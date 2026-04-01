@@ -1,0 +1,35 @@
+## Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Build results
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+
+## NuGet
+packages/
+*.nupkg
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## IDE
+.idea/
+*.resharper*
+_ReSharper*/
+*.DotSettings.user
+
+## OS
+Thumbs.db
+.DS_Store
+
+## Test results
+TestResults/
+*.trx

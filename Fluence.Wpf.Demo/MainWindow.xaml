@@ -1,0 +1,703 @@
+<ui:FluentWindow x:Class="Fluence.Wpf.Demo.MainWindow"
+                 xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                 xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                 xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
+                 xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
+                 Width="1200"
+                 Height="800"
+                 MinWidth="900"
+                 MinHeight="560"
+                 WindowBackdrop="Mica"
+                 WindowCorners="Round"
+                 Title="Fluence.Wpf — Control Gallery"
+                 Icon="Resources/AppIcon.png">
+   <Grid Margin="16" UseLayoutRounding="True">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Fluence.Wpf Control Gallery" Style="{StaticResource PageTitleStyle}" Margin="0,28,0,28" VerticalAlignment="Center" FontWeight="Bold" FontFamily="Segoe UI Variable Display"/>
+
+        <TabControl x:Name="DemoTabs" Grid.Row="1" Style="{StaticResource TabControlStyle}">
+            <TabControl.Resources>
+                <Style TargetType="{x:Type TabItem}">
+                    <Setter Property="Margin" Value="0,0,8,0"/>
+                </Style>
+            </TabControl.Resources>
+
+            <!-- 1. FluentWindow -->
+            <TabItem Header="FluentWindow">
+                <ui:SmoothScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="24" HorizontalAlignment="Stretch">
+                        <TextBlock Text="Theme &amp; Window Settings" Style="{StaticResource SectionHeaderStyle}" Margin="0,0,0,4"/>
+                        <TextBlock Text="Theme, backdrop, accent, and window chrome controls for the demo shell." Style="{StaticResource SectionDescriptionStyle}"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="16"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <ui:Card Variant="{x:Static uicore:CardVariant.Default}" Padding="16" Margin="0,0,0,16">
+                                    <StackPanel>
+                                        <TextBlock Text="Theme" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,8"/>
+                                        <WrapPanel Margin="0,0,0,8">
+                                            <ui:RadioButton x:Name="ThemeLight" Content="Light" GroupName="ThemeGroup" Margin="0,0,12,8" Checked="ThemeRadioButton_Checked"/>
+                                            <ui:RadioButton x:Name="ThemeDark" Content="Dark" GroupName="ThemeGroup" Margin="0,0,12,8" Checked="ThemeRadioButton_Checked"/>
+                                            <ui:RadioButton x:Name="ThemeHighContrast" Content="HighContrast" GroupName="ThemeGroup" Margin="0,0,12,8" Checked="ThemeRadioButton_Checked"/>
+                                            <ui:RadioButton x:Name="ThemeAuto" Content="Auto" GroupName="ThemeGroup" IsChecked="True" Margin="0,0,12,8" Checked="ThemeRadioButton_Checked"/>
+                                        </WrapPanel>
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                                            <ui:ToggleSwitch x:Name="ThemeWatcherToggle" IsChecked="True" Checked="SystemThemeWatcher_Toggled" Unchecked="SystemThemeWatcher_Toggled" Margin="0,0,10,0"/>
+                                            <TextBlock x:Name="SystemThemeLabel" Text="Watching: Yes" VerticalAlignment="Center" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                        </StackPanel>
+                                        <TextBlock x:Name="ThemeStateLabel" Text="Current: Auto" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                    </StackPanel>
+                                </ui:Card>
+                                <ui:Card Variant="{x:Static uicore:CardVariant.Default}" Padding="16">
+                                    <StackPanel>
+                                        <TextBlock Text="Backdrop" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,8"/>
+                                        <ui:ComboBox x:Name="BackdropCombo" Width="220" SelectedIndex="2" SelectionChanged="BackdropCombo_SelectionChanged" HorizontalAlignment="Left">
+                                            <ComboBoxItem Content="Auto"/>
+                                            <ComboBoxItem Content="None"/>
+                                            <ComboBoxItem Content="Mica"/>
+                                            <ComboBoxItem Content="Acrylic"/>
+                                            <ComboBoxItem Content="Tabbed"/>
+                                        </ui:ComboBox>
+                                    </StackPanel>
+                                </ui:Card>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2">
+                                <ui:Card Variant="{x:Static uicore:CardVariant.Default}" Padding="16" Margin="0,0,0,16">
+                                    <StackPanel>
+                                        <TextBlock Text="Accent" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,8"/>
+                                        <WrapPanel Margin="0,0,0,8">
+                                            <ui:Button Style="{StaticResource AccentSwatchStyle}" Background="#0078D4" Tag="#0078D4" Click="AccentSwatch_Click" Margin="0,0,8,8"/>
+                                            <ui:Button Style="{StaticResource AccentSwatchStyle}" Background="#C42B1C" Tag="#C42B1C" Click="AccentSwatch_Click" Margin="0,0,8,8"/>
+                                            <ui:Button Style="{StaticResource AccentSwatchStyle}" Background="#107C10" Tag="#107C10" Click="AccentSwatch_Click" Margin="0,0,8,8"/>
+                                            <ui:Button Style="{StaticResource AccentSwatchStyle}" Background="#881798" Tag="#881798" Click="AccentSwatch_Click" Margin="0,0,8,8"/>
+                                            <ui:Button Style="{StaticResource AccentSwatchStyle}" Background="#CA5010" Tag="#CA5010" Click="AccentSwatch_Click" Margin="0,0,8,8"/>
+                                            <ui:Button Style="{StaticResource AccentSwatchStyle}" Background="#008272" Tag="#008272" Click="AccentSwatch_Click" Margin="0,0,8,8"/>
+                                            <ui:Button Style="{StaticResource AccentSwatchStyle}" Background="#E3008C" Tag="#E3008C" Click="AccentSwatch_Click" Margin="0,0,8,8"/>
+                                            <ui:Button Style="{StaticResource AccentSwatchStyle}" Background="#986F0B" Tag="#986F0B" Click="AccentSwatch_Click" Margin="0,0,8,8"/>
+                                        </WrapPanel>
+                                        <StackPanel Orientation="Horizontal">
+                                            <ui:Button Content="System" Click="SystemAccent_Click" MinWidth="80" Margin="0,0,10,0"/>
+                                            <TextBlock Text="Status:" VerticalAlignment="Center" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,6,0"/>
+                                            <TextBlock Text="Accent: System" VerticalAlignment="Center" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </ui:Card>
+                                <ui:Card Variant="{x:Static uicore:CardVariant.Default}" Padding="16">
+                                    <StackPanel>
+                                        <TextBlock Text="Window Chrome" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,8"/>
+                                        <Grid Margin="0,0,0,10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="120"/>
+                                                <ColumnDefinition Width="14"/>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="120"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="Minimize" Grid.Column="0" VerticalAlignment="Center" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,8,0"/>
+                                            <ui:ComboBox x:Name="MinimizeOverrideCombo" Grid.Column="1" Width="120" SelectionChanged="CaptionOverrideCombo_SelectionChanged">
+                                                <ComboBoxItem Content="Default" IsSelected="True"/>
+                                                <ComboBoxItem Content="Enable"/>
+                                                <ComboBoxItem Content="Disable"/>
+                                                <ComboBoxItem Content="Hide"/>
+                                            </ui:ComboBox>
+                                            <TextBlock Text="Maximize" Grid.Column="3" VerticalAlignment="Center" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,8,0"/>
+                                            <ui:ComboBox x:Name="MaximizeOverrideCombo" Grid.Column="4" Width="120" SelectionChanged="CaptionOverrideCombo_SelectionChanged">
+                                                <ComboBoxItem Content="Default" IsSelected="True"/>
+                                                <ComboBoxItem Content="Enable"/>
+                                                <ComboBoxItem Content="Disable"/>
+                                                <ComboBoxItem Content="Hide"/>
+                                            </ui:ComboBox>
+                                        </Grid>
+                                        <Grid Margin="0,0,0,10">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="120"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="Close" Grid.Column="0" VerticalAlignment="Center" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,8,0"/>
+                                            <ui:ComboBox x:Name="CloseOverrideCombo" Grid.Column="1" Width="120" SelectionChanged="CaptionOverrideCombo_SelectionChanged">
+                                                <ComboBoxItem Content="Default" IsSelected="True"/>
+                                                <ComboBoxItem Content="Enable"/>
+                                                <ComboBoxItem Content="Disable"/>
+                                                <ComboBoxItem Content="Hide"/>
+                                            </ui:ComboBox>
+                                        </Grid>
+                                        <WrapPanel>
+                                            <ui:CheckBox x:Name="ShowWindowIconToggle" Content="Show Window Icon" IsChecked="True" Checked="WindowChromeToggle_Changed" Unchecked="WindowChromeToggle_Changed" Margin="0,0,14,0"/>
+                                            <ui:CheckBox x:Name="ShowWindowTitleToggle" Content="Show Window Title" IsChecked="True" Checked="WindowChromeToggle_Changed" Unchecked="WindowChromeToggle_Changed"/>
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </ui:Card>
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </ui:SmoothScrollViewer>
+            </TabItem>
+
+            <!-- 2. Typography -->
+            <TabItem Header="Typography">
+                <ui:SmoothScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="24" HorizontalAlignment="Stretch">
+                        <TextBlock Text="Typography" Style="{StaticResource SectionHeaderStyle}" Margin="0,0,0,4"/>
+                        <TextBlock Text="WinUI 3 typography scale via TextBlockExtensions.Typography." Style="{StaticResource SectionDescriptionStyle}"/>
+                        <ui:Card Variant="{x:Static uicore:CardVariant.Default}" Padding="16">
+                            <StackPanel>
+                                <TextBlock Text="Display" ui:TextBlockExtensions.Typography="Display" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                <TextBlock Text="TitleLarge" ui:TextBlockExtensions.Typography="TitleLarge" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                <TextBlock Text="Title" ui:TextBlockExtensions.Typography="Title" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                <TextBlock Text="Subtitle" ui:TextBlockExtensions.Typography="Subtitle" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                <TextBlock Text="BodyLarge" ui:TextBlockExtensions.Typography="BodyLarge" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                <TextBlock Text="BodyStrong" ui:TextBlockExtensions.Typography="BodyStrong" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                <TextBlock Text="Body" ui:TextBlockExtensions.Typography="Body" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                <TextBlock Text="Caption" ui:TextBlockExtensions.Typography="Caption" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                <TextBlock x:Name="FontDetectionLabel" Text="FontFamily: (loading...)" Style="{StaticResource StateLabelStyle}" Margin="0,10,0,0"/>
+                            </StackPanel>
+                        </ui:Card>
+
+                        <TextBlock Text="FontIcon Gallery" Style="{StaticResource SectionHeaderStyle}" Margin="0,48,0,4"/>
+                        <TextBlock Text="Common Segoe Fluent glyphs with spinning and rotation demos." Style="{StaticResource SectionDescriptionStyle}"/>
+                        <ui:Card Variant="{x:Static uicore:CardVariant.Default}" Padding="16">
+                            <StackPanel>
+                                <WrapPanel>
+                                    <ui:Border Style="{StaticResource IconGalleryCardStyle}" Margin="0,0,8,8"><ui:FontIcon Glyph="&#xE710;" IconFontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center"/></ui:Border>
+                                    <ui:Border Style="{StaticResource IconGalleryCardStyle}" Margin="0,0,8,8"><ui:FontIcon Glyph="&#xE712;" IconFontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center"/></ui:Border>
+                                    <ui:Border Style="{StaticResource IconGalleryCardStyle}" Margin="0,0,8,8"><ui:FontIcon Glyph="&#xE74D;" IconFontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center"/></ui:Border>
+                                    <ui:Border Style="{StaticResource IconGalleryCardStyle}" Margin="0,0,8,8"><ui:FontIcon Glyph="&#xE721;" IconFontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center"/></ui:Border>
+                                    <ui:Border Style="{StaticResource IconGalleryCardStyle}" Margin="0,0,8,8"><ui:FontIcon Glyph="&#xE72C;" IconFontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" IsSpinning="True"/></ui:Border>
+                                    <ui:Border Style="{StaticResource IconGalleryCardStyle}" Margin="0,0,8,8"><ui:FontIcon Glyph="&#xE72C;" IconFontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" Rotation="45"/></ui:Border>
+                                </WrapPanel>
+                                <StackPanel Orientation="Vertical" Margin="0,4,0,0" HorizontalAlignment="Left">
+                                    <ui:Button Click="FontIconDemo_Click" Width="100" Height="80">
+                                        <ui:FontIcon x:Name="ClickableFontIcon" Glyph="&#xE72A;" IconFontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </ui:Button>
+                                    <TextBlock Text="Click Me" Margin="0,6,0,0" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" Width="100" TextAlignment="Center"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </ui:Card>
+                    </StackPanel>
+                </ui:SmoothScrollViewer>
+            </TabItem>
+
+            <!-- 3. Inputs -->
+            <TabItem Header="Inputs">
+                <ui:SmoothScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="24" HorizontalAlignment="Stretch">
+                        <TextBlock Text="TextBox" Style="{StaticResource SectionHeaderStyle}" Margin="0,0,0,4"/>
+                        <TextBlock Text="Fluent-styled text input with placeholder, icon, clear button, and validation." Style="{StaticResource SectionDescriptionStyle}"/>
+                        <ui:Card Variant="{x:Static uicore:CardVariant.Default}" Padding="16">
+                            <StackPanel>
+                                <ui:TextBox PlaceholderText="Basic text box..." Margin="0,0,0,12" Width="480" HorizontalAlignment="Left"/>
+                                <ui:TextBox PlaceholderText="With icon" Margin="0,0,0,12" Width="480" HorizontalAlignment="Left">
+                                    <ui:TextBox.Icon>
+                                        <ui:FontIcon Glyph="&#xE721;" IconFontSize="14"/>
+                                    </ui:TextBox.Icon>
+                                </ui:TextBox>
+                                <ui:TextBox PlaceholderText="Clear button enabled (default)" Margin="0,0,0,12" Width="480" HorizontalAlignment="Left"/>
+                                <ui:TextBox x:Name="CharCountTextBox" PlaceholderText="Type to see character count..." TextChanged="CharCountTextBox_TextChanged" Margin="0,0,0,4" Width="480" HorizontalAlignment="Left"/>
+                                <TextBlock x:Name="CharCountLabel" Text="Characters: 0" Style="{StaticResource StateLabelStyle}"/>
+                            </StackPanel>
+                        </ui:Card>
+
+                        <TextBlock Text="Validation States" Style="{StaticResource SectionHeaderStyle}"/>
+                        <TextBlock Text="TextBox supports Success, Warning, Error, and informational helper text." Style="{StaticResource SectionDescriptionStyle}"/>
+                        <ui:Card Variant="{x:Static uicore:CardVariant.Default}" Padding="16">
+                            <StackPanel>
+                                <ui:TextBox Text="Valid input" ValidationState="{x:Static uicore:ValidationState.Success}" ValidationMessage="Looks good!" Margin="0,0,0,12" Width="480" HorizontalAlignment="Left"/>
+                                <ui:TextBox Text="Caution" ValidationState="{x:Static uicore:ValidationState.Warning}" ValidationMessage="This might cause issues" Margin="0,0,0,12" Width="480" HorizontalAlignment="Left"/>
+                                <ui:TextBox Text="Bad value" ValidationState="{x:Static uicore:ValidationState.Error}" ValidationMessage="Please fix this field" Margin="0,0,0,12" Width="480" HorizontalAlignment="Left"/>
+                                <ui:TextBox PlaceholderText="With helper text" HelperText="This is informational helper text" Width="480" HorizontalAlignment="Left"/>
+                            </StackPanel>
+                        </ui:Card>
+
+                        <TextBlock Text="PasswordBox" Style="{StaticResource SectionHeaderStyle}"/>
+                        <TextBlock Text="Secure password entry with reveal toggle." Style="{StaticResource SectionDescriptionStyle}"/>
+                        <ui:Card Variant="{x:Static uicore:CardVariant.Default}" Padding="16">
+                            <StackPanel>
+                                <ui:PasswordBox PlaceholderText="Enter password..." RevealButtonEnabled="True" Margin="0,0,0,12" Width="480" HorizontalAlignment="Left"/>
+                                <ui:PasswordBox PlaceholderText="Disabled" IsEnabled="False" Width="480" HorizontalAlignment="Left"/>
+                            </StackPanel>
+                        </ui:Card>
+                    </StackPanel>
+                </ui:SmoothScrollViewer>
+            </TabItem>
+
+            <!-- 4. Buttons & Links -->
+            <TabItem Header="Buttons &amp; Links">
+                <ui:SmoothScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="24" HorizontalAlignment="Stretch">
+                        <TextBlock Text="Button Appearances" Style="{StaticResource SectionHeaderStyle}" Margin="0,0,0,4"/>
+                        <TextBlock Text="Standard, Accent, and Subtle button variants." Style="{StaticResource SectionDescriptionStyle}"/>
+                        <ui:Card Variant="{x:Static uicore:CardVariant.Default}" Padding="16">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                    <ui:Button Content="Standard" Margin="0,0,12,0"/>
+                                    <ui:Button Content="Accent" Appearance="Accent" Margin="0,0,12,0"/>
+                                    <ui:Button Content="Subtle" Appearance="Subtle"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:Button Content="Standard" IsEnabled="False" Margin="0,0,12,0"/>
+                                    <ui:Button Content="Accent" Appearance="Accent" IsEnabled="False" Margin="0,0,12,0"/>
+                                    <ui:Button Content="Subtle" Appearance="Subtle" IsEnabled="False"/>
+                                </StackPanel>
+                                <TextBlock Text="Second row: disabled variants" Style="{StaticResource StateLabelStyle}"/>
+                            </StackPanel>
+                        </ui:Card>
+
+                        <TextBlock Text="Icon Placement" Style="{StaticResource SectionHeaderStyle}"/>
+                        <TextBlock Text="Buttons with leading or trailing icons." Style="{StaticResource SectionDescriptionStyle}"/>
+                        <ui:Card Variant="{x:Static uicore:CardVariant.Default}" Padding="16">
+                            <StackPanel Orientation="Horizontal">
+                                <ui:Button Content="Icon Left" Margin="0,0,12,0">
+                                    <ui:Button.Icon>
+                                        <ui:FontIcon Glyph="&#xE774;" IconFontSize="14"/>
+                                    </ui:Button.Icon>
+                                </ui:Button>
+                                <ui:Button Content="Icon Right" IconPlacement="Right">
+                                    <ui:Button.Icon>
+                                        <ui:FontIcon Glyph="&#xE8D6;" IconFontSize="14"/>
+                                    </ui:Button.Icon>
+                                </ui:Button>
+                            </StackPanel>
+                        </ui:Card>
+
+                        <TextBlock Text="HyperlinkButton" Style="{StaticResource SectionHeaderStyle}"/>
+                        <TextBlock Text="A button styled as a hyperlink, with optional NavigateUri." Style="{StaticResource SectionDescriptionStyle}"/>
+                        <ui:Card Variant="{x:Static uicore:CardVariant.Default}" Padding="16">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                                    <ui:HyperlinkButton Content="Open GitHub" NavigateUri="https://github.com" Margin="0,0,16,0"/>
+                                    <ui:HyperlinkButton Content="No URI (styled)" Margin="0,0,16,0"/>
+                                    <ui:HyperlinkButton Content="Disabled" IsEnabled="False"/>
+                                </StackPanel>
+                                <ui:HyperlinkButton Content="With Icon" NavigateUri="https://github.com">
+                                    <ui:HyperlinkButton.Icon>
+                                        <ui:FontIcon Glyph="&#xE721;" IconFontSize="14"/>
+                                    </ui:HyperlinkButton.Icon>
+                                </ui:HyperlinkButton>
+                            </StackPanel>
+                        </ui:Card>
+                    </StackPanel>
+                </ui:SmoothScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Selection &amp; Toggles">
+                <ui:SmoothScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="24" HorizontalAlignment="Stretch">
+                        <TextBlock Text="CheckBox" Style="{StaticResource SectionHeaderStyle}" Margin="0,0,0,4"/>
+                        <TextBlock Text="Two-state and three-state check boxes with optional description." Style="{StaticResource SectionDescriptionStyle}"/>
+                        <ui:Card Variant="{x:Static uicore:CardVariant.Default}" Padding="16">
+                            <StackPanel>
+                                <WrapPanel Margin="0,0,0,14">
+                                    <ui:CheckBox Content="Checked" IsChecked="True" Margin="0,0,32,10"/>
+                                    <ui:CheckBox Content="Unchecked" Margin="0,0,32,10"/>
+                                    <ui:CheckBox Content="Indeterminate" IsThreeState="True" IsChecked="{x:Null}" Margin="0,0,32,10"/>
+                                    <ui:CheckBox Content="Disabled" IsEnabled="False" IsChecked="True" Margin="0,0,32,10"/>
+                                </WrapPanel>
+                                <ui:CheckBox Content="With description" Description="Additional detail about this option"/>
+                            </StackPanel>
+                        </ui:Card>
+
+                        <TextBlock Text="RadioButton" Style="{StaticResource SectionHeaderStyle}"/>
+                        <TextBlock Text="Grouped radio buttons with optional description text." Style="{StaticResource SectionDescriptionStyle}"/>
+                        <ui:Card Variant="{x:Static uicore:CardVariant.Default}" Padding="16">
+                            <StackPanel>
+                                <TextBlock Text="Basic group" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,8"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                                    <ui:RadioButton Content="Option A" GroupName="BasicGroup" IsChecked="True" Margin="0,0,16,0"/>
+                                    <ui:RadioButton Content="Option B" GroupName="BasicGroup" Margin="0,0,16,0"/>
+                                    <ui:RadioButton Content="Option C" GroupName="BasicGroup"/>
+                                </StackPanel>
+                                <TextBlock Text="With descriptions" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,8"/>
+                                <ui:RadioButton Content="Standard" Description="Uses default application settings" GroupName="DescGroup" IsChecked="True" Margin="0,0,0,8"/>
+                                <ui:RadioButton Content="Custom" Description="Allows manual configuration" GroupName="DescGroup" Margin="0,0,0,8"/>
+                                <ui:RadioButton Content="Advanced" Description="Expert-level options" GroupName="DescGroup" Margin="0,0,0,16"/>
+                                <TextBlock Text="Disabled" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,8"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:RadioButton Content="Disabled (selected)" IsEnabled="False" IsChecked="True" Margin="0,0,24,0"/>
+                                    <ui:RadioButton Content="Disabled (unselected)" IsEnabled="False"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </ui:Card>
+
+                        <TextBlock Text="ToggleSwitch" Style="{StaticResource SectionHeaderStyle}"/>
+                        <TextBlock Text="Toggle switches for binary settings." Style="{StaticResource SectionDescriptionStyle}"/>
+                        <ui:Card Variant="{x:Static uicore:CardVariant.Default}" Padding="16">
+                            <StackPanel>
+                                <WrapPanel Margin="0,0,0,12">
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,20,10">
+                                        <ui:ToggleSwitch x:Name="DefaultToggle" Margin="0,0,12,0" Checked="DefaultToggle_Changed" Unchecked="DefaultToggle_Changed"/>
+                                        <TextBlock Text="Default" VerticalAlignment="Center" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,20,10">
+                                        <ui:ToggleSwitch OnContent="On" OffContent="Off" IsChecked="True" Margin="0,0,12,0"/>
+                                        <TextBlock Text="Custom On/Off" VerticalAlignment="Center" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,20,10">
+                                        <ui:ToggleSwitch IsEnabled="False" IsChecked="True" Margin="0,0,12,0"/>
+                                        <TextBlock Text="Disabled (on)" VerticalAlignment="Center" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal" Margin="0,0,20,10">
+                                        <ui:ToggleSwitch IsEnabled="False" IsChecked="False" Margin="0,0,12,0"/>
+                                        <TextBlock Text="Disabled (off)" VerticalAlignment="Center" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                    </StackPanel>
+                                </WrapPanel>
+                                <TextBlock x:Name="ToggleStateLabel" Text="Default toggle: Off" Style="{StaticResource StateLabelStyle}"/>
+                            </StackPanel>
+                        </ui:Card>
+
+                        <TextBlock Text="ComboBox" Style="{StaticResource SectionHeaderStyle}"/>
+                        <TextBlock Text="Drop-down selection with placeholder and icon support." Style="{StaticResource SectionDescriptionStyle}"/>
+                        <ui:Card Variant="{x:Static uicore:CardVariant.Default}" Padding="16">
+                            <StackPanel>
+                                <ui:ComboBox PlaceholderText="Choose an option..." Width="480" HorizontalAlignment="Left" Margin="0,0,0,12">
+                                    <ComboBoxItem Content="First item"/>
+                                    <ComboBoxItem Content="Second item"/>
+                                    <ComboBoxItem Content="Third item"/>
+                                </ui:ComboBox>
+                                <ui:ComboBox PlaceholderText="With icon" Width="480" HorizontalAlignment="Left" Margin="0,0,0,12">
+                                    <ui:ComboBox.Icon>
+                                        <ui:FontIcon Glyph="&#xE721;" IconFontSize="14"/>
+                                    </ui:ComboBox.Icon>
+                                    <ComboBoxItem Content="Alpha"/>
+                                    <ComboBoxItem Content="Beta"/>
+                                    <ComboBoxItem Content="Gamma"/>
+                                </ui:ComboBox>
+                                <ui:ComboBox PlaceholderText="Disabled" Width="480" HorizontalAlignment="Left" IsEnabled="False" Margin="0,0,0,12"/>
+                                <ui:ComboBox x:Name="ThemeEnumCombo" PlaceholderText="ApplicationTheme enum" Width="480" HorizontalAlignment="Left" SelectionChanged="ThemeEnumCombo_SelectionChanged">
+                                    <ComboBoxItem Content="Light"/>
+                                    <ComboBoxItem Content="Dark"/>
+                                    <ComboBoxItem Content="HighContrast"/>
+                                    <ComboBoxItem Content="Auto"/>
+                                </ui:ComboBox>
+                            </StackPanel>
+                        </ui:Card>
+
+                        <TextBlock Text="ListView" Style="{StaticResource SectionHeaderStyle}" Margin="0,48,0,4"/>
+                        <TextBlock Text="Animated list with add/remove controls and empty state." Style="{StaticResource SectionDescriptionStyle}"/>
+                        <ui:Card Variant="{x:Static uicore:CardVariant.Default}" Padding="16">
+                            <StackPanel>
+                                <Grid Margin="0,0,0,12">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="20"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <ui:ListView x:Name="DemoListView" Height="230" Grid.Column="0"
+                                                 Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                                 BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                                 BorderThickness="1">
+                                        <ui:ListView.EmptyContent>
+                                            <TextBlock Text="No items — click Add to begin" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                       Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                        </ui:ListView.EmptyContent>
+                                        <ListViewItem Content="Ana Bowman"/>
+                                        <ListViewItem Content="Shawn Hughes"/>
+                                        <ListViewItem Content="Oscar Ward"/>
+                                        <ListViewItem Content="Madison Butler"/>
+                                        <ListViewItem Content="Graham Barnes"/>
+                                        <ListViewItem Content="Anthony Ivanov"/>
+                                        <ListViewItem Content="Michael Peltier"/>
+                                        <ListViewItem Content="Sofia Chen"/>
+                                    </ui:ListView>
+                                    <ui:ListView x:Name="DemoListViewDetail" Height="230" Grid.Column="2"
+                                                 Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                                                 BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                                 BorderThickness="1">
+                                        <ListViewItem Tag="Ana Bowman|Support Engineer">
+                                            <Grid Margin="0,4">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="36"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Image Width="28" Height="28" Source="Resources/AppIcon.png"/>
+                                                <StackPanel Grid.Column="1">
+                                                    <TextBlock Text="Ana Bowman" FontWeight="SemiBold"/>
+                                                    <TextBlock Text="Support Engineer" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </ListViewItem>
+                                        <ListViewItem Tag="Shawn Hughes|Platform Specialist">
+                                            <Grid Margin="0,4">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="36"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Image Width="28" Height="28" Source="Resources/AppIcon.png"/>
+                                                <StackPanel Grid.Column="1">
+                                                    <TextBlock Text="Shawn Hughes" FontWeight="SemiBold"/>
+                                                    <TextBlock Text="Platform Specialist" FontSize="12" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </ListViewItem>
+                                    </ui:ListView>
+                                </Grid>
+                                <StackPanel Orientation="Horizontal" Margin="0,12,0,0">
+                                    <ui:Button Content="Add" Appearance="Accent" Click="AddListItem_Click" Margin="0,0,8,0"/>
+                                    <ui:Button Content="Remove" Click="RemoveListItem_Click"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </ui:Card>
+                    </StackPanel>
+                </ui:SmoothScrollViewer>
+            </TabItem>
+
+            <TabItem Header="Progress &amp; Status">
+                <ui:SmoothScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="24" HorizontalAlignment="Stretch">
+                        <TextBlock Text="ProgressBar" Style="{StaticResource SectionHeaderStyle}" Margin="0,0,0,4"/>
+                        <TextBlock Text="Standard progress bar bound to a slider." Style="{StaticResource SectionDescriptionStyle}"/>
+                        <ui:Card Variant="{x:Static uicore:CardVariant.Default}" Padding="16">
+                            <StackPanel>
+                                <ui:ProgressBar x:Name="StandardProgressBar" Height="8" HorizontalAlignment="Stretch" Minimum="0" Maximum="100" Value="{Binding ElementName=ProgressSlider, Path=Value}" Margin="0,0,0,12"/>
+                                <ui:Slider x:Name="ProgressSlider"
+                                           Minimum="0"
+                                           Maximum="100"
+                                           Value="45"
+                                           TickFrequency="5"
+                                           IsSnapToTickEnabled="False"
+                                           ValueChanged="ProgressSlider_ValueChanged"/>
+                                <TextBlock x:Name="SliderValueLabel"
+                                           Text="Value: 45"
+                                           Style="{StaticResource StateLabelStyle}" />
+                            </StackPanel>
+                        </ui:Card>
+
+                        <TextBlock Text="Slider Variants" Style="{StaticResource SectionHeaderStyle}"/>
+                        <TextBlock Text="WinUI-style slider demos for horizontal, snapped, disabled, and vertical usage." Style="{StaticResource SectionDescriptionStyle}"/>
+                        <ui:Card Variant="{x:Static uicore:CardVariant.Default}" Padding="20">
+                            <StackPanel>
+                                <TextBlock Text="Default" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,6"/>
+                                <ui:Slider Minimum="0" Maximum="100" Value="35" Margin="0,0,0,14"/>
+
+                                <TextBlock Text="Snapped to ticks (0-10)" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,6"/>
+                                <ui:Slider Minimum="0" Maximum="10" TickFrequency="1" IsSnapToTickEnabled="True" Value="4" Margin="0,0,0,14"/>
+
+                                <TextBlock Text="Disabled" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,6"/>
+                                <ui:Slider Minimum="0" Maximum="100" Value="60" IsEnabled="False" Margin="0,0,0,14"/>
+
+                                <TextBlock Text="Vertical" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,6"/>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                                    <ui:Slider Orientation="Vertical" Height="180" Minimum="0" Maximum="100" Value="70" Margin="0,0,24,0"/>
+                                    <ui:Slider Orientation="Vertical" Height="180" Minimum="0" Maximum="100" Value="25" IsEnabled="False"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </ui:Card>
+
+                        <TextBlock Text="Indeterminate ProgressBar" Style="{StaticResource SectionHeaderStyle}"/>
+                        <TextBlock Text="Toggle indeterminate mode on or off." Style="{StaticResource SectionDescriptionStyle}"/>
+                        <ui:Card Variant="{x:Static uicore:CardVariant.Default}" Padding="16">
+                            <StackPanel>
+                                <ui:ProgressBar x:Name="IndeterminateProgressBar" Height="8" HorizontalAlignment="Stretch" ProgressMode="Indeterminate" Margin="0,0,0,12"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:ToggleSwitch x:Name="IndeterminateToggle" IsChecked="True" Checked="IndeterminateToggle_Toggled" Unchecked="IndeterminateToggle_Toggled" Margin="0,0,12,0"/>
+                                    <TextBlock Text="Indeterminate" VerticalAlignment="Center" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </ui:Card>
+
+                        <TextBlock Text="Step Progress" Style="{StaticResource SectionHeaderStyle}"/>
+                        <TextBlock Text="Navigate through steps with Back and Next buttons." Style="{StaticResource SectionDescriptionStyle}"/>
+                        <ui:Card Variant="{x:Static uicore:CardVariant.Default}" Padding="16">
+                            <StackPanel>
+                                <ui:ProgressBar x:Name="StepProgressBar" Height="8" HorizontalAlignment="Stretch" ProgressMode="StepProgress" Steps="5" CurrentStep="1" Margin="0,0,0,12"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:Button Content="Back" Tag="Back" Click="ProgressStep_Click" Margin="0,0,12,0"/>
+                                    <ui:Button Content="Next" Appearance="Accent" Tag="Next" Click="ProgressStep_Click" Margin="0,0,16,0"/>
+                                    <TextBlock x:Name="StepLabel" Text="Step 1 of 5" VerticalAlignment="Center" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </ui:Card>
+
+                        <TextBlock Text="ProgressRing" Style="{StaticResource SectionHeaderStyle}"/>
+                        <TextBlock Text="Circular progress indicators in various sizes and modes." Style="{StaticResource SectionDescriptionStyle}"/>
+                        <ui:Card Variant="{x:Static uicore:CardVariant.Default}" Padding="16">
+                            <UniformGrid Columns="4" HorizontalAlignment="Stretch">
+                                <Grid MinHeight="96">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <ui:ProgressRing IsActive="True" IsIndeterminate="True" Width="32" Height="32" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="1" Text="32×32" Style="{StaticResource StateLabelStyle}" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                                </Grid>
+                                <Grid MinHeight="96">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <ui:ProgressRing IsActive="True" IsIndeterminate="True" Width="64" Height="64" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="1" Text="64×64" Style="{StaticResource StateLabelStyle}" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                                </Grid>
+                                <Grid MinHeight="96">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <ui:ProgressRing IsActive="True" IsIndeterminate="False" Width="48" Height="48"
+                                                     Minimum="0" Maximum="100" Value="{Binding ElementName=ProgressSlider, Path=Value}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="1" Text="Determinate" Style="{StaticResource StateLabelStyle}" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                                </Grid>
+                                <Grid MinHeight="96">
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*"/>
+                                        <RowDefinition Height="Auto"/>
+                                    </Grid.RowDefinitions>
+                                    <ui:ProgressRing IsActive="False" Width="48" Height="48" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Row="1" Text="Inactive" Style="{StaticResource StateLabelStyle}" HorizontalAlignment="Center" Margin="0,10,0,0"/>
+                                </Grid>
+                            </UniformGrid>
+                        </ui:Card>
+
+                        <TextBlock Text="InfoBar" Style="{StaticResource SectionHeaderStyle}"/>
+                        <TextBlock Text="Contextual notifications with severity levels and optional actions." Style="{StaticResource SectionDescriptionStyle}"/>
+                        <ui:Card Variant="{x:Static uicore:CardVariant.Default}" Padding="16">
+                            <StackPanel>
+                                <ui:InfoBar x:Name="InfoBarInformational" HorizontalAlignment="Stretch" Severity="Informational" Title="Informational" Message="This is a general information message." IsOpen="True" Margin="0,0,0,8"/>
+                                <ui:InfoBar x:Name="InfoBarSuccess" HorizontalAlignment="Stretch" Severity="Success" Title="Success" Message="The operation completed successfully." IsOpen="True" Margin="0,0,0,8"/>
+                                <ui:InfoBar x:Name="InfoBarWarning" HorizontalAlignment="Stretch" Severity="Warning" Title="Warning" Message="Proceed with caution." IsOpen="True" Margin="0,0,0,8"/>
+                                <ui:InfoBar x:Name="InfoBarError" HorizontalAlignment="Stretch" Severity="Error" Title="Error" Message="Something went wrong." IsOpen="True" Margin="0,0,0,8">
+                                    <ui:InfoBar.ActionButton>
+                                        <ui:Button Content="Retry" Appearance="Accent"/>
+                                    </ui:InfoBar.ActionButton>
+                                </ui:InfoBar>
+                                <ui:Button Content="Reset All InfoBars" Click="ResetInfoBars_Click" Margin="0,4,0,0"/>
+                            </StackPanel>
+                        </ui:Card>
+                    </StackPanel>
+                </ui:SmoothScrollViewer>
+            </TabItem>
+
+            <!-- 7. Navigation -->
+            <TabItem Header="Navigation">
+                <ui:SmoothScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="24" HorizontalAlignment="Stretch">
+                        <TextBlock Text="NavigationView Demos" Style="{StaticResource SectionHeaderStyle}" Margin="0,0,0,4"/>
+                        <TextBlock Text="Top and Left pane demos with content transitions and back-button behavior." Style="{StaticResource SectionDescriptionStyle}"/>
+                        <ui:Card Variant="{x:Static uicore:CardVariant.Default}" Padding="16">
+                            <StackPanel>
+                                <TextBlock Text="Top Pane NavigationView" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,8"/>
+                                <Border Height="220" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" Margin="0,0,0,14">
+                                    <ui:NavigationView x:Name="InlineNavTopDemo" PaneDisplayMode="Top" IsBackButtonVisible="True" IsBackEnabled="False" SelectionChanged="InlineNavTopDemo_SelectionChanged">
+                                        <ui:NavigationViewItem Content="Home" />
+                                        <ui:NavigationViewItem Content="Reports" />
+                                        <ui:NavigationViewItem Content="Settings" />
+                                        <ui:NavigationView.Content>
+                                            <Grid x:Name="InlineNavTopContentHost" Margin="16">
+                                                <TextBlock x:Name="InlineNavTopLabel" Text="Top: Home" FontSize="16"/>
+                                            </Grid>
+                                        </ui:NavigationView.Content>
+                                    </ui:NavigationView>
+                                </Border>
+                                <TextBlock Text="Left Pane NavigationView" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,8"/>
+                                <Border Height="260" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" Margin="0,0,0,14">
+                                    <ui:NavigationView x:Name="InlineNavLeftDemo" PaneDisplayMode="Left" IsBackButtonVisible="True" IsBackEnabled="False" SelectionChanged="InlineNavLeftDemo_SelectionChanged">
+                                        <ui:NavigationViewItem Content="Files"><ui:NavigationViewItem.Icon><ui:FontIcon Glyph="&#xE8B7;" IconFontSize="14"/></ui:NavigationViewItem.Icon></ui:NavigationViewItem>
+                                        <ui:NavigationViewItem Content="Users"><ui:NavigationViewItem.Icon><ui:FontIcon Glyph="&#xE77B;" IconFontSize="14"/></ui:NavigationViewItem.Icon></ui:NavigationViewItem>
+                                        <ui:NavigationViewItem Content="Automation"><ui:NavigationViewItem.Icon><ui:FontIcon Glyph="&#xE7E8;" IconFontSize="14"/></ui:NavigationViewItem.Icon></ui:NavigationViewItem>
+                                        <ui:NavigationView.Content>
+                                            <Grid x:Name="InlineNavLeftContentHost" Margin="16">
+                                                <TextBlock x:Name="InlineNavLeftLabel" Text="Left: Files" FontSize="16"/>
+                                            </Grid>
+                                        </ui:NavigationView.Content>
+                                    </ui:NavigationView>
+                                </Border>
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:CheckBox x:Name="InlineBackEnabledToggle" Content="Back enabled" Checked="InlineBackEnabledToggle_Changed" Unchecked="InlineBackEnabledToggle_Changed" Margin="0,0,14,0"/>
+                                    <TextBlock x:Name="InlineBackStatusLabel" Text="Back button disabled" VerticalAlignment="Center" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                </StackPanel>
+                            </StackPanel>
+                        </ui:Card>
+                    </StackPanel>
+                </ui:SmoothScrollViewer>
+            </TabItem>
+
+            <!-- 8. Layout -->
+            <TabItem Header="Layout">
+                <ui:SmoothScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="24" HorizontalAlignment="Stretch">
+                        <TextBlock Text="Card" Style="{StaticResource SectionHeaderStyle}" Margin="0,0,0,4"/>
+                        <TextBlock Text="Four visual variants plus clickable and minimal cards." Style="{StaticResource SectionDescriptionStyle}"/>
+                        <ui:Card Variant="{x:Static uicore:CardVariant.Default}" Padding="16">
+                            <StackPanel>
+                                <UniformGrid Columns="2" Margin="0,0,0,20">
+                                    <ui:Card Variant="{x:Static uicore:CardVariant.Default}" Header="Default" Margin="0,0,16,16" Padding="18" MinHeight="120">
+                                        <TextBlock Text="Default card variant" TextWrapping="Wrap"/>
+                                    </ui:Card>
+                                    <ui:Card Variant="{x:Static uicore:CardVariant.Outlined}" Header="Outlined" Margin="0,0,0,16" Padding="18" MinHeight="120">
+                                        <TextBlock Text="Outlined card variant" TextWrapping="Wrap"/>
+                                    </ui:Card>
+                                    <ui:Card Variant="{x:Static uicore:CardVariant.Filled}" Header="Filled" Margin="0,0,16,0" Padding="18" MinHeight="120">
+                                        <TextBlock Text="Filled card variant" TextWrapping="Wrap"/>
+                                    </ui:Card>
+                                    <ui:Card Variant="{x:Static uicore:CardVariant.Subtle}" Header="Subtle" Padding="18" MinHeight="120">
+                                        <TextBlock Text="Subtle card variant" TextWrapping="Wrap"/>
+                                    </ui:Card>
+                                </UniformGrid>
+                                <ui:Card Variant="{x:Static uicore:CardVariant.Outlined}" IsClickable="True" Header="Clickable Card" Margin="0,0,0,16" Padding="18" MinHeight="120">
+                                    <ui:Card.Icon>
+                                        <ui:FontIcon Glyph="&#xE8B7;" IconFontSize="20"/>
+                                    </ui:Card.Icon>
+                                    <TextBlock Text="Click me — I have an icon, header, and footer." TextWrapping="Wrap"/>
+                                </ui:Card>
+                                <ui:Card Variant="{x:Static uicore:CardVariant.Subtle}" Padding="18" MinHeight="100">
+                                    <TextBlock Text="Minimal card (content only, no header)" TextWrapping="Wrap"/>
+                                </ui:Card>
+                            </StackPanel>
+                        </ui:Card>
+
+                        <TextBlock Text="Layout Helpers" Style="{StaticResource SectionHeaderStyle}" Margin="0,48,0,4"/>
+                        <TextBlock Text="FluentStackPanel with Spacing, FluentDockPanel, and Border variants." Style="{StaticResource SectionDescriptionStyle}"/>
+                        <ui:Card Variant="{x:Static uicore:CardVariant.Default}" Padding="16">
+                            <StackPanel>
+                                <TextBlock Text="StackPanel with Spacing=8" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,8"/>
+                                <ui:Border Variant="{x:Static uicore:BorderVariant.Subtle}" Padding="20" CornerRadius="6" Margin="0,0,0,16" MinHeight="120">
+                                    <ui:StackPanel Spacing="8" Orientation="Vertical">
+                                        <TextBlock Text="First row (full-width layout helper)" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                        <TextBlock Text="Second row adapts as the window grows" Foreground="{DynamicResource TextFillColorSecondaryBrush}"/>
+                                        <TextBlock Text="Third row demonstrates spacing behavior" Foreground="{DynamicResource TextFillColorTertiaryBrush}"/>
+                                    </ui:StackPanel>
+                                </ui:Border>
+                                <TextBlock Text="DockPanel with Spacing=8" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,8"/>
+                                <ui:DockPanel LastChildFill="True" Spacing="8" Height="170" Margin="0,0,0,16">
+                                    <Border DockPanel.Dock="Top" Background="{DynamicResource SubtleFillColorSecondaryBrush}" Height="40" CornerRadius="4"/>
+                                    <Border DockPanel.Dock="Left" Background="{DynamicResource SubtleFillColorTertiaryBrush}" Width="110" CornerRadius="4"/>
+                                    <Border Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}" BorderThickness="1" CornerRadius="4"/>
+                                </ui:DockPanel>
+                                <TextBlock Text="Border Variants" FontWeight="SemiBold" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,0,8"/>
+                                <UniformGrid Columns="3">
+                                    <ui:Border Variant="{x:Static uicore:BorderVariant.Card}" Padding="24" CornerRadius="6" Margin="0,0,12,0" MinHeight="96">
+                                        <TextBlock Text="Card" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                    </ui:Border>
+                                    <ui:Border Variant="{x:Static uicore:BorderVariant.Subtle}" Padding="24" CornerRadius="6" Margin="0,0,12,0" MinHeight="96">
+                                        <TextBlock Text="Subtle" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                    </ui:Border>
+                                    <ui:Border Variant="{x:Static uicore:BorderVariant.Divider}" Padding="24" CornerRadius="6" MinHeight="96">
+                                        <TextBlock Text="Divider" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+                                    </ui:Border>
+                                </UniformGrid>
+                            </StackPanel>
+                        </ui:Card>
+
+                    </StackPanel>
+                </ui:SmoothScrollViewer>
+            </TabItem>
+        </TabControl>
+
+        <ui:Border Grid.Row="2" Variant="{x:Static uicore:BorderVariant.Subtle}" CornerRadius="6" Padding="12" Margin="0,16,0,0">
+            <WrapPanel>
+                <TextBlock Text="Status:" Foreground="{DynamicResource TextFillColorSecondaryBrush}" Margin="0,0,8,0"/>
+                <TextBlock x:Name="StatusThemeLabel" Text="Theme: Auto" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,16,0"/>
+                <TextBlock x:Name="StatusBackdropLabel" Text="Backdrop: Mica" Foreground="{DynamicResource TextFillColorPrimaryBrush}" Margin="0,0,16,0"/>
+                <Rectangle x:Name="StatusAccentSwatch" Width="18" Height="18" RadiusX="4" RadiusY="4" Fill="{DynamicResource SystemAccentColorBrush}" Margin="0,0,6,0"/>
+                <TextBlock x:Name="StatusAccentLabel" Text="Accent: System" Foreground="{DynamicResource TextFillColorPrimaryBrush}"/>
+            </WrapPanel>
+        </ui:Border>
+    </Grid>
+</ui:FluentWindow>

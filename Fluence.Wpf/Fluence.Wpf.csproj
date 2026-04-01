@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <TargetFramework>net472</TargetFramework>
+    <LangVersion>7.3</LangVersion>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>Fluence.Wpf</RootNamespace>
+    <AssemblyName>Fluence.Wpf</AssemblyName>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Fluence.Wpf.xml</DocumentationFile>
+    <!-- Suppress missing-doc until all public members have summaries; XML file still emitted for consumers -->
+    <NoWarn>$(NoWarn);1591;1574</NoWarn>
+    <Description>Windows 11 Fluent Design controls and theming for WPF (.NET Framework 4.7.2)</Description>
+    <Authors>Dan Cunningham</Authors>
+    <Copyright>Copyright © 2026 Dan Cunningham</Copyright>
+    <Product>Fluence.Wpf</Product>
+    <Title>Fluence.Wpf</Title>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+
+</Project>
