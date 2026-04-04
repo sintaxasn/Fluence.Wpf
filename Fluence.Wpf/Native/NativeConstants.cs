@@ -57,11 +57,29 @@ namespace Fluence.Wpf.Native
         public const int DWMWA_COLOR_DEFAULT = unchecked((int)0xFFFFFFFF);
 
         // Window Messages
+        public const int WM_NCHITTEST = 0x0084;
+        public const int WM_NCCALCSIZE = 0x0083;
+        public const int WM_GETMINMAXINFO = 0x0024;
         public const int WM_SETTINGCHANGE = 0x001A;
         public const int WM_SYSCOLORCHANGE = 0x0015;
         public const int WM_THEMECHANGED = 0x031A;
         public const int WM_DWMCOLORIZATIONCOLORCHANGED = 0x0320;
         public const int WM_DWMCOMPOSITIONCHANGED = 0x031E;
+
+        // Hit Test Results
+        public const int HTCLIENT = 1;
+        public const int HTCAPTION = 2;
+        public const int HTMINBUTTON = 8;
+        public const int HTMAXBUTTON = 9;
+        public const int HTLEFT = 10;
+        public const int HTRIGHT = 11;
+        public const int HTTOP = 12;
+        public const int HTTOPLEFT = 13;
+        public const int HTTOPRIGHT = 14;
+        public const int HTBOTTOM = 15;
+        public const int HTBOTTOMLEFT = 16;
+        public const int HTBOTTOMRIGHT = 17;
+        public const int HTCLOSE = 20;
 
         // DWM Boolean Values
         public const int DWM_TRUE = 1;
