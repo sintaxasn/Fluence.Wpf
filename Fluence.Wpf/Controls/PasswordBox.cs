@@ -57,6 +57,9 @@ namespace Fluence.Wpf.Controls
                 new FrameworkPropertyMetadata(typeof(PasswordBox)));
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PasswordBox"/> class.
+        /// </summary>
         public PasswordBox()
         {
             _capsPollTick = OnCapsPollTick;
@@ -296,6 +299,7 @@ namespace Fluence.Wpf.Controls
             box.UpdateStrengthMeter();
         }
 
+        /// <inheritdoc />
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
@@ -576,6 +580,21 @@ namespace Fluence.Wpf.Controls
         private void OnRevealButtonLeave(object sender, System.Windows.Input.MouseEventArgs e)
         {
             IsPasswordRevealed = false;
+        }
+
+        /// <summary>
+        /// Selects all text in the password field.
+        /// </summary>
+        public void SelectAll()
+        {
+            if (IsPasswordRevealed && _revealTextBox != null)
+            {
+                _revealTextBox.SelectAll();
+            }
+            else if (_passwordBox != null)
+            {
+                _passwordBox.SelectAll();
+            }
         }
     }
 }
