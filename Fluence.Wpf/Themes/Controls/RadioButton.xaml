@@ -1,4 +1,4 @@
-<!--
+﻿<!--
   Copyright 2026 Dan Cunningham
 
   Redistribution and use in source and binary forms, with or without
@@ -51,6 +51,10 @@
     </Style>
 
     <Style TargetType="{x:Type controls:RadioButton}">
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
@@ -89,7 +93,7 @@
                                      Width="20"
                                      Height="20"
                                      Fill="{DynamicResource ControlAltFillColorSecondaryBrush}"
-                                     Stroke="{DynamicResource ControlStrokeColorDefaultBrush}"
+                                     Stroke="{DynamicResource ControlStrongStrokeColorDefaultBrush}"
                                      StrokeThickness="1" />
 
                             <!-- Unchecked: hover overlay -->
@@ -97,7 +101,7 @@
                                      Width="20"
                                      Height="20"
                                      Fill="{DynamicResource ControlAltFillColorTertiaryBrush}"
-                                     Stroke="{DynamicResource ControlStrokeColorDefaultBrush}"
+                                     Stroke="{DynamicResource ControlStrongStrokeColorDefaultBrush}"
                                      StrokeThickness="1"
                                      Opacity="0" />
 
@@ -122,11 +126,11 @@
                                      Fill="{DynamicResource AccentFillColorTertiaryBrush}"
                                      Opacity="0" />
 
-                            <!-- Inner dot (white circle, animated size) -->
+                            <!-- Inner dot (color adapts to accent luminance via TextOnAccent) -->
                             <Ellipse x:Name="InnerDot"
                                      Width="0"
                                      Height="0"
-                                     Fill="White"
+                                     Fill="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
                                      HorizontalAlignment="Center"
                                      VerticalAlignment="Center" />
                         </Grid>
@@ -270,7 +274,7 @@
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                             <Setter TargetName="DescriptionText" Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                             <Setter TargetName="OuterEllipse" Property="Fill" Value="{DynamicResource ControlFillColorDisabledBrush}" />
-                            <Setter TargetName="OuterEllipse" Property="Stroke" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+                            <Setter TargetName="OuterEllipse" Property="Stroke" Value="{DynamicResource ControlStrongStrokeColorDisabledBrush}" />
                             <Setter TargetName="CheckedEllipse" Property="Fill" Value="{DynamicResource ControlFillColorDisabledBrush}" />
                             <Setter TargetName="CheckedEllipseHover" Property="Fill" Value="{DynamicResource ControlFillColorDisabledBrush}" />
                             <Setter TargetName="CheckedEllipsePressed" Property="Fill" Value="{DynamicResource ControlFillColorDisabledBrush}" />

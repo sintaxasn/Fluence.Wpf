@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -74,6 +74,7 @@ namespace Fluence.Wpf.Controls
             set { SetValue(LastChildFillProperty, value); }
         }
 
+        /// <inheritdoc />
         protected override Size MeasureOverride(Size constraint)
         {
             var children = InternalChildren;
@@ -139,6 +140,7 @@ namespace Fluence.Wpf.Controls
             return new Size(maxWidth, maxHeight);
         }
 
+        /// <inheritdoc />
         protected override Size ArrangeOverride(Size arrangeSize)
         {
             var children = InternalChildren;

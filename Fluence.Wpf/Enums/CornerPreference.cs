@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// Rounded corner preference for top-level windows (DWM), used with <see cref="Fluence.Wpf.Controls.FluentWindow"/>.
+    /// Rounded corner preference for top-level windows (DWM), used with <see cref="Fluence.Wpf.Controls.FluenceWindow"/>.
     /// </summary>
     public enum CornerPreference
     {

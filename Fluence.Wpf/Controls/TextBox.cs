@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -215,11 +215,15 @@ namespace Fluence.Wpf.Controls
             set { SetValue(ValidationStateProperty, value); }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TextBox"/> class and wires text-changed handling.
+        /// </summary>
         public TextBox()
         {
             TextChanged += OnTextChanged;
         }
 
+        /// <inheritdoc />
         protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
         {
             base.OnPropertyChanged(e);
@@ -241,6 +245,7 @@ namespace Fluence.Wpf.Controls
             UpdateHelperText();
         }
 
+        /// <inheritdoc />
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();

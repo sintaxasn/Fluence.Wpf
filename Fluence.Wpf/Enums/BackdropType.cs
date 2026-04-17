@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,7 +28,7 @@
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// DWM backdrop material applied to a <see cref="Fluence.Wpf.Controls.FluentWindow"/> non-client area on Windows 11.
+    /// DWM backdrop material applied to a <see cref="Fluence.Wpf.Controls.FluenceWindow"/> non-client area on Windows 11.
     /// </summary>
     public enum BackdropType
     {

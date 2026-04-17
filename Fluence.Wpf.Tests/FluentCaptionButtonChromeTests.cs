@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,6 @@
  */
 using System.Windows;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf;
 using Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Tests
@@ -36,11 +35,10 @@ namespace Fluence.Wpf.Tests
     public class CaptionButtonChromeTests
     {
         [TestMethod]
-        public void Minimize_Default_NoResize_Hides()
+        public void Minimize_NoResize_Hides()
         {
             CaptionButtonChrome.GetMinimizeChrome(
                 ResizeMode.NoResize,
-                CaptionButtonOverride.Default,
                 out var vis,
                 out var en);
 
@@ -49,11 +47,10 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void Minimize_Enable_OverridesNoResize()
+        public void Minimize_CanResize_ShowsEnabled()
         {
             CaptionButtonChrome.GetMinimizeChrome(
-                ResizeMode.NoResize,
-                CaptionButtonOverride.Enable,
+                ResizeMode.CanResize,
                 out var vis,
                 out var en);
 
@@ -62,12 +59,11 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void MaximizeRestore_Default_CanResize_Normal_ShowsMaximizeOnly()
+        public void MaximizeRestore_CanResize_Normal_ShowsMaximizeOnly()
         {
             CaptionButtonChrome.GetMaximizeRestoreChrome(
                 ResizeMode.CanResize,
                 WindowState.Normal,
-                CaptionButtonOverride.Default,
                 out var maxVis,
                 out var restVis,
                 out var maxEn,
@@ -80,12 +76,11 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void MaximizeRestore_Default_CanResize_Maximized_ShowsRestoreOnly()
+        public void MaximizeRestore_CanResize_Maximized_ShowsRestoreOnly()
         {
             CaptionButtonChrome.GetMaximizeRestoreChrome(
                 ResizeMode.CanResize,
                 WindowState.Maximized,
-                CaptionButtonOverride.Default,
                 out var maxVis,
                 out var restVis,
                 out var maxEn,
@@ -98,12 +93,11 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void MaximizeRestore_Default_CanMinimize_DisablesBoth()
+        public void MaximizeRestore_CanMinimize_DisablesBoth()
         {
             CaptionButtonChrome.GetMaximizeRestoreChrome(
                 ResizeMode.CanMinimize,
                 WindowState.Normal,
-                CaptionButtonOverride.Default,
                 out var maxVis,
                 out var restVis,
                 out var maxEn,
@@ -115,27 +109,14 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void Close_Default_VisibleAndEnabled()
+        public void Close_VisibleAndEnabled()
         {
             CaptionButtonChrome.GetCloseChrome(
-                CaptionButtonOverride.Default,
                 out var vis,
                 out var en);
 
             Assert.AreEqual(Visibility.Visible, vis);
             Assert.IsTrue(en);
-        }
-
-        [TestMethod]
-        public void Close_Hide_Collapsed()
-        {
-            CaptionButtonChrome.GetCloseChrome(
-                CaptionButtonOverride.Hide,
-                out var vis,
-                out var en);
-
-            Assert.AreEqual(Visibility.Collapsed, vis);
-            Assert.IsFalse(en);
         }
     }
 }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,9 +32,13 @@ namespace Fluence.Wpf
     /// </summary>
     public enum ValidationState
     {
+        /// <summary>No validation state applied.</summary>
         None,
+        /// <summary>Input is valid.</summary>
         Success,
+        /// <summary>Non-blocking validation warning.</summary>
         Warning,
+        /// <summary>Blocking validation error.</summary>
         Error
     }
 }

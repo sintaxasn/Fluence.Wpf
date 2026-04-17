@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,185 +29,210 @@ using System;
 using System.Windows;
 using System.Windows.Media;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Fluence.Wpf;
 
 namespace Fluence.Wpf.Tests
 {
     [TestClass]
     public class DictionaryStabilityTests
     {
-        private static Application _app;
-
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
-        {
-            if (Application.Current == null)
-            {
-                _app = new Application();
-                _app.ShutdownMode = ShutdownMode.OnExplicitShutdown;
-            }
-            else
-            {
-                _app = Application.Current;
-            }
-        }
-
         [TestInitialize]
         public void TestInitialize()
         {
-            ApplicationThemeManager.ResetForTesting();
-            ApplicationAccentColorManager.ResetForTesting();
-            _app.Resources.MergedDictionaries.Clear();
+            WpfTestSta.Invoke(() =>
+            {
+                WpfTestSta.EnsureApplication();
+                ApplicationThemeManager.ResetForTesting();
+                ApplicationAccentColorManager.ResetForTesting();
+                Application.Current.Resources.MergedDictionaries.Clear();
+            });
         }
 
         [TestMethod]
         public void RepeatedThemeSwitches_NoDictionaryAccumulation()
         {
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
-            int baselineCount = _app.Resources.MergedDictionaries.Count;
-
-            for (int i = 0; i < 10; i++)
+            WpfTestSta.Invoke(() =>
             {
-                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, false);
+                var app = Application.Current;
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
-            }
+                int baselineCount = app.Resources.MergedDictionaries.Count;
 
-            int finalCount = _app.Resources.MergedDictionaries.Count;
-            Assert.AreEqual(baselineCount, finalCount,
-                string.Format("Dictionary count should remain at {0}, but was {1} after 20 switches",
-                    baselineCount, finalCount));
+                for (int i = 0; i < 10; i++)
+                {
+                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, false);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
+                }
+
+                int finalCount = app.Resources.MergedDictionaries.Count;
+                Assert.AreEqual(baselineCount, finalCount,
+                    string.Format("Dictionary count should remain at {0}, but was {1} after 20 switches",
+                        baselineCount, finalCount));
+            });
         }
 
         [TestMethod]
         public void ThemeSlotIsReused()
         {
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
-            int countAfterFirst = _app.Resources.MergedDictionaries.Count;
+            WpfTestSta.Invoke(() =>
+            {
+                var app = Application.Current;
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
+                int countAfterFirst = app.Resources.MergedDictionaries.Count;
 
-            ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, false);
-            int countAfterSecond = _app.Resources.MergedDictionaries.Count;
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, false);
+                int countAfterSecond = app.Resources.MergedDictionaries.Count;
 
-            Assert.AreEqual(countAfterFirst, countAfterSecond,
-                "Theme dictionary slot should be reused, not added");
+                Assert.AreEqual(countAfterFirst, countAfterSecond,
+                    "Theme dictionary slot should be reused, not added");
+            });
         }
 
         [TestMethod]
         public void AllThemeVariants_SameSlotCount()
         {
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
-            int lightCount = _app.Resources.MergedDictionaries.Count;
+            WpfTestSta.Invoke(() =>
+            {
+                var app = Application.Current;
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
+                int lightCount = app.Resources.MergedDictionaries.Count;
 
-            ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, false);
-            int darkCount = _app.Resources.MergedDictionaries.Count;
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, false);
+                int darkCount = app.Resources.MergedDictionaries.Count;
 
-            ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, false);
-            int hcCount = _app.Resources.MergedDictionaries.Count;
+                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, false);
+                int hcCount = app.Resources.MergedDictionaries.Count;
 
-            Assert.AreEqual(lightCount, darkCount, "Light and Dark should use same slot count");
-            Assert.AreEqual(darkCount, hcCount, "Dark and HighContrast should use same slot count");
+                Assert.AreEqual(lightCount, darkCount, "Light and Dark should use same slot count");
+                Assert.AreEqual(darkCount, hcCount, "Dark and HighContrast should use same slot count");
+            });
         }
 
         [TestMethod]
         public void FirstApply_Loads5Dictionaries()
         {
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
+            WpfTestSta.Invoke(() =>
+            {
+                var app = Application.Current;
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
 
-            Assert.AreEqual(5, _app.Resources.MergedDictionaries.Count,
-                "Initial Apply should load exactly 5 dictionaries (Colors, Accent, Brushes, Typography, Generic).");
+                Assert.AreEqual(5, app.Resources.MergedDictionaries.Count,
+                    "Initial Apply should load exactly 5 dictionaries (Colors, Accent, Brushes, Typography, Generic).");
+            });
         }
 
         [TestMethod]
         public void ThemeSwap_OnlyReplacesIndex0And2()
         {
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
-            var dictionaries = _app.Resources.MergedDictionaries;
-            var accentRef = dictionaries[1];
-            var typographyRef = dictionaries[3];
-            var genericRef = dictionaries[4];
+            WpfTestSta.Invoke(() =>
+            {
+                var app = Application.Current;
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
+                var dictionaries = app.Resources.MergedDictionaries;
+                var accentRef = dictionaries[1];
+                var typographyRef = dictionaries[3];
+                var genericRef = dictionaries[4];
 
-            ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, false);
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, false);
 
-            Assert.AreSame(accentRef, dictionaries[1], "Accent dictionary at [1] should not be replaced on theme swap.");
-            Assert.AreSame(typographyRef, dictionaries[3], "Typography dictionary at [3] should not be replaced on theme swap.");
-            Assert.AreSame(genericRef, dictionaries[4], "Generic dictionary at [4] should not be replaced on theme swap.");
+                Assert.AreSame(accentRef, dictionaries[1], "Accent dictionary at [1] should not be replaced on theme swap.");
+                Assert.AreSame(typographyRef, dictionaries[3], "Typography dictionary at [3] should not be replaced on theme swap.");
+                Assert.AreSame(genericRef, dictionaries[4], "Generic dictionary at [4] should not be replaced on theme swap.");
+            });
         }
 
         [TestMethod]
         public void BrushesDict_ReloadedOnNonHcSwap()
         {
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
-            var brushesRef = _app.Resources.MergedDictionaries[2];
+            WpfTestSta.Invoke(() =>
+            {
+                var app = Application.Current;
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
+                var brushesRef = app.Resources.MergedDictionaries[2];
 
-            ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, false);
-            Assert.AreNotSame(brushesRef, _app.Resources.MergedDictionaries[2],
-                "Brushes dictionary should be reloaded after Light->Dark to pick up new Colors.");
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, false);
+                Assert.AreNotSame(brushesRef, app.Resources.MergedDictionaries[2],
+                    "Brushes dictionary should be reloaded after Light->Dark to pick up new Colors.");
 
-            var brushesAfterDark = _app.Resources.MergedDictionaries[2];
-            ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, false);
-            Assert.AreSame(brushesAfterDark, _app.Resources.MergedDictionaries[2],
-                "Brushes dictionary should NOT be reloaded for HighContrast (HC promotes its own brushes).");
+                var brushesAfterDark = app.Resources.MergedDictionaries[2];
+                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, false);
+                Assert.AreSame(brushesAfterDark, app.Resources.MergedDictionaries[2],
+                    "Brushes dictionary should NOT be reloaded for HighContrast (HC promotes its own brushes).");
+            });
         }
 
         [TestMethod]
         public void AccentUpdate_DoesNotChangeDictionaryCount()
         {
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-            int countBefore = _app.Resources.MergedDictionaries.Count;
+            WpfTestSta.Invoke(() =>
+            {
+                var app = Application.Current;
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
+                int countBefore = app.Resources.MergedDictionaries.Count;
 
-            ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
-            int countAfter = _app.Resources.MergedDictionaries.Count;
+                ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
+                int countAfter = app.Resources.MergedDictionaries.Count;
 
-            Assert.AreEqual(countBefore, countAfter,
-                "Applying a custom accent should not change the merged dictionary count.");
+                Assert.AreEqual(countBefore, countAfter,
+                    "Applying a custom accent should not change the merged dictionary count.");
+            });
         }
 
         [TestMethod]
         public void AllBrushKeys_Resolve_AfterLightDarkHcCycle()
         {
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-            ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, true);
-            ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, true);
-
-            var keyBrushNames = new[]
+            WpfTestSta.Invoke(() =>
             {
-                "TextFillColorPrimaryBrush",
-                "AccentFillColorDefaultBrush",
-                "SubtleFillColorSecondaryBrush",
-                "ControlStrokeColorDefaultBrush",
-                "CardBackgroundFillColorDefaultBrush"
-            };
+                var app = Application.Current;
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, true);
+                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, true);
 
-            foreach (var key in keyBrushNames)
-            {
-                var brush = _app.Resources[key] as Brush;
-                Assert.IsNotNull(brush, string.Format("Brush key '{0}' should resolve to non-null after Light->Dark->HC cycle.", key));
-            }
+                var keyBrushNames = new[]
+                {
+                    "TextFillColorPrimaryBrush",
+                    "AccentFillColorDefaultBrush",
+                    "SubtleFillColorSecondaryBrush",
+                    "ControlStrokeColorDefaultBrush",
+                    "CardBackgroundFillColorDefaultBrush"
+                };
+
+                foreach (var key in keyBrushNames)
+                {
+                    var brush = app.Resources[key] as Brush;
+                    Assert.IsNotNull(brush, string.Format("Brush key '{0}' should resolve to non-null after Light->Dark->HC cycle.", key));
+                }
+            });
         }
 
         [TestMethod]
         public void InitialApply_LoadsColorsAccentBrushesTypographyGeneric_InOrder()
         {
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
-            var dictionaries = _app.Resources.MergedDictionaries;
-
-            Assert.AreEqual(5, dictionaries.Count);
-
-            var expectedFragments = new[]
+            WpfTestSta.Invoke(() =>
             {
-                "Theme.Light",
-                "Accent",
-                "Brushes",
-                "Typography",
-                "Generic"
-            };
+                var app = Application.Current;
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
+                var dictionaries = app.Resources.MergedDictionaries;
 
-            for (int i = 0; i < expectedFragments.Length; i++)
-            {
-                var source = dictionaries[i].Source;
-                Assert.IsNotNull(source, string.Format("Dictionary at [{0}] should have a Source URI.", i));
-                Assert.IsTrue(source.OriginalString.IndexOf(expectedFragments[i], StringComparison.OrdinalIgnoreCase) >= 0,
-                    string.Format("Dictionary at [{0}] Source should contain '{1}', but was '{2}'.",
-                        i, expectedFragments[i], source.OriginalString));
-            }
+                Assert.AreEqual(5, dictionaries.Count);
+
+                var expectedFragments = new[]
+                {
+                    "Theme.Light",
+                    "Accent",
+                    "Brushes",
+                    "Typography",
+                    "Generic"
+                };
+
+                for (int i = 0; i < expectedFragments.Length; i++)
+                {
+                    var source = dictionaries[i].Source;
+                    Assert.IsNotNull(source, string.Format("Dictionary at [{0}] should have a Source URI.", i));
+                    Assert.IsTrue(source.OriginalString.IndexOf(expectedFragments[i], StringComparison.OrdinalIgnoreCase) >= 0,
+                        string.Format("Dictionary at [{0}] Source should contain '{1}', but was '{2}'.",
+                            i, expectedFragments[i], source.OriginalString));
+                }
+            });
         }
     }
 }

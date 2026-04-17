@@ -1,0 +1,32 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!--  iNKORE Compatibility Layer — Light Theme  -->
+    <!--  Overrides standard Fluence.Wpf Color keys with higher-opacity values that  -->
+    <!--  approximate iNKORE.Modern.UI's visual behavior. Use when migrating an app  -->
+    <!--  from iNKORE to Fluence.Wpf to prevent transparency-related regressions.  -->
+    <!--  See docs/RESOURCE_AUDIT.md Section 2 for the rationale behind each override.  -->
+
+    <!--  P0 — Control Fill Colors (prevent illegible text on translucent backdrops)  -->
+    <Color x:Key="ControlFillColorDefault">#E6FFFFFF</Color>
+    <Color x:Key="ControlFillColorSecondary">#CCF9F9F9</Color>
+    <Color x:Key="ControlFillColorTertiary">#99F9F9F9</Color>
+    <Color x:Key="ControlFillColorQuarternary">#E6F3F3F3</Color>
+
+    <!--  P0 — Card Background Fill Colors  -->
+    <Color x:Key="CardBackgroundFillColorDefault">#E6FFFFFF</Color>
+    <Color x:Key="CardBackgroundFillColorSecondary">#CCF6F6F6</Color>
+
+    <!--  P0 — Layer Fill Colors  -->
+    <Color x:Key="LayerFillColorDefault">#CCF9F9F9</Color>
+    <Color x:Key="LayerOnMicaBaseAltFillColorDefault">#E6FFFFFF</Color>
+
+    <!--  P0 — Acrylic Background (solid fallback matching iNKORE behavior)  -->
+    <Color x:Key="AcrylicBackgroundFillColorDefault">#FFF9F9F9</Color>
+    <Color x:Key="AcrylicBackgroundFillColorBase">#FFEEEEEE</Color>
+
+    <!--  iNKORE Legacy Brush Aliases (referenced by PSADT via ThemeKeys)  -->
+    <SolidColorBrush x:Key="SystemControlBackgroundAltHighBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="ProgressRingBackgroundThemeBrush" Color="Transparent" />
+    <SolidColorBrush x:Key="ProgressRingForegroundThemeBrush" Color="{DynamicResource AccentFillColorDefault}" />
+
+</ResourceDictionary>

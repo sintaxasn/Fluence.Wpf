@@ -1,12 +1,23 @@
-<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
-    <!-- Windows 11 Fluent — Typography layer -->
+    <!-- Windows 11 Fluent motion timing canonical values.
+         WPF Storyboard Duration attributes require literal values in XAML,
+         so these cannot be used directly in trigger-based animations.
+         Use from code-behind: (TimeSpan)FindResource("ControlFastAnimationDuration") -->
+    <sys:TimeSpan x:Key="ControlFasterAnimationDuration">0:0:0.083</sys:TimeSpan>
+    <sys:TimeSpan x:Key="ControlFastAnimationDuration">0:0:0.167</sys:TimeSpan>
+    <sys:TimeSpan x:Key="ControlNormalAnimationDuration">0:0:0.250</sys:TimeSpan>
+    <sys:TimeSpan x:Key="ControlSlowAnimationDuration">0:0:0.333</sys:TimeSpan>
+    <KeySpline x:Key="ControlFastOutSlowInKeySpline">0.8,0,0,1</KeySpline>
+
+    <!-- Windows 11 Fluent - Typography layer -->
     <!-- Prefer Display typography for large/small optical sizes; fall back when not installed. -->
 
     <FontFamily x:Key="FluentFontFamily">Segoe UI Variable Display, Segoe UI Variable, Segoe UI</FontFamily>
 
-    <!-- Caption — 12 / Regular / 16 -->
+    <!-- Caption - 12 / Regular / 16 -->
     <Style x:Key="CaptionTextBlockStyle" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="FontSize" Value="12" />
@@ -17,7 +28,7 @@
         <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
     </Style>
 
-    <!-- Body — 14 / Regular / 20 -->
+    <!-- Body - 14 / Regular / 20 -->
     <Style x:Key="BodyTextBlockStyle" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="FontSize" Value="14" />
@@ -28,7 +39,7 @@
         <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
     </Style>
 
-    <!-- Body Strong — 14 / SemiBold / 20 -->
+    <!-- Body Strong - 14 / SemiBold / 20 -->
     <Style x:Key="BodyStrongTextBlockStyle" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="FontSize" Value="14" />
@@ -39,7 +50,7 @@
         <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
     </Style>
 
-    <!-- Body Large — 18 / Regular / 24 -->
+    <!-- Body Large - 18 / Regular / 24 -->
     <Style x:Key="BodyLargeTextBlockStyle" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="FontSize" Value="18" />
@@ -50,7 +61,7 @@
         <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
     </Style>
 
-    <!-- Subtitle — 20 / SemiBold / 28 -->
+    <!-- Subtitle - 20 / SemiBold / 28 -->
     <Style x:Key="SubtitleTextBlockStyle" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="FontSize" Value="20" />
@@ -61,7 +72,7 @@
         <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
     </Style>
 
-    <!-- Title — 28 / SemiBold / 36 -->
+    <!-- Title - 28 / SemiBold / 36 -->
     <Style x:Key="TitleTextBlockStyle" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="FontSize" Value="28" />
@@ -72,7 +83,7 @@
         <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
     </Style>
 
-    <!-- Title Large — 40 / SemiBold / 52 -->
+    <!-- Title Large - 40 / SemiBold / 52 -->
     <Style x:Key="TitleLargeTextBlockStyle" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="FontSize" Value="40" />
@@ -83,7 +94,7 @@
         <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
     </Style>
 
-    <!-- Display — 68 / SemiBold / 92 -->
+    <!-- Display - 68 / SemiBold / 92 -->
     <Style x:Key="DisplayTextBlockStyle" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="FontSize" Value="68" />

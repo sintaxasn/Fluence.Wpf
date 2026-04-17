@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -143,9 +143,117 @@ namespace Fluence.Wpf.Controls
             set { SetValue(EmptyContentProperty, value); }
         }
 
+        /// <summary>
+        /// Attached property mirrored from the parent <see cref="ListView"/> so item templates can use
+        /// <c>MultiDataTrigger</c> (each condition must use a <c>Binding</c>, not <c>Property</c>, in WPF).
+        /// </summary>
+        public static readonly DependencyProperty ParentIsItemSelectableProperty =
+            DependencyProperty.RegisterAttached(
+                "ParentIsItemSelectable",
+                typeof(bool),
+                typeof(ListView),
+                new FrameworkPropertyMetadata(true));
+
+        /// <summary>
+        /// Sets the parent list's <see cref="IsItemSelectable"/> value on an item container for template triggers.
+        /// </summary>
+        public static void SetParentIsItemSelectable(DependencyObject element, bool value)
+        {
+            element.SetValue(ParentIsItemSelectableProperty, value);
+        }
+
+        /// <summary>
+        /// Gets whether the parent list allows item selection (for template triggers).
+        /// </summary>
+        public static bool GetParentIsItemSelectable(DependencyObject element)
+        {
+            return (bool)element.GetValue(ParentIsItemSelectableProperty);
+        }
+
+        /// <summary>
+        /// Identifies the <see cref="IsItemSelectable"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty IsItemSelectableProperty =
+            DependencyProperty.Register(
+                nameof(IsItemSelectable),
+                typeof(bool),
+                typeof(ListView),
+                new FrameworkPropertyMetadata(true, OnIsItemSelectableChanged));
+
+        /// <summary>
+        /// Gets or sets whether items can be selected and show hover/selection visuals.
+        /// When false, rows are display-only; scrolling and item animations are unchanged.
+        /// </summary>
+        public bool IsItemSelectable
+        {
+            get { return (bool)GetValue(IsItemSelectableProperty); }
+            set { SetValue(IsItemSelectableProperty, value); }
+        }
+
+        private bool _suppressSelectionChange;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ListView"/> class and wires the loaded event for default group styling.
+        /// </summary>
         public ListView()
         {
             Loaded += OnListViewLoaded;
+        }
+
+        private static void OnIsItemSelectableChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var listView = (ListView)d;
+            if (!(bool)e.NewValue)
+            {
+                listView._suppressSelectionChange = true;
+                try
+                {
+                    listView.UnselectAll();
+                }
+                finally
+                {
+                    listView._suppressSelectionChange = false;
+                }
+            }
+
+            listView.UpdateItemContainersFocusable();
+        }
+
+        private void UpdateItemContainersFocusable()
+        {
+            foreach (var item in Items)
+            {
+                var container = ItemContainerGenerator.ContainerFromItem(item) as DependencyObject;
+                if (container != null)
+                {
+                    SetParentIsItemSelectable(container, IsItemSelectable);
+                    if (container is UIElement ui)
+                    {
+                        ui.Focusable = IsItemSelectable;
+                    }
+                }
+            }
+        }
+
+        /// <inheritdoc />
+        protected override void OnSelectionChanged(SelectionChangedEventArgs e)
+        {
+            if (!IsItemSelectable && !_suppressSelectionChange)
+            {
+                _suppressSelectionChange = true;
+                try
+                {
+                    UnselectAll();
+                }
+                finally
+                {
+                    _suppressSelectionChange = false;
+                }
+
+                return;
+            }
+
+            base.OnSelectionChanged(e);
         }
 
         private void OnListViewLoaded(object sender, RoutedEventArgs e)
@@ -160,26 +268,37 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            var style = TryFindResource("FluentListViewGroupItemStyle") as Style;
+            var style = TryFindResource("ListViewGroupItemStyle") as Style;
             if (style != null)
             {
                 GroupStyle.Add(new GroupStyle { ContainerStyle = style });
             }
         }
 
+        /// <inheritdoc />
         protected override DependencyObject GetContainerForItemOverride()
         {
             return new ListViewItem();
         }
 
+        /// <inheritdoc />
         protected override bool IsItemItsOwnContainerOverride(object item)
         {
             return item is ListViewItem;
         }
 
+        /// <inheritdoc />
         protected override void PrepareContainerForItemOverride(DependencyObject element, object item)
         {
             base.PrepareContainerForItemOverride(element, item);
+
+            SetParentIsItemSelectable(element, IsItemSelectable);
+
+            var ui = element as UIElement;
+            if (ui != null)
+            {
+                ui.Focusable = IsItemSelectable;
+            }
 
             if (!ItemAnimationsEnabled || !IsLoaded)
                 return;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,6 +30,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Fluence.Wpf;
 using Fluent = Fluence.Wpf.Controls;
@@ -39,6 +40,13 @@ namespace Fluence.Wpf.Tests
 {
     public partial class ControlTests
     {
+        private static void CloseWindowAndDrain(Window window)
+        {
+            window.Content = null;
+            window.UpdateLayout();
+            window.Close();
+        }
+
         [TestMethod]
         public void NavigationView_PaneDisplayMode_Left_RendersVerticalPane()
         {
@@ -69,7 +77,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    window.Close();
+                    CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
                         application.Resources.MergedDictionaries.Remove(genericDictionary);
@@ -108,7 +116,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    window.Close();
+                    CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
                         application.Resources.MergedDictionaries.Remove(genericDictionary);
@@ -153,7 +161,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    window.Close();
+                    CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
                         application.Resources.MergedDictionaries.Remove(genericDictionary);
@@ -198,7 +206,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    window.Close();
+                    CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
                         application.Resources.MergedDictionaries.Remove(genericDictionary);
@@ -243,7 +251,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    window.Close();
+                    CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
                         application.Resources.MergedDictionaries.Remove(genericDictionary);
@@ -283,7 +291,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    window.Close();
+                    CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
                         application.Resources.MergedDictionaries.Remove(genericDictionary);
@@ -323,7 +331,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    window.Close();
+                    CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
                         application.Resources.MergedDictionaries.Remove(genericDictionary);
@@ -370,7 +378,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    window.Close();
+                    CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
                         application.Resources.MergedDictionaries.Remove(genericDictionary);
@@ -417,7 +425,149 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    window.Close();
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NavigationView_SharedIndicator_ExistsInTemplate_AndVisibleWhenSelected()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 400,
+                        Height = 320,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left
+                    };
+                    var item0 = new Fluent.NavigationViewItem { Content = "One" };
+                    var item1 = new Fluent.NavigationViewItem { Content = "Two" };
+                    nav.Items.Add(item0);
+                    nav.Items.Add(item1);
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    nav.ApplyTemplate();
+                    var indicator = nav.GetSelectionIndicatorForTesting();
+                    Assert.IsNotNull(indicator, "PART_SelectionIndicator should exist in the NavigationView template.");
+                    Assert.AreEqual(0.0, indicator.Opacity, 0.01, "Indicator should be hidden when nothing is selected.");
+
+                    nav.SelectedIndex = 0;
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    Assert.AreEqual(1.0, indicator.Opacity, 0.01, "Indicator should be visible when an item is selected.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NavigationView_SharedIndicator_HidesWhenSelectionCleared()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 400,
+                        Height = 320,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left
+                    };
+                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    nav.SelectedIndex = 0;
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    var indicator = nav.GetSelectionIndicatorForTesting();
+                    Assert.AreEqual(1.0, indicator.Opacity, 0.01);
+
+                    nav.SelectedItem = null;
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    Assert.AreEqual(0.0, indicator.Opacity, 0.01, "Indicator should hide when selection is cleared.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NavigationView_TopMode_SharedIndicator_VisibleWhenSelected()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 600,
+                        Height = 320,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Top
+                    };
+                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Alpha" });
+                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Beta" });
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    nav.SelectedIndex = 1;
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    var indicator = nav.GetSelectionIndicatorForTesting();
+                    Assert.IsNotNull(indicator, "PART_SelectionIndicator should exist in Top pane template.");
+                    Assert.AreEqual(1.0, indicator.Opacity, 0.01, "Indicator should be visible in top mode.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
                         application.Resources.MergedDictionaries.Remove(genericDictionary);
@@ -466,7 +616,157 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    window.Close();
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NavigationView_PaneModeSwitch_IndicatorSurvives()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 600,
+                        Height = 320,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left
+                    };
+                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
+                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Two" });
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    nav.SelectedIndex = 0;
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Top;
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    var indicator = nav.GetSelectionIndicatorForTesting();
+                    Assert.IsNotNull(indicator, "Indicator should exist after mode switch.");
+                    Assert.AreEqual(1.0, indicator.Opacity, 0.01, "Indicator should remain visible after mode switch.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NavigationView_PaneCollapse_IndicatorSurvives()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 400,
+                        Height = 320,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left,
+                        IsPaneOpen = true
+                    };
+                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    nav.SelectedIndex = 0;
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    nav.IsPaneOpen = false;
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    var indicator = nav.GetSelectionIndicatorForTesting();
+                    Assert.IsNotNull(indicator, "Indicator should exist after pane collapse.");
+                    Assert.AreEqual(1.0, indicator.Opacity, 0.01, "Indicator should remain visible after pane collapse.");
+
+                    nav.IsPaneOpen = true;
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    Assert.AreEqual(1.0, indicator.Opacity, 0.01, "Indicator should remain visible after pane re-expand.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NavigationViewItem_DisabledState_ChangesForeground()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 400,
+                        Height = 320,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left
+                    };
+                    var item = new Fluent.NavigationViewItem { Content = "Disabled" };
+                    nav.Items.Add(item);
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    var enabledForeground = item.Foreground;
+
+                    item.IsEnabled = false;
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    var disabledForeground = item.Foreground;
+                    Assert.AreNotEqual(enabledForeground, disabledForeground,
+                        "Foreground should change when item is disabled.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
                         application.Resources.MergedDictionaries.Remove(genericDictionary);

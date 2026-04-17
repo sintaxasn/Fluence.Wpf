@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,9 +27,12 @@
  */
 using System;
 using System.Windows;
+using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Shapes;
+using Fluence.Wpf.Automation;
 
 namespace Fluence.Wpf.Controls
 {
@@ -39,6 +42,9 @@ namespace Fluence.Wpf.Controls
     /// <remarks>Inspired by WInUI's ProgressRing.</remarks>
     public class ProgressRing : Control
     {
+        private static readonly Duration AnimationDuration = new Duration(TimeSpan.FromMilliseconds(150));
+        private static readonly IEasingFunction AnimationEasing = new CubicEase { EasingMode = EasingMode.EaseInOut };
+
         private Path _arcPath;
 
         static ProgressRing()
@@ -46,6 +52,24 @@ namespace Fluence.Wpf.Controls
             DefaultStyleKeyProperty.OverrideMetadata(
                 typeof(ProgressRing),
                 new FrameworkPropertyMetadata(typeof(ProgressRing)));
+        }
+
+        private static readonly DependencyProperty AnimatedFractionProperty =
+            DependencyProperty.Register(
+                nameof(AnimatedFraction),
+                typeof(double),
+                typeof(ProgressRing),
+                new FrameworkPropertyMetadata(0.0, OnAnimatedFractionChanged));
+
+        private double AnimatedFraction
+        {
+            get { return (double)GetValue(AnimatedFractionProperty); }
+            set { SetValue(AnimatedFractionProperty, value); }
+        }
+
+        private static void OnAnimatedFractionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((ProgressRing)d).RenderArc((double)e.NewValue);
         }
 
         /// <summary>Identifies the <see cref="IsActive"/> dependency property.</summary>
@@ -138,17 +162,31 @@ namespace Fluence.Wpf.Controls
             set { SetValue(StrokeThicknessProperty, value); }
         }
 
+        /// <inheritdoc />
+        protected override AutomationPeer OnCreateAutomationPeer()
+        {
+            return new ProgressRingAutomationPeer(this);
+        }
+
+        /// <inheritdoc />
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
             _arcPath = GetTemplateChild("PART_DeterminateArc") as Path;
-            UpdateDeterminateArc();
+
+            if (_arcPath != null && !IsIndeterminate)
+            {
+                double range = Maximum - Minimum;
+                double fraction = range > 0
+                    ? Math.Max(0, Math.Min(1, (Value - Minimum) / range))
+                    : 0;
+                AnimatedFraction = fraction;
+            }
         }
 
         private static void OnArcPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var ring = (ProgressRing)d;
-            ring.UpdateDeterminateArc();
+            ((ProgressRing)d).UpdateDeterminateArc();
         }
 
         private void UpdateDeterminateArc()
@@ -159,13 +197,34 @@ namespace Fluence.Wpf.Controls
             }
 
             double range = Maximum - Minimum;
-            if (range <= 0)
+            double targetFraction = range > 0
+                ? Math.Max(0, Math.Min(1, (Value - Minimum) / range))
+                : 0;
+
+            var animation = new DoubleAnimation
             {
-                _arcPath.Data = null;
+                From = AnimatedFraction,
+                To = targetFraction,
+                Duration = AnimationDuration,
+                EasingFunction = AnimationEasing,
+                FillBehavior = FillBehavior.Stop
+            };
+
+            animation.Completed += (s, e) =>
+            {
+                AnimatedFraction = targetFraction;
+            };
+
+            BeginAnimation(AnimatedFractionProperty, animation);
+        }
+
+        private void RenderArc(double fraction)
+        {
+            if (_arcPath == null)
+            {
                 return;
             }
 
-            double fraction = Math.Max(0, Math.Min(1, (Value - Minimum) / range));
             if (fraction <= 0)
             {
                 _arcPath.Data = null;
@@ -175,26 +234,22 @@ namespace Fluence.Wpf.Controls
             double size = ActualWidth > 0 ? ActualWidth : Width;
             if (double.IsNaN(size) || size <= 0)
             {
-                size = 32;
+                EventHandler handler = null;
+                handler = delegate { LayoutUpdated -= handler; RenderArc(fraction); };
+                LayoutUpdated += handler;
+                return;
             }
 
             double radius = (size - StrokeThickness) / 2.0;
             double centerX = size / 2.0;
             double centerY = size / 2.0;
 
-            double angle = fraction * 360.0;
-            if (angle >= 359.99)
-            {
-                angle = 359.99;
-            }
-
+            double angle = Math.Min(fraction * 360.0, 359.99);
             double angleRad = angle * Math.PI / 180.0;
             double startX = centerX;
             double startY = centerY - radius;
             double endX = centerX + radius * Math.Sin(angleRad);
             double endY = centerY - radius * Math.Cos(angleRad);
-
-            bool isLargeArc = angle > 180;
 
             var figure = new PathFigure
             {
@@ -206,7 +261,7 @@ namespace Fluence.Wpf.Controls
             {
                 Point = new Point(endX, endY),
                 Size = new Size(radius, radius),
-                IsLargeArc = isLargeArc,
+                IsLargeArc = angle > 180,
                 SweepDirection = SweepDirection.Clockwise
             });
 
@@ -215,10 +270,11 @@ namespace Fluence.Wpf.Controls
             _arcPath.Data = geometry;
         }
 
+        /// <inheritdoc />
         protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
         {
             base.OnRenderSizeChanged(sizeInfo);
-            UpdateDeterminateArc();
+            RenderArc(AnimatedFraction);
         }
     }
 }

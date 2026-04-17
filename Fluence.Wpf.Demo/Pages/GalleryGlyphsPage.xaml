@@ -1,0 +1,986 @@
+<UserControl x:Class="Fluence.Wpf.Demo.Pages.GalleryGlyphsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
+    xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="800" d:DesignWidth="900"
+    mc:Ignorable="d">
+                    <ui:SmoothScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="24" HorizontalAlignment="Stretch">
+                            <TextBlock
+                                Margin="0,0,0,4"
+                                Style="{StaticResource SectionHeaderStyle}"
+                                Text="Segoe Fluent Icons"
+                                />
+                            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="A selection of commonly-used glyphs from the Segoe Fluent Icons font. Each cell shows the icon and its Unicode code point." />
+                            <ui:Card Padding="16" Variant="{x:Static uicore:CardVariant.Default}">
+                                <WrapPanel>
+                                    <!--  Navigation  -->
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE700;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E700"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE72B;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E72B"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE710;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E710"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE711;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E711"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE712;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E712"
+                                            />
+                                    </StackPanel>
+                                    <!--  Search / Find  -->
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE721;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E721"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE70F;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E70F"
+                                            />
+                                    </StackPanel>
+                                    <!--  Files  -->
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE8B7;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E8B7"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE8E5;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E8E5"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE74D;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E74D"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE74E;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E74E"
+                                            />
+                                    </StackPanel>
+                                    <!--  Checkmarks / Status  -->
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE73E;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E73E"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE711;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E711"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE783;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E783"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE7BA;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E7BA"
+                                            />
+                                    </StackPanel>
+                                    <!--  People  -->
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE77B;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E77B"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE716;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E716"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE779;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E779"
+                                            />
+                                    </StackPanel>
+                                    <!--  Settings / System  -->
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE713;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E713"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE737;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E737"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE7E8;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E7E8"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE72C;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E72C"
+                                            />
+                                    </StackPanel>
+                                    <!--  Arrows  -->
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE70D;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E70D"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE70E;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E70E"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE72A;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E72A"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE72B;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E72B"
+                                            />
+                                    </StackPanel>
+                                    <!--  Stars / Rating  -->
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE734;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E734"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE735;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E735"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE8D9;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E8D9"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE8D8;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E8D8"
+                                            />
+                                    </StackPanel>
+                                    <!--  Communication  -->
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE715;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E715"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE8BD;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E8BD"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE8D2;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E8D2"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE774;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E774"
+                                            />
+                                    </StackPanel>
+                                    <!--  Media  -->
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE768;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E768"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE769;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E769"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE767;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E767"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE787;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E787"
+                                            />
+                                    </StackPanel>
+                                    <!--  Devices  -->
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE770;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E770"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE7F8;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E7F8"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE8D6;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E8D6"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE80A;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E80A"
+                                            />
+                                    </StackPanel>
+                                    <!--  Status / Info  -->
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE7BA;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E7BA"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE916;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E916"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE946;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E946"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE8FD;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E8FD"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE91C;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E91C"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE8FB;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E8FB"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE897;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E897"
+                                            />
+                                    </StackPanel>
+                                    <StackPanel
+                                        Width="96"
+                                        Margin="16"
+                                        HorizontalAlignment="Center"
+                                        Style="{StaticResource GlyphCellStyle}"
+                                        >
+                                        <ui:FontIcon
+                                            HorizontalAlignment="Center"
+                                            Glyph="&#xE8A1;"
+                                            IconFontSize="24"
+                                            />
+                                        <TextBlock
+                                            Margin="0,8,0,0"
+                                            HorizontalAlignment="Center"
+                                            FontSize="10"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="E8A1"
+                                            />
+                                    </StackPanel>
+                                </WrapPanel>
+                            </ui:Card>
+                        </StackPanel>
+                    </ui:SmoothScrollViewer>
+</UserControl>

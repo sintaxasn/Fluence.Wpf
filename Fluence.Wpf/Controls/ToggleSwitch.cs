@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,6 +26,8 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 using System.Windows;
+using System.Windows.Automation.Peers;
+using Fluence.Wpf.Automation;
 
 namespace Fluence.Wpf.Controls
 {
@@ -38,6 +40,12 @@ namespace Fluence.Wpf.Controls
             DefaultStyleKeyProperty.OverrideMetadata(
                 typeof(ToggleSwitch),
                 new FrameworkPropertyMetadata(typeof(ToggleSwitch)));
+        }
+
+        /// <inheritdoc />
+        protected override AutomationPeer OnCreateAutomationPeer()
+        {
+            return new ToggleSwitchAutomationPeer(this);
         }
 
         /// <summary>

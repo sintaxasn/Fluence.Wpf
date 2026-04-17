@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,6 +36,12 @@ namespace Fluence.Wpf
         Left,
 
         /// <summary>A horizontal pane across the top of the control.</summary>
-        Top
+        Top,
+
+        /// <summary>
+        /// A compact vertical pane that starts collapsed (icons only, 48px) and
+        /// expands as an overlay without pushing content.
+        /// </summary>
+        LeftCompact
     }
 }

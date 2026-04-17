@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -132,6 +132,31 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
+        /// Identifies the <see cref="MirroredWhenRightToLeft"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty MirroredWhenRightToLeftProperty =
+            DependencyProperty.Register(
+                nameof(MirroredWhenRightToLeft),
+                typeof(bool),
+                typeof(FontIcon),
+                new FrameworkPropertyMetadata(false, OnMirroredWhenRightToLeftChanged));
+
+        /// <summary>
+        /// Gets or sets whether the glyph is horizontally flipped when
+        /// <see cref="FrameworkElement.FlowDirection"/> is <see cref="FlowDirection.RightToLeft"/>.
+        /// </summary>
+        public bool MirroredWhenRightToLeft
+        {
+            get { return (bool)GetValue(MirroredWhenRightToLeftProperty); }
+            set { SetValue(MirroredWhenRightToLeftProperty, value); }
+        }
+
+        private static void OnMirroredWhenRightToLeftChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((FontIcon)d).ApplyMirrorState();
+        }
+
+        /// <summary>
         /// Identifies the <see cref="EnableTransitions"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty EnableTransitionsProperty =
@@ -175,6 +200,7 @@ namespace Fluence.Wpf.Controls
             icon.ApplySpinState();
         }
 
+        /// <inheritdoc />
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
@@ -185,7 +211,30 @@ namespace Fluence.Wpf.Controls
                 rotate.Angle = Rotation;
             }
 
+            ApplyMirrorState();
             ApplySpinState();
+        }
+
+        /// <inheritdoc />
+        protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+
+            if (e.Property == FlowDirectionProperty)
+            {
+                ApplyMirrorState();
+            }
+        }
+
+        private void ApplyMirrorState()
+        {
+            var mirror = GetTemplateChild("PART_Mirror") as ScaleTransform;
+            if (mirror == null)
+            {
+                return;
+            }
+
+            mirror.ScaleX = (MirroredWhenRightToLeft && FlowDirection == FlowDirection.RightToLeft) ? -1 : 1;
         }
 
         private void ApplySpinState()

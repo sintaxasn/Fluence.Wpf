@@ -1,4 +1,4 @@
-# Fluence.Wpf — AI Coding Instructions
+﻿# Fluence.Wpf - AI Coding Instructions
 
 This file provides context for GitHub Copilot, Cursor, and other AI coding assistants working on this project.
 
@@ -10,17 +10,17 @@ Fluence.Wpf is a WPF control library that recreates Windows 11 Fluent Design (Wi
 
 ### Solution Structure
 
-- `Fluence.Wpf/` — Core class library (WPF)
-- `Fluence.Wpf.Demo/` — Control gallery (WPF executable)
-- `Fluence.Wpf.Tests/` — MSTest suite (`Microsoft.NET.Test.Sdk`, MSTest 3.2)
+- `Fluence.Wpf/` - Core class library (WPF)
+- `Fluence.Wpf.Demo/` - Control gallery (WPF executable)
+- `Fluence.Wpf.Tests/` - MSTest suite (`Microsoft.NET.Test.Sdk`, MSTest 3.2)
 
 ### Namespace Layout
 
-- `Fluence.Wpf` — `ApplicationThemeManager`, `ApplicationAccentColorManager`, `SystemThemeWatcher`, theme enums
-- `Fluence.Wpf.Controls` — Custom controls and `FluentWindow`
-- `Fluence.Wpf.Enums` — UI enums (card variant, validation, typography, etc.)
-- `Fluence.Wpf.Helpers` — Internal helpers (acrylic noise, HSV, OS version, registry)
-- `Fluence.Wpf.Native` — Internal P/Invoke and Win32 structures
+- `Fluence.Wpf` - `ApplicationThemeManager`, `ApplicationAccentColorManager`, `SystemThemeWatcher`, theme enums
+- `Fluence.Wpf.Controls` - Custom controls and `FluenceWindow`
+- `Fluence.Wpf.Enums` - UI enums (card variant, validation, typography, etc.)
+- `Fluence.Wpf.Helpers` - Internal helpers (acrylic noise, HSV, OS version, registry)
+- `Fluence.Wpf.Native` - Internal P/Invoke and Win32 structures
 - XAML themes live under `Fluence.Wpf/Themes/` (not a CLR namespace)
 
 Mapped XML namespace (see `Properties/AssemblyInfo.cs`):
@@ -32,11 +32,11 @@ Mapped XML namespace (see `Properties/AssemblyInfo.cs`):
 
 Merged dictionary order in `Application.Current.Resources` is stable:
 
-1. `[0]` `Theme.{Light|Dark|HighContrast}.xaml` — color keys only; **swapped** on theme change
-2. `[1]` `Accent.xaml` — accent ramp; keys updated in place
-3. `[2]` `Brushes.xaml` — `SolidColorBrush` keys referencing colors via `DynamicResource`
-4. `[3]` `Typography.xaml` — font resources and text styles
-5. `[4]` `Generic.xaml` — merges per-control templates from `Themes/Controls/`
+1. `[0]` `Theme.{Light|Dark|HighContrast}.xaml` - color keys only; **swapped** on theme change
+2. `[1]` `Accent.xaml` - accent ramp; keys updated in place
+3. `[2]` `Brushes.xaml` - `SolidColorBrush` keys referencing colors via `DynamicResource`
+4. `[3]` `Typography.xaml` - font resources and text styles
+5. `[4]` `Generic.xaml` - merges per-control templates from `Themes/Controls/`
 
 ### Control Authoring Patterns
 
@@ -63,7 +63,7 @@ Every `.cs` file must begin with the BSD 3-Clause block used in this repository 
 
 ### XML Documentation
 
-Public APIs should have `///` comments. The project may suppress CS1591 until coverage is complete — prefer adding real summaries over permanent suppression.
+Public APIs must have `///` comments; the library builds with `<DocumentationFile>` and **no** CS1591/CS1574 suppression. Use `<inheritdoc />` for overrides when appropriate; document dependency properties with `<see cref="..."/>` on the `*Property` field.
 
 ### File Organization
 
@@ -79,11 +79,11 @@ Public APIs should have `///` comments. The project may suppress CS1591 until co
 3. Add colors/brushes to Light, Dark, HighContrast (and design-time) dictionaries as needed.
 4. Add demo section in `Fluence.Wpf.Demo`.
 5. Add tests in `Fluence.Wpf.Tests`.
-6. Update `docs/CONTROL_COVERAGE.md`.
+6. Update `docs/controls.md` (catalog / screenshots note) if the public inventory changes.
 
 ### Testing
 
-- Tests use STA threads and `Application` with `ShutdownMode.OnExplicitShutdown`.
+- Tests use the shared **`WpfTestSta`** STA dispatcher, `Application` with `ShutdownMode.OnExplicitShutdown`, and `[assembly: DoNotParallelize]` on the test assembly.
 - Theme tests reset merged dictionaries and call internal `ResetForTesting` helpers (`InternalsVisibleTo` tests assembly).
 
 ## Design References
@@ -93,4 +93,4 @@ Public APIs should have `///` comments. The project may suppress CS1591 until co
 
 ## Inspirations
 
-Design and implementation ideas are informed by community projects such as [WPF-UI](https://github.com/lepoco/wpfui), [MicaWPF](https://github.com/Jeremyforever/MicaWPF), and official WinUI theme resources. Prefer WinUI’s `themeresources.xaml` as the source of truth for token values when in doubt.
+Design and implementation ideas are informed by the official WinUI theme resources. Prefer WinUI's `themeresources.xaml` as the source of truth for token values when in doubt.

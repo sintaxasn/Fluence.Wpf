@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -200,6 +200,127 @@ namespace Fluence.Wpf.Helpers
         public static Color WithAlpha(Color color, byte alpha)
         {
             return Color.FromArgb(alpha, color.R, color.G, color.B);
+        }
+
+        /// <summary>
+        /// Determines whether white text should be used on a given background color.
+        /// Uses the same weighted formula as Windows (winaccent): (5*G + 2*R + B) &lt;= 1024.
+        /// </summary>
+        public static bool ShouldUseWhiteText(Color color)
+        {
+            return (5 * color.G + 2 * color.R + color.B) <= 1024;
+        }
+
+        /// <summary>
+        /// Linear RGB blend matching Windows' palette generation.
+        /// <paramref name="intensity"/> is 0-100 weight toward <paramref name="c1"/>.
+        /// </summary>
+        public static Color BlendColors(Color c1, Color c2, double intensity)
+        {
+            double scaled = intensity * 255.0 / 100.0;
+            double inv = 255.0 - scaled;
+
+            byte r = (byte)Math.Round((c1.R * scaled + c2.R * inv) / 255.0);
+            byte g = (byte)Math.Round((c1.G * scaled + c2.G * inv) / 255.0);
+            byte b = (byte)Math.Round((c1.B * scaled + c2.B * inv) / 255.0);
+
+            return Color.FromRgb(r, g, b);
+        }
+
+        /// <summary>
+        /// Boosts saturation in HLS color space by the given factor (capped at 1.0).
+        /// Matches winaccent's increase_saturation which uses Python colorsys HLS (not HSV).
+        /// </summary>
+        public static Color IncreaseSaturationHls(Color color, double factor)
+        {
+            double r = color.R / 255.0;
+            double g = color.G / 255.0;
+            double b = color.B / 255.0;
+
+            double max = Math.Max(r, Math.Max(g, b));
+            double min = Math.Min(r, Math.Min(g, b));
+
+            double h = 0;
+            double l = (max + min) / 2.0;
+            double s = 0;
+
+            if (max != min)
+            {
+                double d = max - min;
+                s = l > 0.5 ? d / (2.0 - max - min) : d / (max + min);
+
+                if (max == r)
+                {
+                    h = (g - b) / d + (g < b ? 6 : 0);
+                }
+                else if (max == g)
+                {
+                    h = (b - r) / d + 2;
+                }
+                else
+                {
+                    h = (r - g) / d + 4;
+                }
+
+                h /= 6.0;
+            }
+
+            s = Math.Min(1.0, s * factor);
+
+            return HlsToRgb(h, l, s);
+        }
+
+        private static Color HlsToRgb(double h, double l, double s)
+        {
+            double r, g, b;
+
+            if (s == 0)
+            {
+                r = g = b = l;
+            }
+            else
+            {
+                double q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                double p = 2 * l - q;
+                r = HueToChannel(p, q, h + 1.0 / 3.0);
+                g = HueToChannel(p, q, h);
+                b = HueToChannel(p, q, h - 1.0 / 3.0);
+            }
+
+            return Color.FromRgb(
+                (byte)Math.Round(r * 255),
+                (byte)Math.Round(g * 255),
+                (byte)Math.Round(b * 255));
+        }
+
+        private static double HueToChannel(double p, double q, double t)
+        {
+            if (t < 0) t += 1;
+            if (t > 1) t -= 1;
+            if (t < 1.0 / 6.0) return p + (q - p) * 6 * t;
+            if (t < 1.0 / 2.0) return q;
+            if (t < 2.0 / 3.0) return p + (q - p) * (2.0 / 3.0 - t) * 6;
+            return p;
+        }
+
+        /// <summary>
+        /// Generates accent ramp using winaccent's algorithm: linear RGB blend toward white/black,
+        /// then HLS saturation doubled. Produces shades matching the Windows AccentPalette blob.
+        /// </summary>
+        public static void GenerateAccentRampWinaccent(
+            Color baseColor,
+            out Color light1, out Color light2, out Color light3,
+            out Color dark1, out Color dark2, out Color dark3)
+        {
+            Color white = Color.FromRgb(0xFF, 0xFF, 0xFF);
+            Color black = Color.FromRgb(0x00, 0x00, 0x00);
+
+            light3 = IncreaseSaturationHls(BlendColors(white, baseColor, 75), 2);
+            light2 = IncreaseSaturationHls(BlendColors(white, baseColor, 50), 2);
+            light1 = IncreaseSaturationHls(BlendColors(white, baseColor, 25), 2);
+            dark1 = IncreaseSaturationHls(BlendColors(black, baseColor, 25), 2);
+            dark2 = IncreaseSaturationHls(BlendColors(black, baseColor, 50), 2);
+            dark3 = IncreaseSaturationHls(BlendColors(black, baseColor, 75), 2);
         }
     }
 }

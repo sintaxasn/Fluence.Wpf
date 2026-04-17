@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -100,6 +100,12 @@ namespace Fluence.Wpf.Native
 
         [DllImport(User32, SetLastError = true)]
         public static extern bool GetClientRect(IntPtr hwnd, out RECT lpRect);
+
+        [DllImport(User32)]
+        public static extern IntPtr MonitorFromWindow(IntPtr hwnd, uint dwFlags);
+
+        [DllImport(User32, CharSet = CharSet.Unicode)]
+        public static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFO lpmi);
 
         [DllImport(User32, SetLastError = true)]
         public static extern IntPtr GetDC(IntPtr hwnd);

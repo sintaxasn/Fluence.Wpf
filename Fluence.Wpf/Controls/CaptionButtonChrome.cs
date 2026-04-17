@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -33,104 +33,40 @@ namespace Fluence.Wpf.Controls
     {
         public static void GetMinimizeChrome(
             ResizeMode resizeMode,
-            CaptionButtonOverride overrideMode,
             out Visibility visibility,
             out bool isEnabled)
         {
-            switch (overrideMode)
-            {
-                case CaptionButtonOverride.Hide:
-                    visibility = Visibility.Collapsed;
-                    isEnabled = false;
-                    return;
-                case CaptionButtonOverride.Disable:
-                    visibility = Visibility.Visible;
-                    isEnabled = false;
-                    return;
-                case CaptionButtonOverride.Enable:
-                    visibility = Visibility.Visible;
-                    isEnabled = true;
-                    return;
-                default:
-                    bool allowMinimize = resizeMode != ResizeMode.NoResize;
-                    visibility = allowMinimize ? Visibility.Visible : Visibility.Collapsed;
-                    isEnabled = allowMinimize;
-                    return;
-            }
+            bool allowMinimize = resizeMode != ResizeMode.NoResize;
+            visibility = allowMinimize ? Visibility.Visible : Visibility.Collapsed;
+            isEnabled = allowMinimize;
         }
 
         public static void GetCloseChrome(
-            CaptionButtonOverride overrideMode,
             out Visibility visibility,
             out bool isEnabled)
         {
-            switch (overrideMode)
-            {
-                case CaptionButtonOverride.Hide:
-                    visibility = Visibility.Collapsed;
-                    isEnabled = false;
-                    return;
-                case CaptionButtonOverride.Disable:
-                    visibility = Visibility.Visible;
-                    isEnabled = false;
-                    return;
-                case CaptionButtonOverride.Enable:
-                    visibility = Visibility.Visible;
-                    isEnabled = true;
-                    return;
-                default:
-                    visibility = Visibility.Visible;
-                    isEnabled = true;
-                    return;
-            }
+            visibility = Visibility.Visible;
+            isEnabled = true;
         }
 
         public static void GetMaximizeRestoreChrome(
             ResizeMode resizeMode,
             WindowState windowState,
-            CaptionButtonOverride overrideMode,
             out Visibility maximizeVisibility,
             out Visibility restoreVisibility,
             out bool maximizeEnabled,
             out bool restoreEnabled)
         {
-            switch (overrideMode)
+            GetMaximizeRestoreLayout(resizeMode, windowState, out maximizeVisibility, out restoreVisibility);
+            if (resizeMode == ResizeMode.NoResize || resizeMode == ResizeMode.CanMinimize)
             {
-                case CaptionButtonOverride.Hide:
-                    maximizeVisibility = Visibility.Collapsed;
-                    restoreVisibility = Visibility.Collapsed;
-                    maximizeEnabled = false;
-                    restoreEnabled = false;
-                    return;
-                case CaptionButtonOverride.Disable:
-                    GetMaximizeRestoreLayout(resizeMode, windowState, out maximizeVisibility, out restoreVisibility);
-                    maximizeEnabled = false;
-                    restoreEnabled = false;
-                    return;
-                case CaptionButtonOverride.Enable:
-                    GetMaximizeRestoreLayout(resizeMode, windowState, out maximizeVisibility, out restoreVisibility);
-                    maximizeEnabled = maximizeVisibility == Visibility.Visible;
-                    restoreEnabled = restoreVisibility == Visibility.Visible;
-                    return;
-                default:
-                    GetMaximizeRestoreLayout(resizeMode, windowState, out maximizeVisibility, out restoreVisibility);
-                    if (resizeMode == ResizeMode.NoResize)
-                    {
-                        maximizeEnabled = false;
-                        restoreEnabled = false;
-                    }
-                    else if (resizeMode == ResizeMode.CanMinimize)
-                    {
-                        maximizeEnabled = false;
-                        restoreEnabled = false;
-                    }
-                    else
-                    {
-                        maximizeEnabled = maximizeVisibility == Visibility.Visible;
-                        restoreEnabled = restoreVisibility == Visibility.Visible;
-                    }
-
-                    return;
+                maximizeEnabled = false;
+                restoreEnabled = false;
+            }
+            else
+            {
+                maximizeEnabled = maximizeVisibility == Visibility.Visible;
+                restoreEnabled = restoreVisibility == Visibility.Visible;
             }
         }
 

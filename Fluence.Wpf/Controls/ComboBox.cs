@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,9 +25,13 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+using System;
 using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace Fluence.Wpf.Controls
 {
@@ -163,22 +167,147 @@ namespace Fluence.Wpf.Controls
             set { SetValue(DropdownCornerRadiusProperty, value); }
         }
 
+        private static readonly DependencyPropertyKey IsDropDownOpenedUpwardPropertyKey =
+            DependencyProperty.RegisterReadOnly(
+                nameof(IsDropDownOpenedUpward),
+                typeof(bool),
+                typeof(ComboBox),
+                new FrameworkPropertyMetadata(false));
+
+        /// <summary>
+        /// Identifies the <see cref="IsDropDownOpenedUpward"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty IsDropDownOpenedUpwardProperty =
+            IsDropDownOpenedUpwardPropertyKey.DependencyProperty;
+
+        /// <summary>
+        /// Gets whether the dropdown is currently displayed above the control.
+        /// </summary>
+        public bool IsDropDownOpenedUpward
+        {
+            get { return (bool)GetValue(IsDropDownOpenedUpwardProperty); }
+            private set { SetValue(IsDropDownOpenedUpwardPropertyKey, value); }
+        }
+
+        private Popup _popup;
+        private bool _isAutoSelecting;
+
+        /// <inheritdoc />
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
+            _popup = GetTemplateChild("PART_Popup") as Popup;
             UpdateSelectedContent();
+
+            if (SelectedIndex == -1 && Items.Count > 0 && !IsSelectedIndexExplicitlySet())
+            {
+                Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    TryAutoSelectFirstItem();
+                }), DispatcherPriority.Loaded);
+            }
         }
 
+        /// <inheritdoc />
+        protected override void OnDropDownOpened(EventArgs e)
+        {
+            base.OnDropDownOpened(e);
+            UpdateDropDownDirection();
+        }
+
+        /// <inheritdoc />
+        protected override void OnDropDownClosed(EventArgs e)
+        {
+            base.OnDropDownClosed(e);
+            IsDropDownOpenedUpward = false;
+            if (_popup != null)
+            {
+                _popup.Placement = PlacementMode.Bottom;
+            }
+        }
+
+        /// <inheritdoc />
         protected override void OnSelectionChanged(SelectionChangedEventArgs e)
         {
             base.OnSelectionChanged(e);
             UpdateSelectedContent();
         }
 
+        /// <inheritdoc />
         protected override void OnItemsChanged(NotifyCollectionChangedEventArgs e)
         {
             base.OnItemsChanged(e);
             UpdateSelectedContent();
+            TryAutoSelectFirstItem();
+        }
+
+        private void UpdateDropDownDirection()
+        {
+            if (_popup == null)
+            {
+                return;
+            }
+
+            try
+            {
+                var source = PresentationSource.FromVisual(this);
+                if (source == null || source.CompositionTarget == null)
+                {
+                    return;
+                }
+
+                var bottomEdge = PointToScreen(new Point(0, ActualHeight));
+                var topEdge = PointToScreen(new Point(0, 0));
+
+                double dpiY = source.CompositionTarget.TransformToDevice.M22;
+                double maxHeightPx = (MaxDropDownHeight > 0 ? MaxDropDownHeight : 480) * dpiY;
+                double workBottom = SystemParameters.WorkArea.Bottom * dpiY;
+                double workTop = SystemParameters.WorkArea.Top * dpiY;
+
+                double spaceBelow = workBottom - bottomEdge.Y;
+                double spaceAbove = topEdge.Y - workTop;
+
+                bool openUpward = spaceBelow < maxHeightPx && spaceAbove > spaceBelow;
+
+                IsDropDownOpenedUpward = openUpward;
+                _popup.Placement = openUpward ? PlacementMode.Top : PlacementMode.Bottom;
+            }
+            catch
+            {
+                IsDropDownOpenedUpward = false;
+                if (_popup != null)
+                {
+                    _popup.Placement = PlacementMode.Bottom;
+                }
+            }
+        }
+
+        private bool IsSelectedIndexExplicitlySet()
+        {
+            var source = DependencyPropertyHelper.GetValueSource(
+                this, Selector.SelectedIndexProperty);
+            return source.BaseValueSource != BaseValueSource.Default;
+        }
+
+        private void TryAutoSelectFirstItem()
+        {
+            if (_isAutoSelecting || SelectedIndex != -1 || Items.Count == 0)
+            {
+                return;
+            }
+
+            if (!IsSelectedIndexExplicitlySet())
+            {
+                _isAutoSelecting = true;
+                try
+                {
+                    SelectedIndex = 0;
+                }
+                finally
+                {
+                    _isAutoSelecting = false;
+                }
+            }
         }
 
         private void UpdateSelectedContent()

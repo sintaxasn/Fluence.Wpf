@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -155,6 +155,105 @@ namespace Fluence.Wpf.Helpers
         public static bool IsHighContrastEnabled()
         {
             return SystemParameters.HighContrast;
+        }
+
+        /// <summary>
+        /// Reads DWM AccentColor (ABGR DWORD) used for the active titlebar when ColorPrevalence is on.
+        /// </summary>
+        public static bool TryGetDwmAccentColor(out Color color)
+        {
+            color = default;
+            try
+            {
+                using (var key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath))
+                {
+                    var value = key?.GetValue(NativeConstants.AccentColor);
+                    if (value is int intValue)
+                    {
+                        uint raw = unchecked((uint)intValue);
+                        byte a = (byte)((raw >> 24) & 0xFF);
+                        byte b = (byte)((raw >> 16) & 0xFF);
+                        byte g = (byte)((raw >> 8) & 0xFF);
+                        byte r = (byte)(raw & 0xFF);
+                        color = Color.FromArgb(a == 0 ? (byte)255 : a, r, g, b);
+                        return true;
+                    }
+                }
+            }
+            catch
+            {
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Reads DWM AccentColorInactive (ABGR DWORD) for the inactive titlebar.
+        /// </summary>
+        public static bool TryGetDwmAccentColorInactive(out Color color)
+        {
+            color = default;
+            try
+            {
+                using (var key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath))
+                {
+                    var value = key?.GetValue(NativeConstants.AccentColorInactive);
+                    if (value is int intValue)
+                    {
+                        uint raw = unchecked((uint)intValue);
+                        byte a = (byte)((raw >> 24) & 0xFF);
+                        byte b = (byte)((raw >> 16) & 0xFF);
+                        byte g = (byte)((raw >> 8) & 0xFF);
+                        byte r = (byte)(raw & 0xFF);
+                        color = Color.FromArgb(a == 0 ? (byte)255 : a, r, g, b);
+                        return true;
+                    }
+                }
+            }
+            catch
+            {
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Reads DWM ColorizationColor (ARGB) and ColorizationColorBalance for Win10 border blending.
+        /// </summary>
+        public static bool TryGetColorizationBalance(out Color colorizationColor, out int balance)
+        {
+            colorizationColor = default;
+            balance = 0;
+            try
+            {
+                using (var key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath))
+                {
+                    if (key == null)
+                    {
+                        return false;
+                    }
+
+                    var colorVal = key.GetValue(NativeConstants.ColorizationColor);
+                    var balanceVal = key.GetValue(NativeConstants.ColorizationColorBalance);
+
+                    if (colorVal is int colorInt && balanceVal is int balanceInt)
+                    {
+                        uint raw = unchecked((uint)colorInt);
+                        byte a = (byte)((raw >> 24) & 0xFF);
+                        byte r = (byte)((raw >> 16) & 0xFF);
+                        byte g = (byte)((raw >> 8) & 0xFF);
+                        byte b = (byte)(raw & 0xFF);
+                        colorizationColor = Color.FromArgb(a == 0 ? (byte)255 : a, r, g, b);
+                        balance = balanceInt;
+                        return true;
+                    }
+                }
+            }
+            catch
+            {
+            }
+
+            return false;
         }
     }
 }

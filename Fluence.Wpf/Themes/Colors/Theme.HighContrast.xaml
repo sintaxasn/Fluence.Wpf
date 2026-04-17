@@ -1,13 +1,13 @@
-<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <!-- Windows 11 High Contrast Theme — Color fallbacks + Brush overrides -->
+    <!-- Windows 11 High Contrast Theme - Color fallbacks + Brush overrides -->
     <!-- Contains BOTH Color keys (static HC defaults) AND Brush keys (live SystemColor references). -->
     <!-- When HighContrast is active the ThemeManager skips Brushes.xaml and Accent.xaml; -->
     <!-- this dictionary supplies everything directly so brushes track SystemColor changes. -->
 
     <!-- ================================================================ -->
-    <!--  SECTION 1 — Color keys (static HC-Black fallback values)        -->
+    <!--  SECTION 1 - Color keys (static HC-Black fallback values)        -->
     <!--  These exist so any code that resolves a Color key won't crash.   -->
     <!--  Visual appearance comes from the Brush overrides in Section 2.   -->
     <!-- ================================================================ -->
@@ -159,7 +159,7 @@
     <Color x:Key="TextOnAccentFillColorDisabled">#FF3FF23F</Color>
 
     <!-- ================================================================ -->
-    <!--  SECTION 2 — Brush overrides (live SystemColor DynamicResource)   -->
+    <!--  SECTION 2 - Brush overrides (live SystemColor DynamicResource)   -->
     <!--  These take visual precedence; they track system HC color changes. -->
     <!-- ================================================================ -->
 
@@ -315,6 +315,7 @@
     <SolidColorBrush x:Key="SystemAccentColorPrimaryBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
     <SolidColorBrush x:Key="SystemAccentColorSecondaryBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
     <SolidColorBrush x:Key="SystemAccentColorTertiaryBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="NavigationViewSelectionIndicatorBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
 
     <!-- Elevation Border Brushes (solid in high contrast) -->
     <SolidColorBrush x:Key="ControlElevationBorderBrush" Color="{DynamicResource {x:Static SystemColors.ControlDarkColorKey}}" />

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,6 +55,7 @@ namespace Fluence.Wpf.Controls
             set { SetValue(SpacingProperty, value); }
         }
 
+        /// <inheritdoc />
         protected override Size MeasureOverride(Size constraint)
         {
             var orientation = Orientation;
@@ -120,6 +121,7 @@ namespace Fluence.Wpf.Controls
             return new Size(totalMain, maxCross);
         }
 
+        /// <inheritdoc />
         protected override Size ArrangeOverride(Size arrangeSize)
         {
             var orientation = Orientation;

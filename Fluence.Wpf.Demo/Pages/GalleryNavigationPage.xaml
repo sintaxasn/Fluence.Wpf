@@ -1,0 +1,129 @@
+<UserControl x:Class="Fluence.Wpf.Demo.Pages.GalleryNavigationPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
+    xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="800" d:DesignWidth="900"
+    mc:Ignorable="d">
+                    <ui:SmoothScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="24" HorizontalAlignment="Stretch">
+                            <TextBlock
+                                Margin="0,0,0,4"
+                                Style="{StaticResource SectionHeaderStyle}"
+                                Text="NavigationView Demos"
+                                />
+                            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Top and Left pane demos with back-button behavior." />
+                            <ui:Card Padding="16" Variant="{x:Static uicore:CardVariant.Default}">
+                                <StackPanel>
+                                    <TextBlock
+                                        Margin="0,0,0,8"
+                                        FontWeight="SemiBold"
+                                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                        Text="Top Pane"
+                                        />
+                                    <Border
+                                        Height="220"
+                                        Margin="0,0,0,14"
+                                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                        BorderThickness="1"
+                                        >
+                                        <ui:NavigationView
+                                            x:Name="InlineNavTopDemo"
+                                            IsBackButtonVisible="True"
+                                            IsBackEnabled="False"
+                                            PaneDisplayMode="Top"
+                                            SelectionChanged="InlineNavTopDemo_SelectionChanged"
+                                            >
+                                            <ui:NavigationViewItem Content="Home">
+                                                <ui:NavigationViewItem.Icon>
+                                                    <ui:FontIcon Glyph="&#xE80F;" IconFontSize="16" />
+                                                </ui:NavigationViewItem.Icon>
+                                            </ui:NavigationViewItem>
+                                            <ui:NavigationViewItem Content="Reports">
+                                                <ui:NavigationViewItem.Icon>
+                                                    <ui:FontIcon Glyph="&#xE9D9;" IconFontSize="16" />
+                                                </ui:NavigationViewItem.Icon>
+                                            </ui:NavigationViewItem>
+                                            <ui:NavigationViewItem Content="Settings">
+                                                <ui:NavigationViewItem.Icon>
+                                                    <ui:FontIcon Glyph="&#xE713;" IconFontSize="16" />
+                                                </ui:NavigationViewItem.Icon>
+                                            </ui:NavigationViewItem>
+                                            <ui:NavigationView.Content>
+                                                <Grid x:Name="InlineNavTopContentHost" Margin="16">
+                                                    <TextBlock
+                                                        x:Name="InlineNavTopLabel"
+                                                        FontSize="16"
+                                                        Text="Top: Home"
+                                                        />
+                                                </Grid>
+                                            </ui:NavigationView.Content>
+                                        </ui:NavigationView>
+                                    </Border>
+                                    <TextBlock
+                                        Margin="0,0,0,8"
+                                        FontWeight="SemiBold"
+                                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                        Text="Left Pane"
+                                        />
+                                    <Border
+                                        Height="300"
+                                        Margin="0,0,0,14"
+                                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                                        BorderThickness="1"
+                                        >
+                                        <ui:NavigationView
+                                            x:Name="InlineNavLeftDemo"
+                                            IsBackButtonVisible="True"
+                                            IsBackEnabled="False"
+                                            PaneDisplayMode="Left"
+                                            SelectionChanged="InlineNavLeftDemo_SelectionChanged"
+                                            >
+                                            <ui:NavigationViewItem Content="Files">
+                                                <ui:NavigationViewItem.Icon>
+                                                    <ui:FontIcon Glyph="&#xE8B7;" IconFontSize="20" />
+                                                </ui:NavigationViewItem.Icon>
+                                            </ui:NavigationViewItem>
+                                            <ui:NavigationViewItem Content="Users">
+                                                <ui:NavigationViewItem.Icon>
+                                                    <ui:FontIcon Glyph="&#xE77B;" IconFontSize="20" />
+                                                </ui:NavigationViewItem.Icon>
+                                            </ui:NavigationViewItem>
+                                            <ui:NavigationViewItem Content="Automation">
+                                                <ui:NavigationViewItem.Icon>
+                                                    <ui:FontIcon Glyph="&#xE7E8;" IconFontSize="20" />
+                                                </ui:NavigationViewItem.Icon>
+                                            </ui:NavigationViewItem>
+                                            <ui:NavigationView.Content>
+                                                <Grid x:Name="InlineNavLeftContentHost" Margin="20">
+                                                    <TextBlock
+                                                        x:Name="InlineNavLeftLabel"
+                                                        FontSize="16"
+                                                        Text="Left: Files"
+                                                        />
+                                                </Grid>
+                                            </ui:NavigationView.Content>
+                                        </ui:NavigationView>
+                                    </Border>
+                                    <StackPanel Orientation="Horizontal">
+                                        <ui:CheckBox
+                                            x:Name="InlineBackEnabledToggle"
+                                            Margin="0,0,14,0"
+                                            Checked="InlineBackEnabledToggle_Changed"
+                                            Content="Back enabled"
+                                            Unchecked="InlineBackEnabledToggle_Changed"
+                                            />
+                                        <TextBlock
+                                            x:Name="InlineBackStatusLabel"
+                                            VerticalAlignment="Center"
+                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                            Text="Back button disabled"
+                                            />
+                                    </StackPanel>
+                                </StackPanel>
+                            </ui:Card>
+                        </StackPanel>
+                    </ui:SmoothScrollViewer>
+</UserControl>

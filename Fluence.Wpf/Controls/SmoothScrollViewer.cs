@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -102,6 +102,7 @@ namespace Fluence.Wpf.Controls
             SharedEase.Freeze();
         }
 
+        /// <inheritdoc />
         protected override void OnMouseWheel(MouseWheelEventArgs e)
         {
             double delta = e.Delta * 0.6;
@@ -131,6 +132,7 @@ namespace Fluence.Wpf.Controls
             e.Handled = true;
         }
 
+        /// <inheritdoc />
         protected override void OnScrollChanged(ScrollChangedEventArgs e)
         {
             base.OnScrollChanged(e);
@@ -145,6 +147,7 @@ namespace Fluence.Wpf.Controls
             }
         }
 
+        /// <inheritdoc />
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();

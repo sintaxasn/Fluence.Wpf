@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,11 +27,17 @@
  */
 using System;
 using System.Windows;
+using System.Windows.Media;
 
 namespace Fluence.Wpf.Demo
 {
     public partial class App : Application
     {
+        static App()
+        {
+            TextOptions.TextFormattingModeProperty.OverrideMetadata(typeof(Window),
+                new FrameworkPropertyMetadata(TextFormattingMode.Display, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender | FrameworkPropertyMetadataOptions.Inherits));
+        }
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);

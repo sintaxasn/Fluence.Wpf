@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -124,6 +124,7 @@ namespace Fluence.Wpf.Controls
             set { SetValue(IconPlacementProperty, value); }
         }
 
+        /// <inheritdoc />
         public override void OnApplyTemplate()
         {
             if (_mainContentPresenter != null)
@@ -142,6 +143,7 @@ namespace Fluence.Wpf.Controls
             UpdateTruncationToolTip();
         }
 
+        /// <inheritdoc />
         protected override void OnContentChanged(object oldContent, object newContent)
         {
             base.OnContentChanged(oldContent, newContent);

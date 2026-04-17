@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,7 +27,9 @@
  */
 using System;
 using System.Windows;
+using System.Windows.Automation.Peers;
 using System.Windows.Controls;
+using Fluence.Wpf.Automation;
 
 namespace Fluence.Wpf.Controls
 {
@@ -229,6 +231,12 @@ namespace Fluence.Wpf.Controls
         /// Occurs after the info bar has closed.
         /// </summary>
         public event EventHandler Closed;
+
+        /// <inheritdoc />
+        protected override AutomationPeer OnCreateAutomationPeer()
+        {
+            return new InfoBarAutomationPeer(this);
+        }
 
         /// <inheritdoc />
         public override void OnApplyTemplate()

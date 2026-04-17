@@ -1,0 +1,98 @@
+<UserControl x:Class="Fluence.Wpf.Demo.Pages.GalleryButtonsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
+    xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    d:DesignHeight="800" d:DesignWidth="900"
+    mc:Ignorable="d">
+                    <ui:SmoothScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                        <StackPanel Margin="24" HorizontalAlignment="Stretch">
+                            <TextBlock
+                                Margin="0,0,0,4"
+                                Style="{StaticResource SectionHeaderStyle}"
+                                Text="Button Appearances"
+                                />
+                            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Standard, Accent, and Subtle button variants with enabled and disabled states." />
+                            <ui:Card
+                                Margin="0,0,0,16"
+                                Padding="16"
+                                Variant="{x:Static uicore:CardVariant.Default}"
+                                >
+                                <StackPanel>
+                                    <StackPanel Margin="0,0,0,12" Orientation="Horizontal">
+                                        <ui:Button Margin="0,0,12,0" Content="Standard" />
+                                        <ui:Button
+                                            Margin="0,0,12,0"
+                                            Appearance="Accent"
+                                            Content="Accent"
+                                            />
+                                        <ui:Button Appearance="Subtle" Content="Subtle" />
+                                    </StackPanel>
+                                    <StackPanel Orientation="Horizontal">
+                                        <ui:Button
+                                            Margin="0,0,12,0"
+                                            Content="Standard"
+                                            IsEnabled="False"
+                                            />
+                                        <ui:Button
+                                            Margin="0,0,12,0"
+                                            Appearance="Accent"
+                                            Content="Accent"
+                                            IsEnabled="False"
+                                            />
+                                        <ui:Button
+                                            Appearance="Subtle"
+                                            Content="Subtle"
+                                            IsEnabled="False"
+                                            />
+                                    </StackPanel>
+                                    <TextBlock Style="{StaticResource StateLabelStyle}" Text="Second row: disabled variants" />
+                                </StackPanel>
+                            </ui:Card>
+
+                            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="Icon Placement" />
+                            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Buttons with leading or trailing icons." />
+                            <ui:Card
+                                Margin="0,0,0,16"
+                                Padding="16"
+                                Variant="{x:Static uicore:CardVariant.Default}"
+                                >
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:Button Margin="0,0,12,0" Content="Icon Left">
+                                        <ui:Button.Icon>
+                                            <ui:FontIcon Glyph="&#xE774;" IconFontSize="14" />
+                                        </ui:Button.Icon>
+                                    </ui:Button>
+                                    <ui:Button Content="Icon Right" IconPlacement="Right">
+                                        <ui:Button.Icon>
+                                            <ui:FontIcon Glyph="&#xE8D6;" IconFontSize="14" />
+                                        </ui:Button.Icon>
+                                    </ui:Button>
+                                </StackPanel>
+                            </ui:Card>
+
+                            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="HyperlinkButton" />
+                            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="A button styled as a hyperlink, with optional NavigateUri." />
+                            <ui:Card Padding="16" Variant="{x:Static uicore:CardVariant.Default}">
+                                <StackPanel>
+                                    <StackPanel Margin="0,0,0,12" Orientation="Horizontal">
+                                        <ui:HyperlinkButton
+                                            Margin="0,0,16,0"
+                                            Content="Open GitHub"
+                                            NavigateUri="https://github.com"
+                                            />
+                                        <ui:HyperlinkButton Margin="0,0,16,0" Content="No URI (styled)" />
+                                        <ui:HyperlinkButton Content="Disabled" IsEnabled="False" />
+                                    </StackPanel>
+                                    <ui:HyperlinkButton Content="With Icon" NavigateUri="https://github.com">
+                                        <ui:HyperlinkButton.Icon>
+                                            <ui:FontIcon Glyph="&#xE721;" IconFontSize="14" />
+                                        </ui:HyperlinkButton.Icon>
+                                    </ui:HyperlinkButton>
+                                </StackPanel>
+                            </ui:Card>
+                        </StackPanel>
+                    </ui:SmoothScrollViewer>
+</UserControl>

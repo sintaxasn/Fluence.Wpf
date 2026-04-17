@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -217,6 +217,27 @@ namespace Fluence.Wpf.Controls
             private set { SetValue(IsPressedPropertyKey, value); }
         }
 
+        /// <summary>
+        /// Identifies the <see cref="Click"/> routed event.
+        /// </summary>
+        public static readonly RoutedEvent ClickEvent =
+            EventManager.RegisterRoutedEvent(
+                nameof(Click),
+                RoutingStrategy.Bubble,
+                typeof(RoutedEventHandler),
+                typeof(Card));
+
+        /// <summary>
+        /// Occurs when a clickable card is activated by a mouse left-button release
+        /// that began with a press inside the card bounds.
+        /// </summary>
+        public event RoutedEventHandler Click
+        {
+            add { AddHandler(ClickEvent, value); }
+            remove { RemoveHandler(ClickEvent, value); }
+        }
+
+        /// <inheritdoc />
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonDown(e);
@@ -229,22 +250,31 @@ namespace Fluence.Wpf.Controls
             CaptureMouse();
         }
 
+        /// <inheritdoc />
         protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonUp(e);
-            if (IsPressed)
+            bool wasPressed = IsPressed;
+            if (wasPressed)
             {
                 IsPressed = false;
                 ReleaseMouseCapture();
             }
+
+            if (wasPressed && IsClickable && IsEnabled)
+            {
+                RaiseEvent(new RoutedEventArgs(ClickEvent, this));
+            }
         }
 
+        /// <inheritdoc />
         protected override void OnLostMouseCapture(MouseEventArgs e)
         {
             base.OnLostMouseCapture(e);
             IsPressed = false;
         }
 
+        /// <inheritdoc />
         protected override void OnMouseLeave(MouseEventArgs e)
         {
             base.OnMouseLeave(e);

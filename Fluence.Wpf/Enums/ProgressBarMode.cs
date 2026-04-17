@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,12 +28,19 @@
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// Display mode for <see cref="Controls.ProgressBar"/>.
+    /// Display mode for <see cref="Fluence.Wpf.Controls.ProgressBar"/>.
     /// </summary>
     public enum ProgressBarMode
     {
+        /// <summary>Determinate progress between minimum and maximum.</summary>
         Standard,
+        /// <summary>Indeterminate animation when value is unknown.</summary>
         Indeterminate,
-        StepProgress
+        /// <summary>Segmented step progress display.</summary>
+        StepProgress,
+        /// <summary>Error state with critical-severity fill color.</summary>
+        Error,
+        /// <summary>Paused state with caution-severity fill color.</summary>
+        Paused
     }
 }

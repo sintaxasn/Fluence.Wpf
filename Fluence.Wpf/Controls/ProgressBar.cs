@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -166,6 +166,9 @@ namespace Fluence.Wpf.Controls
             set { SetValue(TrackHeightProperty, value); }
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ProgressBar"/> class and subscribes to size changes for layout updates.
+        /// </summary>
         public ProgressBar()
         {
             SizeChanged += OnSizeChanged;
@@ -197,11 +200,17 @@ namespace Fluence.Wpf.Controls
             RefreshIndeterminateLayout();
         }
 
+        /// <inheritdoc />
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
 
             StopIndeterminate();
+
+            if (_track != null)
+            {
+                _track.SizeChanged -= OnTrackSizeChanged;
+            }
 
             _track = GetTemplateChild("PART_Track") as System.Windows.Controls.Border;
             _fill = GetTemplateChild("PART_Fill") as System.Windows.Controls.Border;
@@ -210,23 +219,37 @@ namespace Fluence.Wpf.Controls
             _indeterminateTranslate = GetTemplateChild("PART_IndeterminateTranslate") as TranslateTransform;
             _indeterminateTranslate2 = GetTemplateChild("PART_IndeterminateTranslate2") as TranslateTransform;
 
+            if (_track != null)
+            {
+                _track.SizeChanged += OnTrackSizeChanged;
+            }
+
             ApplyProgressMode();
             UpdateFillWidth(false);
             RefreshIndeterminateLayout();
         }
 
+        private void OnTrackSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            UpdateFillWidth(false);
+            RefreshIndeterminateLayout();
+        }
+
+        /// <inheritdoc />
         protected override void OnValueChanged(double oldValue, double newValue)
         {
             base.OnValueChanged(oldValue, newValue);
             UpdateFillWidth();
         }
 
+        /// <inheritdoc />
         protected override void OnMinimumChanged(double oldMinimum, double newMinimum)
         {
             base.OnMinimumChanged(oldMinimum, newMinimum);
             UpdateFillWidth(false);
         }
 
+        /// <inheritdoc />
         protected override void OnMaximumChanged(double oldMaximum, double newMaximum)
         {
             base.OnMaximumChanged(oldMaximum, newMaximum);
@@ -259,7 +282,33 @@ namespace Fluence.Wpf.Controls
                 {
                     _indeterminateBar2.Visibility = Visibility.Collapsed;
                 }
-                UpdateFillWidth(false);
+
+                ApplyFillBrushForMode();
+
+                Dispatcher.BeginInvoke(
+                    new Action(() => UpdateFillWidth(false)),
+                    System.Windows.Threading.DispatcherPriority.Loaded);
+            }
+        }
+
+        private void ApplyFillBrushForMode()
+        {
+            if (_fill == null)
+            {
+                return;
+            }
+
+            switch (ProgressMode)
+            {
+                case ProgressBarMode.Error:
+                    _fill.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, "SystemFillColorCriticalBrush");
+                    break;
+                case ProgressBarMode.Paused:
+                    _fill.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, "SystemFillColorCautionBrush");
+                    break;
+                default:
+                    _fill.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, "AccentFillColorDefaultBrush");
+                    break;
             }
         }
 

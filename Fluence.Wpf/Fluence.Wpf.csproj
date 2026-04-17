@@ -1,8 +1,9 @@
-<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
 
   <PropertyGroup>
-    <TargetFramework>net472</TargetFramework>
-    <LangVersion>7.3</LangVersion>
+    <TargetFrameworks>net472;net10.0-windows10.0.26100.0</TargetFrameworks>
+    <LangVersion Condition="'$(TargetFramework)' == 'net472'">7.3</LangVersion>
+    <LangVersion Condition="$(TargetFramework.StartsWith('net10'))">latest</LangVersion>
     <UseWPF>true</UseWPF>
     <RootNamespace>Fluence.Wpf</RootNamespace>
     <AssemblyName>Fluence.Wpf</AssemblyName>
@@ -10,17 +11,25 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Fluence.Wpf.xml</DocumentationFile>
-    <!-- Suppress missing-doc until all public members have summaries; XML file still emitted for consumers -->
-    <NoWarn>$(NoWarn);1591;1574</NoWarn>
-    <Description>Windows 11 Fluent Design controls and theming for WPF (.NET Framework 4.7.2)</Description>
+    <Description>Windows 11 Fluent Design controls and theming for WPF (.NET Framework 4.7.2 and .NET 10)</Description>
     <Authors>Dan Cunningham</Authors>
     <Copyright>Copyright © 2026 Dan Cunningham</Copyright>
     <Product>Fluence.Wpf</Product>
     <Title>Fluence.Wpf</Title>
+    <PackageId>Fluence.Wpf</PackageId>
+    <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/sintaxasn/Fluence.Wpf</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/sintaxasn/Fluence.Wpf</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>wpf;fluent;fluent-design;windows11;controls;theme</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>AppIcon.png</PackageIcon>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Reference Include="System.Drawing" />
+  <ItemGroup Label="NuGet package content">
+    <None Include="..\README.md" Pack="true" PackagePath="\" />
+    <None Include="..\Fluence.Wpf.Demo\Resources\AppIcon.png" Pack="true" PackagePath="\" />
   </ItemGroup>
+
 
 </Project>

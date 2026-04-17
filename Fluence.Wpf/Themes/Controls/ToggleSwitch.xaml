@@ -1,4 +1,4 @@
-<!--
+﻿<!--
   Copyright 2026 Dan Cunningham
 
   Redistribution and use in source and binary forms, with or without
@@ -51,6 +51,10 @@
     </Style>
 
     <Style TargetType="{x:Type controls:ToggleSwitch}">
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
@@ -92,14 +96,14 @@
                                 <Border x:Name="TrackOff"
                                         CornerRadius="10"
                                         Background="{DynamicResource ControlAltFillColorSecondaryBrush}"
-                                        BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                                        BorderBrush="{DynamicResource ControlStrongFillColorDefaultBrush}"
                                         BorderThickness="1" />
 
                                 <!-- Off track: hover -->
                                 <Border x:Name="TrackOffHover"
                                         CornerRadius="10"
                                         Background="{DynamicResource ControlAltFillColorTertiaryBrush}"
-                                        BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
+                                        BorderBrush="{DynamicResource ControlStrongFillColorDefaultBrush}"
                                         BorderThickness="1"
                                         Opacity="0" />
 
@@ -121,11 +125,11 @@
                                         Background="{DynamicResource AccentFillColorTertiaryBrush}"
                                         Opacity="0" />
 
-                                <!-- Thumb: 12×14 off (horizontally compressed), 14×14 on (circle) -->
+                                <!-- Thumb: 12x12 circle at rest; grows on hover/pressed -->
                                 <Ellipse x:Name="SwitchThumb"
                                          Width="12"
-                                         Height="14"
-                                         Fill="White"
+                                         Height="12"
+                                         Fill="{DynamicResource TextFillColorSecondaryBrush}"
                                          HorizontalAlignment="Left"
                                          VerticalAlignment="Center"
                                          Margin="3,0,0,0">
@@ -160,6 +164,38 @@
                             <Setter TargetName="HeaderPresenter" Property="Visibility" Value="Collapsed" />
                         </Trigger>
 
+                        <!-- Hover (any state): grow thumb 12->14 -->
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="SwitchThumb" Storyboard.TargetProperty="Width"
+                                                         To="14" Duration="0:0:0.083">
+                                            <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="SwitchThumb" Storyboard.TargetProperty="Height"
+                                                         To="14" Duration="0:0:0.083">
+                                            <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="SwitchThumb" Storyboard.TargetProperty="Width"
+                                                         To="12" Duration="0:0:0.083">
+                                            <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="SwitchThumb" Storyboard.TargetProperty="Height"
+                                                         To="12" Duration="0:0:0.083">
+                                            <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+
                         <!-- Unchecked + Hover -->
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
@@ -169,14 +205,15 @@
                             <Setter TargetName="TrackOffHover" Property="Opacity" Value="1" />
                         </MultiTrigger>
 
-                        <!-- Unchecked + Pressed -->
+                        <!-- Unchecked + Pressed: squash thumb to 17x14 -->
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsPressed" Value="True" />
                                 <Condition Property="IsChecked" Value="False" />
                             </MultiTrigger.Conditions>
                             <Setter TargetName="TrackOffHover" Property="Opacity" Value="1" />
-                            <Setter TargetName="SwitchThumb" Property="Width" Value="14" />
+                            <Setter TargetName="SwitchThumb" Property="Width" Value="17" />
+                            <Setter TargetName="SwitchThumb" Property="Height" Value="14" />
                         </MultiTrigger>
 
                         <!-- Checked -->
@@ -184,7 +221,7 @@
                             <Setter TargetName="TrackOff" Property="Opacity" Value="0" />
                             <Setter TargetName="TrackOffHover" Property="Opacity" Value="0" />
                             <Setter TargetName="TrackOn" Property="Opacity" Value="1" />
-                            <Setter TargetName="SwitchThumb" Property="Width" Value="14" />
+                            <Setter TargetName="SwitchThumb" Property="Fill" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
                             <Setter TargetName="SwitchThumb" Property="RenderTransform">
                                 <Setter.Value>
                                     <TranslateTransform X="20" />
@@ -233,7 +270,7 @@
                             <Setter TargetName="TrackOnHover" Property="Opacity" Value="1" />
                         </MultiTrigger>
 
-                        <!-- Checked + Pressed -->
+                        <!-- Checked + Pressed: squash thumb -->
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsChecked" Value="True" />
@@ -242,17 +279,34 @@
                             <Setter TargetName="TrackOn" Property="Opacity" Value="0" />
                             <Setter TargetName="TrackOnHover" Property="Opacity" Value="0" />
                             <Setter TargetName="TrackOnPressed" Property="Opacity" Value="1" />
+                            <Setter TargetName="SwitchThumb" Property="Width" Value="17" />
+                            <Setter TargetName="SwitchThumb" Property="Height" Value="14" />
                         </MultiTrigger>
 
-                        <!-- Disabled -->
-                        <Trigger Property="IsEnabled" Value="False">
+                        <!-- Off + Disabled -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsEnabled" Value="False" />
+                                <Condition Property="IsChecked" Value="False" />
+                            </MultiTrigger.Conditions>
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                             <Setter TargetName="TrackOff" Property="Background" Value="{DynamicResource ControlFillColorDisabledBrush}" />
-                            <Setter TargetName="TrackOn" Property="Background" Value="{DynamicResource ControlFillColorDisabledBrush}" />
-                            <Setter TargetName="TrackOnHover" Property="Background" Value="{DynamicResource ControlFillColorDisabledBrush}" />
-                            <Setter TargetName="TrackOnPressed" Property="Background" Value="{DynamicResource ControlFillColorDisabledBrush}" />
+                            <Setter TargetName="TrackOff" Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+                            <Setter TargetName="SwitchThumb" Property="Fill" Value="{DynamicResource TextFillColorDisabledBrush}" />
                             <Setter TargetName="SwitchThumb" Property="Opacity" Value="0.4" />
-                        </Trigger>
+                        </MultiTrigger>
+
+                        <!-- On + Disabled -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsEnabled" Value="False" />
+                                <Condition Property="IsChecked" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+                            <Setter TargetName="TrackOn" Property="Background" Value="{DynamicResource AccentFillColorDisabledBrush}" />
+                            <Setter TargetName="SwitchThumb" Property="Fill" Value="{DynamicResource TextOnAccentFillColorDisabledBrush}" />
+                            <Setter TargetName="SwitchThumb" Property="Opacity" Value="0.4" />
+                        </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,7 +29,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.ExceptionServices;
-using System.Threading;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
@@ -53,32 +52,10 @@ namespace Fluence.Wpf.Tests
 
         private static void RunOnStaThread(Action action)
         {
-            var application = Application.Current;
-            if (application != null)
-            {
-                Exception dispatchedException = null;
-                application.Dispatcher.Invoke(new Action(delegate
-                {
-                    try
-                    {
-                        action();
-                    }
-                    catch (Exception exception)
-                    {
-                        dispatchedException = exception;
-                    }
-                }));
-
-                if (dispatchedException != null)
-                {
-                    ExceptionDispatchInfo.Capture(dispatchedException).Throw();
-                }
-
-                return;
-            }
+            var dispatcher = WpfTestSta.Dispatcher;
 
             Exception capturedException = null;
-            var thread = new Thread(() =>
+            dispatcher.Invoke(new Action(delegate
             {
                 try
                 {
@@ -88,11 +65,7 @@ namespace Fluence.Wpf.Tests
                 {
                     capturedException = exception;
                 }
-            });
-
-            thread.SetApartmentState(ApartmentState.STA);
-            thread.Start();
-            thread.Join();
+            }));
 
             if (capturedException != null)
             {
@@ -102,14 +75,7 @@ namespace Fluence.Wpf.Tests
 
         private static Application EnsureApplication()
         {
-            var application = Application.Current;
-            if (application == null)
-            {
-                application = new Application();
-                application.ShutdownMode = ShutdownMode.OnExplicitShutdown;
-            }
-
-            return application;
+            return WpfTestSta.EnsureApplication();
         }
 
         private static ResourceDictionary MergeGenericDictionary(Application application)
@@ -261,73 +227,97 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void FontIcon_DefaultFontFamily_IsSegoeFluent()
         {
-            var fontIcon = new Fluent.FontIcon();
+            RunOnStaThread(() =>
+            {
+                var fontIcon = new Fluent.FontIcon();
 
-            Assert.AreEqual("Segoe Fluent Icons", fontIcon.IconFontFamily.Source);
+                Assert.AreEqual("Segoe Fluent Icons", fontIcon.IconFontFamily.Source);
+            });
         }
 
         [TestMethod]
         public void FontIcon_GlyphProperty_Roundtrips()
         {
-            var fontIcon = new Fluent.FontIcon();
-            var testGlyph = "\uE710";
+            RunOnStaThread(() =>
+            {
+                var fontIcon = new Fluent.FontIcon();
+                var testGlyph = "\uE710";
 
-            fontIcon.Glyph = testGlyph;
+                fontIcon.Glyph = testGlyph;
 
-            Assert.AreEqual(testGlyph, fontIcon.Glyph);
+                Assert.AreEqual(testGlyph, fontIcon.Glyph);
+            });
         }
 
         [TestMethod]
         public void Button_DefaultAppearance_IsStandard()
         {
-            var button = new Fluent.Button();
+            RunOnStaThread(() =>
+            {
+                var button = new Fluent.Button();
 
-            Assert.AreEqual(ControlAppearance.Standard, button.Appearance);
+                Assert.AreEqual(ControlAppearance.Standard, button.Appearance);
+            });
         }
 
         [TestMethod]
         public void Button_AccentAppearance_CanBeSet()
         {
-            var button = new Fluent.Button();
+            RunOnStaThread(() =>
+            {
+                var button = new Fluent.Button();
 
-            button.Appearance = ControlAppearance.Accent;
+                button.Appearance = ControlAppearance.Accent;
 
-            Assert.AreEqual(ControlAppearance.Accent, button.Appearance);
+                Assert.AreEqual(ControlAppearance.Accent, button.Appearance);
+            });
         }
 
         [TestMethod]
         public void TextBox_PlaceholderText_Roundtrips()
         {
-            var textBox = new Fluent.TextBox();
-            var placeholder = "Enter text here...";
+            RunOnStaThread(() =>
+            {
+                var textBox = new Fluent.TextBox();
+                var placeholder = "Enter text here...";
 
-            textBox.PlaceholderText = placeholder;
+                textBox.PlaceholderText = placeholder;
 
-            Assert.AreEqual(placeholder, textBox.PlaceholderText);
+                Assert.AreEqual(placeholder, textBox.PlaceholderText);
+            });
         }
 
         [TestMethod]
         public void TextBox_ClearButtonEnabled_DefaultTrue()
         {
-            var textBox = new Fluent.TextBox();
+            RunOnStaThread(() =>
+            {
+                var textBox = new Fluent.TextBox();
 
-            Assert.IsTrue(textBox.ClearButtonEnabled);
+                Assert.IsTrue(textBox.ClearButtonEnabled);
+            });
         }
 
         [TestMethod]
         public void PasswordBox_RevealButtonEnabled_DefaultTrue()
         {
-            var passwordBox = new Fluent.PasswordBox();
+            RunOnStaThread(() =>
+            {
+                var passwordBox = new Fluent.PasswordBox();
 
-            Assert.IsTrue(passwordBox.RevealButtonEnabled);
+                Assert.IsTrue(passwordBox.RevealButtonEnabled);
+            });
         }
 
         [TestMethod]
         public void PasswordBox_IsPasswordRevealed_DefaultFalse()
         {
-            var passwordBox = new Fluent.PasswordBox();
+            RunOnStaThread(() =>
+            {
+                var passwordBox = new Fluent.PasswordBox();
 
-            Assert.IsFalse(passwordBox.IsPasswordRevealed);
+                Assert.IsFalse(passwordBox.IsPasswordRevealed);
+            });
         }
 
         [TestMethod]
@@ -491,17 +481,23 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ListView_ItemAnimationsEnabled_DefaultTrue()
         {
-            var listView = new Fluent.ListView();
+            RunOnStaThread(() =>
+            {
+                var listView = new Fluent.ListView();
 
-            Assert.IsTrue(listView.ItemAnimationsEnabled);
+                Assert.IsTrue(listView.ItemAnimationsEnabled);
+            });
         }
 
         [TestMethod]
         public void ListView_HoverHighlightEnabled_DefaultTrue()
         {
-            var listView = new Fluent.ListView();
+            RunOnStaThread(() =>
+            {
+                var listView = new Fluent.ListView();
 
-            Assert.IsTrue(listView.HoverHighlightEnabled);
+                Assert.IsTrue(listView.HoverHighlightEnabled);
+            });
         }
 
         [TestMethod]
@@ -640,11 +636,14 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void TextBlockExtensions_Typography_SetsCorrectFontSize()
         {
-            var textBlock = new TextBlock();
+            RunOnStaThread(() =>
+            {
+                var textBlock = new TextBlock();
 
-            Fluent.TextBlockExtensions.SetTypography(textBlock, FluentTypography.BodyLarge);
+                Fluent.TextBlockExtensions.SetTypography(textBlock, FluentTypography.BodyLarge);
 
-            Assert.AreEqual(18.0, textBlock.FontSize);
+                Assert.AreEqual(18.0, textBlock.FontSize);
+            });
         }
 
         [TestMethod]
@@ -920,11 +919,13 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
+                    SelectMainWindowNavPage(window, window.Dispatcher, "Window");
+
                     var accentSwatchButtons = FindVisualChildren<Fluent.Button>(window)
-                        .Where(b => b.Width == 32 && b.Height == 32)
+                        .Where(b => b.Tag is string hex && hex.Length > 0 && hex[0] == '#')
                         .ToList();
 
-                    Assert.IsTrue(accentSwatchButtons.Count >= 8, "Header should contain at least 8 accent swatch buttons.");
+                    Assert.IsTrue(accentSwatchButtons.Count >= 8, "Window page should expose at least 8 accent swatch buttons.");
                     foreach (var swatch in accentSwatchButtons)
                     {
                         Assert.IsInstanceOfType(swatch, typeof(Fluent.Button));
@@ -957,6 +958,8 @@ namespace Fluence.Wpf.Tests
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
+
+                    SelectMainWindowNavPage(window, window.Dispatcher, "Window");
 
                     Assert.IsInstanceOfType(FindVisualChildByName<Fluent.RadioButton>(window, "ThemeLight"), typeof(Fluent.RadioButton));
                     Assert.IsInstanceOfType(FindVisualChildByName<Fluent.RadioButton>(window, "ThemeDark"), typeof(Fluent.RadioButton));
@@ -992,6 +995,8 @@ namespace Fluence.Wpf.Tests
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
+
+                    SelectMainWindowNavPage(window, window.Dispatcher, "Window");
 
                     var themeDark = FindVisualChildByName<Fluent.RadioButton>(window, "ThemeDark");
                     var themeStateLabel = FindVisualChildByName<TextBlock>(window, "ThemeStateLabel");
@@ -1033,7 +1038,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    SelectMainWindowTab(window, window.Dispatcher, "Buttons & Links");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "Buttons");
 
                     var iconLeftButton = FindFluentButtonByContent(window, "Icon Left");
                     var iconRightButton = FindFluentButtonByContent(window, "Icon Right");
@@ -1073,7 +1078,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    SelectMainWindowTab(window, window.Dispatcher, "Buttons & Links");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "Buttons");
 
                     var iconLeftButton = FindFluentButtonByContent(window, "Icon Left");
                     var iconRightButton = FindFluentButtonByContent(window, "Icon Right");
@@ -1166,20 +1171,20 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    SelectMainWindowTab(window, window.Dispatcher, "Buttons & Links");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "Buttons");
                     Assert.IsNotNull(FindFluentButtonByContent(window, "Icon Left"));
 
-                    SelectMainWindowTab(window, window.Dispatcher, "Inputs");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "Inputs");
                     Assert.IsNotNull(FindVisualChildByName<Fluent.TextBox>(window, "CharCountTextBox"));
 
-                    SelectMainWindowTab(window, window.Dispatcher, "Selection & Toggles");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "Selection");
                     Assert.IsNotNull(FindVisualChildByName<Fluent.ToggleSwitch>(window, "DefaultToggle"));
-                    Assert.IsNotNull(FindVisualChildByName<Fluent.ComboBox>(window, "ThemeEnumCombo"));
+                    Assert.IsNotNull(FindVisualChildByName<Fluent.ComboBox>(window, "SelectionDemoCombo"));
 
-                    SelectMainWindowTab(window, window.Dispatcher, "Progress & Status");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "Status");
                     Assert.IsNotNull(FindVisualChildByName<Fluent.ProgressBar>(window, "StepProgressBar"));
 
-                    SelectMainWindowTab(window, window.Dispatcher, "Typography");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "Data");
                     Assert.IsNotNull(FindVisualChildByName<TextBlock>(window, "FontDetectionLabel"));
                 }
                 finally
@@ -1195,7 +1200,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void MainWindow_TabControl_Has8Items()
+        public void MainWindow_NavigationView_HasElevenNavItems()
         {
             RunOnStaThread(() =>
             {
@@ -1210,9 +1215,18 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var tabs = window.FindName("DemoTabs") as TabControl;
-                    Assert.IsNotNull(tabs);
-                    Assert.AreEqual(8, tabs.Items.Count, "Demo tab control should have 8 tabs.");
+                    var nav = window.FindName("DemoNav") as Fluent.NavigationView;
+                    Assert.IsNotNull(nav);
+                    var count = 0;
+                    foreach (var obj in nav.Items)
+                    {
+                        if (obj is Fluent.NavigationViewItem)
+                        {
+                            count++;
+                        }
+                    }
+
+                    Assert.AreEqual(11, count, "Demo navigation should expose 11 pages, including the Tabs page.");
                 }
                 finally
                 {
@@ -1242,9 +1256,9 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Assert.AreEqual(CaptionButtonOverride.Default, window.MinimizeButtonOverride);
-                    Assert.AreEqual(CaptionButtonOverride.Default, window.MaximizeButtonOverride);
-                    Assert.AreEqual(CaptionButtonOverride.Default, window.CloseButtonOverride);
+                    Assert.IsTrue(window.IsMinimizable);
+                    Assert.IsTrue(window.IsMaximizable);
+                    Assert.IsTrue(window.IsClosable);
 
                     var closeButton = window.Template.FindName("CloseButton", window) as Button;
                     Assert.IsNotNull(closeButton);
@@ -1277,6 +1291,8 @@ namespace Fluence.Wpf.Tests
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
+
+                    SelectMainWindowNavPage(window, window.Dispatcher, "Window");
 
                     var toggle = FindVisualChildByName<Fluent.ToggleSwitch>(window, "ThemeWatcherToggle");
                     var label = FindVisualChildByName<TextBlock>(window, "SystemThemeLabel");
@@ -1320,7 +1336,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    SelectMainWindowTab(window, window.Dispatcher, "Buttons & Links");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "Buttons");
 
                     var button = FindFluentButtonByContent(window, "Icon Left");
                     Assert.IsNotNull(button, "Buttons page should contain an 'Icon Left' button.");
@@ -1362,7 +1378,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    SelectMainWindowTab(window, window.Dispatcher, "Buttons & Links");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "Buttons");
 
                     var iconLeftButton = FindFluentButtonByContent(window, "Icon Left");
                     var iconRightButton = FindFluentButtonByContent(window, "Icon Right");
@@ -1388,29 +1404,41 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void Stage3_Card_DefaultVariant_IsDefault()
         {
-            var card = new Fluent.Card();
-            Assert.AreEqual(CardVariant.Default, card.Variant);
+            RunOnStaThread(() =>
+            {
+                var card = new Fluent.Card();
+                Assert.AreEqual(CardVariant.Default, card.Variant);
+            });
         }
 
         [TestMethod]
         public void Stage3_Card_IsClickable_ExposesIsPressed()
         {
-            var card = new Fluent.Card { IsClickable = true };
-            Assert.IsFalse(card.IsPressed);
+            RunOnStaThread(() =>
+            {
+                var card = new Fluent.Card { IsClickable = true };
+                Assert.IsFalse(card.IsPressed);
+            });
         }
 
         [TestMethod]
         public void Stage3_CheckBox_Content_Roundtrips()
         {
-            var cb = new Fluent.CheckBox { Content = "Test" };
-            Assert.AreEqual("Test", cb.Content as string);
+            RunOnStaThread(() =>
+            {
+                var cb = new Fluent.CheckBox { Content = "Test" };
+                Assert.AreEqual("Test", cb.Content as string);
+            });
         }
 
         [TestMethod]
         public void Stage3_ComboBox_PlaceholderText_Roundtrips()
         {
-            var combo = new Fluent.ComboBox { PlaceholderText = "Pick one" };
-            Assert.AreEqual("Pick one", combo.PlaceholderText);
+            RunOnStaThread(() =>
+            {
+                var combo = new Fluent.ComboBox { PlaceholderText = "Pick one" };
+                Assert.AreEqual("Pick one", combo.PlaceholderText);
+            });
         }
 
         [TestMethod]
@@ -1505,7 +1533,8 @@ namespace Fluence.Wpf.Tests
                 var combo = new Fluent.ComboBox
                 {
                     Width = 240,
-                    PlaceholderText = "Choose..."
+                    PlaceholderText = "Choose...",
+                    SelectedIndex = -1
                 };
                 combo.Items.Add(new ComboBoxItem { Content = "Alpha" });
 
@@ -1518,7 +1547,7 @@ namespace Fluence.Wpf.Tests
 
                     var placeholder = combo.Template.FindName("PlaceholderTextBlock", combo) as TextBlock;
                     Assert.IsNotNull(placeholder, "PlaceholderTextBlock should exist in the template.");
-                    Assert.AreEqual(Visibility.Visible, placeholder.Visibility, "Placeholder should be visible when nothing is selected.");
+                    Assert.AreEqual(Visibility.Visible, placeholder.Visibility, "Placeholder should be visible when SelectedIndex is explicitly -1.");
 
                     combo.SelectedIndex = 0;
                     DrainDispatcher(window.Dispatcher);
@@ -1668,85 +1697,121 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void Stage3_ProgressBar_ProgressMode_DefaultIsStandard()
         {
-            var bar = new Fluent.ProgressBar();
-            Assert.AreEqual(ProgressBarMode.Standard, bar.ProgressMode);
+            RunOnStaThread(() =>
+            {
+                var bar = new Fluent.ProgressBar();
+                Assert.AreEqual(ProgressBarMode.Standard, bar.ProgressMode);
+            });
         }
 
         [TestMethod]
         public void Stage3_Border_Variant_DefaultIsNone()
         {
-            var border = new Fluent.Border();
-            Assert.AreEqual(BorderVariant.None, border.Variant);
+            RunOnStaThread(() =>
+            {
+                var border = new Fluent.Border();
+                Assert.AreEqual(BorderVariant.None, border.Variant);
+            });
         }
 
         [TestMethod]
         public void Stage3_StackPanel_Spacing_DefaultZero()
         {
-            var panel = new Fluent.StackPanel();
-            Assert.AreEqual(0.0, panel.Spacing);
+            RunOnStaThread(() =>
+            {
+                var panel = new Fluent.StackPanel();
+                Assert.AreEqual(0.0, panel.Spacing);
+            });
         }
 
         [TestMethod]
         public void Stage3_DockPanel_LastChildFill_DefaultTrue()
         {
-            var dock = new Fluent.DockPanel();
-            Assert.IsTrue(dock.LastChildFill);
+            RunOnStaThread(() =>
+            {
+                var dock = new Fluent.DockPanel();
+                Assert.IsTrue(dock.LastChildFill);
+            });
         }
 
         [TestMethod]
         public void Stage3_TextBox_ValidationState_DefaultNone()
         {
-            var tb = new Fluent.TextBox();
-            Assert.AreEqual(ValidationState.None, tb.ValidationState);
+            RunOnStaThread(() =>
+            {
+                var tb = new Fluent.TextBox();
+                Assert.AreEqual(ValidationState.None, tb.ValidationState);
+            });
         }
 
         [TestMethod]
         public void Stage3_TextBox_HelperText_Roundtrips()
         {
-            var tb = new Fluent.TextBox { HelperText = "Hint" };
-            Assert.AreEqual("Hint", tb.HelperText);
+            RunOnStaThread(() =>
+            {
+                var tb = new Fluent.TextBox { HelperText = "Hint" };
+                Assert.AreEqual("Hint", tb.HelperText);
+            });
         }
 
         [TestMethod]
         public void Stage3_PasswordBox_ShowCapsLockIndicator_DefaultTrue()
         {
-            var pb = new Fluent.PasswordBox();
-            Assert.IsTrue(pb.ShowCapsLockIndicator);
+            RunOnStaThread(() =>
+            {
+                var pb = new Fluent.PasswordBox();
+                Assert.IsTrue(pb.ShowCapsLockIndicator);
+            });
         }
 
         [TestMethod]
         public void Stage3_PasswordBox_ComputesPasswordStrength()
         {
-            var pb = new Fluent.PasswordBox { Password = "Aa1!aaaaaa" };
-            Assert.IsTrue(pb.PasswordStrength >= 3);
+            RunOnStaThread(() =>
+            {
+                var pb = new Fluent.PasswordBox { Password = "Aa1!aaaaaa" };
+                Assert.IsTrue(pb.PasswordStrength >= 3);
+            });
         }
 
         [TestMethod]
         public void Stage3_ListView_EmptyContent_DefaultNull()
         {
-            var list = new Fluent.ListView();
-            Assert.IsNull(list.EmptyContent);
+            RunOnStaThread(() =>
+            {
+                var list = new Fluent.ListView();
+                Assert.IsNull(list.EmptyContent);
+            });
         }
 
         [TestMethod]
         public void Stage3_FontIcon_Rotation_Roundtrips()
         {
-            var icon = new Fluent.FontIcon { Rotation = 33 };
-            Assert.AreEqual(33.0, icon.Rotation);
+            RunOnStaThread(() =>
+            {
+                var icon = new Fluent.FontIcon { Rotation = 33 };
+                Assert.AreEqual(33.0, icon.Rotation);
+            });
         }
 
         [TestMethod]
         public void Stage3_FontIcon_IsSpinning_Roundtrips()
         {
-            var icon = new Fluent.FontIcon { IsSpinning = true };
-            Assert.IsTrue(icon.IsSpinning);
+            RunOnStaThread(() =>
+            {
+                var icon = new Fluent.FontIcon { IsSpinning = true };
+                Assert.IsTrue(icon.IsSpinning);
+            });
         }
 
         [TestMethod]
         public void Stage3_FontIcon_EnableTransitions_DefaultTrue()
         {
-            var icon = new Fluent.FontIcon();
-            Assert.IsTrue(icon.EnableTransitions);
+            RunOnStaThread(() =>
+            {
+                var icon = new Fluent.FontIcon();
+                Assert.IsTrue(icon.EnableTransitions);
+            });
         }
 
         [TestMethod]
@@ -1891,7 +1956,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    SelectMainWindowTab(window, window.Dispatcher, "Progress & Status");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "Status");
 
                     var slider = FindVisualChildByName<Fluent.Slider>(window, "ProgressSlider");
                     var label = FindVisualChildByName<TextBlock>(window, "SliderValueLabel");
@@ -1917,7 +1982,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void MainWindow_ThemeEnumCombo_SelectionUpdatesIndex()
+        public void MainWindow_SelectionDemoCombo_SelectionUpdatesIndex()
         {
             RunOnStaThread(() =>
             {
@@ -1932,17 +1997,17 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    SelectMainWindowTab(window, window.Dispatcher, "Selection & Toggles");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "Selection");
 
-                    var combo = FindVisualChildByName<Fluent.ComboBox>(window, "ThemeEnumCombo");
-                    Assert.IsNotNull(combo, "ThemeEnumCombo should exist on the Selection & Toggles tab.");
-                    Assert.AreEqual(4, combo.Items.Count, "ThemeEnumCombo should have 4 items (Light, Dark, HighContrast, Auto).");
+                    var combo = FindVisualChildByName<Fluent.ComboBox>(window, "SelectionDemoCombo");
+                    Assert.IsNotNull(combo, "SelectionDemoCombo should exist on the Selection page.");
+                    Assert.AreEqual(3, combo.Items.Count, "SelectionDemoCombo should list three items.");
 
                     combo.SelectedIndex = 1;
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Assert.AreEqual(1, combo.SelectedIndex, "ThemeEnumCombo selection should persist after layout.");
+                    Assert.AreEqual(1, combo.SelectedIndex, "SelectionDemoCombo selection should persist after layout.");
                 }
                 finally
                 {
@@ -2390,7 +2455,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void DemoMainWindow_SelectingControlsTab_DoesNotThrow()
+        public void DemoMainWindow_SelectingNavPage_DoesNotThrow()
         {
             RunOnStaThread(() =>
             {
@@ -2408,11 +2473,11 @@ namespace Fluence.Wpf.Tests
                     window.Show();
                     window.UpdateLayout();
 
-                    var tabs = window.FindName("DemoTabs") as TabControl;
-                    Assert.IsNotNull(tabs);
+                    var nav = window.FindName("DemoNav") as Fluent.NavigationView;
+                    Assert.IsNotNull(nav);
 
-                    SelectMainWindowTab(window, window.Dispatcher, "Buttons & Links");
-                    Assert.AreEqual(3, tabs.SelectedIndex);
+                    SelectMainWindowNavPage(window, window.Dispatcher, "Buttons");
+                    Assert.IsNotNull(nav.SelectedItem);
                 }
                 finally
                 {
@@ -2426,26 +2491,27 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        private static void SelectMainWindowTab(MainWindow window, Dispatcher dispatcher, string header)
+        private static void SelectMainWindowNavPage(MainWindow window, Dispatcher dispatcher, string itemContent)
         {
-            var tabs = window.FindName("DemoTabs") as TabControl;
-            Assert.IsNotNull(tabs, "Main window should expose DemoTabs.");
+            var nav = window.FindName("DemoNav") as Fluent.NavigationView;
+            Assert.IsNotNull(nav, "Main window should expose DemoNav.");
 
-            var targetIndex = -1;
-            for (var i = 0; i < tabs.Items.Count; i++)
+            foreach (var obj in nav.Items)
             {
-                var tabItem = tabs.Items[i] as TabItem;
-                if (tabItem != null && string.Equals(tabItem.Header as string, header, StringComparison.Ordinal))
+                var nvi = obj as Fluent.NavigationViewItem;
+                if (nvi != null && string.Equals(nvi.Content as string, itemContent, StringComparison.Ordinal))
                 {
-                    targetIndex = i;
-                    break;
+                    nav.SelectedItem = nvi;
+                    DrainDispatcher(dispatcher);
+                    dispatcher.Invoke(new Action(delegate { }), DispatcherPriority.Loaded);
+                    dispatcher.Invoke(new Action(delegate { }), DispatcherPriority.ContextIdle);
+                    window.UpdateLayout();
+                    DrainDispatcher(dispatcher);
+                    return;
                 }
             }
 
-            Assert.IsTrue(targetIndex >= 0, string.Format("Tab '{0}' should exist.", header));
-            tabs.SelectedIndex = targetIndex;
-            DrainDispatcher(dispatcher);
-            window.UpdateLayout();
+            Assert.Fail(string.Format("Navigation item '{0}' should exist.", itemContent));
         }
 
         private static void AssertButtonShowsGlyph(Fluent.Button button, string glyph)

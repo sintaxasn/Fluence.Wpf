@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,9 @@ namespace Fluence.Wpf.Native
 
         // Window Messages
         public const int WM_NCHITTEST = 0x0084;
+        public const int WM_NCLBUTTONUP = 0x00A2;
         public const int WM_NCCALCSIZE = 0x0083;
+        public const int WM_NCMOUSELEAVE = 0x02A2;
         public const int WM_GETMINMAXINFO = 0x0024;
         public const int WM_SETTINGCHANGE = 0x001A;
         public const int WM_SYSCOLORCHANGE = 0x0015;
@@ -81,6 +83,9 @@ namespace Fluence.Wpf.Native
         public const int HTBOTTOMRIGHT = 17;
         public const int HTCLOSE = 20;
 
+        // Monitor Defaults
+        public const uint MONITOR_DEFAULTTONEAREST = 2;
+
         // DWM Boolean Values
         public const int DWM_TRUE = 1;
         public const int DWM_FALSE = 0;
@@ -96,5 +101,8 @@ namespace Fluence.Wpf.Native
         public const string ColorPrevalence = "ColorPrevalence";
         public const string AccentPalette = "AccentPalette";
         public const string AccentColor = "AccentColor";
+        public const string AccentColorInactive = "AccentColorInactive";
+        public const string ColorizationColor = "ColorizationColor";
+        public const string ColorizationColorBalance = "ColorizationColorBalance";
     }
 }

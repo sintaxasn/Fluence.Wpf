@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -151,11 +151,21 @@ namespace Fluence.Wpf.Controls
                 typeof(TextBlockExtensions),
                 new FrameworkPropertyMetadata(TextTrimming.None, OnTextTrimmingChanged));
 
+        /// <summary>
+        /// Gets the value of the <see cref="TextTrimmingProperty"/> attached property for the specified object.
+        /// </summary>
+        /// <param name="obj">The target <see cref="System.Windows.Controls.TextBlock"/>.</param>
+        /// <returns>The requested text trimming mode.</returns>
         public static TextTrimming GetTextTrimming(DependencyObject obj)
         {
             return (TextTrimming)obj.GetValue(TextTrimmingProperty);
         }
 
+        /// <summary>
+        /// Sets the value of the <see cref="TextTrimmingProperty"/> attached property for the specified object.
+        /// </summary>
+        /// <param name="obj">The target <see cref="System.Windows.Controls.TextBlock"/>.</param>
+        /// <param name="value">The text trimming mode to apply.</param>
         public static void SetTextTrimming(DependencyObject obj, TextTrimming value)
         {
             obj.SetValue(TextTrimmingProperty, value);
@@ -186,11 +196,21 @@ namespace Fluence.Wpf.Controls
                 typeof(TextBlockExtensions),
                 new FrameworkPropertyMetadata(false, OnIsTextSelectionEnabledChanged));
 
+        /// <summary>
+        /// Gets the value of the <see cref="IsTextSelectionEnabledProperty"/> attached property for the specified object.
+        /// </summary>
+        /// <param name="obj">The target <see cref="System.Windows.Controls.TextBlock"/>.</param>
+        /// <returns><c>true</c> if selection is enabled; otherwise <c>false</c>.</returns>
         public static bool GetIsTextSelectionEnabled(DependencyObject obj)
         {
             return (bool)obj.GetValue(IsTextSelectionEnabledProperty);
         }
 
+        /// <summary>
+        /// Sets the value of the <see cref="IsTextSelectionEnabledProperty"/> attached property for the specified object.
+        /// </summary>
+        /// <param name="obj">The target <see cref="System.Windows.Controls.TextBlock"/>.</param>
+        /// <param name="value"><c>true</c> to enable text selection; otherwise <c>false</c>.</param>
         public static void SetIsTextSelectionEnabled(DependencyObject obj, bool value)
         {
             obj.SetValue(IsTextSelectionEnabledProperty, value);

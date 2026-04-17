@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -63,6 +63,10 @@ namespace Fluence.Wpf
         private static Color _systemAccentColorSecondary;
         private static Color _systemAccentColorTertiary;
 
+        private static Color _titleBarActiveColor;
+        private static Color _titleBarInactiveColor;
+        private static Color _windowBorderColor;
+
         private static bool _useSystemAccent = true;
 
         /// <summary>
@@ -92,51 +96,99 @@ namespace Fluence.Wpf
             get { return _systemAccentColorLight1; }
         }
 
+        /// <summary>
+        /// Gets the second lightest tint on the generated accent ramp.
+        /// </summary>
         public static Color SystemAccentColorLight2
         {
             get { return _systemAccentColorLight2; }
         }
 
+        /// <summary>
+        /// Gets the lightest tint on the generated accent ramp.
+        /// </summary>
         public static Color SystemAccentColorLight3
         {
             get { return _systemAccentColorLight3; }
         }
 
+        /// <summary>
+        /// Gets the first dark shade on the generated accent ramp.
+        /// </summary>
         public static Color SystemAccentColorDark1
         {
             get { return _systemAccentColorDark1; }
         }
 
+        /// <summary>
+        /// Gets the second dark shade on the generated accent ramp.
+        /// </summary>
         public static Color SystemAccentColorDark2
         {
             get { return _systemAccentColorDark2; }
         }
 
+        /// <summary>
+        /// Gets the darkest shade on the generated accent ramp.
+        /// </summary>
         public static Color SystemAccentColorDark3
         {
             get { return _systemAccentColorDark3; }
         }
 
+        /// <summary>
+        /// Gets the primary accent color used for emphasis surfaces.
+        /// </summary>
         public static Color SystemAccentColorPrimary
         {
             get { return _systemAccentColorPrimary; }
         }
 
+        /// <summary>
+        /// Gets the secondary accent color used for layered emphasis.
+        /// </summary>
         public static Color SystemAccentColorSecondary
         {
             get { return _systemAccentColorSecondary; }
         }
 
+        /// <summary>
+        /// Gets the tertiary accent color used for subtle accent fills.
+        /// </summary>
         public static Color SystemAccentColorTertiary
         {
             get { return _systemAccentColorTertiary; }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether Windows is configured to show accent color on title bars and window borders.
+        /// </summary>
         public static bool IsAccentColorOnTitleBarsEnabled
         {
             get { return RegistryHelper.GetColorPrevalence(); }
         }
 
+        /// <summary>Gets the active titlebar color (from DWM AccentColor or default gray).</summary>
+        public static Color TitleBarActiveColor
+        {
+            get { return _titleBarActiveColor; }
+        }
+
+        /// <summary>Gets the inactive titlebar color (from DWM AccentColorInactive or default gray).</summary>
+        public static Color TitleBarInactiveColor
+        {
+            get { return _titleBarInactiveColor; }
+        }
+
+        /// <summary>Gets the window border color (titlebar active on Win11, blended on Win10).</summary>
+        public static Color WindowBorderColor
+        {
+            get { return _windowBorderColor; }
+        }
+
+        /// <summary>
+        /// Loads the current Windows accent palette from the registry or DWM and updates application resources.
+        /// </summary>
         public static void ApplySystemAccent()
         {
             _useSystemAccent = true;
@@ -167,11 +219,18 @@ namespace Fluence.Wpf
             UpdateResources();
         }
 
+        /// <summary>
+        /// Applies the default application accent (Windows blue) and regenerates the accent ramp.
+        /// </summary>
         public static void ApplyApplicationAccent()
         {
             ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
         }
 
+        /// <summary>
+        /// Applies a custom base accent color and regenerates the accent ramp and theme resources.
+        /// </summary>
+        /// <param name="color">The accent color to use as the ramp base.</param>
         public static void ApplyCustomAccent(Color color)
         {
             _useSystemAccent = false;
@@ -199,6 +258,60 @@ namespace Fluence.Wpf
             }
 
             UpdateResources();
+            UpdateTextOnAccentColors(resolvedTheme);
+        }
+
+        private static void UpdateAccentTextBrushes(ResourceDictionary resources)
+        {
+            bool isDark = ApplicationThemeManager.GetResolvedTheme() == ApplicationTheme.Dark;
+
+            Color primary = isDark ? _systemAccentColorLight3 : _systemAccentColorDark2;
+            Color secondary = isDark ? _systemAccentColorLight3 : _systemAccentColorDark3;
+            Color tertiary = isDark ? _systemAccentColorLight2 : _systemAccentColorDark1;
+            Color disabled = isDark ? Color.FromArgb(0x5D, 0xFF, 0xFF, 0xFF) : Color.FromArgb(0x5C, 0x00, 0x00, 0x00);
+
+            resources["AccentTextFillColorPrimaryBrush"] = new SolidColorBrush(primary);
+            resources["AccentTextFillColorSecondaryBrush"] = new SolidColorBrush(secondary);
+            resources["AccentTextFillColorTertiaryBrush"] = new SolidColorBrush(tertiary);
+            resources["AccentTextFillColorDisabled"] = disabled;
+            resources["AccentTextFillColorDisabledBrush"] = new SolidColorBrush(disabled);
+        }
+
+        private static void UpdateTextOnAccentColors(ApplicationTheme resolvedTheme)
+        {
+            if (Application.Current == null)
+            {
+                return;
+            }
+
+            var resources = Application.Current.Resources;
+
+            bool useWhite = HsvColorHelper.ShouldUseWhiteText(_systemAccentColorPrimary);
+
+            Color primary;
+            Color secondary;
+            Color disabled;
+
+            if (useWhite)
+            {
+                primary = Color.FromArgb(0xFF, 0xFF, 0xFF, 0xFF);
+                secondary = Color.FromArgb(0xB3, 0xFF, 0xFF, 0xFF);
+                disabled = Color.FromArgb(0xFF, 0xFF, 0xFF, 0xFF);
+            }
+            else
+            {
+                primary = Color.FromArgb(0xFF, 0x00, 0x00, 0x00);
+                secondary = Color.FromArgb(0x80, 0x00, 0x00, 0x00);
+                disabled = Color.FromArgb(0x87, 0xFF, 0xFF, 0xFF);
+            }
+
+            resources["TextOnAccentFillColorPrimary"] = primary;
+            resources["TextOnAccentFillColorSecondary"] = secondary;
+            resources["TextOnAccentFillColorDisabled"] = disabled;
+
+            resources["TextOnAccentFillColorPrimaryBrush"] = new SolidColorBrush(primary);
+            resources["TextOnAccentFillColorSecondaryBrush"] = new SolidColorBrush(secondary);
+            resources["TextOnAccentFillColorDisabledBrush"] = new SolidColorBrush(disabled);
         }
 
         internal static void RefreshAccent()
@@ -217,12 +330,14 @@ namespace Fluence.Wpf
 
         private static void GenerateAccentRamp(Color baseColor)
         {
-            _systemAccentColorLight1 = HsvColorHelper.GetLightVariant(baseColor, 1);
-            _systemAccentColorLight2 = HsvColorHelper.GetLightVariant(baseColor, 2);
-            _systemAccentColorLight3 = HsvColorHelper.GetLightVariant(baseColor, 3);
-            _systemAccentColorDark1 = HsvColorHelper.GetDarkVariant(baseColor, 1);
-            _systemAccentColorDark2 = HsvColorHelper.GetDarkVariant(baseColor, 2);
-            _systemAccentColorDark3 = HsvColorHelper.GetDarkVariant(baseColor, 3);
+            HsvColorHelper.GenerateAccentRampWinaccent(
+                baseColor,
+                out _systemAccentColorLight1,
+                out _systemAccentColorLight2,
+                out _systemAccentColorLight3,
+                out _systemAccentColorDark1,
+                out _systemAccentColorDark2,
+                out _systemAccentColorDark3);
         }
 
         private static Color GetAccentFromDwm()
@@ -286,11 +401,80 @@ namespace Fluence.Wpf
             resources["AccentFillColorSecondaryBrush"] = new SolidColorBrush(HsvColorHelper.WithAlpha(_systemAccentColorPrimary, 0xE6));
             resources["AccentFillColorTertiaryBrush"] = new SolidColorBrush(HsvColorHelper.WithAlpha(_systemAccentColorPrimary, 0xCC));
 
-            resources["AccentTextFillColorPrimaryBrush"] = new SolidColorBrush(_systemAccentColorSecondary);
-            resources["AccentTextFillColorSecondaryBrush"] = new SolidColorBrush(_systemAccentColorTertiary);
-            resources["AccentTextFillColorTertiaryBrush"] = new SolidColorBrush(_systemAccentColorPrimary);
+            UpdateAccentTextBrushes(resources);
+            UpdateTitleBarColors(resources);
 
             OnAccentColorChanged();
+        }
+
+        private static void UpdateTitleBarColors(ResourceDictionary resources)
+        {
+            bool colorPrevalence = RegistryHelper.GetColorPrevalence();
+            bool isDark = ApplicationThemeManager.GetResolvedTheme() == ApplicationTheme.Dark;
+
+            if (colorPrevalence)
+            {
+                Color dwmAccent;
+                if (RegistryHelper.TryGetDwmAccentColor(out dwmAccent))
+                {
+                    _titleBarActiveColor = dwmAccent;
+                }
+                else
+                {
+                    _titleBarActiveColor = _systemAccentColor;
+                }
+
+                Color inactive;
+                if (RegistryHelper.TryGetDwmAccentColorInactive(out inactive))
+                {
+                    _titleBarInactiveColor = inactive;
+                }
+                else
+                {
+                    _titleBarInactiveColor = isDark
+                        ? Color.FromRgb(0x2B, 0x2B, 0x2B)
+                        : Color.FromRgb(0xFF, 0xFF, 0xFF);
+                }
+            }
+            else
+            {
+                _titleBarActiveColor = isDark
+                    ? Color.FromRgb(0x2B, 0x2B, 0x2B)
+                    : Color.FromRgb(0xFF, 0xFF, 0xFF);
+                _titleBarInactiveColor = isDark
+                    ? Color.FromRgb(0x2B, 0x2B, 0x2B)
+                    : Color.FromRgb(0xFF, 0xFF, 0xFF);
+            }
+
+            bool isWin11 = Environment.OSVersion.Version.Build >= 22000;
+            if (isWin11)
+            {
+                _windowBorderColor = _titleBarActiveColor;
+            }
+            else
+            {
+                Color colorizationColor;
+                int balance;
+                if (RegistryHelper.TryGetColorizationBalance(out colorizationColor, out balance))
+                {
+                    _windowBorderColor = HsvColorHelper.BlendColors(
+                        colorizationColor,
+                        Color.FromRgb(0xD9, 0xD9, 0xD9),
+                        balance);
+                }
+                else
+                {
+                    _windowBorderColor = _titleBarActiveColor;
+                }
+            }
+
+            resources["TitleBarActiveColor"] = _titleBarActiveColor;
+            resources["TitleBarInactiveColor"] = _titleBarInactiveColor;
+            resources["WindowBorderColor"] = _windowBorderColor;
+
+            resources["TitleBarActiveColorBrush"] = new SolidColorBrush(_titleBarActiveColor);
+            resources["TitleBarInactiveColorBrush"] = new SolidColorBrush(_titleBarInactiveColor);
+            resources["WindowBorderColorBrush"] = new SolidColorBrush(_windowBorderColor);
         }
 
         private static void OnAccentColorChanged()

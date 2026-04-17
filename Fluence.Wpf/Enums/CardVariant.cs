@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,9 +32,13 @@ namespace Fluence.Wpf
     /// </summary>
     public enum CardVariant
     {
+        /// <summary>Default card elevation and stroke.</summary>
         Default,
+        /// <summary>Outlined card with transparent fill.</summary>
         Outlined,
+        /// <summary>Solid filled card surface.</summary>
         Filled,
+        /// <summary>Low-contrast subtle card surface.</summary>
         Subtle
     }
 }

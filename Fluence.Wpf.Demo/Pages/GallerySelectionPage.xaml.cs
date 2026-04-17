@@ -25,23 +25,35 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-namespace Fluence.Wpf
+using System.Windows;
+using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages
 {
-    /// <summary>
-    /// Explicit per-button caption chrome behavior for <see cref="Fluence.Wpf.Controls.FluentWindow"/>.
-    /// <see cref="Default"/> follows <see cref="System.Windows.Window.ResizeMode"/> and window state.
-    /// </summary>
-    public enum CaptionButtonOverride
+    public partial class GallerySelectionPage : UserControl
     {
-        Default = 0,
+        public GallerySelectionPage()
+        {
+            InitializeComponent();
+            Loaded += GallerySelectionPage_Loaded;
+        }
 
-        /// <summary>Show the button and allow interaction when the window chrome allows it.</summary>
-        Enable = 1,
+        private void GallerySelectionPage_Loaded(object sender, RoutedEventArgs e)
+        {
+            Loaded -= GallerySelectionPage_Loaded;
+            DefaultToggle_Changed(null, null);
+        }
 
-        /// <summary>Show the button but keep it inactive.</summary>
-        Disable = 2,
+        private void DefaultToggle_Changed(object sender, RoutedEventArgs e)
+        {
+            if (ToggleStateLabel == null || DefaultToggle == null)
+            {
+                return;
+            }
 
-        /// <summary>Hide the button.</summary>
-        Hide = 3
+            ToggleStateLabel.Text = string.Format(
+                "Default toggle: {0}",
+                DefaultToggle.IsChecked == true ? "On" : "Off");
+        }
     }
 }

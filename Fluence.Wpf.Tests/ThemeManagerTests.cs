@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,128 +26,138 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 using System;
-using System.Threading;
 using System.Windows;
 using System.Windows.Media;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Fluence.Wpf;
 
 namespace Fluence.Wpf.Tests
 {
     [TestClass]
     public class ThemeManagerTests
     {
-        private static Application _app;
-
-        [ClassInitialize]
-        public static void ClassInitialize(TestContext context)
-        {
-            if (Application.Current == null)
-            {
-                _app = new Application();
-                _app.ShutdownMode = ShutdownMode.OnExplicitShutdown;
-            }
-            else
-            {
-                _app = Application.Current;
-            }
-        }
-
         [TestInitialize]
         public void TestInitialize()
         {
-            ApplicationThemeManager.ResetForTesting();
-            ApplicationAccentColorManager.ResetForTesting();
-            _app.Resources.MergedDictionaries.Clear();
+            WpfTestSta.Invoke(() =>
+            {
+                WpfTestSta.EnsureApplication();
+                ApplicationThemeManager.ResetForTesting();
+                ApplicationAccentColorManager.ResetForTesting();
+                Application.Current.Resources.MergedDictionaries.Clear();
+            });
         }
 
         [TestMethod]
         public void Apply_Light_TextBrushIsDarkOnLight()
         {
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
+            WpfTestSta.Invoke(() =>
+            {
+                var app = Application.Current;
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
 
-            var textColor = _app.Resources["TextFillColorPrimary"] as Color?;
-            Assert.IsNotNull(textColor, "TextFillColorPrimary should be defined");
+                var textColor = app.Resources["TextFillColorPrimary"] as Color?;
+                Assert.IsNotNull(textColor, "TextFillColorPrimary should be defined");
 
-            Assert.AreEqual((byte)0xE4, textColor.Value.A, "Alpha should be 0xE4");
-            Assert.AreEqual((byte)0x00, textColor.Value.R, "Red should be 0x00");
-            Assert.AreEqual((byte)0x00, textColor.Value.G, "Green should be 0x00");
-            Assert.AreEqual((byte)0x00, textColor.Value.B, "Blue should be 0x00");
+                Assert.AreEqual((byte)0xE4, textColor.Value.A, "Alpha should be 0xE4");
+                Assert.AreEqual((byte)0x00, textColor.Value.R, "Red should be 0x00");
+                Assert.AreEqual((byte)0x00, textColor.Value.G, "Green should be 0x00");
+                Assert.AreEqual((byte)0x00, textColor.Value.B, "Blue should be 0x00");
+            });
         }
 
         [TestMethod]
         public void Apply_Dark_TextBrushIsLightOnDark()
         {
-            ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, false);
+            WpfTestSta.Invoke(() =>
+            {
+                var app = Application.Current;
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, false);
 
-            var textColor = _app.Resources["TextFillColorPrimary"] as Color?;
-            Assert.IsNotNull(textColor, "TextFillColorPrimary should be defined");
+                var textColor = app.Resources["TextFillColorPrimary"] as Color?;
+                Assert.IsNotNull(textColor, "TextFillColorPrimary should be defined");
 
-            Assert.AreEqual((byte)0xFF, textColor.Value.A, "Alpha should be 0xFF");
-            Assert.AreEqual((byte)0xFF, textColor.Value.R, "Red should be 0xFF");
-            Assert.AreEqual((byte)0xFF, textColor.Value.G, "Green should be 0xFF");
-            Assert.AreEqual((byte)0xFF, textColor.Value.B, "Blue should be 0xFF");
+                Assert.AreEqual((byte)0xFF, textColor.Value.A, "Alpha should be 0xFF");
+                Assert.AreEqual((byte)0xFF, textColor.Value.R, "Red should be 0xFF");
+                Assert.AreEqual((byte)0xFF, textColor.Value.G, "Green should be 0xFF");
+                Assert.AreEqual((byte)0xFF, textColor.Value.B, "Blue should be 0xFF");
+            });
         }
 
         [TestMethod]
         public void Apply_HighContrast_UsesSystemColors()
         {
-            ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, false);
+            WpfTestSta.Invoke(() =>
+            {
+                var app = Application.Current;
+                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, false);
 
-            var brush = _app.Resources["TextFillColorPrimaryBrush"] as SolidColorBrush;
-            Assert.IsNotNull(brush, "TextFillColorPrimaryBrush should be defined");
+                var brush = app.Resources["TextFillColorPrimaryBrush"] as SolidColorBrush;
+                Assert.IsNotNull(brush, "TextFillColorPrimaryBrush should be defined");
+            });
         }
 
         [TestMethod]
         public void Apply_FiresChangedExactlyOnce()
         {
-            int eventCount = 0;
-            EventHandler<ThemeChangedEventArgs> handler = (s, e) => eventCount++;
+            WpfTestSta.Invoke(() =>
+            {
+                int eventCount = 0;
+                EventHandler<ThemeChangedEventArgs> handler = (s, e) => eventCount++;
 
-            ApplicationThemeManager.Changed += handler;
-            try
-            {
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
-                Assert.AreEqual(1, eventCount, "Changed event should fire exactly once");
-            }
-            finally
-            {
-                ApplicationThemeManager.Changed -= handler;
-            }
+                ApplicationThemeManager.Changed += handler;
+                try
+                {
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
+                    Assert.AreEqual(1, eventCount, "Changed event should fire exactly once");
+                }
+                finally
+                {
+                    ApplicationThemeManager.Changed -= handler;
+                }
+            });
         }
 
         [TestMethod]
         public void TwoRapidApplies_FiresExactlyTwoEvents()
         {
-            int eventCount = 0;
-            EventHandler<ThemeChangedEventArgs> handler = (s, e) => eventCount++;
+            WpfTestSta.Invoke(() =>
+            {
+                int eventCount = 0;
+                EventHandler<ThemeChangedEventArgs> handler = (s, e) => eventCount++;
 
-            ApplicationThemeManager.Changed += handler;
-            try
-            {
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
-                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, false);
-                Assert.AreEqual(2, eventCount, "Changed event should fire exactly twice");
-            }
-            finally
-            {
-                ApplicationThemeManager.Changed -= handler;
-            }
+                ApplicationThemeManager.Changed += handler;
+                try
+                {
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, false);
+                    Assert.AreEqual(2, eventCount, "Changed event should fire exactly twice");
+                }
+                finally
+                {
+                    ApplicationThemeManager.Changed -= handler;
+                }
+            });
         }
 
         [TestMethod]
         public void FiveSwitches_DictionaryCountStable()
         {
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
-            int initialCount = _app.Resources.MergedDictionaries.Count;
+            WpfTestSta.Invoke(() =>
+            {
+                var app = Application.Current;
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
+                int initialCount = app.Resources.MergedDictionaries.Count;
 
-            ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, false);
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
-            ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, false);
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
-            ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, false);
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, false);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, false);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, false);
 
-            int finalCount = _app.Resources.MergedDictionaries.Count;
-            Assert.AreEqual(initialCount, finalCount, "Dictionary count should remain stable after multiple switches");
+                int finalCount = app.Resources.MergedDictionaries.Count;
+                Assert.AreEqual(initialCount, finalCount, "Dictionary count should remain stable after multiple switches");
+            });
         }
     }
 }

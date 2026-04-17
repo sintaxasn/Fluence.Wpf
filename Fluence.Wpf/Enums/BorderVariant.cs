@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,9 +32,13 @@ namespace Fluence.Wpf
     /// </summary>
     public enum BorderVariant
     {
+        /// <summary>No themed border styling.</summary>
         None,
+        /// <summary>Card-style border and background.</summary>
         Card,
+        /// <summary>Subtle outline suitable for grouped content.</summary>
         Subtle,
+        /// <summary>Thin divider line between sections.</summary>
         Divider
     }
 }

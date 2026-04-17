@@ -1,0 +1,166 @@
+# Controls
+
+The **Fluence.Wpf.Demo** gallery is the live inventory: `FluenceWindow` chrome with a search box in the title bar, a left `NavigationView` (compact / expanded), and grouped `UserControl` pages under `Fluence.Wpf.Demo/Pages/`:
+
+- Home (clickable hero cards)
+- Window (backdrop, caption, theme)
+- Buttons
+- Selection (CheckBox, RadioButton, ToggleSwitch, Slider)
+- Inputs (TextBox, PasswordBox, NumberBox, ComboBox)
+- Status (InfoBar, InfoBadge, ProgressBar, ProgressRing)
+- Data (ListView, ListBox, Expander)
+- Tabs (TabControl, TabView)
+- Glyphs (FontIcon)
+- Navigation (NavigationView modes)
+- Colors (accent ramp, theme brush swatches)
+
+## Namespaces
+
+- `Fluence.Wpf` — theme, accent, window chrome helpers, and UI enums (`ApplicationTheme`, `BackdropType`, `CardVariant`, `NavigationViewPaneDisplayMode`, typography enums).
+- `Fluence.Wpf.Controls` — styled controls, primitives, and `FluenceWindow`.
+
+Example XML namespace declarations:
+
+```xml
+xmlns:fluence="http://schemas.fluencewpf.com"
+<!-- or, fully qualified: -->
+xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
+xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
+```
+
+`http://schemas.fluencewpf.com` covers both the controls and the core namespaces in a single prefix.
+
+## Catalog (summary)
+
+
+| Area              | Types                                                                                                                                    |
+| ----------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Window            | `FluenceWindow`, `TitleBar`, `CaptionButtonChrome`, `WindowPolicy` (`FluentWindow` is retained as an obsolete alias for `FluenceWindow`) |
+| Basic actions     | `Button`, `HyperlinkButton`, `DropDownButton`, `RepeatButton`, `ToggleButton`                                                            |
+| Selection         | `CheckBox`, `RadioButton`, `ToggleSwitch`, `ComboBox`, `Slider`, `NumberBox`                                                             |
+| Text              | `TextBox`, `PasswordBox`, `TextBlock` + `TextBlockExtensions`                                                                            |
+| Data              | `ListView`, `ListBox`, `ListBoxItem`, `ListViewItem`                                                                                     |
+| Tabs              | `TabControl`, `TabItem`, `TabView`, `TabViewItem`                                                                                        |
+| Feedback          | `ProgressBar`, `ProgressRing`, `InfoBar`, `InfoBadge`                                                                                    |
+| Navigation        | `NavigationView`, `NavigationViewItem`, `NavigationViewItemHeader`, `NavigationViewItemSeparator`                                        |
+| Layout / surfaces | `Card`, `Border`, `StackPanel`, `DockPanel`, `SmoothScrollViewer`, `Expander`                                                            |
+| Icons             | `FontIcon`                                                                                                                               |
+
+
+Tab strip and scroll bar styling are provided via merged themes (see `Themes/Generic.xaml`).
+
+## NavigationView
+
+Three pane display modes are supported out of the box:
+
+
+| `PaneDisplayMode` | Rail                                            | Labels                         | Template                                |
+| ----------------- | ----------------------------------------------- | ------------------------------ | --------------------------------------- |
+| `Left` (default)  | 48 / 280 px                                     | Shown when `IsPaneOpen="True"` | `NavigationViewLeftPaneTemplate`        |
+| `LeftCompact`     | 48 px (overlay 280 px when `IsPaneOpen="True"`) | Overlay only                   | `NavigationViewLeftCompactPaneTemplate` |
+| `Top`             | 48 px horizontal strip                          | Always shown                   | `NavigationViewTopPaneTemplate`         |
+
+
+Left and LeftCompact share the same visual contract:
+
+- Pane toggle (`PART_PaneToggleButton`, glyph `E700`) and back button (`PART_BackButton`, glyph `E72B`) stacked at the top of a 48 px rail, each 40×40 px.
+- Selection indicator (`PART_SelectionIndicator`) is a single `Border` that animates between items — 3 × 16 px vertical in `Left` / `LeftCompact`, 16 × 3 px horizontal in `Top`.
+- Content region is a `Border` with `CornerRadius="8,0,0,0"`, `BorderThickness="1,1,0,0"`, and `BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"`, wrapping `PART_ContentPresenter`.
+- Back button visibility and enabled state are driven by `IsBackButtonVisible` / `IsBackEnabled`. Consumers route the `BackRequested` event to their own history stack.
+
+## Cards
+
+`Card` is a `ContentControl` with optional `Header`, `Footer`, and `Icon` slots. Opt into click semantics with `IsClickable="True"`:
+
+```xml
+<fluence:Card Padding="16"
+              IsClickable="True"
+              Click="OnCardClicked"
+              Variant="{x:Static uicore:CardVariant.Default}">
+    <fluence:Button Content="Accent" Appearance="Accent" />
+</fluence:Card>
+```
+
+When `IsClickable` is true:
+
+- The read-only `IsPressed` dependency property mirrors the left-button press state.
+- A left-button press inside the card followed by a matching release raises the `Click` routed event (`RoutingStrategy.Bubble`).
+- `OnMouseLeave` and `OnLostMouseCapture` cancel the pending press without raising `Click`, matching WinUI button semantics.
+
+## Typography
+
+`TextBlockExtensions` exposes attached properties for the WinUI type ramp:
+
+```xml
+<TextBlock fluence:TextBlockExtensions.Typography="TitleLarge"
+           Text="Fluence.Wpf" />
+```
+
+Supported values: `Caption`, `Body`, `BodyStrong`, `Subtitle`, `Title`, `TitleLarge`, `Display` (see `Fluence.Wpf/Enums/TextBlockTypography.cs`).
+
+## Tabs
+
+`TabControl` / `TabItem` receive WinUI 3 styling automatically via `Themes/Generic.xaml` — animated selection indicator, typography, and strip padding match the rest of the library.
+
+`TabView` / `TabViewItem` add multi-document features on top of the standard `TabControl` contract:
+
+```xml
+<ui:TabView AddTabButtonClick="OnAddTabButtonClick"
+            CloseButtonOverlayMode="Auto"
+            TabCloseRequested="OnTabCloseRequested">
+    <ui:TabViewItem Header="Document 1" IsSelected="True">
+        <ui:TabViewItem.Icon>
+            <ui:FontIcon Glyph="" IconFontSize="16" />
+        </ui:TabViewItem.Icon>
+        <!-- tab body -->
+    </ui:TabViewItem>
+
+    <ui:TabViewItem Header="Welcome" IsClosable="False">
+        <!-- pinned tab: close button hidden -->
+    </ui:TabViewItem>
+</ui:TabView>
+```
+
+Key members:
+
+
+| Member                           | Type                                               | Notes                                                                  |
+| -------------------------------- | -------------------------------------------------- | ---------------------------------------------------------------------- |
+| `TabView.IsAddTabButtonVisible`  | `bool`                                             | Toggles the trailing `+` button (`PART_AddTabButton`). Default `true`. |
+| `TabView.TabWidthMode`           | `TabViewWidthMode`                                 | `SizeToContent` (default), `Equal`, or `Compact`.                      |
+| `TabView.CloseButtonOverlayMode` | `TabViewCloseButtonOverlayMode`                    | `Auto` (default), `OnPointerOver`, or `Always`.                        |
+| `TabView.AddTabButtonClick`      | Routed event                                       | Raised when the trailing `+` button is invoked.                        |
+| `TabView.TabCloseRequested`      | Routed event (`TabViewTabCloseRequestedEventArgs`) | Bubbled from the originating `TabViewItem.CloseRequested`.             |
+| `TabViewItem.IsClosable`         | `bool`                                             | Default `true`. Set `false` to pin a tab and hide its close button.    |
+| `TabViewItem.Icon`               | `object`                                           | Any visual (typically `FontIcon`); rendered to the left of `Header`.   |
+| `TabViewItem.CloseRequested`     | Routed event (`RoutingStrategy.Bubble`)            | Raised by the per-tab close button (`PART_CloseButton`).               |
+
+
+Consumers remove the tab from the source collection themselves — the control does not auto-remove items. See `Fluence.Wpf.Demo/Pages/GalleryTabsPage.xaml(.cs)` for a reference implementation.
+
+## Screenshots
+
+Reference captures live under `docs/screenshots/`:
+
+- `banner-light-1x.png` / `banner-light-1.5x.png`
+- `banner-dark-1x.png` / `banner-dark-1.5x.png`
+- `banner-highcontrast-1x.png` / `banner-highcontrast-1.5x.png`
+
+They are regenerated by `Fluence.Wpf.Tests/GalleryScreenshotHarness.CaptureBannerAcrossThemesAndScales`. The test is opt-in: set `FLUENCE_CAPTURE_SCREENSHOTS=1` and run
+
+```
+dotnet test Fluence.Wpf.Tests -f net472 --filter "FullyQualifiedName~GalleryScreenshotHarness"
+```
+
+Without the environment variable the test reports `Inconclusive` so routine CI / developer runs don't overwrite the committed images. The harness hosts `GalleryHomePage` inside a plain `Window` with a solid `SolidBackgroundFillColorBaseBrush` backdrop (DWM Mica / Acrylic cannot be captured by `RenderTargetBitmap`), so the screenshots document the control surface — not the window chrome itself. `FluenceWindow` caption styling is verified by `FluenceWindowTitleBarTests` instead.
+
+Marketing images live under `docs/images/` (for example `docs/images/Banner.png`). Capture control screenshots at 100 % and 150 % scaling and document the reference OS build, theme, and accent when adding them.
+
+## Tests
+
+MSTest exercises templates, theme stability, and control behavior across `net472` and `net10.0-windows`. Adding a new public control should include at least:
+
+- A default-style / template smoke test (the control applies the expected template).
+- A theme-cycle pass if the control uses `DynamicResource` heavily (`ThemeTestHelpers.ApplyStandardThemeCycle`).
+- Interaction or state assertions where the control exposes behavior (see `ControlTests.NavigationView.cs` and `ControlTests.FluentStroke.cs` for representative patterns).
+
