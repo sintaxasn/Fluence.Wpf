@@ -131,7 +131,31 @@ Three WI-1 F1 tests flipped green; zero new failures introduced:
 
 Remaining 4 failures unchanged — they belong to WI-1A F3, WI-1D, and WI-3.
 
-### WI-1A F3, WI-1B F2, WI-1C F4, WI-1D redesign
+### WI-1A F3 — search top-match selection (landed 2026-04-20)
+
+Added the missing `PreviewKeyDown="NavSearchBox_PreviewKeyDown"` attribute to
+[MainWindow.xaml](../../Fluence.Wpf.Demo/MainWindow.xaml) on the `NavSearchBox`
+TextBox. The code-behind had the handler since the prior session, but the XAML
+binding was never wired — so Enter in the search box was a no-op and the initial
+selection ('Home') stayed put regardless of the filter state.
+
+With the handler wired, typing `button` + Enter now walks the visible items in
+pane order and selects 'Buttons' (first match). 'Home' is collapsed by the
+filter predicate and skipped, so there is no ranking needed — pane order is
+already the intended top-match order.
+
+Post-fix baseline:
+
+| TFM               | Passed | Failed | Skipped | Total | Delta vs F1 baseline |
+|-------------------|-------:|-------:|--------:|------:|----------------------|
+| net10.0-windows   |   216  |    3   |    1    |  220  | +1 passed / −1 failed |
+| net472            |   215  |    3   |    1    |  219  | +1 passed / −1 failed |
+
+Test flipped green: `NavSearch_EnterKey_SelectsTopMatch`.
+
+Remaining 3 failures — all WI-1D Paradigm A scaffolding + WI-3 RadioButton.
+
+### WI-1B F2, WI-1C F4, WI-1D redesign
 
 _(pending)_
 
