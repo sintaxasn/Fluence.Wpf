@@ -11,6 +11,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - **Demo `MainWindow` NavigationView grouping** (Paradigm A) - the 11 gallery pages are now grouped under three WinUI 3 Gallery-style section headers (`NavigationViewItemHeader`): _Basic input_ (Buttons, Selection, Inputs), _Collections & navigation_ (Data, Tabs, Navigation), _Design & shell_ (Status, Colors, Glyphs, Window). "Home" stays above the groups. Existing search-driven `CollapseEmptySectionHeaders()` behavior hides headers when their section is fully filtered out — no new code path.
 - **`GalleryHomePage` Featured controls tile grid** - a new "Featured controls" section below the category landing tiles displays a 3-column `UniformGrid` named `FeaturedControlsGrid` with six clickable `Card`s routing to Buttons, Selection, Inputs, Status, Collections, and Navigation. Uses `BodyStrong` + `Caption` typography so it reads as a distinct surface from the Subtitle + Body category tiles above.
+- **Template-part contracts tightened across 10 controls** (WI-3 Batch A, uplift plan rows 37–46) - `ComboBox`, `DropDownButton`, `NumberBox`, `ProgressBar`, `ProgressRing`, `TextBox`, `Slider`, `SmoothScrollViewer`, `FontIcon`, and `TextBlock` now declare every `PART_*` they consume via `[TemplatePart]` attributes + `private const string PART_Whatever = "PART_Whatever"`, and use the constants in `OnApplyTemplate`/`GetTemplateChild` calls. No behaviour change; unblocks `[TemplateVisualState]` uplift work under row #1 RadioButton full-VSM port.
+
+### Fixed
+
+- **ComboBox popup open animation** (WI-3 B2, uplift row #29) - duration raised from 0.15 s to the canonical `ControlFastAnimationDuration` (0.167 s) and easing swapped from `CubicEaseOut` to a `SplineDoubleKeyFrame` with KeySpline `0.8,0,0,1`, matching WinUI 3 `ControlFastOutSlowInKeySpline` motion.
+- **TabViewItem close-button glyph** (WI-3 B3, uplift row #30) - `StrokeThickness` changed from `1` to `1.5` to match the WinUI 3 canonical close-glyph visual weight.
+- **DropDownButton + ComboBox chevrons** (WI-3 B4, uplift row #31) - replaced the inline `Path` (filled triangle on DropDownButton) and raw `TextBlock` glyph (ComboBox) with `controls:FontIcon Glyph="&#xE70D;" IconFontSize="12"` (Segoe Fluent Icons `ChevronDown`) for consistent foreground / opacity plumbing and canonical rendering.
 
 ### Added
 
