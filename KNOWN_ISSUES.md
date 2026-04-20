@@ -11,13 +11,12 @@ This file tracks optional follow-ups and deliberate non-features. Filed bugs wit
 
 ## Resolved (Unreleased)
 
-- **`FluentWindow` vs `FluenceWindow`** - Consolidated. `FluentWindow` is now a thin `[Obsolete]` subclass of `FluenceWindow` and shares the single `Themes/Controls/FluenceWindow.xaml` default style. The duplicate `FluentWindow.xaml` theme and the redundant `FluentWindowTitleBarTests.cs` (a 32-test mirror of `FluenceWindowTitleBarTests.cs`) have been removed.
 - **WinUI `TabView` parity (MVP)** - `Fluence.Wpf.Controls.TabView` / `TabViewItem` now ship with WinUI 3 close buttons (`CloseRequested` → `TabCloseRequested` bubbling), add-tab button (`AddTabButtonClick`), per-tab icons, `TabWidthMode` (`SizeToContent` / `Equal` / `Compact`), `CloseButtonOverlayMode` (`Auto` / `OnPointerOver` / `Always`), and horizontal overflow scroll. A "Tabs" page in the demo gallery exercises both `TabControl` and `TabView`, and `TabViewTests.cs` covers the new public surface.
 
 ## Resolved (0.3.0)
 
 - **Radio / checkbox ring visibility** - Outer ring now uses `ControlStrongStrokeColorDefaultBrush` (and `ControlStrongStrokeColorDisabledBrush` on `IsEnabled="False"`), matching WinUI 3 canonical values (#72000000 in Light, #8BFFFFFF in Dark).
-- **NavigationView Left layout** - `Left` / `LeftCompact` templates center icons in a 48 px pane, stack the pane toggle above the back button, and the content region draws a 1 px top/left `CardStrokeColorDefault` border with an 8,0,0,0 corner radius that hugs the top-left — matching `Common_themeresources_any.xaml`.
+- **NavigationView Left layout** - `Left` / `LeftCompact` templates center icons in a 48 px pane, stack the pane toggle above the back button, and the content region draws a 1 px top/left `CardStrokeColorDefault` border with an 8,0,0,0 corner radius that hugs the top-left - matching `Common_themeresources_any.xaml`.
 - **Clickable cards** - `Fluence.Wpf.Controls.Card` exposes `IsClickable`, `IsPressed`, and a `Click` routed event; the demo home page drives navigation with it.
 - **Search in title bar** - Demo `MainWindow` hosts the search box inside `FluenceWindow.TitleBar` and filters `NavigationView` items live; no per-page back-stack is kept.
 - **Repo folder rename** - The repository root is now `Fluence.Wpf`; the earlier `New11` rename note has been retired.
