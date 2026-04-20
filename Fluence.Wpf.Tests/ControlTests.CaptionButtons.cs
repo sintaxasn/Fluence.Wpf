@@ -1,0 +1,247 @@
+/*
+ * Copyright 2026 Dan Cunningham
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+ * THE POSSIBILITY OF SUCH DAMAGE.
+ */
+using System;
+using System.Windows;
+using System.Windows.Shell;
+using System.Windows.Threading;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Fluence.Wpf.Controls;
+using WpfButton = System.Windows.Controls.Button;
+
+namespace Fluence.Wpf.Tests
+{
+    // WI-1 F4 regression guard. The four caption buttons on FluenceWindow
+    // (MinimizeButton / MaximizeButton / RestoreButton / CloseButton, see
+    // Themes/Controls/FluenceWindow.xaml:203-251) bind to SystemCommands via XAML
+    // and are routed through CommandBindings registered in FluenceWindow's
+    // constructor (FluenceWindow.cs:394-397) to private handlers that drive
+    // WindowState directly (belt-and-braces-paired with NativeMethods.*WindowNative
+    // P/Invoke so SC_MINIMIZE/SC_MAXIMIZE gating by DefWindowProc cannot silently
+    // drop caption clicks). These tests pin both slots: the XAML binding
+    // (Button.Command reference-equals the expected SystemCommand) and the
+    // runtime effect (WindowState transition / Closing event).
+    public partial class ControlTests
+    {
+        private static FluenceWindow CreateAndShowOffScreenFluenceWindow()
+        {
+            var window = new FluenceWindow
+            {
+                Width = 520,
+                Height = 360,
+                Left = -20000,
+                Top = -20000,
+                ExtendsContentIntoTitleBar = true,
+                WindowStartupLocation = WindowStartupLocation.Manual,
+                ShowInTaskbar = false
+            };
+            window.Show();
+            window.Dispatcher.Invoke(DispatcherPriority.Loaded, new Action(delegate { }));
+            return window;
+        }
+
+        private static WpfButton GetCaptionButton(FluenceWindow window, string name)
+        {
+            var button = FindVisualChildByName<WpfButton>(window, name);
+            Assert.IsNotNull(button,
+                string.Format("Caption template part '{0}' must exist on FluenceWindow.", name));
+            return button;
+        }
+
+        [TestMethod]
+        public void FluenceWindow_CaptionButtons_AllFourBindToCanonicalSystemCommands()
+        {
+            RunOnStaThread(delegate
+            {
+                EnsureApplication();
+                MergeGenericDictionary(Application.Current);
+
+                FluenceWindow window = null;
+                try
+                {
+                    window = CreateAndShowOffScreenFluenceWindow();
+
+                    var minimize = GetCaptionButton(window, "MinimizeButton");
+                    var maximize = GetCaptionButton(window, "MaximizeButton");
+                    var restore = GetCaptionButton(window, "RestoreButton");
+                    var close = GetCaptionButton(window, "CloseButton");
+
+                    Assert.AreSame(SystemCommands.MinimizeWindowCommand, minimize.Command,
+                        "MinimizeButton must bind to SystemCommands.MinimizeWindowCommand.");
+                    Assert.AreSame(SystemCommands.MaximizeWindowCommand, maximize.Command,
+                        "MaximizeButton must bind to SystemCommands.MaximizeWindowCommand.");
+                    Assert.AreSame(SystemCommands.RestoreWindowCommand, restore.Command,
+                        "RestoreButton must bind to SystemCommands.RestoreWindowCommand.");
+                    Assert.AreSame(SystemCommands.CloseWindowCommand, close.Command,
+                        "CloseButton must bind to SystemCommands.CloseWindowCommand.");
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void FluenceWindow_MinimizeCommand_TransitionsToMinimized()
+        {
+            RunOnStaThread(delegate
+            {
+                EnsureApplication();
+                MergeGenericDictionary(Application.Current);
+
+                FluenceWindow window = null;
+                try
+                {
+                    window = CreateAndShowOffScreenFluenceWindow();
+                    Assert.AreEqual(WindowState.Normal, window.WindowState,
+                        "Baseline: FluenceWindow should start in WindowState.Normal.");
+
+                    SystemCommands.MinimizeWindowCommand.Execute(null, window);
+                    DrainDispatcher(window.Dispatcher);
+
+                    Assert.AreEqual(WindowState.Minimized, window.WindowState,
+                        "MinimizeWindowCommand must drive WindowState to Minimized via OnMinimizeWindow.");
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        // Restore before close so the dispatcher does not leak a minimized window.
+                        window.WindowState = WindowState.Normal;
+                        window.Close();
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void FluenceWindow_MaximizeCommand_TransitionsToMaximized()
+        {
+            RunOnStaThread(delegate
+            {
+                EnsureApplication();
+                MergeGenericDictionary(Application.Current);
+
+                FluenceWindow window = null;
+                try
+                {
+                    window = CreateAndShowOffScreenFluenceWindow();
+                    Assert.AreEqual(WindowState.Normal, window.WindowState,
+                        "Baseline: FluenceWindow should start in WindowState.Normal.");
+
+                    SystemCommands.MaximizeWindowCommand.Execute(null, window);
+                    DrainDispatcher(window.Dispatcher);
+
+                    Assert.AreEqual(WindowState.Maximized, window.WindowState,
+                        "MaximizeWindowCommand must drive WindowState to Maximized via OnMaximizeWindow.");
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void FluenceWindow_RestoreCommand_TransitionsMaximizedToNormal()
+        {
+            RunOnStaThread(delegate
+            {
+                EnsureApplication();
+                MergeGenericDictionary(Application.Current);
+
+                FluenceWindow window = null;
+                try
+                {
+                    window = CreateAndShowOffScreenFluenceWindow();
+                    window.WindowState = WindowState.Maximized;
+                    DrainDispatcher(window.Dispatcher);
+                    Assert.AreEqual(WindowState.Maximized, window.WindowState,
+                        "Baseline: window should be Maximized before Restore is exercised.");
+
+                    SystemCommands.RestoreWindowCommand.Execute(null, window);
+                    DrainDispatcher(window.Dispatcher);
+
+                    Assert.AreEqual(WindowState.Normal, window.WindowState,
+                        "RestoreWindowCommand must drive WindowState back to Normal via OnRestoreWindow.");
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void FluenceWindow_CloseCommand_FiresClosingEvent()
+        {
+            RunOnStaThread(delegate
+            {
+                EnsureApplication();
+                MergeGenericDictionary(Application.Current);
+
+                FluenceWindow window = null;
+                try
+                {
+                    window = CreateAndShowOffScreenFluenceWindow();
+                    bool closingFired = false;
+                    window.Closing += delegate { closingFired = true; };
+
+                    SystemCommands.CloseWindowCommand.Execute(null, window);
+                    // OnCloseWindow calls SystemCommands.CloseWindow(this) which posts
+                    // WM_SYSCOMMAND/SC_CLOSE via PostMessage. Block at Background priority
+                    // so the Win32 message pump processes the queued message and close
+                    // flow runs before we assert.
+                    window.Dispatcher.Invoke(DispatcherPriority.Background, new Action(delegate { }));
+
+                    Assert.IsTrue(closingFired,
+                        "CloseWindowCommand must raise Window.Closing via SystemCommands.CloseWindow -> WM_SYSCOMMAND/SC_CLOSE.");
+
+                    // Window is now closed; defeat the finally Close() so we do not double-dispose.
+                    window = null;
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+                }
+            });
+        }
+    }
+}

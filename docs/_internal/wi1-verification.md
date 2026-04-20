@@ -181,9 +181,61 @@ Post-fix baseline:
 | net10.0-windows   |   217  |    3   |    1    |  221  | +1 passed / +1 total |
 | net472            |   216  |    3   |    1    |  220  | +1 passed / +1 total |
 
-### WI-1C F4, WI-1D redesign
+### WI-1C F4 — caption button wiring (landed 2026-04-20)
 
-_(pending)_
+Audit + TDD regression guard — no source change needed. Caption buttons on
+[FluenceWindow.xaml:203-251](../../Fluence.Wpf/Themes/Controls/FluenceWindow.xaml)
+(`MinimizeButton`, `MaximizeButton`, `RestoreButton`, `CloseButton`) are already
+bound to `SystemCommands.{Minimize,Maximize,Restore,Close}WindowCommand` via
+`Command="{x:Static ...}"`. The matching `CommandBinding`s are registered in
+[FluenceWindow.cs:394-397](../../Fluence.Wpf/Controls/FluenceWindow.cs) and
+route to private handlers `OnMinimizeWindow` / `OnMaximizeWindow` /
+`OnRestoreWindow` / `OnCloseWindow` (lines 1064-1089) that drive
+`WindowState` directly.
+
+The belt-and-braces comment at `FluenceWindow.cs:1043-1063` documents why these
+handlers intentionally set `WindowState` and also call
+`NativeMethods.{Minimize,Maximize,Restore}WindowNative(_handle)`: when
+`NativeMethods.HideAllWindowButtons` strips `WS_MINIMIZEBOX` / `WS_MAXIMIZEBOX`
+(or `ResizeMode=NoResize` does the same — the baseline for every PSADT fluent
+dialog), `DefWindowProc` silently drops `SC_MINIMIZE` / `SC_MAXIMIZE`, and a
+command router that went through `WM_SYSCOMMAND` would leave the caption buttons
+looking clickable but doing nothing. The WPF `WindowState` setter uses
+`ShowWindow` which is not gated by sysmenu styles, and the `*WindowNative`
+P/Invoke provides a fallback for transient `_hwndSource` unavailability — so F4
+has in fact been correctly wired all along; the prior "F4 caption buttons via
+inference" classification in the Stage 0.3 note was speculative, not evidence-based.
+
+New regression guard [ControlTests.CaptionButtons.cs](../../Fluence.Wpf.Tests/ControlTests.CaptionButtons.cs):
+
+- `FluenceWindow_CaptionButtons_AllFourBindToCanonicalSystemCommands` — asserts
+  `Button.Command` reference-equals the expected `SystemCommands.*WindowCommand`
+  on all four caption buttons after template application.
+- `FluenceWindow_MinimizeCommand_TransitionsToMinimized` — invokes
+  `SystemCommands.MinimizeWindowCommand.Execute(null, window)` on an off-screen
+  `FluenceWindow`, asserts `WindowState == Minimized`.
+- `FluenceWindow_MaximizeCommand_TransitionsToMaximized` — same, but asserts
+  `Maximized`.
+- `FluenceWindow_RestoreCommand_TransitionsMaximizedToNormal` — starts from
+  `Maximized`, invokes `RestoreWindowCommand`, asserts `Normal`.
+- `FluenceWindow_CloseCommand_FiresClosingEvent` — invokes `CloseWindowCommand`,
+  pumps the dispatcher at `Background` priority so `PostMessage(WM_SYSCOMMAND,
+  SC_CLOSE)` is processed, asserts `Window.Closing` fires.
+
+Post-fix baseline (Debug, `--no-build`):
+
+| TFM               | Passed | Failed | Skipped | Total | Delta vs F2 baseline |
+|-------------------|-------:|-------:|--------:|------:|----------------------|
+| net10.0-windows   |   222  |    3   |    1    |  226  | +5 passed / +5 total |
+| net472            |   221  |    3   |    1    |  225  | +5 passed / +5 total |
+
+Remaining 3 failures unchanged — `MainWindow_NavigationPane_ContainsSectionHeaders`
+and `HomePage_ContainsFeaturedControlsGrid` (WI-1D Paradigm A) plus
+`RadioButton_OuterRing_UsesControlStrongStrokeBrush` (WI-3).
+
+### WI-1D redesign
+
+_(pending user decision against the HTML mocks at `docs/demo-redesign-mocks.html`)_
 
 ## WI-2 API snapshot diff
 
