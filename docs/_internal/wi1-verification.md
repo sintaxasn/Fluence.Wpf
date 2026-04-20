@@ -70,13 +70,30 @@ Zero-regression policy for the rest of the migration:
 - **Final target: 220+0 failed / 219+0 failed** (seven tests flip to green
   across WI-1 and WI-3, zero new reds).
 
-## Stage 0.2 — PSADT baseline
+## Stage 0.2 — PSADT baseline (recorded 2026-04-20)
 
-_(recorded after WI-4 spot-check)_
+Command: `dotnet build PSAppDeployToolkit/PSADT.slnx -c Debug`
+
+Result: **0 errors, 0 warnings**. Build time ~16 s.
+
+All 13 PSADT assemblies compiled for both `net472` and `net10.0-windows10.0.26100.0`.
+`PSADT.UserInterface` and `PSADT.UserInterface.TestHarness` build through the
+live `ProjectReference` to `Fluence.Wpf` — confirming the public surface
+Fluence exposes today satisfies PSADT's consumption.
+
+## Stage 0.3 — Demo smoke test (recorded 2026-04-20)
+
+Launched `Fluence.Wpf.Demo/bin/Debug/net472/Fluence.Wpf.Demo.exe` and confirmed
+it stays alive for >4 s (no crash at startup). PID 1133 terminated cleanly.
+
+Visual screenshots deferred: the Demo is a dev build (not Start-menu installed)
+and the current state is already known to be broken via the 7 failing tests
+(WI-1 F1 pane layout, F3 search, F4 captions via inference, WI-1D Paradigm A
+scaffolding). Per-work-item targeted screenshots (Light / Dark / HC × 100% /
+150% DPI) will be captured when a WI fix is implemented — that is where the
+before/after evidence has signal.
 
 ## Visual baselines
-
-_(captured at Stage 0.3)_
 
 ## WI-1 runtime verification
 
