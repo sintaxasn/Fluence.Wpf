@@ -774,5 +774,242 @@ namespace Fluence.Wpf.Tests
                 }
             });
         }
+
+        // WI-1 F1: LeftCompact pane must resize inline and push sibling content. Never overlay.
+        //
+        // Regression guard: the original LeftCompactPaneTemplate drew the pane as an overlay
+        // (Panel.ZIndex="1", Width triggered to 280), which caused the pane to cover the content
+        // area rather than push it aside. We assert that the pane's visible width changes with
+        // IsPaneOpen AND that the content host starts immediately to the right of the pane.
+        [TestMethod]
+        public void NavigationView_LeftCompact_PaneOpen_ContentStartsAt280px_Inline()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 800,
+                        Height = 480,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact,
+                        IsPaneOpen = true
+                    };
+                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    var presenter = FindVisualChildByName<ContentPresenter>(nav, Fluent.NavigationView.PartContentPresenter);
+                    Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in LeftCompact template.");
+
+                    var offset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
+                    Assert.AreEqual(280.0, offset.X, 1.0,
+                        "When IsPaneOpen=true in LeftCompact, content must start inline at pane width 280 (not overlap the pane).");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NavigationView_LeftCompact_PaneClosed_ContentStartsAt48px_Inline()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 800,
+                        Height = 480,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact,
+                        IsPaneOpen = false
+                    };
+                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    var presenter = FindVisualChildByName<ContentPresenter>(nav, Fluent.NavigationView.PartContentPresenter);
+                    Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in LeftCompact template.");
+
+                    var offset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
+                    Assert.AreEqual(48.0, offset.X, 1.0,
+                        "When IsPaneOpen=false in LeftCompact, content must start inline at pane width 48 (compact rail).");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NavigationView_LeftCompact_PaneToggle_ResizesPushingContent()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 800,
+                        Height = 480,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact,
+                        IsPaneOpen = true
+                    };
+                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    var presenter = FindVisualChildByName<ContentPresenter>(nav, Fluent.NavigationView.PartContentPresenter);
+                    Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in LeftCompact template.");
+
+                    var openOffset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
+                    Assert.AreEqual(280.0, openOffset.X, 1.0, "Open state: content begins at 280.");
+
+                    nav.IsPaneOpen = false;
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    var closedOffset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
+                    Assert.AreEqual(48.0, closedOffset.X, 1.0, "Closed state: content begins at 48 (push, not overlay).");
+
+                    nav.IsPaneOpen = true;
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    var reopenOffset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
+                    Assert.AreEqual(280.0, reopenOffset.X, 1.0, "Reopen state: content returns to 280.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        // WI-1 F2: NavigationView.ContentBackground must default to LayerFillColorDefaultBrush
+        // so the content region reads as the WinUI 3 "layer" tone against the window backdrop.
+        [TestMethod]
+        public void NavigationView_ContentBackground_DefaultStyle_ResolvesToLayerFillColorDefault()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 400,
+                        Height = 320,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left
+                    };
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    var expected = application.TryFindResource("LayerFillColorDefaultBrush") as SolidColorBrush;
+                    var actual = nav.ContentBackground as SolidColorBrush;
+
+                    Assert.IsNotNull(expected, "LayerFillColorDefaultBrush must be present in merged resources.");
+                    Assert.IsNotNull(actual, "NavigationView.ContentBackground must be a SolidColorBrush.");
+                    Assert.AreEqual(expected.Color, actual.Color,
+                        "Default ContentBackground must equal LayerFillColorDefaultBrush (WinUI 3 NavigationView content layer).");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        // WI-1 F3 supporting guard: NavigationViewItemHeader must be a first-class pane child
+        // (placed via Items), styled distinctly from NavigationViewItem, and not selectable.
+        [TestMethod]
+        public void NavigationView_Header_InPane_IsRendered_NotSelectable()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 400,
+                        Height = 320,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left
+                    };
+                    var header = new Fluent.NavigationViewItemHeader { Content = "Input" };
+                    var item = new Fluent.NavigationViewItem { Content = "Buttons" };
+                    nav.Items.Add(header);
+                    nav.Items.Add(item);
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    var renderedHeader = FindVisualChild<Fluent.NavigationViewItemHeader>(nav);
+                    Assert.IsNotNull(renderedHeader, "NavigationViewItemHeader must render inside the pane.");
+                    Assert.IsFalse(renderedHeader.Focusable, "Header must not be focusable.");
+                    Assert.IsNull(nav.SelectedItem, "Header must not be auto-selected even when placed at index 0.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
     }
 }

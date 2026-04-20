@@ -1,0 +1,546 @@
+/*
+ * Copyright 2026 Dan Cunningham
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+ * THE POSSIBILITY OF SUCH DAMAGE.
+ */
+using System;
+using System.Reflection;
+using System.Runtime.ExceptionServices;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Threading;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Fluence.Wpf;
+using Fluence.Wpf.Controls;
+using Fluence.Wpf.Demo;
+using Fluence.Wpf.Demo.Pages;
+using FluenceTextBox = Fluence.Wpf.Controls.TextBox;
+
+namespace Fluence.Wpf.Tests
+{
+    // WI-1 behavior tests for the demo shell: nav search (F3), Paradigm A structure, featured grid.
+    // These tests exercise the concrete MainWindow and GalleryHomePage rather than the control
+    // templates so regressions in demo-level UX surface immediately.
+    [TestClass]
+    public class DemoMainWindowTests
+    {
+        private static void RunOnSta(Action action)
+        {
+            Exception captured = null;
+            WpfTestSta.Dispatcher.Invoke(new Action(() =>
+            {
+                try
+                {
+                    action();
+                }
+                catch (Exception ex)
+                {
+                    captured = ex;
+                }
+            }));
+
+            if (captured != null)
+            {
+                ExceptionDispatchInfo.Capture(captured).Throw();
+            }
+        }
+
+        private static Application EnsureApp()
+        {
+            return WpfTestSta.EnsureApplication();
+        }
+
+        private static ResourceDictionary MergeTheme(Application application)
+        {
+            ApplicationThemeManager.ResetForTesting();
+            ApplicationAccentColorManager.ResetForTesting();
+            application.Resources.MergedDictionaries.Clear();
+            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
+            var dictionaries = application.Resources.MergedDictionaries;
+            var generic = dictionaries.Count > 0 ? dictionaries[dictionaries.Count - 1] : null;
+
+            var demoShared = new ResourceDictionary
+            {
+                Source = new Uri("/Fluence.Wpf.Demo;component/Resources/DemoSharedStyles.xaml", UriKind.Relative)
+            };
+            application.Resources.MergedDictionaries.Add(demoShared);
+
+            return generic;
+        }
+
+        private static void Drain(Dispatcher dispatcher)
+        {
+            dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() => { }));
+        }
+
+        private static MainWindow CreateShownMainWindow()
+        {
+            var window = new MainWindow
+            {
+                Left = -20000,
+                Top = -20000,
+                WindowStartupLocation = WindowStartupLocation.Manual,
+                ShowInTaskbar = false
+            };
+            window.Show();
+            Drain(window.Dispatcher);
+            window.UpdateLayout();
+            Drain(window.Dispatcher);
+            return window;
+        }
+
+        private static T GetPrivateField<T>(object instance, string name) where T : class
+        {
+            var field = instance.GetType().GetField(name, BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            Assert.IsNotNull(field, "Field must exist: " + name);
+            return field.GetValue(instance) as T;
+        }
+
+        private static FluenceTextBox GetNavSearchBox(MainWindow window)
+        {
+            return GetPrivateField<FluenceTextBox>(window, "NavSearchBox");
+        }
+
+        private static NavigationView GetDemoNav(MainWindow window)
+        {
+            return GetPrivateField<NavigationView>(window, "DemoNav");
+        }
+
+        private static void RaisePreviewKeyDown(FrameworkElement source, Key key)
+        {
+            var args = new KeyEventArgs(
+                Keyboard.PrimaryDevice,
+                PresentationSource.FromVisual(source),
+                0,
+                key)
+            {
+                RoutedEvent = Keyboard.PreviewKeyDownEvent
+            };
+            source.RaiseEvent(args);
+        }
+
+        // WI-1 F3: Enter in the search box must select the top visible match.
+        [TestMethod]
+        public void NavSearch_EnterKey_SelectsTopMatch()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                MainWindow window = null;
+                try
+                {
+                    window = CreateShownMainWindow();
+                    var search = GetNavSearchBox(window);
+                    var nav = GetDemoNav(window);
+
+                    search.Focus();
+                    search.Text = "button";
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    RaisePreviewKeyDown(search, Key.Enter);
+                    Drain(window.Dispatcher);
+
+                    var selected = nav.SelectedItem as NavigationViewItem;
+                    Assert.IsNotNull(selected, "Enter must select a NavigationViewItem.");
+                    Assert.AreEqual("Buttons", selected.Content as string,
+                        "Top match for 'button' must be the 'Buttons' item.");
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        // WI-1 F3: Empty search box + Enter must not change the selection.
+        [TestMethod]
+        public void NavSearch_EnterKey_EmptyQuery_DoesNotChangeSelection()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                MainWindow window = null;
+                try
+                {
+                    window = CreateShownMainWindow();
+                    var search = GetNavSearchBox(window);
+                    var nav = GetDemoNav(window);
+
+                    var before = nav.SelectedItem;
+
+                    search.Text = string.Empty;
+                    Drain(window.Dispatcher);
+                    RaisePreviewKeyDown(search, Key.Enter);
+                    Drain(window.Dispatcher);
+
+                    Assert.AreSame(before, nav.SelectedItem,
+                        "Empty Enter must be a no-op for selection.");
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        // WI-1 F3: Enter with zero matches must not throw and must leave selection untouched.
+        [TestMethod]
+        public void NavSearch_EnterKey_NoMatches_DoesNotThrowAndKeepsSelection()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                MainWindow window = null;
+                try
+                {
+                    window = CreateShownMainWindow();
+                    var search = GetNavSearchBox(window);
+                    var nav = GetDemoNav(window);
+
+                    var before = nav.SelectedItem;
+                    search.Text = "zzz-no-such-token-zzz";
+                    Drain(window.Dispatcher);
+
+                    RaisePreviewKeyDown(search, Key.Enter);
+                    Drain(window.Dispatcher);
+
+                    Assert.AreSame(before, nav.SelectedItem,
+                        "Enter with zero matches must not reset or randomise the selection.");
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        // WI-1 F3: Empty query restores all items to Visible (regression guard on filter reset).
+        [TestMethod]
+        public void NavSearch_EmptyQuery_RestoresAllItemsVisible()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                MainWindow window = null;
+                try
+                {
+                    window = CreateShownMainWindow();
+                    var search = GetNavSearchBox(window);
+                    var nav = GetDemoNav(window);
+
+                    search.Text = "button";
+                    Drain(window.Dispatcher);
+
+                    search.Text = string.Empty;
+                    Drain(window.Dispatcher);
+
+                    foreach (var obj in nav.Items)
+                    {
+                        var el = obj as FrameworkElement;
+                        if (el == null)
+                        {
+                            continue;
+                        }
+
+                        Assert.AreEqual(Visibility.Visible, el.Visibility,
+                            "Empty query must restore every pane element (including headers) to Visible.");
+                    }
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        // WI-1 Paradigm A: nav pane must be grouped by NavigationViewItemHeader sections.
+        [TestMethod]
+        public void MainWindow_NavigationPane_ContainsSectionHeaders()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                MainWindow window = null;
+                try
+                {
+                    window = CreateShownMainWindow();
+                    var nav = GetDemoNav(window);
+
+                    var headerCount = 0;
+                    foreach (var obj in nav.Items)
+                    {
+                        if (obj is NavigationViewItemHeader)
+                        {
+                            headerCount++;
+                        }
+                    }
+
+                    Assert.IsTrue(headerCount >= 2,
+                        "Paradigm A: pane must declare at least 2 NavigationViewItemHeader section headers to group controls.");
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        // WI-1 Paradigm A: filter must hide NavigationViewItemHeaders whose section becomes empty.
+        [TestMethod]
+        public void NavSearch_Filter_HidesHeaders_WhenAllSectionItemsFilteredOut()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                MainWindow window = null;
+                try
+                {
+                    window = CreateShownMainWindow();
+                    var search = GetNavSearchBox(window);
+                    var nav = GetDemoNav(window);
+
+                    search.Text = "button";
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    NavigationViewItemHeader anyVisibleEmptyHeader = null;
+                    NavigationViewItemHeader currentHeader = null;
+                    var currentHeaderHasVisibleChild = false;
+
+                    foreach (var obj in nav.Items)
+                    {
+                        if (obj is NavigationViewItemHeader header)
+                        {
+                            if (currentHeader != null && currentHeader.Visibility == Visibility.Visible && !currentHeaderHasVisibleChild)
+                            {
+                                anyVisibleEmptyHeader = currentHeader;
+                                break;
+                            }
+
+                            currentHeader = header;
+                            currentHeaderHasVisibleChild = false;
+                        }
+                        else if (obj is NavigationViewItem item && item.Visibility == Visibility.Visible)
+                        {
+                            currentHeaderHasVisibleChild = true;
+                        }
+                    }
+
+                    if (anyVisibleEmptyHeader == null && currentHeader != null &&
+                        currentHeader.Visibility == Visibility.Visible && !currentHeaderHasVisibleChild)
+                    {
+                        anyVisibleEmptyHeader = currentHeader;
+                    }
+
+                    Assert.IsNull(anyVisibleEmptyHeader,
+                        "Filter must collapse headers that have no visible items beneath them. " +
+                        "Found a stranded header: " + (anyVisibleEmptyHeader != null ? anyVisibleEmptyHeader.Content as string : "<none>"));
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        // WI-1: The Home page must present a curated "Featured controls" grid.
+        [TestMethod]
+        public void HomePage_ContainsFeaturedControlsGrid()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                try
+                {
+                    var page = new GalleryHomePage();
+                    var host = new System.Windows.Controls.Grid();
+                    host.Children.Add(page);
+                    var window = new Window
+                    {
+                        Left = -20000,
+                        Top = -20000,
+                        Width = 1040,
+                        Height = 720,
+                        WindowStartupLocation = WindowStartupLocation.Manual,
+                        ShowInTaskbar = false,
+                        Content = host
+                    };
+
+                    try
+                    {
+                        window.Show();
+                        Drain(window.Dispatcher);
+                        window.UpdateLayout();
+                        Drain(window.Dispatcher);
+
+                        var grid = FindByName<FrameworkElement>(page, "FeaturedControlsGrid");
+                        Assert.IsNotNull(grid,
+                            "GalleryHomePage must contain a FrameworkElement named 'FeaturedControlsGrid' " +
+                            "(Paradigm A curated featured controls).");
+
+                        var featuredCards = 0;
+                        foreach (var card in FindAllVisualChildren<Fluence.Wpf.Controls.Card>(grid))
+                        {
+                            if (card.IsClickable)
+                            {
+                                featuredCards++;
+                            }
+                        }
+
+                        Assert.IsTrue(featuredCards >= 6,
+                            "Featured grid must surface at least 6 curated controls. Found: " + featuredCards);
+                    }
+                    finally
+                    {
+                        window.Close();
+                    }
+                }
+                finally
+                {
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        private static T FindByName<T>(DependencyObject root, string name) where T : FrameworkElement
+        {
+            if (root == null || string.IsNullOrEmpty(name))
+            {
+                return null;
+            }
+
+            var asT = root as T;
+            if (asT != null && string.Equals(asT.Name, name, StringComparison.Ordinal))
+            {
+                return asT;
+            }
+
+            var count = VisualTreeHelper.GetChildrenCount(root);
+            for (var i = 0; i < count; i++)
+            {
+                var hit = FindByName<T>(VisualTreeHelper.GetChild(root, i), name);
+                if (hit != null)
+                {
+                    return hit;
+                }
+            }
+
+            return null;
+        }
+
+        private static System.Collections.Generic.IEnumerable<T> FindAllVisualChildren<T>(DependencyObject root) where T : DependencyObject
+        {
+            if (root == null)
+            {
+                yield break;
+            }
+
+            var count = VisualTreeHelper.GetChildrenCount(root);
+            for (var i = 0; i < count; i++)
+            {
+                var child = VisualTreeHelper.GetChild(root, i);
+                if (child is T match)
+                {
+                    yield return match;
+                }
+
+                foreach (var descendant in FindAllVisualChildren<T>(child))
+                {
+                    yield return descendant;
+                }
+            }
+        }
+    }
+}
