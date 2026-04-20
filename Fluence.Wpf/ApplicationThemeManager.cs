@@ -56,24 +56,16 @@ namespace Fluence.Wpf
          * directly into Application.Resources AFTER merging, ensuring correct precedence.
          */
         private const int SlotTheme = 0;
-        private const int SlotCompat = 1;
         private const int SlotAccent = 1;
         private const int SlotBrushes = 2;
         private const int SlotTypography = 3;
         private const int SlotGeneric = 4;
 
         private static bool _isInitialized;
-        private static bool _isCompatEnabled;
         private static ApplicationTheme _currentTheme = ApplicationTheme.Auto;
         private static BackdropType _currentBackdrop = BackdropType.Auto;
         private static bool _isApplying;
         private static System.Collections.Generic.List<object> _promotedHighContrastBrushKeys;
-        private static System.Collections.Generic.List<object> _promotedCompatKeys;
-
-        private static int CompatOffset
-        {
-            get { return _isCompatEnabled ? 1 : 0; }
-        }
 
         /// <summary>Gets the currently requested theme (may be <see cref="ApplicationTheme.Auto"/>).</summary>
         public static ApplicationTheme CurrentTheme
@@ -85,12 +77,6 @@ namespace Fluence.Wpf
         public static BackdropType CurrentBackdrop
         {
             get { return _currentBackdrop; }
-        }
-
-        /// <summary>Gets whether the iNKORE compatibility layer is active.</summary>
-        public static bool IsInkoreCompatibilityEnabled
-        {
-            get { return _isCompatEnabled; }
         }
 
         /// <summary>Raised after a theme or accent change has been applied.</summary>
@@ -142,38 +128,6 @@ namespace Fluence.Wpf
         public static void ApplySystemTheme()
         {
             Apply(ApplicationTheme.Auto, _currentBackdrop, true);
-        }
-
-        /// <summary>
-        /// Enables or disables the iNKORE compatibility layer, which overrides certain
-        /// Color keys with higher-opacity values to match iNKORE.Modern.UI's visual behavior.
-        /// Call after <see cref="Apply"/> to insert (or remove) the compatibility dictionary.
-        /// </summary>
-        public static void EnableInkoreCompatibility(bool enable = true)
-        {
-            if (_isCompatEnabled == enable || !_isInitialized || Application.Current == null)
-            {
-                return;
-            }
-
-            var dictionaries = Application.Current.Resources.MergedDictionaries;
-            var resolvedTheme = ResolveTheme(_currentTheme);
-
-            if (enable)
-            {
-                var compatDict = LoadDictionary(GetCompatUri(resolvedTheme));
-                dictionaries.Insert(SlotCompat, compatDict);
-                _isCompatEnabled = true;
-                PromoteCompatKeys(compatDict);
-            }
-            else
-            {
-                RemovePromotedCompatKeys();
-                dictionaries.RemoveAt(SlotCompat);
-                _isCompatEnabled = false;
-            }
-
-            ReloadAndPromoteBrushes(dictionaries);
         }
 
         internal static ApplicationTheme ResolveTheme(ApplicationTheme theme)
@@ -237,17 +191,6 @@ namespace Fluence.Wpf
                 dictionaries[SlotTheme] = LoadDictionary(GetThemeColorUri(resolvedTheme));
             }
 
-            if (_isCompatEnabled && resolvedTheme != ApplicationTheme.HighContrast)
-            {
-                var compatDict = LoadDictionary(GetCompatUri(resolvedTheme));
-                dictionaries[SlotCompat] = compatDict;
-                PromoteCompatKeys(compatDict);
-            }
-            else if (_isCompatEnabled)
-            {
-                RemovePromotedCompatKeys();
-            }
-
             PromoteThemeColors(resolvedTheme);
 
             if (resolvedTheme != ApplicationTheme.HighContrast)
@@ -268,15 +211,13 @@ namespace Fluence.Wpf
         /// </summary>
         private static void ReloadAndPromoteBrushes(System.Collections.ObjectModel.Collection<ResourceDictionary> dictionaries)
         {
-            int actualSlot = SlotBrushes + CompatOffset;
-
-            if (actualSlot >= dictionaries.Count)
+            if (SlotBrushes >= dictionaries.Count)
             {
                 return;
             }
 
             var freshBrushes = LoadDictionary(PackBase + "Themes/Brushes/Brushes.xaml");
-            dictionaries[actualSlot] = freshBrushes;
+            dictionaries[SlotBrushes] = freshBrushes;
 
             var resources = Application.Current.Resources;
             foreach (var key in freshBrushes.Keys)
@@ -336,45 +277,6 @@ namespace Fluence.Wpf
             }
         }
 
-        private static void PromoteCompatKeys(ResourceDictionary compatDict)
-        {
-            if (Application.Current == null)
-            {
-                return;
-            }
-
-            _promotedCompatKeys = new System.Collections.Generic.List<object>();
-            var resources = Application.Current.Resources;
-
-            foreach (var key in compatDict.Keys)
-            {
-                resources[key] = compatDict[key];
-                _promotedCompatKeys.Add(key);
-            }
-        }
-
-        private static void RemovePromotedCompatKeys()
-        {
-            if (_promotedCompatKeys == null || Application.Current == null)
-            {
-                return;
-            }
-
-            var resources = Application.Current.Resources;
-            foreach (var key in _promotedCompatKeys)
-            {
-                resources.Remove(key);
-            }
-
-            _promotedCompatKeys = null;
-        }
-
-        private static Uri GetCompatUri(ApplicationTheme resolvedTheme)
-        {
-            string themeName = resolvedTheme == ApplicationTheme.Dark ? "Dark" : "Light";
-            return new Uri(PackBase + "Themes/Compatibility/InkoreCompat." + themeName + ".xaml", UriKind.Absolute);
-        }
-
         private static Uri GetThemeColorUri(ApplicationTheme resolvedTheme)
         {
             string themeName;
@@ -430,12 +332,10 @@ namespace Fluence.Wpf
         internal static void ResetForTesting()
         {
             _isInitialized = false;
-            _isCompatEnabled = false;
             _currentTheme = ApplicationTheme.Auto;
             _currentBackdrop = BackdropType.Auto;
             _isApplying = false;
             _promotedHighContrastBrushKeys = null;
-            _promotedCompatKeys = null;
         }
     }
 }

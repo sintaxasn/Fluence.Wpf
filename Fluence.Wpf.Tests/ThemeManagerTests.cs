@@ -159,5 +159,6 @@ namespace Fluence.Wpf.Tests
                 Assert.AreEqual(initialCount, finalCount, "Dictionary count should remain stable after multiple switches");
             });
         }
+
     }
 }
