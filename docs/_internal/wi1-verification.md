@@ -97,7 +97,43 @@ before/after evidence has signal.
 
 ## WI-1 runtime verification
 
-_(filled by WI-1A / WI-1B / WI-1C / WI-1D)_
+### WI-1A F1 — pane layout (landed 2026-04-20)
+
+Commit: restructured [NavigationView.xaml](../../Fluence.Wpf/Themes/Controls/NavigationView.xaml)
+so PART_ContentPresenter is no longer wrapped by a `BorderThickness=1` Border.
+The 1,1,0,0 stroke now lives on a sibling decorative Border (`IsHitTestVisible=False`)
+inside the same Grid, sharing the 8,0,0,0 corner radius. Both
+`NavigationViewLeftPaneTemplate` and `NavigationViewLeftCompactPaneTemplate` changed.
+
+Root cause: at 150% DPI the 1 px stroke caused `WindowsChild` layout rounding to
+snap `PART_ContentPresenter.X` to 281.333 instead of 280 (and 49.333 instead of 48),
+breaking the pane-layout `TransformToAncestor` assertions. Splitting the Border
+keeps the presenter flush with the column edge while preserving the visual contract.
+
+Companion tests updated to match the new structure:
+[ControlTests.FluentStroke.cs](../../Fluence.Wpf.Tests/ControlTests.FluentStroke.cs)
+`NavigationView_Left_ContentBorder_HasWinUiCornerRadiusAndStroke` and
+`NavigationView_LeftCompact_ContentBorder_HasWinUiCornerRadiusAndStroke` now look
+for the 1,1,0,0 stroke on the sibling Border (second child of the content Grid).
+
+Post-fix baseline (Debug, `--no-build`):
+
+| TFM               | Passed | Failed | Skipped | Total | Delta vs Stage 0 |
+|-------------------|-------:|-------:|--------:|------:|------------------|
+| net10.0-windows   |   215  |    4   |    1    |  220  | +3 passed / −3 failed |
+| net472            |   214  |    4   |    1    |  219  | +3 passed / −3 failed |
+
+Three WI-1 F1 tests flipped green; zero new failures introduced:
+
+- `NavigationView_LeftCompact_PaneClosed_ContentStartsAt48px_Inline` ✅
+- `NavigationView_LeftCompact_PaneOpen_ContentStartsAt280px_Inline` ✅
+- `NavigationView_LeftCompact_PaneToggle_ResizesPushingContent` ✅
+
+Remaining 4 failures unchanged — they belong to WI-1A F3, WI-1D, and WI-3.
+
+### WI-1A F3, WI-1B F2, WI-1C F4, WI-1D redesign
+
+_(pending)_
 
 ## WI-2 API snapshot diff
 

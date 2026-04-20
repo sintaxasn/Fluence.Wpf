@@ -296,13 +296,28 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(contentBorder, "PART_ContentPresenter must be hosted by a Border in the Left template.");
 
                     Assert.AreEqual(new CornerRadius(8, 0, 0, 0), contentBorder.CornerRadius,
-                        "Left-mode content region must carry an 8,0,0,0 corner radius so the content hugs the top-left per WinUI 3.");
-                    Assert.AreEqual(new Thickness(1, 1, 0, 0), contentBorder.BorderThickness,
+                        "Left-mode content background Border must carry an 8,0,0,0 corner radius so the content hugs the top-left per WinUI 3.");
+
+                    // WI-1 F1: the 1,1,0,0 stroke sits on a sibling decorative Border so
+                    // PART_ContentPresenter lines up with the pane column edge. Wrapping the
+                    // presenter in a BorderThickness=1 Border snapped content.X to 281.333 at
+                    // 150% DPI (layout rounding), breaking the pane-layout assertions.
+                    var contentGrid = VisualTreeHelper.GetParent(contentBorder) as Grid;
+                    Assert.IsNotNull(contentGrid, "The content Border must be hosted in a Grid that also carries the decorative stroke Border.");
+                    Assert.AreEqual(2, VisualTreeHelper.GetChildrenCount(contentGrid),
+                        "The content Grid must contain exactly two children: the background Border and the decorative stroke Border.");
+
+                    var strokeBorder = VisualTreeHelper.GetChild(contentGrid, 1) as Border;
+                    Assert.IsNotNull(strokeBorder, "The second child of the content Grid must be the decorative stroke Border.");
+                    Assert.IsFalse(strokeBorder.IsHitTestVisible, "The decorative stroke Border must not capture hit-tests.");
+                    Assert.AreEqual(new CornerRadius(8, 0, 0, 0), strokeBorder.CornerRadius,
+                        "The decorative stroke Border must share the 8,0,0,0 corner radius of the content background Border.");
+                    Assert.AreEqual(new Thickness(1, 1, 0, 0), strokeBorder.BorderThickness,
                         "Left-mode content region must draw a 1,1,0,0 stroke separating it from the pane and top chrome.");
 
                     var expectedStroke = nav.FindResource("CardStrokeColorDefaultBrush") as Brush;
                     Assert.IsNotNull(expectedStroke, "CardStrokeColorDefaultBrush should be available from the active theme.");
-                    Assert.AreSame(expectedStroke, contentBorder.BorderBrush,
+                    Assert.AreSame(expectedStroke, strokeBorder.BorderBrush,
                         "Left-mode content region stroke must bind to CardStrokeColorDefaultBrush so theme switching updates it.");
                 }
                 finally
@@ -349,9 +364,28 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(contentBorder, "PART_ContentPresenter must be hosted by a Border in the LeftCompact template.");
 
                     Assert.AreEqual(new CornerRadius(8, 0, 0, 0), contentBorder.CornerRadius,
-                        "LeftCompact-mode content region must carry the same 8,0,0,0 corner radius as Left mode.");
-                    Assert.AreEqual(new Thickness(1, 1, 0, 0), contentBorder.BorderThickness,
+                        "LeftCompact-mode content background Border must carry the same 8,0,0,0 corner radius as Left mode.");
+
+                    // WI-1 F1: the 1,1,0,0 stroke sits on a sibling decorative Border so
+                    // PART_ContentPresenter lines up with the pane column edge at both 48 px
+                    // (pane closed) and 280 px (pane open) without layout-rounding drift.
+                    var contentGrid = VisualTreeHelper.GetParent(contentBorder) as Grid;
+                    Assert.IsNotNull(contentGrid, "The content Border must be hosted in a Grid that also carries the decorative stroke Border.");
+                    Assert.AreEqual(2, VisualTreeHelper.GetChildrenCount(contentGrid),
+                        "The content Grid must contain exactly two children: the background Border and the decorative stroke Border.");
+
+                    var strokeBorder = VisualTreeHelper.GetChild(contentGrid, 1) as Border;
+                    Assert.IsNotNull(strokeBorder, "The second child of the content Grid must be the decorative stroke Border.");
+                    Assert.IsFalse(strokeBorder.IsHitTestVisible, "The decorative stroke Border must not capture hit-tests.");
+                    Assert.AreEqual(new CornerRadius(8, 0, 0, 0), strokeBorder.CornerRadius,
+                        "The decorative stroke Border must share the 8,0,0,0 corner radius of the content background Border.");
+                    Assert.AreEqual(new Thickness(1, 1, 0, 0), strokeBorder.BorderThickness,
                         "LeftCompact-mode content region must draw a 1,1,0,0 stroke consistent with Left mode.");
+
+                    var expectedStroke = nav.FindResource("CardStrokeColorDefaultBrush") as Brush;
+                    Assert.IsNotNull(expectedStroke, "CardStrokeColorDefaultBrush should be available from the active theme.");
+                    Assert.AreSame(expectedStroke, strokeBorder.BorderBrush,
+                        "LeftCompact-mode content region stroke must bind to CardStrokeColorDefaultBrush so theme switching updates it.");
                 }
                 finally
                 {
