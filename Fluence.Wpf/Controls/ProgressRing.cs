@@ -40,8 +40,13 @@ namespace Fluence.Wpf.Controls
     /// A circular progress indicator that supports both determinate and indeterminate modes.
     /// </summary>
     /// <remarks>Inspired by WInUI's ProgressRing.</remarks>
+    [TemplatePart(Name = PART_IndeterminateRing, Type = typeof(System.Windows.Shapes.Ellipse))]
+    [TemplatePart(Name = PART_DeterminateArc, Type = typeof(Path))]
     public class ProgressRing : Control
     {
+        private const string PART_IndeterminateRing = "PART_IndeterminateRing";
+        private const string PART_DeterminateArc = "PART_DeterminateArc";
+
         private static readonly Duration AnimationDuration = new Duration(TimeSpan.FromMilliseconds(150));
         private static readonly IEasingFunction AnimationEasing = new CubicEase { EasingMode = EasingMode.EaseInOut };
 
@@ -172,7 +177,7 @@ namespace Fluence.Wpf.Controls
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            _arcPath = GetTemplateChild("PART_DeterminateArc") as Path;
+            _arcPath = GetTemplateChild(PART_DeterminateArc) as Path;
 
             if (_arcPath != null && !IsIndeterminate)
             {

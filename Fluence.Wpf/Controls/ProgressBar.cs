@@ -36,8 +36,21 @@ namespace Fluence.Wpf.Controls
     /// <summary>
     /// Fluent-styled progress bar with standard, indeterminate, and step modes.
     /// </summary>
+    [TemplatePart(Name = PART_Track, Type = typeof(System.Windows.Controls.Border))]
+    [TemplatePart(Name = PART_Fill, Type = typeof(System.Windows.Controls.Border))]
+    [TemplatePart(Name = PART_IndeterminateBar, Type = typeof(System.Windows.Controls.Border))]
+    [TemplatePart(Name = PART_IndeterminateBar2, Type = typeof(System.Windows.Controls.Border))]
+    [TemplatePart(Name = PART_IndeterminateTranslate, Type = typeof(TranslateTransform))]
+    [TemplatePart(Name = PART_IndeterminateTranslate2, Type = typeof(TranslateTransform))]
     public class ProgressBar : System.Windows.Controls.ProgressBar
     {
+        private const string PART_Track = "PART_Track";
+        private const string PART_Fill = "PART_Fill";
+        private const string PART_IndeterminateBar = "PART_IndeterminateBar";
+        private const string PART_IndeterminateBar2 = "PART_IndeterminateBar2";
+        private const string PART_IndeterminateTranslate = "PART_IndeterminateTranslate";
+        private const string PART_IndeterminateTranslate2 = "PART_IndeterminateTranslate2";
+
         private System.Windows.Controls.Border _track;
         private System.Windows.Controls.Border _fill;
         private System.Windows.Controls.Border _indeterminateBar;
@@ -212,12 +225,12 @@ namespace Fluence.Wpf.Controls
                 _track.SizeChanged -= OnTrackSizeChanged;
             }
 
-            _track = GetTemplateChild("PART_Track") as System.Windows.Controls.Border;
-            _fill = GetTemplateChild("PART_Fill") as System.Windows.Controls.Border;
-            _indeterminateBar = GetTemplateChild("PART_IndeterminateBar") as System.Windows.Controls.Border;
-            _indeterminateBar2 = GetTemplateChild("PART_IndeterminateBar2") as System.Windows.Controls.Border;
-            _indeterminateTranslate = GetTemplateChild("PART_IndeterminateTranslate") as TranslateTransform;
-            _indeterminateTranslate2 = GetTemplateChild("PART_IndeterminateTranslate2") as TranslateTransform;
+            _track = GetTemplateChild(PART_Track) as System.Windows.Controls.Border;
+            _fill = GetTemplateChild(PART_Fill) as System.Windows.Controls.Border;
+            _indeterminateBar = GetTemplateChild(PART_IndeterminateBar) as System.Windows.Controls.Border;
+            _indeterminateBar2 = GetTemplateChild(PART_IndeterminateBar2) as System.Windows.Controls.Border;
+            _indeterminateTranslate = GetTemplateChild(PART_IndeterminateTranslate) as TranslateTransform;
+            _indeterminateTranslate2 = GetTemplateChild(PART_IndeterminateTranslate2) as TranslateTransform;
 
             if (_track != null)
             {

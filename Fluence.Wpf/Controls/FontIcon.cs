@@ -36,8 +36,13 @@ namespace Fluence.Wpf.Controls
     /// <summary>
     /// Represents an icon that uses a glyph from a font.
     /// </summary>
+    [TemplatePart(Name = PART_Mirror, Type = typeof(ScaleTransform))]
+    [TemplatePart(Name = PART_Rotate, Type = typeof(RotateTransform))]
     public class FontIcon : Control
     {
+        private const string PART_Mirror = "PART_Mirror";
+        private const string PART_Rotate = "PART_Rotate";
+
         static FontIcon()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -124,7 +129,7 @@ namespace Fluence.Wpf.Controls
         private static void OnRotationChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var icon = (FontIcon)d;
-            var rotate = icon.GetTemplateChild("PART_Rotate") as RotateTransform;
+            var rotate = icon.GetTemplateChild(PART_Rotate) as RotateTransform;
             if (rotate != null)
             {
                 rotate.Angle = (double)e.NewValue;
@@ -205,7 +210,7 @@ namespace Fluence.Wpf.Controls
         {
             base.OnApplyTemplate();
 
-            var rotate = GetTemplateChild("PART_Rotate") as RotateTransform;
+            var rotate = GetTemplateChild(PART_Rotate) as RotateTransform;
             if (rotate != null)
             {
                 rotate.Angle = Rotation;
@@ -228,7 +233,7 @@ namespace Fluence.Wpf.Controls
 
         private void ApplyMirrorState()
         {
-            var mirror = GetTemplateChild("PART_Mirror") as ScaleTransform;
+            var mirror = GetTemplateChild(PART_Mirror) as ScaleTransform;
             if (mirror == null)
             {
                 return;
@@ -239,7 +244,7 @@ namespace Fluence.Wpf.Controls
 
         private void ApplySpinState()
         {
-            var rotate = GetTemplateChild("PART_Rotate") as RotateTransform;
+            var rotate = GetTemplateChild(PART_Rotate) as RotateTransform;
             if (rotate == null)
             {
                 return;

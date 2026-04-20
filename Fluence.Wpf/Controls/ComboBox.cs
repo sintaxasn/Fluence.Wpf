@@ -38,8 +38,13 @@ namespace Fluence.Wpf.Controls
     /// <summary>
     /// Fluent-styled combo box with placeholder, icon, and rounded dropdown.
     /// </summary>
+    [TemplatePart(Name = PART_Popup, Type = typeof(Popup))]
+    [TemplatePart(Name = PART_DropdownBorder, Type = typeof(System.Windows.Controls.Border))]
     public class ComboBox : System.Windows.Controls.ComboBox
     {
+        private const string PART_Popup = "PART_Popup";
+        private const string PART_DropdownBorder = "PART_DropdownBorder";
+
         private static readonly DependencyPropertyKey SelectedContentPropertyKey =
             DependencyProperty.RegisterReadOnly(
                 nameof(SelectedContent),
@@ -196,7 +201,7 @@ namespace Fluence.Wpf.Controls
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            _popup = GetTemplateChild("PART_Popup") as Popup;
+            _popup = GetTemplateChild(PART_Popup) as Popup;
             UpdateSelectedContent();
 
             if (SelectedIndex == -1 && Items.Count > 0 && !IsSelectedIndexExplicitlySet())

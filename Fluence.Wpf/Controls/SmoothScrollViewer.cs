@@ -28,6 +28,7 @@
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
 
@@ -36,8 +37,15 @@ namespace Fluence.Wpf.Controls
     /// <summary>
     /// A scroll viewer that animates scrolling with easing for a smooth experience.
     /// </summary>
+    [TemplatePart(Name = PART_ScrollContentPresenter, Type = typeof(ScrollContentPresenter))]
+    [TemplatePart(Name = PART_VerticalScrollBar, Type = typeof(ScrollBar))]
+    [TemplatePart(Name = PART_HorizontalScrollBar, Type = typeof(ScrollBar))]
     public class SmoothScrollViewer : ScrollViewer
     {
+        private const string PART_ScrollContentPresenter = "PART_ScrollContentPresenter";
+        private const string PART_VerticalScrollBar = "PART_VerticalScrollBar";
+        private const string PART_HorizontalScrollBar = "PART_HorizontalScrollBar";
+
         /// <summary>
         /// Identifies the <see cref="ScrollDuration"/> dependency property.
         /// </summary>

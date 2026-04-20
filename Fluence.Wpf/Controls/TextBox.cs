@@ -33,8 +33,21 @@ namespace Fluence.Wpf.Controls
     /// <summary>
     /// A Fluent Design styled text box with placeholder, clear button, and icon support.
     /// </summary>
+    [TemplatePart(Name = PART_ContentHost, Type = typeof(ScrollViewer))]
+    [TemplatePart(Name = PART_ClearButton, Type = typeof(System.Windows.Controls.Button))]
+    [TemplatePart(Name = PART_CharacterCounter, Type = typeof(System.Windows.Controls.TextBlock))]
+    [TemplatePart(Name = PART_ValidationLine, Type = typeof(System.Windows.Controls.Border))]
+    [TemplatePart(Name = PART_ValidationIcon, Type = typeof(System.Windows.Controls.TextBlock))]
+    [TemplatePart(Name = PART_HelperText, Type = typeof(System.Windows.Controls.TextBlock))]
     public class TextBox : System.Windows.Controls.TextBox
     {
+        private const string PART_ContentHost = "PART_ContentHost";
+        private const string PART_ClearButton = "PART_ClearButton";
+        private const string PART_CharacterCounter = "PART_CharacterCounter";
+        private const string PART_ValidationLine = "PART_ValidationLine";
+        private const string PART_ValidationIcon = "PART_ValidationIcon";
+        private const string PART_HelperText = "PART_HelperText";
+
         private System.Windows.Controls.Button _clearButton;
 
         static TextBox()
@@ -255,7 +268,7 @@ namespace Fluence.Wpf.Controls
                 _clearButton.Click -= OnClearButtonClick;
             }
 
-            _clearButton = GetTemplateChild("PART_ClearButton") as System.Windows.Controls.Button;
+            _clearButton = GetTemplateChild(PART_ClearButton) as System.Windows.Controls.Button;
             if (_clearButton != null)
             {
                 _clearButton.Click += OnClearButtonClick;
@@ -273,7 +286,7 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateCharacterCounter()
         {
-            var counter = GetTemplateChild("PART_CharacterCounter") as System.Windows.Controls.TextBlock;
+            var counter = GetTemplateChild(PART_CharacterCounter) as System.Windows.Controls.TextBlock;
             if (counter == null)
             {
                 return;
@@ -291,8 +304,8 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateHelperText()
         {
-            var helper = GetTemplateChild("PART_HelperText") as System.Windows.Controls.TextBlock;
-            var icon = GetTemplateChild("PART_ValidationIcon") as System.Windows.Controls.TextBlock;
+            var helper = GetTemplateChild(PART_HelperText) as System.Windows.Controls.TextBlock;
+            var icon = GetTemplateChild(PART_ValidationIcon) as System.Windows.Controls.TextBlock;
             if (helper == null)
             {
                 return;

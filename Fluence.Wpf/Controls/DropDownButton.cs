@@ -36,8 +36,11 @@ namespace Fluence.Wpf.Controls
     /// <summary>
     /// A toggle button that displays a flyout in a popup when checked.
     /// </summary>
+    [TemplatePart(Name = PART_Popup, Type = typeof(Popup))]
     public class DropDownButton : ToggleButton
     {
+        private const string PART_Popup = "PART_Popup";
+
         private Popup _popup;
 
         static DropDownButton()
@@ -121,7 +124,7 @@ namespace Fluence.Wpf.Controls
 
             base.OnApplyTemplate();
 
-            _popup = GetTemplateChild("PART_Popup") as Popup;
+            _popup = GetTemplateChild(PART_Popup) as Popup;
             if (_popup != null)
             {
                 _popup.PlacementTarget = this;

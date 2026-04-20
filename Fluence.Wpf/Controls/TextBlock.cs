@@ -34,8 +34,11 @@ namespace Fluence.Wpf.Controls
     /// <summary>
     /// A Fluent Design enhanced TextBlock that supports the FluentTypography type ramp.
     /// </summary>
+    [TemplatePart(Name = PART_TextBlock, Type = typeof(System.Windows.Controls.TextBlock))]
     public class TextBlock : ContentControl
     {
+        private const string PART_TextBlock = "PART_TextBlock";
+
         private System.Windows.Controls.TextBlock _partTextBlock;
 
         static TextBlock()
@@ -137,7 +140,7 @@ namespace Fluence.Wpf.Controls
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            _partTextBlock = GetTemplateChild("PART_TextBlock") as System.Windows.Controls.TextBlock;
+            _partTextBlock = GetTemplateChild(PART_TextBlock) as System.Windows.Controls.TextBlock;
             SyncPartTextBlock();
         }
 

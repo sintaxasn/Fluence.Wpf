@@ -66,6 +66,9 @@ namespace Fluence.Wpf.Controls
     /// <summary>
     /// A numeric input control with optional spin buttons and min/max clamping.
     /// </summary>
+    [TemplatePart(Name = PartTextBox, Type = typeof(System.Windows.Controls.TextBox))]
+    [TemplatePart(Name = PartUpButton, Type = typeof(RepeatButton))]
+    [TemplatePart(Name = PartDownButton, Type = typeof(RepeatButton))]
     public class NumberBox : Control
     {
         private const string PartTextBox = "PART_TextBox";

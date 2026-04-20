@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 using System.Windows;
+using System.Windows.Controls.Primitives;
 
 namespace Fluence.Wpf.Controls
 {
@@ -33,8 +34,11 @@ namespace Fluence.Wpf.Controls
     /// Fluent-styled slider control.
     /// </summary>
     /// <remarks>Inspired by WInUI's Slider.</remarks>
+    [TemplatePart(Name = PART_Track, Type = typeof(Track))]
     public class Slider : System.Windows.Controls.Slider
     {
+        private const string PART_Track = "PART_Track";
+
         static Slider()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
