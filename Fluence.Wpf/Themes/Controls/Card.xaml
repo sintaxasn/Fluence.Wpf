@@ -19,7 +19,7 @@
                 <ControlTemplate TargetType="{x:Type controls:Card}">
                     <Border
                         x:Name="OuterBorder"
-                        Background="Transparent"
+                        Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                         CornerRadius="{TemplateBinding CornerRadius}"
                         SnapsToDevicePixels="True">
                         <Border
@@ -171,23 +171,27 @@
                         </Trigger>
 
                         <Trigger Property="Variant" Value="{x:Static ui:CardVariant.Default}">
+                            <Setter TargetName="OuterBorder" Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
                             <Setter TargetName="VariantBackground" Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
                             <Setter TargetName="VariantBackground" Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
                             <Setter TargetName="VariantBackground" Property="BorderThickness" Value="1" />
                             <Setter TargetName="ShadowHost" Property="Effect" Value="{x:Null}" />
                         </Trigger>
                         <Trigger Property="Variant" Value="{x:Static ui:CardVariant.Outlined}">
+                            <Setter TargetName="OuterBorder" Property="Background" Value="Transparent" />
                             <Setter TargetName="VariantBackground" Property="Background" Value="Transparent" />
                             <Setter TargetName="VariantBackground" Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
                             <Setter TargetName="VariantBackground" Property="BorderThickness" Value="1" />
                             <Setter TargetName="ShadowHost" Property="Effect" Value="{x:Null}" />
                         </Trigger>
                         <Trigger Property="Variant" Value="{x:Static ui:CardVariant.Filled}">
+                            <Setter TargetName="OuterBorder" Property="Background" Value="{DynamicResource CardBackgroundFillColorSecondaryBrush}" />
                             <Setter TargetName="VariantBackground" Property="Background" Value="{DynamicResource CardBackgroundFillColorSecondaryBrush}" />
                             <Setter TargetName="VariantBackground" Property="BorderThickness" Value="0" />
                             <Setter TargetName="ShadowHost" Property="Effect" Value="{x:Null}" />
                         </Trigger>
                         <Trigger Property="Variant" Value="{x:Static ui:CardVariant.Subtle}">
+                            <Setter TargetName="OuterBorder" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
                             <Setter TargetName="VariantBackground" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
                             <Setter TargetName="VariantBackground" Property="BorderThickness" Value="0" />
                             <Setter TargetName="ShadowHost" Property="Effect" Value="{x:Null}" />
@@ -225,6 +229,7 @@
                         </Trigger>
 
                         <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="OuterBorder" Property="Background" Value="{DynamicResource ControlFillColorDisabledBrush}" />
                             <Setter TargetName="VariantBackground" Property="Background" Value="{DynamicResource ControlFillColorDisabledBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                             <Setter TargetName="ClickHoverLayer" Property="Opacity" Value="0" />
