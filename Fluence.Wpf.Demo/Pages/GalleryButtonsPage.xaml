@@ -93,7 +93,10 @@
 
             <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="DropDownButton" />
             <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="A toggle button that opens a flyout popup when checked. Set the Flyout property to any content; StaysOpen=false so clicking outside closes the popup and resets IsChecked." />
-            <ui:Card Padding="16" Variant="{x:Static uicore:CardVariant.Default}">
+            <ui:Card
+                Margin="0,0,0,16"
+                Padding="16"
+                Variant="{x:Static uicore:CardVariant.Default}">
                 <StackPanel Orientation="Horizontal">
                     <!--  Menu-style flyout (Subtle buttons stacked)  -->
                     <ui:DropDownButton Margin="0,0,12,0" Content="Options">
@@ -139,6 +142,57 @@
                             <TextBlock Margin="12" Text="(unreachable while disabled)" />
                         </ui:DropDownButton.Flyout>
                     </ui:DropDownButton>
+                </StackPanel>
+            </ui:Card>
+
+            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="SplitButton" />
+            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="A two-half button: the left half fires a primary Click / Command, the right chevron half opens a flyout of alternate actions. Both halves share a single rounded outline bisected by a 1-pixel divider." />
+            <ui:Card Padding="16" Variant="{x:Static uicore:CardVariant.Default}">
+                <StackPanel Orientation="Horizontal">
+                    <!--  Menu-style flyout - primary action + "Save As…" alternate  -->
+                    <ui:SplitButton Margin="0,0,12,0" Content="Save">
+                        <ui:SplitButton.Flyout>
+                            <StackPanel MinWidth="180" Margin="4">
+                                <ui:Button
+                                    Margin="0,0,0,2"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left"
+                                    Appearance="Subtle"
+                                    Content="Save As…" />
+                                <ui:Button
+                                    Margin="0,0,0,2"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left"
+                                    Appearance="Subtle"
+                                    Content="Save a Copy…" />
+                                <ui:Button
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left"
+                                    Appearance="Subtle"
+                                    Content="Export…" />
+                            </StackPanel>
+                        </ui:SplitButton.Flyout>
+                    </ui:SplitButton>
+                    <!--  Free-form flyout content  -->
+                    <ui:SplitButton Margin="0,0,12,0" Content="Paste">
+                        <ui:SplitButton.Flyout>
+                            <StackPanel MaxWidth="260" Margin="12">
+                                <TextBlock
+                                    Margin="0,0,0,6"
+                                    FontWeight="SemiBold"
+                                    Text="Paste Special" />
+                                <TextBlock
+                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                    Text="Clicking the left half pastes as-is; the chevron opens alternate paste modes. Flyout content is arbitrary WPF."
+                                    TextWrapping="Wrap" />
+                            </StackPanel>
+                        </ui:SplitButton.Flyout>
+                    </ui:SplitButton>
+                    <ui:SplitButton Content="Disabled" IsEnabled="False">
+                        <ui:SplitButton.Flyout>
+                            <TextBlock Margin="12" Text="(unreachable while disabled)" />
+                        </ui:SplitButton.Flyout>
+                    </ui:SplitButton>
                 </StackPanel>
             </ui:Card>
         </StackPanel>

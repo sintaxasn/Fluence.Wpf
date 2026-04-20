@@ -35,7 +35,7 @@ xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
 | Area              | Types                                                                                             |
 |-------------------|---------------------------------------------------------------------------------------------------|
 | Window            | `FluenceWindow`, `TitleBar`, `CaptionButtonChrome`, `WindowPolicy`                                |
-| Basic actions     | `Button`, `HyperlinkButton`, `DropDownButton`, `RepeatButton`, `ToggleButton`                     |
+| Basic actions     | `Button`, `HyperlinkButton`, `DropDownButton`, `SplitButton`, `RepeatButton`, `ToggleButton`      |
 | Selection         | `CheckBox`, `RadioButton`, `ToggleSwitch`, `ComboBox`, `Slider`, `NumberBox`                      |
 | Text              | `TextBox`, `PasswordBox`, `TextBlock` + `TextBlockExtensions`                                     |
 | Data              | `ListView`, `ListBox`, `ListBoxItem`, `ListViewItem`                                              |

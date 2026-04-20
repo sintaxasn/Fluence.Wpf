@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **`SplitButton` control** (`Fluence.Wpf.Controls`) - WinUI 3-canonical two-half button: a left primary half that fires `Click` / `Command` and a right chevron half that opens a flyout popup. Public surface: `Content`, `Command`, `CommandParameter`, `CommandTarget` (`ICommandSource`), `Flyout`, `FlyoutTemplate`, `CornerRadius`, `DropdownCornerRadius`, read-only `IsFlyoutOpen`, and a bubbling `Click` routed event. Template parts: `PART_PrimaryButton` (`Button`), `PART_SecondaryButton` (`ToggleButton`), `PART_Popup`. Default style in `Themes/Controls/SplitButton.xaml` merges a single rounded outline bisected by a 1 px divider, with per-half hover / pressed tints. `SplitButtonAutomationPeer` exposes the control as `AutomationControlType.SplitButton` with both `Invoke` (primary half) and `ExpandCollapse` (flyout) patterns. New `GalleryButtonsPage` section demonstrates menu-style, free-form, and disabled flyouts.
+- **7 new MSTests** in `SplitButtonTests.cs` covering default dependency-property values, `IsFlyoutOpen` read-only enforcement, template parts (`PART_PrimaryButton` / `PART_SecondaryButton` / `PART_Popup` with `StaysOpen=false`), primary-half `Click` routed-event + `Command` execution via UI Automation, secondary `ToggleButton.IsChecked=true` → `Popup.IsOpen=true` + `IsFlyoutOpen` flip, and automation peer patterns (`Invoke` + `ExpandCollapse`).
+
 ### Changed
 
 - **Demo `MainWindow` NavigationView grouping** (Paradigm A) - the 11 gallery pages are now grouped under three WinUI 3 Gallery-style section headers (`NavigationViewItemHeader`): _Basic input_ (Buttons, Selection, Inputs), _Collections & navigation_ (Data, Tabs, Navigation), _Design & shell_ (Status, Colors, Glyphs, Window). "Home" stays above the groups. Existing search-driven `CollapseEmptySectionHeaders()` behavior hides headers when their section is fully filtered out — no new code path.
