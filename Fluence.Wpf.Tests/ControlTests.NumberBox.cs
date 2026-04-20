@@ -1,0 +1,243 @@
+/*
+ * Copyright 2026 Dan Cunningham
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+ * THE POSSIBILITY OF SUCH DAMAGE.
+ */
+using System.Windows;
+using System.Windows.Automation.Peers;
+using System.Windows.Automation.Provider;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Fluent = Fluence.Wpf.Controls;
+
+namespace Fluence.Wpf.Tests
+{
+    public partial class ControlTests
+    {
+        [TestMethod]
+        public void NumberBox_UpButton_Click_IncrementsValueBySmallChange()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var numberBox = new Fluent.NumberBox
+                    {
+                        Value = 5,
+                        SmallChange = 1,
+                        SpinButtonPlacementMode = SpinButtonPlacementMode.Inline,
+                        Width = 160
+                    };
+                    window.Content = numberBox;
+                    window.Width = 240;
+                    window.Height = 120;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    numberBox.ApplyTemplate();
+                    var upButton = numberBox.Template.FindName("PART_UpButton", numberBox) as RepeatButton;
+                    Assert.IsNotNull(upButton, "NumberBox template must expose PART_UpButton.");
+
+                    // Use the UI Automation peer's IInvokeProvider.Invoke, which calls the
+                    // button's protected OnClick() and raises ClickEvent through the proper
+                    // channel - equivalent to what a user click does.
+                    var peer = UIElementAutomationPeer.CreatePeerForElement(upButton);
+                    var invoke = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
+                    invoke.Invoke();
+                    DrainDispatcher(window.Dispatcher);
+
+                    Assert.AreEqual(6.0, numberBox.Value,
+                        "PART_UpButton.Click must increment NumberBox.Value by SmallChange.");
+                    Assert.AreEqual("6", numberBox.Text,
+                        "NumberBox.Text must mirror Value after an increment.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NumberBox_DownButton_Click_DecrementsValueBySmallChange()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var numberBox = new Fluent.NumberBox
+                    {
+                        Value = 5,
+                        SmallChange = 1,
+                        SpinButtonPlacementMode = SpinButtonPlacementMode.Inline,
+                        Width = 160
+                    };
+                    window.Content = numberBox;
+                    window.Width = 240;
+                    window.Height = 120;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    numberBox.ApplyTemplate();
+                    var downButton = numberBox.Template.FindName("PART_DownButton", numberBox) as RepeatButton;
+                    Assert.IsNotNull(downButton, "NumberBox template must expose PART_DownButton.");
+
+                    var peer = UIElementAutomationPeer.CreatePeerForElement(downButton);
+                    var invoke = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
+                    invoke.Invoke();
+                    DrainDispatcher(window.Dispatcher);
+
+                    Assert.AreEqual(4.0, numberBox.Value,
+                        "PART_DownButton.Click must decrement NumberBox.Value by SmallChange.");
+                    Assert.AreEqual("4", numberBox.Text,
+                        "NumberBox.Text must mirror Value after a decrement.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NumberBox_SpinButton_UsesClickModePress()
+        {
+            // Regression: the spin buttons must fire Click immediately on MouseDown so
+            // a quick press-release updates the value. With the default ClickMode=Release
+            // the internal RepeatButton timer only raises Click after Delay elapses
+            // (~250 ms on most systems), which users perceive as "the button is broken."
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var numberBox = new Fluent.NumberBox
+                    {
+                        Value = 0,
+                        SpinButtonPlacementMode = SpinButtonPlacementMode.Inline,
+                        Width = 160
+                    };
+                    window.Content = numberBox;
+                    window.Width = 240;
+                    window.Height = 120;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    numberBox.ApplyTemplate();
+                    var upButton = numberBox.Template.FindName("PART_UpButton", numberBox) as RepeatButton;
+                    var downButton = numberBox.Template.FindName("PART_DownButton", numberBox) as RepeatButton;
+                    Assert.IsNotNull(upButton);
+                    Assert.IsNotNull(downButton);
+
+                    Assert.AreEqual(ClickMode.Press, upButton.ClickMode,
+                        "PART_UpButton must use ClickMode=Press so a quick press-release fires Click immediately.");
+                    Assert.AreEqual(ClickMode.Press, downButton.ClickMode,
+                        "PART_DownButton must use ClickMode=Press so a quick press-release fires Click immediately.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NumberBox_Click_ClampsToMaximum()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var numberBox = new Fluent.NumberBox
+                    {
+                        Minimum = 0,
+                        Maximum = 5,
+                        Value = 5,
+                        SmallChange = 1,
+                        SpinButtonPlacementMode = SpinButtonPlacementMode.Inline,
+                        Width = 160
+                    };
+                    window.Content = numberBox;
+                    window.Width = 240;
+                    window.Height = 120;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    numberBox.ApplyTemplate();
+                    var upButton = numberBox.Template.FindName("PART_UpButton", numberBox) as RepeatButton;
+                    Assert.IsNotNull(upButton);
+
+                    var peer = UIElementAutomationPeer.CreatePeerForElement(upButton);
+                    var invoke = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
+                    invoke.Invoke();
+                    DrainDispatcher(window.Dispatcher);
+
+                    Assert.AreEqual(5.0, numberBox.Value,
+                        "Up-click at Maximum must clamp Value to Maximum (no overshoot).");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+    }
+}

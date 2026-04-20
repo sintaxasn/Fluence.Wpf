@@ -30,10 +30,20 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using Fluence.Wpf.Automation;
 
+// IMPORTANT: every reference to RepeatButton / TextBox in this file MUST be
+// fully qualified (System.Windows.Controls.Primitives.RepeatButton,
+// System.Windows.Controls.TextBox). The Fluence.Wpf.Controls namespace
+// defines its own RepeatButton and TextBox subclasses, and because this file
+// sits inside that namespace, any unqualified reference resolves to the
+// Fluence subclass. The default NumberBox template instantiates the stock
+// WPF primitives, so `as RepeatButton` against the Fluence subclass silently
+// returns null and the spin-button Click handlers never get attached.
+// Using aliases do not work here either — C# enforces CS0576 when an alias
+// collides with a namespace member, so fully-qualified names are the only
+// option.
 namespace Fluence.Wpf.Controls
 {
     /// <summary>
@@ -67,8 +77,8 @@ namespace Fluence.Wpf.Controls
     /// A numeric input control with optional spin buttons and min/max clamping.
     /// </summary>
     [TemplatePart(Name = PartTextBox, Type = typeof(System.Windows.Controls.TextBox))]
-    [TemplatePart(Name = PartUpButton, Type = typeof(RepeatButton))]
-    [TemplatePart(Name = PartDownButton, Type = typeof(RepeatButton))]
+    [TemplatePart(Name = PartUpButton, Type = typeof(System.Windows.Controls.Primitives.RepeatButton))]
+    [TemplatePart(Name = PartDownButton, Type = typeof(System.Windows.Controls.Primitives.RepeatButton))]
     public class NumberBox : Control
     {
         private const string PartTextBox = "PART_TextBox";
@@ -76,8 +86,8 @@ namespace Fluence.Wpf.Controls
         private const string PartDownButton = "PART_DownButton";
 
         private System.Windows.Controls.TextBox _partTextBox;
-        private RepeatButton _partUpButton;
-        private RepeatButton _partDownButton;
+        private System.Windows.Controls.Primitives.RepeatButton _partUpButton;
+        private System.Windows.Controls.Primitives.RepeatButton _partDownButton;
         private bool _suppressTextSync;
 
         static NumberBox()
@@ -412,8 +422,8 @@ namespace Fluence.Wpf.Controls
             }
 
             _partTextBox = GetTemplateChild(PartTextBox) as System.Windows.Controls.TextBox;
-            _partUpButton = GetTemplateChild(PartUpButton) as RepeatButton;
-            _partDownButton = GetTemplateChild(PartDownButton) as RepeatButton;
+            _partUpButton = GetTemplateChild(PartUpButton) as System.Windows.Controls.Primitives.RepeatButton;
+            _partDownButton = GetTemplateChild(PartDownButton) as System.Windows.Controls.Primitives.RepeatButton;
 
             if (_partTextBox != null)
             {
