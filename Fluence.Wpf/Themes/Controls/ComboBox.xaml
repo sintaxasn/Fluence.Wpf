@@ -180,15 +180,14 @@
                                                 Text="{TemplateBinding PlaceholderText}"
                                                 Visibility="Collapsed" />
                                         </Grid>
-                                        <TextBlock
+                                        <controls:FontIcon
                                             x:Name="ChevronGlyph"
                                             Grid.Column="2"
                                             Margin="8,0,4,0"
                                             VerticalAlignment="Center"
-                                            FontFamily="Segoe Fluent Icons"
-                                            FontSize="12"
                                             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                            Text="&#xE70D;" />
+                                            Glyph="&#xE70D;"
+                                            IconFontSize="12" />
                                     </Grid>
                                     <ToggleButton
                                         x:Name="ToggleButton"

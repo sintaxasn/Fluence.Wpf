@@ -1,6 +1,7 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
 
     <Style TargetType="{x:Type controls:DropDownButton}">
         <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
@@ -25,67 +26,73 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
-                        <Border x:Name="OuterBorder"
-                                Grid.Row="0"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="{TemplateBinding CornerRadius}"
-                                SnapsToDevicePixels="True">
+                        <Border
+                            x:Name="OuterBorder"
+                            Grid.Row="0"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            SnapsToDevicePixels="True">
                             <Grid>
-                                <Border x:Name="RestFill"
-                                        Background="{TemplateBinding Background}"
-                                        CornerRadius="{TemplateBinding CornerRadius}" />
+                                <Border
+                                    x:Name="RestFill"
+                                    Background="{TemplateBinding Background}"
+                                    CornerRadius="{TemplateBinding CornerRadius}" />
                                 <Grid Margin="{TemplateBinding Padding}">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <ContentPresenter x:Name="ContentPresenter"
-                                                      Grid.Column="0"
-                                                      HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                                      Content="{TemplateBinding Content}"
-                                                      ContentStringFormat="{TemplateBinding ContentStringFormat}"
-                                                      ContentTemplate="{TemplateBinding ContentTemplate}"
-                                                      ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
-                                                      RecognizesAccessKey="True" />
-                                    <Path x:Name="Chevron"
-                                          Grid.Column="1"
-                                          Width="10"
-                                          Height="6"
-                                          Margin="8,0,0,0"
-                                          VerticalAlignment="Center"
-                                          Data="M 0,1.5 L 5,6.5 L 10,1.5 Z"
-                                          Fill="{DynamicResource TextFillColorSecondaryBrush}"
-                                          SnapsToDevicePixels="True" />
+                                    <ContentPresenter
+                                        x:Name="ContentPresenter"
+                                        Grid.Column="0"
+                                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                        Content="{TemplateBinding Content}"
+                                        ContentStringFormat="{TemplateBinding ContentStringFormat}"
+                                        ContentTemplate="{TemplateBinding ContentTemplate}"
+                                        ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
+                                        RecognizesAccessKey="True" />
+                                    <controls:FontIcon
+                                        x:Name="Chevron"
+                                        Grid.Column="1"
+                                        Margin="8,0,0,0"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                        Glyph="&#xE70D;"
+                                        IconFontSize="12" />
                                 </Grid>
                             </Grid>
                         </Border>
 
-                        <Popup x:Name="PART_Popup"
-                               Grid.Row="1"
-                               AllowsTransparency="True"
-                               Focusable="False"
-                               Placement="Bottom"
-                               PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
-                               PopupAnimation="None">
-                            <Border MinWidth="{Binding ActualWidth, ElementName=OuterBorder}"
-                                    Margin="0,4,0,0"
-                                    Background="{DynamicResource SolidBackgroundFillColorQuarternaryBrush}"
-                                    BorderBrush="{DynamicResource SurfaceStrokeColorFlyoutBrush}"
-                                    BorderThickness="1"
-                                    CornerRadius="{TemplateBinding DropdownCornerRadius}"
-                                    SnapsToDevicePixels="True">
+                        <Popup
+                            x:Name="PART_Popup"
+                            Grid.Row="1"
+                            AllowsTransparency="True"
+                            Focusable="False"
+                            Placement="Bottom"
+                            PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+                            PopupAnimation="None">
+                            <Border
+                                MinWidth="{Binding ActualWidth, ElementName=OuterBorder}"
+                                Margin="0,4,0,0"
+                                Background="{DynamicResource SolidBackgroundFillColorQuarternaryBrush}"
+                                BorderBrush="{DynamicResource SurfaceStrokeColorFlyoutBrush}"
+                                BorderThickness="1"
+                                CornerRadius="{TemplateBinding DropdownCornerRadius}"
+                                SnapsToDevicePixels="True">
                                 <Border.Effect>
-                                    <DropShadowEffect BlurRadius="18"
-                                                      Direction="270"
-                                                      Opacity="0.24"
-                                                      ShadowDepth="6"
-                                                      Color="Black" />
+                                    <DropShadowEffect
+                                        BlurRadius="18"
+                                        Direction="270"
+                                        Opacity="0.24"
+                                        ShadowDepth="6"
+                                        Color="Black" />
                                 </Border.Effect>
-                                <ContentPresenter Margin="4"
-                                                  Content="{TemplateBinding Flyout}"
-                                                  ContentTemplate="{TemplateBinding FlyoutTemplate}" />
+                                <ContentPresenter
+                                    Margin="4"
+                                    Content="{TemplateBinding Flyout}"
+                                    ContentTemplate="{TemplateBinding FlyoutTemplate}" />
                             </Border>
                         </Popup>
                     </Grid>
