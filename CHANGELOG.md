@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **Demo `MainWindow` NavigationView grouping** (Paradigm A) - the 11 gallery pages are now grouped under three WinUI 3 Gallery-style section headers (`NavigationViewItemHeader`): _Basic input_ (Buttons, Selection, Inputs), _Collections & navigation_ (Data, Tabs, Navigation), _Design & shell_ (Status, Colors, Glyphs, Window). "Home" stays above the groups. Existing search-driven `CollapseEmptySectionHeaders()` behavior hides headers when their section is fully filtered out — no new code path.
+- **`GalleryHomePage` Featured controls tile grid** - a new "Featured controls" section below the category landing tiles displays a 3-column `UniformGrid` named `FeaturedControlsGrid` with six clickable `Card`s routing to Buttons, Selection, Inputs, Status, Collections, and Navigation. Uses `BodyStrong` + `Caption` typography so it reads as a distinct surface from the Subtitle + Body category tiles above.
+
 ### Added
 
 - **`TabView` / `TabViewItem` controls** (`Fluence.Wpf.Controls`) - WinUI 3-styled multi-document surface built on top of `TabControl` / `TabItem`. Public surface: `TabViewItem.IsClosable`, `TabViewItem.Icon`, `TabViewItem.CloseRequested` routed event; `TabView.IsAddTabButtonVisible`, `TabView.TabWidthMode` (`SizeToContent` / `Equal` / `Compact`), `TabView.CloseButtonOverlayMode` (`Auto` / `OnPointerOver` / `Always`), plus `TabView.AddTabButtonClick` and `TabView.TabCloseRequested` routed events. Template parts: `PART_AddTabButton`, `PART_CloseButton`. Default style in `Themes/Controls/TabView.xaml`.

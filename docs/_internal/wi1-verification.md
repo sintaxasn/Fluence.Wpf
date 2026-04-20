@@ -233,9 +233,60 @@ Remaining 3 failures unchanged — `MainWindow_NavigationPane_ContainsSectionHea
 and `HomePage_ContainsFeaturedControlsGrid` (WI-1D Paradigm A) plus
 `RadioButton_OuterRing_UsesControlStrongStrokeBrush` (WI-3).
 
-### WI-1D redesign
+### WI-1D Paradigm A redesign (landed 2026-04-20)
 
-_(pending user decision against the HTML mocks at `docs/demo-redesign-mocks.html`)_
+Picked **Paradigm A** (WinUI 3 Gallery-style: left rail with section headers
++ category search, cards grid on the home page). The Paradigm A contract was
+already encoded by the two pre-written failing tests
+(`MainWindow_NavigationPane_ContainsSectionHeaders`,
+`HomePage_ContainsFeaturedControlsGrid`), which made A the only paradigm that
+keeps the baseline green without rewriting tests.
+
+Two structural changes:
+
+**1. NavigationView restructure.** [MainWindow.xaml](../../Fluence.Wpf.Demo/MainWindow.xaml)
+now groups the 11 gallery pages under three WinUI 3 Gallery category headers,
+with the "Home" item above all three groups:
+
+- _Basic input_ — Buttons, Selection, Inputs
+- _Collections & navigation_ — Data, Tabs, Navigation
+- _Design & shell_ — Status, Colors, Glyphs, Window
+
+Section headers use `ui:NavigationViewItemHeader`, a sibling item type inside
+`NavigationView.Items`. The existing `CollapseEmptySectionHeaders()` code-behind
+(at [MainWindow.xaml.cs:203-232](../../Fluence.Wpf.Demo/MainWindow.xaml.cs)) already
+walks pane items tracking `currentHeader` + `currentSectionHasVisibleItem` and
+collapses any header whose items are all filtered out — so search behavior
+falls out for free.
+
+**2. Featured controls grid on the home page.**
+[GalleryHomePage.xaml](../../Fluence.Wpf.Demo/Pages/GalleryHomePage.xaml) adds a
+second tile surface below the existing category landing cards: a Subtitle-styled
+"Featured controls" heading plus a `<UniformGrid x:Name="FeaturedControlsGrid"
+Columns="3">` containing six clickable `ui:Card`s (Buttons, Selection, Inputs,
+Status, Collections, Navigation). Each card fires `Card_Click` → `NavigateTo(tag)`,
+reusing the existing handler on `MainWindow`. The action-cards UniformGrid above
+is unchanged (keeps its Theming / Shell / Controls / Fidelity landing semantic).
+
+Per WinUI 3 Gallery, the Featured row uses `BodyStrong` + `Caption` typography
+(tighter than the Subtitle + Body landing tiles) so a six-tile grid reads as a
+different surface from the four-tile grid above it.
+
+Post-fix baseline (Debug, `--no-build`):
+
+| TFM               | Passed | Failed | Skipped | Total | Delta vs F4 baseline |
+|-------------------|-------:|-------:|--------:|------:|----------------------|
+| net10.0-windows   |   224  |    1   |    1    |  226  | +2 passed / −2 failed |
+| net472            |   223  |    1   |    1    |  225  | +2 passed / −2 failed |
+
+Tests flipped green: `MainWindow_NavigationPane_ContainsSectionHeaders`,
+`HomePage_ContainsFeaturedControlsGrid`. The third Paradigm A test
+(`NavSearch_Filter_HidesHeaders_WhenAllSectionItemsFilteredOut`) was already
+passing before WI-1D thanks to `CollapseEmptySectionHeaders()`.
+
+Remaining single failure is the pre-existing WI-3 item
+`RadioButton_OuterRing_UsesControlStrongStrokeBrush` — WI-1 is now closed end
+to end.
 
 ## WI-2 API snapshot diff
 
