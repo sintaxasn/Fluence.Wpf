@@ -29,6 +29,7 @@ using System;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Shell;
 using System.Windows.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -640,6 +641,458 @@ namespace Fluence.Wpf.Tests
 
         #endregion
 
+        #region Caption button DP overrides (authoritative when explicitly set)
+
+        [TestMethod]
+        public void MinimizeButtonVisibility_ExplicitVisible_UnderNoResize_ShowsAndEnablesButton()
+        {
+            RunWithShownWindow(w =>
+            {
+                // Mirror the real PSADT lifecycle: XAML sets MinimizeButtonVisibility=Collapsed
+                // on the FluentDialog template, then code-behind flips it back to Visible when
+                // DialogAllowMinimize is honoured (SetMinimizeButtonAvailability(true)).
+                w.MinimizeButtonVisibility = Visibility.Collapsed;
+                w.ResizeMode = ResizeMode.NoResize;
+                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+
+                var btn = GetCaptionButtonField(w, "_minimizeButton");
+                Assert.IsNotNull(btn);
+                Assert.AreEqual(Visibility.Collapsed, btn.Visibility,
+                    "Pre-flip state: XAML-style local Collapsed must hide the minimize button under NoResize.");
+
+                w.MinimizeButtonVisibility = Visibility.Visible;
+                w.IsMinimizable = true;
+                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+
+                Assert.AreEqual(Visibility.Visible, btn.Visibility,
+                    "Explicit flip Collapsed->Visible must override the NoResize-derived Collapsed baseline.");
+                Assert.IsTrue(btn.IsEnabled,
+                    "Explicit Visible under NoResize must also enable the minimize button.");
+            });
+        }
+
+        [TestMethod]
+        public void MinimizeButtonVisibility_ExplicitCollapsed_UnderCanResize_HidesButton()
+        {
+            RunWithShownWindow(w =>
+            {
+                w.ResizeMode = ResizeMode.CanResize;
+                w.MinimizeButtonVisibility = Visibility.Collapsed;
+                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+
+                var btn = GetCaptionButtonField(w, "_minimizeButton");
+                Assert.IsNotNull(btn);
+                Assert.AreEqual(Visibility.Collapsed, btn.Visibility,
+                    "Explicit MinimizeButtonVisibility=Collapsed must hide the button even under CanResize.");
+                Assert.IsFalse(btn.IsEnabled,
+                    "Explicit Collapsed must also disable the button.");
+            });
+        }
+
+        [TestMethod]
+        public void MaximizeButtonVisibility_ExplicitVisible_UnderNoResize_ShowsAndEnablesMaximize()
+        {
+            RunWithShownWindow(w =>
+            {
+                w.MaximizeButtonVisibility = Visibility.Collapsed;
+                w.ResizeMode = ResizeMode.NoResize;
+                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+
+                var max = GetCaptionButtonField(w, "_maximizeButton");
+                Assert.IsNotNull(max);
+                Assert.AreEqual(Visibility.Collapsed, max.Visibility,
+                    "Pre-flip state: XAML-style local Collapsed must hide the maximize button under NoResize.");
+
+                w.MaximizeButtonVisibility = Visibility.Visible;
+                w.IsMaximizable = true;
+                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+
+                Assert.AreEqual(Visibility.Visible, max.Visibility,
+                    "Explicit flip Collapsed->Visible must override the NoResize-derived Collapsed baseline.");
+                Assert.AreEqual(WindowState.Normal, w.WindowState);
+                Assert.IsTrue(max.IsEnabled,
+                    "Maximize button must be enabled when the window is not already maximized and the DP is explicit.");
+            });
+        }
+
+        private static CanExecuteRoutedEventArgs CreateCanExecuteArgs(ICommand command)
+        {
+            var ctor = typeof(CanExecuteRoutedEventArgs).GetConstructor(
+                BindingFlags.Instance | BindingFlags.NonPublic,
+                null,
+                new[] { typeof(ICommand), typeof(object) },
+                null);
+            Assert.IsNotNull(ctor, "CanExecuteRoutedEventArgs should expose an internal (ICommand, object) ctor.");
+            return (CanExecuteRoutedEventArgs)ctor.Invoke(new object[] { command, null });
+        }
+
+        private static bool InvokeCanHandler(FluenceWindow window, string handlerName, CanExecuteRoutedEventArgs args)
+        {
+            var handler = typeof(FluenceWindow).GetMethod(
+                handlerName,
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.IsNotNull(handler, "Expected caption-button command handler: " + handlerName);
+            handler.Invoke(window, new object[] { window, args });
+            return args.CanExecute;
+        }
+
+        private static ExecutedRoutedEventArgs CreateExecutedArgs(ICommand command)
+        {
+            var ctor = typeof(ExecutedRoutedEventArgs).GetConstructor(
+                BindingFlags.Instance | BindingFlags.NonPublic,
+                null,
+                new[] { typeof(ICommand), typeof(object) },
+                null);
+            Assert.IsNotNull(ctor, "ExecutedRoutedEventArgs should expose an internal (ICommand, object) ctor.");
+            return (ExecutedRoutedEventArgs)ctor.Invoke(new object[] { command, null });
+        }
+
+        private static void InvokeExecutedHandler(FluenceWindow window, string handlerName, ExecutedRoutedEventArgs args)
+        {
+            var handler = typeof(FluenceWindow).GetMethod(
+                handlerName,
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.IsNotNull(handler, "Expected caption-button Executed handler: " + handlerName);
+            handler.Invoke(window, new object[] { window, args });
+        }
+
+        [TestMethod]
+        public void CanMinimizeWindow_RespectsExplicitDp_UnderNoResize()
+        {
+            RunWithWindow(w =>
+            {
+                w.ResizeMode = ResizeMode.NoResize;
+
+                Assert.IsFalse(InvokeCanHandler(w, "OnCanMinimizeWindow", CreateCanExecuteArgs(SystemCommands.MinimizeWindowCommand)),
+                    "Default: ResizeMode=NoResize must block MinimizeWindowCommand when the DP is at its declared default.");
+
+                w.MinimizeButtonVisibility = Visibility.Visible;
+                w.IsMinimizable = true;
+                Assert.IsTrue(InvokeCanHandler(w, "OnCanMinimizeWindow", CreateCanExecuteArgs(SystemCommands.MinimizeWindowCommand)),
+                    "Explicit MinimizeButtonVisibility=Visible + IsMinimizable=true must allow MinimizeWindowCommand to execute even under NoResize.");
+
+                w.IsMinimizable = false;
+                Assert.IsFalse(InvokeCanHandler(w, "OnCanMinimizeWindow", CreateCanExecuteArgs(SystemCommands.MinimizeWindowCommand)),
+                    "IsMinimizable=false must gate the command regardless of DP visibility override.");
+            });
+        }
+
+        [TestMethod]
+        public void CanMaximizeWindow_RespectsExplicitDp_UnderNoResize()
+        {
+            RunWithWindow(w =>
+            {
+                w.ResizeMode = ResizeMode.NoResize;
+
+                Assert.IsFalse(InvokeCanHandler(w, "OnCanResizeWindow", CreateCanExecuteArgs(SystemCommands.MaximizeWindowCommand)),
+                    "Default: ResizeMode=NoResize must block MaximizeWindowCommand when the DP is at its declared default.");
+
+                w.MaximizeButtonVisibility = Visibility.Visible;
+                w.IsMaximizable = true;
+                Assert.IsTrue(InvokeCanHandler(w, "OnCanResizeWindow", CreateCanExecuteArgs(SystemCommands.MaximizeWindowCommand)),
+                    "Explicit MaximizeButtonVisibility=Visible + IsMaximizable=true must allow MaximizeWindowCommand even under NoResize.");
+            });
+        }
+
+        [TestMethod]
+        public void CaptionButtons_DefaultBehaviorUnchanged_WhenDpsNotTouched()
+        {
+            RunWithShownWindow(w =>
+            {
+                Assert.AreEqual(ResizeMode.CanResize, w.ResizeMode,
+                    "Default ResizeMode sanity check.");
+
+                var minBtn = GetCaptionButtonField(w, "_minimizeButton");
+                var maxBtn = GetCaptionButtonField(w, "_maximizeButton");
+                var closeBtn = GetCaptionButtonField(w, "_closeButton");
+
+                Assert.AreEqual(Visibility.Visible, minBtn.Visibility,
+                    "Default visibility must remain Visible under CanResize.");
+                Assert.AreEqual(Visibility.Visible, maxBtn.Visibility);
+                Assert.AreEqual(Visibility.Visible, closeBtn.Visibility);
+
+                w.ResizeMode = ResizeMode.NoResize;
+                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+
+                Assert.AreEqual(Visibility.Collapsed, minBtn.Visibility,
+                    "Pre-existing contract: untouched DPs hide min/max when ResizeMode=NoResize.");
+                Assert.AreEqual(Visibility.Collapsed, maxBtn.Visibility);
+            });
+        }
+
+        [TestMethod]
+        public void OnMinimizeWindow_DrivesWindowStateMinimized_EvenAfterSysMenuStripped()
+        {
+            // RunWithShownWindow triggers OnSourceInitialized → ApplyWindowShell →
+            // HideNativeCaptionButtons → NativeMethods.HideAllWindowButtons, which strips
+            // WS_SYSMENU on the native HWND. Without WS_SYSMENU (and the implicitly-disabled
+            // WS_MINIMIZEBOX) DefWindowProc silently drops WM_SYSCOMMAND/SC_MINIMIZE, so
+            // SystemCommands.MinimizeWindow(this) would be a no-op — exactly the production
+            // symptom that made the PSADT AllowMinimize caption button look clickable but
+            // refuse to actually minimize. The Executed handler must bypass the sysmenu gate
+            // by assigning WindowState directly so the transition always lands.
+            RunWithShownWindow(w =>
+            {
+                Assert.AreEqual(WindowState.Normal, w.WindowState,
+                    "Precondition: freshly-shown window should start in Normal state.");
+
+                InvokeExecutedHandler(
+                    w,
+                    "OnMinimizeWindow",
+                    CreateExecutedArgs(SystemCommands.MinimizeWindowCommand));
+
+                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+
+                Assert.AreEqual(WindowState.Minimized, w.WindowState,
+                    "OnMinimizeWindow must drive WindowState=Minimized even when HideAllWindowButtons has stripped WS_SYSMENU.");
+            });
+        }
+
+        [TestMethod]
+        public void OnMaximizeWindow_DrivesWindowStateMaximized_EvenAfterSysMenuStripped()
+        {
+            RunWithShownWindow(w =>
+            {
+                Assert.AreEqual(WindowState.Normal, w.WindowState,
+                    "Precondition: freshly-shown window should start in Normal state.");
+
+                InvokeExecutedHandler(
+                    w,
+                    "OnMaximizeWindow",
+                    CreateExecutedArgs(SystemCommands.MaximizeWindowCommand));
+
+                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+
+                Assert.AreEqual(WindowState.Maximized, w.WindowState,
+                    "OnMaximizeWindow must drive WindowState=Maximized even when HideAllWindowButtons has stripped WS_SYSMENU.");
+            });
+        }
+
+        [TestMethod]
+        public void OnRestoreWindow_DrivesWindowStateNormal_FromMaximized()
+        {
+            RunWithShownWindow(w =>
+            {
+                w.WindowState = WindowState.Maximized;
+                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+                Assert.AreEqual(WindowState.Maximized, w.WindowState,
+                    "Precondition: test setup failed to drive the window to Maximized state.");
+
+                InvokeExecutedHandler(
+                    w,
+                    "OnRestoreWindow",
+                    CreateExecutedArgs(SystemCommands.RestoreWindowCommand));
+
+                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+
+                Assert.AreEqual(WindowState.Normal, w.WindowState,
+                    "OnRestoreWindow must drive WindowState=Normal regardless of sysmenu/style gating.");
+            });
+        }
+
+        [TestMethod]
+        public void MinimizeButton_EndToEnd_ClicksActuallyMinimizeUnderPsadtConfig()
+        {
+            // Reproduces the exact PSADT FluentDialog topology: Topmost=True + ResizeMode=NoResize
+            // + ExtendsContentIntoTitleBar=True + MinimizeButtonVisibility flipped from
+            // Collapsed (XAML baseline) to Visible (SetMinimizeButtonAvailability(true)). The
+            // test drives the Button via its ICommand to mirror the real click path (WPF
+            // Button → SystemCommands.MinimizeWindowCommand → FluenceWindow CommandBinding →
+            // OnMinimizeWindow) and asserts the caption is clickable AND the state lands on
+            // Minimized. If this ever regresses to "visible but inert" we'll catch it here
+            // instead of only in manual QA.
+            RunOnFreshStaThread(() =>
+            {
+                var app = EnsureApplication();
+                var dict = MergeTheme(app);
+                FluenceWindow window = null;
+
+                try
+                {
+                    window = new FluenceWindow
+                    {
+                        Width = 520,
+                        Height = 360,
+                        Left = -20000,
+                        Top = -20000,
+                        ExtendsContentIntoTitleBar = true,
+                        WindowStartupLocation = WindowStartupLocation.Manual,
+                        ShowInTaskbar = true,
+                        Topmost = true,
+                        ResizeMode = ResizeMode.NoResize,
+                        MinimizeButtonVisibility = Visibility.Collapsed,
+                        MaximizeButtonVisibility = Visibility.Collapsed,
+                        CloseButtonVisibility = Visibility.Collapsed,
+                    };
+
+                    window.Show();
+                    window.Dispatcher.Invoke(() => { }, DispatcherPriority.Loaded);
+
+                    // Flip visibility after Show() to mirror PSADT's SetMinimizeButtonAvailability(true).
+                    window.MinimizeButtonVisibility = Visibility.Visible;
+                    window.IsMinimizable = true;
+                    window.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+                    CommandManager.InvalidateRequerySuggested();
+                    window.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
+
+                    var minBtn = GetCaptionButtonField(window, "_minimizeButton");
+                    Assert.IsNotNull(minBtn, "Minimize template part must exist after Show.");
+                    Assert.AreEqual(Visibility.Visible, minBtn.Visibility,
+                        "PSADT flow: post-flip MinimizeButtonVisibility must render the button visible.");
+                    Assert.IsTrue(minBtn.IsEnabled,
+                        "PSADT flow: Button.IsEnabled must be true so clicks dispatch the command.");
+
+                    Assert.IsTrue(
+                        SystemCommands.MinimizeWindowCommand.CanExecute(null, minBtn),
+                        "PSADT flow: MinimizeWindowCommand.CanExecute must be true once DPs are flipped and IsMinimizable=true.");
+
+                    Assert.AreEqual(WindowState.Normal, window.WindowState,
+                        "Precondition: window must start in Normal before the command executes.");
+
+                    // Drive the same code path a real click would drive: the button's Command
+                    // on its own DataContext (the button is the command target, the window is
+                    // the CommandBinding host via routed-command bubbling).
+                    SystemCommands.MinimizeWindowCommand.Execute(null, minBtn);
+                    window.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+                    window.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
+
+                    Assert.AreEqual(WindowState.Minimized, window.WindowState,
+                        "PSADT flow: SystemCommands.MinimizeWindowCommand.Execute must end with WindowState=Minimized even when Topmost=True + ResizeMode=NoResize + HideAllWindowButtons has stripped the sysmenu.");
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void MinimizeButton_EndToEnd_WorksUnderShowDialogModalPsadtConfig()
+        {
+            // Same topology as the Show() variant above, but uses ShowDialog() which is what
+            // PSADT's DialogManager actually invokes (see DialogManager.ShowModalDialog -> dialog.ShowDialog()).
+            // Modal WPF windows push a nested Dispatcher frame, disable their owner, and in the
+            // PSADT case are also Topmost — a combination that can mask bugs a Show() test misses.
+            // We schedule the click via Dispatcher.BeginInvoke(ApplicationIdle) from Loaded so
+            // the command fires after the modal frame is pumping, then verify WindowState.
+            RunOnFreshStaThread(() =>
+            {
+                var app = EnsureApplication();
+                var dict = MergeTheme(app);
+                FluenceWindow window = null;
+                WindowState observedStateAfterMinimize = WindowState.Normal;
+                bool minimizeCommandCanExecute = false;
+                bool minimizeButtonIsEnabled = false;
+                Visibility minimizeButtonVisibility = Visibility.Collapsed;
+                Exception scenarioException = null;
+
+                try
+                {
+                    window = new FluenceWindow
+                    {
+                        Width = 520,
+                        Height = 360,
+                        Left = -20000,
+                        Top = -20000,
+                        ExtendsContentIntoTitleBar = true,
+                        WindowStartupLocation = WindowStartupLocation.Manual,
+                        ShowInTaskbar = true,
+                        Topmost = true,
+                        ResizeMode = ResizeMode.NoResize,
+                        MinimizeButtonVisibility = Visibility.Collapsed,
+                        MaximizeButtonVisibility = Visibility.Collapsed,
+                        CloseButtonVisibility = Visibility.Collapsed,
+                    };
+
+                    var capturedWindow = window;
+                    capturedWindow.Loaded += (_, __) =>
+                    {
+                        capturedWindow.Dispatcher.BeginInvoke((Action)(() =>
+                        {
+                            try
+                            {
+                                capturedWindow.MinimizeButtonVisibility = Visibility.Visible;
+                                capturedWindow.IsMinimizable = true;
+                                CommandManager.InvalidateRequerySuggested();
+
+                                capturedWindow.Dispatcher.BeginInvoke((Action)(() =>
+                                {
+                                    try
+                                    {
+                                        var minBtn = GetCaptionButtonField(capturedWindow, "_minimizeButton");
+                                        if (minBtn == null)
+                                        {
+                                            throw new InvalidOperationException("Minimize template part was not materialised inside ShowDialog modal frame.");
+                                        }
+
+                                        minimizeButtonVisibility = minBtn.Visibility;
+                                        minimizeButtonIsEnabled = minBtn.IsEnabled;
+                                        minimizeCommandCanExecute = SystemCommands.MinimizeWindowCommand.CanExecute(null, minBtn);
+
+                                        SystemCommands.MinimizeWindowCommand.Execute(null, minBtn);
+
+                                        capturedWindow.Dispatcher.BeginInvoke((Action)(() =>
+                                        {
+                                            observedStateAfterMinimize = capturedWindow.WindowState;
+                                            capturedWindow.Close();
+                                        }), DispatcherPriority.ApplicationIdle);
+                                    }
+                                    catch (Exception exInner)
+                                    {
+                                        scenarioException = exInner;
+                                        capturedWindow.Close();
+                                    }
+                                }), DispatcherPriority.ApplicationIdle);
+                            }
+                            catch (Exception exOuter)
+                            {
+                                scenarioException = exOuter;
+                                capturedWindow.Close();
+                            }
+                        }), DispatcherPriority.ApplicationIdle);
+                    };
+
+                    window.ShowDialog();
+
+                    if (scenarioException != null)
+                    {
+                        ExceptionDispatchInfo.Capture(scenarioException).Throw();
+                    }
+
+                    Assert.AreEqual(Visibility.Visible, minimizeButtonVisibility,
+                        "PSADT ShowDialog flow: MinimizeButtonVisibility must render Visible after Loaded flip.");
+                    Assert.IsTrue(minimizeButtonIsEnabled,
+                        "PSADT ShowDialog flow: Button.IsEnabled must be true inside the modal dispatcher frame.");
+                    Assert.IsTrue(minimizeCommandCanExecute,
+                        "PSADT ShowDialog flow: MinimizeWindowCommand.CanExecute must be true inside the modal dispatcher frame.");
+                    Assert.AreEqual(WindowState.Minimized, observedStateAfterMinimize,
+                        "PSADT ShowDialog flow: SystemCommands.MinimizeWindowCommand.Execute must end with WindowState=Minimized even inside a modal dispatcher frame with Topmost=True + ResizeMode=NoResize + sysmenu stripped.");
+                }
+                finally
+                {
+                    if (window != null && window.IsVisible)
+                    {
+                        window.Close();
+                    }
+
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        #endregion
+
         #region 8. PasswordBox.SelectAll
 
         [TestMethod]
@@ -729,6 +1182,127 @@ namespace Fluence.Wpf.Tests
         public void NativeConstants_MonitorDefaultToNearest_HasCorrectValue()
         {
             Assert.AreEqual(2u, NativeConstants.MONITOR_DEFAULTTONEAREST);
+        }
+
+        #endregion
+
+        #region WI-1 F4 — Caption buttons must remain hit-testable when ExtendsContentIntoTitleBar=true
+
+        // When ExtendsContentIntoTitleBar=true, the content area moves into Grid.Row=0 (same row
+        // as the title bar). Because WPF paints siblings in document order, whichever sibling is
+        // declared last wins the top of the z-stack. The title bar grid (and its caption button
+        // panel) must therefore win — otherwise opaque client content covers min/max/close and
+        // clicks are swallowed by the content, not the button.
+        //
+        // This test plants an opaque full-size Border as the window Content. If the title bar
+        // grid is correctly on top, a hit-test at a caption-button center hits the button or one
+        // of its Path children — not the Border.
+        [TestMethod]
+        public void CaptionButtons_AboveContent_WhenExtendsContentIntoTitleBar()
+        {
+            RunOnFreshStaThread(() =>
+            {
+                var app = EnsureApplication();
+                var dict = MergeTheme(app);
+                FluenceWindow window = null;
+
+                try
+                {
+                    var occluder = new System.Windows.Controls.Border
+                    {
+                        Background = System.Windows.Media.Brushes.Magenta
+                    };
+                    occluder.Name = "OccluderBorder";
+
+                    window = new FluenceWindow
+                    {
+                        Width = 640,
+                        Height = 420,
+                        Left = -20000,
+                        Top = -20000,
+                        ExtendsContentIntoTitleBar = true,
+                        WindowStartupLocation = WindowStartupLocation.Manual,
+                        ShowInTaskbar = false,
+                        Content = occluder
+                    };
+
+                    window.Show();
+                    window.Dispatcher.Invoke(() => { }, DispatcherPriority.Loaded);
+                    window.UpdateLayout();
+                    window.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+
+                    foreach (var fieldName in new[] { "_minimizeButton", "_maximizeButton", "_closeButton" })
+                    {
+                        var btn = GetCaptionButtonField(window, fieldName);
+                        Assert.IsNotNull(btn, fieldName + " must exist in template.");
+                        Assert.IsTrue(btn.IsVisible, fieldName + " must be visible.");
+
+                        var center = new System.Windows.Point(btn.ActualWidth / 2, btn.ActualHeight / 2);
+                        var clientPoint = btn.TranslatePoint(center, window);
+
+                        var hitVisual = (System.Windows.Media.Visual)null;
+                        System.Windows.Media.VisualTreeHelper.HitTest(
+                            window,
+                            null,
+                            new System.Windows.Media.HitTestResultCallback(r =>
+                            {
+                                hitVisual = r.VisualHit as System.Windows.Media.Visual;
+                                return System.Windows.Media.HitTestResultBehavior.Stop;
+                            }),
+                            new System.Windows.Media.PointHitTestParameters(clientPoint));
+
+                        Assert.IsNotNull(hitVisual, "Hit test must return a visual at " + fieldName + " center.");
+                        var hitHost = FindLogicalHost(hitVisual as DependencyObject);
+                        Assert.AreNotSame(occluder, hitHost,
+                            fieldName + " must be above client content in z-order when ExtendsContentIntoTitleBar=true (got occluder instead).");
+                        Assert.IsTrue(
+                            IsDescendantOfButton(hitVisual as DependencyObject, btn),
+                            fieldName + " center must hit a descendant of the caption button, not the content underneath.");
+                    }
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        private static DependencyObject FindLogicalHost(DependencyObject node)
+        {
+            while (node != null)
+            {
+                if (node is System.Windows.Controls.Border || node is System.Windows.Controls.Button)
+                {
+                    return node;
+                }
+
+                node = System.Windows.Media.VisualTreeHelper.GetParent(node);
+            }
+
+            return null;
+        }
+
+        private static bool IsDescendantOfButton(DependencyObject node, System.Windows.Controls.Button target)
+        {
+            while (node != null)
+            {
+                if (ReferenceEquals(node, target))
+                {
+                    return true;
+                }
+
+                node = System.Windows.Media.VisualTreeHelper.GetParent(node);
+            }
+
+            return false;
         }
 
         #endregion

@@ -48,6 +48,25 @@ namespace Fluence.Wpf.Native
         [DllImport(User32, SetLastError = true)]
         private static extern int SetWindowLong(IntPtr hWnd, int nIndex, int dwNewLong);
 
+        [DllImport(User32, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
+
+        [DllImport(User32, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool IsIconic(IntPtr hWnd);
+
+        [DllImport(User32, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool IsZoomed(IntPtr hWnd);
+
+        // SW_* constants for ShowWindow. See Win32 docs for full list.
+        private const int SW_RESTORE = 9;
+        private const int SW_MINIMIZE = 6;
+        private const int SW_MAXIMIZE = 3;
+        private const int SW_SHOWMINIMIZED = 2;
+        private const int SW_SHOWNOACTIVATE = 4;
+
         #endregion
 
         #region NT APIs
@@ -196,6 +215,53 @@ namespace Fluence.Wpf.Native
         {
             int style = GetWindowLong(hwnd, GWL_STYLE);
             SetWindowLong(hwnd, GWL_STYLE, style & ~WS_SYSMENU);
+        }
+
+        // Directly drives the native ShowWindow() API to minimize a window. Used as a
+        // belt-and-braces fallback from FluenceWindow.OnMinimizeWindow so that the custom
+        // caption's minimize button is guaranteed to work even when the chrome has stripped
+        // WS_SYSMENU/WS_MINIMIZEBOX (blocking SC_MINIMIZE via DefWindowProc), ResizeMode is
+        // NoResize, the window is Topmost, or the window is shown via ShowDialog() inside a
+        // nested dispatcher frame. The Win32 ShowWindow call honors SW_MINIMIZE regardless of
+        // window styles, so it cannot be silently gated the way WM_SYSCOMMAND can.
+        public static bool MinimizeWindowNative(IntPtr hwnd)
+        {
+            if (hwnd == IntPtr.Zero)
+            {
+                return false;
+            }
+
+            if (IsIconic(hwnd))
+            {
+                return true;
+            }
+
+            return ShowWindow(hwnd, SW_MINIMIZE);
+        }
+
+        public static bool MaximizeWindowNative(IntPtr hwnd)
+        {
+            if (hwnd == IntPtr.Zero)
+            {
+                return false;
+            }
+
+            if (IsZoomed(hwnd))
+            {
+                return true;
+            }
+
+            return ShowWindow(hwnd, SW_MAXIMIZE);
+        }
+
+        public static bool RestoreWindowNative(IntPtr hwnd)
+        {
+            if (hwnd == IntPtr.Zero)
+            {
+                return false;
+            }
+
+            return ShowWindow(hwnd, SW_RESTORE);
         }
 
         public static bool RoundWindowCorner(IntPtr hwnd)

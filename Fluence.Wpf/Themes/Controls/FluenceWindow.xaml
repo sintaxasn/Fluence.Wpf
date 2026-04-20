@@ -143,11 +143,16 @@
                                 <RowDefinition Height="*" />
                             </Grid.RowDefinitions>
 
-                            <!--  Title bar region  -->
+                            <!--  Title bar region.
+                                  Panel.ZIndex=1 keeps the caption-button strip above client content
+                                  when ExtendsContentIntoTitleBar=true. Without this, client content
+                                  renders on top in document order and swallows min / max / close
+                                  clicks even though the hit-test for NC buttons returns 0 correctly (WI-1 F4).  -->
                             <Grid
                                 x:Name="TitleBarGrid"
                                 Grid.Row="0"
                                 Height="{TemplateBinding TitleBarHeight}"
+                                Panel.ZIndex="1"
                                 Background="Transparent">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />

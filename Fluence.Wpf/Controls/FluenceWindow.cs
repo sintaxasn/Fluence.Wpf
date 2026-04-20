@@ -474,6 +474,7 @@ namespace Fluence.Wpf.Controls
             {
                 UpdateShellMetrics();
                 UpdateCaptionButtons();
+                CommandManager.InvalidateRequerySuggested();
             }
 
             if (e.Property == Window.WindowStateProperty)
@@ -490,6 +491,7 @@ namespace Fluence.Wpf.Controls
             if (window != null)
             {
                 window.UpdateCaptionButtons();
+                CommandManager.InvalidateRequerySuggested();
             }
         }
 
@@ -687,9 +689,13 @@ namespace Fluence.Wpf.Controls
                 ResizeMode,
                 out var minimizeVisibility,
                 out var minimizeEnabled);
-            if (MinimizeButtonVisibility != Visibility.Visible)
+            // When the user has explicitly set MinimizeButtonVisibility (e.g. to re-enable the
+            // button under ResizeMode=NoResize), that value wins over the ResizeMode-derived
+            // baseline. Otherwise we keep the chrome defaults.
+            if (IsCaptionChromeOverrideExplicit(MinimizeButtonVisibilityProperty))
             {
                 minimizeVisibility = MinimizeButtonVisibility;
+                minimizeEnabled = minimizeVisibility == Visibility.Visible;
             }
 
             if (!IsMinimizable)
@@ -707,10 +713,13 @@ namespace Fluence.Wpf.Controls
                 out var restVis,
                 out var maxEn,
                 out var restEn);
-            if (MaximizeButtonVisibility != Visibility.Visible)
+            if (IsCaptionChromeOverrideExplicit(MaximizeButtonVisibilityProperty))
             {
                 maxVis = MaximizeButtonVisibility;
                 restVis = MaximizeButtonVisibility;
+                bool explicitlyVisible = MaximizeButtonVisibility == Visibility.Visible;
+                maxEn = explicitlyVisible && WindowState != WindowState.Maximized;
+                restEn = explicitlyVisible && WindowState == WindowState.Maximized;
             }
 
             if (!IsMaximizable)
@@ -727,9 +736,10 @@ namespace Fluence.Wpf.Controls
             CaptionButtonChrome.GetCloseChrome(
                 out var closeVisibility,
                 out var closeEnabled);
-            if (CloseButtonVisibility != Visibility.Visible)
+            if (IsCaptionChromeOverrideExplicit(CloseButtonVisibilityProperty))
             {
                 closeVisibility = CloseButtonVisibility;
+                closeEnabled = closeVisibility == Visibility.Visible;
             }
 
             if (!IsClosable)
@@ -739,6 +749,17 @@ namespace Fluence.Wpf.Controls
 
             _closeButton.Visibility = closeVisibility;
             _closeButton.IsEnabled = closeEnabled;
+        }
+
+        /// <summary>
+        /// Returns <c>true</c> when the caption-chrome override property has been explicitly assigned
+        /// (via code, XAML local value, style, binding, etc.) rather than left at its declared default.
+        /// </summary>
+        private bool IsCaptionChromeOverrideExplicit(DependencyProperty dp)
+        {
+            var source = DependencyPropertyHelper.GetValueSource(this, dp);
+            return source.BaseValueSource != BaseValueSource.Default &&
+                   source.BaseValueSource != BaseValueSource.Inherited;
         }
 
         private void ApplyCornerPreference()
@@ -996,12 +1017,22 @@ namespace Fluence.Wpf.Controls
 
         private void OnCanResizeWindow(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = ResizeMode == ResizeMode.CanResize || ResizeMode == ResizeMode.CanResizeWithGrip;
+            bool allowedByResizeMode =
+                ResizeMode == ResizeMode.CanResize ||
+                ResizeMode == ResizeMode.CanResizeWithGrip;
+            bool allowedByExplicitDp =
+                IsCaptionChromeOverrideExplicit(MaximizeButtonVisibilityProperty) &&
+                MaximizeButtonVisibility == Visibility.Visible;
+            e.CanExecute = (allowedByResizeMode || allowedByExplicitDp) && IsMaximizable;
         }
 
         private void OnCanMinimizeWindow(object sender, CanExecuteRoutedEventArgs e)
         {
-            e.CanExecute = ResizeMode != ResizeMode.NoResize;
+            bool allowedByResizeMode = ResizeMode != ResizeMode.NoResize;
+            bool allowedByExplicitDp =
+                IsCaptionChromeOverrideExplicit(MinimizeButtonVisibilityProperty) &&
+                MinimizeButtonVisibility == Visibility.Visible;
+            e.CanExecute = (allowedByResizeMode || allowedByExplicitDp) && IsMinimizable;
         }
 
         private void OnCloseWindow(object sender, ExecutedRoutedEventArgs e)
@@ -1009,19 +1040,52 @@ namespace Fluence.Wpf.Controls
             SystemCommands.CloseWindow(this);
         }
 
+        // Note: Maximize/Minimize/Restore are driven by setting WindowState directly
+        // rather than via SystemCommands.*Window, which post WM_SYSCOMMAND. DefWindowProc
+        // gates SC_MINIMIZE on WS_SYSMENU + WS_MINIMIZEBOX (and SC_MAXIMIZE on
+        // WS_MAXIMIZEBOX); those bits are intentionally stripped by
+        // NativeMethods.HideAllWindowButtons so the native caption does not paint over the
+        // custom chrome, and they are also stripped by WPF whenever ResizeMode is
+        // ResizeMode.NoResize (the XAML baseline for every PSADT fluent dialog). If we
+        // routed through WM_SYSCOMMAND the messages would be silently dropped and the
+        // caption buttons would appear clickable but do nothing. Assigning WindowState
+        // uses ShowWindow under the hood, which honours the requested state regardless of
+        // sysmenu/style gating and keeps the custom caption authoritative.
+        //
+        // Belt-and-braces: we also call NativeMethods.{Minimize/Maximize/Restore}WindowNative
+        // after the WPF assignment. These perform a direct ShowWindow() call on the HWND.
+        // ShowWindow() is not gated by window styles, modal dispatcher state, Topmost, or
+        // ShowInTaskbar, so the caption button remains functional even in niche scenarios
+        // where WPF's WindowStateProperty change handler's internal ShowWindow might not
+        // reach the native window (for example if _hwndSource is transiently unavailable
+        // mid-activation, or if a third-party WndProc hook mutates WM_SIZE/WM_WINDOWPOSCHANGING
+        // replies). When the native window is already in the requested state, the helpers
+        // short-circuit via IsIconic/IsZoomed so there is no double-transition.
         private void OnMaximizeWindow(object sender, ExecutedRoutedEventArgs e)
         {
-            SystemCommands.MaximizeWindow(this);
+            WindowState = WindowState.Maximized;
+            if (_handle != IntPtr.Zero)
+            {
+                NativeMethods.MaximizeWindowNative(_handle);
+            }
         }
 
         private void OnMinimizeWindow(object sender, ExecutedRoutedEventArgs e)
         {
-            SystemCommands.MinimizeWindow(this);
+            WindowState = WindowState.Minimized;
+            if (_handle != IntPtr.Zero)
+            {
+                NativeMethods.MinimizeWindowNative(_handle);
+            }
         }
 
         private void OnRestoreWindow(object sender, ExecutedRoutedEventArgs e)
         {
-            SystemCommands.RestoreWindow(this);
+            WindowState = WindowState.Normal;
+            if (_handle != IntPtr.Zero)
+            {
+                NativeMethods.RestoreWindowNative(_handle);
+            }
         }
 
         #endregion
