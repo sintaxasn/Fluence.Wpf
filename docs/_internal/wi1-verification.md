@@ -288,6 +288,46 @@ Remaining single failure is the pre-existing WI-3 item
 `RadioButton_OuterRing_UsesControlStrongStrokeBrush` — WI-1 is now closed end
 to end.
 
+### WI-1D Step 1D.3 — screenshot regeneration (recorded 2026-04-20)
+
+Regenerated `docs/screenshots/banner-{light,dark,highcontrast}-{1,1.5}x.png` via
+[GalleryScreenshotHarness.CaptureBannerAcrossThemesAndScales](../../Fluence.Wpf.Tests/GalleryScreenshotHarness.cs)
+with `FLUENCE_CAPTURE_SCREENSHOTS=1`. Invocation that works inside this session:
+
+```powershell
+dotnet vstest Fluence.Wpf.Tests/bin/Debug/net10.0-windows10.0.26100.0/Fluence.Wpf.Tests.dll `
+  --TestCaseFilter:"FullyQualifiedName~CaptureBannerAcrossThemesAndScales"
+```
+
+(`dotnet test` silently skipped output in this session's shell; `dotnet vstest`
+against the pre-built DLL is the reliable path. Result: `Passed 1, Failed 0`.)
+
+File size growth reflects the added **Featured controls** heading +
+`FeaturedControlsGrid` 3×2 card surface below the existing four-tile category
+grid:
+
+| File                             | Before (04-17) | After (04-20) |
+|----------------------------------|---------------:|--------------:|
+| banner-light-1x.png              |         68 KB  |        91 KB  |
+| banner-light-1.5x.png            |         78 KB  |       104 KB  |
+| banner-dark-1x.png               |         66 KB  |        89 KB  |
+| banner-dark-1.5x.png             |         74 KB  |        99 KB  |
+| banner-highcontrast-1x.png       |         64 KB  |        87 KB  |
+| banner-highcontrast-1.5x.png     |         70 KB  |        95 KB  |
+
+Visual pass on all three 1× captures:
+
+- **Light** — hero banner + four-tile category grid (Theming / Shell / Controls / Fidelity) + Subtitle "Featured controls" + six-tile grid (Buttons, Selection, Inputs, Status, Collections, Navigation). All text readable; card strokes render with the canonical `CardStrokeColorDefault` tone.
+- **Dark** — same layout; theme-reactive foreground/background brushes tracked the swap cleanly. No stale Light brushes on any surface.
+- **HighContrast** — FeaturedControlsGrid + category tiles render correctly; the **pre-existing** HC banner wordmark fade (BannerLight.png raster blending into the HC-light surface) is unrelated to 46c4b93 and is tracked separately (not a WI-1D regression).
+
+The `GalleryScreenshotHarness` hosts `GalleryHomePage` inside a plain `Window`
+per its documented limitation (`RenderTargetBitmap` cannot capture DWM
+backdrops), so the NavigationView section-header grouping from 46c4b93 is
+**not** visible in these banners. Runtime verification of the grouped pane is
+covered by MSTest `MainWindow_NavigationPane_ContainsSectionHeaders` already
+green.
+
 ## WI-2 API snapshot diff
 
 _(see `docs/fluencewindow-api-snapshot.md` for the enumeration; this section
