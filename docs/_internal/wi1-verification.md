@@ -155,7 +155,33 @@ Test flipped green: `NavSearch_EnterKey_SelectsTopMatch`.
 
 Remaining 3 failures — all WI-1D Paradigm A scaffolding + WI-3 RadioButton.
 
-### WI-1B F2, WI-1C F4, WI-1D redesign
+### WI-1B F2 — content pane tone (landed 2026-04-20)
+
+Audit only — no source change needed. The default style setter at
+[NavigationView.xaml:750](../../Fluence.Wpf/Themes/Controls/NavigationView.xaml)
+already binds `ContentBackground` to `{DynamicResource LayerFillColorDefaultBrush}`,
+the canonical WinUI 3 layer tone, and the template instances bind via
+`TemplateBinding` at lines 409, 592, 721.
+
+Gallery cards across the demo (`GalleryDataPage`, `GalleryColorsPage`,
+`GalleryHomePage` etc.) already use `CardBackgroundFillColorDefaultBrush`,
+so the subtle elevation (pane = `NavigationViewBackgroundBrush` →
+content host = `LayerFillColorDefaultBrush` → cards =
+`CardBackgroundFillColorDefaultBrush`) is preserved per WinUI 3 Gallery.
+
+Added [NavigationView_ContentBackground_ResolvesToLayerFillColorDefaultBrush_AcrossThemes](../../Fluence.Wpf.Tests/ControlTests.NavigationView.cs)
+as a regression guard: asserts `nav.ContentBackground` is reference-identical to the
+currently-resolved `LayerFillColorDefaultBrush` under Light, Dark, and after a
+full Light→Dark→HC→Light theme cycle.
+
+Post-fix baseline:
+
+| TFM               | Passed | Failed | Skipped | Total | Delta vs F3 baseline |
+|-------------------|-------:|-------:|--------:|------:|----------------------|
+| net10.0-windows   |   217  |    3   |    1    |  221  | +1 passed / +1 total |
+| net472            |   216  |    3   |    1    |  220  | +1 passed / +1 total |
+
+### WI-1C F4, WI-1D redesign
 
 _(pending)_
 

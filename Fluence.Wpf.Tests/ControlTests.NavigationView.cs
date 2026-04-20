@@ -1011,5 +1011,63 @@ namespace Fluence.Wpf.Tests
                 }
             });
         }
+
+        // WI-1 F2: NavigationView.ContentBackground must resolve to LayerFillColorDefaultBrush
+        // so the content host carries the canonical WinUI 3 layer tone above the pane. The
+        // default style ships the DynamicResource binding; this test guards the contract and
+        // proves the brush re-resolves correctly after a theme swap.
+        [TestMethod]
+        public void NavigationView_ContentBackground_ResolvesToLayerFillColorDefaultBrush_AcrossThemes()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 640,
+                        Height = 400,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left
+                    };
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
+                    DrainDispatcher(window.Dispatcher);
+                    var lightLayer = nav.FindResource("LayerFillColorDefaultBrush") as Brush;
+                    Assert.IsNotNull(lightLayer, "LayerFillColorDefaultBrush must resolve under Light theme.");
+                    Assert.AreSame(lightLayer, nav.ContentBackground,
+                        "Light-theme ContentBackground must resolve to LayerFillColorDefaultBrush via DynamicResource.");
+
+                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, true);
+                    DrainDispatcher(window.Dispatcher);
+                    var darkLayer = nav.FindResource("LayerFillColorDefaultBrush") as Brush;
+                    Assert.IsNotNull(darkLayer, "LayerFillColorDefaultBrush must resolve under Dark theme.");
+                    Assert.AreSame(darkLayer, nav.ContentBackground,
+                        "Dark-theme ContentBackground must resolve to LayerFillColorDefaultBrush via DynamicResource.");
+
+                    ThemeTestHelpers.ApplyStandardThemeCycle();
+                    DrainDispatcher(window.Dispatcher);
+                    var postCycleLayer = nav.FindResource("LayerFillColorDefaultBrush") as Brush;
+                    Assert.IsNotNull(postCycleLayer, "LayerFillColorDefaultBrush must resolve after a full theme cycle.");
+                    Assert.AreSame(postCycleLayer, nav.ContentBackground,
+                        "ContentBackground must track the current LayerFillColorDefaultBrush after a full theme cycle.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
     }
 }
