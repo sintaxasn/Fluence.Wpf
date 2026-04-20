@@ -236,7 +236,14 @@
                                         Color="Black" />
                                 </Border.Effect>
                                 <Grid>
+                                    <!--  The noise overlay fills the rounded popup shape. Its CornerRadius  -->
+                                    <!--  MUST track the outer PART_DropdownBorder.CornerRadius so that when  -->
+                                    <!--  the popup opens upward (IsDropDownOpenedUpward=True) the outer goes  -->
+                                    <!--  flat at the bottom and the noise does the same - otherwise the noise  -->
+                                    <!--  paints rounded bottom corners that no longer match the outer flat  -->
+                                    <!--  edge, which reads as "bottom corners not properly rounded".  -->
                                     <Border
+                                        x:Name="NoiseOverlay"
                                         Background="{DynamicResource AcrylicNoiseBrush}"
                                         CornerRadius="{TemplateBinding DropdownCornerRadius}"
                                         Opacity="0.04" />
@@ -288,6 +295,8 @@
                             <Setter TargetName="PART_DropdownBorder" Property="CornerRadius" Value="8,8,0,0" />
                             <Setter TargetName="PART_DropdownBorder" Property="Margin" Value="0,0,0,4" />
                             <Setter TargetName="PART_DropdownBorder" Property="RenderTransformOrigin" Value="0.5,1" />
+                            <!--  Track the outer border's runtime shape - see NoiseOverlay comment above.  -->
+                            <Setter TargetName="NoiseOverlay" Property="CornerRadius" Value="8,8,0,0" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="MainBorder" Property="Background" Value="{DynamicResource ControlFillColorDisabledBrush}" />

@@ -149,6 +149,115 @@ namespace Fluence.Wpf.Tests
 
         #endregion
 
+        #region Popup corner tracking (bottom-rounded regression guard)
+
+        // Regression: the inner acrylic-noise Border inside the popup was using a
+        // fixed TemplateBinding for CornerRadius, so when IsDropDownOpenedUpward=True
+        // flipped the OUTER PART_DropdownBorder to "8,8,0,0" (flat bottom) the inner
+        // noise Border kept "8,8,8,8", painting a rounded bottom noise that no longer
+        // matched the outer shape. Users saw this as "bottom corners not properly
+        // rounded". The fix names the inner Border "NoiseOverlay" and extends the
+        // IsDropDownOpenedUpward trigger to flip NoiseOverlay.CornerRadius in lockstep.
+
+        [TestMethod]
+        public void ComboBoxXaml_NoiseOverlay_IsNamed()
+        {
+            var xamlPath = System.IO.Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                @"..\..\..\..\Fluence.Wpf\Themes\Controls\ComboBox.xaml");
+
+            if (!System.IO.File.Exists(xamlPath))
+            {
+                return;
+            }
+
+            string xaml = System.IO.File.ReadAllText(xamlPath);
+
+            Assert.IsTrue(
+                xaml.Contains("x:Name=\"NoiseOverlay\""),
+                "The acrylic-noise Border inside PART_DropdownBorder must be named " +
+                "\"NoiseOverlay\" so the IsDropDownOpenedUpward trigger can retarget " +
+                "its CornerRadius to match the outer border's flat-bottom shape.");
+        }
+
+        [TestMethod]
+        public void ComboBoxXaml_UpwardTrigger_SetsNoiseOverlayCornerRadius()
+        {
+            var xamlPath = System.IO.Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
+                @"..\..\..\..\Fluence.Wpf\Themes\Controls\ComboBox.xaml");
+
+            if (!System.IO.File.Exists(xamlPath))
+            {
+                return;
+            }
+
+            string xaml = System.IO.File.ReadAllText(xamlPath);
+
+            // The setter must appear inside the IsDropDownOpenedUpward trigger and
+            // target NoiseOverlay with the same "8,8,0,0" value used by the outer
+            // PART_DropdownBorder - otherwise the noise overlay paints rounded
+            // bottom corners while the outer is flat, producing the visual bug.
+            const string expectedSetter =
+                "<Setter TargetName=\"NoiseOverlay\" Property=\"CornerRadius\" Value=\"8,8,0,0\" />";
+
+            Assert.IsTrue(
+                xaml.Contains(expectedSetter),
+                "IsDropDownOpenedUpward trigger must set NoiseOverlay.CornerRadius=\"8,8,0,0\" " +
+                "so the inner noise tracks the outer flat-bottom shape when the popup opens upward.");
+        }
+
+        [TestMethod]
+        public void ComboBox_Template_ExposesDropdownBorderAndNoiseOverlay()
+        {
+            RunOnFreshStaThread(() =>
+            {
+                var application = EnsureApplication();
+                MergeTheme(application);
+
+                var window = new Window();
+                try
+                {
+                    var comboBox = new ComboBox();
+                    comboBox.Items.Add("Alpha");
+                    comboBox.Items.Add("Beta");
+
+                    window.Content = comboBox;
+                    window.Width = 200;
+                    window.Height = 80;
+                    window.Show();
+                    WpfTestSta.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.Background);
+                    window.UpdateLayout();
+                    comboBox.ApplyTemplate();
+
+                    var dropdownBorder = comboBox.Template.FindName("PART_DropdownBorder", comboBox)
+                        as System.Windows.Controls.Border;
+                    Assert.IsNotNull(dropdownBorder,
+                        "Template must expose PART_DropdownBorder so the popup backdrop is locatable.");
+
+                    var noiseOverlay = comboBox.Template.FindName("NoiseOverlay", comboBox)
+                        as System.Windows.Controls.Border;
+                    Assert.IsNotNull(noiseOverlay,
+                        "Template must expose NoiseOverlay (the inner acrylic-noise Border) so the " +
+                        "IsDropDownOpenedUpward trigger can track the outer border's CornerRadius.");
+
+                    // Default (downward-opening) state: both borders share the same radius,
+                    // inherited from DropdownCornerRadius (default CornerRadius(8)).
+                    Assert.AreEqual(new CornerRadius(8), dropdownBorder.CornerRadius,
+                        "PART_DropdownBorder.CornerRadius must default to DropdownCornerRadius (8).");
+                    Assert.AreEqual(new CornerRadius(8), noiseOverlay.CornerRadius,
+                        "NoiseOverlay.CornerRadius must default to DropdownCornerRadius (8) so the " +
+                        "noise paints the same rounded shape as the outer border.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        #endregion
+
         #region Auto-select first item
 
         [TestMethod]
