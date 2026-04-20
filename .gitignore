@@ -33,3 +33,5 @@ Thumbs.db
 ## Test results
 TestResults/
 *.trx
+
+.history/
