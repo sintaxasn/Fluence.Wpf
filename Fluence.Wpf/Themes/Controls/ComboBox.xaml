@@ -260,7 +260,7 @@
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="DropdownScale" Storyboard.TargetProperty="ScaleY">
                                             <DiscreteDoubleKeyFrame KeyTime="0" Value="0" />
                                             <SplineDoubleKeyFrame
-                                                KeySpline="{StaticResource ControlFastOutSlowInKeySpline}"
+                                                KeySpline="0.8,0,0,1"
                                                 KeyTime="0:0:0.167"
                                                 Value="1" />
                                         </DoubleAnimationUsingKeyFrames>
