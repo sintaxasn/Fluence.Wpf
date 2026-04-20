@@ -164,14 +164,14 @@
                                 BorderThickness="1"
                                 CornerRadius="{TemplateBinding DropdownCornerRadius}"
                                 SnapsToDevicePixels="True">
-                                <Border.Effect>
-                                    <DropShadowEffect
-                                        BlurRadius="18"
-                                        Direction="270"
-                                        Opacity="0.24"
-                                        ShadowDepth="6"
-                                        Color="Black" />
-                                </Border.Effect>
+                                <!--
+                                    No DropShadowEffect: WPF bitmap effects on a Border with CornerRadius
+                                    always bleed into the transparent corner nooks, producing darker
+                                    squared-off artifacts at the rounded corners regardless of ShadowDepth.
+                                    Real WinUI 3 uses DWM-managed compositor shadows (not WPF effects).
+                                    The SurfaceStrokeColorFlyoutBrush border + background contrast is
+                                    sufficient for visual separation without the rendering artifact.
+                                -->
                                 <ContentPresenter
                                     Margin="4"
                                     Content="{TemplateBinding Flyout}"
