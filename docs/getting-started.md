@@ -4,17 +4,17 @@
 
 1. Add a **project reference** to `Fluence.Wpf/Fluence.Wpf.csproj` (recommended until a NuGet package is published):
 
-```xml
-<ItemGroup>
-  <ProjectReference Include="path/to/Fluence.Wpf/Fluence.Wpf.csproj" />
-</ItemGroup>
-```
+    ```xml
+    <ItemGroup>
+    <ProjectReference Include="path/to/Fluence.Wpf/Fluence.Wpf.csproj" />
+    </ItemGroup>
+    ```
 
 2. Optional: produce a local NuGet package for feed or `PackageReference` consumption:
 
-```powershell
-dotnet pack Fluence.Wpf/Fluence.Wpf.csproj -c Release -o ./artifacts
-```
+    ```powershell
+    dotnet pack Fluence.Wpf/Fluence.Wpf.csproj -c Release -o ./artifacts
+    ```
 
 The package id is **`Fluence.Wpf`** when publishing is enabled.
 
@@ -30,7 +30,7 @@ Fluence.Wpf.ApplicationThemeManager.Apply(
 Fluence.Wpf.ApplicationAccentColorManager.ApplySystemAccent();
 ```
 
-`Apply` (first call) seeds the resource stack in a fixed order; subsequent calls swap only the theme color dictionary at slot `[0]` — see [theming.md](theming.md).
+`Apply` (first call) seeds the resource stack in a fixed order; subsequent calls swap only the theme color dictionary at slot `[0]` - see [theming.md](theming.md).
 
 ## Use a Fluent window shell
 
@@ -85,7 +85,7 @@ Fluence.Wpf.ApplicationThemeManager.Changed += (s, e) => { /* refresh theme-spec
 Fluence.Wpf.SystemThemeWatcher.UnWatch(myWindow);
 ```
 
-`ApplicationThemeManager.Changed` fires once per applied theme change — use it to swap theme-specific image assets (see `GalleryHomePage.xaml.cs` in the demo for a banner swap pattern).
+`ApplicationThemeManager.Changed` fires once per applied theme change - use it to swap theme-specific image assets (see `GalleryHomePage.xaml.cs` in the demo for a banner swap pattern).
 
 ## Verify locally
 

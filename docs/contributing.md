@@ -14,7 +14,7 @@ Test project targets **net472** and **net10.0-windows**; both must pass. WPF tes
 
 - **Fluence.Wpf** library: **C# 7.3** on `net472` (no `default` interface members, no nullable reference types, no ranges). `net10.0-windows` may use `latest` via the `LangVersion` conditional.
 - Every `.cs` file starts with the standard BSD 3-Clause header used across the repo; match an existing file exactly.
-- Public APIs carry `///` XML comments. The library builds with `<DocumentationFile>` and does **not** suppress `CS1591` / `CS1574` — a missing comment becomes a build error.
+- Public APIs carry `///` XML comments. The library builds with `<DocumentationFile>` and does **not** suppress `CS1591` / `CS1574` - a missing comment becomes a build error.
 - XAML lives in `Fluence.Wpf/Themes/Controls/<ControlName>.xaml` and is merged from `Themes/Generic.xaml`.
 
 ## Visual changes
@@ -27,9 +27,9 @@ Test project targets **net472** and **net10.0-windows**; both must pass. WPF tes
 
 - Drop new test files alongside existing ones (`ControlTests.<Area>.cs`) as partial extensions of `public partial class ControlTests` so they share the `RunOnStaThread`, `EnsureApplication`, `MergeGenericDictionary`, and `FindVisualChild*` helpers.
 - When adding a new public control, include at minimum:
-    - A default-style / template smoke test.
-    - A theme-cycle test if the control uses `DynamicResource` heavily (`ThemeTestHelpers.ApplyStandardThemeCycle`).
-    - Interaction or state assertions for any public event / read-only DP the control exposes.
+  - A default-style / template smoke test.
+  - A theme-cycle test if the control uses `DynamicResource` heavily (`ThemeTestHelpers.ApplyStandardThemeCycle`).
+  - Interaction or state assertions for any public event / read-only DP the control exposes.
 - `ControlTests.FluentStroke.cs` is the reference pattern for small template/behavior probes: apply the generic dictionary, show a minimal `Window`, `ApplyTemplate`, assert template parts and resolved brushes, then drain and close.
 
 ## Pull requests

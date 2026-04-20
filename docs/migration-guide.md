@@ -22,12 +22,12 @@ This guide is **generic**: it describes moving from any older Fluent-style WPF t
 ## 4. Window and backdrop
 
 - If you used custom chrome or unofficial backdrop wrappers, compare behavior with `FluenceWindow` (`Backdrop`, caption visibility, rounded corners, `ExtendsContentIntoTitleBar`).
-- `FluenceWindow` exposes a `TitleBar` content slot — migrate any search boxes, breadcrumbs, or workspace pickers you previously crammed into a custom header into this slot.
+- `FluenceWindow` exposes a `TitleBar` content slot - migrate any search boxes, breadcrumbs, or workspace pickers you previously crammed into a custom header into this slot.
 - Test **High Contrast** and **accent** changes with `SystemThemeWatcher` enabled; if your old shell relied on `SystemParameters` poll-based hooks, retire them and subscribe to `ApplicationThemeManager.Changed` instead.
 
 ## 5. NavigationView layout
 
-- The default `PaneDisplayMode` is **`Left`**. If you previously pinned `LeftCompact` to work around indicator gaps, you can drop that override — both templates now share a single animated `PART_SelectionIndicator` and the same content-region border.
+- The default `PaneDisplayMode` is **`Left`**. If you previously pinned `LeftCompact` to work around indicator gaps, you can drop that override - both templates now share a single animated `PART_SelectionIndicator` and the same content-region border.
 - The content region draws a 1 px top/left `CardStrokeColorDefault` border with `CornerRadius="8,0,0,0"`. If your consumer styles painted their own outer frame, remove that frame so the Fluence border is visible.
 - Back button and pane toggle live in a 48 px rail on the left; custom pane headers / footers go through `PaneHeader`, `PaneFooter`, and `Header` as before.
 

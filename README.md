@@ -44,17 +44,17 @@ The banner above is checked in at `docs/images/Banner.png`. Theme-specific galle
 
 ## Controls
 
-| Area        | Types                                                                                        |
-|-------------|----------------------------------------------------------------------------------------------|
-| Window      | `FluenceWindow` (plus `FluentWindow`, retained as an obsolete alias)                         |
+| Area        | Types                                                                                                                       |
+|-------------|-----------------------------------------------------------------------------------------------------------------------------|
+| Window      | `FluenceWindow`,                                                                                                            |
 | Basic input | `Button`, `HyperlinkButton`, `DropDownButton`, `CheckBox`, `RadioButton`, `ToggleSwitch`, `ComboBox`, `Slider`, `NumberBox` |
-| Text        | `TextBox`, `PasswordBox`, `TextBlockExtensions`                                              |
-| Collections | `ListView`, `ListBox`                                                                         |
-| Tabs        | `TabControl`, `TabItem`, `TabView`, `TabViewItem`                                            |
-| Feedback    | `ProgressBar`, `ProgressRing`, `InfoBar`, `InfoBadge`                                          |
-| Navigation  | `NavigationView`, `NavigationViewItem`                                                       |
-| Layout      | `Card`, `Border`, `StackPanel`, `DockPanel`, `SmoothScrollViewer`, `Expander`               |
-| Icons       | `FontIcon`                                                                                   |
+| Text        | `TextBox`, `PasswordBox`, `TextBlockExtensions`                                                                             |
+| Collections | `ListView`, `ListBox`                                                                                                       |
+| Tabs        | `TabControl`, `TabItem`, `TabView`, `TabViewItem`                                                                           |
+| Feedback    | `ProgressBar`, `ProgressRing`, `InfoBar`, `InfoBadge`                                                                       |
+| Navigation  | `NavigationView`, `NavigationViewItem`                                                                                      |
+| Layout      | `Card`, `Border`, `StackPanel`, `DockPanel`, `SmoothScrollViewer`, `Expander`                                               |
+| Icons       | `FontIcon`                                                                                                                  |
 
 ## Theming
 
@@ -75,7 +75,7 @@ dotnet pack Fluence.Wpf/Fluence.Wpf.csproj -c Release -o ./artifacts
 
 ## Requirements
 
-- .NET Framework 4.7.2 and/or .NET 10 (Windows) — see the solution TFMs
+- .NET Framework 4.7.2 and/or .NET 10 (Windows) - see the solution TFMs
 - Windows 10 version 1809 or later
 - Windows 11 recommended for full Mica / Acrylic / Tabbed backdrop support
 
@@ -99,11 +99,11 @@ Or set **Fluence.Wpf.Demo** as the startup project in Visual Studio and press F5
 
 ## Documentation
 
-- [Getting started](docs/getting-started.md) — reference, startup calls, local pack
-- [Theming](docs/theming.md) — merge order, accent, backdrop, watcher
-- [Controls](docs/controls.md) — catalog aligned with the demo gallery
-- [Migration guide](docs/migration-guide.md) — generic move from other Fluent-style stacks
-- [Contributing](docs/contributing.md) — build matrix, tests, PR notes
+- [Getting started](docs/getting-started.md) - reference, startup calls, local pack
+- [Theming](docs/theming.md) - merge order, accent, backdrop, watcher
+- [Controls](docs/controls.md) - catalog aligned with the demo gallery
+- [Migration guide](docs/migration-guide.md) - generic move from other Fluent-style stacks
+- [Contributing](docs/contributing.md) - build matrix, tests, PR notes
 
 ## Contributing
 
