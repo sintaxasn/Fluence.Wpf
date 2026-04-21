@@ -37,6 +37,10 @@ namespace Fluence.Wpf.Controls
     /// An inline notification bar for displaying status messages with severity levels.
     /// </summary>
     [TemplatePart(Name = PART_CloseButton, Type = typeof(System.Windows.Controls.Button))]
+    [TemplateVisualState(GroupName = "SeverityLevels", Name = "Informational")]
+    [TemplateVisualState(GroupName = "SeverityLevels", Name = "Success")]
+    [TemplateVisualState(GroupName = "SeverityLevels", Name = "Warning")]
+    [TemplateVisualState(GroupName = "SeverityLevels", Name = "Error")]
     public class InfoBar : ContentControl
     {
         private const string PART_CloseButton = "PART_CloseButton";
@@ -96,7 +100,7 @@ namespace Fluence.Wpf.Controls
                 nameof(Severity),
                 typeof(InfoBarSeverity),
                 typeof(InfoBar),
-                new FrameworkPropertyMetadata(InfoBarSeverity.Informational));
+                new FrameworkPropertyMetadata(InfoBarSeverity.Informational, OnSeverityChanged));
 
         /// <summary>
         /// Gets or sets the severity level that determines the visual style of the info bar.
@@ -253,6 +257,39 @@ namespace Fluence.Wpf.Controls
             {
                 _closeButton.Click += OnCloseButtonClick;
             }
+
+            UpdateSeverityState(false);
+        }
+
+        private static void OnSeverityChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((InfoBar)d).UpdateSeverityState(true);
+        }
+
+        /// <summary>
+        /// Transitions the control to the visual state matching the current <see cref="Severity"/>.
+        /// Called without transitions on initial template application; with transitions on runtime changes.
+        /// </summary>
+        private void UpdateSeverityState(bool useTransitions)
+        {
+            string stateName;
+            switch (Severity)
+            {
+                case InfoBarSeverity.Success:
+                    stateName = "Success";
+                    break;
+                case InfoBarSeverity.Warning:
+                    stateName = "Warning";
+                    break;
+                case InfoBarSeverity.Error:
+                    stateName = "Error";
+                    break;
+                default:
+                    stateName = "Informational";
+                    break;
+            }
+
+            VisualStateManager.GoToState(this, stateName, useTransitions);
         }
 
         private void OnCloseButtonClick(object sender, RoutedEventArgs e)
