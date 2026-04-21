@@ -296,7 +296,12 @@ namespace Fluence.Wpf.Demo.Pages
 
             if (ExtendsContentToggle != null)
             {
-                fw.ExtendsContentIntoTitleBar = ExtendsContentToggle.IsChecked == true;
+                bool extends = ExtendsContentToggle.IsChecked == true;
+                fw.ExtendsContentIntoTitleBar = extends;
+                // When extending into the title bar and a Left / LeftCompact navigation
+                // pane is present, push the icon + title past the compact rail so they do
+                // not overlap the pane. 48 matches the compact rail width.
+                fw.TitleBarLeftIndent = extends ? 48d : 0d;
             }
 
             if (HasShadowToggle != null)
