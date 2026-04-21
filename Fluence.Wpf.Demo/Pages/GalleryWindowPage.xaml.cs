@@ -266,18 +266,41 @@ namespace Fluence.Wpf.Demo.Pages
                 return;
             }
 
+            // Funnel through MainWindow helpers so the Top-pane + extended-chrome hide rule
+            // (see MainWindow.ApplyTitleBarContentVisibility) stays authoritative for the
+            // actual ShowIcon / ShowTitle DPs.
+            var main = fw as MainWindow;
+
             if (ShowWindowTitleToggle != null)
             {
-                fw.ShowTitle = ShowWindowTitleToggle.IsChecked == true;
-                fw.Title = ShowWindowTitleToggle.IsChecked == true ? MainWindow.GalleryWindowTitle : string.Empty;
+                bool show = ShowWindowTitleToggle.IsChecked == true;
+                string title = show ? MainWindow.GalleryWindowTitle : string.Empty;
+                if (main != null)
+                {
+                    main.SetUserShowTitle(show, title);
+                }
+                else
+                {
+                    fw.ShowTitle = show;
+                    fw.Title = title;
+                }
             }
 
             if (ShowWindowIconToggle != null)
             {
-                fw.ShowIcon = ShowWindowIconToggle.IsChecked == true;
-                fw.Icon = ShowWindowIconToggle.IsChecked == true
+                bool show = ShowWindowIconToggle.IsChecked == true;
+                ImageSource icon = show
                     ? new BitmapImage(new Uri("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/AppIcon.png"))
                     : null;
+                if (main != null)
+                {
+                    main.SetUserShowIcon(show, icon);
+                }
+                else
+                {
+                    fw.ShowIcon = show;
+                    fw.Icon = icon;
+                }
             }
         }
 
