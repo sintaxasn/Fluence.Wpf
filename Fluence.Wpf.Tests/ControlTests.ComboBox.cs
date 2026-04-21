@@ -1,0 +1,158 @@
+/*
+ * Copyright 2026 Dan Cunningham
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+ * THE POSSIBILITY OF SUCH DAMAGE.
+ */
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using FluenceComboBox = Fluence.Wpf.Controls.ComboBox;
+using WpfBorder = System.Windows.Controls.Border;
+
+namespace Fluence.Wpf.Tests
+{
+    /// <summary>
+    /// WI-3 C18 tests: ComboBox FocusStates VSM port.
+    /// Authority: WinUI 3 ComboBox_themeresources.xaml (FocusStates group).
+    /// </summary>
+    public partial class ControlTests
+    {
+        // ---------------------------------------------------------------------------
+        // WI-3 C18  ComboBox FocusStates VSM
+        // ---------------------------------------------------------------------------
+
+        [TestMethod]
+        public void ComboBox_FocusStates_GroupExistsInTemplate()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                var app = EnsureApplication();
+                MergeGenericDictionary(app);
+
+                var cb = new FluenceComboBox();
+                cb.Items.Add("One");
+                var w = new Window { Content = cb, Width = 300, Height = 100 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                // VSM groups are attached to the root Grid of the template
+                var root = FindVisualChild<Grid>(cb);
+                Assert.IsNotNull(root, "TemplateRoot Grid must be present.");
+                var groups = VisualStateManager.GetVisualStateGroups(root);
+                bool hasFocusStates = groups
+                    .Cast<VisualStateGroup>()
+                    .Any(g => g.Name == "FocusStates");
+                Assert.IsTrue(hasFocusStates,
+                    "ComboBox template root must have a FocusStates VSM group per WI-3 C18.");
+                w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void ComboBox_FocusedState_FocusAccentLineIsVisible()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                var app = EnsureApplication();
+                MergeGenericDictionary(app);
+
+                var cb = new FluenceComboBox();
+                cb.Items.Add("Alpha");
+                var w = new Window { Content = cb, Width = 300, Height = 100 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                bool transitioned = VisualStateManager.GoToState(cb, "Focused", false);
+                Assert.IsTrue(transitioned, "GoToState('Focused') must return true.");
+                DrainDispatcher(w.Dispatcher);
+
+                var accentLine = FindVisualChildByName<WpfBorder>(cb, "FocusAccentLine");
+                Assert.IsNotNull(accentLine, "FocusAccentLine border must be present in template.");
+                Assert.AreEqual(1.0, accentLine.Opacity, 0.01,
+                    "FocusAccentLine opacity must be 1.0 in Focused state per WI-3 C18.");
+                w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void ComboBox_UnfocusedState_FocusAccentLineIsHidden()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                var app = EnsureApplication();
+                MergeGenericDictionary(app);
+
+                var cb = new FluenceComboBox();
+                cb.Items.Add("Beta");
+                var w = new Window { Content = cb, Width = 300, Height = 100 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                // Focused first, then Unfocused
+                VisualStateManager.GoToState(cb, "Focused", false);
+                DrainDispatcher(w.Dispatcher);
+                bool transitioned = VisualStateManager.GoToState(cb, "Unfocused", false);
+                Assert.IsTrue(transitioned, "GoToState('Unfocused') must return true.");
+                DrainDispatcher(w.Dispatcher);
+
+                var accentLine = FindVisualChildByName<WpfBorder>(cb, "FocusAccentLine");
+                Assert.IsNotNull(accentLine, "FocusAccentLine border must be present in template.");
+                Assert.AreEqual(0.0, accentLine.Opacity, 0.01,
+                    "FocusAccentLine opacity must be 0.0 in Unfocused state per WI-3 C18.");
+                w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void ComboBox_ThemeCycle_FocusedStatePreservesAccentLine()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                var app = EnsureApplication();
+                MergeGenericDictionary(app);
+
+                var cb = new FluenceComboBox();
+                cb.Items.Add("Gamma");
+                var w = new Window { Content = cb, Width = 300, Height = 100 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                ThemeTestHelpers.ApplyStandardThemeCycle();
+                DrainDispatcher(w.Dispatcher);
+
+                VisualStateManager.GoToState(cb, "Focused", false);
+                DrainDispatcher(w.Dispatcher);
+
+                var accentLine = FindVisualChildByName<WpfBorder>(cb, "FocusAccentLine");
+                Assert.IsNotNull(accentLine,
+                    "FocusAccentLine must be present after theme cycle.");
+                Assert.AreEqual(1.0, accentLine.Opacity, 0.01,
+                    "FocusAccentLine must be visible in Focused state after theme cycle.");
+                w.Close();
+            });
+        }
+    }
+}

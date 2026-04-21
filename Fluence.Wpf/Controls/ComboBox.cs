@@ -37,9 +37,12 @@ namespace Fluence.Wpf.Controls
 {
     /// <summary>
     /// Fluent-styled combo box with placeholder, icon, and rounded dropdown.
+    /// Authority: WinUI 3 ComboBox_themeresources.xaml (FocusStates VSM group — WI-3 C18).
     /// </summary>
     [TemplatePart(Name = PART_Popup, Type = typeof(Popup))]
     [TemplatePart(Name = PART_DropdownBorder, Type = typeof(System.Windows.Controls.Border))]
+    [TemplateVisualState(GroupName = "FocusStates", Name = "Focused")]
+    [TemplateVisualState(GroupName = "FocusStates", Name = "Unfocused")]
     public class ComboBox : System.Windows.Controls.ComboBox
     {
         private const string PART_Popup = "PART_Popup";
@@ -203,6 +206,7 @@ namespace Fluence.Wpf.Controls
             base.OnApplyTemplate();
             _popup = GetTemplateChild(PART_Popup) as Popup;
             UpdateSelectedContent();
+            UpdateFocusState(false);
 
             if (SelectedIndex == -1 && Items.Count > 0 && !IsSelectedIndexExplicitlySet())
             {
@@ -244,6 +248,28 @@ namespace Fluence.Wpf.Controls
             base.OnItemsChanged(e);
             UpdateSelectedContent();
             TryAutoSelectFirstItem();
+        }
+
+        /// <inheritdoc />
+        protected override void OnGotFocus(RoutedEventArgs e)
+        {
+            base.OnGotFocus(e);
+            UpdateFocusState(true);
+        }
+
+        /// <inheritdoc />
+        protected override void OnLostFocus(RoutedEventArgs e)
+        {
+            base.OnLostFocus(e);
+            UpdateFocusState(true);
+        }
+
+        private void UpdateFocusState(bool useTransitions)
+        {
+            VisualStateManager.GoToState(
+                this,
+                IsKeyboardFocused ? "Focused" : "Unfocused",
+                useTransitions);
         }
 
         private void UpdateDropDownDirection()
