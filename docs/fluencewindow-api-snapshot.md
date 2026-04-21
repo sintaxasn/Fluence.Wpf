@@ -54,7 +54,9 @@ public class FluenceWindow : Window
 |---------------------------------------|------------------|--------------------------------------------------------|
 | `IsNotNullConverter`                  | `IValueConverter`| Singleton `IsNotNullValueConverter`; used by template. |
 
-### Public dependency properties (15)
+### Public dependency properties (16)
+
+> Updated 2026-04-21: added `TitleBarLeftIndentProperty` (added in commit `da98e9e`/subsequent; not present at original snapshot time).
 
 | DP field                               | CLR wrapper                   | Type              | Default                      | Metadata callback                         |
 |----------------------------------------|-------------------------------|-------------------|------------------------------|-------------------------------------------|
@@ -73,6 +75,7 @@ public class FluenceWindow : Window
 | `IsMaximizableProperty`                | `IsMaximizable`               | `bool`            | `true`                       | `OnCaptionButtonChromeOverrideChanged`    |
 | `IsClosableProperty`                   | `IsClosable`                  | `bool`            | `true`                       | `OnCaptionButtonChromeOverrideChanged`    |
 | `HasShadowProperty`                    | `HasShadow`                   | `bool`            | `true`                       | `OnHasShadowChanged`                      |
+| `TitleBarLeftIndentProperty`           | `TitleBarLeftIndent`          | `double`          | `0.0`                        | _(none)_                                  |
 
 All registered via `DependencyProperty.Register`; none read-only; none
 attached.
