@@ -114,7 +114,7 @@
                                     <StackPanel
                                         x:Name="SpinPanel"
                                         Grid.Column="1"
-                                        Margin="0,1,2,1"
+                                        Margin="0,1,0,1"
                                         VerticalAlignment="Center"
                                         Orientation="Horizontal">
                                         <RepeatButton x:Name="PART_UpButton" Style="{StaticResource NumberBoxSpinButton}">
