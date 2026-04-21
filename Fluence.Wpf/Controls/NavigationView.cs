@@ -49,6 +49,8 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = PartPaneItemsScrollViewer, Type = typeof(ScrollViewer))]
     [TemplatePart(Name = PartPaneToggleButton, Type = typeof(System.Windows.Controls.Button))]
     [TemplatePart(Name = PartSelectionIndicator, Type = typeof(FrameworkElement))]
+    [TemplateVisualState(GroupName = "BackButtonStates", Name = "BackButtonVisible")]
+    [TemplateVisualState(GroupName = "BackButtonStates", Name = "BackButtonCollapsed")]
     public class NavigationView : Selector
     {
         /// <summary>Name of the back button template part.</summary>
@@ -96,7 +98,7 @@ namespace Fluence.Wpf.Controls
             "IsBackButtonVisible",
             typeof(bool),
             typeof(NavigationView),
-            new PropertyMetadata(false));
+            new PropertyMetadata(false, OnIsBackButtonVisibleChanged));
 
         /// <summary>Identifies the <see cref="IsBackEnabled"/> dependency property.</summary>
         public static readonly DependencyProperty IsBackEnabledProperty = DependencyProperty.Register(
@@ -332,6 +334,7 @@ namespace Fluence.Wpf.Controls
 
             _indicatorPositioned = false;
             StopAnimation();
+            UpdateBackButtonState(false);
         }
 
         /// <inheritdoc />
@@ -436,6 +439,22 @@ namespace Fluence.Wpf.Controls
         internal FrameworkElement GetSelectionIndicatorForTesting()
         {
             return _selectionIndicator;
+        }
+
+        private static void OnIsBackButtonVisibleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((NavigationView)d).UpdateBackButtonState(true);
+        }
+
+        /// <summary>
+        /// Transitions the back button to the correct <c>BackButtonStates</c> VSM state
+        /// based on <see cref="IsBackButtonVisible"/>. Called without transitions on
+        /// initial template application; with transitions on runtime changes.
+        /// </summary>
+        private void UpdateBackButtonState(bool useTransitions)
+        {
+            string stateName = IsBackButtonVisible ? "BackButtonVisible" : "BackButtonCollapsed";
+            VisualStateManager.GoToState(this, stateName, useTransitions);
         }
 
         private void OnBackButtonClick(object sender, RoutedEventArgs e)

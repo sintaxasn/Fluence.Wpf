@@ -1032,6 +1032,110 @@ namespace Fluence.Wpf.Tests
             });
         }
 
+        // ---------------------------------------------------------------------------
+        // WI-3 B15  NavigationView pane header LayerFillColorAltBrush + BackButtonStates VSM
+        // ---------------------------------------------------------------------------
+
+        [TestMethod]
+        public void NavigationView_BackButtonStates_BothStatesAccessible()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView { Width = 700, Height = 500 };
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+
+                    // WI-3 B15: BackButtonStates VSM group must expose both states
+                    bool okVisible = VisualStateManager.GoToState(nav, "BackButtonVisible", false);
+                    bool okCollapsed = VisualStateManager.GoToState(nav, "BackButtonCollapsed", false);
+
+                    Assert.IsTrue(okVisible, "GoToState('BackButtonVisible') must succeed — BackButtonStates VSM group required.");
+                    Assert.IsTrue(okCollapsed, "GoToState('BackButtonCollapsed') must succeed.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NavigationView_IsBackButtonVisible_True_ShowsBackButton()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView { Width = 700, Height = 500, IsBackButtonVisible = true };
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+
+                    var back = nav.Template.FindName(Fluent.NavigationView.PartBackButton, nav) as System.Windows.Controls.Button;
+                    Assert.IsNotNull(back, "PART_BackButton must exist.");
+                    Assert.AreEqual(Visibility.Visible, back.Visibility,
+                        "PART_BackButton must be Visible when IsBackButtonVisible=True (WI-3 B15 VSM).");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NavigationView_CompactPane_BackgroundIsLayerFillColorAlt()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 700,
+                        Height = 500,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact
+                    };
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+
+                    var compactPane = FindVisualChildByName<System.Windows.Controls.Border>(nav, "CompactPane");
+                    Assert.IsNotNull(compactPane, "CompactPane Border must exist in LeftCompact template.");
+
+                    var bg = compactPane.Background as SolidColorBrush;
+                    Assert.IsNotNull(bg, "CompactPane Background must be a SolidColorBrush (LayerFillColorAltBrush).");
+                    Assert.AreNotEqual(Colors.Transparent, bg.Color,
+                        "CompactPane Background must not be Transparent — must use LayerFillColorAltBrush (WI-3 B15).");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                }
+            });
+        }
+
         // WI-1 F2: NavigationView.ContentBackground must resolve to SolidBackgroundFillColorBaseBrush
         // (per commit 597aad2). The default style ships the DynamicResource binding; this test
         // guards the contract and proves the brush re-resolves correctly after a theme swap.
