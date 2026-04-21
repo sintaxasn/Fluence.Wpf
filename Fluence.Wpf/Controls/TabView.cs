@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -33,7 +34,8 @@ namespace Fluence.Wpf.Controls
 {
     /// <summary>
     /// A <see cref="TabControl"/> aligned with the WinUI 3 TabView: per-tab close buttons, a trailing
-    /// "add" (+) button, horizontally scrollable tab strip, and WinUI-styled selection indicator.
+    /// "add" (+) button, horizontally scrollable tab strip with scroll navigation buttons, and
+    /// WinUI-styled selection indicator.
     /// </summary>
     /// <remarks>
     /// <para>
@@ -47,13 +49,28 @@ namespace Fluence.Wpf.Controls
     /// to remove a tab; this control does not itself mutate the items collection so applications remain in
     /// full control of their data model.
     /// </para>
+    /// <para>
+    /// <c>PART_ScrollBackButton</c> and <c>PART_ScrollForwardButton</c> are automatically
+    /// shown or hidden based on whether the tab strip overflows the available width.
+    /// </para>
     /// </remarks>
     [TemplatePart(Name = PartAddTabButton, Type = typeof(ButtonBase))]
+    [TemplatePart(Name = PartScrollBackButton, Type = typeof(RepeatButton))]
+    [TemplatePart(Name = PartScrollForwardButton, Type = typeof(RepeatButton))]
+    [TemplatePart(Name = PartTabContentScroller, Type = typeof(ScrollViewer))]
     public class TabView : TabControl
     {
         private const string PartAddTabButton = "PART_AddTabButton";
+        private const string PartScrollBackButton = "PART_ScrollBackButton";
+        private const string PartScrollForwardButton = "PART_ScrollForwardButton";
+        private const string PartTabContentScroller = "PART_TabContentScroller";
+
+        private const double ScrollAmount = 200.0;
 
         private ButtonBase _addTabButton;
+        private RepeatButton _scrollBackButton;
+        private RepeatButton _scrollForwardButton;
+        private ScrollViewer _tabContentScroller;
 
         /// <summary>
         /// Identifies the <see cref="IsAddTabButtonVisible"/> dependency property.
@@ -176,11 +193,45 @@ namespace Fluence.Wpf.Controls
                 _addTabButton.Click -= OnAddTabButtonClick;
             }
 
+            if (_scrollBackButton != null)
+            {
+                _scrollBackButton.Click -= OnScrollBackClick;
+            }
+
+            if (_scrollForwardButton != null)
+            {
+                _scrollForwardButton.Click -= OnScrollForwardClick;
+            }
+
+            if (_tabContentScroller != null)
+            {
+                _tabContentScroller.ScrollChanged -= OnTabScrollChanged;
+            }
+
             _addTabButton = GetTemplateChild(PartAddTabButton) as ButtonBase;
+            _scrollBackButton = GetTemplateChild(PartScrollBackButton) as RepeatButton;
+            _scrollForwardButton = GetTemplateChild(PartScrollForwardButton) as RepeatButton;
+            _tabContentScroller = GetTemplateChild(PartTabContentScroller) as ScrollViewer;
 
             if (_addTabButton != null)
             {
                 _addTabButton.Click += OnAddTabButtonClick;
+            }
+
+            if (_scrollBackButton != null)
+            {
+                _scrollBackButton.Click += OnScrollBackClick;
+            }
+
+            if (_scrollForwardButton != null)
+            {
+                _scrollForwardButton.Click += OnScrollForwardClick;
+            }
+
+            if (_tabContentScroller != null)
+            {
+                _tabContentScroller.ScrollChanged += OnTabScrollChanged;
+                UpdateScrollButtonVisibility();
             }
         }
 
@@ -199,6 +250,50 @@ namespace Fluence.Wpf.Controls
         private void OnAddTabButtonClick(object sender, RoutedEventArgs e)
         {
             RaiseEvent(new RoutedEventArgs(AddTabButtonClickEvent, this));
+        }
+
+        private void OnScrollBackClick(object sender, RoutedEventArgs e)
+        {
+            if (_tabContentScroller == null) { return; }
+
+            _tabContentScroller.ScrollToHorizontalOffset(
+                Math.Max(0, _tabContentScroller.HorizontalOffset - ScrollAmount));
+        }
+
+        private void OnScrollForwardClick(object sender, RoutedEventArgs e)
+        {
+            if (_tabContentScroller == null) { return; }
+
+            _tabContentScroller.ScrollToHorizontalOffset(
+                Math.Min(_tabContentScroller.ScrollableWidth, _tabContentScroller.HorizontalOffset + ScrollAmount));
+        }
+
+        private void OnTabScrollChanged(object sender, ScrollChangedEventArgs e)
+        {
+            UpdateScrollButtonVisibility();
+        }
+
+        private void UpdateScrollButtonVisibility()
+        {
+            if (_tabContentScroller == null) { return; }
+
+            bool hasOverflow = _tabContentScroller.ScrollableWidth > 0;
+            bool canScrollBack = _tabContentScroller.HorizontalOffset > 0;
+            bool canScrollForward = _tabContentScroller.HorizontalOffset < _tabContentScroller.ScrollableWidth;
+
+            if (_scrollBackButton != null)
+            {
+                _scrollBackButton.Visibility = (hasOverflow && canScrollBack)
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+            }
+
+            if (_scrollForwardButton != null)
+            {
+                _scrollForwardButton.Visibility = (hasOverflow && canScrollForward)
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+            }
         }
 
         private void OnChildCloseRequested(object sender, RoutedEventArgs e)

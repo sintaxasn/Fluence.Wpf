@@ -238,14 +238,64 @@
                             <RowDefinition Height="*" />
                         </Grid.RowDefinitions>
 
+                        <!--
+                            Tab strip: [ScrollBack] [Scrollable tabs] [ScrollForward] [AddTab]
+                            Scroll buttons are managed by TabView.UpdateScrollButtonVisibility():
+                            they start Collapsed and appear only when tab content overflows.
+                        -->
                         <Grid Grid.Row="0">
                             <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
-                            <ScrollViewer
+                            <!--  WI-3 B16: scroll-back button (WinUI TabView canonical)  -->
+                            <RepeatButton
+                                x:Name="PART_ScrollBackButton"
                                 Grid.Column="0"
+                                Width="28"
+                                Height="28"
+                                Margin="2,4,0,0"
+                                Padding="0"
+                                VerticalAlignment="Center"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Delay="400"
+                                Focusable="False"
+                                Interval="100"
+                                Visibility="Collapsed">
+                                <RepeatButton.Template>
+                                    <ControlTemplate TargetType="{x:Type RepeatButton}">
+                                        <Border
+                                            x:Name="ScrollBackRoot"
+                                            Background="{TemplateBinding Background}"
+                                            CornerRadius="4"
+                                            SnapsToDevicePixels="True">
+                                            <TextBlock
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                                FontSize="12"
+                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                                Text="&#xE76B;" />
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="ScrollBackRoot" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter TargetName="ScrollBackRoot" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </RepeatButton.Template>
+                            </RepeatButton>
+
+                            <ScrollViewer
+                                x:Name="PART_TabContentScroller"
+                                Grid.Column="1"
                                 Focusable="False"
                                 HorizontalScrollBarVisibility="Hidden"
                                 PanningMode="HorizontalOnly"
@@ -257,9 +307,51 @@
                                     KeyboardNavigation.TabIndex="1" />
                             </ScrollViewer>
 
+                            <!--  WI-3 B16: scroll-forward button (WinUI TabView canonical)  -->
+                            <RepeatButton
+                                x:Name="PART_ScrollForwardButton"
+                                Grid.Column="2"
+                                Width="28"
+                                Height="28"
+                                Margin="0,4,0,0"
+                                Padding="0"
+                                VerticalAlignment="Center"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Delay="400"
+                                Focusable="False"
+                                Interval="100"
+                                Visibility="Collapsed">
+                                <RepeatButton.Template>
+                                    <ControlTemplate TargetType="{x:Type RepeatButton}">
+                                        <Border
+                                            x:Name="ScrollForwardRoot"
+                                            Background="{TemplateBinding Background}"
+                                            CornerRadius="4"
+                                            SnapsToDevicePixels="True">
+                                            <TextBlock
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                                FontSize="12"
+                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                                Text="&#xE76C;" />
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="ScrollForwardRoot" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                            </Trigger>
+                                            <Trigger Property="IsPressed" Value="True">
+                                                <Setter TargetName="ScrollForwardRoot" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </RepeatButton.Template>
+                            </RepeatButton>
+
                             <Button
                                 x:Name="PART_AddTabButton"
-                                Grid.Column="1"
+                                Grid.Column="3"
                                 Width="32"
                                 Height="32"
                                 Margin="4,4,0,0"
