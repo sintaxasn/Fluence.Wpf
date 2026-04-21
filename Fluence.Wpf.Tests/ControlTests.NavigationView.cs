@@ -47,6 +47,23 @@ namespace Fluence.Wpf.Tests
             window.Close();
         }
 
+        // Pump the dispatcher for `milliseconds` so any in-flight storyboard
+        // (e.g. the LeftCompact pane's 167 ms Width animation) reaches its
+        // HoldEnd state before the test samples layout values.
+        private static void WaitForAnimationAndDrain(Dispatcher dispatcher, int milliseconds)
+        {
+            var frame = new DispatcherFrame();
+            var timer = new DispatcherTimer(
+                TimeSpan.FromMilliseconds(milliseconds),
+                DispatcherPriority.Normal,
+                delegate { frame.Continue = false; },
+                dispatcher);
+            timer.Start();
+            Dispatcher.PushFrame(frame);
+            timer.Stop();
+            dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
+        }
+
         [TestMethod]
         public void NavigationView_PaneDisplayMode_Left_RendersVerticalPane()
         {
@@ -804,7 +821,9 @@ namespace Fluence.Wpf.Tests
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    // Pane-open enter animation is 167 ms (CubicEase EaseOut). Wait past HoldEnd.
+                    WaitForAnimationAndDrain(window.Dispatcher, 300);
+                    window.UpdateLayout();
 
                     var presenter = FindVisualChildByName<ContentPresenter>(nav, Fluent.NavigationView.PartContentPresenter);
                     Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in LeftCompact template.");
@@ -890,7 +909,9 @@ namespace Fluence.Wpf.Tests
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
+                    // Pane enter animation is 167 ms (CubicEase). Wait past HoldEnd before sampling layout.
+                    WaitForAnimationAndDrain(window.Dispatcher, 300);
+                    window.UpdateLayout();
 
                     var presenter = FindVisualChildByName<ContentPresenter>(nav, Fluent.NavigationView.PartContentPresenter);
                     Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in LeftCompact template.");
@@ -899,17 +920,15 @@ namespace Fluence.Wpf.Tests
                     Assert.AreEqual(280.0, openOffset.X, 1.0, "Open state: content begins at 280.");
 
                     nav.IsPaneOpen = false;
-                    DrainDispatcher(window.Dispatcher);
+                    WaitForAnimationAndDrain(window.Dispatcher, 300);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
 
                     var closedOffset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
                     Assert.AreEqual(48.0, closedOffset.X, 1.0, "Closed state: content begins at 48 (push, not overlay).");
 
                     nav.IsPaneOpen = true;
-                    DrainDispatcher(window.Dispatcher);
+                    WaitForAnimationAndDrain(window.Dispatcher, 300);
                     window.UpdateLayout();
-                    DrainDispatcher(window.Dispatcher);
 
                     var reopenOffset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
                     Assert.AreEqual(280.0, reopenOffset.X, 1.0, "Reopen state: content returns to 280.");
@@ -925,10 +944,11 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        // WI-1 F2: NavigationView.ContentBackground must default to LayerFillColorDefaultBrush
-        // so the content region reads as the WinUI 3 "layer" tone against the window backdrop.
+        // WI-1 F2: NavigationView.ContentBackground must default to SolidBackgroundFillColorBaseBrush
+        // (per commit 597aad2 - LayerFillColorDefault is 50% transparent white, composites wrong
+        // on WPF-based Mica; the solid #F3F3F3 base matches WinUI 3 Gallery tone in light mode).
         [TestMethod]
-        public void NavigationView_ContentBackground_DefaultStyle_ResolvesToLayerFillColorDefault()
+        public void NavigationView_ContentBackground_DefaultStyle_ResolvesToSolidBackgroundFillColorBase()
         {
             RunOnStaThread(() =>
             {
@@ -949,13 +969,13 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var expected = application.TryFindResource("LayerFillColorDefaultBrush") as SolidColorBrush;
+                    var expected = application.TryFindResource("SolidBackgroundFillColorBaseBrush") as SolidColorBrush;
                     var actual = nav.ContentBackground as SolidColorBrush;
 
-                    Assert.IsNotNull(expected, "LayerFillColorDefaultBrush must be present in merged resources.");
+                    Assert.IsNotNull(expected, "SolidBackgroundFillColorBaseBrush must be present in merged resources.");
                     Assert.IsNotNull(actual, "NavigationView.ContentBackground must be a SolidColorBrush.");
                     Assert.AreEqual(expected.Color, actual.Color,
-                        "Default ContentBackground must equal LayerFillColorDefaultBrush (WinUI 3 NavigationView content layer).");
+                        "Default ContentBackground must equal SolidBackgroundFillColorBaseBrush (WinUI 3 Gallery content tone).");
                 }
                 finally
                 {
@@ -1012,12 +1032,11 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        // WI-1 F2: NavigationView.ContentBackground must resolve to LayerFillColorDefaultBrush
-        // so the content host carries the canonical WinUI 3 layer tone above the pane. The
-        // default style ships the DynamicResource binding; this test guards the contract and
-        // proves the brush re-resolves correctly after a theme swap.
+        // WI-1 F2: NavigationView.ContentBackground must resolve to SolidBackgroundFillColorBaseBrush
+        // (per commit 597aad2). The default style ships the DynamicResource binding; this test
+        // guards the contract and proves the brush re-resolves correctly after a theme swap.
         [TestMethod]
-        public void NavigationView_ContentBackground_ResolvesToLayerFillColorDefaultBrush_AcrossThemes()
+        public void NavigationView_ContentBackground_ResolvesToSolidBackgroundFillColorBaseBrush_AcrossThemes()
         {
             RunOnStaThread(() =>
             {
@@ -1040,24 +1059,24 @@ namespace Fluence.Wpf.Tests
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
                     DrainDispatcher(window.Dispatcher);
-                    var lightLayer = nav.FindResource("LayerFillColorDefaultBrush") as Brush;
-                    Assert.IsNotNull(lightLayer, "LayerFillColorDefaultBrush must resolve under Light theme.");
-                    Assert.AreSame(lightLayer, nav.ContentBackground,
-                        "Light-theme ContentBackground must resolve to LayerFillColorDefaultBrush via DynamicResource.");
+                    var lightBase = nav.FindResource("SolidBackgroundFillColorBaseBrush") as Brush;
+                    Assert.IsNotNull(lightBase, "SolidBackgroundFillColorBaseBrush must resolve under Light theme.");
+                    Assert.AreSame(lightBase, nav.ContentBackground,
+                        "Light-theme ContentBackground must resolve to SolidBackgroundFillColorBaseBrush via DynamicResource.");
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, true);
                     DrainDispatcher(window.Dispatcher);
-                    var darkLayer = nav.FindResource("LayerFillColorDefaultBrush") as Brush;
-                    Assert.IsNotNull(darkLayer, "LayerFillColorDefaultBrush must resolve under Dark theme.");
-                    Assert.AreSame(darkLayer, nav.ContentBackground,
-                        "Dark-theme ContentBackground must resolve to LayerFillColorDefaultBrush via DynamicResource.");
+                    var darkBase = nav.FindResource("SolidBackgroundFillColorBaseBrush") as Brush;
+                    Assert.IsNotNull(darkBase, "SolidBackgroundFillColorBaseBrush must resolve under Dark theme.");
+                    Assert.AreSame(darkBase, nav.ContentBackground,
+                        "Dark-theme ContentBackground must resolve to SolidBackgroundFillColorBaseBrush via DynamicResource.");
 
                     ThemeTestHelpers.ApplyStandardThemeCycle();
                     DrainDispatcher(window.Dispatcher);
-                    var postCycleLayer = nav.FindResource("LayerFillColorDefaultBrush") as Brush;
-                    Assert.IsNotNull(postCycleLayer, "LayerFillColorDefaultBrush must resolve after a full theme cycle.");
-                    Assert.AreSame(postCycleLayer, nav.ContentBackground,
-                        "ContentBackground must track the current LayerFillColorDefaultBrush after a full theme cycle.");
+                    var postCycleBase = nav.FindResource("SolidBackgroundFillColorBaseBrush") as Brush;
+                    Assert.IsNotNull(postCycleBase, "SolidBackgroundFillColorBaseBrush must resolve after a full theme cycle.");
+                    Assert.AreSame(postCycleBase, nav.ContentBackground,
+                        "ContentBackground must track the current SolidBackgroundFillColorBaseBrush after a full theme cycle.");
                 }
                 finally
                 {
