@@ -1,81 +1,90 @@
 ﻿<!--
-  Copyright (C) 2026 Dan Cunningham. All rights reserved.
-
-  Shared demo gallery styles (merged by App.xaml and test host).
+    Copyright (C) 2026 Dan Cunningham. All rights reserved.
+    
+    Shared demo gallery styles (merged by App.xaml and test host).
 -->
-<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
-                    xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf">
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
+    xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf">
 
     <Style x:Key="AccentSwatchStyle" TargetType="{x:Type ui:Button}">
-        <Setter Property="Width" Value="40"/>
-        <Setter Property="Height" Value="40"/>
-        <Setter Property="MinWidth" Value="40"/>
-        <Setter Property="MinHeight" Value="40"/>
-        <Setter Property="Padding" Value="0"/>
-        <Setter Property="CornerRadius" Value="8"/>
-        <Setter Property="BorderThickness" Value="2"/>
-        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="Width" Value="40" />
+        <Setter Property="Height" Value="40" />
+        <Setter Property="MinWidth" Value="40" />
+        <Setter Property="MinHeight" Value="40" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="BorderThickness" Value="2" />
+        <Setter Property="BorderBrush" Value="Transparent" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="BorderBrush" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource TextFillColorPrimaryBrush}" />
             </Trigger>
         </Style.Triggers>
     </Style>
 
     <Style x:Key="PageTitleStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}"/>
-        <Setter Property="FontSize" Value="28"/>
-        <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
-        <Setter Property="Margin" Value="0,0,0,36"/>
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="FontSize" Value="28" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="Margin" Value="0,0,0,36" />
     </Style>
 
     <Style x:Key="SectionHeaderStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}"/>
-        <Setter Property="FontSize" Value="20"/>
-        <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
-        <Setter Property="Margin" Value="0,36,0,4"/>
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="Margin" Value="0,36,0,4" />
     </Style>
 
     <Style x:Key="SectionDescriptionStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}"/>
-        <Setter Property="FontSize" Value="14"/>
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}"/>
-        <Setter Property="TextWrapping" Value="Wrap"/>
-        <Setter Property="Margin" Value="0,0,0,12"/>
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="Margin" Value="0,0,0,12" />
     </Style>
 
     <Style x:Key="StateLabelStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}"/>
-        <Setter Property="FontSize" Value="12"/>
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorTertiaryBrush}"/>
-        <Setter Property="Margin" Value="0,4,0,0"/>
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorTertiaryBrush}" />
+        <Setter Property="Margin" Value="0,4,0,0" />
     </Style>
 
-    <!-- Glyph cell hover: accent foreground + scale-up on hover -->
+    <!--  Glyph cell hover: accent foreground + scale-up on hover  -->
     <Style x:Key="GlyphCellStyle" TargetType="{x:Type StackPanel}">
-        <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+        <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
         <Setter Property="RenderTransform">
             <Setter.Value>
-                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                <ScaleTransform ScaleX="1" ScaleY="1" />
             </Setter.Value>
         </Setter>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentFillColorDefaultBrush}"/>
+                <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentFillColorDefaultBrush}" />
                 <Trigger.EnterActions>
                     <BeginStoryboard>
                         <Storyboard>
-                            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
-                                             To="1.15" Duration="0:0:0.100">
-                                <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                            <DoubleAnimation
+                                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                To="1.15"
+                                Duration="0:0:0.100">
+                                <DoubleAnimation.EasingFunction>
+                                    <CubicEase EasingMode="EaseOut" />
+                                </DoubleAnimation.EasingFunction>
                             </DoubleAnimation>
-                            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
-                                             To="1.15" Duration="0:0:0.100">
-                                <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                            <DoubleAnimation
+                                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                To="1.15"
+                                Duration="0:0:0.100">
+                                <DoubleAnimation.EasingFunction>
+                                    <CubicEase EasingMode="EaseOut" />
+                                </DoubleAnimation.EasingFunction>
                             </DoubleAnimation>
                         </Storyboard>
                     </BeginStoryboard>
@@ -83,13 +92,21 @@
                 <Trigger.ExitActions>
                     <BeginStoryboard>
                         <Storyboard>
-                            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
-                                             To="1" Duration="0:0:0.100">
-                                <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                            <DoubleAnimation
+                                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                To="1"
+                                Duration="0:0:0.100">
+                                <DoubleAnimation.EasingFunction>
+                                    <CubicEase EasingMode="EaseOut" />
+                                </DoubleAnimation.EasingFunction>
                             </DoubleAnimation>
-                            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
-                                             To="1" Duration="0:0:0.100">
-                                <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut"/></DoubleAnimation.EasingFunction>
+                            <DoubleAnimation
+                                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                To="1"
+                                Duration="0:0:0.100">
+                                <DoubleAnimation.EasingFunction>
+                                    <CubicEase EasingMode="EaseOut" />
+                                </DoubleAnimation.EasingFunction>
                             </DoubleAnimation>
                         </Storyboard>
                     </BeginStoryboard>
@@ -98,85 +115,89 @@
         </Style.Triggers>
     </Style>
 
-    <!-- Color swatch cell for Colors gallery tab -->
+    <!--  Color swatch cell for Colors gallery tab  -->
     <Style x:Key="ColorSwatchCellStyle" TargetType="{x:Type Border}">
-        <Setter Property="MinHeight" Value="88"/>
-        <Setter Property="Padding" Value="12,8"/>
-        <Setter Property="CornerRadius" Value="4"/>
-        <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}"/>
-        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="MinHeight" Value="88" />
+        <Setter Property="Padding" Value="12,8" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
     </Style>
 
-    <!-- Swatch section header (category name inside the Colors tab) -->
+    <!--  Swatch section header (category name inside the Colors tab)  -->
     <Style x:Key="SwatchSectionHeaderStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}"/>
-        <Setter Property="FontSize" Value="20"/>
-        <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}"/>
-        <Setter Property="Margin" Value="0,0,0,4"/>
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="Margin" Value="0,0,0,4" />
     </Style>
 
-    <!-- Swatch section description -->
+    <!--  Swatch section description  -->
     <Style x:Key="SwatchSectionDescStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}"/>
-        <Setter Property="FontSize" Value="13"/>
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}"/>
-        <Setter Property="Margin" Value="0,0,0,12"/>
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+        <Setter Property="Margin" Value="0,0,0,12" />
     </Style>
 
-    <!-- Swatch cell: brush name label -->
+    <!--  Swatch cell: brush name label  -->
     <Style x:Key="SwatchNameStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}"/>
-        <Setter Property="FontSize" Value="13"/>
-        <Setter Property="FontWeight" Value="SemiBold"/>
-        <Setter Property="TextWrapping" Value="Wrap"/>
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
 
-    <!-- Swatch cell: usage description -->
+    <!--  Swatch cell: usage description  -->
     <Style x:Key="SwatchUsageStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}"/>
-        <Setter Property="FontSize" Value="11"/>
-        <Setter Property="Opacity" Value="0.7"/>
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="Opacity" Value="0.7" />
     </Style>
 
-    <!-- Swatch cell: resource key label at bottom -->
+    <!--  Swatch cell: resource key label at bottom  -->
     <Style x:Key="SwatchKeyStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}"/>
-        <Setter Property="FontSize" Value="11"/>
-        <Setter Property="Opacity" Value="0.6"/>
-        <Setter Property="Margin" Value="0,8,0,0"/>
-        <Setter Property="VerticalAlignment" Value="Bottom"/>
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="FontSize" Value="11" />
+        <Setter Property="Opacity" Value="0.6" />
+        <Setter Property="Margin" Value="0,8,0,0" />
+        <Setter Property="VerticalAlignment" Value="Bottom" />
     </Style>
 
     <Style x:Key="IconGalleryCardStyle" TargetType="{x:Type ui:Border}">
-        <Setter Property="Variant" Value="{x:Static uicore:BorderVariant.Subtle}"/>
-        <Setter Property="Padding" Value="12"/>
-        <Setter Property="CornerRadius" Value="6"/>
-        <Setter Property="Width" Value="100"/>
-        <Setter Property="Height" Value="80"/>
-        <Setter Property="RenderTransformOrigin" Value="0.5,0.5"/>
+        <Setter Property="Variant" Value="{x:Static uicore:BorderVariant.Subtle}" />
+        <Setter Property="Padding" Value="12" />
+        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="Width" Value="100" />
+        <Setter Property="Height" Value="80" />
+        <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
         <Setter Property="RenderTransform">
             <Setter.Value>
-                <ScaleTransform ScaleX="1" ScaleY="1"/>
+                <ScaleTransform ScaleX="1" ScaleY="1" />
             </Setter.Value>
         </Setter>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentFillColorDefaultBrush}"/>
+                <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentFillColorDefaultBrush}" />
                 <Trigger.EnterActions>
                     <BeginStoryboard>
                         <Storyboard>
-                            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
-                                             To="1.12" Duration="0:0:0.100">
+                            <DoubleAnimation
+                                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                To="1.12"
+                                Duration="0:0:0.100">
                                 <DoubleAnimation.EasingFunction>
-                                    <CubicEase EasingMode="EaseOut"/>
+                                    <CubicEase EasingMode="EaseOut" />
                                 </DoubleAnimation.EasingFunction>
                             </DoubleAnimation>
-                            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
-                                             To="1.12" Duration="0:0:0.100">
+                            <DoubleAnimation
+                                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                To="1.12"
+                                Duration="0:0:0.100">
                                 <DoubleAnimation.EasingFunction>
-                                    <CubicEase EasingMode="EaseOut"/>
+                                    <CubicEase EasingMode="EaseOut" />
                                 </DoubleAnimation.EasingFunction>
                             </DoubleAnimation>
                         </Storyboard>
@@ -185,16 +206,20 @@
                 <Trigger.ExitActions>
                     <BeginStoryboard>
                         <Storyboard>
-                            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
-                                             To="1" Duration="0:0:0.100">
+                            <DoubleAnimation
+                                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
+                                To="1"
+                                Duration="0:0:0.100">
                                 <DoubleAnimation.EasingFunction>
-                                    <CubicEase EasingMode="EaseOut"/>
+                                    <CubicEase EasingMode="EaseOut" />
                                 </DoubleAnimation.EasingFunction>
                             </DoubleAnimation>
-                            <DoubleAnimation Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
-                                             To="1" Duration="0:0:0.100">
+                            <DoubleAnimation
+                                Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
+                                To="1"
+                                Duration="0:0:0.100">
                                 <DoubleAnimation.EasingFunction>
-                                    <CubicEase EasingMode="EaseOut"/>
+                                    <CubicEase EasingMode="EaseOut" />
                                 </DoubleAnimation.EasingFunction>
                             </DoubleAnimation>
                         </Storyboard>
