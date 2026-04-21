@@ -38,6 +38,7 @@
         <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/InfoBadge.xaml" />
         <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/ToolTip.xaml" />
         <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/ContextMenu.xaml" />
+        <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/Menu.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>
