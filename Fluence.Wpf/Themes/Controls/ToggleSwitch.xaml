@@ -1,49 +1,52 @@
 ﻿<!--
-  Copyright 2026 Dan Cunningham
-
-  Redistribution and use in source and binary forms, with or without
-  modification, are permitted provided that the following conditions are met:
-
-  1. Redistributions of source code must retain the above copyright notice,
-     this list of conditions and the following disclaimer.
-  2. Redistributions in binary form must reproduce the above copyright notice,
-     this list of conditions and the following disclaimer in the documentation
-     and/or other materials provided with the distribution.
-  3. Neither the name of the copyright holder nor the names of its contributors
-     may be used to endorse or promote products derived from this software
-     without specific prior written permission.
-
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-  AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-  IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-  ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-  LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-  CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-  SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-  INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-  CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-  ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
-  THE POSSIBILITY OF SUCH DAMAGE.
+    Copyright 2026 Dan Cunningham
+    
+    Redistribution and use in source and binary forms, with or without
+    modification, are permitted provided that the following conditions are met:
+    
+    1. Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
+    2. Redistributions in binary form must reproduce the above copyright notice,
+    this list of conditions and the following disclaimer in the documentation
+    and/or other materials provided with the distribution.
+    3. Neither the name of the copyright holder nor the names of its contributors
+    may be used to endorse or promote products derived from this software
+    without specific prior written permission.
+    
+    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+    ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+    LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+    CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+    SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+    INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+    CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+    ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+    THE POSSIBILITY OF SUCH DAMAGE.
 -->
-<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
 
     <Style x:Key="ToggleSwitchFocusVisual">
         <Setter Property="Control.Template">
             <Setter.Value>
                 <ControlTemplate>
                     <Grid>
-                        <Border Margin="-3"
-                                BorderBrush="{DynamicResource FocusStrokeColorOuterBrush}"
-                                BorderThickness="2"
-                                CornerRadius="4"
-                                SnapsToDevicePixels="True" />
-                        <Border Margin="-2"
-                                BorderBrush="{DynamicResource FocusStrokeColorInnerBrush}"
-                                BorderThickness="1"
-                                CornerRadius="3"
-                                SnapsToDevicePixels="True" />
+                        <Border
+                            Margin="-3"
+                            BorderBrush="{DynamicResource FocusStrokeColorOuterBrush}"
+                            BorderThickness="2"
+                            CornerRadius="4"
+                            SnapsToDevicePixels="True" />
+                        <Border
+                            Margin="-2"
+                            BorderBrush="{DynamicResource FocusStrokeColorInnerBrush}"
+                            BorderThickness="1"
+                            CornerRadius="3"
+                            SnapsToDevicePixels="True" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -71,132 +74,151 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
-                        <!-- Header -->
-                        <ContentPresenter x:Name="HeaderPresenter"
-                                          Grid.Row="0"
-                                          Content="{TemplateBinding HeaderContent}"
-                                          Margin="0,0,0,4"
-                                          TextBlock.FontSize="14"
-                                          TextBlock.Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                        <!--  Header  -->
+                        <ContentPresenter
+                            x:Name="HeaderPresenter"
+                            Grid.Row="0"
+                            Margin="0,0,0,4"
+                            Content="{TemplateBinding HeaderContent}"
+                            TextBlock.FontSize="14"
+                            TextBlock.Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
 
-                        <!-- Switch row: track + content -->
+                        <!--  Switch row: track + content  -->
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
-                            <!-- Track -->
-                            <Grid x:Name="TrackHost"
-                                  Grid.Column="0"
-                                  Width="40"
-                                  Height="20">
+                            <!--  Track  -->
+                            <Grid
+                                x:Name="TrackHost"
+                                Grid.Column="0"
+                                Width="40"
+                                Height="20">
 
-                                <!-- Off track: normal -->
-                                <Border x:Name="TrackOff"
-                                        CornerRadius="10"
-                                        Background="{DynamicResource ControlAltFillColorSecondaryBrush}"
-                                        BorderBrush="{DynamicResource ControlStrongFillColorDefaultBrush}"
-                                        BorderThickness="1" />
+                                <!--  Off track: normal  -->
+                                <Border
+                                    x:Name="TrackOff"
+                                    Background="{DynamicResource ControlAltFillColorSecondaryBrush}"
+                                    BorderBrush="{DynamicResource ControlStrongFillColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="10" />
 
-                                <!-- Off track: hover -->
-                                <Border x:Name="TrackOffHover"
-                                        CornerRadius="10"
-                                        Background="{DynamicResource ControlAltFillColorTertiaryBrush}"
-                                        BorderBrush="{DynamicResource ControlStrongFillColorDefaultBrush}"
-                                        BorderThickness="1"
-                                        Opacity="0" />
+                                <!--  Off track: hover  -->
+                                <Border
+                                    x:Name="TrackOffHover"
+                                    Background="{DynamicResource ControlAltFillColorTertiaryBrush}"
+                                    BorderBrush="{DynamicResource ControlStrongFillColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="10"
+                                    Opacity="0" />
 
-                                <!-- On track: normal -->
-                                <Border x:Name="TrackOn"
-                                        CornerRadius="10"
-                                        Background="{DynamicResource AccentFillColorDefaultBrush}"
-                                        Opacity="0" />
+                                <!--  On track: normal  -->
+                                <Border
+                                    x:Name="TrackOn"
+                                    Background="{DynamicResource AccentFillColorDefaultBrush}"
+                                    CornerRadius="10"
+                                    Opacity="0" />
 
-                                <!-- On track: hover -->
-                                <Border x:Name="TrackOnHover"
-                                        CornerRadius="10"
-                                        Background="{DynamicResource AccentFillColorSecondaryBrush}"
-                                        Opacity="0" />
+                                <!--  On track: hover  -->
+                                <Border
+                                    x:Name="TrackOnHover"
+                                    Background="{DynamicResource AccentFillColorSecondaryBrush}"
+                                    CornerRadius="10"
+                                    Opacity="0" />
 
-                                <!-- On track: pressed -->
-                                <Border x:Name="TrackOnPressed"
-                                        CornerRadius="10"
-                                        Background="{DynamicResource AccentFillColorTertiaryBrush}"
-                                        Opacity="0" />
+                                <!--  On track: pressed  -->
+                                <Border
+                                    x:Name="TrackOnPressed"
+                                    Background="{DynamicResource AccentFillColorTertiaryBrush}"
+                                    CornerRadius="10"
+                                    Opacity="0" />
 
-                                <!-- Thumb: 12x12 circle at rest; grows on hover/pressed -->
-                                <Ellipse x:Name="SwitchThumb"
-                                         Width="12"
-                                         Height="12"
-                                         Fill="{DynamicResource TextFillColorSecondaryBrush}"
-                                         HorizontalAlignment="Left"
-                                         VerticalAlignment="Center"
-                                         Margin="3,0,0,0">
+                                <!--  Thumb: 12x12 circle at rest; grows on hover/pressed  -->
+                                <Ellipse
+                                    x:Name="SwitchThumb"
+                                    Width="12"
+                                    Height="12"
+                                    Margin="3,0,0,0"
+                                    HorizontalAlignment="Left"
+                                    VerticalAlignment="Center"
+                                    Fill="{DynamicResource TextFillColorSecondaryBrush}">
                                     <Ellipse.RenderTransform>
                                         <TranslateTransform X="0" />
                                     </Ellipse.RenderTransform>
                                 </Ellipse>
                             </Grid>
 
-                            <!-- Off content (visible by default) -->
-                            <ContentPresenter x:Name="OffContentPresenter"
-                                              Grid.Column="1"
-                                              Content="{TemplateBinding OffContent}"
-                                              ContentTemplate="{TemplateBinding OffContentTemplate}"
-                                              Margin="{TemplateBinding Padding}"
-                                              VerticalAlignment="Center" />
+                            <!--  Off content (visible by default)  -->
+                            <ContentPresenter
+                                x:Name="OffContentPresenter"
+                                Grid.Column="1"
+                                Margin="{TemplateBinding Padding}"
+                                VerticalAlignment="Center"
+                                Content="{TemplateBinding OffContent}"
+                                ContentTemplate="{TemplateBinding OffContentTemplate}" />
 
-                            <!-- On content (collapsed by default) -->
-                            <ContentPresenter x:Name="OnContentPresenter"
-                                              Grid.Column="1"
-                                              Content="{TemplateBinding OnContent}"
-                                              ContentTemplate="{TemplateBinding OnContentTemplate}"
-                                              Margin="{TemplateBinding Padding}"
-                                              VerticalAlignment="Center"
-                                              Visibility="Collapsed" />
+                            <!--  On content (collapsed by default)  -->
+                            <ContentPresenter
+                                x:Name="OnContentPresenter"
+                                Grid.Column="1"
+                                Margin="{TemplateBinding Padding}"
+                                VerticalAlignment="Center"
+                                Content="{TemplateBinding OnContent}"
+                                ContentTemplate="{TemplateBinding OnContentTemplate}"
+                                Visibility="Collapsed" />
                         </Grid>
                     </Grid>
 
                     <ControlTemplate.Triggers>
-                        <!-- Collapse header when null -->
+                        <!--  Collapse header when null  -->
                         <Trigger Property="HeaderContent" Value="{x:Null}">
                             <Setter TargetName="HeaderPresenter" Property="Visibility" Value="Collapsed" />
                         </Trigger>
 
-                        <!-- Hover (any state): grow thumb 12->14 -->
+                        <!--  WI-3 B12: WinUI canonical knob easing — ControlFastOutSlowIn (0.8,0,0,1), ControlFasterAnimationDuration 83ms  -->
+                        <!--  Hover (any state): grow thumb 12->14  -->
                         <Trigger Property="IsMouseOver" Value="True">
                             <Trigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="SwitchThumb" Storyboard.TargetProperty="Width"
-                                                         To="14" Duration="0:0:0.083">
-                                            <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                        </DoubleAnimation>
-                                        <DoubleAnimation Storyboard.TargetName="SwitchThumb" Storyboard.TargetProperty="Height"
-                                                         To="14" Duration="0:0:0.083">
-                                            <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                        </DoubleAnimation>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SwitchThumb" Storyboard.TargetProperty="Width">
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0.8,0,0,1"
+                                                KeyTime="0:0:0.083"
+                                                Value="14" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SwitchThumb" Storyboard.TargetProperty="Height">
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0.8,0,0,1"
+                                                KeyTime="0:0:0.083"
+                                                Value="14" />
+                                        </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.EnterActions>
                             <Trigger.ExitActions>
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="SwitchThumb" Storyboard.TargetProperty="Width"
-                                                         To="12" Duration="0:0:0.083">
-                                            <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                        </DoubleAnimation>
-                                        <DoubleAnimation Storyboard.TargetName="SwitchThumb" Storyboard.TargetProperty="Height"
-                                                         To="12" Duration="0:0:0.083">
-                                            <DoubleAnimation.EasingFunction><CubicEase EasingMode="EaseOut" /></DoubleAnimation.EasingFunction>
-                                        </DoubleAnimation>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SwitchThumb" Storyboard.TargetProperty="Width">
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0.8,0,0,1"
+                                                KeyTime="0:0:0.083"
+                                                Value="12" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SwitchThumb" Storyboard.TargetProperty="Height">
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0.8,0,0,1"
+                                                KeyTime="0:0:0.083"
+                                                Value="12" />
+                                        </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.ExitActions>
                         </Trigger>
 
-                        <!-- Unchecked + Hover -->
+                        <!--  Unchecked + Hover  -->
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsMouseOver" Value="True" />
@@ -205,7 +227,7 @@
                             <Setter TargetName="TrackOffHover" Property="Opacity" Value="1" />
                         </MultiTrigger>
 
-                        <!-- Unchecked + Pressed: squash thumb to 17x14 -->
+                        <!--  Unchecked + Pressed: squash thumb to 17x14  -->
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsPressed" Value="True" />
@@ -216,7 +238,7 @@
                             <Setter TargetName="SwitchThumb" Property="Height" Value="14" />
                         </MultiTrigger>
 
-                        <!-- Checked -->
+                        <!--  Checked  -->
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="TrackOff" Property="Opacity" Value="0" />
                             <Setter TargetName="TrackOffHover" Property="Opacity" Value="0" />
@@ -232,34 +254,30 @@
                             <Trigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="SwitchThumb"
-                                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
-                                                         From="0" To="20"
-                                                         Duration="0:0:0.150">
-                                            <DoubleAnimation.EasingFunction>
-                                                <CubicEase EasingMode="EaseInOut" />
-                                            </DoubleAnimation.EasingFunction>
-                                        </DoubleAnimation>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SwitchThumb" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)">
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0.8,0,0,1"
+                                                KeyTime="0:0:0.167"
+                                                Value="20" />
+                                        </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.EnterActions>
                             <Trigger.ExitActions>
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation Storyboard.TargetName="SwitchThumb"
-                                                         Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)"
-                                                         From="20" To="0"
-                                                         Duration="0:0:0.150">
-                                            <DoubleAnimation.EasingFunction>
-                                                <CubicEase EasingMode="EaseInOut" />
-                                            </DoubleAnimation.EasingFunction>
-                                        </DoubleAnimation>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SwitchThumb" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)">
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0.8,0,0,1"
+                                                KeyTime="0:0:0.167"
+                                                Value="0" />
+                                        </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.ExitActions>
                         </Trigger>
 
-                        <!-- Checked + Hover -->
+                        <!--  Checked + Hover  -->
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsChecked" Value="True" />
@@ -270,7 +288,7 @@
                             <Setter TargetName="TrackOnHover" Property="Opacity" Value="1" />
                         </MultiTrigger>
 
-                        <!-- Checked + Pressed: squash thumb -->
+                        <!--  Checked + Pressed: squash thumb  -->
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsChecked" Value="True" />
@@ -283,7 +301,7 @@
                             <Setter TargetName="SwitchThumb" Property="Height" Value="14" />
                         </MultiTrigger>
 
-                        <!-- Off + Disabled -->
+                        <!--  Off + Disabled  -->
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsEnabled" Value="False" />
@@ -296,7 +314,7 @@
                             <Setter TargetName="SwitchThumb" Property="Opacity" Value="0.4" />
                         </MultiTrigger>
 
-                        <!-- On + Disabled -->
+                        <!--  On + Disabled  -->
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsEnabled" Value="False" />
