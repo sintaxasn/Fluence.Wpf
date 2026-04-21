@@ -69,6 +69,8 @@
     </Style>
 
     <!--  Subtitle - 20 / SemiBold / 28  -->
+    <!--  Large-size titles use Ideal formatting: integer-pixel (Display) metrics alias glyph curves  -->
+    <!--  at 20pt+. Ideal uses vector metrics for smoother curves, matching DirectWrite behaviour.  -->
     <Style x:Key="SubtitleTextBlockStyle" TargetType="TextBlock">
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="FontSize" Value="20" />
@@ -76,7 +78,7 @@
         <Setter Property="LineHeight" Value="28" />
         <Setter Property="LineStackingStrategy" Value="BlockLineHeight" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
         <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
     </Style>
 
@@ -88,7 +90,7 @@
         <Setter Property="LineHeight" Value="36" />
         <Setter Property="LineStackingStrategy" Value="BlockLineHeight" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
         <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
     </Style>
 
@@ -100,7 +102,7 @@
         <Setter Property="LineHeight" Value="52" />
         <Setter Property="LineStackingStrategy" Value="BlockLineHeight" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
         <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
     </Style>
 
@@ -112,7 +114,7 @@
         <Setter Property="LineHeight" Value="92" />
         <Setter Property="LineStackingStrategy" Value="BlockLineHeight" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
         <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
     </Style>
 
