@@ -224,6 +224,16 @@ namespace Fluence.Wpf.Controls
                 typeof(FluenceWindow),
                 new PropertyMetadata(true, OnHasShadowChanged));
 
+        /// <summary>
+        /// Identifies the <see cref="TitleBarLeftIndent"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty TitleBarLeftIndentProperty =
+            DependencyProperty.Register(
+                nameof(TitleBarLeftIndent),
+                typeof(double),
+                typeof(FluenceWindow),
+                new PropertyMetadata(0.0));
+
         #endregion
 
         #region Properties
@@ -366,6 +376,19 @@ namespace Fluence.Wpf.Controls
         {
             get { return (bool)GetValue(HasShadowProperty); }
             set { SetValue(HasShadowProperty, value); }
+        }
+
+        /// <summary>
+        /// Gets or sets the left inset (device-independent pixels) applied to the title bar icon
+        /// and title text.  Set this to the navigation pane width when
+        /// <see cref="ExtendsContentIntoTitleBar"/> is <c>true</c> and a left-side navigation pane
+        /// occupies the leftmost portion of the window (e.g. 48 for a compact left pane).
+        /// The default value is 0.
+        /// </summary>
+        public double TitleBarLeftIndent
+        {
+            get { return (double)GetValue(TitleBarLeftIndentProperty); }
+            set { SetValue(TitleBarLeftIndentProperty, value); }
         }
 
         #endregion
@@ -945,6 +968,14 @@ namespace Fluence.Wpf.Controls
                 return 0;
             }
 
+            // If a custom-content child marked with IsHitTestVisibleInChrome=True is under the
+            // cursor (e.g. a search TextBox or ToggleSwitch in the TitleBar content area), return
+            // HTCLIENT so Windows passes the click to WPF rather than treating it as a drag.
+            if (IsOverInteractiveContent(point))
+            {
+                return 0;
+            }
+
             return NativeConstants.HTCAPTION;
         }
 
@@ -992,6 +1023,30 @@ namespace Fluence.Wpf.Controls
             {
                 return false;
             }
+        }
+
+        /// <summary>
+        /// Returns <c>true</c> when the element under <paramref name="windowPoint"/> (or any of its
+        /// visual ancestors) has <see cref="WindowChrome.IsHitTestVisibleInChromeProperty"/> set to
+        /// <c>true</c>.  Used by <see cref="HitTestTitleBar"/> to let clicks on interactive controls
+        /// inside the title bar (e.g. a search TextBox or ToggleSwitch) fall through to WPF instead
+        /// of being swallowed as caption-area drag gestures.
+        /// </summary>
+        private bool IsOverInteractiveContent(Point windowPoint)
+        {
+            var hit = InputHitTest(windowPoint) as DependencyObject;
+            while (hit != null)
+            {
+                var element = hit as IInputElement;
+                if (element != null && WindowChrome.GetIsHitTestVisibleInChrome(element))
+                {
+                    return true;
+                }
+
+                hit = VisualTreeHelper.GetParent(hit);
+            }
+
+            return false;
         }
 
         #endregion
