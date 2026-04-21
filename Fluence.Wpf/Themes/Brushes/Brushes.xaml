@@ -164,4 +164,49 @@
         <GradientStop Offset="1.0" Color="{DynamicResource ControlStrokeColorDefault}" />
     </LinearGradientBrush>
 
+    <!--  ═══════════════════════════════════════════════════════════════════════════  -->
+    <!--  Step 3.0 — Shared layout / shadow / focus tokens (WI-3 + WI-5A prerequisite)  -->
+    <!--  ═══════════════════════════════════════════════════════════════════════════  -->
+
+    <!--  Corner radius tokens — WinUI 3: ControlCornerRadius / OverlayCornerRadius  -->
+    <CornerRadius x:Key="ControlCornerRadius">4</CornerRadius>
+    <CornerRadius x:Key="OverlayCornerRadius">8</CornerRadius>
+
+    <!--  Flyout drop shadow (BlurRadius=18 matches WinUI MicaBackdrop shadow profile)  -->
+    <DropShadowEffect
+        x:Key="FlyoutShadowEffect"
+        BlurRadius="18"
+        Direction="270"
+        Opacity="0.22"
+        ShadowDepth="4"
+        Color="Black" />
+
+    <!--
+        Shared focus-visual style. Replaces per-control ButtonFocusVisual / CheckBoxFocusVisual
+        duplicates for controls whose CornerRadius matches the 4 px canonical value.
+        Authority: in-tree Button.xaml / CheckBox.xaml focus-visual pattern (§4.1).
+    -->
+    <Style x:Key="DefaultControlFocusVisualStyle">
+        <Setter Property="Control.Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Grid>
+                        <Border
+                            Margin="-3"
+                            BorderBrush="{DynamicResource FocusStrokeColorOuterBrush}"
+                            BorderThickness="2"
+                            CornerRadius="7"
+                            SnapsToDevicePixels="True" />
+                        <Border
+                            Margin="-2"
+                            BorderBrush="{DynamicResource FocusStrokeColorInnerBrush}"
+                            BorderThickness="1"
+                            CornerRadius="5"
+                            SnapsToDevicePixels="True" />
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>
