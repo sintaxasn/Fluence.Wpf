@@ -32,6 +32,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using Fluence.Wpf.Automation;
+using Fluence.Wpf;
 
 namespace Fluence.Wpf.Controls
 {
@@ -226,6 +227,32 @@ namespace Fluence.Wpf.Controls
         {
             get { return (CornerRadius)GetValue(CornerRadiusProperty); }
             set { SetValue(CornerRadiusProperty, value); }
+        }
+
+        #endregion
+
+        #region Appearance
+
+        /// <summary>
+        /// Identifies the <see cref="Appearance"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty AppearanceProperty =
+            DependencyProperty.Register(
+                nameof(Appearance),
+                typeof(ControlAppearance),
+                typeof(SplitButton),
+                new FrameworkPropertyMetadata(ControlAppearance.Standard));
+
+        /// <summary>
+        /// Gets or sets the visual appearance of the split button.
+        /// Set to <see cref="ControlAppearance.Accent"/> to apply the accent-colored variant;
+        /// the divider stroke will automatically switch to
+        /// <c>ControlStrokeColorOnAccentSecondaryBrush</c> per WinUI 3 canonical styling.
+        /// </summary>
+        public ControlAppearance Appearance
+        {
+            get { return (ControlAppearance)GetValue(AppearanceProperty); }
+            set { SetValue(AppearanceProperty, value); }
         }
 
         #endregion
