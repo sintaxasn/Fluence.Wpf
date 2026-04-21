@@ -46,14 +46,18 @@ namespace Fluence.Wpf.Helpers
     public class GridLengthAnimation : AnimationTimeline
     {
         /// <summary>
-        /// Identifies the <see cref="From"/> dependency property.
+        /// Identifies the <see cref="From"/> dependency property. A sentinel
+        /// <see cref="GridLength"/> with <see cref="GridUnitType"/> = <see cref="GridUnitType.Auto"/>
+        /// means "use the animated property's current value" (the standard WPF
+        /// <c>Storyboard.To</c>-only pattern). Consumers who want an explicit
+        /// starting width set <c>From</c> to a pixel value.
         /// </summary>
         public static readonly DependencyProperty FromProperty =
             DependencyProperty.Register(
                 nameof(From),
                 typeof(GridLength),
                 typeof(GridLengthAnimation),
-                new PropertyMetadata(new GridLength(0, GridUnitType.Pixel)));
+                new PropertyMetadata(new GridLength(0, GridUnitType.Auto)));
 
         /// <summary>
         /// Identifies the <see cref="To"/> dependency property.
@@ -137,7 +141,24 @@ namespace Fluence.Wpf.Helpers
                 throw new ArgumentNullException(nameof(animationClock));
             }
 
-            double fromValue = From.Value;
+            // If From is left at its Auto sentinel (the common "To-only" case), start
+            // from the property's current animated base value — this is what WPF does
+            // for a DoubleAnimation with only To set, and is what keeps a reverse
+            // collapse (280 -> 48) from snapping to 0 on the first frame.
+            double fromValue;
+            GridLength fromLength = From;
+            if (fromLength.GridUnitType == GridUnitType.Auto)
+            {
+                GridLength originLength = defaultOriginValue is GridLength origin
+                    ? origin
+                    : new GridLength(0d, GridUnitType.Pixel);
+                fromValue = originLength.Value;
+            }
+            else
+            {
+                fromValue = fromLength.Value;
+            }
+
             double toValue = To.Value;
             double progress = animationClock.CurrentProgress ?? 0d;
             if (EasingFunction != null)
