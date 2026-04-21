@@ -1,0 +1,161 @@
+/*
+ * Copyright 2026 Dan Cunningham
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+ * THE POSSIBILITY OF SUCH DAMAGE.
+ */
+using System.Windows;
+using System.Windows.Controls;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Fluence.Wpf;
+using Fluence.Wpf.Controls;
+
+namespace Fluence.Wpf.Tests
+{
+    /// <summary>
+    /// WI-3 A10 tests: InfoBadge DisplayKindStates VSM group.
+    /// </summary>
+    public partial class ControlTests
+    {
+        // ---------------------------------------------------------------------------
+        // WI-3 A10  InfoBadge DisplayKindStates VSM group
+        // ---------------------------------------------------------------------------
+
+        [TestMethod]
+        public void InfoBadge_DisplayKindStates_GroupExists()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                var app = EnsureApplication();
+                MergeGenericDictionary(app);
+
+                var badge = new InfoBadge();
+                var w = new Window { Content = badge, Width = 60, Height = 60 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                // Verify the VSM group is present in the template.
+                var groups = VisualStateManager.GetVisualStateGroups(
+                    FindVisualChild<Grid>(badge));
+                bool found = false;
+                if (groups != null)
+                {
+                    foreach (var g in groups)
+                    {
+                        var vsg = g as VisualStateGroup;
+                        if (vsg != null && vsg.Name == "DisplayKindStates")
+                        { found = true; break; }
+                    }
+                }
+                Assert.IsTrue(found, "InfoBadge template must contain a VisualStateGroup named 'DisplayKindStates'.");
+                w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void InfoBadge_DefaultState_IsDot()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                var app = EnsureApplication();
+                MergeGenericDictionary(app);
+
+                // Default: Value=-1, no IconSource → Dot state.
+                var badge = new InfoBadge();
+                var w = new Window { Content = badge, Width = 60, Height = 60 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                // DotIndicator should be visible; BadgeBorder should be collapsed.
+                var dot = FindVisualChildByName<System.Windows.Shapes.Ellipse>(badge, "DotIndicator");
+                var border = FindVisualChildByName<System.Windows.Controls.Border>(badge, "BadgeBorder");
+                Assert.IsNotNull(dot, "DotIndicator element must exist.");
+                Assert.IsNotNull(border, "BadgeBorder element must exist.");
+                Assert.AreEqual(Visibility.Visible, dot.Visibility, "DotIndicator must be Visible in Dot state.");
+                Assert.AreEqual(Visibility.Collapsed, border.Visibility, "BadgeBorder must be Collapsed in Dot state.");
+                w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void InfoBadge_ValueSet_ShowsBadgeBorder()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                var app = EnsureApplication();
+                MergeGenericDictionary(app);
+
+                var badge = new InfoBadge { Value = 5 };
+                var w = new Window { Content = badge, Width = 60, Height = 60 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                var dot = FindVisualChildByName<System.Windows.Shapes.Ellipse>(badge, "DotIndicator");
+                var border = FindVisualChildByName<System.Windows.Controls.Border>(badge, "BadgeBorder");
+                Assert.AreEqual(Visibility.Collapsed, dot.Visibility, "DotIndicator must be Collapsed when Value >= 0.");
+                Assert.AreEqual(Visibility.Visible, border.Visibility, "BadgeBorder must be Visible when Value >= 0.");
+                w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void InfoBadge_DisplayKindStates_HasAllFourStates()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                var app = EnsureApplication();
+                MergeGenericDictionary(app);
+
+                var badge = new InfoBadge();
+                var w = new Window { Content = badge, Width = 60, Height = 60 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                var groups = VisualStateManager.GetVisualStateGroups(FindVisualChild<Grid>(badge));
+                VisualStateGroup dkg = null;
+                if (groups != null)
+                {
+                    foreach (var g in groups)
+                    {
+                        var vsg = g as VisualStateGroup;
+                        if (vsg != null && vsg.Name == "DisplayKindStates") { dkg = vsg; break; }
+                    }
+                }
+                Assert.IsNotNull(dkg, "DisplayKindStates group must exist.");
+
+                var stateNames = new System.Collections.Generic.HashSet<string>();
+                foreach (var s in dkg.States)
+                {
+                    var vs = s as VisualState;
+                    if (vs != null) stateNames.Add(vs.Name);
+                }
+                Assert.IsTrue(stateNames.Contains("Dot"), "DisplayKindStates must include 'Dot'.");
+                Assert.IsTrue(stateNames.Contains("Icon"), "DisplayKindStates must include 'Icon'.");
+                Assert.IsTrue(stateNames.Contains("FontIcon"), "DisplayKindStates must include 'FontIcon'.");
+                Assert.IsTrue(stateNames.Contains("Value"), "DisplayKindStates must include 'Value'.");
+                w.Close();
+            });
+        }
+    }
+}

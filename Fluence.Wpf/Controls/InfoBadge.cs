@@ -34,6 +34,10 @@ namespace Fluence.Wpf.Controls
     /// A small badge overlay that displays a numeric value, icon, or dot indicator.
     /// Typically attached to a <see cref="NavigationViewItem"/> or other control.
     /// </summary>
+    [TemplateVisualState(GroupName = "DisplayKindStates", Name = "Dot")]
+    [TemplateVisualState(GroupName = "DisplayKindStates", Name = "Icon")]
+    [TemplateVisualState(GroupName = "DisplayKindStates", Name = "FontIcon")]
+    [TemplateVisualState(GroupName = "DisplayKindStates", Name = "Value")]
     public class InfoBadge : ContentControl
     {
         static InfoBadge()
@@ -94,6 +98,13 @@ namespace Fluence.Wpf.Controls
             set { SetValue(IconSourceProperty, value); }
         }
 
+        /// <inheritdoc />
+        public override void OnApplyTemplate()
+        {
+            base.OnApplyTemplate();
+            UpdateDisplayKindState(false);
+        }
+
         private static void OnIconSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var badge = (InfoBadge)d;
@@ -105,6 +116,8 @@ namespace Fluence.Wpf.Controls
             {
                 badge.Content = badge.Value >= 0 ? badge.Value.ToString() : null;
             }
+
+            badge.UpdateDisplayKindState();
         }
 
         private static void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -115,6 +128,20 @@ namespace Fluence.Wpf.Controls
 
             int val = (int)e.NewValue;
             badge.Content = val >= 0 ? val.ToString() : null;
+            badge.UpdateDisplayKindState();
+        }
+
+        private void UpdateDisplayKindState(bool useTransitions = true)
+        {
+            string state;
+            if (IconSource != null)
+                state = "Icon";
+            else if (Value >= 0)
+                state = "Value";
+            else
+                state = "Dot";
+
+            VisualStateManager.GoToState(this, state, useTransitions);
         }
     }
 }
