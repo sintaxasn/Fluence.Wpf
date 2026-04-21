@@ -36,6 +36,7 @@
         <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/Expander.xaml" />
         <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/NumberBox.xaml" />
         <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/InfoBadge.xaml" />
+        <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/ToolTip.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>
