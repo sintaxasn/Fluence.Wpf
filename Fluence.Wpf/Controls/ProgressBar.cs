@@ -356,11 +356,14 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
+            // WinUI 3 canonical timing: both bars on a 2.0 s repeat cycle.
+            // Bar 1 travels 0 → 1.5 s then holds; bar 2 is delayed 0.75 s.
+            // (Authority: WinUI_XAML/Controls/ProgressBar.xaml Indeterminate VSM)
             StartTranslateAnimation(
                 _indeterminateTranslate,
                 -_indeterminateBar.Width,
                 trackWidth,
-                TimeSpan.FromSeconds(1.5),
+                TimeSpan.FromSeconds(2.0),
                 TimeSpan.Zero);
 
             if (_indeterminateTranslate2 != null && _indeterminateBar2 != null)
@@ -370,7 +373,7 @@ namespace Fluence.Wpf.Controls
                     -_indeterminateBar2.Width,
                     trackWidth,
                     TimeSpan.FromSeconds(2.0),
-                    TimeSpan.FromMilliseconds(450));
+                    TimeSpan.FromMilliseconds(750));
             }
         }
 
