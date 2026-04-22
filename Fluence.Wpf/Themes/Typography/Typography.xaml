@@ -13,7 +13,8 @@
     <sys:TimeSpan x:Key="ControlFastAnimationDuration">0:0:0.167</sys:TimeSpan>
     <sys:TimeSpan x:Key="ControlNormalAnimationDuration">0:0:0.250</sys:TimeSpan>
     <sys:TimeSpan x:Key="ControlSlowAnimationDuration">0:0:0.333</sys:TimeSpan>
-    <KeySpline x:Key="ControlFastOutSlowInKeySpline">0.8,0,0,1</KeySpline>
+    <!--  Canonical WinUI 3 / .NET 10 WPF decelerate curve: P1=(0,0), P2=(0,1).  -->
+    <KeySpline x:Key="ControlFastOutSlowInKeySpline">0,0,0,1</KeySpline>
 
     <!--  Windows 11 Fluent - Typography layer  -->
     <!--  Prefer Display typography for large/small optical sizes; fall back when not installed.  -->

@@ -168,9 +168,11 @@
     <!--  Step 3.0 — Shared layout / shadow / focus tokens (WI-3 + WI-5A prerequisite)  -->
     <!--  ═══════════════════════════════════════════════════════════════════════════  -->
 
-    <!--  Corner radius tokens — WinUI 3: ControlCornerRadius / OverlayCornerRadius  -->
+    <!--  Corner radius tokens — WinUI 3: ControlCornerRadius / OverlayCornerRadius / PopupCornerRadius  -->
     <CornerRadius x:Key="ControlCornerRadius">4</CornerRadius>
     <CornerRadius x:Key="OverlayCornerRadius">8</CornerRadius>
+    <!--  PopupCornerRadius: alias for OverlayCornerRadius per .NET 10 WPF Variables.xaml (8,8,8,8).  -->
+    <CornerRadius x:Key="PopupCornerRadius">8</CornerRadius>
 
     <!--  Flyout drop shadow (BlurRadius=18 matches WinUI MicaBackdrop shadow profile)  -->
     <DropShadowEffect
