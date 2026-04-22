@@ -99,59 +99,65 @@
     <Style x:Key="TitleBarSearchBoxStyle" TargetType="{x:Type ui:TextBox}">
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="CaretBrush" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="SelectionBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
-        <Setter Property="Padding" Value="4,0,4,4" />
+        <Setter Property="Padding" Value="10,5,6,6" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ui:TextBox}">
-                    <Grid>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="2" />
-                        </Grid.RowDefinitions>
+                    <Border
+                        x:Name="MainBorder"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                        SnapsToDevicePixels="True">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="2" />
+                            </Grid.RowDefinitions>
 
-                        <Grid Grid.Row="0">
-                            <ScrollViewer
-                                x:Name="PART_ContentHost"
-                                Padding="{TemplateBinding Padding}"
-                                Focusable="False"
-                                HorizontalScrollBarVisibility="Hidden"
-                                VerticalScrollBarVisibility="Hidden" />
-                            <TextBlock
-                                x:Name="PlaceholderTextBlock"
-                                Margin="4,0,0,0"
-                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                FontFamily="{TemplateBinding FontFamily}"
-                                FontSize="{TemplateBinding FontSize}"
-                                Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                                IsHitTestVisible="False"
-                                Text="{TemplateBinding PlaceholderText}"
-                                Visibility="Collapsed" />
+                            <Grid Grid.Row="0">
+                                <ScrollViewer
+                                    x:Name="PART_ContentHost"
+                                    Padding="{TemplateBinding Padding}"
+                                    Focusable="False"
+                                    HorizontalScrollBarVisibility="Hidden"
+                                    VerticalScrollBarVisibility="Hidden" />
+                                <TextBlock
+                                    x:Name="PlaceholderTextBlock"
+                                    Margin="13,0,0,0"
+                                    VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                    FontFamily="{TemplateBinding FontFamily}"
+                                    FontSize="{TemplateBinding FontSize}"
+                                    Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                    IsHitTestVisible="False"
+                                    Text="{TemplateBinding PlaceholderText}"
+                                    Visibility="Collapsed" />
+                            </Grid>
+
+                            <!--  Rest underline: grey stroke  -->
+                            <Border
+                                x:Name="RestLine"
+                                Grid.Row="1"
+                                HorizontalAlignment="Stretch"
+                                Background="{DynamicResource ControlStrokeColorDefaultBrush}" />
+
+                            <!--  Focus underline: accent colour, overlays rest line when focused  -->
+                            <Border
+                                x:Name="FocusLine"
+                                Grid.Row="1"
+                                HorizontalAlignment="Stretch"
+                                Background="{DynamicResource AccentFillColorDefaultBrush}"
+                                Opacity="0" />
                         </Grid>
-
-                        <!--  Rest underline: grey stroke  -->
-                        <Border
-                            x:Name="RestLine"
-                            Grid.Row="1"
-                            HorizontalAlignment="Stretch"
-                            Background="{DynamicResource ControlStrokeColorDefaultBrush}" />
-
-                        <!--  Focus underline: accent colour, fades in over rest line  -->
-                        <Border
-                            x:Name="FocusLine"
-                            Grid.Row="1"
-                            HorizontalAlignment="Stretch"
-                            Background="{DynamicResource AccentFillColorDefaultBrush}"
-                            Opacity="0" />
-                    </Grid>
+                    </Border>
                     <ControlTemplate.Triggers>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
@@ -162,12 +168,25 @@
                                 <Setter TargetName="PlaceholderTextBlock" Property="Visibility" Value="Visible" />
                             </MultiTrigger.Setters>
                         </MultiTrigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="MainBorder" Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}" />
+                        </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="MainBorder" Property="Background" Value="{DynamicResource ControlFillColorInputActiveBrush}" />
                             <Setter TargetName="FocusLine" Property="Opacity" Value="1" />
                         </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsKeyboardFocused" Value="True" />
+                                <Condition Property="IsMouseOver" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.Setters>
+                                <Setter TargetName="MainBorder" Property="Background" Value="{DynamicResource ControlFillColorInputActiveBrush}" />
+                            </MultiTrigger.Setters>
+                        </MultiTrigger>
                         <Trigger Property="IsEnabled" Value="False">
+                            <Setter TargetName="MainBorder" Property="Background" Value="{DynamicResource ControlFillColorDisabledBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
-                            <Setter TargetName="RestLine" Property="Opacity" Value="0.4" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
