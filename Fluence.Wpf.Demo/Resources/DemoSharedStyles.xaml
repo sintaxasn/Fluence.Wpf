@@ -35,6 +35,26 @@
                 <ScaleTransform ScaleX="1" ScaleY="1" />
             </Setter.Value>
         </Setter>
+        <!--
+            Custom template: paint Background directly without any VSM hover overrides.
+            The default ui:Button template re-colours the background on PointerOver via
+            VisualStateManager, washing out the swatch colour to ControlFillColorSecondaryBrush
+            (grey). This template bypasses VSM entirely — hover feedback comes only from the
+            border-colour + scale triggers below.
+        -->
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ui:Button}">
+                    <Border
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                        SnapsToDevicePixels="True"
+                        UseLayoutRounding="True" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="BorderThickness" Value="3" />
@@ -69,6 +89,90 @@
                 </Trigger.ExitActions>
             </Trigger>
         </Style.Triggers>
+    </Style>
+
+    <!--
+        Title-bar search box: transparent box, bottom-only underline.
+        Grey (ControlStrokeColorDefaultBrush) at rest; accent on focus.
+        Matches WinUI 3 AutoSuggestBox title-bar treatment.
+    -->
+    <Style x:Key="TitleBarSearchBoxStyle" TargetType="{x:Type ui:TextBox}">
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="CaretBrush" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="Padding" Value="4,0,4,4" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ui:TextBox}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="2" />
+                        </Grid.RowDefinitions>
+
+                        <Grid Grid.Row="0">
+                            <ScrollViewer
+                                x:Name="PART_ContentHost"
+                                Padding="{TemplateBinding Padding}"
+                                Focusable="False"
+                                HorizontalScrollBarVisibility="Hidden"
+                                VerticalScrollBarVisibility="Hidden" />
+                            <TextBlock
+                                x:Name="PlaceholderTextBlock"
+                                Margin="4,0,0,0"
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                FontFamily="{TemplateBinding FontFamily}"
+                                FontSize="{TemplateBinding FontSize}"
+                                Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                IsHitTestVisible="False"
+                                Text="{TemplateBinding PlaceholderText}"
+                                Visibility="Collapsed" />
+                        </Grid>
+
+                        <!--  Rest underline: grey stroke  -->
+                        <Border
+                            x:Name="RestLine"
+                            Grid.Row="1"
+                            HorizontalAlignment="Stretch"
+                            Background="{DynamicResource ControlStrokeColorDefaultBrush}" />
+
+                        <!--  Focus underline: accent colour, fades in over rest line  -->
+                        <Border
+                            x:Name="FocusLine"
+                            Grid.Row="1"
+                            HorizontalAlignment="Stretch"
+                            Background="{DynamicResource AccentFillColorDefaultBrush}"
+                            Opacity="0" />
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="Text" Value="" />
+                                <Condition Property="PlaceholderEnabled" Value="True" />
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.Setters>
+                                <Setter TargetName="PlaceholderTextBlock" Property="Visibility" Value="Visible" />
+                            </MultiTrigger.Setters>
+                        </MultiTrigger>
+                        <Trigger Property="IsKeyboardFocused" Value="True">
+                            <Setter TargetName="FocusLine" Property="Opacity" Value="1" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+                            <Setter TargetName="RestLine" Property="Opacity" Value="0.4" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style x:Key="PageTitleStyle" TargetType="{x:Type TextBlock}">

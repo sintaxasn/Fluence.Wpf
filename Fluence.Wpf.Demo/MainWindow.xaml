@@ -38,6 +38,7 @@
                 VerticalAlignment="Center"
                 PlaceholderText="Search"
                 PreviewKeyDown="NavSearchBox_PreviewKeyDown"
+                Style="{StaticResource TitleBarSearchBoxStyle}"
                 TextChanged="NavSearchBox_TextChanged"
                 WindowChrome.IsHitTestVisibleInChrome="True" />
         </Grid>
