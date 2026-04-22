@@ -103,6 +103,14 @@
                         </Border>
                     </Border>
                     <ControlTemplate.Resources>
+                        <!--  WI-3 C21: subtle elevation for Default variant only (BlurRadius=8, Opacity=0.08).  -->
+                        <DropShadowEffect
+                            x:Key="CardDefaultElevationEffect"
+                            BlurRadius="8"
+                            Direction="270"
+                            Opacity="0.08"
+                            ShadowDepth="2"
+                            Color="Black" />
                         <Storyboard x:Key="HoverOnStoryboard">
                             <DoubleAnimation
                                 Storyboard.TargetName="ClickHoverLayer"
@@ -175,26 +183,24 @@
                             <Setter TargetName="VariantBackground" Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
                             <Setter TargetName="VariantBackground" Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
                             <Setter TargetName="VariantBackground" Property="BorderThickness" Value="1" />
-                            <Setter TargetName="ShadowHost" Property="Effect" Value="{x:Null}" />
+                            <!--  WI-3 C21: Default variant gets subtle elevation shadow.  -->
+                            <Setter TargetName="OuterBorder" Property="Effect" Value="{StaticResource CardDefaultElevationEffect}" />
                         </Trigger>
                         <Trigger Property="Variant" Value="{x:Static ui:CardVariant.Outlined}">
                             <Setter TargetName="OuterBorder" Property="Background" Value="Transparent" />
                             <Setter TargetName="VariantBackground" Property="Background" Value="Transparent" />
                             <Setter TargetName="VariantBackground" Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
                             <Setter TargetName="VariantBackground" Property="BorderThickness" Value="1" />
-                            <Setter TargetName="ShadowHost" Property="Effect" Value="{x:Null}" />
                         </Trigger>
                         <Trigger Property="Variant" Value="{x:Static ui:CardVariant.Filled}">
                             <Setter TargetName="OuterBorder" Property="Background" Value="{DynamicResource CardBackgroundFillColorSecondaryBrush}" />
                             <Setter TargetName="VariantBackground" Property="Background" Value="{DynamicResource CardBackgroundFillColorSecondaryBrush}" />
                             <Setter TargetName="VariantBackground" Property="BorderThickness" Value="0" />
-                            <Setter TargetName="ShadowHost" Property="Effect" Value="{x:Null}" />
                         </Trigger>
                         <Trigger Property="Variant" Value="{x:Static ui:CardVariant.Subtle}">
                             <Setter TargetName="OuterBorder" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
                             <Setter TargetName="VariantBackground" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
                             <Setter TargetName="VariantBackground" Property="BorderThickness" Value="0" />
-                            <Setter TargetName="ShadowHost" Property="Effect" Value="{x:Null}" />
                         </Trigger>
 
                         <MultiTrigger>
