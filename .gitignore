@@ -30,6 +30,9 @@ _ReSharper*/
 Thumbs.db
 .DS_Store
 
+## Language Service Cache
+*.lscache
+
 ## Test results
 TestResults/
 *.trx
