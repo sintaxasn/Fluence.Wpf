@@ -211,4 +211,25 @@
         </Setter>
     </Style>
 
+    <!--
+        Collection-item focus visual: inset single-stroke Rectangle, no margin.
+        Used by ListBoxItem, ListViewItem, TreeViewItem — draws inside item bounds.
+        Authority: .NET 10 WPF DefaultFocusVisualStyle.xaml (DefaultCollectionFocusVisualStyle).
+        Uses FocusStrokeColorOuterBrush consistent with DefaultControlFocusVisualStyle above.
+    -->
+    <Style x:Key="DefaultCollectionFocusVisualStyle">
+        <Setter Property="Control.Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Rectangle
+                        RadiusX="4"
+                        RadiusY="4"
+                        SnapsToDevicePixels="True"
+                        Stroke="{DynamicResource FocusStrokeColorOuterBrush}"
+                        StrokeThickness="2" />
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
 </ResourceDictionary>

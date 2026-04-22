@@ -144,7 +144,9 @@
                                 Placement="Right"
                                 PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
                                 PopupAnimation="None">
+                                <!--  SubMenuBorder: slide-in from X=-8 on open (167ms ControlFastOutSlowIn).  -->
                                 <Border
+                                    x:Name="SubMenuBorder"
                                     MinWidth="180"
                                     Padding="2"
                                     Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"
@@ -153,6 +155,9 @@
                                     CornerRadius="{DynamicResource OverlayCornerRadius}"
                                     SnapsToDevicePixels="True"
                                     UseLayoutRounding="True">
+                                    <Border.RenderTransform>
+                                        <TranslateTransform x:Name="SubMenuTranslate" X="-8" />
+                                    </Border.RenderTransform>
                                     <Grid Grid.IsSharedSizeScope="True">
                                         <ItemsPresenter x:Name="ItemsPresenter" KeyboardNavigation.DirectionalNavigation="Cycle" />
                                     </Grid>
@@ -161,6 +166,24 @@
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
+                        <!--
+                            Submenu open: slide SubMenuBorder in from X=-8 → 0 (167ms, ControlFastOutSlowIn).
+                            Authority: .NET 10 WPF MenuItem.xaml IsSubmenuOpen EnterActions pattern.
+                        -->
+                        <Trigger Property="IsSubmenuOpen" Value="True">
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SubMenuTranslate" Storyboard.TargetProperty="X">
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0,0,0,1"
+                                                KeyTime="0:0:0.167"
+                                                Value="0" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                        </Trigger>
                         <!--  Hover  -->
                         <Trigger Property="IsHighlighted" Value="True">
                             <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />

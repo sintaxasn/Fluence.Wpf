@@ -250,5 +250,50 @@ namespace Fluence.Wpf.Tests
                 }
             });
         }
+
+        // ---------------------------------------------------------------------------
+        // DefaultCollectionFocusVisualStyle token
+        // ---------------------------------------------------------------------------
+
+        [TestMethod]
+        public void DefaultCollectionFocusVisualStyle_PresentInLightTheme()
+        {
+            RunOnStaThread(() =>
+            {
+                var app = EnsureApp();
+                ResetAndApply(ApplicationTheme.Light, app);
+                var style = app.TryFindResource("DefaultCollectionFocusVisualStyle");
+                Assert.IsNotNull(style,
+                    "DefaultCollectionFocusVisualStyle must resolve in Light theme.");
+                Assert.IsInstanceOfType(style, typeof(Style),
+                    "DefaultCollectionFocusVisualStyle must be a Style.");
+            });
+        }
+
+        [TestMethod]
+        public void DefaultCollectionFocusVisualStyle_PresentInDarkTheme()
+        {
+            RunOnStaThread(() =>
+            {
+                var app = EnsureApp();
+                ResetAndApply(ApplicationTheme.Dark, app);
+                var style = app.TryFindResource("DefaultCollectionFocusVisualStyle");
+                Assert.IsNotNull(style,
+                    "DefaultCollectionFocusVisualStyle must resolve in Dark theme.");
+            });
+        }
+
+        [TestMethod]
+        public void DefaultCollectionFocusVisualStyle_PresentInHighContrastTheme()
+        {
+            RunOnStaThread(() =>
+            {
+                var app = EnsureApp();
+                ResetAndApply(ApplicationTheme.HighContrast, app);
+                var style = app.TryFindResource("DefaultCollectionFocusVisualStyle");
+                Assert.IsNotNull(style,
+                    "DefaultCollectionFocusVisualStyle must resolve in HighContrast theme.");
+            });
+        }
     }
 }
