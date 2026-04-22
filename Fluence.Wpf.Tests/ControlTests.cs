@@ -568,7 +568,8 @@ namespace Fluence.Wpf.Tests
                     var selectionIndicator = item.Template.FindName("SelectionIndicator", item) as Border;
 
                     Assert.IsNotNull(selectionIndicator);
-                    Assert.AreEqual(new CornerRadius(2), selectionIndicator.CornerRadius);
+                    // WI-3 C20: canonical ListViewItemSelectionIndicatorCornerRadius = 1.5
+                    Assert.AreEqual(new CornerRadius(1.5), selectionIndicator.CornerRadius);
                 }
                 finally
                 {
