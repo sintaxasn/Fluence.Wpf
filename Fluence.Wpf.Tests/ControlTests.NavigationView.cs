@@ -1099,7 +1099,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void NavigationView_CompactPane_BackgroundIsLayerFillColorAlt()
+        public void NavigationView_CompactPane_BackgroundIsTransparent()
         {
             RunOnStaThread(() =>
             {
@@ -1122,10 +1122,12 @@ namespace Fluence.Wpf.Tests
                     var compactPane = FindVisualChildByName<System.Windows.Controls.Border>(nav, "CompactPane");
                     Assert.IsNotNull(compactPane, "CompactPane Border must exist in LeftCompact template.");
 
-                    var bg = compactPane.Background as SolidColorBrush;
-                    Assert.IsNotNull(bg, "CompactPane Background must be a SolidColorBrush (LayerFillColorAltBrush).");
-                    Assert.AreNotEqual(Colors.Transparent, bg.Color,
-                        "CompactPane Background must not be Transparent — must use LayerFillColorAltBrush (WI-3 B15).");
+                    // Pane background must be Transparent (or null) so the DWM Mica/Acrylic
+                    // backdrop shows through seamlessly — matches the FluenceWindow title bar.
+                    bool isTransparent = compactPane.Background == null
+                        || (compactPane.Background is SolidColorBrush scb && scb.Color == Colors.Transparent);
+                    Assert.IsTrue(isTransparent,
+                        "CompactPane Background must be Transparent (or null) to allow Mica/Acrylic backdrop continuity.");
                 }
                 finally
                 {
