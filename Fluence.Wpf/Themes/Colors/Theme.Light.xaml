@@ -132,4 +132,11 @@
     <Color x:Key="SystemFillColorSolidAttentionBackground">#FFF7F7F7</Color>
     <Color x:Key="SystemFillColorSolidNeutralBackground">#FFF3F3F3</Color>
 
+    <!--
+        Text color for content placed on an accent-color background.
+        Light theme: white (accent is dark/saturated blue).
+        Authority: WinUI 3 Common_themeresources_any.xaml, Light dictionary.
+    -->
+    <Color x:Key="TextOnAccentFillColorPrimary">#FFFFFFFF</Color>
+
 </ResourceDictionary>

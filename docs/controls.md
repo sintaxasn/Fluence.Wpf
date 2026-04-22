@@ -40,9 +40,10 @@ xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
 | Text              | `TextBox`, `PasswordBox`, `TextBlock` + `TextBlockExtensions`                                     |
 | Data              | `ListView`, `ListBox`, `ListBoxItem`, `ListViewItem`                                              |
 | Tabs              | `TabControl`, `TabItem`, `TabView`, `TabViewItem`                                                 |
-| Feedback          | `ProgressBar`, `ProgressRing`, `InfoBar`, `InfoBadge`                                             |
+| Feedback          | `ProgressBar`, `ProgressRing`, `InfoBar`, `InfoBadge`, `RatingControl`                            |
 | Navigation        | `NavigationView`, `NavigationViewItem`, `NavigationViewItemHeader`, `NavigationViewItemSeparator` |
-| Layout / surfaces | `Card`, `Border`, `StackPanel`, `DockPanel`, `SmoothScrollViewer`, `Expander`                     |
+| Layout / surfaces | `Card`, `Border`, `StackPanel`, `DockPanel`, `SmoothScrollViewer`, `Expander`, `Separator`        |
+| Person / social   | `PersonPicture`                                                                                   |
 | Icons             | `FontIcon`                                                                                        |
 
 Tab strip and scroll bar styling are provided via merged themes (see `Themes/Generic.xaml`).
