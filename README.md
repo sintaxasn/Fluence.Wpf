@@ -10,12 +10,13 @@ Windows 11 Fluent Design controls and theming for WPF applications targeting **.
 - **Accent colors** - System accent palette, app-defined accent, and custom accent ramps mapped to WinUI-style resource keys.
 - **System theme watcher** - Refresh resources when the user changes Windows theme or accent at runtime.
 - **FluenceWindow** - DWM **Mica**, **Acrylic**, and **Tabbed** backdrops; rounded corners; minimize / maximize / close button overrides; extensible title bar for a WinUI-style search box or custom content.
-- **Controls** - Fluent-styled Button, HyperlinkButton, DropDownButton, CheckBox, RadioButton, ToggleSwitch, TextBox, PasswordBox, ComboBox, Slider, NumberBox, ProgressBar, ProgressRing, ListView, ListBox, Expander, Card (clickable), InfoBar, InfoBadge, NavigationView, FontIcon, Border, StackPanel, DockPanel, SmoothScrollViewer, plus TabControl / TabView / ScrollBar themes.
+- **Controls** - 40+ Fluent-styled controls: Button, HyperlinkButton, DropDownButton, SplitButton, RepeatButton, ToggleButton, CheckBox, RadioButton, ToggleSwitch, TextBox, PasswordBox, ComboBox, Slider, NumberBox, ProgressBar, ProgressRing, InfoBar, InfoBadge, RatingControl, PersonPicture, ListView, ListBox, Expander, Card (clickable), NavigationView, ContextMenu, MenuItem, Menu, ToolTip, TreeView, TreeViewItem, Separator, FontIcon, Border, StackPanel, DockPanel, SmoothScrollViewer, plus TabView and ScrollBar themes.
 - **TabView** - Multi-document surface over `TabControl` with per-tab close (`CloseRequested` / `TabCloseRequested`), trailing add-tab button (`AddTabButtonClick`), per-tab icons, `TabWidthMode`, `CloseButtonOverlayMode`, and horizontal overflow scroll.
 - **NavigationView** - `Top`, `Left`, and `LeftCompact` pane modes with animated shared selection indicator, pane toggle + back button in the 48 px rail, and WinUI 3 content-region border (`CornerRadius="8,0,0,0"`, `CardStrokeColorDefault` top/left stroke).
 - **Typography** - Attached properties on `TextBlock` for the WinUI type ramp (Caption / Body / BodyStrong / Title / TitleLarge / Display).
-- **Demo app** - Full gallery for visual verification: theme swatches, accent picker, backdrops, per-control pages (including a dedicated Tabs page), and a title-bar search that filters the nav.
-- **Tests** - MSTest suite covering theme stability, accent resolution, window policy, template parts, and control behavior (including `TabView` close / add-tab routing).
+- **Gallery demo** - Full visual-verification app: theme swatches, accent picker, DWM backdrops, per-control pages (Buttons, Selection, Inputs, Data, Tabs, Navigation, Window, Status, Colors, Glyphs), and a title-bar search that filters the nav.
+- **MVVM demo** - Minimal Task Manager (`Fluence.Wpf.Demo.Mvvm`) built with CommunityToolkit.Mvvm, showcasing `[ObservableProperty]`, `[RelayCommand]`, filter bindings, and progress reporting with zero code-behind.
+- **Tests** - MSTest suite covering theme stability, accent resolution, window policy, template parts, and control behavior (including `TabView` close / add-tab routing, `RatingControl`, `PersonPicture`).
 
 ## Quick Start
 
@@ -44,17 +45,21 @@ The banner above is checked in at `docs/images/Banner.png`. Theme-specific galle
 
 ## Controls
 
-| Area        | Types                                                                                                                       |
-|-------------|-----------------------------------------------------------------------------------------------------------------------------|
-| Window      | `FluenceWindow`,                                                                                                            |
-| Basic input | `Button`, `HyperlinkButton`, `DropDownButton`, `CheckBox`, `RadioButton`, `ToggleSwitch`, `ComboBox`, `Slider`, `NumberBox` |
-| Text        | `TextBox`, `PasswordBox`, `TextBlockExtensions`                                                                             |
-| Collections | `ListView`, `ListBox`                                                                                                       |
-| Tabs        | `TabControl`, `TabItem`, `TabView`, `TabViewItem`                                                                           |
-| Feedback    | `ProgressBar`, `ProgressRing`, `InfoBar`, `InfoBadge`                                                                       |
-| Navigation  | `NavigationView`, `NavigationViewItem`                                                                                      |
-| Layout      | `Card`, `Border`, `StackPanel`, `DockPanel`, `SmoothScrollViewer`, `Expander`                                               |
-| Icons       | `FontIcon`                                                                                                                  |
+| Area                | Types                                                                                                                                       |
+|---------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| Window              | `FluenceWindow`, `TitleBar`, `CaptionButtonChrome`, `WindowPolicy`                                                                          |
+| Basic actions       | `Button`, `HyperlinkButton`, `DropDownButton`, `SplitButton`, `RepeatButton`, `ToggleButton`                                                |
+| Selection           | `CheckBox`, `RadioButton`, `ToggleSwitch`, `ComboBox`, `Slider`, `NumberBox`                                                                |
+| Text                | `TextBox`, `PasswordBox`, `TextBlockExtensions`                                                                                             |
+| Data                | `ListView`, `ListBox`                                                                                                                       |
+| Tabs                | `TabView`, `TabViewItem`                                                                                                                    |
+| Feedback            | `ProgressBar`, `ProgressRing`, `InfoBar`, `InfoBadge`, `RatingControl`                                                                      |
+| Navigation          | `NavigationView`, `NavigationViewItem`, `NavigationViewItemHeader`, `NavigationViewItemSeparator`                                           |
+| Menus & popups      | `ContextMenu`, `MenuItem`, `Menu`, `ToolTip`                                                                                                |
+| Trees & collections | `TreeView`, `TreeViewItem`                                                                                                                  |
+| Layout / surfaces   | `Card`, `Expander`, `Border`, `StackPanel`, `DockPanel`, `SmoothScrollViewer`, `Separator`                                                  |
+| Person / social     | `PersonPicture`                                                                                                                             |
+| Icons               | `FontIcon`                                                                                                                                  |
 
 ## Theming
 
@@ -89,13 +94,21 @@ dotnet build Fluence.Wpf.sln -c Release
 dotnet test Fluence.Wpf.sln -c Release
 ```
 
-## Running the Demo
+## Running the Demos
+
+**Gallery demo** — all controls, themes, backdrops, accent picker, and NavigationView modes:
 
 ```powershell
 dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -c Release
 ```
 
-Or set **Fluence.Wpf.Demo** as the startup project in Visual Studio and press F5.
+**MVVM Task Manager demo** — minimal `FluenceWindow` + CommunityToolkit.Mvvm example with zero code-behind:
+
+```powershell
+dotnet run --project Fluence.Wpf.Demo.Mvvm/Fluence.Wpf.Demo.Mvvm.csproj
+```
+
+Or set either project as the startup project in Visual Studio and press F5.
 
 ## Documentation
 

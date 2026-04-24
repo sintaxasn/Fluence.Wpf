@@ -14,6 +14,8 @@ The **Fluence.Wpf.Demo** gallery is the live inventory: `FluenceWindow` chrome w
 - Navigation (NavigationView modes)
 - Colors (accent ramp, theme brush swatches)
 
+**Fluence.Wpf.Demo.Mvvm** is a minimal Task Manager demonstrating `FluenceWindow` + Fluence controls with zero code-behind (CommunityToolkit.Mvvm). See [CLAUDE.md §8](../CLAUDE.md) for architecture notes.
+
 ## Namespaces
 
 - `Fluence.Wpf` - theme, accent, window chrome helpers, and UI enums (`ApplicationTheme`, `BackdropType`, `CardVariant`, `NavigationViewPaneDisplayMode`, typography enums).
@@ -32,19 +34,21 @@ xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
 
 ## Catalog (summary)
 
-| Area              | Types                                                                                             |
-|-------------------|---------------------------------------------------------------------------------------------------|
-| Window            | `FluenceWindow`, `TitleBar`, `CaptionButtonChrome`, `WindowPolicy`                                |
-| Basic actions     | `Button`, `HyperlinkButton`, `DropDownButton`, `SplitButton`, `RepeatButton`, `ToggleButton`      |
-| Selection         | `CheckBox`, `RadioButton`, `ToggleSwitch`, `ComboBox`, `Slider`, `NumberBox`                      |
-| Text              | `TextBox`, `PasswordBox`, `TextBlock` + `TextBlockExtensions`                                     |
-| Data              | `ListView`, `ListBox`, `ListBoxItem`, `ListViewItem`                                              |
-| Tabs              | `TabControl`, `TabItem`, `TabView`, `TabViewItem`                                                 |
-| Feedback          | `ProgressBar`, `ProgressRing`, `InfoBar`, `InfoBadge`, `RatingControl`                            |
-| Navigation        | `NavigationView`, `NavigationViewItem`, `NavigationViewItemHeader`, `NavigationViewItemSeparator` |
-| Layout / surfaces | `Card`, `Border`, `StackPanel`, `DockPanel`, `SmoothScrollViewer`, `Expander`, `Separator`        |
-| Person / social   | `PersonPicture`                                                                                   |
-| Icons             | `FontIcon`                                                                                        |
+| Area                | Types                                                                                                                              |
+|---------------------|------------------------------------------------------------------------------------------------------------------------------------|
+| Window              | `FluenceWindow`, `TitleBar`, `CaptionButtonChrome`, `WindowPolicy`                                                                 |
+| Basic actions       | `Button`, `HyperlinkButton`, `DropDownButton`, `SplitButton`, `RepeatButton`, `ToggleButton`                                       |
+| Selection           | `CheckBox`, `RadioButton`, `ToggleSwitch`, `ComboBox`, `Slider`, `NumberBox`                                                       |
+| Text                | `TextBox`, `PasswordBox`, `TextBlock` + `TextBlockExtensions`                                                                      |
+| Data                | `ListView`, `ListBox`, `ListBoxItem`, `ListViewItem`                                                                               |
+| Tabs                | `TabControl`, `TabItem`, `TabView`, `TabViewItem`                                                                                  |
+| Feedback            | `ProgressBar`, `ProgressRing`, `InfoBar`, `InfoBadge`, `RatingControl`                                                             |
+| Navigation          | `NavigationView`, `NavigationViewItem`, `NavigationViewItemHeader`, `NavigationViewItemSeparator`                                  |
+| Menus & popups      | `ContextMenu`, `MenuItem`, `Menu`, `ToolTip`                                                                                       |
+| Trees & collections | `TreeView`, `TreeViewItem`                                                                                                         |
+| Layout / surfaces   | `Card`, `Expander`, `Border`, `StackPanel`, `DockPanel`, `SmoothScrollViewer`, `Separator`                                         |
+| Person / social     | `PersonPicture`                                                                                                                    |
+| Icons               | `FontIcon`                                                                                                                         |
 
 Tab strip and scroll bar styling are provided via merged themes (see `Themes/Generic.xaml`).
 
@@ -132,6 +136,63 @@ Key members:
 | `TabViewItem.CloseRequested`     | Routed event (`RoutingStrategy.Bubble`)            | Raised by the per-tab close button (`PART_CloseButton`).               |
 
 Consumers remove the tab from the source collection themselves - the control does not auto-remove items. See `Fluence.Wpf.Demo/Pages/GalleryTabsPage.xaml(.cs)` for a reference implementation.
+
+## Menus & Popups
+
+`ContextMenu`, `MenuItem`, and `Menu` use the WinUI 3 MenuFlyout visual vocabulary.
+
+```xml
+<!-- Attach a Fluent ContextMenu to any element -->
+<ui:Button Content="Right-click me">
+    <ui:Button.ContextMenu>
+        <ui:ContextMenu>
+            <ui:MenuItem Header="Cut"  InputGestureText="Ctrl+X" />
+            <ui:MenuItem Header="Copy" InputGestureText="Ctrl+C" />
+            <Separator />
+            <ui:MenuItem Header="Paste" InputGestureText="Ctrl+V" />
+        </ui:ContextMenu>
+    </ui:Button.ContextMenu>
+</ui:Button>
+
+<!-- Top-level menu bar -->
+<ui:Menu>
+    <ui:MenuItem Header="_File">
+        <ui:MenuItem Header="_New"  InputGestureText="Ctrl+N" />
+        <ui:MenuItem Header="_Open" InputGestureText="Ctrl+O" />
+        <Separator />
+        <ui:MenuItem Header="E_xit" />
+    </ui:MenuItem>
+</ui:Menu>
+```
+
+`ToolTip` is applied automatically to any element with a `ToolTipService.ToolTip` property when the `ToolTip` style is merged:
+
+```xml
+<ui:Button Content="Save" ToolTipService.ToolTip="Save the document" />
+```
+
+## Trees
+
+`TreeView` and `TreeViewItem` provide a hierarchical list matching the WinUI 3 `TreeView` visual contract.
+
+```xml
+<ui:TreeView>
+    <ui:TreeViewItem Header="Documents" IsExpanded="True">
+        <ui:TreeViewItem Header="Reports">
+            <ui:TreeViewItem Header="Q1.xlsx" />
+            <ui:TreeViewItem Header="Q2.xlsx" />
+        </ui:TreeViewItem>
+        <ui:TreeViewItem Header="Presentations" />
+    </ui:TreeViewItem>
+    <ui:TreeViewItem Header="Pictures" />
+</ui:TreeView>
+```
+
+Visual contract:
+- Per-level indent via `LevelToIndentConverter` (16 px per level).
+- Chevron (`U+E76C`) rotates 90° on expand — 100 ms `ControlFastOutSlowInKeySpline` easing.
+- `SubtleFillColorSecondaryBrush` on hover, `SubtleFillColorTertiaryBrush` on press, `AccentFillColorDefaultBrush` when selected.
+- VSM groups: `CommonStates`, `SelectionStates`, `ExpansionStates`.
 
 ## Screenshots
 

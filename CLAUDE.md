@@ -9,7 +9,7 @@ Self-contained persistent memory for engineers (human and AI) working in this re
 ## 1. Project overview
 
 - **Fluence.Wpf** is a WPF control library that recreates the **Windows 11 Fluent / WinUI 3** visual language and interaction patterns on WPF.
-- **Target frameworks** (library + tests): `net472` (primary) and `net10.0-windows`. Demo is `net472`.
+- **Target frameworks** (library + tests): `net472` (primary) and `net10.0-windows`. Gallery demo (`Fluence.Wpf.Demo`) targets `net472`; MVVM demo (`Fluence.Wpf.Demo.Mvvm`) targets `net10.0-windows`.
 - **Language**: `C# 7.3` on `net472` (see `Directory.Build.props` conditional `LangVersion`). No `net472` sources may use C# 8+ features (nullable reference types, ranges, default-interface methods, `record`, `with`, range/index, raw strings, etc.).
 - **License**: BSD 3-Clause. Every `.cs` file begins with the same 27-line header; copy it verbatim from any existing library file when adding new sources. Do not edit the copyright year unless the user asks.
 - **OS**: Windows 10 1809+ baseline. Mica and rounded-corner extras light up on Windows 11.
@@ -19,9 +19,10 @@ Self-contained persistent memory for engineers (human and AI) working in this re
 
 ```text
 Fluence.Wpf.sln
-├── Fluence.Wpf/           Control library (multi-TFM)
-├── Fluence.Wpf.Demo/      Gallery app (net472)
-└── Fluence.Wpf.Tests/     MSTest v3.2 suite (multi-TFM)
+├── Fluence.Wpf/             Control library (multi-TFM: net472 + net10.0-windows)
+├── Fluence.Wpf.Demo/        Gallery app (net472) — visual verification for all controls
+├── Fluence.Wpf.Demo.Mvvm/   MVVM Task Manager demo (net10.0-windows) — CommunityToolkit.Mvvm example
+└── Fluence.Wpf.Tests/       MSTest v3.2 suite (multi-TFM)
 ```
 
 ### CLR namespaces
@@ -220,12 +221,26 @@ dotnet test    Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug
 
 ---
 
-## 8. Demo application
+## 8. Demo applications
+
+### Fluence.Wpf.Demo (gallery, net472)
 
 - `MainWindow` is a `FluenceWindow` with `ExtendsContentIntoTitleBar="True"`; the title bar hosts the app icon, title, a `TextBox` **search** bound to filter menu items, and caption buttons.
 - `NavigationView` named `DemoNav`: default `PaneDisplayMode="Left"` in source (demo currently opens in `LeftCompact` with `IsPaneOpen="True"` to showcase expansion - verify at review time).
 - Menu items carry `Tag` strings; `MainWindow.NavigateTo(string tag)` does a switch to the matching `Gallery*Page` inside the content frame. The back stack has been intentionally removed; navigation is tag-driven.
 - `GalleryHomePage` shows a theme-aware hero banner (`BannerLight.png` / `BannerDark.png`) and four large **clickable `Card`** tiles that route to Buttons, Selection, Navigation, and Window pages via the same `NavigateTo` helper.
+- 11 gallery pages: Home, Buttons, Selection, Inputs, Data, Tabs, Navigation, Window, Status, Colors, Glyphs — grouped under three `NavigationViewItemHeader` sections.
+- Run: `dotnet run -p Fluence.Wpf.Demo` (net472, Windows).
+
+### Fluence.Wpf.Demo.Mvvm (MVVM Task Manager, net10.0-windows)
+
+- Minimal Task Manager demonstrating `FluenceWindow` + Fluence controls with **zero code-behind**.
+- Uses **CommunityToolkit.Mvvm** 8.4: `[ObservableProperty]`, `[RelayCommand(CanExecute=nameof(CanAdd))]`, `partial void OnXxxChanged` source-generated callbacks.
+- `MainViewModel` owns an unfiltered `ObservableCollection<TaskItemViewModel>` and rebuilds `DisplayedTasks` on every filter or completion change. `StatusText` and `ProgressValue` are derived and notified after the rebuild — do **not** add `[NotifyPropertyChangedFor]` on `_activeFilter`; that would fire notifications before `DisplayedTasks` is rebuilt (stale read).
+- Filter radio buttons use `EnumToBoolConverter` with `ConverterParameter={x:Static vm:FilterMode.*}`.
+- Delete button inside `DataTemplate` reaches `MainViewModel.DeleteCommand` via `RelativeSource AncestorType=Window`; this is deliberate — keeps `TaskItemViewModel` free of parent references.
+- `App.xaml` contains **no `MergedDictionaries`**; `ApplicationThemeManager.Apply` (called from `App.xaml.cs`) seeds all five slots. A manual `Generic.xaml` merge would become a sixth stale entry and corrupt slot indices.
+- Run: `dotnet run -p Fluence.Wpf.Demo.Mvvm`.
 
 ---
 
