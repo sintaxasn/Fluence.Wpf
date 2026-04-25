@@ -792,6 +792,49 @@ namespace Fluence.Wpf.Tests
             });
         }
 
+        [TestMethod]
+        public void NavigationView_Left_PaneClosedInitially_ContentStartsAt48px_Inline()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 800,
+                        Height = 480,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left,
+                        IsPaneOpen = false
+                    };
+                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    var presenter = FindVisualChildByName<ContentPresenter>(nav, Fluent.NavigationView.PartContentPresenter);
+                    Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in Left template.");
+
+                    var offset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
+                    Assert.AreEqual(48.0, offset.X, 1.0,
+                        "When Left mode starts with IsPaneOpen=false, content must start at the 48px compact rail, not at the expanded pane width.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
         // WI-1 F1: LeftCompact pane must resize inline and push sibling content. Never overlay.
         //
         // Regression guard: the original LeftCompactPaneTemplate drew the pane as an overlay

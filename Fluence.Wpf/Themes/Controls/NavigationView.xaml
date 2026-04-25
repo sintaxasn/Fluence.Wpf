@@ -292,7 +292,7 @@
         <Border Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition x:Name="PaneColumn" Width="280" />
+                    <ColumnDefinition x:Name="PaneColumn" Width="48" />
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
@@ -462,6 +462,7 @@
                 <Setter TargetName="PART_BackButton" Property="IsEnabled" Value="False" />
             </Trigger>
             <Trigger Property="IsPaneOpen" Value="True">
+                <Setter TargetName="PaneColumn" Property="Width" Value="280" />
                 <Trigger.EnterActions>
                     <BeginStoryboard>
                         <Storyboard>
@@ -679,6 +680,7 @@
                 <Setter TargetName="PART_BackButton" Property="IsEnabled" Value="False" />
             </Trigger>
             <Trigger Property="IsPaneOpen" Value="True">
+                <Setter TargetName="PaneColumn" Property="Width" Value="280" />
                 <Trigger.EnterActions>
                     <BeginStoryboard>
                         <Storyboard>

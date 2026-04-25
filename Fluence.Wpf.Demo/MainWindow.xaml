@@ -50,7 +50,7 @@
         Background="Transparent"
         IsBackButtonVisible="False"
         IsBackEnabled="False"
-        IsPaneOpen="True"
+        IsPaneOpen="False"
         PaneDisplayMode="Left"
         SelectedIndex="0">
         <ui:NavigationViewItem Content="Home" Tag="home overview welcome">
