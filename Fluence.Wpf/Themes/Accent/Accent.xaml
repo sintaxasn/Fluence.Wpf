@@ -28,9 +28,8 @@
     <Color x:Key="AccentFillColorDefault">#FF005A9E</Color>
     <Color x:Key="AccentFillColorSecondary">#E6005A9E</Color>
     <Color x:Key="AccentFillColorTertiary">#CC005A9E</Color>
-    <Color x:Key="AccentFillColorDisabled">#37000000</Color>
 
-    <!--  TextOnAccent* and AccentTextFillColorDisabled are theme-dependent; set per-theme by ApplicationAccentColorManager  -->
+    <!--  AccentFillColorDisabled, TextOnAccent*, and AccentTextFillColorDisabled are theme-dependent.  -->
     <Color x:Key="TextOnAccentFillColorSelectedText">#FFFFFFFF</Color>
 
     <!--  ================================================================  -->
@@ -63,7 +62,10 @@
     <!--  Accent selection highlight  -->
     <SolidColorBrush x:Key="AccentFillColorSelectedTextBackgroundBrush" Color="{DynamicResource SystemAccentColor}" />
 
-    <!--  Text on accent surface brushes (Selected is theme-independent; Primary/Secondary/Disabled are set per-theme by code)  -->
+    <!--  Text on accent surface brushes (Primary/Secondary/Disabled resolve to the active theme and are also refreshed by code)  -->
     <SolidColorBrush x:Key="TextOnAccentFillColorSelectedTextBrush" Color="{DynamicResource TextOnAccentFillColorSelectedText}" />
+    <SolidColorBrush x:Key="TextOnAccentFillColorPrimaryBrush" Color="{DynamicResource TextOnAccentFillColorPrimary}" />
+    <SolidColorBrush x:Key="TextOnAccentFillColorSecondaryBrush" Color="{DynamicResource TextOnAccentFillColorSecondary}" />
+    <SolidColorBrush x:Key="TextOnAccentFillColorDisabledBrush" Color="{DynamicResource TextOnAccentFillColorDisabled}" />
 
 </ResourceDictionary>

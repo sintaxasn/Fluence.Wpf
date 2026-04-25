@@ -261,6 +261,19 @@ namespace Fluence.Wpf
             UpdateTextOnAccentColors(resolvedTheme);
         }
 
+        internal static void UpdateThemeDependentColors(ApplicationTheme resolvedTheme)
+        {
+            if (Application.Current == null)
+            {
+                return;
+            }
+
+            var resources = Application.Current.Resources;
+            UpdateDisabledAccentFill(resources, resolvedTheme);
+            UpdateAccentTextBrushes(resources);
+            UpdateTextOnAccentColors(resolvedTheme);
+        }
+
         private static void UpdateAccentTextBrushes(ResourceDictionary resources)
         {
             bool isDark = ApplicationThemeManager.GetResolvedTheme() == ApplicationTheme.Dark;
@@ -296,14 +309,16 @@ namespace Fluence.Wpf
             {
                 primary = Color.FromArgb(0xFF, 0xFF, 0xFF, 0xFF);
                 secondary = Color.FromArgb(0xB3, 0xFF, 0xFF, 0xFF);
-                disabled = Color.FromArgb(0xFF, 0xFF, 0xFF, 0xFF);
             }
             else
             {
                 primary = Color.FromArgb(0xFF, 0x00, 0x00, 0x00);
                 secondary = Color.FromArgb(0x80, 0x00, 0x00, 0x00);
-                disabled = Color.FromArgb(0x87, 0xFF, 0xFF, 0xFF);
             }
+
+            disabled = resolvedTheme == ApplicationTheme.Dark
+                ? Color.FromArgb(0x87, 0xFF, 0xFF, 0xFF)
+                : Color.FromArgb(0xFF, 0xFF, 0xFF, 0xFF);
 
             resources["TextOnAccentFillColorPrimary"] = primary;
             resources["TextOnAccentFillColorSecondary"] = secondary;
@@ -401,10 +416,28 @@ namespace Fluence.Wpf
             resources["AccentFillColorSecondaryBrush"] = new SolidColorBrush(HsvColorHelper.WithAlpha(_systemAccentColorPrimary, 0xE6));
             resources["AccentFillColorTertiaryBrush"] = new SolidColorBrush(HsvColorHelper.WithAlpha(_systemAccentColorPrimary, 0xCC));
 
+            var resolvedTheme = ApplicationThemeManager.GetResolvedTheme();
+            UpdateDisabledAccentFill(resources, resolvedTheme);
+
             UpdateAccentTextBrushes(resources);
             UpdateTitleBarColors(resources);
 
             OnAccentColorChanged();
+        }
+
+        private static void UpdateDisabledAccentFill(ResourceDictionary resources, ApplicationTheme resolvedTheme)
+        {
+            if (resolvedTheme == ApplicationTheme.HighContrast)
+            {
+                return;
+            }
+
+            var disabledAccentFill = resolvedTheme == ApplicationTheme.Dark
+                ? Color.FromArgb(0x28, 0xFF, 0xFF, 0xFF)
+                : Color.FromArgb(0x37, 0x00, 0x00, 0x00);
+
+            resources["AccentFillColorDisabled"] = disabledAccentFill;
+            resources["AccentFillColorDisabledBrush"] = new SolidColorBrush(disabledAccentFill);
         }
 
         private static void UpdateTitleBarColors(ResourceDictionary resources)

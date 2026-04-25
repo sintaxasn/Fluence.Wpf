@@ -46,7 +46,7 @@ namespace Fluence.Wpf
          * Stable merge order in Application.Current.Resources.MergedDictionaries:
          *   [0] Theme Colors   - Theme.{Light|Dark|HighContrast}.xaml  (SWAPPED on theme change)
          *   [1] Accent          - Accent.xaml                           (loaded once, keys updated in-place)
-         *   [2] Brushes         - Brushes.xaml                          (loaded once, never replaced)
+         *   [2] Brushes         - Brushes.xaml                          (reloaded on non-HC theme swaps)
          *   [3] Typography      - Typography.xaml                       (loaded once, never replaced)
          *   [4] Generic         - Generic.xaml                          (loaded once, never replaced)
          *
@@ -114,6 +114,10 @@ namespace Fluence.Wpf
                 if (updateAccent)
                 {
                     ApplicationAccentColorManager.UpdateThemeAdaptiveColors(resolvedTheme);
+                }
+                else
+                {
+                    ApplicationAccentColorManager.UpdateThemeDependentColors(resolvedTheme);
                 }
 
                 OnChanged(resolvedTheme);

@@ -83,6 +83,7 @@ namespace Fluence.Wpf.Tests
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
             application.Resources.MergedDictionaries.Clear();
+            application.Resources.Clear();
             ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
             var dictionaries = application.Resources.MergedDictionaries;
             var genericDictionary = dictionaries.Count > 0 ? dictionaries[dictionaries.Count - 1] : null;

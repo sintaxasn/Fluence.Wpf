@@ -132,11 +132,16 @@
     <Color x:Key="SystemFillColorSolidAttentionBackground">#FFF7F7F7</Color>
     <Color x:Key="SystemFillColorSolidNeutralBackground">#FFF3F3F3</Color>
 
+    <!--  Accent Fill Colors  -->
+    <Color x:Key="AccentFillColorDisabled">#37000000</Color>
+
     <!--
         Text color for content placed on an accent-color background.
         Light theme: white (accent is dark/saturated blue).
         Authority: WinUI 3 Common_themeresources_any.xaml, Light dictionary.
     -->
     <Color x:Key="TextOnAccentFillColorPrimary">#FFFFFFFF</Color>
+    <Color x:Key="TextOnAccentFillColorSecondary">#B3FFFFFF</Color>
+    <Color x:Key="TextOnAccentFillColorDisabled">#FFFFFFFF</Color>
 
 </ResourceDictionary>
