@@ -10,9 +10,10 @@ Fluence.Wpf is a WPF control library that recreates Windows 11 Fluent Design (Wi
 
 ### Solution Structure
 
-- `Fluence.Wpf/` - Core class library (WPF)
-- `Fluence.Wpf.Demo/` - Control gallery (WPF executable)
-- `Fluence.Wpf.Tests/` - MSTest suite (`Microsoft.NET.Test.Sdk`, MSTest 3.2)
+- `Fluence.Wpf/` - Core class library (multi-targets `net472` and `net10.0-windows`)
+- `Fluence.Wpf.Demo/` - Control gallery (`net472`)
+- `Fluence.Wpf.Demo.Mvvm/` - CommunityToolkit.Mvvm Task Manager demo (`net10.0-windows`)
+- `Fluence.Wpf.Tests/` - MSTest suite (`Microsoft.NET.Test.Sdk`, MSTest 3.2; `net472` and `net10.0-windows`)
 
 ### Namespace Layout
 
@@ -55,7 +56,7 @@ Align with Windows 11 / WinUI theme resources, e.g. `TextFillColorPrimary` → `
 ### Language & Framework
 
 - **C# 7.3** (no nullable reference types, no ranges, no default interface methods, etc.)
-- **.NET Framework 4.7.2**, **WPF**
+- **.NET Framework 4.7.2** and **.NET 10 Windows**, **WPF**
 
 ### License Header
 
