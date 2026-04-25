@@ -35,7 +35,7 @@ Merged dictionary order in `Application.Current.Resources` is stable:
 
 1. `[0]` `Theme.{Light|Dark|HighContrast}.xaml` - color keys only; **swapped** on theme change
 2. `[1]` `Accent.xaml` - accent ramp; keys updated in place
-3. `[2]` `Brushes.xaml` - `SolidColorBrush` keys referencing colors via `DynamicResource`
+3. `[2]` `Brushes.xaml` - `SolidColorBrush` keys referencing colors via `DynamicResource`; reloaded/re-promoted on non-HighContrast theme swaps
 4. `[3]` `Typography.xaml` - font resources and text styles
 5. `[4]` `Generic.xaml` - merges per-control templates from `Themes/Controls/`
 
@@ -89,9 +89,11 @@ Public APIs must have `///` comments; the library builds with `<DocumentationFil
 
 ## Design References
 
-- [WinUI 3 controls](https://learn.microsoft.com/en-us/windows/apps/design/controls/)
-- [Windows 11 color](https://learn.microsoft.com/en-us/windows/apps/design/style/color)
+- In-tree precedent in `Fluence.Wpf/Themes/**/*.xaml`, `Fluence.Wpf/Controls/*.cs`, and tests
+- WinUI 3 CommonStyles for visual tokens, resource keys, state tables, and control visuals
+- .NET WPF theme sources for WPF-native chrome, registry, and DWM interop patterns
+- Windows design guidance on Microsoft Learn as a tie-breaker
 
 ## Inspirations
 
-Design and implementation ideas are informed by the official WinUI theme resources. Prefer WinUI's `themeresources.xaml` as the source of truth for token values when in doubt.
+Design and implementation ideas are informed by the official WinUI theme resources. Prefer WinUI CommonStyles as the source of truth for token values when in doubt, while translating patterns through WPF primitives compatible with `net472`.
