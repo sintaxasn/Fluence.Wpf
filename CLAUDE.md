@@ -51,6 +51,7 @@ Every `.cs` file in the library, demo, and tests starts with the BSD 3-Clause he
 - Multi-target: do not guard with `#if NET10_0_OR_GREATER` to gain features that would break `net472`.
 - No nullable reference types in library or demo code.
 - `public` API must have `///` XML doc comments. The library builds with `<DocumentationFile>` and does not suppress `CS1591` / `CS1574`; missing comments fail the build.
+- **File encoding**: All `.cs`, `.xaml`, and `.csproj` files must be saved as **UTF-8 with BOM** (EF BB BF). Never commit UTF-16 LE files — they produce spurious full-file diffs, break `grep`-based tooling, and may cause XML parser failures on some build agents. If your editor does not default to UTF-8 with BOM, configure it project-wide (Visual Studio: Tools → Advanced Save Options; VS Code: `"files.encoding": "utf8bom"`). Verify with `[System.IO.File]::ReadAllBytes($path)[0..2]` — must be `0xEF 0xBB 0xBF`.
 
 ### Warnings and analyzers
 
