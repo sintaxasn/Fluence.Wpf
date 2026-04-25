@@ -30,11 +30,11 @@ Fluence.Wpf.ApplicationThemeManager.Apply(
 Fluence.Wpf.ApplicationAccentColorManager.ApplySystemAccent();
 ```
 
-`Apply` (first call) seeds the resource stack in a fixed order; subsequent calls swap only the theme color dictionary at slot `[0]` - see [theming.md](theming.md).
+`Apply` (first call) seeds the resource stack in a fixed order. Later calls swap the theme color dictionary at slot `[0]`, refresh promoted color keys, and reload/promote the brush dictionary on non-HighContrast theme changes - see [theming.md](theming.md).
 
 ## Use a Fluent window shell
 
-Derive your main window from `Fluence.Wpf.Controls.FluenceWindow`, **or** host `FluenceWindow` XAML and merge `Themes/Generic.xaml` in `App.xaml`.
+Derive your main window from `Fluence.Wpf.Controls.FluenceWindow`, **or** call `ApplicationThemeManager.Apply(...)` at startup and use Fluence controls inside a standard WPF `Window`. Do not manually merge `Themes/Generic.xaml` in `App.xaml` when using the theme manager; it already owns the template slot.
 
 ```xml
 <fluence:FluenceWindow
@@ -44,7 +44,7 @@ Derive your main window from `Fluence.Wpf.Controls.FluenceWindow`, **or** host `
     x:Class="YourApp.Shell"
     Title="Your App"
     Width="1200" Height="760"
-    Backdrop="Mica"
+    WindowBackdrop="Mica"
     ExtendsContentIntoTitleBar="True">
 
     <!-- Custom content in the extended title bar (search, breadcrumbs, etc.) -->
@@ -91,5 +91,6 @@ Fluence.Wpf.SystemThemeWatcher.UnWatch(myWindow);
 
 - Run tests: `dotnet test Fluence.Wpf.sln`
 - Run the gallery: `dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj`
+- Run the MVVM demo: `dotnet run --project Fluence.Wpf.Demo.Mvvm/Fluence.Wpf.Demo.Mvvm.csproj`
 
 Next: [theming.md](theming.md) for dictionary order and pitfalls, [controls.md](controls.md) for the control inventory and XAML snippets.

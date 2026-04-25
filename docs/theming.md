@@ -10,11 +10,11 @@ Design reference: **WinUI 3** resource key names and state behaviour. Fluence.Wp
 |-------|--------------------------------------------------------------------|-------------------------------------------------------|
 | 0     | Theme colors (`Theme.Light` / `Theme.Dark` / `Theme.HighContrast`) | **Replaced** (the manager swaps only this dictionary) |
 | 1     | Accent ramp (`Accent.xaml`)                                        | Loaded once; **values updated in place**              |
-| 2     | Brushes (`Brushes.xaml`)                                           | Loaded once                                           |
+| 2     | Brushes (`Brushes.xaml`)                                           | Loaded once; reloaded and re-promoted on non-HC swaps |
 | 3     | Typography (`Typography.xaml`)                                     | Loaded once                                           |
 | 4     | Control templates (`Generic.xaml`)                                 | Loaded once                                           |
 
-There must be **no accumulation** of extra theme dictionaries on repeated `Apply` calls (`DictionaryStabilityTests` enforces this).
+There must be **no accumulation** of extra theme dictionaries on repeated `Apply` calls (`DictionaryStabilityTests` enforces this). On a non-HighContrast theme swap, `ApplicationThemeManager` reloads `Brushes.xaml` and promotes those brush keys again so `DynamicResource` chains on `Freezable` values re-evaluate.
 
 ## Rules for XAML and code
 
@@ -26,8 +26,8 @@ There must be **no accumulation** of extra theme dictionaries on repeated `Apply
 
 Fluence.Wpf defines the full WinUI 3 token ramp; these are the ones most commonly referenced in custom templates:
 
-- **Text**: `TextFillColorPrimary`, `TextFillColorSecondary`, `TextFillColorTertiary`, `TextFillColorDisabled`, `TextOnAccentFillColorPrimary`.
-- **Fill**: `ControlFillColorDefault`, `ControlFillColorSecondary`, `ControlFillColorTertiary`, `ControlFillColorInputActive`, `ControlFillColorDisabled`, `AccentFillColorDefault` / `Secondary` / `Tertiary`, `SubtleFillColorSecondary` / `Tertiary`, `LayerFillColorDefault`, `CardBackgroundFillColorDefault`.
+- **Text**: `TextFillColorPrimary`, `TextFillColorSecondary`, `TextFillColorTertiary`, `TextFillColorDisabled`, `TextOnAccentFillColorPrimary` / `Secondary` / `Disabled`.
+- **Fill**: `ControlFillColorDefault`, `ControlFillColorSecondary`, `ControlFillColorTertiary`, `ControlFillColorInputActive`, `ControlFillColorDisabled`, `AccentFillColorDefault` / `Secondary` / `Tertiary` / `Disabled`, `SubtleFillColorSecondary` / `Tertiary`, `LayerFillColorDefault`, `CardBackgroundFillColorDefault`.
 - **Stroke**: `ControlStrokeColorDefault` / `Secondary`, **`ControlStrongStrokeColorDefault`** (radio / check-box rings), **`ControlStrongStrokeColorDisabled`**, `CardStrokeColorDefault`, `DividerStrokeColorDefault`, `FocusStrokeColorOuter` / `Inner`.
 - **Background**: `SolidBackgroundFillColorBase`, `ApplicationBackgroundColor`.
 

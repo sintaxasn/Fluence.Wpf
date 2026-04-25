@@ -8,7 +8,7 @@ dotnet build Fluence.Wpf.sln
 dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj
 ```
 
-Test project targets **net472** and **net10.0-windows**; both must pass. WPF tests run on a shared STA dispatcher (`WpfTestSta`); the assembly uses `[assembly: DoNotParallelize]` to avoid cross-thread resource issues. Current baseline is **230** tests, duration ~16 seconds on `net472`.
+Test project targets **net472** and **net10.0-windows**; both must pass. WPF tests run on a shared STA dispatcher (`WpfTestSta`); the assembly uses `[assembly: DoNotParallelize]` to avoid cross-thread resource issues. The branch's current test count is the floor: add coverage for new behavior and do not remove tests without documenting the replacement rationale.
 
 ## Language and style
 
@@ -21,7 +21,7 @@ Test project targets **net472** and **net10.0-windows**; both must pass. WPF tes
 
 - Run **Fluence.Wpf.Demo** and exercise: theme (Light / Dark / High Contrast / Auto), accent swatches, backdrop, and representative controls per gallery section.
 - Prefer `DynamicResource` for theme-bound properties in XAML.
-- Reference the WinUI 3 source (`WinUI_XAML/Controls/*_themeresources.xaml` in the repo root) when choosing resource keys, state tables, or animation timings.
+- Reference the authoritative WinUI 3 CommonStyles sources when choosing resource keys, state tables, or animation timings; use .NET WPF theme sources for WPF-native chrome and interop patterns.
 
 ## Tests
 
@@ -41,5 +41,5 @@ Test project targets **net472** and **net10.0-windows**; both must pass. WPF tes
 
 ## Documentation
 
-- Public guides live in `docs/*.md`. Archive maintainer-only notes under `docs/_internal/` only if/when that folder is reintroduced.
+- Public guides live in `docs/*.md`. Maintainer-only notes live under `docs/_internal/`; do not link them from `README.md` or public guides.
 - AI-assisted edits should read [CLAUDE.md](../CLAUDE.md) and [.github/copilot-instructions.md](../.github/copilot-instructions.md) for project standards and quality gates.

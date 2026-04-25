@@ -97,7 +97,7 @@ When `IsClickable` is true:
            Text="Fluence.Wpf" />
 ```
 
-Supported values: `Caption`, `Body`, `BodyStrong`, `Subtitle`, `Title`, `TitleLarge`, `Display` (see `Fluence.Wpf/Enums/TextBlockTypography.cs`).
+Supported values: `Caption`, `Body`, `BodyStrong`, `BodyLarge`, `Subtitle`, `Title`, `TitleLarge`, `Display` (see `Fluence.Wpf/Enums/FluentTypography.cs`).
 
 ## Tabs
 

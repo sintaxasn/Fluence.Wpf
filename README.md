@@ -31,7 +31,7 @@ Fluence.Wpf.ApplicationThemeManager.Apply(
 Fluence.Wpf.ApplicationAccentColorManager.ApplySystemAccent();
 ```
 
-1. Use `Fluence.Wpf.Controls.FluenceWindow` (or merge `Generic.xaml` and use styled controls in a standard `Window`).
+1. Use `Fluence.Wpf.Controls.FluenceWindow`, or call `ApplicationThemeManager.Apply(...)` at startup and place Fluence controls in a standard `Window`.
 
 Optional XML namespace mapping:
 
@@ -66,7 +66,7 @@ The banner above is checked in at `docs/images/Banner.png`. Theme-specific galle
 - **ApplicationTheme**: `Light`, `Dark`, `HighContrast`, `Auto`.
 - **BackdropType**: `None`, `Auto`, `Mica`, `Acrylic`, `Tabbed` (for `FluenceWindow`).
 - **Accent**: `ApplicationAccentColorManager.ApplySystemAccent()`, `ApplyApplicationAccent()`, or `ApplyCustomAccent(Color)`.
-- **Live OS changes**: `SystemThemeWatcher.Watch(window)` / `UnWatch(window)`.
+- **Live OS changes**: `SystemThemeWatcher.Watch(window)` / `SystemThemeWatcher.UnWatch(window)`.
 
 ## Installation
 

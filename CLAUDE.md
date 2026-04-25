@@ -118,7 +118,7 @@ Every color key generally has a sibling `…Brush` `SolidColorBrush`; template b
 - `ApplicationThemeManager.CurrentTheme` / `CurrentBackdrop` - read-only state.
 - `ApplicationThemeManager.Changed` - `EventHandler<ThemeChangedEventArgs>`, raised once per applied change.
 - `ApplicationAccentColorManager.ApplySystemAccent()` / `ApplyApplicationAccent(Color)` / `ApplyCustomAccent(Color)` - ramp generation + in-place key updates. Subscribe to `AccentColorChanged` for post-apply hooks.
-- `SystemThemeWatcher.Watch(Window)` / `Unwatch(Window)` - Win32 settings-change hooks with debounce; fires `Changed` (via `ApplicationThemeManager`) once per logical OS change. **Do not assume more than one `Changed` per user action in tests.**
+- `SystemThemeWatcher.Watch(Window)` / `UnWatch(Window)` - Win32 settings-change hooks with debounce; fires `Changed` (via `ApplicationThemeManager`) once per logical OS change. **Do not assume more than one `Changed` per user action in tests.**
 - `FluenceWindow` is the canonical WPF window with DWM backdrop, rounded corners, caption extension, and an optional title-bar content slot.
 
 ---

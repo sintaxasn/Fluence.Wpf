@@ -55,10 +55,10 @@ Priority tiers: HIGH → must fix before release | MEDIUM → fix in this cycle 
 ## Execution rules (per approved item)
 
 1. Read target `.cs` + template `.xaml` in full.
-2. Read WinUI 3 counterpart (`WinUI_XAML/Controls/<Name>.xaml` + `<Name>_themeresources.xaml`).
+2. Read the WinUI 3 CommonStyles counterpart for the control (`microsoft-ui-xaml/src/controls/dev/CommonStyles`) plus any matching `.NET WPF` theme source when WPF translation details matter.
 3. TDD: add failing MSTest encoding the acceptance criterion.
 4. Implement minimal change.
 5. Build + test (net10 first, then net472).
 6. Visual verification in Demo (Light / Dark / HC × Normal / PointerOver / Pressed / Focused / Disabled × 100% / 150% DPI).
-7. `wpf-code-reviewer` audit.
+7. Request a reviewer-agent audit or equivalent code review.
 8. Commit per item. Do not batch.
