@@ -82,12 +82,15 @@ namespace Fluence.Wpf.Controls
 
         private static void ApplyTypography(System.Windows.Controls.TextBlock textBlock, FluentTypography typography)
         {
-            textBlock.LineStackingStrategy = LineStackingStrategy.BlockLineHeight;
-
-            if (typography != FluentTypography.None)
+            if (typography == FluentTypography.None)
             {
-                textBlock.FontFamily = FluentTypographyFontFamily;
+                return;
             }
+
+            textBlock.LineStackingStrategy = LineStackingStrategy.BlockLineHeight;
+            textBlock.FontFamily = FluentTypographyFontFamily;
+
+            var formattingMode = TextFormattingMode.Display;
 
             switch (typography)
             {
@@ -115,26 +118,39 @@ namespace Fluence.Wpf.Controls
                     textBlock.FontSize = 20;
                     textBlock.FontWeight = FontWeights.SemiBold;
                     textBlock.LineHeight = 28;
+                    formattingMode = TextFormattingMode.Ideal;
                     break;
                 case FluentTypography.Title:
                     textBlock.FontSize = 28;
                     textBlock.FontWeight = FontWeights.SemiBold;
                     textBlock.LineHeight = 36;
+                    formattingMode = TextFormattingMode.Ideal;
                     break;
                 case FluentTypography.TitleLarge:
                     textBlock.FontSize = 40;
                     textBlock.FontWeight = FontWeights.Normal;
                     textBlock.LineHeight = 52;
+                    formattingMode = TextFormattingMode.Ideal;
                     break;
                 case FluentTypography.Display:
                     textBlock.FontSize = 68;
                     textBlock.FontWeight = FontWeights.SemiBold;
                     textBlock.LineHeight = 92;
+                    formattingMode = TextFormattingMode.Ideal;
                     break;
                 case FluentTypography.None:
                 default:
                     break;
             }
+
+            ApplyTextRenderingPolicy(textBlock, formattingMode);
+        }
+
+        private static void ApplyTextRenderingPolicy(System.Windows.Controls.TextBlock textBlock, TextFormattingMode formattingMode)
+        {
+            TextOptions.SetTextFormattingMode(textBlock, formattingMode);
+            TextOptions.SetTextRenderingMode(textBlock, TextRenderingMode.ClearType);
+            TextOptions.SetTextHintingMode(textBlock, TextHintingMode.Fixed);
         }
 
         #endregion
@@ -288,6 +304,10 @@ namespace Fluence.Wpf.Controls
                 CaretBrush = textBlock.Foreground,
                 SelectionBrush = SystemColors.HighlightBrush
             };
+
+            TextOptions.SetTextFormattingMode(overlay, TextOptions.GetTextFormattingMode(textBlock));
+            TextOptions.SetTextRenderingMode(overlay, TextOptions.GetTextRenderingMode(textBlock));
+            TextOptions.SetTextHintingMode(overlay, TextOptions.GetTextHintingMode(textBlock));
 
             overlay.SetBinding(System.Windows.Controls.TextBox.TextProperty, new Binding
             {

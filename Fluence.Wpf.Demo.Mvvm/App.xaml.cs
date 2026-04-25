@@ -35,14 +35,20 @@ namespace Fluence.Wpf.Demo.Mvvm
     {
         static App()
         {
-            // Inherit ClearType text rendering from root Window downward.
+            // Inherit on-screen ClearType text rendering from root Window downward.
+            var textOptionsMetadata = FrameworkPropertyMetadataOptions.AffectsMeasure |
+                FrameworkPropertyMetadataOptions.AffectsRender |
+                FrameworkPropertyMetadataOptions.Inherits;
+
             TextOptions.TextFormattingModeProperty.OverrideMetadata(
                 typeof(Window),
-                new FrameworkPropertyMetadata(
-                    TextFormattingMode.Display,
-                    FrameworkPropertyMetadataOptions.AffectsMeasure |
-                    FrameworkPropertyMetadataOptions.AffectsRender |
-                    FrameworkPropertyMetadataOptions.Inherits));
+                new FrameworkPropertyMetadata(TextFormattingMode.Display, textOptionsMetadata));
+            TextOptions.TextRenderingModeProperty.OverrideMetadata(
+                typeof(Window),
+                new FrameworkPropertyMetadata(TextRenderingMode.ClearType, textOptionsMetadata));
+            TextOptions.TextHintingModeProperty.OverrideMetadata(
+                typeof(Window),
+                new FrameworkPropertyMetadata(TextHintingMode.Fixed, textOptionsMetadata));
         }
 
         protected override void OnStartup(StartupEventArgs e)

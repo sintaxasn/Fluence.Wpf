@@ -221,6 +221,10 @@ namespace Fluence.Wpf.Controls
                     SnapsToDevicePixels = true,
                     Text = "\uE734"
                 };
+                TextOptions.SetTextFormattingMode(star, TextFormattingMode.Display);
+                TextOptions.SetTextRenderingMode(star, TextRenderingMode.ClearType);
+                TextOptions.SetTextHintingMode(star, TextHintingMode.Fixed);
+
                 if (i < count)
                     star.Margin = new Thickness(0, 0, 4, 0);
 

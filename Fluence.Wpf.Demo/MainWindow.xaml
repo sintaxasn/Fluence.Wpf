@@ -16,6 +16,7 @@
     SnapsToDevicePixels="True"
     TextOptions.TextFormattingMode="Display"
     TextOptions.TextRenderingMode="ClearType"
+    TextOptions.TextHintingMode="Fixed"
     TitleBarHeight="48"
     UseLayoutRounding="True"
     WindowBackdrop="Mica"
