@@ -268,26 +268,57 @@ namespace Fluence.Wpf.Controls
             };
             _indeterminateRotation.BeginAnimation(RotateTransform.AngleProperty, rotAnim);
 
-            // Arc-sweep oscillation: 10 % → 75 % → 10 % of circumference per 1.6 s cycle.
-            // KeySpline 0.4,0,0.6,1 gives a smooth ease-in/ease-out on both legs.
+            BeginAnimation(IndeterminateSweepProperty, CreateIndeterminateSweepAnimation());
+        }
+
+        /// <summary>
+        /// Creates the 4-keyframe S-curve animation for the indeterminate arc sweep.
+        /// Exposed internal for unit-test access (KeyFrames.Count assertion).
+        /// </summary>
+        /// <remarks>
+        /// 4-keyframe S-curve eliminates the hard velocity-zero snap present in the
+        /// original 2-keyframe approach.  Both the arrival (0.4s→0.8s ease-in) and
+        /// departure (0.8s→1.6s ease-in-out) have near-zero velocity at the apex (0.8s),
+        /// producing a smooth direction reversal.
+        ///
+        /// KeySplines chosen so that:
+        ///   0.0s → 0.10  (initial minimum arc)
+        ///   0.4s → 0.40  (ease-out: fast expansion, KeySpline 0,0,0.2,1)
+        ///   0.8s → 0.75  (ease-in arrival: near-zero velocity at apex, KeySpline 0.8,0,1,1)
+        ///   1.6s → 0.10  (ease-in-out contraction: zero departure from apex, KeySpline 0.4,0,0.6,1)
+        /// </remarks>
+        internal static DoubleAnimationUsingKeyFrames CreateIndeterminateSweepAnimation()
+        {
             var sweepAnim = new DoubleAnimationUsingKeyFrames
             {
                 RepeatBehavior = RepeatBehavior.Forever,
                 FillBehavior = FillBehavior.HoldEnd
             };
+
+            // 0.0 s — minimum arc (10 % of circumference).
             sweepAnim.KeyFrames.Add(new LinearDoubleKeyFrame(
                 0.1,
                 KeyTime.FromTimeSpan(TimeSpan.Zero)));
+
+            // 0.4 s — rapid expansion to 40 % (ease-out: fast start, slow finish).
+            sweepAnim.KeyFrames.Add(new SplineDoubleKeyFrame(
+                0.40,
+                KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0.4)),
+                new KeySpline(0.0, 0.0, 0.2, 1.0)));
+
+            // 0.8 s — slow arrival at apex 75 % (ease-in: near-zero velocity at apex).
             sweepAnim.KeyFrames.Add(new SplineDoubleKeyFrame(
                 0.75,
                 KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0.8)),
-                new KeySpline(0.4, 0.0, 0.6, 1.0)));
+                new KeySpline(0.8, 0.0, 1.0, 1.0)));
+
+            // 1.6 s — smooth contraction back to 10 % (ease-in-out: zero departure from apex).
             sweepAnim.KeyFrames.Add(new SplineDoubleKeyFrame(
                 0.1,
                 KeyTime.FromTimeSpan(TimeSpan.FromSeconds(1.6)),
                 new KeySpline(0.4, 0.0, 0.6, 1.0)));
 
-            BeginAnimation(IndeterminateSweepProperty, sweepAnim);
+            return sweepAnim;
         }
 
         private void StopIndeterminateAnimation()
