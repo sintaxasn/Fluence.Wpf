@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,11 @@ namespace Fluence.Wpf.Controls
     /// <summary>
     /// A circular progress indicator that supports both determinate and indeterminate modes.
     /// </summary>
-    /// <remarks>Inspired by WInUI's ProgressRing.</remarks>
+    /// <remarks>
+    /// Indeterminate animation approximates the WinUI 3 Lottie ProgressRing:
+    /// continuous base rotation (360° / 1.4 s) combined with a sinusoidal arc-sweep
+    /// oscillation (10% → 75% → 10% of circumference, period 1.6 s).
+    /// </remarks>
     [TemplatePart(Name = PART_IndeterminateRing, Type = typeof(System.Windows.Shapes.Ellipse))]
     [TemplatePart(Name = PART_DeterminateArc, Type = typeof(Path))]
     public class ProgressRing : Control
@@ -47,10 +51,17 @@ namespace Fluence.Wpf.Controls
         private const string PART_IndeterminateRing = "PART_IndeterminateRing";
         private const string PART_DeterminateArc = "PART_DeterminateArc";
 
+        // Determinate arc animation settings
         private static readonly Duration AnimationDuration = new Duration(TimeSpan.FromMilliseconds(150));
         private static readonly IEasingFunction AnimationEasing = new CubicEase { EasingMode = EasingMode.EaseInOut };
 
+        // Indeterminate animation timings (WinUI Lottie approximation)
+        // Rotation: 360° every 1.4 s ≈ 257°/s (WinUI Lottie ≈ 250°/s).
+        private static readonly Duration RotationDuration = new Duration(TimeSpan.FromSeconds(1.4));
+
         private Path _arcPath;
+        private System.Windows.Shapes.Ellipse _indeterminateRing;
+        private RotateTransform _indeterminateRotation;
 
         static ProgressRing()
         {
@@ -58,6 +69,8 @@ namespace Fluence.Wpf.Controls
                 typeof(ProgressRing),
                 new FrameworkPropertyMetadata(typeof(ProgressRing)));
         }
+
+        // ──── Private DP: animated fraction for determinate arc ────
 
         private static readonly DependencyProperty AnimatedFractionProperty =
             DependencyProperty.Register(
@@ -76,6 +89,28 @@ namespace Fluence.Wpf.Controls
         {
             ((ProgressRing)d).RenderArc((double)e.NewValue);
         }
+
+        // ──── Private DP: sweep fraction for indeterminate arc ────
+
+        private static readonly DependencyProperty IndeterminateSweepProperty =
+            DependencyProperty.Register(
+                "IndeterminateSweep",
+                typeof(double),
+                typeof(ProgressRing),
+                new FrameworkPropertyMetadata(0.0, OnIndeterminateSweepChanged));
+
+        private double IndeterminateSweep
+        {
+            get { return (double)GetValue(IndeterminateSweepProperty); }
+            set { SetValue(IndeterminateSweepProperty, value); }
+        }
+
+        private static void OnIndeterminateSweepChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((ProgressRing)d).UpdateIndeterminateDash((double)e.NewValue);
+        }
+
+        // ──── Public DPs ────
 
         /// <summary>Identifies the <see cref="IsActive"/> dependency property.</summary>
         public static readonly DependencyProperty IsActiveProperty =
@@ -98,7 +133,7 @@ namespace Fluence.Wpf.Controls
                 nameof(IsIndeterminate),
                 typeof(bool),
                 typeof(ProgressRing),
-                new FrameworkPropertyMetadata(true, OnArcPropertyChanged));
+                new FrameworkPropertyMetadata(true, OnIsIndeterminateChanged));
 
         /// <summary>Gets or sets whether the ring operates in indeterminate (spinning) mode.</summary>
         public bool IsIndeterminate
@@ -167,17 +202,28 @@ namespace Fluence.Wpf.Controls
             set { SetValue(StrokeThicknessProperty, value); }
         }
 
+        // ──── Automation ────
+
         /// <inheritdoc />
         protected override AutomationPeer OnCreateAutomationPeer()
         {
             return new ProgressRingAutomationPeer(this);
         }
 
+        // ──── Template ────
+
         /// <inheritdoc />
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
+
             _arcPath = GetTemplateChild(PART_DeterminateArc) as Path;
+            _indeterminateRing = GetTemplateChild(PART_IndeterminateRing) as System.Windows.Shapes.Ellipse;
+            _indeterminateRotation = _indeterminateRing != null
+                ? _indeterminateRing.RenderTransform as RotateTransform
+                : null;
+
+            UpdateIndeterminateState();
 
             if (_arcPath != null && !IsIndeterminate)
             {
@@ -188,6 +234,97 @@ namespace Fluence.Wpf.Controls
                 AnimatedFraction = fraction;
             }
         }
+
+        // ──── Indeterminate animation ────
+
+        private static void OnIsIndeterminateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var ring = (ProgressRing)d;
+            ring.UpdateDeterminateArc();
+            ring.UpdateIndeterminateState();
+        }
+
+        private void UpdateIndeterminateState()
+        {
+            if (IsIndeterminate)
+                StartIndeterminateAnimation();
+            else
+                StopIndeterminateAnimation();
+        }
+
+        private void StartIndeterminateAnimation()
+        {
+            if (_indeterminateRotation == null)
+                return;
+
+            // Continuous rotation: 360° every 1.4 s.
+            var rotAnim = new DoubleAnimation
+            {
+                From = 0,
+                To = 360,
+                Duration = RotationDuration,
+                RepeatBehavior = RepeatBehavior.Forever,
+                FillBehavior = FillBehavior.HoldEnd
+            };
+            _indeterminateRotation.BeginAnimation(RotateTransform.AngleProperty, rotAnim);
+
+            // Arc-sweep oscillation: 10 % → 75 % → 10 % of circumference per 1.6 s cycle.
+            // KeySpline 0.4,0,0.6,1 gives a smooth ease-in/ease-out on both legs.
+            var sweepAnim = new DoubleAnimationUsingKeyFrames
+            {
+                RepeatBehavior = RepeatBehavior.Forever,
+                FillBehavior = FillBehavior.HoldEnd
+            };
+            sweepAnim.KeyFrames.Add(new LinearDoubleKeyFrame(
+                0.1,
+                KeyTime.FromTimeSpan(TimeSpan.Zero)));
+            sweepAnim.KeyFrames.Add(new SplineDoubleKeyFrame(
+                0.75,
+                KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0.8)),
+                new KeySpline(0.4, 0.0, 0.6, 1.0)));
+            sweepAnim.KeyFrames.Add(new SplineDoubleKeyFrame(
+                0.1,
+                KeyTime.FromTimeSpan(TimeSpan.FromSeconds(1.6)),
+                new KeySpline(0.4, 0.0, 0.6, 1.0)));
+
+            BeginAnimation(IndeterminateSweepProperty, sweepAnim);
+        }
+
+        private void StopIndeterminateAnimation()
+        {
+            if (_indeterminateRotation != null)
+                _indeterminateRotation.BeginAnimation(RotateTransform.AngleProperty, null);
+            BeginAnimation(IndeterminateSweepProperty, null);
+            if (_indeterminateRing != null)
+                _indeterminateRing.StrokeDashArray = null;
+        }
+
+        private void UpdateIndeterminateDash(double sweepFraction)
+        {
+            if (_indeterminateRing == null)
+                return;
+
+            if (sweepFraction <= 0)
+            {
+                _indeterminateRing.StrokeDashArray = null;
+                return;
+            }
+
+            double size = ActualWidth > 0 ? ActualWidth : Width;
+            if (double.IsNaN(size) || size <= 0)
+                return;
+
+            double radius = (size - StrokeThickness) / 2.0;
+            if (radius <= 0)
+                return;
+
+            double circumference = 2.0 * Math.PI * radius;
+            double dashLen = sweepFraction * circumference / StrokeThickness;
+            double gapLen = Math.Max(0.01, (1.0 - sweepFraction) * circumference / StrokeThickness);
+            _indeterminateRing.StrokeDashArray = new DoubleCollection(new double[] { dashLen, gapLen });
+        }
+
+        // ──── Determinate arc ────
 
         private static void OnArcPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
@@ -280,6 +417,8 @@ namespace Fluence.Wpf.Controls
         {
             base.OnRenderSizeChanged(sizeInfo);
             RenderArc(AnimatedFraction);
+            if (IsIndeterminate)
+                UpdateIndeterminateDash(IndeterminateSweep);
         }
     }
 }

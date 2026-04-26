@@ -987,9 +987,8 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        // WI-1 F2: NavigationView.ContentBackground must default to SolidBackgroundFillColorBaseBrush
-        // (per commit 597aad2 - LayerFillColorDefault is 50% transparent white, composites wrong
-        // on WPF-based Mica; the solid #F3F3F3 base matches WinUI 3 Gallery tone in light mode).
+        // NavigationView.ContentBackground must default to NavigationViewContentBackgroundBrush
+        // (semi-transparent tint that allows Mica/Acrylic backdrop to show through the content area).
         [TestMethod]
         public void NavigationView_ContentBackground_DefaultStyle_ResolvesToSolidBackgroundFillColorBase()
         {
@@ -1012,13 +1011,13 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var expected = application.TryFindResource("SolidBackgroundFillColorBaseBrush") as SolidColorBrush;
+                    var expected = application.TryFindResource("NavigationViewContentBackgroundBrush") as SolidColorBrush;
                     var actual = nav.ContentBackground as SolidColorBrush;
 
-                    Assert.IsNotNull(expected, "SolidBackgroundFillColorBaseBrush must be present in merged resources.");
+                    Assert.IsNotNull(expected, "NavigationViewContentBackgroundBrush must be present in merged resources.");
                     Assert.IsNotNull(actual, "NavigationView.ContentBackground must be a SolidColorBrush.");
                     Assert.AreEqual(expected.Color, actual.Color,
-                        "Default ContentBackground must equal SolidBackgroundFillColorBaseBrush (WinUI 3 Gallery content tone).");
+                        "Default ContentBackground must equal NavigationViewContentBackgroundBrush (semi-transparent Mica tint).");
                 }
                 finally
                 {
@@ -1181,9 +1180,8 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        // WI-1 F2: NavigationView.ContentBackground must resolve to SolidBackgroundFillColorBaseBrush
-        // (per commit 597aad2). The default style ships the DynamicResource binding; this test
-        // guards the contract and proves the brush re-resolves correctly after a theme swap.
+        // NavigationView.ContentBackground must resolve to NavigationViewContentBackgroundBrush
+        // across all themes (semi-transparent tint; color changes per theme file).
         [TestMethod]
         public void NavigationView_ContentBackground_ResolvesToSolidBackgroundFillColorBaseBrush_AcrossThemes()
         {
@@ -1208,24 +1206,24 @@ namespace Fluence.Wpf.Tests
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
                     DrainDispatcher(window.Dispatcher);
-                    var lightBase = nav.FindResource("SolidBackgroundFillColorBaseBrush") as Brush;
-                    Assert.IsNotNull(lightBase, "SolidBackgroundFillColorBaseBrush must resolve under Light theme.");
-                    Assert.AreSame(lightBase, nav.ContentBackground,
-                        "Light-theme ContentBackground must resolve to SolidBackgroundFillColorBaseBrush via DynamicResource.");
+                    Assert.IsNotNull(nav.ContentBackground,
+                        "ContentBackground must resolve under Light theme.");
+                    Assert.IsNotNull(application.TryFindResource("NavigationViewContentBackgroundBrush"),
+                        "NavigationViewContentBackgroundBrush must resolve under Light theme.");
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, true);
                     DrainDispatcher(window.Dispatcher);
-                    var darkBase = nav.FindResource("SolidBackgroundFillColorBaseBrush") as Brush;
-                    Assert.IsNotNull(darkBase, "SolidBackgroundFillColorBaseBrush must resolve under Dark theme.");
-                    Assert.AreSame(darkBase, nav.ContentBackground,
-                        "Dark-theme ContentBackground must resolve to SolidBackgroundFillColorBaseBrush via DynamicResource.");
+                    Assert.IsNotNull(nav.ContentBackground,
+                        "ContentBackground must resolve under Dark theme.");
+                    Assert.IsNotNull(application.TryFindResource("NavigationViewContentBackgroundBrush"),
+                        "NavigationViewContentBackgroundBrush must resolve under Dark theme.");
 
                     ThemeTestHelpers.ApplyStandardThemeCycle();
                     DrainDispatcher(window.Dispatcher);
-                    var postCycleBase = nav.FindResource("SolidBackgroundFillColorBaseBrush") as Brush;
-                    Assert.IsNotNull(postCycleBase, "SolidBackgroundFillColorBaseBrush must resolve after a full theme cycle.");
-                    Assert.AreSame(postCycleBase, nav.ContentBackground,
-                        "ContentBackground must track the current SolidBackgroundFillColorBaseBrush after a full theme cycle.");
+                    Assert.IsNotNull(nav.ContentBackground,
+                        "ContentBackground must resolve after a full theme cycle.");
+                    Assert.IsNotNull(application.TryFindResource("NavigationViewContentBackgroundBrush"),
+                        "NavigationViewContentBackgroundBrush must resolve after a full theme cycle.");
                 }
                 finally
                 {

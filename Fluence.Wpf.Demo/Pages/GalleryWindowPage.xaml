@@ -1,19 +1,20 @@
-﻿<UserControl x:Class="Fluence.Wpf.Demo.Pages.GalleryWindowPage"
+﻿<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.GalleryWindowPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
-    xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    d:DesignHeight="800" d:DesignWidth="900"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
+    xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
+    d:DesignHeight="800"
+    d:DesignWidth="900"
     mc:Ignorable="d">
-                    <ui:SmoothScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+    <ui:SmoothScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="24" HorizontalAlignment="Stretch">
             <TextBlock
-                                Margin="0,0,0,4"
-                                Style="{StaticResource SectionHeaderStyle}"
-                                Text="Theme &amp; Appearance"
-                                />
+                Margin="0,0,0,4"
+                Style="{StaticResource SectionHeaderStyle}"
+                Text="Theme &amp; Appearance" />
             <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Theme, accent color, backdrop, and window chrome settings." />
 
             <!--  Row 1: Theme + Accent side by side  -->
@@ -24,158 +25,148 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
                 <ui:Card
-                                    Grid.Column="0"
-                                    Padding="16"
-                                    Variant="{x:Static uicore:CardVariant.Default}"
-                                    >
+                    Grid.Column="0"
+                    Padding="16"
+                    Variant="{x:Static uicore:CardVariant.Default}">
                     <StackPanel>
                         <TextBlock
-                                            Margin="0,0,0,8"
-                                            FontWeight="SemiBold"
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Text="Theme"
-                                            />
+                            Margin="0,0,0,8"
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                            Text="Theme" />
                         <WrapPanel Margin="0,0,0,8">
                             <ui:RadioButton
-                                                x:Name="ThemeLight"
-                                                Margin="0,0,12,8"
-                                                Checked="ThemeRadioButton_Checked"
-                                                Content="Light"
-                                                GroupName="ThemeGroup"
-                                                />
+                                x:Name="ThemeLight"
+                                Margin="0,0,12,8"
+                                Checked="ThemeRadioButton_Checked"
+                                Content="Light"
+                                GroupName="ThemeGroup" />
                             <ui:RadioButton
-                                                x:Name="ThemeDark"
-                                                Margin="0,0,12,8"
-                                                Checked="ThemeRadioButton_Checked"
-                                                Content="Dark"
-                                                GroupName="ThemeGroup"
-                                                />
+                                x:Name="ThemeDark"
+                                Margin="0,0,12,8"
+                                Checked="ThemeRadioButton_Checked"
+                                Content="Dark"
+                                GroupName="ThemeGroup" />
                             <ui:RadioButton
-                                                x:Name="ThemeHighContrast"
-                                                Margin="0,0,12,8"
-                                                Checked="ThemeRadioButton_Checked"
-                                                Content="HighContrast"
-                                                GroupName="ThemeGroup"
-                                                />
+                                x:Name="ThemeHighContrast"
+                                Margin="0,0,12,8"
+                                Checked="ThemeRadioButton_Checked"
+                                Content="HighContrast"
+                                GroupName="ThemeGroup" />
                             <ui:RadioButton
-                                                x:Name="ThemeAuto"
-                                                Margin="0,0,12,8"
-                                                Checked="ThemeRadioButton_Checked"
-                                                Content="Auto"
-                                                GroupName="ThemeGroup"
-                                                IsChecked="True"
-                                                />
+                                x:Name="ThemeAuto"
+                                Margin="0,0,12,8"
+                                Checked="ThemeRadioButton_Checked"
+                                Content="Auto"
+                                GroupName="ThemeGroup"
+                                IsChecked="True" />
                         </WrapPanel>
                         <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
                             <ui:ToggleSwitch
-                                                x:Name="ThemeWatcherToggle"
-                                                Margin="0,0,10,0"
-                                                Checked="SystemThemeWatcher_Toggled"
-                                                IsChecked="True"
-                                                Unchecked="SystemThemeWatcher_Toggled"
-                                                />
+                                x:Name="ThemeWatcherToggle"
+                                Margin="0,0,10,0"
+                                Checked="SystemThemeWatcher_Toggled"
+                                IsChecked="True"
+                                Unchecked="SystemThemeWatcher_Toggled" />
                             <TextBlock
-                                                x:Name="SystemThemeLabel"
-                                                VerticalAlignment="Center"
-                                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                                Text="Watching: Yes"
-                                                />
+                                x:Name="SystemThemeLabel"
+                                VerticalAlignment="Center"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                Text="Watching: Yes" />
                         </StackPanel>
                         <TextBlock
-                                            x:Name="ThemeStateLabel"
-                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                            Text="Current: Auto"
-                                            />
+                            x:Name="ThemeStateLabel"
+                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                            Text="Current: Auto" />
                     </StackPanel>
                 </ui:Card>
                 <ui:Card
-                                    Grid.Column="2"
-                                    Padding="16"
-                                    Variant="{x:Static uicore:CardVariant.Default}"
-                                    >
+                    Grid.Column="2"
+                    Padding="16"
+                    Variant="{x:Static uicore:CardVariant.Default}">
                     <StackPanel>
                         <TextBlock
-                                            Margin="0,0,0,8"
-                                            FontWeight="SemiBold"
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Text="Accent Color"
-                                            />
+                            Margin="0,0,0,8"
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                            Text="Accent Color" />
                         <WrapPanel Margin="0,0,0,8">
                             <ui:Button
-                                                Margin="0,0,8,8"
-                                                Background="#0078D4"
-                                                Click="AccentSwatch_Click"
-                                                Style="{StaticResource AccentSwatchStyle}"
-                                                Tag="#0078D4"
-                                                />
+                                Margin="0,0,8,8"
+                                Background="#E81123"
+                                Click="AccentSwatch_Click"
+                                Style="{StaticResource AccentSwatchStyle}"
+                                Tag="#E81123" />
                             <ui:Button
-                                                Margin="0,0,8,8"
-                                                Background="#C42B1C"
-                                                Click="AccentSwatch_Click"
-                                                Style="{StaticResource AccentSwatchStyle}"
-                                                Tag="#C42B1C"
-                                                />
+                                Margin="0,0,8,8"
+                                Background="#DA3B01"
+                                Click="AccentSwatch_Click"
+                                Style="{StaticResource AccentSwatchStyle}"
+                                Tag="#DA3B01" />
                             <ui:Button
-                                                Margin="0,0,8,8"
-                                                Background="#107C10"
-                                                Click="AccentSwatch_Click"
-                                                Style="{StaticResource AccentSwatchStyle}"
-                                                Tag="#107C10"
-                                                />
+                                Margin="0,0,8,8"
+                                Background="#FF8C00"
+                                Click="AccentSwatch_Click"
+                                Style="{StaticResource AccentSwatchStyle}"
+                                Tag="#FF8C00" />
                             <ui:Button
-                                                Margin="0,0,8,8"
-                                                Background="#881798"
-                                                Click="AccentSwatch_Click"
-                                                Style="{StaticResource AccentSwatchStyle}"
-                                                Tag="#881798"
-                                                />
+                                Margin="0,0,8,8"
+                                Background="#FFB900"
+                                Click="AccentSwatch_Click"
+                                Style="{StaticResource AccentSwatchStyle}"
+                                Tag="#FFB900" />
                             <ui:Button
-                                                Margin="0,0,8,8"
-                                                Background="#CA5010"
-                                                Click="AccentSwatch_Click"
-                                                Style="{StaticResource AccentSwatchStyle}"
-                                                Tag="#CA5010"
-                                                />
+                                Margin="0,0,8,8"
+                                Background="#47B800"
+                                Click="AccentSwatch_Click"
+                                Style="{StaticResource AccentSwatchStyle}"
+                                Tag="#47B800" />
                             <ui:Button
-                                                Margin="0,0,8,8"
-                                                Background="#008272"
-                                                Click="AccentSwatch_Click"
-                                                Style="{StaticResource AccentSwatchStyle}"
-                                                Tag="#008272"
-                                                />
+                                Margin="0,0,8,8"
+                                Background="#00B7C3"
+                                Click="AccentSwatch_Click"
+                                Style="{StaticResource AccentSwatchStyle}"
+                                Tag="#00B7C3" />
                             <ui:Button
-                                                Margin="0,0,8,8"
-                                                Background="#E3008C"
-                                                Click="AccentSwatch_Click"
-                                                Style="{StaticResource AccentSwatchStyle}"
-                                                Tag="#E3008C"
-                                                />
+                                Margin="0,0,8,8"
+                                Background="#0078D4"
+                                Click="AccentSwatch_Click"
+                                Style="{StaticResource AccentSwatchStyle}"
+                                Tag="#0078D4" />
                             <ui:Button
-                                                Margin="0,0,8,8"
-                                                Background="#986F0B"
-                                                Click="AccentSwatch_Click"
-                                                Style="{StaticResource AccentSwatchStyle}"
-                                                Tag="#986F0B"
-                                                />
+                                Margin="0,0,8,8"
+                                Background="#4F56A3"
+                                Click="AccentSwatch_Click"
+                                Style="{StaticResource AccentSwatchStyle}"
+                                Tag="#4F56A3" />
+                            <ui:Button
+                                Margin="0,0,8,8"
+                                Background="#8A00C4"
+                                Click="AccentSwatch_Click"
+                                Style="{StaticResource AccentSwatchStyle}"
+                                Tag="#8A00C4" />
+                            <ui:Button
+                                Margin="0,0,8,8"
+                                Background="#E3008C"
+                                Click="AccentSwatch_Click"
+                                Style="{StaticResource AccentSwatchStyle}"
+                                Tag="#E3008C" />
                         </WrapPanel>
                         <StackPanel Orientation="Horizontal">
                             <ui:Button
-                                                MinWidth="80"
-                                                Margin="0,0,10,0"
-                                                Click="SystemAccent_Click"
-                                                Content="System"
-                                                />
+                                MinWidth="80"
+                                Margin="0,0,10,0"
+                                Click="SystemAccent_Click"
+                                Content="System" />
                             <TextBlock
-                                                Margin="0,0,6,0"
-                                                VerticalAlignment="Center"
-                                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                                Text="Status:"
-                                                />
+                                Margin="0,0,6,0"
+                                VerticalAlignment="Center"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                Text="Status:" />
                             <TextBlock
-                                                VerticalAlignment="Center"
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Text="Accent: System"
-                                                />
+                                VerticalAlignment="Center"
+                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                Text="Accent: System" />
                         </StackPanel>
                     </StackPanel>
                 </ui:Card>
@@ -185,11 +176,10 @@
             <ui:Card Padding="16" Variant="{x:Static uicore:CardVariant.Default}">
                 <StackPanel>
                     <TextBlock
-                                        Margin="0,0,0,12"
-                                        FontWeight="SemiBold"
-                                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                        Text="Window &amp; Title Bar"
-                                        />
+                        Margin="0,0,0,12"
+                        FontWeight="SemiBold"
+                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                        Text="Window &amp; Title Bar" />
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -200,18 +190,16 @@
                         <!--  Left: Backdrop + Chrome buttons  -->
                         <StackPanel Grid.Column="0">
                             <TextBlock
-                                                Margin="0,0,0,6"
-                                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                                Text="Backdrop"
-                                                />
+                                Margin="0,0,0,6"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                Text="Backdrop" />
                             <ui:ComboBox
-                                                x:Name="BackdropCombo"
-                                                Width="220"
-                                                Margin="0,0,0,16"
-                                                HorizontalAlignment="Left"
-                                                SelectedIndex="2"
-                                                SelectionChanged="BackdropCombo_SelectionChanged"
-                                                >
+                                x:Name="BackdropCombo"
+                                Width="220"
+                                Margin="0,0,0,16"
+                                HorizontalAlignment="Left"
+                                SelectedIndex="2"
+                                SelectionChanged="BackdropCombo_SelectionChanged">
                                 <ComboBoxItem Content="Auto" />
                                 <ComboBoxItem Content="None" />
                                 <ComboBoxItem Content="Mica" />
@@ -220,10 +208,9 @@
                             </ui:ComboBox>
 
                             <TextBlock
-                                                Margin="0,0,0,6"
-                                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                                Text="Caption Buttons"
-                                                />
+                                Margin="0,0,0,6"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                Text="Caption Buttons" />
                             <Grid Margin="0,0,0,8">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
@@ -238,60 +225,54 @@
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
                                 <TextBlock
-                                                    Grid.Row="0"
-                                                    Grid.Column="0"
-                                                    Margin="0,0,8,0"
-                                                    VerticalAlignment="Center"
-                                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                                    Text="Minimize"
-                                                    />
+                                    Grid.Row="0"
+                                    Grid.Column="0"
+                                    Margin="0,0,8,0"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                    Text="Minimize" />
                                 <ui:ComboBox
-                                                    x:Name="MinimizeOverrideCombo"
-                                                    Grid.Row="0"
-                                                    Grid.Column="1"
-                                                    Width="110"
-                                                    SelectionChanged="CaptionOverrideCombo_SelectionChanged"
-                                                    >
+                                    x:Name="MinimizeOverrideCombo"
+                                    Grid.Row="0"
+                                    Grid.Column="1"
+                                    Width="110"
+                                    SelectionChanged="CaptionOverrideCombo_SelectionChanged">
                                     <ComboBoxItem Content="Default" IsSelected="True" />
                                     <ComboBoxItem Content="Enable" />
                                     <ComboBoxItem Content="Disable" />
                                     <ComboBoxItem Content="Hide" />
                                 </ui:ComboBox>
                                 <TextBlock
-                                                    Grid.Row="0"
-                                                    Grid.Column="3"
-                                                    Margin="0,0,8,0"
-                                                    VerticalAlignment="Center"
-                                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                                    Text="Maximize"
-                                                    />
+                                    Grid.Row="0"
+                                    Grid.Column="3"
+                                    Margin="0,0,8,0"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                    Text="Maximize" />
                                 <ui:ComboBox
-                                                    x:Name="MaximizeOverrideCombo"
-                                                    Grid.Row="0"
-                                                    Grid.Column="4"
-                                                    Width="110"
-                                                    SelectionChanged="CaptionOverrideCombo_SelectionChanged"
-                                                    >
+                                    x:Name="MaximizeOverrideCombo"
+                                    Grid.Row="0"
+                                    Grid.Column="4"
+                                    Width="110"
+                                    SelectionChanged="CaptionOverrideCombo_SelectionChanged">
                                     <ComboBoxItem Content="Default" IsSelected="True" />
                                     <ComboBoxItem Content="Enable" />
                                     <ComboBoxItem Content="Disable" />
                                     <ComboBoxItem Content="Hide" />
                                 </ui:ComboBox>
                                 <TextBlock
-                                                    Grid.Row="2"
-                                                    Grid.Column="0"
-                                                    Margin="0,0,8,0"
-                                                    VerticalAlignment="Center"
-                                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                                    Text="Close"
-                                                    />
+                                    Grid.Row="2"
+                                    Grid.Column="0"
+                                    Margin="0,0,8,0"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                    Text="Close" />
                                 <ui:ComboBox
-                                                    x:Name="CloseOverrideCombo"
-                                                    Grid.Row="2"
-                                                    Grid.Column="1"
-                                                    Width="110"
-                                                    SelectionChanged="CaptionOverrideCombo_SelectionChanged"
-                                                    >
+                                    x:Name="CloseOverrideCombo"
+                                    Grid.Row="2"
+                                    Grid.Column="1"
+                                    Width="110"
+                                    SelectionChanged="CaptionOverrideCombo_SelectionChanged">
                                     <ComboBoxItem Content="Default" IsSelected="True" />
                                     <ComboBoxItem Content="Enable" />
                                     <ComboBoxItem Content="Disable" />
@@ -300,81 +281,71 @@
                             </Grid>
                             <WrapPanel>
                                 <ui:CheckBox
-                                                    x:Name="ShowWindowIconToggle"
-                                                    Margin="0,0,14,0"
-                                                    Checked="WindowChromeToggle_Changed"
-                                                    Content="Show Icon"
-                                                    IsChecked="True"
-                                                    Unchecked="WindowChromeToggle_Changed"
-                                                    />
+                                    x:Name="ShowWindowIconToggle"
+                                    Margin="0,0,14,0"
+                                    Checked="WindowChromeToggle_Changed"
+                                    Content="Show Icon"
+                                    IsChecked="True"
+                                    Unchecked="WindowChromeToggle_Changed" />
                                 <ui:CheckBox
-                                                    x:Name="ShowWindowTitleToggle"
-                                                    Checked="WindowChromeToggle_Changed"
-                                                    Content="Show Title"
-                                                    IsChecked="True"
-                                                    Unchecked="WindowChromeToggle_Changed"
-                                                    />
+                                    x:Name="ShowWindowTitleToggle"
+                                    Checked="WindowChromeToggle_Changed"
+                                    Content="Show Title"
+                                    IsChecked="True"
+                                    Unchecked="WindowChromeToggle_Changed" />
                             </WrapPanel>
                         </StackPanel>
 
                         <!--  Right: Title Bar settings  -->
                         <StackPanel Grid.Column="2">
                             <TextBlock
-                                                Margin="0,0,0,6"
-                                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                                Text="Title Bar"
-                                                />
+                                Margin="0,0,0,6"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                Text="Title Bar" />
                             <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
                                 <ui:ToggleSwitch
-                                                    x:Name="ExtendsContentToggle"
-                                                    Margin="0,0,10,0"
-                                                    Checked="TitleBarToggle_Changed"
-                                                    IsChecked="False"
-                                                    Unchecked="TitleBarToggle_Changed"
-                                                    />
+                                    x:Name="ExtendsContentToggle"
+                                    Margin="0,0,10,0"
+                                    Checked="TitleBarToggle_Changed"
+                                    IsChecked="False"
+                                    Unchecked="TitleBarToggle_Changed" />
                                 <TextBlock
-                                                    VerticalAlignment="Center"
-                                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                                    Text="Extends into title bar"
-                                                    />
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                    Text="Extends into title bar" />
                             </StackPanel>
                             <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
                                 <ui:ToggleSwitch
-                                                    x:Name="HasShadowToggle"
-                                                    Margin="0,0,10,0"
-                                                    Checked="TitleBarToggle_Changed"
-                                                    IsChecked="True"
-                                                    Unchecked="TitleBarToggle_Changed"
-                                                    />
+                                    x:Name="HasShadowToggle"
+                                    Margin="0,0,10,0"
+                                    Checked="TitleBarToggle_Changed"
+                                    IsChecked="True"
+                                    Unchecked="TitleBarToggle_Changed" />
                                 <TextBlock
-                                                    VerticalAlignment="Center"
-                                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                                    Text="Title bar shadow"
-                                                    />
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                    Text="Title bar shadow" />
                             </StackPanel>
                             <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
                                 <TextBlock
-                                                    Width="60"
-                                                    Margin="0,0,8,0"
-                                                    VerticalAlignment="Center"
-                                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                                    Text="Height"
-                                                    />
+                                    Width="60"
+                                    Margin="0,0,8,0"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                    Text="Height" />
                                 <ui:Slider
-                                                    x:Name="TitleBarHeightSlider"
-                                                    Width="180"
-                                                    Maximum="64"
-                                                    Minimum="32"
-                                                    ValueChanged="TitleBarHeightSlider_Changed"
-                                                    Value="48"
-                                                    />
+                                    x:Name="TitleBarHeightSlider"
+                                    Width="180"
+                                    Maximum="64"
+                                    Minimum="32"
+                                    ValueChanged="TitleBarHeightSlider_Changed"
+                                    Value="48" />
                                 <TextBlock
-                                                    x:Name="TitleBarHeightLabel"
-                                                    Margin="8,0,0,0"
-                                                    VerticalAlignment="Center"
-                                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                                    Text="48"
-                                                    />
+                                    x:Name="TitleBarHeightLabel"
+                                    Margin="8,0,0,0"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                    Text="48" />
                             </StackPanel>
                         </StackPanel>
                     </Grid>

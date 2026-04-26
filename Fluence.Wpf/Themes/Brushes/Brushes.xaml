@@ -114,6 +114,9 @@
     <SolidColorBrush x:Key="SolidBackgroundFillColorSenaryBrush" Color="{DynamicResource SolidBackgroundFillColorSenary}" />
     <SolidColorBrush x:Key="SolidBackgroundFillColorBaseAltBrush" Color="{DynamicResource SolidBackgroundFillColorBaseAlt}" />
 
+    <!--  NavigationView content area (semi-transparent tint over Mica/Acrylic backdrop)  -->
+    <SolidColorBrush x:Key="NavigationViewContentBackgroundBrush" Color="{DynamicResource NavigationViewContentBackground}" />
+
     <!--  Acrylic Background Fill Colors  -->
     <SolidColorBrush x:Key="AcrylicBackgroundFillColorDefaultBrush" Color="{DynamicResource AcrylicBackgroundFillColorDefault}" />
     <SolidColorBrush x:Key="AcrylicBackgroundFillColorBaseBrush" Color="{DynamicResource AcrylicBackgroundFillColorBase}" />
@@ -197,13 +200,13 @@
                             Margin="-3"
                             BorderBrush="{DynamicResource FocusStrokeColorOuterBrush}"
                             BorderThickness="2"
-                            CornerRadius="7"
+                            CornerRadius="4"
                             SnapsToDevicePixels="True" />
                         <Border
                             Margin="-2"
                             BorderBrush="{DynamicResource FocusStrokeColorInnerBrush}"
                             BorderThickness="1"
-                            CornerRadius="5"
+                            CornerRadius="4"
                             SnapsToDevicePixels="True" />
                     </Grid>
                 </ControlTemplate>

@@ -48,44 +48,32 @@
                     </Border>
                     <ControlTemplate.Resources>
                         <Storyboard x:Key="PressedScaleStoryboard">
-                            <DoubleAnimation
-                                Storyboard.TargetName="PressScale"
-                                Storyboard.TargetProperty="ScaleX"
-                                To="0.98"
-                                Duration="0:0:0.12">
-                                <DoubleAnimation.EasingFunction>
-                                    <QuadraticEase EasingMode="EaseOut" />
-                                </DoubleAnimation.EasingFunction>
-                            </DoubleAnimation>
-                            <DoubleAnimation
-                                Storyboard.TargetName="PressScale"
-                                Storyboard.TargetProperty="ScaleY"
-                                To="0.98"
-                                Duration="0:0:0.12">
-                                <DoubleAnimation.EasingFunction>
-                                    <QuadraticEase EasingMode="EaseOut" />
-                                </DoubleAnimation.EasingFunction>
-                            </DoubleAnimation>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleX">
+                                <SplineDoubleKeyFrame
+                                    KeySpline="0.8,0,0,1"
+                                    KeyTime="0:0:0.12"
+                                    Value="0.98" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleY">
+                                <SplineDoubleKeyFrame
+                                    KeySpline="0.8,0,0,1"
+                                    KeyTime="0:0:0.12"
+                                    Value="0.98" />
+                            </DoubleAnimationUsingKeyFrames>
                         </Storyboard>
                         <Storyboard x:Key="ReleasedScaleStoryboard">
-                            <DoubleAnimation
-                                Storyboard.TargetName="PressScale"
-                                Storyboard.TargetProperty="ScaleX"
-                                To="1"
-                                Duration="0:0:0.12">
-                                <DoubleAnimation.EasingFunction>
-                                    <QuadraticEase EasingMode="EaseOut" />
-                                </DoubleAnimation.EasingFunction>
-                            </DoubleAnimation>
-                            <DoubleAnimation
-                                Storyboard.TargetName="PressScale"
-                                Storyboard.TargetProperty="ScaleY"
-                                To="1"
-                                Duration="0:0:0.12">
-                                <DoubleAnimation.EasingFunction>
-                                    <QuadraticEase EasingMode="EaseOut" />
-                                </DoubleAnimation.EasingFunction>
-                            </DoubleAnimation>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleX">
+                                <SplineDoubleKeyFrame
+                                    KeySpline="0.8,0,0,1"
+                                    KeyTime="0:0:0.12"
+                                    Value="1" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleY">
+                                <SplineDoubleKeyFrame
+                                    KeySpline="0.8,0,0,1"
+                                    KeyTime="0:0:0.12"
+                                    Value="1" />
+                            </DoubleAnimationUsingKeyFrames>
                         </Storyboard>
                     </ControlTemplate.Resources>
                     <ControlTemplate.Triggers>

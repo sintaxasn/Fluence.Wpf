@@ -157,6 +157,9 @@
     <Color x:Key="TextOnAccentFillColorSecondary">#FF000000</Color>
     <Color x:Key="TextOnAccentFillColorDisabled">#FF3FF23F</Color>
 
+    <!--  NavigationView content area (transparent — HC Window color via brush override below)  -->
+    <Color x:Key="NavigationViewContentBackground">#FF000000</Color>
+
     <!--  ================================================================  -->
     <!--  SECTION 2 - Brush overrides (live SystemColor DynamicResource)  -->
     <!--  These take visual precedence; they track system HC color changes.  -->
@@ -315,6 +318,7 @@
     <SolidColorBrush x:Key="SystemAccentColorSecondaryBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
     <SolidColorBrush x:Key="SystemAccentColorTertiaryBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
     <SolidColorBrush x:Key="NavigationViewSelectionIndicatorBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="NavigationViewContentBackgroundBrush" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
 
     <!--  Elevation Border Brushes (solid in high contrast)  -->
     <SolidColorBrush x:Key="ControlElevationBorderBrush" Color="{DynamicResource {x:Static SystemColors.ControlDarkColorKey}}" />

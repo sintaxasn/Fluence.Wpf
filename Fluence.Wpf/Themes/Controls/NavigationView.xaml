@@ -163,6 +163,22 @@
                                 <ColumnDefinition x:Name="GapColumn" Width="12" />
                                 <ColumnDefinition x:Name="ContentColumn" Width="*" />
                             </Grid.ColumnDefinitions>
+                            <!--  3×16 accent selection pill — Left pane mode only  -->
+                            <Border
+                                x:Name="SelectionIndicator"
+                                Grid.Column="0"
+                                Grid.ColumnSpan="3"
+                                Width="3"
+                                Height="16"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Background="{DynamicResource AccentFillColorDefaultBrush}"
+                                CornerRadius="1.5"
+                                Opacity="0">
+                                <Border.RenderTransform>
+                                    <ScaleTransform x:Name="IndicatorScale" CenterY="0.5" ScaleY="0.6" />
+                                </Border.RenderTransform>
+                            </Border>
                             <ContentPresenter
                                 x:Name="IconPresenter"
                                 Grid.Column="0"
@@ -181,7 +197,7 @@
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
-                        <!--  Top mode: hide icon, adjust margin  -->
+                        <!--  Top mode: hide icon, adjust margin, hide selection pill  -->
                         <DataTrigger Binding="{Binding PaneDisplayMode, RelativeSource={RelativeSource AncestorType=controls:NavigationView}}" Value="{x:Static uicore:NavigationViewPaneDisplayMode.Top}">
                             <Setter TargetName="IconColumn" Property="Width" Value="0" />
                             <Setter TargetName="GapColumn" Property="Width" Value="0" />
@@ -189,6 +205,7 @@
                             <Setter TargetName="OuterBorder" Property="Margin" Value="2,4" />
                             <Setter TargetName="OuterBorder" Property="Padding" Value="8,0" />
                             <Setter Property="FontSize" Value="12" />
+                            <Setter TargetName="SelectionIndicator" Property="Visibility" Value="Collapsed" />
                         </DataTrigger>
                         <!--  Left + pane closed: hide label and center icon in 48px pane  -->
                         <MultiDataTrigger>
@@ -215,6 +232,31 @@
                         <!--  Selected  -->
                         <Trigger Property="IsSelected" Value="True">
                             <Setter TargetName="OuterBorder" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                            <Setter TargetName="SelectionIndicator" Property="Opacity" Value="1" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="IndicatorScale" Storyboard.TargetProperty="ScaleY">
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0.8,0,0,1"
+                                                KeyTime="0:0:0.15"
+                                                Value="1" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="IndicatorScale" Storyboard.TargetProperty="ScaleY">
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0.8,0,0,1"
+                                                KeyTime="0:0:0.15"
+                                                Value="0.6" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
                         </Trigger>
                         <!--  Hover (not selected)  -->
                         <MultiTrigger>
@@ -849,7 +891,7 @@
         <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
         <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="ContentBackground" Value="{DynamicResource SolidBackgroundFillColorBaseBrush}" />
+        <Setter Property="ContentBackground" Value="{DynamicResource NavigationViewContentBackgroundBrush}" />
         <Setter Property="Focusable" Value="False" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />

@@ -144,4 +144,7 @@
     <Color x:Key="TextOnAccentFillColorSecondary">#80000000</Color>
     <Color x:Key="TextOnAccentFillColorDisabled">#87FFFFFF</Color>
 
+    <!--  NavigationView content area tint (semi-transparent, shows Mica/Acrylic beneath)  -->
+    <Color x:Key="NavigationViewContentBackground">#402A2A2A</Color>
+
 </ResourceDictionary>

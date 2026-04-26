@@ -30,7 +30,7 @@
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
                             ui:TextBlockExtensions.Typography="Title"
-                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                            Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                             Text="WinUI / Fluent Design for WPF"
                             />
                         <TextBlock
@@ -41,9 +41,9 @@
                             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                             TextWrapping="Wrap"
                             >
-                            <Run Text="· " /><Run Text="A near-complete replica of WinUI 3 but without being forced to use the Windows App SDK. " /><LineBreak />
-                            <Run Text="·" /><Run Text=" Targets .NET Framework 4.7.2 and supporting Windwos 10 (1809+) and above." /><LineBreak />
-                            <Run Text="·" /><Run Text=" Licensed under 3-Clause BSD" /><LineBreak />
+                            <Run Text="· A near-complete replica of WinUI 3 but without being forced to use the Windows App SDK. " /><LineBreak />
+                            <Run Text="· Targets .NET Framework 4.7.2 and supporting Windwos 10 (1809+) and above." /><LineBreak />
+                            <Run Text="· Licensed under 3-Clause BSD" /><LineBreak />
                             <Run /><LineBreak />
                             <Run Text="Browse categories in the pane, search from the title bar, or pick a topic below to get started." /></TextBlock>
                     </StackPanel>

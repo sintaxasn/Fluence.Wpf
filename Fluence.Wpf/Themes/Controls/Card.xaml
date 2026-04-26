@@ -113,48 +113,36 @@
                             ShadowDepth="2"
                             Color="Black" />
                         <Storyboard x:Key="HoverOnStoryboard">
-                            <DoubleAnimation
-                                Storyboard.TargetName="ClickHoverLayer"
-                                Storyboard.TargetProperty="Opacity"
-                                To="1"
-                                Duration="0:0:0.1">
-                                <DoubleAnimation.EasingFunction>
-                                    <CubicEase EasingMode="EaseOut" />
-                                </DoubleAnimation.EasingFunction>
-                            </DoubleAnimation>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ClickHoverLayer" Storyboard.TargetProperty="Opacity">
+                                <SplineDoubleKeyFrame
+                                    KeySpline="0.8,0,0,1"
+                                    KeyTime="0:0:0.1"
+                                    Value="1" />
+                            </DoubleAnimationUsingKeyFrames>
                         </Storyboard>
                         <Storyboard x:Key="HoverOffStoryboard">
-                            <DoubleAnimation
-                                Storyboard.TargetName="ClickHoverLayer"
-                                Storyboard.TargetProperty="Opacity"
-                                To="0"
-                                Duration="0:0:0.1">
-                                <DoubleAnimation.EasingFunction>
-                                    <CubicEase EasingMode="EaseOut" />
-                                </DoubleAnimation.EasingFunction>
-                            </DoubleAnimation>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ClickHoverLayer" Storyboard.TargetProperty="Opacity">
+                                <SplineDoubleKeyFrame
+                                    KeySpline="0.8,0,0,1"
+                                    KeyTime="0:0:0.1"
+                                    Value="0" />
+                            </DoubleAnimationUsingKeyFrames>
                         </Storyboard>
                         <Storyboard x:Key="PressOnStoryboard">
-                            <DoubleAnimation
-                                Storyboard.TargetName="ClickPressLayer"
-                                Storyboard.TargetProperty="Opacity"
-                                To="1"
-                                Duration="0:0:0.1">
-                                <DoubleAnimation.EasingFunction>
-                                    <CubicEase EasingMode="EaseOut" />
-                                </DoubleAnimation.EasingFunction>
-                            </DoubleAnimation>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ClickPressLayer" Storyboard.TargetProperty="Opacity">
+                                <SplineDoubleKeyFrame
+                                    KeySpline="0.8,0,0,1"
+                                    KeyTime="0:0:0.1"
+                                    Value="1" />
+                            </DoubleAnimationUsingKeyFrames>
                         </Storyboard>
                         <Storyboard x:Key="PressOffStoryboard">
-                            <DoubleAnimation
-                                Storyboard.TargetName="ClickPressLayer"
-                                Storyboard.TargetProperty="Opacity"
-                                To="0"
-                                Duration="0:0:0.1">
-                                <DoubleAnimation.EasingFunction>
-                                    <CubicEase EasingMode="EaseOut" />
-                                </DoubleAnimation.EasingFunction>
-                            </DoubleAnimation>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ClickPressLayer" Storyboard.TargetProperty="Opacity">
+                                <SplineDoubleKeyFrame
+                                    KeySpline="0.8,0,0,1"
+                                    KeyTime="0:0:0.1"
+                                    Value="0" />
+                            </DoubleAnimationUsingKeyFrames>
                         </Storyboard>
                     </ControlTemplate.Resources>
                     <ControlTemplate.Triggers>

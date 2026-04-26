@@ -307,10 +307,15 @@
                             <Setter TargetName="TitleText" Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                         </Trigger>
 
-                        <!--  ExtendsContentIntoTitleBar: content fills entire window, title bar overlays  -->
+                        <!--
+                            ExtendsContentIntoTitleBar: content fills entire window, title bar overlays.
+                            Hide WindowIcon and TitleText — the app is responsible for branding in its own TitleBar content.
+                        -->
                         <Trigger Property="ExtendsContentIntoTitleBar" Value="True">
                             <Setter TargetName="ContentArea" Property="Grid.Row" Value="0" />
                             <Setter TargetName="ContentArea" Property="Grid.RowSpan" Value="2" />
+                            <Setter TargetName="WindowIcon" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="TitleText" Property="Visibility" Value="Collapsed" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

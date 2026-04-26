@@ -138,31 +138,25 @@
                                             Storyboard.TargetProperty="Opacity"
                                             To="1"
                                             Duration="0:0:0.05" />
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="IndicatorScale"
-                                            Storyboard.TargetProperty="ScaleX"
-                                            From="0"
-                                            To="1"
-                                            Duration="0:0:0.15">
-                                            <DoubleAnimation.EasingFunction>
-                                                <CubicEase EasingMode="EaseOut" />
-                                            </DoubleAnimation.EasingFunction>
-                                        </DoubleAnimation>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="IndicatorScale" Storyboard.TargetProperty="ScaleX">
+                                            <LinearDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0.8,0,0,1"
+                                                KeyTime="0:0:0.15"
+                                                Value="1" />
+                                        </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.EnterActions>
                             <Trigger.ExitActions>
                                 <BeginStoryboard>
                                     <Storyboard>
-                                        <DoubleAnimation
-                                            Storyboard.TargetName="IndicatorScale"
-                                            Storyboard.TargetProperty="ScaleX"
-                                            To="0"
-                                            Duration="0:0:0.1">
-                                            <DoubleAnimation.EasingFunction>
-                                                <CubicEase EasingMode="EaseIn" />
-                                            </DoubleAnimation.EasingFunction>
-                                        </DoubleAnimation>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="IndicatorScale" Storyboard.TargetProperty="ScaleX">
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0.8,0,0,1"
+                                                KeyTime="0:0:0.1"
+                                                Value="0" />
+                                        </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimation
                                             BeginTime="0:0:0.05"
                                             Storyboard.TargetName="SelectionIndicator"
