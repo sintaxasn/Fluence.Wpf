@@ -113,10 +113,11 @@
                                         SelectionBrush="{DynamicResource AccentFillColorDefaultBrush}"
                                         Text="{Binding Text, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 
+                                    <!--  WI-3 A7: WinUI canonical right inset = 2px; was 0,1,0,1.  -->
                                     <StackPanel
                                         x:Name="SpinPanel"
                                         Grid.Column="1"
-                                        Margin="0,1,0,1"
+                                        Margin="0,1,2,1"
                                         VerticalAlignment="Center"
                                         Orientation="Horizontal">
                                         <RepeatButton x:Name="PART_UpButton" Style="{StaticResource NumberBoxSpinButton}">

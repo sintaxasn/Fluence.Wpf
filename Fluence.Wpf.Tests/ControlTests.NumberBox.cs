@@ -191,6 +191,54 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void NumberBox_SpinPanel_HasWinUiCanonicalMargin()
+        {
+            // WI-3 A7: WinUI canonical SpinPanel margin is "0,1,2,1" (2px right inset from
+            // border edge).  Before this fix Fluence used "0,1,0,1" which butted the buttons
+            // flush against the right border of the control.
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var numberBox = new Fluent.NumberBox
+                    {
+                        SpinButtonPlacementMode = SpinButtonPlacementMode.Inline,
+                        Width = 160
+                    };
+                    window.Content = numberBox;
+                    window.Width = 240;
+                    window.Height = 120;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    numberBox.ApplyTemplate();
+
+                    var spinPanel = numberBox.Template.FindName("SpinPanel", numberBox) as StackPanel;
+                    Assert.IsNotNull(spinPanel, "NumberBox template must expose SpinPanel.");
+                    Assert.AreEqual(0.0, spinPanel.Margin.Left,
+                        "SpinPanel.Margin.Left must be 0.");
+                    Assert.AreEqual(1.0, spinPanel.Margin.Top,
+                        "SpinPanel.Margin.Top must be 1 (WinUI canonical vertical inset).");
+                    Assert.AreEqual(2.0, spinPanel.Margin.Right,
+                        "SpinPanel.Margin.Right must be 2 (WinUI canonical right inset from border edge).");
+                    Assert.AreEqual(1.0, spinPanel.Margin.Bottom,
+                        "SpinPanel.Margin.Bottom must be 1 (WinUI canonical vertical inset).");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                }
+            });
+        }
+
+        [TestMethod]
         public void NumberBox_Click_ClampsToMaximum()
         {
             RunOnStaThread(() =>
