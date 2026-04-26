@@ -83,7 +83,7 @@
                                                             <Storyboard>
                                                                 <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ChevronRotate" Storyboard.TargetProperty="Angle">
                                                                     <SplineDoubleKeyFrame
-                                                                        KeySpline="0,0,0,1"
+                                                                        KeySpline="0.8,0,0,1"
                                                                         KeyTime="0:0:0.167"
                                                                         Value="90" />
                                                                 </DoubleAnimationUsingKeyFrames>
@@ -95,7 +95,7 @@
                                                             <Storyboard>
                                                                 <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ChevronRotate" Storyboard.TargetProperty="Angle">
                                                                     <SplineDoubleKeyFrame
-                                                                        KeySpline="0,0,0,1"
+                                                                        KeySpline="0.8,0,0,1"
                                                                         KeyTime="0:0:0.167"
                                                                         Value="0" />
                                                                 </DoubleAnimationUsingKeyFrames>
