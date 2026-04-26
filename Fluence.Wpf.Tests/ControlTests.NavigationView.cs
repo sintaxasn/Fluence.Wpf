@@ -1330,5 +1330,47 @@ namespace Fluence.Wpf.Tests
                 }
             });
         }
+
+        [TestMethod]
+        public void NavigationViewItem_Template_HasNoInnerSelectionIndicator()
+        {
+            // Regression: per-item Border named "SelectionIndicator" was duplicating the
+            // pane-level PART_SelectionIndicator (animated by NavigationView code-behind),
+            // producing two visible accent pills on the selected item. The pane-level
+            // indicator is canonical (WinUI 3) and is wired in NavigationView.cs; the
+            // per-item one must NOT exist in the template.
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var item = new Fluent.NavigationViewItem
+                    {
+                        Content = "Item",
+                        IsSelected = true
+                    };
+                    window.Content = item;
+                    window.Width = 240;
+                    window.Height = 80;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    var inner = FindVisualChildByName<System.Windows.Controls.Border>(item, "SelectionIndicator");
+                    Assert.IsNull(inner,
+                        "NavigationViewItem template must not contain a per-item Border named 'SelectionIndicator'. " +
+                        "The pane-level PART_SelectionIndicator owns the selection visual.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                }
+            });
+        }
     }
 }
