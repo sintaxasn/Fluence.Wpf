@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,94 +25,17 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media.Imaging;
-using Fluence.Wpf;
 using Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryHomePage : UserControl
     {
-        private static readonly Uri BannerLightUri = new Uri(
-            "pack://application:,,,/Fluence.Wpf.Demo;component/Resources/BannerLight.png",
-            UriKind.Absolute);
-
-        private static readonly Uri BannerDarkUri = new Uri(
-            "pack://application:,,,/Fluence.Wpf.Demo;component/Resources/BannerDark.png",
-            UriKind.Absolute);
-
         public GalleryHomePage()
         {
             InitializeComponent();
-            Loaded += OnLoaded;
-            Unloaded += OnUnloaded;
-        }
-
-        private void OnLoaded(object sender, RoutedEventArgs e)
-        {
-            ApplicationThemeManager.Changed += OnApplicationThemeChanged;
-            UpdateBanner(ResolveTheme(ApplicationThemeManager.CurrentTheme));
-        }
-
-        private void OnUnloaded(object sender, RoutedEventArgs e)
-        {
-            ApplicationThemeManager.Changed -= OnApplicationThemeChanged;
-        }
-
-        private void OnApplicationThemeChanged(object sender, ThemeChangedEventArgs e)
-        {
-            UpdateBanner(e.Theme);
-        }
-
-        private void UpdateBanner(ApplicationTheme resolvedTheme)
-        {
-            if (BannerImage == null)
-            {
-                return;
-            }
-
-            var uri = resolvedTheme == ApplicationTheme.Light ? BannerLightUri : BannerDarkUri;
-            BannerImage.Source = new BitmapImage(uri);
-        }
-
-        private static ApplicationTheme ResolveTheme(ApplicationTheme theme)
-        {
-            if (theme != ApplicationTheme.Auto)
-            {
-                return theme;
-            }
-
-            return IsLightWindowsTheme() ? ApplicationTheme.Light : ApplicationTheme.Dark;
-        }
-
-        private static bool IsLightWindowsTheme()
-        {
-            try
-            {
-                using (var key = Microsoft.Win32.Registry.CurrentUser.OpenSubKey(
-                    @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize"))
-                {
-                    if (key == null)
-                    {
-                        return true;
-                    }
-
-                    var value = key.GetValue("AppsUseLightTheme");
-                    if (value is int i)
-                    {
-                        return i != 0;
-                    }
-                }
-            }
-            catch
-            {
-                // Any access failure falls back to Light.
-            }
-
-            return true;
         }
 
         private void Card_Click(object sender, RoutedEventArgs e)
