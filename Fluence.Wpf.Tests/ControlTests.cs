@@ -1202,7 +1202,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void MainWindow_NavigationView_HasElevenNavItems()
+        public void MainWindow_NavigationView_HasSixteenNavItems()
         {
             RunOnStaThread(() =>
             {
@@ -1228,7 +1228,7 @@ namespace Fluence.Wpf.Tests
                         }
                     }
 
-                    Assert.AreEqual(11, count, "Demo navigation should expose 11 pages, including the Tabs page.");
+                    Assert.AreEqual(16, count, "Demo navigation should expose 16 pages (11 original + 5 gallery additions).");
                 }
                 finally
                 {

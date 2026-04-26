@@ -1,0 +1,189 @@
+﻿<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.GalleryDataBindingPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
+    xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
+    d:DesignHeight="900"
+    d:DesignWidth="900"
+    mc:Ignorable="d">
+    <ui:SmoothScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24" HorizontalAlignment="Stretch">
+
+            <!--  ── ObservableCollection ListView ──  -->
+            <TextBlock
+                Margin="0,0,0,4"
+                Style="{StaticResource SectionHeaderStyle}"
+                Text="ListView bound to ObservableCollection" />
+            <TextBlock
+                Margin="0,0,0,8"
+                Style="{StaticResource SectionDescriptionStyle}"
+                Text="Add / remove items at runtime. The list updates reactively via INotifyCollectionChanged." />
+            <ui:Card
+                Margin="0,0,0,8"
+                Padding="16"
+                Variant="{x:Static uicore:CardVariant.Default}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="8" />
+                        <RowDefinition Height="220" />
+                        <RowDefinition Height="8" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <!--  Add item row  -->
+                    <Grid Grid.Row="0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="8" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="4" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <ui:TextBox
+                            x:Name="NewItemBox"
+                            Grid.Column="0"
+                            KeyDown="NewItemBox_KeyDown"
+                            PlaceholderText="New item name…" />
+                        <ui:Button
+                            Grid.Column="2"
+                            Appearance="Accent"
+                            Click="AddItem_Click"
+                            Content="Add" />
+                        <ui:Button
+                            Grid.Column="4"
+                            Click="RemoveItem_Click"
+                            Content="Remove selected" />
+                    </Grid>
+
+                    <!--  ListView  -->
+                    <ui:ListView
+                        x:Name="BoundListView"
+                        Grid.Row="2"
+                        SelectionMode="Single">
+                        <ui:ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="12" />
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <ui:FontIcon
+                                        Grid.Column="0"
+                                        VerticalAlignment="Center"
+                                        Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
+                                        Glyph="&#xE8A5;"
+                                        IconFontSize="16" />
+                                    <TextBlock
+                                        Grid.Column="2"
+                                        VerticalAlignment="Center"
+                                        ui:TextBlockExtensions.Typography="Body"
+                                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                        Text="{Binding Name}" />
+                                    <TextBlock
+                                        Grid.Column="3"
+                                        VerticalAlignment="Center"
+                                        ui:TextBlockExtensions.Typography="Caption"
+                                        Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                        Text="{Binding AddedAt}" />
+                                </Grid>
+                            </DataTemplate>
+                        </ui:ListView.ItemTemplate>
+                    </ui:ListView>
+
+                    <!--  Item count  -->
+                    <TextBlock
+                        x:Name="ItemCountLabel"
+                        Grid.Row="4"
+                        ui:TextBlockExtensions.Typography="Caption"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Text="0 items" />
+                </Grid>
+            </ui:Card>
+
+            <!--  ── SelectionMode variants ──  -->
+            <TextBlock
+                Margin="0,0,0,4"
+                Style="{StaticResource SectionHeaderStyle}"
+                Text="ListView SelectionMode" />
+            <TextBlock
+                Margin="0,0,0,8"
+                Style="{StaticResource SectionDescriptionStyle}"
+                Text="Switch between Single, Multiple, and Extended selection modes." />
+            <ui:Card
+                Margin="0,0,0,24"
+                Padding="16"
+                Variant="{x:Static uicore:CardVariant.Default}">
+                <StackPanel>
+                    <!--  Mode picker  -->
+                    <StackPanel Margin="0,0,0,12" Orientation="Horizontal">
+                        <ui:RadioButton
+                            x:Name="SingleModeRadio"
+                            Margin="0,0,16,0"
+                            Checked="SelectionMode_Changed"
+                            Content="Single"
+                            GroupName="SelectionModeGroup"
+                            IsChecked="True" />
+                        <ui:RadioButton
+                            x:Name="MultipleModeRadio"
+                            Margin="0,0,16,0"
+                            Checked="SelectionMode_Changed"
+                            Content="Multiple"
+                            GroupName="SelectionModeGroup" />
+                        <ui:RadioButton
+                            x:Name="ExtendedModeRadio"
+                            Checked="SelectionMode_Changed"
+                            Content="Extended (Shift+Click)"
+                            GroupName="SelectionModeGroup" />
+                    </StackPanel>
+                    <ui:ListView
+                        x:Name="SelectionModeListView"
+                        Height="200"
+                        SelectionChanged="SelectionModeListView_SelectionChanged"
+                        SelectionMode="Single">
+                        <ListViewItem Content="Alpha" />
+                        <ListViewItem Content="Bravo" />
+                        <ListViewItem Content="Charlie" />
+                        <ListViewItem Content="Delta" />
+                        <ListViewItem Content="Echo" />
+                        <ListViewItem Content="Foxtrot" />
+                        <ListViewItem Content="Golf" />
+                        <ListViewItem Content="Hotel" />
+                    </ui:ListView>
+                    <TextBlock
+                        x:Name="SelectionCountLabel"
+                        Margin="0,8,0,0"
+                        ui:TextBlockExtensions.Typography="Caption"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Text="Selected: —" />
+                </StackPanel>
+            </ui:Card>
+
+            <!--  ── DataTemplate selector note ──  -->
+            <TextBlock
+                Margin="0,0,0,4"
+                Style="{StaticResource SectionHeaderStyle}"
+                Text="Custom DataTemplate" />
+            <TextBlock
+                Margin="0,0,0,8"
+                Style="{StaticResource SectionDescriptionStyle}"
+                Text="Each item in the first list above uses a DataTemplate with Name (Body) + AddedAt (Caption) laid out in a two-column row. The template is defined inline in XAML — no code-behind required for layout." />
+            <ui:Card
+                Margin="0,0,0,24"
+                Padding="16"
+                Variant="{x:Static uicore:CardVariant.Outlined}">
+                <TextBlock
+                    ui:TextBlockExtensions.Typography="Body"
+                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                    Text="DataTemplate pattern: bind Name to a Body-style TextBlock, AddedAt to a Caption-style TextBlock. FontIcon in column 0 uses AccentTextFillColorPrimaryBrush. No ItemTemplateSelector is needed when all items share the same shape — use DataTemplateSelector in code-behind only when item type varies."
+                    TextWrapping="Wrap" />
+            </ui:Card>
+
+        </StackPanel>
+    </ui:SmoothScrollViewer>
+</UserControl>

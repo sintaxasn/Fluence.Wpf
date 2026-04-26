@@ -20,8 +20,7 @@
     TitleBarHeight="48"
     UseLayoutRounding="True"
     WindowBackdrop="Mica"
-    WindowCorners="Round"
-    >
+    WindowCorners="Round">
 
     <ui:FluenceWindow.TitleBar>
         <Grid Margin="16,0,16,0">
@@ -42,8 +41,7 @@
                 PreviewKeyDown="NavSearchBox_PreviewKeyDown"
                 Style="{StaticResource TitleBarSearchBoxStyle}"
                 TextChanged="NavSearchBox_TextChanged"
-                WindowChrome.IsHitTestVisibleInChrome="True"
-                />
+                WindowChrome.IsHitTestVisibleInChrome="True" />
         </Grid>
     </ui:FluenceWindow.TitleBar>
 
@@ -54,8 +52,7 @@
         IsBackEnabled="False"
         IsPaneOpen="False"
         PaneDisplayMode="Left"
-        SelectedIndex="0"
-        >
+        SelectedIndex="0">
         <ui:NavigationViewItem Content="Home" Tag="home overview welcome">
             <ui:NavigationViewItem.Icon>
                 <ui:FontIcon Glyph="&#xE80F;" IconFontSize="20" />
@@ -94,6 +91,15 @@
             </ui:NavigationViewItem.PageContent>
         </ui:NavigationViewItem>
 
+        <ui:NavigationViewItem Content="Forms" Tag="form validation password email numberbox">
+            <ui:NavigationViewItem.Icon>
+                <ui:FontIcon Glyph="&#xE943;" IconFontSize="20" />
+            </ui:NavigationViewItem.Icon>
+            <ui:NavigationViewItem.PageContent>
+                <pages:GalleryFormsPage />
+            </ui:NavigationViewItem.PageContent>
+        </ui:NavigationViewItem>
+
         <ui:NavigationViewItemHeader Content="Collections &amp; navigation" />
 
         <ui:NavigationViewItem Content="Data" Tag="listview list layout card dock stack scroll">
@@ -120,6 +126,33 @@
             </ui:NavigationViewItem.Icon>
             <ui:NavigationViewItem.PageContent>
                 <pages:GalleryNavigationPage />
+            </ui:NavigationViewItem.PageContent>
+        </ui:NavigationViewItem>
+
+        <ui:NavigationViewItem Content="Menus" Tag="menu contextmenu tooltip dropdownbutton splitbutton">
+            <ui:NavigationViewItem.Icon>
+                <ui:FontIcon Glyph="&#xE115;" IconFontSize="20" />
+            </ui:NavigationViewItem.Icon>
+            <ui:NavigationViewItem.PageContent>
+                <pages:GalleryMenusPage />
+            </ui:NavigationViewItem.PageContent>
+        </ui:NavigationViewItem>
+
+        <ui:NavigationViewItem Content="Trees" Tag="treeview tree hierarchy expand collapse">
+            <ui:NavigationViewItem.Icon>
+                <ui:FontIcon Glyph="&#xE8EB;" IconFontSize="20" />
+            </ui:NavigationViewItem.Icon>
+            <ui:NavigationViewItem.PageContent>
+                <pages:GalleryTreesPage />
+            </ui:NavigationViewItem.PageContent>
+        </ui:NavigationViewItem>
+
+        <ui:NavigationViewItem Content="Data Binding" Tag="databinding observablecollection listview selectionmode">
+            <ui:NavigationViewItem.Icon>
+                <ui:FontIcon Glyph="&#xEA37;" IconFontSize="20" />
+            </ui:NavigationViewItem.Icon>
+            <ui:NavigationViewItem.PageContent>
+                <pages:GalleryDataBindingPage />
             </ui:NavigationViewItem.PageContent>
         </ui:NavigationViewItem>
 
@@ -158,6 +191,15 @@
             </ui:NavigationViewItem.Icon>
             <ui:NavigationViewItem.PageContent>
                 <pages:GalleryWindowPage />
+            </ui:NavigationViewItem.PageContent>
+        </ui:NavigationViewItem>
+
+        <ui:NavigationViewItem Content="Accessibility" Tag="accessibility focus tab rtl highcontrast automation narrator">
+            <ui:NavigationViewItem.Icon>
+                <ui:FontIcon Glyph="&#xE776;" IconFontSize="20" />
+            </ui:NavigationViewItem.Icon>
+            <ui:NavigationViewItem.PageContent>
+                <pages:GalleryAccessibilityPage />
             </ui:NavigationViewItem.PageContent>
         </ui:NavigationViewItem>
     </ui:NavigationView>
