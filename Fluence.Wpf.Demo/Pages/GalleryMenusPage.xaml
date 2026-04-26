@@ -154,34 +154,58 @@
                         Margin="0,0,8,0"
                         Content="Sort by">
                         <ui:DropDownButton.Flyout>
-                            <ui:ContextMenu>
-                                <ui:MenuItem
+                            <StackPanel MinWidth="160" Margin="4">
+                                <ui:Button
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left"
+                                    Appearance="Subtle"
                                     Click="Sort_Click"
-                                    Header="Name (A → Z)"
+                                    Content="Name (A → Z)"
                                     Tag="name-asc" />
-                                <ui:MenuItem
+                                <ui:Button
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left"
+                                    Appearance="Subtle"
                                     Click="Sort_Click"
-                                    Header="Name (Z → A)"
+                                    Content="Name (Z → A)"
                                     Tag="name-desc" />
-                                <Separator />
-                                <ui:MenuItem
+                                <Rectangle
+                                    Height="1"
+                                    Margin="4,2"
+                                    Fill="{DynamicResource DividerStrokeColorDefaultBrush}" />
+                                <ui:Button
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left"
+                                    Appearance="Subtle"
                                     Click="Sort_Click"
-                                    Header="Date modified (newest)"
+                                    Content="Date modified (newest)"
                                     Tag="date-desc" />
-                                <ui:MenuItem
+                                <ui:Button
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left"
+                                    Appearance="Subtle"
                                     Click="Sort_Click"
-                                    Header="Date modified (oldest)"
+                                    Content="Date modified (oldest)"
                                     Tag="date-asc" />
-                                <Separator />
-                                <ui:MenuItem
+                                <Rectangle
+                                    Height="1"
+                                    Margin="4,2"
+                                    Fill="{DynamicResource DividerStrokeColorDefaultBrush}" />
+                                <ui:Button
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left"
+                                    Appearance="Subtle"
                                     Click="Sort_Click"
-                                    Header="Size (largest)"
+                                    Content="Size (largest)"
                                     Tag="size-desc" />
-                                <ui:MenuItem
+                                <ui:Button
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left"
+                                    Appearance="Subtle"
                                     Click="Sort_Click"
-                                    Header="Size (smallest)"
+                                    Content="Size (smallest)"
                                     Tag="size-asc" />
-                            </ui:ContextMenu>
+                            </StackPanel>
                         </ui:DropDownButton.Flyout>
                     </ui:DropDownButton>
                     <ui:SplitButton
@@ -189,25 +213,40 @@
                         Click="ExportPrimary_Click"
                         Content="Export">
                         <ui:SplitButton.Flyout>
-                            <ui:ContextMenu>
-                                <ui:MenuItem
+                            <StackPanel MinWidth="160" Margin="4">
+                                <ui:Button
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left"
+                                    Appearance="Subtle"
                                     Click="ExportFormat_Click"
-                                    Header="Export as CSV"
+                                    Content="Export as CSV"
                                     Tag="csv" />
-                                <ui:MenuItem
+                                <ui:Button
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left"
+                                    Appearance="Subtle"
                                     Click="ExportFormat_Click"
-                                    Header="Export as JSON"
+                                    Content="Export as JSON"
                                     Tag="json" />
-                                <ui:MenuItem
+                                <ui:Button
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left"
+                                    Appearance="Subtle"
                                     Click="ExportFormat_Click"
-                                    Header="Export as XML"
+                                    Content="Export as XML"
                                     Tag="xml" />
-                                <Separator />
-                                <ui:MenuItem
+                                <Rectangle
+                                    Height="1"
+                                    Margin="4,2"
+                                    Fill="{DynamicResource DividerStrokeColorDefaultBrush}" />
+                                <ui:Button
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left"
+                                    Appearance="Subtle"
                                     Click="ExportFormat_Click"
-                                    Header="Export settings…"
+                                    Content="Export settings…"
                                     Tag="settings" />
-                            </ui:ContextMenu>
+                            </StackPanel>
                         </ui:SplitButton.Flyout>
                     </ui:SplitButton>
                     <TextBlock
