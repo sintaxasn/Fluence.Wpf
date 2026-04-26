@@ -210,16 +210,21 @@ namespace Fluence.Wpf.Tests
         }
 
         // ---------------------------------------------------------------------------
-        // 4. Finding B: close button must use DynamicResource, not hardcoded hex
+        // 4. Close button color regression guard
+        //    WI-2 Finding B originally switched to SystemFillColorCriticalBrush but
+        //    that resolves to pink (#FF99A4) in Dark theme — wrong for a title-bar
+        //    close button.  The canonical Fluent close-button red (#C42B1C hover /
+        //    #B4271C pressed) is theme-agnostic; it is the correct value in both
+        //    Light and Dark on Windows 11.  This test guards against accidentally
+        //    removing it.
         // ---------------------------------------------------------------------------
 
         [TestMethod]
-        public void FluenceWindowXaml_CloseButtonHover_UsesDynamicResource_NotHardcodedHex()
+        public void FluenceWindowXaml_CloseButtonHover_UsesCanonicalFluentRed()
         {
-            // Finding B from WI-2 audit: the close button hover/pressed colors must reference
-            // {DynamicResource SystemFillColorCriticalBrush} so that High Contrast themes can
-            // override the red. Hardcoded #C42B1C renders correctly in Light (same value) but
-            // fails HC accessibility requirements.
+            // Regression: close button hover must use the Fluent canonical red (#C42B1C) rather
+            // than SystemFillColorCriticalBrush, which resolves to a pink/salmon (#FF99A4) in the
+            // Dark theme and is visually wrong for a close button.
             var xamlPath = Path.GetFullPath(Path.Combine(
                 AppDomain.CurrentDomain.BaseDirectory,
                 @"..\..\..\..\Fluence.Wpf\Themes\Controls\FluenceWindow.xaml"));
@@ -229,19 +234,15 @@ namespace Fluence.Wpf.Tests
 
             string xaml = File.ReadAllText(xamlPath);
 
-            // Verify hardcoded red hex colors are NOT present in hover/pressed triggers.
-            Assert.IsFalse(
-                xaml.Contains("#C42B1C"),
-                "FluenceWindow.xaml must NOT contain hardcoded hex #C42B1C for close button hover. Use {DynamicResource SystemFillColorCriticalBrush} instead.");
-
-            Assert.IsFalse(
-                xaml.Contains("#B4271C"),
-                "FluenceWindow.xaml must NOT contain hardcoded hex #B4271C for close button pressed. Use {DynamicResource SystemFillColorCriticalBackgroundBrush} or similar DynamicResource.");
-
-            // Verify the DynamicResource key IS referenced.
+            // Canonical Fluent close-button red must be present.
             Assert.IsTrue(
-                xaml.Contains("SystemFillColorCriticalBrush"),
-                "FluenceWindow.xaml must reference SystemFillColorCriticalBrush for close button hover state.");
+                xaml.Contains("#C42B1C"),
+                "FluenceWindow.xaml must retain hardcoded #C42B1C for close-button hover. " +
+                "SystemFillColorCritical resolves to pink (#FF99A4) in Dark theme — do not replace.");
+
+            Assert.IsTrue(
+                xaml.Contains("#B4271C"),
+                "FluenceWindow.xaml must retain hardcoded #B4271C for close-button pressed.");
         }
 
         // ---------------------------------------------------------------------------

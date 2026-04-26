@@ -62,12 +62,10 @@
         </Setter>
     </Style>
 
-    <!--
-        Close button style with Fluent red hover.
-        Uses {DynamicResource SystemFillColorCriticalBrush} for hover/pressed so that
-        High Contrast themes can override to their system colour (Finding B, WI-2).
-        Pressed darken is achieved by a black overlay at 12 % opacity — no new token needed.
-    -->
+    <!--  Close button style with Windows 11 red hover (#C42B1C / #B4271C).  -->
+    <!--  These are the canonical Fluent close-button reds — same in both Light  -->
+    <!--  and Dark themes (unlike SystemFillColorCritical which shifts to pink  -->
+    <!--  in dark mode and would look wrong on a title bar close button).  -->
     <Style x:Key="WindowCloseButtonStyle" TargetType="{x:Type Button}">
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
@@ -91,12 +89,6 @@
                         x:Name="RootGrid"
                         Background="{TemplateBinding Background}"
                         SnapsToDevicePixels="True">
-                        <!--  Pressed-darken overlay: Black at 0 % normally, 12 % when pressed.  -->
-                        <!--  Works in all themes without a separate pressed-colour token.  -->
-                        <Border
-                            x:Name="PressedOverlay"
-                            Background="Black"
-                            Opacity="0" />
                         <ContentPresenter
                             x:Name="contentPresenter"
                             Margin="{TemplateBinding Padding}"
@@ -110,13 +102,12 @@
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                         </DataTrigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="RootGrid" Property="Background" Value="{DynamicResource SystemFillColorCriticalBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorInverseBrush}" />
+                            <Setter TargetName="RootGrid" Property="Background" Value="#C42B1C" />
+                            <Setter Property="Foreground" Value="#FFFFFF" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="RootGrid" Property="Background" Value="{DynamicResource SystemFillColorCriticalBrush}" />
-                            <Setter TargetName="PressedOverlay" Property="Opacity" Value="0.12" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorInverseBrush}" />
+                            <Setter TargetName="RootGrid" Property="Background" Value="#B4271C" />
+                            <Setter Property="Foreground" Value="#FFFFFF" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter TargetName="contentPresenter" Property="Opacity" Value=".5" />
