@@ -1141,8 +1141,11 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void NavigationView_CompactPane_BackgroundIsTransparent()
+        public void NavigationView_CompactPane_BackgroundIsLayerFillColorAlt()
         {
+            // WI-3 B15: pane strip uses LayerFillColorAltBrush (WinUI canonical).
+            // In Dark mode LayerFillColorAlt = #0DFFFFFF (~transparent), so Mica/Acrylic
+            // continuity is preserved at runtime; in Light mode it is #FFFFFF.
             RunOnStaThread(() =>
             {
                 var application = EnsureApplication();
@@ -1160,16 +1163,17 @@ namespace Fluence.Wpf.Tests
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
 
                     var compactPane = FindVisualChildByName<System.Windows.Controls.Border>(nav, "CompactPane");
                     Assert.IsNotNull(compactPane, "CompactPane Border must exist in LeftCompact template.");
 
-                    // Pane background must be Transparent (or null) so the DWM Mica/Acrylic
-                    // backdrop shows through seamlessly — matches the FluenceWindow title bar.
-                    bool isTransparent = compactPane.Background == null
-                        || (compactPane.Background is SolidColorBrush scb && scb.Color == Colors.Transparent);
-                    Assert.IsTrue(isTransparent,
-                        "CompactPane Background must be Transparent (or null) to allow Mica/Acrylic backdrop continuity.");
+                    var brush = compactPane.Background as SolidColorBrush;
+                    Assert.IsNotNull(brush,
+                        "CompactPane.Background must be LayerFillColorAltBrush (not null/Transparent).");
+                    var expectedColor = (Color)application.TryFindResource("LayerFillColorAlt");
+                    Assert.AreEqual(expectedColor, brush.Color,
+                        "CompactPane background must match LayerFillColorAlt (WinUI canonical pane tint).");
                 }
                 finally
                 {
@@ -1232,6 +1236,97 @@ namespace Fluence.Wpf.Tests
                     {
                         application.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NavigationView_Left_PaneBorder_UsesLayerFillColorAltBrush()
+        {
+            // WI-3 B15: pane column border must use LayerFillColorAltBrush so the strip
+            // containing hamburger + back buttons gets the WinUI canonical subtle layer tint.
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 400,
+                        Height = 320,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left
+                    };
+                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Item" });
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    var paneBorder = FindVisualChildByName<System.Windows.Controls.Border>(nav, "PaneBorder");
+                    Assert.IsNotNull(paneBorder,
+                        "Left pane template must expose a Border named 'PaneBorder'.");
+
+                    var brush = paneBorder.Background as SolidColorBrush;
+                    Assert.IsNotNull(brush,
+                        "PaneBorder.Background must be a SolidColorBrush (DynamicResource LayerFillColorAltBrush).");
+
+                    var expectedColor = (Color)application.TryFindResource("LayerFillColorAlt");
+                    Assert.AreEqual(expectedColor, brush.Color,
+                        "PaneBorder background must match LayerFillColorAlt (WinUI canonical pane tint).");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NavigationView_LeftCompact_PaneBorder_UsesLayerFillColorAltBrush()
+        {
+            // WI-3 B15: same pane-strip background check for LeftCompact mode.
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 400,
+                        Height = 320,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact
+                    };
+                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Item" });
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    var paneBorder = FindVisualChildByName<System.Windows.Controls.Border>(nav, "CompactPane");
+                    Assert.IsNotNull(paneBorder,
+                        "LeftCompact pane template must expose a Border named 'CompactPane'.");
+
+                    var brush = paneBorder.Background as SolidColorBrush;
+                    Assert.IsNotNull(brush,
+                        "CompactPane.Background must be a SolidColorBrush (DynamicResource LayerFillColorAltBrush).");
+
+                    var expectedColor = (Color)application.TryFindResource("LayerFillColorAlt");
+                    Assert.AreEqual(expectedColor, brush.Color,
+                        "CompactPane background must match LayerFillColorAlt (WinUI canonical pane tint).");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
