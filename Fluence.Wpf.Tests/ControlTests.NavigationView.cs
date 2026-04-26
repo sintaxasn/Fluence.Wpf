@@ -1140,49 +1140,8 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
-        public void NavigationView_CompactPane_BackgroundIsLayerFillColorAlt()
-        {
-            // WI-3 B15: pane strip uses LayerFillColorAltBrush (WinUI canonical).
-            // In Dark mode LayerFillColorAlt = #0DFFFFFF (~transparent), so Mica/Acrylic
-            // continuity is preserved at runtime; in Light mode it is #FFFFFF.
-            RunOnStaThread(() =>
-            {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
-
-                try
-                {
-                    var nav = new Fluent.NavigationView
-                    {
-                        Width = 700,
-                        Height = 500,
-                        PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact
-                    };
-                    window.Content = nav;
-                    window.Show();
-                    DrainDispatcher(window.Dispatcher);
-                    window.UpdateLayout();
-
-                    var compactPane = FindVisualChildByName<System.Windows.Controls.Border>(nav, "CompactPane");
-                    Assert.IsNotNull(compactPane, "CompactPane Border must exist in LeftCompact template.");
-
-                    var brush = compactPane.Background as SolidColorBrush;
-                    Assert.IsNotNull(brush,
-                        "CompactPane.Background must be LayerFillColorAltBrush (not null/Transparent).");
-                    var expectedColor = (Color)application.TryFindResource("LayerFillColorAlt");
-                    Assert.AreEqual(expectedColor, brush.Color,
-                        "CompactPane background must match LayerFillColorAlt (WinUI canonical pane tint).");
-                }
-                finally
-                {
-                    CloseWindowAndDrain(window);
-                    if (genericDictionary != null)
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
-                }
-            });
-        }
+        // NavigationView_CompactPane_BackgroundIsLayerFillColorAlt REMOVED (WI-3 B15 revert).
+        // Replaced by NavigationView_PaneBorders_AreTransparent below.
 
         // NavigationView.ContentBackground must resolve to NavigationViewContentBackgroundBrush
         // across all themes (semi-transparent tint; color changes per theme file).
@@ -1240,17 +1199,24 @@ namespace Fluence.Wpf.Tests
             });
         }
 
+        // NavigationView_Left_PaneBorder_UsesLayerFillColorAltBrush REMOVED (WI-3 B15 revert).
+        // NavigationView_LeftCompact_PaneBorder_UsesLayerFillColorAltBrush REMOVED (WI-3 B15 revert).
+        // Both replaced by NavigationView_PaneBorders_AreTransparent below.
+
         [TestMethod]
-        public void NavigationView_Left_PaneBorder_UsesLayerFillColorAltBrush()
+        public void NavigationView_PaneBorders_AreTransparent()
         {
-            // WI-3 B15: pane column border must use LayerFillColorAltBrush so the strip
-            // containing hamburger + back buttons gets the WinUI canonical subtle layer tint.
+            // Regression guard: pane borders (PaneBorder, CompactPane, PaneHeaderBorder) must
+            // be Transparent (or null) so the DWM Mica/Acrylic backdrop shows through. The
+            // WI-3 B15 commit wrongly set them to LayerFillColorAltBrush, which blocked the
+            // backdrop entirely. This test asserts the reverted state is preserved.
             RunOnStaThread(() =>
             {
                 var application = EnsureApplication();
                 var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
 
+                // ---- Left pane ----
+                var winLeft = new Window();
                 try
                 {
                     var nav = new Fluent.NavigationView
@@ -1260,42 +1226,23 @@ namespace Fluence.Wpf.Tests
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Left
                     };
                     nav.Items.Add(new Fluent.NavigationViewItem { Content = "Item" });
-                    window.Content = nav;
-                    window.Show();
-                    DrainDispatcher(window.Dispatcher);
-                    window.UpdateLayout();
+                    winLeft.Content = nav;
+                    winLeft.Show();
+                    DrainDispatcher(winLeft.Dispatcher);
+                    winLeft.UpdateLayout();
 
                     var paneBorder = FindVisualChildByName<System.Windows.Controls.Border>(nav, "PaneBorder");
-                    Assert.IsNotNull(paneBorder,
-                        "Left pane template must expose a Border named 'PaneBorder'.");
-
-                    var brush = paneBorder.Background as SolidColorBrush;
-                    Assert.IsNotNull(brush,
-                        "PaneBorder.Background must be a SolidColorBrush (DynamicResource LayerFillColorAltBrush).");
-
-                    var expectedColor = (Color)application.TryFindResource("LayerFillColorAlt");
-                    Assert.AreEqual(expectedColor, brush.Color,
-                        "PaneBorder background must match LayerFillColorAlt (WinUI canonical pane tint).");
+                    Assert.IsNotNull(paneBorder, "Left pane must expose Border named 'PaneBorder'.");
+                    AssertBrushIsTransparentOrNull(paneBorder.Background,
+                        "PaneBorder.Background must be Transparent so DWM backdrop shows through.");
                 }
                 finally
                 {
-                    CloseWindowAndDrain(window);
-                    if (genericDictionary != null)
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    CloseWindowAndDrain(winLeft);
                 }
-            });
-        }
 
-        [TestMethod]
-        public void NavigationView_LeftCompact_PaneBorder_UsesLayerFillColorAltBrush()
-        {
-            // WI-3 B15: same pane-strip background check for LeftCompact mode.
-            RunOnStaThread(() =>
-            {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
-
+                // ---- LeftCompact pane ----
+                var winCompact = new Window();
                 try
                 {
                     var nav = new Fluent.NavigationView
@@ -1305,30 +1252,68 @@ namespace Fluence.Wpf.Tests
                         PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact
                     };
                     nav.Items.Add(new Fluent.NavigationViewItem { Content = "Item" });
-                    window.Content = nav;
-                    window.Show();
-                    DrainDispatcher(window.Dispatcher);
-                    window.UpdateLayout();
+                    winCompact.Content = nav;
+                    winCompact.Show();
+                    DrainDispatcher(winCompact.Dispatcher);
+                    winCompact.UpdateLayout();
 
-                    var paneBorder = FindVisualChildByName<System.Windows.Controls.Border>(nav, "CompactPane");
-                    Assert.IsNotNull(paneBorder,
-                        "LeftCompact pane template must expose a Border named 'CompactPane'.");
-
-                    var brush = paneBorder.Background as SolidColorBrush;
-                    Assert.IsNotNull(brush,
-                        "CompactPane.Background must be a SolidColorBrush (DynamicResource LayerFillColorAltBrush).");
-
-                    var expectedColor = (Color)application.TryFindResource("LayerFillColorAlt");
-                    Assert.AreEqual(expectedColor, brush.Color,
-                        "CompactPane background must match LayerFillColorAlt (WinUI canonical pane tint).");
+                    var compactPane = FindVisualChildByName<System.Windows.Controls.Border>(nav, "CompactPane");
+                    Assert.IsNotNull(compactPane, "LeftCompact pane must expose Border named 'CompactPane'.");
+                    AssertBrushIsTransparentOrNull(compactPane.Background,
+                        "CompactPane.Background must be Transparent so DWM backdrop shows through.");
                 }
                 finally
                 {
-                    CloseWindowAndDrain(window);
+                    CloseWindowAndDrain(winCompact);
+                }
+
+                // ---- Top pane ----
+                var winTop = new Window();
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 600,
+                        Height = 320,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Top
+                    };
+                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Item" });
+                    winTop.Content = nav;
+                    winTop.Show();
+                    DrainDispatcher(winTop.Dispatcher);
+                    winTop.UpdateLayout();
+
+                    var paneHeader = FindVisualChildByName<System.Windows.Controls.Border>(nav, "PaneHeaderBorder");
+                    Assert.IsNotNull(paneHeader, "Top pane must expose Border named 'PaneHeaderBorder'.");
+                    AssertBrushIsTransparentOrNull(paneHeader.Background,
+                        "PaneHeaderBorder.Background must be Transparent so DWM backdrop shows through.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(winTop);
                     if (genericDictionary != null)
                         application.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
+        }
+
+        /// <summary>
+        /// Asserts that <paramref name="brush"/> is null, Brushes.Transparent, or a
+        /// SolidColorBrush whose alpha channel is zero — i.e. effectively transparent.
+        /// </summary>
+        private static void AssertBrushIsTransparentOrNull(System.Windows.Media.Brush brush, string message)
+        {
+            if (brush == null)
+                return; // null == no background == transparent
+
+            if (brush == System.Windows.Media.Brushes.Transparent)
+                return;
+
+            var solid = brush as SolidColorBrush;
+            if (solid != null && solid.Color.A == 0)
+                return;
+
+            Assert.Fail(message + " Actual: " + brush);
         }
 
         [TestMethod]

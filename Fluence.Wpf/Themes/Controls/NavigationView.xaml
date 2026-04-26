@@ -297,11 +297,11 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <!--  WI-3 B15: WinUI canonical pane header tint — LayerFillColorAltBrush.  -->
+                <!--  Pane background: Transparent so DWM Mica/Acrylic backdrop shows through.  -->
                 <Border
                     x:Name="PaneBorder"
                     Grid.Column="0"
-                    Background="{DynamicResource LayerFillColorAltBrush}">
+                    Background="Transparent">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -516,11 +516,11 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <!--  WI-3 B15: WinUI canonical pane header tint — LayerFillColorAltBrush.  -->
+                <!--  Pane background: Transparent so DWM Mica/Acrylic backdrop shows through.  -->
                 <Border
                     x:Name="CompactPane"
                     Grid.Column="0"
-                    Background="{DynamicResource LayerFillColorAltBrush}">
+                    Background="Transparent">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -735,12 +735,12 @@
                     <RowDefinition Height="48" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <!--  WI-3 B15: WinUI canonical pane header tint — LayerFillColorAltBrush.  -->
+                <!--  Pane background: Transparent so DWM Mica/Acrylic backdrop shows through.  -->
                 <Border
                     x:Name="PaneHeaderBorder"
                     Grid.Row="0"
                     Padding="4,0,8,0"
-                    Background="{DynamicResource LayerFillColorAltBrush}"
+                    Background="Transparent"
                     BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
                     BorderThickness="0,0,0,1">
                     <Grid>
