@@ -37,12 +37,14 @@ namespace Fluence.Wpf.Controls
 {
     /// <summary>
     /// Fluent-styled combo box with placeholder, icon, and rounded dropdown.
-    /// Authority: WinUI 3 ComboBox_themeresources.xaml (FocusStates VSM group — WI-3 C18).
+    /// Authority: WinUI 3 ComboBox_themeresources.xaml (FocusedStates / EditableFocusedStates VSM groups — WI-3 C18).
     /// </summary>
     [TemplatePart(Name = PART_Popup, Type = typeof(Popup))]
     [TemplatePart(Name = PART_DropdownBorder, Type = typeof(System.Windows.Controls.Border))]
-    [TemplateVisualState(GroupName = "FocusStates", Name = "Focused")]
-    [TemplateVisualState(GroupName = "FocusStates", Name = "Unfocused")]
+    [TemplateVisualState(GroupName = "FocusedStates", Name = "Focused")]
+    [TemplateVisualState(GroupName = "FocusedStates", Name = "Unfocused")]
+    [TemplateVisualState(GroupName = "EditableFocusedStates", Name = "EditableFocused")]
+    [TemplateVisualState(GroupName = "EditableFocusedStates", Name = "EditableUnfocused")]
     public class ComboBox : System.Windows.Controls.ComboBox
     {
         private const string PART_Popup = "PART_Popup";

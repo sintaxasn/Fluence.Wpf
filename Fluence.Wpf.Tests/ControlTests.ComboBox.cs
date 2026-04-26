@@ -35,17 +35,17 @@ using WpfBorder = System.Windows.Controls.Border;
 namespace Fluence.Wpf.Tests
 {
     /// <summary>
-    /// WI-3 C18 tests: ComboBox FocusStates VSM port.
-    /// Authority: WinUI 3 ComboBox_themeresources.xaml (FocusStates group).
+    /// WI-3 C18 tests: ComboBox FocusedStates VSM port.
+    /// Authority: WinUI 3 ComboBox_themeresources.xaml (FocusedStates / EditableFocusedStates groups).
     /// </summary>
     public partial class ControlTests
     {
         // ---------------------------------------------------------------------------
-        // WI-3 C18  ComboBox FocusStates VSM
+        // WI-3 C18  ComboBox FocusedStates VSM
         // ---------------------------------------------------------------------------
 
         [TestMethod]
-        public void ComboBox_FocusStates_GroupExistsInTemplate()
+        public void ComboBox_FocusedStates_GroupExistsInTemplate()
         {
             WpfTestSta.Invoke(() =>
             {
@@ -62,11 +62,37 @@ namespace Fluence.Wpf.Tests
                 var root = FindVisualChild<Grid>(cb);
                 Assert.IsNotNull(root, "TemplateRoot Grid must be present.");
                 var groups = VisualStateManager.GetVisualStateGroups(root);
-                bool hasFocusStates = groups
+                bool hasFocusedStates = groups
                     .Cast<VisualStateGroup>()
-                    .Any(g => g.Name == "FocusStates");
-                Assert.IsTrue(hasFocusStates,
-                    "ComboBox template root must have a FocusStates VSM group per WI-3 C18.");
+                    .Any(g => g.Name == "FocusedStates");
+                Assert.IsTrue(hasFocusedStates,
+                    "ComboBox template root must have a FocusedStates VSM group per WI-3 C18.");
+                w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void ComboBox_EditableFocusedStates_GroupExistsInTemplate()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                var app = EnsureApplication();
+                MergeGenericDictionary(app);
+
+                var cb = new FluenceComboBox();
+                cb.Items.Add("One");
+                var w = new Window { Content = cb, Width = 300, Height = 100 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                var root = FindVisualChild<Grid>(cb);
+                Assert.IsNotNull(root, "TemplateRoot Grid must be present.");
+                var groups = VisualStateManager.GetVisualStateGroups(root);
+                bool hasEditableFocusedStates = groups
+                    .Cast<VisualStateGroup>()
+                    .Any(g => g.Name == "EditableFocusedStates");
+                Assert.IsTrue(hasEditableFocusedStates,
+                    "ComboBox template root must have an EditableFocusedStates VSM group per WI-3 C18.");
                 w.Close();
             });
         }

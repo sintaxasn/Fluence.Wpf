@@ -263,12 +263,13 @@
                             </Border>
                         </Popup>
                         <!--
-                            WI-3 C18: FocusStates VSM group.
-                            Authority: WinUI 3 ComboBox_themeresources.xaml (FocusStates group).
+                            WI-3 C18: FocusedStates + EditableFocusedStates VSM groups.
+                            Authority: WinUI 3 ComboBox_themeresources.xaml.
                             FocusAccentLine (accent bottom line) tracks keyboard focus, not dropdown state.
+                            EditableFocusedStates mirrors FocusedStates for future IsEditable support.
                         -->
                         <VisualStateManager.VisualStateGroups>
-                            <VisualStateGroup x:Name="FocusStates">
+                            <VisualStateGroup x:Name="FocusedStates">
                                 <VisualState x:Name="Focused">
                                     <Storyboard>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FocusAccentLine" Storyboard.TargetProperty="Opacity">
@@ -277,6 +278,22 @@
                                     </Storyboard>
                                 </VisualState>
                                 <VisualState x:Name="Unfocused">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FocusAccentLine" Storyboard.TargetProperty="Opacity">
+                                            <DiscreteDoubleKeyFrame KeyTime="0" Value="0" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                            </VisualStateGroup>
+                            <VisualStateGroup x:Name="EditableFocusedStates">
+                                <VisualState x:Name="EditableFocused">
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FocusAccentLine" Storyboard.TargetProperty="Opacity">
+                                            <DiscreteDoubleKeyFrame KeyTime="0" Value="1" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </VisualState>
+                                <VisualState x:Name="EditableUnfocused">
                                     <Storyboard>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FocusAccentLine" Storyboard.TargetProperty="Opacity">
                                             <DiscreteDoubleKeyFrame KeyTime="0" Value="0" />
