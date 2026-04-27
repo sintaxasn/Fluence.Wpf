@@ -21,6 +21,27 @@
         <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
         <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
         <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <!--
+                    Explicit template required: without it WPF falls back to the Aero-theme
+                    system template for Menu which clamps the bar to MenuBarHeight (~19 px)
+                    and prevents Fluence MenuItem items from rendering at their natural height.
+                    Authority: .NET 10 WPF Menu.xaml generic template (ItemsPresenter pattern).
+                -->
+                <ControlTemplate TargetType="{x:Type controls:Menu}">
+                    <Border
+                        Padding="{TemplateBinding Padding}"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                        UseLayoutRounding="{TemplateBinding UseLayoutRounding}">
+                        <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
 </ResourceDictionary>

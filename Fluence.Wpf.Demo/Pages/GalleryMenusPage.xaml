@@ -143,7 +143,7 @@
             <TextBlock
                 Margin="0,0,0,8"
                 Style="{StaticResource SectionDescriptionStyle}"
-                Text="DropDownButton opens a ContextMenu flyout with nested items and keyboard arrow navigation." />
+                Text="DropDownButton opens a flyout panel with action items. SplitButton combines a primary action with a dropdown for format variants." />
             <ui:Card
                 Margin="0,0,0,24"
                 Padding="16"

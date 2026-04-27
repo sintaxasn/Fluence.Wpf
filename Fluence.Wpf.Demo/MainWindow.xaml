@@ -20,7 +20,8 @@
     TitleBarHeight="48"
     UseLayoutRounding="True"
     WindowBackdrop="Mica"
-    WindowCorners="Round">
+    WindowCorners="Round"
+    >
 
     <ui:FluenceWindow.TitleBar>
         <Grid Margin="16,0,16,0">
@@ -41,7 +42,8 @@
                 PreviewKeyDown="NavSearchBox_PreviewKeyDown"
                 Style="{StaticResource TitleBarSearchBoxStyle}"
                 TextChanged="NavSearchBox_TextChanged"
-                WindowChrome.IsHitTestVisibleInChrome="True" />
+                WindowChrome.IsHitTestVisibleInChrome="True"
+                />
         </Grid>
     </ui:FluenceWindow.TitleBar>
 
@@ -50,9 +52,10 @@
         Background="Transparent"
         IsBackButtonVisible="False"
         IsBackEnabled="False"
-        IsPaneOpen="False"
+        IsPaneOpen="True"
         PaneDisplayMode="Left"
-        SelectedIndex="0">
+        SelectedIndex="0"
+        >
         <ui:NavigationViewItem Content="Home" Tag="home overview welcome">
             <ui:NavigationViewItem.Icon>
                 <ui:FontIcon Glyph="&#xE80F;" IconFontSize="20" />
@@ -61,6 +64,16 @@
                 <pages:GalleryHomePage />
             </ui:NavigationViewItem.PageContent>
         </ui:NavigationViewItem>
+
+        <ui:NavigationViewItem Content="Window" Tag="window theme backdrop mica accent titlebar chrome shell">
+            <ui:NavigationViewItem.Icon>
+                <ui:FontIcon Glyph="&#xE737;" IconFontSize="20" />
+            </ui:NavigationViewItem.Icon>
+            <ui:NavigationViewItem.PageContent>
+                <pages:GalleryWindowPage />
+            </ui:NavigationViewItem.PageContent>
+        </ui:NavigationViewItem>
+
 
         <ui:NavigationViewItemHeader Content="Basic input" />
 
@@ -182,15 +195,6 @@
             </ui:NavigationViewItem.Icon>
             <ui:NavigationViewItem.PageContent>
                 <pages:GalleryGlyphsPage />
-            </ui:NavigationViewItem.PageContent>
-        </ui:NavigationViewItem>
-
-        <ui:NavigationViewItem Content="Window" Tag="window theme backdrop mica accent titlebar chrome shell">
-            <ui:NavigationViewItem.Icon>
-                <ui:FontIcon Glyph="&#xE737;" IconFontSize="20" />
-            </ui:NavigationViewItem.Icon>
-            <ui:NavigationViewItem.PageContent>
-                <pages:GalleryWindowPage />
             </ui:NavigationViewItem.PageContent>
         </ui:NavigationViewItem>
 

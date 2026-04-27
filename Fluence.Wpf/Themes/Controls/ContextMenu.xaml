@@ -202,9 +202,17 @@
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                         </Trigger>
-                        <!--  Submenu-header: show the chevron arrow  -->
+                        <!--  Submenu-header: show the chevron arrow (popup already Placement=Right)  -->
                         <Trigger Property="Role" Value="SubmenuHeader">
                             <Setter TargetName="Arrow" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <!--
+                            TopLevelHeader: item is a direct child of Menu (horizontal bar).
+                            Popup must open BELOW the item, not to the right.
+                            Authority: WPF Menu role model — TopLevelHeader owns a dropdown.
+                        -->
+                        <Trigger Property="Role" Value="TopLevelHeader">
+                            <Setter TargetName="PART_Popup" Property="Placement" Value="Bottom" />
                         </Trigger>
                         <!--  Show checkmark when checked and no custom icon  -->
                         <MultiTrigger>
