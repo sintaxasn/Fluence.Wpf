@@ -2420,8 +2420,12 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void ProgressRing_Indeterminate_ShowsSpinningRing()
+        public void ProgressRing_Indeterminate_DotHostBecomesVisible()
         {
+            // The 2026-04-27 ProgressRing rewrite replaced the single PART_IndeterminateRing
+            // ellipse + StrokeDashArray approximation with the WinUI canonical 5-dot orbit
+            // (E1…E5), wrapped in a "DotHost" Grid that flips to Visible via a MultiTrigger
+            // on (IsActive=True, IsIndeterminate=True).
             RunOnStaThread(() =>
             {
                 var application = EnsureApplication();
@@ -2443,10 +2447,13 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     ring.ApplyTemplate();
-                    var indeterminateRing = ring.Template.FindName("PART_IndeterminateRing", ring) as FrameworkElement;
-                    Assert.IsNotNull(indeterminateRing, "PART_IndeterminateRing should exist in the template.");
-                    Assert.AreEqual(Visibility.Visible, indeterminateRing.Visibility,
-                        "Indeterminate ring should be visible when IsIndeterminate is true.");
+                    var dotHost = ring.Template.FindName("DotHost", ring) as FrameworkElement;
+                    Assert.IsNotNull(dotHost, "DotHost Grid should exist in the indeterminate template.");
+                    Assert.AreEqual(Visibility.Visible, dotHost.Visibility,
+                        "DotHost should be Visible when IsActive=True and IsIndeterminate=True.");
+
+                    var firstDot = ring.Template.FindName("E1", ring) as System.Windows.Shapes.Ellipse;
+                    Assert.IsNotNull(firstDot, "Orbit-dot E1 should exist in the indeterminate template.");
                 }
                 finally
                 {
