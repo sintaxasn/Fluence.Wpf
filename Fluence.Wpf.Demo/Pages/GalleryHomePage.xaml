@@ -13,40 +13,35 @@
         <StackPanel Margin="28,20,28,32" HorizontalAlignment="Stretch">
             <!--  Hero: diamond logo mark + brand text + stats row  -->
             <StackPanel Margin="0,8,0,28" HorizontalAlignment="Center">
-                <Image
+                <ui:StackPanel Spacing ="20" VerticalAlignment="Center" Orientation="Horizontal">
+                    <Image
                     Width="88"
                     Height="88"
-                    Margin="0,0,0,20"
                     HorizontalAlignment="Center"
                     RenderOptions.BitmapScalingMode="HighQuality"
                     SnapsToDevicePixels="True"
                     Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/AppIcon.png"
                     Stretch="Uniform" />
-                <TextBlock
+                    <TextBlock
                     HorizontalAlignment="Center"
                     ui:TextBlockExtensions.Typography="Display"
                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                    Text="Fluence.Wpf"
+                    Text="Fluence"
                     TextOptions.TextFormattingMode="Ideal" />
+                    <TextBlock
+                    HorizontalAlignment="Center"
+                    ui:TextBlockExtensions.Typography="Display"
+                    Foreground="#81cfff"
+                    Text=".Wpf"
+                    TextOptions.TextFormattingMode="Ideal" />
+                </ui:StackPanel>
                 <TextBlock
-                    Margin="0,8,0,0"
+                    
                     HorizontalAlignment="Center"
                     ui:TextBlockExtensions.Typography="Subtitle"
                     Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                     Text="Windows 11 Fluent Design controls for WPF" />
-                <TextBlock
-                    Margin="0,10,0,4"
-                    HorizontalAlignment="Center"
-                    ui:TextBlockExtensions.Typography="Body">
-                    <Run Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Text="40+ controls" />
-                    <Run Foreground="{DynamicResource TextFillColorTertiaryBrush}" Text="  ·  " />
-                    <Run Foreground="{DynamicResource TextFillColorSecondaryBrush}" Text="net472 + net10.0-windows" />
-                    <Run Foreground="{DynamicResource TextFillColorTertiaryBrush}" Text="  ·  " />
-                    <Run Foreground="{DynamicResource TextFillColorSecondaryBrush}" Text="WinUI 3 fidelity" />
-                    <Run Foreground="{DynamicResource TextFillColorTertiaryBrush}" Text="  ·  " />
-                    <Run Foreground="{DynamicResource TextFillColorSecondaryBrush}" Text="BSD 3-Clause" />
-                </TextBlock>
-            </StackPanel>
+        </StackPanel>
 
             <!--  Action cards  -->
             <UniformGrid Margin="0,8,0,16" Columns="2">

@@ -494,6 +494,18 @@ namespace Fluence.Wpf.Controls
                 TryParseText();
                 e.Handled = true;
             }
+            else if (e.Key == Key.Up)
+            {
+                TryParseText();
+                OnUpClick();
+                e.Handled = true;
+            }
+            else if (e.Key == Key.Down)
+            {
+                TryParseText();
+                OnDownClick();
+                e.Handled = true;
+            }
         }
 
         private void OnPartTextBoxLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)

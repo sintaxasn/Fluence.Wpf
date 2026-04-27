@@ -15,7 +15,7 @@
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Width" Value="32" />
         <Setter Property="Height" Value="30" />
-        <Setter Property="Focusable" Value="False" />
+        <Setter Property="Focusable" Value="True" />
         <!--  Fire Click immediately on MouseDown so a quick press-release registers  -->
         <!--  (default Release mode waits for the internal timer's first tick).  -->
         <Setter Property="ClickMode" Value="Press" />
@@ -51,6 +51,14 @@
         <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
         <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
         <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
+        <!--
+            IsTabStop=False: the outer NumberBox shell must not be a tab stop.
+            Focus is hosted by PART_TextBox (inner element).  Without this,
+            Shift+Tab from PART_TextBox lands on the NumberBox shell which
+            immediately redirects focus back to PART_TextBox — an infinite loop
+            that prevents Shift+Tab from escaping to the previous outer control.
+        -->
+        <Setter Property="IsTabStop" Value="False" />
         <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource TextControlElevationBorderBrush}" />

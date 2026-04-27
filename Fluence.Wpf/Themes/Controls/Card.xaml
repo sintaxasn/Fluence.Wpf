@@ -221,6 +221,8 @@
                         </MultiTrigger>
                         <Trigger Property="IsClickable" Value="True">
                             <Setter Property="Cursor" Value="Hand" />
+                            <Setter Property="Focusable" Value="True" />
+                            <Setter Property="FocusVisualStyle" Value="{DynamicResource DefaultControlFocusVisualStyle}" />
                         </Trigger>
 
                         <Trigger Property="IsEnabled" Value="False">

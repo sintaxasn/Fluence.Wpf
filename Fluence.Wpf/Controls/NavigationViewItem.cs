@@ -121,6 +121,33 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <inheritdoc />
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            if ((e.Key == Key.Enter || e.Key == Key.Space) && IsEnabled)
+            {
+                var nav = ItemsControl.ItemsControlFromItemContainer(this) as NavigationView;
+                if (nav != null)
+                {
+                    object data = nav.ItemContainerGenerator.ItemFromContainer(this);
+                    if (data == DependencyProperty.UnsetValue || data == null)
+                    {
+                        data = this;
+                    }
+
+                    if (!object.ReferenceEquals(nav.SelectedItem, data))
+                    {
+                        nav.SelectedItem = data;
+                    }
+
+                    e.Handled = true;
+                    return;
+                }
+            }
+
+            base.OnKeyDown(e);
+        }
+
+        /// <inheritdoc />
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             SetValue(IsPressedPropertyKey, true);

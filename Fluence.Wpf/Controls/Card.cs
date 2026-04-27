@@ -238,6 +238,44 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <inheritdoc />
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            if (!IsClickable || !IsEnabled)
+            {
+                return;
+            }
+
+            if (e.Key == Key.Enter || e.Key == Key.Space)
+            {
+                IsPressed = true;
+                e.Handled = true;
+            }
+        }
+
+        /// <inheritdoc />
+        protected override void OnKeyUp(KeyEventArgs e)
+        {
+            base.OnKeyUp(e);
+            if (!IsClickable || !IsEnabled)
+            {
+                return;
+            }
+
+            if (e.Key == Key.Enter || e.Key == Key.Space)
+            {
+                bool wasPressed = IsPressed;
+                IsPressed = false;
+                if (wasPressed)
+                {
+                    RaiseEvent(new RoutedEventArgs(ClickEvent, this));
+                }
+
+                e.Handled = true;
+            }
+        }
+
+        /// <inheritdoc />
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonDown(e);

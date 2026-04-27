@@ -96,13 +96,28 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void ProgressRing_Indeterminate_SweepAnimation_RepeatsBehaviorIsForever()
+        public void ProgressRing_Indeterminate_SweepAnimation_IsSingleCycleWithHoldEnd()
         {
+            // The caterpillar offset fix replaced RepeatBehavior.Forever with a single-cycle
+            // animation chained via the Completed event in StartNextIndeterminateCycle().
+            // A forever-repeating animation resets StrokeDashOffset to its from-value at each
+            // cycle boundary, producing a visible jump.  The fix accumulates _cumulativeOffset
+            // externally and feeds each new cycle a fresh start value, so FillBehavior.HoldEnd
+            // is required (hold the final frame between the Completed callback and the next
+            // BeginAnimation call).  RepeatBehavior must be exactly 1 iteration.
             var anim = ProgressRing.CreateIndeterminateSweepAnimation();
+
             Assert.AreEqual(
-                RepeatBehavior.Forever,
+                new RepeatBehavior(1),
                 anim.RepeatBehavior,
-                "Indeterminate sweep animation must repeat forever.");
+                "Sweep animation must be a single cycle (repetition managed externally by " +
+                "the Completed-chained StartNextIndeterminateCycle, not by RepeatBehavior.Forever).");
+
+            Assert.AreEqual(
+                FillBehavior.HoldEnd,
+                anim.FillBehavior,
+                "Sweep animation must use FillBehavior.HoldEnd so the final frame is held " +
+                "until the next cycle begins in the Completed callback.");
         }
 
         [TestMethod]

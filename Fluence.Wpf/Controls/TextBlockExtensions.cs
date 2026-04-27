@@ -38,7 +38,7 @@ namespace Fluence.Wpf.Controls
     public static class TextBlockExtensions
     {
         private static readonly FontFamily FluentTypographyFontFamily =
-            new FontFamily("Segoe UI Variable Display, Segoe UI Variable, Segoe UI");
+            new FontFamily("Segoe UI Variable, Segoe UI");
 
         #region Typography
 

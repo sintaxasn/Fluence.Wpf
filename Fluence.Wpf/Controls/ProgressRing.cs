@@ -107,8 +107,36 @@ namespace Fluence.Wpf.Controls
 
         private static void OnIndeterminateSweepChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            ((ProgressRing)d).UpdateIndeterminateDash((double)e.NewValue);
+            var ring = (ProgressRing)d;
+            ring.UpdateIndeterminateDash((double)e.NewValue, ring.IndeterminateOffset);
         }
+
+        // ──── Private DP: dash-offset fraction for indeterminate caterpillar ────
+        // During contraction this advances at the same rate the sweep shrinks so the
+        // leading edge of the arc moves only with rotation (no backward slip).
+
+        private static readonly DependencyProperty IndeterminateOffsetProperty =
+            DependencyProperty.Register(
+                "IndeterminateOffset",
+                typeof(double),
+                typeof(ProgressRing),
+                new FrameworkPropertyMetadata(0.0, OnIndeterminateOffsetChanged));
+
+        private double IndeterminateOffset
+        {
+            get { return (double)GetValue(IndeterminateOffsetProperty); }
+            set { SetValue(IndeterminateOffsetProperty, value); }
+        }
+
+        private static void OnIndeterminateOffsetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var ring = (ProgressRing)d;
+            ring.UpdateIndeterminateDash(ring.IndeterminateSweep, (double)e.NewValue);
+        }
+
+        // Cumulative offset accumulates across animation cycles to prevent visual reset jump.
+        private double _cumulativeOffset;
+        private bool _isIndeterminateRunning;
 
         // ──── Public DPs ────
 
@@ -257,6 +285,9 @@ namespace Fluence.Wpf.Controls
             if (_indeterminateRotation == null)
                 return;
 
+            _isIndeterminateRunning = true;
+            _cumulativeOffset = 0.0;
+
             // Continuous rotation: 360° every 1.4 s.
             var rotAnim = new DoubleAnimation
             {
@@ -268,51 +299,92 @@ namespace Fluence.Wpf.Controls
             };
             _indeterminateRotation.BeginAnimation(RotateTransform.AngleProperty, rotAnim);
 
-            BeginAnimation(IndeterminateSweepProperty, CreateIndeterminateSweepAnimation());
+            StartNextIndeterminateCycle();
+        }
+
+        private void StartNextIndeterminateCycle()
+        {
+            if (!_isIndeterminateRunning)
+                return;
+
+            double startOffset = _cumulativeOffset;
+            double endOffset = _cumulativeOffset + 0.65;
+
+            // ── Sweep animation (one cycle, 1.6 s) ───────────────────────────────────────
+            // 4-keyframe S-curve: fast expansion → slow apex arrival → ease-in-out contraction.
+            // Sweep range: 10 % → 40 % → 75 % → 10 % of circumference.
+            var sweepAnim = CreateIndeterminateSweepAnimation();
+            BeginAnimation(IndeterminateSweepProperty, sweepAnim);
+
+            // ── Offset animation (one cycle, 1.6 s) ──────────────────────────────────────
+            // Offset stays fixed during expansion (0 → 0.8 s) then advances by 0.65 during
+            // contraction (0.8 → 1.6 s) with matching ease-in-out easing.  This keeps the
+            // leading edge of the arc moving forward at rotation speed only (no backward slip):
+            //   d(head)/dt = rotation_rate + d(offset)/dt + d(sweep)/dt
+            //              = 1/1.4  +  (-d(sweep)/dt)    + d(sweep)/dt
+            //              = 1/1.4   ← constant forward motion regardless of sweep change.
+            var offsetAnim = new DoubleAnimationUsingKeyFrames
+            {
+                FillBehavior = FillBehavior.HoldEnd
+            };
+            offsetAnim.KeyFrames.Add(new LinearDoubleKeyFrame(
+                startOffset,
+                KeyTime.FromTimeSpan(TimeSpan.Zero)));
+            offsetAnim.KeyFrames.Add(new LinearDoubleKeyFrame(
+                startOffset,
+                KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0.8))));
+            offsetAnim.KeyFrames.Add(new SplineDoubleKeyFrame(
+                endOffset,
+                KeyTime.FromTimeSpan(TimeSpan.FromSeconds(1.6)),
+                new KeySpline(0.4, 0.0, 0.6, 1.0)));
+
+            offsetAnim.Completed += delegate
+            {
+                if (!_isIndeterminateRunning)
+                    return;
+                _cumulativeOffset = endOffset;
+                StartNextIndeterminateCycle();
+            };
+
+            BeginAnimation(IndeterminateOffsetProperty, offsetAnim);
         }
 
         /// <summary>
-        /// Creates the 4-keyframe S-curve animation for the indeterminate arc sweep.
+        /// Creates the 4-keyframe S-curve sweep animation for one indeterminate cycle.
         /// Exposed internal for unit-test access (KeyFrames.Count assertion).
         /// </summary>
         /// <remarks>
-        /// 4-keyframe S-curve eliminates the hard velocity-zero snap present in the
-        /// original 2-keyframe approach.  Both the arrival (0.4s→0.8s ease-in) and
-        /// departure (0.8s→1.6s ease-in-out) have near-zero velocity at the apex (0.8s),
-        /// producing a smooth direction reversal.
+        /// Returns a single-cycle (non-repeating) animation so that the caterpillar
+        /// offset accumulation via <see cref="StartNextIndeterminateCycle"/> can chain
+        /// cycles without resetting the dash offset to zero.
         ///
-        /// KeySplines chosen so that:
-        ///   0.0s → 0.10  (initial minimum arc)
-        ///   0.4s → 0.40  (ease-out: fast expansion, KeySpline 0,0,0.2,1)
-        ///   0.8s → 0.75  (ease-in arrival: near-zero velocity at apex, KeySpline 0.8,0,1,1)
-        ///   1.6s → 0.10  (ease-in-out contraction: zero departure from apex, KeySpline 0.4,0,0.6,1)
+        /// KeySplines:
+        ///   0.0 s → 0.10  initial minimum arc
+        ///   0.4 s → 0.40  ease-out fast expansion (0,0,0.2,1)
+        ///   0.8 s → 0.75  ease-in slow arrival at apex (0.8,0,1,1)
+        ///   1.6 s → 0.10  ease-in-out smooth contraction (0.4,0,0.6,1)
         /// </remarks>
         internal static DoubleAnimationUsingKeyFrames CreateIndeterminateSweepAnimation()
         {
             var sweepAnim = new DoubleAnimationUsingKeyFrames
             {
-                RepeatBehavior = RepeatBehavior.Forever,
                 FillBehavior = FillBehavior.HoldEnd
             };
 
-            // 0.0 s — minimum arc (10 % of circumference).
             sweepAnim.KeyFrames.Add(new LinearDoubleKeyFrame(
                 0.1,
                 KeyTime.FromTimeSpan(TimeSpan.Zero)));
 
-            // 0.4 s — rapid expansion to 40 % (ease-out: fast start, slow finish).
             sweepAnim.KeyFrames.Add(new SplineDoubleKeyFrame(
                 0.40,
                 KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0.4)),
                 new KeySpline(0.0, 0.0, 0.2, 1.0)));
 
-            // 0.8 s — slow arrival at apex 75 % (ease-in: near-zero velocity at apex).
             sweepAnim.KeyFrames.Add(new SplineDoubleKeyFrame(
                 0.75,
                 KeyTime.FromTimeSpan(TimeSpan.FromSeconds(0.8)),
                 new KeySpline(0.8, 0.0, 1.0, 1.0)));
 
-            // 1.6 s — smooth contraction back to 10 % (ease-in-out: zero departure from apex).
             sweepAnim.KeyFrames.Add(new SplineDoubleKeyFrame(
                 0.1,
                 KeyTime.FromTimeSpan(TimeSpan.FromSeconds(1.6)),
@@ -323,14 +395,23 @@ namespace Fluence.Wpf.Controls
 
         private void StopIndeterminateAnimation()
         {
+            _isIndeterminateRunning = false;
+            _cumulativeOffset = 0.0;
+
             if (_indeterminateRotation != null)
                 _indeterminateRotation.BeginAnimation(RotateTransform.AngleProperty, null);
+
             BeginAnimation(IndeterminateSweepProperty, null);
+            BeginAnimation(IndeterminateOffsetProperty, null);
+
             if (_indeterminateRing != null)
+            {
                 _indeterminateRing.StrokeDashArray = null;
+                _indeterminateRing.StrokeDashOffset = 0;
+            }
         }
 
-        private void UpdateIndeterminateDash(double sweepFraction)
+        private void UpdateIndeterminateDash(double sweepFraction, double offsetFraction)
         {
             if (_indeterminateRing == null)
                 return;
@@ -338,6 +419,7 @@ namespace Fluence.Wpf.Controls
             if (sweepFraction <= 0)
             {
                 _indeterminateRing.StrokeDashArray = null;
+                _indeterminateRing.StrokeDashOffset = 0;
                 return;
             }
 
@@ -350,9 +432,11 @@ namespace Fluence.Wpf.Controls
                 return;
 
             double circumference = 2.0 * Math.PI * radius;
-            double dashLen = sweepFraction * circumference / StrokeThickness;
-            double gapLen = Math.Max(0.01, (1.0 - sweepFraction) * circumference / StrokeThickness);
+            double unitLength = circumference / StrokeThickness;
+            double dashLen = sweepFraction * unitLength;
+            double gapLen = Math.Max(0.01, (1.0 - sweepFraction) * unitLength);
             _indeterminateRing.StrokeDashArray = new DoubleCollection(new double[] { dashLen, gapLen });
+            _indeterminateRing.StrokeDashOffset = offsetFraction * unitLength;
         }
 
         // ──── Determinate arc ────
@@ -449,7 +533,7 @@ namespace Fluence.Wpf.Controls
             base.OnRenderSizeChanged(sizeInfo);
             RenderArc(AnimatedFraction);
             if (IsIndeterminate)
-                UpdateIndeterminateDash(IndeterminateSweep);
+                UpdateIndeterminateDash(IndeterminateSweep, IndeterminateOffset);
         }
     }
 }

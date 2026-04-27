@@ -353,10 +353,11 @@
                             </Button>
                         </StackPanel>
 
+                        <!--  Padding="3,4": 3px horizontal gives focus-ring Margin="-3" clearance so it is not clipped.  -->
                         <ScrollViewer
                             x:Name="PART_PaneItemsScrollViewer"
                             Grid.Row="1"
-                            Padding="0,4"
+                            Padding="3,4"
                             Focusable="False"
                             HorizontalScrollBarVisibility="Disabled"
                             VerticalScrollBarVisibility="Auto">
@@ -572,10 +573,11 @@
                             </Button>
                         </StackPanel>
 
+                        <!--  Padding="3,4": 3px horizontal gives focus-ring Margin="-3" clearance so it is not clipped.  -->
                         <ScrollViewer
                             x:Name="PART_PaneItemsScrollViewer"
                             Grid.Row="1"
-                            Padding="0,4"
+                            Padding="3,4"
                             Focusable="False"
                             HorizontalScrollBarVisibility="Disabled"
                             VerticalScrollBarVisibility="Auto">
