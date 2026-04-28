@@ -1,0 +1,34 @@
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Samples.Selection.ComboBoxSelection"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
+    <StackPanel>
+        <ui:ComboBox
+            Width="480"
+            Margin="0,0,0,12"
+            HorizontalAlignment="Left"
+            PlaceholderText="Choose an option...">
+            <ComboBoxItem Content="First item" />
+            <ComboBoxItem Content="Second item" />
+            <ComboBoxItem Content="Third item" />
+        </ui:ComboBox>
+        <ui:ComboBox
+            Width="480"
+            Margin="0,0,0,12"
+            HorizontalAlignment="Left"
+            PlaceholderText="With icon">
+            <ui:ComboBox.Icon>
+                <ui:FontIcon Glyph="&#xE721;" IconFontSize="14" />
+            </ui:ComboBox.Icon>
+            <ComboBoxItem Content="Alpha" />
+            <ComboBoxItem Content="Beta" />
+            <ComboBoxItem Content="Gamma" />
+        </ui:ComboBox>
+        <ui:ComboBox
+            Width="480"
+            HorizontalAlignment="Left"
+            IsEnabled="False"
+            PlaceholderText="Disabled" />
+    </StackPanel>
+</UserControl>

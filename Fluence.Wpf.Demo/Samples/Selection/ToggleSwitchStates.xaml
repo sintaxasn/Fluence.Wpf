@@ -1,0 +1,27 @@
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Samples.Selection.ToggleSwitchStates"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
+    <WrapPanel>
+        <StackPanel Margin="0,0,20,10" Orientation="Horizontal">
+            <ui:ToggleSwitch Margin="0,0,12,0" />
+            <TextBlock VerticalAlignment="Center" Text="Default" />
+        </StackPanel>
+        <StackPanel Margin="0,0,20,10" Orientation="Horizontal">
+            <ui:ToggleSwitch
+                Margin="0,0,12,0"
+                IsChecked="True"
+                OffContent="Off"
+                OnContent="On" />
+            <TextBlock VerticalAlignment="Center" Text="Custom On/Off" />
+        </StackPanel>
+        <StackPanel Margin="0,0,20,10" Orientation="Horizontal">
+            <ui:ToggleSwitch
+                Margin="0,0,12,0"
+                IsChecked="True"
+                IsEnabled="False" />
+            <TextBlock VerticalAlignment="Center" Text="Disabled (on)" />
+        </StackPanel>
+    </WrapPanel>
+</UserControl>

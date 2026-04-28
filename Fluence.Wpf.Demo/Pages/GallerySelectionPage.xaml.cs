@@ -35,6 +35,12 @@ namespace Fluence.Wpf.Demo.Pages
         public GallerySelectionPage()
         {
             InitializeComponent();
+
+            CheckBoxStatesSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Selection/CheckBoxStates.xaml");
+            RadioButtonGroupsSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Selection/RadioButtonGroups.xaml");
+            ToggleSwitchStatesSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Selection/ToggleSwitchStates.xaml");
+            ComboBoxSelectionSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Selection/ComboBoxSelection.xaml");
+
             Loaded += GallerySelectionPage_Loaded;
         }
 
@@ -54,6 +60,19 @@ namespace Fluence.Wpf.Demo.Pages
             ToggleStateLabel.Text = string.Format(
                 "Default toggle: {0}",
                 DefaultToggle.IsChecked == true ? "On" : "Off");
+        }
+
+        private void SelectionDemoCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ComboStateLabel == null || SelectionDemoCombo == null)
+            {
+                return;
+            }
+
+            var selectedItem = SelectionDemoCombo.SelectedItem as ComboBoxItem;
+            ComboStateLabel.Text = string.Format(
+                "Selected: {0}",
+                selectedItem != null ? selectedItem.Content : "none");
         }
     }
 }

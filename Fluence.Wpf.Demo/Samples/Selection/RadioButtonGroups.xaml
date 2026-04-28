@@ -1,0 +1,43 @@
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Samples.Selection.RadioButtonGroups"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
+    <StackPanel>
+        <TextBlock
+            Margin="0,0,0,8"
+            FontWeight="SemiBold"
+            Text="Basic group" />
+        <StackPanel Margin="0,0,0,16" Orientation="Horizontal">
+            <ui:RadioButton
+                Margin="0,0,16,0"
+                Content="Option A"
+                GroupName="BasicGroup"
+                IsChecked="True" />
+            <ui:RadioButton
+                Margin="0,0,16,0"
+                Content="Option B"
+                GroupName="BasicGroup" />
+            <ui:RadioButton Content="Option C" GroupName="BasicGroup" />
+        </StackPanel>
+        <TextBlock
+            Margin="0,0,0,8"
+            FontWeight="SemiBold"
+            Text="With descriptions" />
+        <ui:RadioButton
+            Margin="0,0,0,8"
+            Content="Standard"
+            Description="Uses default application settings"
+            GroupName="DescGroup"
+            IsChecked="True" />
+        <ui:RadioButton
+            Margin="0,0,0,8"
+            Content="Custom"
+            Description="Allows manual configuration"
+            GroupName="DescGroup" />
+        <ui:RadioButton
+            Content="Advanced"
+            Description="Expert-level options"
+            GroupName="DescGroup" />
+    </StackPanel>
+</UserControl>
