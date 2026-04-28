@@ -449,13 +449,13 @@ namespace Fluence.Wpf.Controls
         {
             var box = (NumberBox)d;
             double v = (double)baseValue;
-            if (double.IsNaN(v) || double.IsInfinity(v))
+            if (double.IsNaN(v))
+            {
                 return baseValue;
-            double min = box.Minimum;
-            double max = box.Maximum;
-            if (v < min) return min;
-            if (v > max) return max;
-            return baseValue;
+            }
+
+            double clamped = box.ClampValue(v);
+            return double.IsNaN(clamped) ? baseValue : (object)clamped;
         }
 
         private static void OnValuePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

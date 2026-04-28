@@ -88,6 +88,12 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
+                var application = WpfTestSta.EnsureApplication();
+                ApplicationThemeManager.ResetForTesting();
+                ApplicationAccentColorManager.ResetForTesting();
+                application.Resources.Clear();
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
+
                 var body = new WpfTextBlock();
                 TextBlockExtensions.SetTypography(body, FluentTypography.Body);
 

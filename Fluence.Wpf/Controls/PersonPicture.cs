@@ -305,7 +305,7 @@ namespace Fluence.Wpf.Controls
             if (_initialsText != null)
             {
                 _initialsText.Text = GlyphContact;
-                _initialsText.SetResourceReference(WpfTextBlock.FontFamilyProperty, "FluentFontFamily");
+                _initialsText.FontFamily = new FontFamily("Segoe Fluent Icons");
             }
             VisualStateManager.GoToState(this, StateNoPhotoOrInitials, useTransitions);
         }

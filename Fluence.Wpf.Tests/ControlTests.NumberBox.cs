@@ -239,6 +239,42 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void NumberBox_DirectValue_ClampsPositiveInfinityToMaximum()
+        {
+            RunOnStaThread(() =>
+            {
+                var numberBox = new Fluent.NumberBox
+                {
+                    Minimum = 0,
+                    Maximum = 5
+                };
+
+                numberBox.Value = double.PositiveInfinity;
+
+                Assert.AreEqual(5.0, numberBox.Value,
+                    "Direct Value assignment must use the same maximum clamp as spin-button changes.");
+            });
+        }
+
+        [TestMethod]
+        public void NumberBox_DirectValue_NormalizesReversedRangeBeforeClamping()
+        {
+            RunOnStaThread(() =>
+            {
+                var numberBox = new Fluent.NumberBox
+                {
+                    Minimum = 10,
+                    Maximum = 0
+                };
+
+                numberBox.Value = 12;
+
+                Assert.AreEqual(10.0, numberBox.Value,
+                    "Direct Value assignment must normalize reversed Minimum/Maximum before clamping.");
+            });
+        }
+
+        [TestMethod]
         public void NumberBox_Click_ClampsToMaximum()
         {
             RunOnStaThread(() =>
