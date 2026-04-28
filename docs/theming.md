@@ -16,6 +16,8 @@ Design reference: **WinUI 3** resource key names and state behaviour. Fluence.Wp
 
 There must be **no accumulation** of extra theme dictionaries on repeated `Apply` calls (`DictionaryStabilityTests` enforces this). On a non-HighContrast theme swap, `ApplicationThemeManager` reloads `Brushes.xaml` and promotes those brush keys again so `DynamicResource` chains on `Freezable` values re-evaluate.
 
+`Typography.xaml` owns the Fluent type ramp through named `TextBlock` styles such as `BodyTextBlockStyle`, `BodyStrongTextBlockStyle`, and `TitleLargeTextBlockStyle`. `TextBlockExtensions.Typography` remains the compatibility API, but it resolves those styles instead of duplicating font metrics in code.
+
 ## Rules for XAML and code
 
 - Consume theme and accent brushes with **`DynamicResource`**, not `StaticResource`, so they track live updates.

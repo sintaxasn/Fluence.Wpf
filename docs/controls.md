@@ -99,6 +99,8 @@ When `IsClickable` is true:
 
 Supported values: `Caption`, `Body`, `BodyStrong`, `BodyLarge`, `Subtitle`, `Title`, `TitleLarge`, `Display` (see `Fluence.Wpf/Enums/FluentTypography.cs`).
 
+The attached property applies the corresponding named style from `Themes/Typography/Typography.xaml` (`BodyTextBlockStyle`, `TitleTextBlockStyle`, and so on). Keep type-ramp metrics in that dictionary so code, templates, and consumers share one source of truth.
+
 ## Tabs
 
 `TabControl` / `TabItem` receive WinUI 3 styling automatically via `Themes/Generic.xaml` - animated selection indicator, typography, and strip padding match the rest of the library.

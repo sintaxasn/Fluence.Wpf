@@ -37,8 +37,14 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     public static class TextBlockExtensions
     {
-        private static readonly FontFamily FluentTypographyFontFamily =
-            new FontFamily("Segoe UI Variable, Segoe UI");
+        private const string CaptionTextBlockStyleKey = "CaptionTextBlockStyle";
+        private const string BodyTextBlockStyleKey = "BodyTextBlockStyle";
+        private const string BodyStrongTextBlockStyleKey = "BodyStrongTextBlockStyle";
+        private const string BodyLargeTextBlockStyleKey = "BodyLargeTextBlockStyle";
+        private const string SubtitleTextBlockStyleKey = "SubtitleTextBlockStyle";
+        private const string TitleTextBlockStyleKey = "TitleTextBlockStyle";
+        private const string TitleLargeTextBlockStyleKey = "TitleLargeTextBlockStyle";
+        private const string DisplayTextBlockStyleKey = "DisplayTextBlockStyle";
 
         #region Typography
 
@@ -82,75 +88,39 @@ namespace Fluence.Wpf.Controls
 
         private static void ApplyTypography(System.Windows.Controls.TextBlock textBlock, FluentTypography typography)
         {
-            if (typography == FluentTypography.None)
+            var styleKey = GetTypographyStyleKey(typography);
+            if (styleKey == null)
             {
                 return;
             }
 
-            textBlock.LineStackingStrategy = LineStackingStrategy.BlockLineHeight;
-            textBlock.FontFamily = FluentTypographyFontFamily;
+            textBlock.SetResourceReference(FrameworkElement.StyleProperty, styleKey);
+        }
 
-            var formattingMode = TextFormattingMode.Display;
-
+        private static string GetTypographyStyleKey(FluentTypography typography)
+        {
             switch (typography)
             {
                 case FluentTypography.Caption:
-                    textBlock.FontSize = 12;
-                    textBlock.FontWeight = FontWeights.Normal;
-                    textBlock.LineHeight = 16;
-                    break;
+                    return CaptionTextBlockStyleKey;
                 case FluentTypography.Body:
-                    textBlock.FontSize = 14;
-                    textBlock.FontWeight = FontWeights.Normal;
-                    textBlock.LineHeight = 20;
-                    break;
+                    return BodyTextBlockStyleKey;
                 case FluentTypography.BodyStrong:
-                    textBlock.FontSize = 14;
-                    textBlock.FontWeight = FontWeights.SemiBold;
-                    textBlock.LineHeight = 20;
-                    break;
+                    return BodyStrongTextBlockStyleKey;
                 case FluentTypography.BodyLarge:
-                    textBlock.FontSize = 18;
-                    textBlock.FontWeight = FontWeights.Normal;
-                    textBlock.LineHeight = 24;
-                    break;
+                    return BodyLargeTextBlockStyleKey;
                 case FluentTypography.Subtitle:
-                    textBlock.FontSize = 20;
-                    textBlock.FontWeight = FontWeights.SemiBold;
-                    textBlock.LineHeight = 28;
-                    formattingMode = TextFormattingMode.Ideal;
-                    break;
+                    return SubtitleTextBlockStyleKey;
                 case FluentTypography.Title:
-                    textBlock.FontSize = 28;
-                    textBlock.FontWeight = FontWeights.SemiBold;
-                    textBlock.LineHeight = 36;
-                    formattingMode = TextFormattingMode.Ideal;
-                    break;
+                    return TitleTextBlockStyleKey;
                 case FluentTypography.TitleLarge:
-                    textBlock.FontSize = 40;
-                    textBlock.FontWeight = FontWeights.Normal;
-                    textBlock.LineHeight = 52;
-                    formattingMode = TextFormattingMode.Ideal;
-                    break;
+                    return TitleLargeTextBlockStyleKey;
                 case FluentTypography.Display:
-                    textBlock.FontSize = 68;
-                    textBlock.FontWeight = FontWeights.SemiBold;
-                    textBlock.LineHeight = 92;
-                    formattingMode = TextFormattingMode.Ideal;
-                    break;
+                    return DisplayTextBlockStyleKey;
                 case FluentTypography.None:
                 default:
-                    break;
+                    return null;
             }
-
-            ApplyTextRenderingPolicy(textBlock, formattingMode);
-        }
-
-        private static void ApplyTextRenderingPolicy(System.Windows.Controls.TextBlock textBlock, TextFormattingMode formattingMode)
-        {
-            TextOptions.SetTextFormattingMode(textBlock, formattingMode);
-            TextOptions.SetTextRenderingMode(textBlock, TextRenderingMode.ClearType);
-            TextOptions.SetTextHintingMode(textBlock, TextHintingMode.Fixed);
         }
 
         #endregion

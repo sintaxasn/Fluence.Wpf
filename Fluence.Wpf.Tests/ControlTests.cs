@@ -640,11 +640,25 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var textBlock = new TextBlock();
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
 
-                Fluent.TextBlockExtensions.SetTypography(textBlock, FluentTypography.BodyLarge);
+                try
+                {
+                    var textBlock = new TextBlock();
 
-                Assert.AreEqual(18.0, textBlock.FontSize);
+                    Fluent.TextBlockExtensions.SetTypography(textBlock, FluentTypography.BodyLarge);
+
+                    Assert.AreSame(application.TryFindResource("BodyLargeTextBlockStyle"), textBlock.Style);
+                    Assert.AreEqual(18.0, textBlock.FontSize);
+                }
+                finally
+                {
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
             });
         }
 
