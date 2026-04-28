@@ -1,0 +1,38 @@
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Samples.Inputs.SliderInput"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
+    <StackPanel>
+        <TextBlock Margin="0,0,0,6" Text="Default" />
+        <ui:Slider
+            Margin="0,0,0,14"
+            Maximum="100"
+            Minimum="0"
+            Value="35" />
+        <TextBlock Margin="0,0,0,6" Text="Snapped to ticks" />
+        <ui:Slider
+            Margin="0,0,0,14"
+            IsSnapToTickEnabled="True"
+            Maximum="10"
+            Minimum="0"
+            TickFrequency="1"
+            Value="4" />
+        <WrapPanel>
+            <ui:Slider
+                Height="140"
+                Margin="0,0,24,0"
+                Maximum="100"
+                Minimum="0"
+                Orientation="Vertical"
+                Value="40" />
+            <ui:Slider
+                Height="140"
+                IsEnabled="False"
+                Maximum="100"
+                Minimum="0"
+                Orientation="Vertical"
+                Value="25" />
+        </WrapPanel>
+    </StackPanel>
+</UserControl>

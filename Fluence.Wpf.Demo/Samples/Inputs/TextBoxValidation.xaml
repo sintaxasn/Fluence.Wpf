@@ -1,0 +1,35 @@
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Samples.Inputs.TextBoxValidation"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
+    xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf">
+    <StackPanel>
+        <ui:TextBox
+            Width="480"
+            Margin="0,0,0,12"
+            HorizontalAlignment="Left"
+            HelperText="Helper text can explain format before validation."
+            PlaceholderText="With helper text" />
+        <ui:TextBox
+            Width="480"
+            Margin="0,0,0,12"
+            HorizontalAlignment="Left"
+            Text="Valid input"
+            ValidationMessage="Looks good."
+            ValidationState="{x:Static uicore:ValidationState.Success}" />
+        <ui:TextBox
+            Width="480"
+            Margin="0,0,0,12"
+            HorizontalAlignment="Left"
+            Text="Check this value"
+            ValidationMessage="Review this before continuing."
+            ValidationState="{x:Static uicore:ValidationState.Warning}" />
+        <ui:TextBox
+            Width="480"
+            HorizontalAlignment="Left"
+            Text="Bad value"
+            ValidationMessage="Please fix this field."
+            ValidationState="{x:Static uicore:ValidationState.Error}" />
+    </StackPanel>
+</UserControl>
