@@ -1,0 +1,14 @@
+﻿<UserControl
+    x:Class="Fluence.Wpf.Demo.Samples.Buttons.ButtonAppearances"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
+    <StackPanel Orientation="Horizontal">
+        <ui:Button Margin="0,0,12,0" Content="Standard" />
+        <ui:Button
+            Margin="0,0,12,0"
+            Appearance="Accent"
+            Content="Accent" />
+        <ui:Button Appearance="Subtle" Content="Subtle" />
+    </StackPanel>
+</UserControl>

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 using System;
+using System.IO;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Windows;
@@ -359,6 +360,93 @@ namespace Fluence.Wpf.Tests
                     }
                 }
             });
+        }
+
+        [TestMethod]
+        public void MainWindow_NavigationPane_UsesApprovedCategoryHeaders()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                MainWindow window = null;
+                try
+                {
+                    window = CreateShownMainWindow();
+                    var nav = GetDemoNav(window);
+
+                    var headers = new System.Collections.Generic.List<string>();
+                    foreach (var obj in nav.Items)
+                    {
+                        var header = obj as NavigationViewItemHeader;
+                        if (header != null)
+                        {
+                            headers.Add(header.Content as string);
+                        }
+                    }
+
+                    CollectionAssert.AreEqual(
+                        new[]
+                        {
+                            "Fundamentals",
+                            "Basic input",
+                            "Collections",
+                            "Navigation",
+                            "Status and info",
+                            "Styles",
+                            "Windowing"
+                        },
+                        headers,
+                        "The demo pane should be organized as category groups before per-control pages are rebuilt.");
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void DemoSourceLinks_ResolveLocalAndGitHubUris()
+        {
+            var settingsType = typeof(MainWindow).Assembly.GetType("Fluence.Wpf.Demo.DemoSourceLinkSettings");
+            Assert.IsNotNull(settingsType, "Demo must expose source-link settings for local and GitHub sample links.");
+
+            var localMethod = settingsType.GetMethod("GetLocalSourceUri", BindingFlags.Public | BindingFlags.Static);
+            var githubMethod = settingsType.GetMethod("GetGitHubSourceUri", BindingFlags.Public | BindingFlags.Static);
+            Assert.IsNotNull(localMethod, "Local source-link resolver must exist.");
+            Assert.IsNotNull(githubMethod, "GitHub source-link resolver must exist.");
+
+            var samplePath = "Buttons/ButtonAppearances.xaml";
+            var local = localMethod.Invoke(null, new object[] { samplePath }) as Uri;
+            var github = githubMethod.Invoke(null, new object[] { samplePath }) as Uri;
+
+            Assert.IsNotNull(local, "Local resolver must return a URI.");
+            Assert.IsNotNull(github, "GitHub resolver must return a URI.");
+            Assert.AreEqual("pack://siteoforigin:,,,/Samples/Buttons/ButtonAppearances.xaml", local.AbsoluteUri);
+            Assert.AreEqual(
+                "https://github.com/sintaxasn/Fluence.Wpf/blob/main/Fluence.Wpf.Demo/Samples/Buttons/ButtonAppearances.xaml",
+                github.AbsoluteUri);
+        }
+
+        [TestMethod]
+        public void DemoSourceSamples_CopyToOutput()
+        {
+            var outputDirectory = Path.GetDirectoryName(typeof(MainWindow).Assembly.Location);
+            var xaml = Path.Combine(outputDirectory, "Samples", "Buttons", "ButtonAppearances.xaml");
+            var codeBehind = Path.Combine(outputDirectory, "Samples", "Buttons", "ButtonAppearances.xaml.cs");
+
+            Assert.IsTrue(File.Exists(xaml), "Sample XAML must be copied beside the demo assembly.");
+            Assert.IsTrue(File.Exists(codeBehind), "Sample code-behind must be copied beside the demo assembly.");
         }
 
         // WI-1 Paradigm A: filter must hide NavigationViewItemHeaders whose section becomes empty.

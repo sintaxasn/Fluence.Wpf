@@ -23,4 +23,10 @@
     <Resource Include="Resources\BannerLight.png" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Page Remove="Samples\**\*.xaml" />
+    <Compile Remove="Samples\**\*.xaml.cs" />
+    <Content Include="Samples\**\*.xaml;Samples\**\*.xaml.cs" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
 </Project>

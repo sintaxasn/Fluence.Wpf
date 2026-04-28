@@ -57,6 +57,7 @@ namespace Fluence.Wpf.Demo
             Title = GalleryWindowTitle;
             SystemThemeWatcher.Watch(this);
             ApplicationThemeManager.Apply(ApplicationTheme.Auto, BackdropType.Mica, true);
+            PopulateNavigation();
 
             // Seed user-intent from XAML defaults so the first toggle does not reset to
             // an uninitialised value.
@@ -88,6 +89,43 @@ namespace Fluence.Wpf.Demo
             }
 
             ApplyTitleBarContentVisibility();
+        }
+
+        private void PopulateNavigation()
+        {
+            if (DemoNav == null)
+            {
+                return;
+            }
+
+            DemoNav.Items.Clear();
+
+            var currentCategory = string.Empty;
+            foreach (var item in DemoNavigationCatalog.Items)
+            {
+                if (!string.Equals(currentCategory, item.Category, StringComparison.Ordinal))
+                {
+                    currentCategory = item.Category;
+                    if (!string.IsNullOrEmpty(currentCategory))
+                    {
+                        DemoNav.Items.Add(new NavigationViewItemHeader { Content = currentCategory });
+                    }
+                }
+
+                var navItem = new NavigationViewItem
+                {
+                    Content = item.Title,
+                    Tag = item.Tag,
+                    Icon = new FontIcon { Glyph = item.Glyph, IconFontSize = 20 },
+                    PageContent = item.CreatePage()
+                };
+
+                DemoNav.Items.Add(navItem);
+                if (item.IsDefault)
+                {
+                    DemoNav.SelectedItem = navItem;
+                }
+            }
         }
 
         /// <summary>
