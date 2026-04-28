@@ -34,6 +34,13 @@ namespace Fluence.Wpf.Demo.Pages
         public GalleryButtonsPage()
         {
             InitializeComponent();
+
+            ButtonAppearancesSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Buttons/ButtonAppearances.xaml");
+            ButtonIconsSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Buttons/ButtonIcons.xaml");
+            HyperlinkButtonsSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Buttons/HyperlinkButtons.xaml");
+            DropDownButtonsSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Buttons/DropDownButtons.xaml");
+            SplitButtonsSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Buttons/SplitButtons.xaml");
+            ToggleAndRepeatButtonsSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Buttons/ToggleAndRepeatButtons.xaml");
         }
     }
 }

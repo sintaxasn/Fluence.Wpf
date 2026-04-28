@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 using System;
+using System.IO.Packaging;
 
 namespace Fluence.Wpf.Demo
 {
@@ -44,7 +45,9 @@ namespace Fluence.Wpf.Demo
 
         public static Uri GetLocalSourceUri(string samplePath)
         {
-            return new Uri("pack://siteoforigin:,,,/Samples/" + NormalizeSamplePath(samplePath), UriKind.Absolute);
+            return PackUriHelper.Create(
+                new Uri("siteoforigin:///", UriKind.Absolute),
+                new Uri("/Samples/" + NormalizeSamplePath(samplePath), UriKind.Relative));
         }
 
         public static Uri GetGitHubSourceUri(string samplePath)

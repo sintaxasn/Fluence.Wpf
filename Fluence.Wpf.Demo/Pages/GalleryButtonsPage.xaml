@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
     x:Class="Fluence.Wpf.Demo.Pages.GalleryButtonsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -6,193 +6,289 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
     xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
-    d:DesignHeight="800"
+    d:DesignHeight="900"
     d:DesignWidth="900"
     mc:Ignorable="d">
     <ui:SmoothScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="24" HorizontalAlignment="Stretch">
             <TextBlock
                 Margin="0,0,0,4"
+                ui:TextBlockExtensions.Typography="Title"
+                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                Text="Buttons" />
+            <TextBlock
+                Margin="0,0,0,24"
+                Style="{StaticResource SectionDescriptionStyle}"
+                Text="Buttons initiate actions, open menus, navigate as links, or hold a checked state." />
+
+            <TextBlock
+                Margin="0,0,0,4"
                 Style="{StaticResource SectionHeaderStyle}"
-                Text="Button Appearances" />
-            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Standard, Accent, and Subtle button variants with enabled and disabled states." />
+                Text="Button" />
+            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Use Standard for normal actions, Accent for the primary action, and Subtle for low-emphasis commands." />
             <ui:Card
                 Margin="0,0,0,16"
                 Padding="16"
                 Variant="{x:Static uicore:CardVariant.Default}">
                 <StackPanel>
-                    <StackPanel Margin="0,0,0,12" Orientation="Horizontal">
-                        <ui:Button Margin="0,0,12,0" Content="Standard" />
+                    <WrapPanel Margin="0,0,0,12">
+                        <ui:Button Margin="0,0,8,8" Content="Standard" />
                         <ui:Button
-                            Margin="0,0,12,0"
+                            Margin="0,0,8,8"
                             Appearance="Accent"
                             Content="Accent" />
-                        <ui:Button Appearance="Subtle" Content="Subtle" />
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal">
                         <ui:Button
-                            Margin="0,0,12,0"
+                            Margin="0,0,8,8"
+                            Appearance="Subtle"
+                            Content="Subtle" />
+                        <ui:Button
+                            Margin="0,0,8,8"
                             Content="Standard"
                             IsEnabled="False" />
                         <ui:Button
-                            Margin="0,0,12,0"
+                            Margin="0,0,8,8"
                             Appearance="Accent"
                             Content="Accent"
                             IsEnabled="False" />
                         <ui:Button
+                            Margin="0,0,8,8"
                             Appearance="Subtle"
                             Content="Subtle"
                             IsEnabled="False" />
-                    </StackPanel>
-                    <TextBlock Style="{StaticResource StateLabelStyle}" Text="Second row: disabled variants" />
+                    </WrapPanel>
+                    <ui:HyperlinkButton
+                        x:Name="ButtonAppearancesSourceLink"
+                        HorizontalAlignment="Left"
+                        Content="Source" />
                 </StackPanel>
             </ui:Card>
 
             <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="Icon Placement" />
-            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Buttons with leading or trailing icons." />
-            <ui:Card
-                Margin="0,0,0,16"
-                Padding="16"
-                Variant="{x:Static uicore:CardVariant.Default}">
-                <StackPanel Orientation="Horizontal">
-                    <ui:Button Margin="0,0,12,0" Content="Icon Left">
-                        <ui:Button.Icon>
-                            <ui:FontIcon Glyph="&#xE774;" IconFontSize="14" />
-                        </ui:Button.Icon>
-                    </ui:Button>
-                    <ui:Button Content="Icon Right" IconPlacement="Right">
-                        <ui:Button.Icon>
-                            <ui:FontIcon Glyph="&#xE8D6;" IconFontSize="14" />
-                        </ui:Button.Icon>
-                    </ui:Button>
-                </StackPanel>
-            </ui:Card>
-
-            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="HyperlinkButton" />
-            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="A button styled as a hyperlink, with optional NavigateUri." />
+            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Place icons before or after text when the symbol helps the action scan faster." />
             <ui:Card
                 Margin="0,0,0,16"
                 Padding="16"
                 Variant="{x:Static uicore:CardVariant.Default}">
                 <StackPanel>
-                    <StackPanel Margin="0,0,0,12" Orientation="Horizontal">
-                        <ui:HyperlinkButton
-                            Margin="0,0,16,0"
-                            Content="Open GitHub"
-                            NavigateUri="https://github.com" />
-                        <ui:HyperlinkButton Margin="0,0,16,0" Content="No URI (styled)" />
-                        <ui:HyperlinkButton Content="Disabled" IsEnabled="False" />
-                    </StackPanel>
-                    <ui:HyperlinkButton Content="With Icon" NavigateUri="https://github.com">
-                        <ui:HyperlinkButton.Icon>
-                            <ui:FontIcon Glyph="&#xE721;" IconFontSize="14" />
-                        </ui:HyperlinkButton.Icon>
-                    </ui:HyperlinkButton>
+                    <WrapPanel Margin="0,0,0,12">
+                        <ui:Button Margin="0,0,8,8" Content="Icon Left">
+                            <ui:Button.Icon>
+                                <ui:FontIcon Glyph="&#xE774;" IconFontSize="14" />
+                            </ui:Button.Icon>
+                        </ui:Button>
+                        <ui:Button
+                            Margin="0,0,8,8"
+                            Content="Icon Right"
+                            IconPlacement="Right">
+                            <ui:Button.Icon>
+                                <ui:FontIcon Glyph="&#xE8D6;" IconFontSize="14" />
+                            </ui:Button.Icon>
+                        </ui:Button>
+                        <ui:Button
+                            Margin="0,0,8,8"
+                            Appearance="Subtle"
+                            Content="Refresh">
+                            <ui:Button.Icon>
+                                <ui:FontIcon Glyph="&#xE72C;" IconFontSize="14" />
+                            </ui:Button.Icon>
+                        </ui:Button>
+                    </WrapPanel>
+                    <ui:HyperlinkButton
+                        x:Name="ButtonIconsSourceLink"
+                        HorizontalAlignment="Left"
+                        Content="Source" />
                 </StackPanel>
             </ui:Card>
 
-            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="DropDownButton" />
-            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="A toggle button that opens a flyout popup when checked. Set the Flyout property to any content; StaysOpen=false so clicking outside closes the popup and resets IsChecked." />
+            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="HyperlinkButton" />
+            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Use HyperlinkButton for lightweight navigation and related secondary actions." />
             <ui:Card
                 Margin="0,0,0,16"
                 Padding="16"
                 Variant="{x:Static uicore:CardVariant.Default}">
-                <StackPanel Orientation="Horizontal">
-                    <!--  Menu-style flyout (Subtle buttons stacked)  -->
-                    <ui:DropDownButton Margin="0,0,12,0" Content="Options">
-                        <ui:DropDownButton.Flyout>
-                            <StackPanel MinWidth="180" Margin="4">
-                                <ui:Button
-                                    Margin="0,0,0,2"
-                                    HorizontalAlignment="Stretch"
-                                    HorizontalContentAlignment="Left"
-                                    Appearance="Subtle"
-                                    Content="Open…" />
-                                <ui:Button
-                                    Margin="0,0,0,2"
-                                    HorizontalAlignment="Stretch"
-                                    HorizontalContentAlignment="Left"
-                                    Appearance="Subtle"
-                                    Content="Save" />
-                                <ui:Button
-                                    HorizontalAlignment="Stretch"
-                                    HorizontalContentAlignment="Left"
-                                    Appearance="Subtle"
-                                    Content="Save As…" />
-                            </StackPanel>
-                        </ui:DropDownButton.Flyout>
-                    </ui:DropDownButton>
-                    <!--  Free-form flyout content  -->
-                    <ui:DropDownButton Margin="0,0,12,0" Content="Details">
-                        <ui:DropDownButton.Flyout>
-                            <StackPanel MaxWidth="260" Margin="12">
-                                <TextBlock
-                                    Margin="0,0,0,6"
-                                    FontWeight="SemiBold"
-                                    Text="Flyout content is arbitrary" />
-                                <TextBlock
-                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                    Text="Put any WPF content here - plain text, panels, custom controls. The popup closes when the user clicks outside."
-                                    TextWrapping="Wrap" />
-                            </StackPanel>
-                        </ui:DropDownButton.Flyout>
-                    </ui:DropDownButton>
-                    <ui:DropDownButton Content="Disabled" IsEnabled="False">
-                        <ui:DropDownButton.Flyout>
-                            <TextBlock Margin="12" Text="(unreachable while disabled)" />
-                        </ui:DropDownButton.Flyout>
-                    </ui:DropDownButton>
+                <StackPanel>
+                    <WrapPanel Margin="0,0,0,12">
+                        <ui:HyperlinkButton
+                            Margin="0,0,16,8"
+                            Content="Documentation"
+                            NavigateUri="https://github.com/sintaxasn/Fluence.Wpf" />
+                        <ui:HyperlinkButton
+                            Margin="0,0,16,8"
+                            Content="Release notes"
+                            NavigateUri="https://github.com/sintaxasn/Fluence.Wpf/releases" />
+                        <ui:HyperlinkButton
+                            Margin="0,0,16,8"
+                            Content="With icon"
+                            NavigateUri="https://github.com/sintaxasn/Fluence.Wpf">
+                            <ui:HyperlinkButton.Icon>
+                                <ui:FontIcon Glyph="&#xE71B;" IconFontSize="14" />
+                            </ui:HyperlinkButton.Icon>
+                        </ui:HyperlinkButton>
+                        <ui:HyperlinkButton
+                            Margin="0,0,16,8"
+                            Content="Disabled"
+                            IsEnabled="False" />
+                    </WrapPanel>
+                    <ui:HyperlinkButton
+                        x:Name="HyperlinkButtonsSourceLink"
+                        HorizontalAlignment="Left"
+                        Content="Source" />
+                </StackPanel>
+            </ui:Card>
+
+            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="DropDownButton" />
+            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Use DropDownButton when all available actions live in the flyout." />
+            <ui:Card
+                Margin="0,0,0,16"
+                Padding="16"
+                Variant="{x:Static uicore:CardVariant.Default}">
+                <StackPanel>
+                    <WrapPanel Margin="0,0,0,12">
+                        <ui:DropDownButton Margin="0,0,8,8" Content="New">
+                            <ui:DropDownButton.Flyout>
+                                <StackPanel MinWidth="180" Margin="4">
+                                    <ui:Button
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Left"
+                                        Appearance="Subtle"
+                                        Content="Document" />
+                                    <ui:Button
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Left"
+                                        Appearance="Subtle"
+                                        Content="Spreadsheet" />
+                                    <ui:Button
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Left"
+                                        Appearance="Subtle"
+                                        Content="Folder" />
+                                </StackPanel>
+                            </ui:DropDownButton.Flyout>
+                        </ui:DropDownButton>
+                        <ui:DropDownButton Margin="0,0,8,8" Content="Details">
+                            <ui:DropDownButton.Flyout>
+                                <StackPanel MaxWidth="260" Margin="12">
+                                    <TextBlock
+                                        Margin="0,0,0,6"
+                                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                        Text="Project status" />
+                                    <TextBlock
+                                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                        Text="Flyout content can be any WPF content."
+                                        TextWrapping="Wrap" />
+                                </StackPanel>
+                            </ui:DropDownButton.Flyout>
+                        </ui:DropDownButton>
+                        <ui:DropDownButton
+                            Margin="0,0,8,8"
+                            Content="Disabled"
+                            IsEnabled="False">
+                            <ui:DropDownButton.Flyout>
+                                <TextBlock Margin="12" Text="Unavailable" />
+                            </ui:DropDownButton.Flyout>
+                        </ui:DropDownButton>
+                    </WrapPanel>
+                    <ui:HyperlinkButton
+                        x:Name="DropDownButtonsSourceLink"
+                        HorizontalAlignment="Left"
+                        Content="Source" />
                 </StackPanel>
             </ui:Card>
 
             <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="SplitButton" />
-            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="A two-half button: the left half fires a primary Click / Command, the right chevron half opens a flyout of alternate actions. Both halves share a single rounded outline bisected by a 1-pixel divider." />
+            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Use SplitButton when there is one default action plus alternate actions in the flyout." />
+            <ui:Card
+                Margin="0,0,0,16"
+                Padding="16"
+                Variant="{x:Static uicore:CardVariant.Default}">
+                <StackPanel>
+                    <WrapPanel Margin="0,0,0,12">
+                        <ui:SplitButton Margin="0,0,8,8" Content="Save">
+                            <ui:SplitButton.Flyout>
+                                <StackPanel MinWidth="180" Margin="4">
+                                    <ui:Button
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Left"
+                                        Appearance="Subtle"
+                                        Content="Save as" />
+                                    <ui:Button
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Left"
+                                        Appearance="Subtle"
+                                        Content="Save a copy" />
+                                    <ui:Button
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Left"
+                                        Appearance="Subtle"
+                                        Content="Export" />
+                                </StackPanel>
+                            </ui:SplitButton.Flyout>
+                        </ui:SplitButton>
+                        <ui:SplitButton
+                            Margin="0,0,8,8"
+                            Appearance="Accent"
+                            Content="Publish">
+                            <ui:SplitButton.Flyout>
+                                <StackPanel MinWidth="180" Margin="4">
+                                    <ui:Button
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Left"
+                                        Appearance="Subtle"
+                                        Content="Publish draft" />
+                                    <ui:Button
+                                        HorizontalAlignment="Stretch"
+                                        HorizontalContentAlignment="Left"
+                                        Appearance="Subtle"
+                                        Content="Schedule publish" />
+                                </StackPanel>
+                            </ui:SplitButton.Flyout>
+                        </ui:SplitButton>
+                        <ui:SplitButton
+                            Margin="0,0,8,8"
+                            Content="Disabled"
+                            IsEnabled="False">
+                            <ui:SplitButton.Flyout>
+                                <TextBlock Margin="12" Text="Unavailable" />
+                            </ui:SplitButton.Flyout>
+                        </ui:SplitButton>
+                    </WrapPanel>
+                    <ui:HyperlinkButton
+                        x:Name="SplitButtonsSourceLink"
+                        HorizontalAlignment="Left"
+                        Content="Source" />
+                </StackPanel>
+            </ui:Card>
+
+            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="ToggleButton and RepeatButton" />
+            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="ToggleButton holds a checked state. RepeatButton raises Click repeatedly while pressed." />
             <ui:Card Padding="16" Variant="{x:Static uicore:CardVariant.Default}">
-                <StackPanel Orientation="Horizontal">
-                    <!--  Menu-style flyout - primary action + "Save As…" alternate  -->
-                    <ui:SplitButton Margin="0,0,12,0" Content="Save">
-                        <ui:SplitButton.Flyout>
-                            <StackPanel MinWidth="180" Margin="4">
-                                <ui:Button
-                                    Margin="0,0,0,2"
-                                    HorizontalAlignment="Stretch"
-                                    HorizontalContentAlignment="Left"
-                                    Appearance="Subtle"
-                                    Content="Save As…" />
-                                <ui:Button
-                                    Margin="0,0,0,2"
-                                    HorizontalAlignment="Stretch"
-                                    HorizontalContentAlignment="Left"
-                                    Appearance="Subtle"
-                                    Content="Save a Copy…" />
-                                <ui:Button
-                                    HorizontalAlignment="Stretch"
-                                    HorizontalContentAlignment="Left"
-                                    Appearance="Subtle"
-                                    Content="Export…" />
-                            </StackPanel>
-                        </ui:SplitButton.Flyout>
-                    </ui:SplitButton>
-                    <!--  Free-form flyout content  -->
-                    <ui:SplitButton Margin="0,0,12,0" Content="Paste">
-                        <ui:SplitButton.Flyout>
-                            <StackPanel MaxWidth="260" Margin="12">
-                                <TextBlock
-                                    Margin="0,0,0,6"
-                                    FontWeight="SemiBold"
-                                    Text="Paste Special" />
-                                <TextBlock
-                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                    Text="Clicking the left half pastes as-is; the chevron opens alternate paste modes. Flyout content is arbitrary WPF."
-                                    TextWrapping="Wrap" />
-                            </StackPanel>
-                        </ui:SplitButton.Flyout>
-                    </ui:SplitButton>
-                    <ui:SplitButton Content="Disabled" IsEnabled="False">
-                        <ui:SplitButton.Flyout>
-                            <TextBlock Margin="12" Text="(unreachable while disabled)" />
-                        </ui:SplitButton.Flyout>
-                    </ui:SplitButton>
+                <StackPanel>
+                    <WrapPanel Margin="0,0,0,12">
+                        <ui:ToggleButton
+                            Margin="0,0,8,8"
+                            Content="Bold"
+                            IsChecked="True" />
+                        <ui:ToggleButton
+                            Margin="0,0,8,8"
+                            Appearance="Accent"
+                            Content="Pinned"
+                            IsChecked="True" />
+                        <ui:ToggleButton
+                            Margin="0,0,8,8"
+                            Content="Disabled"
+                            IsEnabled="False" />
+                        <ui:RepeatButton
+                            Margin="0,0,8,8"
+                            Content="Hold to repeat" />
+                        <ui:RepeatButton
+                            Margin="0,0,8,8"
+                            Appearance="Accent"
+                            Content="Accent repeat" />
+                    </WrapPanel>
+                    <ui:HyperlinkButton
+                        x:Name="ToggleAndRepeatButtonsSourceLink"
+                        HorizontalAlignment="Left"
+                        Content="Source" />
                 </StackPanel>
             </ui:Card>
         </StackPanel>

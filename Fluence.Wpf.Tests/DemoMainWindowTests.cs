@@ -442,11 +442,94 @@ namespace Fluence.Wpf.Tests
         public void DemoSourceSamples_CopyToOutput()
         {
             var outputDirectory = Path.GetDirectoryName(typeof(MainWindow).Assembly.Location);
-            var xaml = Path.Combine(outputDirectory, "Samples", "Buttons", "ButtonAppearances.xaml");
-            var codeBehind = Path.Combine(outputDirectory, "Samples", "Buttons", "ButtonAppearances.xaml.cs");
+            var samplePaths = new[]
+            {
+                "ButtonAppearances",
+                "ButtonIcons",
+                "HyperlinkButtons",
+                "DropDownButtons",
+                "SplitButtons",
+                "ToggleAndRepeatButtons"
+            };
 
-            Assert.IsTrue(File.Exists(xaml), "Sample XAML must be copied beside the demo assembly.");
-            Assert.IsTrue(File.Exists(codeBehind), "Sample code-behind must be copied beside the demo assembly.");
+            foreach (var samplePath in samplePaths)
+            {
+                var xaml = Path.Combine(outputDirectory, "Samples", "Buttons", samplePath + ".xaml");
+                var codeBehind = Path.Combine(outputDirectory, "Samples", "Buttons", samplePath + ".xaml.cs");
+
+                Assert.IsTrue(File.Exists(xaml), "Sample XAML must be copied beside the demo assembly: " + samplePath);
+                Assert.IsTrue(File.Exists(codeBehind), "Sample code-behind must be copied beside the demo assembly: " + samplePath);
+            }
+        }
+
+        [TestMethod]
+        public void ButtonsPage_ContainsSourceLinksForEachExample()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                try
+                {
+                    var page = new GalleryButtonsPage();
+                    var host = new System.Windows.Controls.Grid();
+                    host.Children.Add(page);
+                    var window = new Window
+                    {
+                        Left = -20000,
+                        Top = -20000,
+                        Width = 1040,
+                        Height = 720,
+                        WindowStartupLocation = WindowStartupLocation.Manual,
+                        ShowInTaskbar = false,
+                        Content = host
+                    };
+
+                    try
+                    {
+                        window.Show();
+                        Drain(window.Dispatcher);
+                        window.UpdateLayout();
+                        Drain(window.Dispatcher);
+
+                        var expected = new[]
+                        {
+                            DemoSourceLinkSettings.GetSourceUri("Buttons/ButtonAppearances.xaml").AbsoluteUri,
+                            DemoSourceLinkSettings.GetSourceUri("Buttons/ButtonIcons.xaml").AbsoluteUri,
+                            DemoSourceLinkSettings.GetSourceUri("Buttons/HyperlinkButtons.xaml").AbsoluteUri,
+                            DemoSourceLinkSettings.GetSourceUri("Buttons/DropDownButtons.xaml").AbsoluteUri,
+                            DemoSourceLinkSettings.GetSourceUri("Buttons/SplitButtons.xaml").AbsoluteUri,
+                            DemoSourceLinkSettings.GetSourceUri("Buttons/ToggleAndRepeatButtons.xaml").AbsoluteUri
+                        };
+
+                        var actual = new System.Collections.Generic.List<string>();
+                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(page))
+                        {
+                            if (link.NavigateUri != null && link.Content as string == "Source")
+                            {
+                                actual.Add(link.NavigateUri.AbsoluteUri);
+                            }
+                        }
+
+                        CollectionAssert.AreEquivalent(
+                            expected,
+                            actual,
+                            "Each Buttons page example must expose a Source link to its sample XAML.");
+                    }
+                    finally
+                    {
+                        window.Close();
+                    }
+                }
+                finally
+                {
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
         }
 
         // WI-1 Paradigm A: filter must hide NavigationViewItemHeaders whose section becomes empty.

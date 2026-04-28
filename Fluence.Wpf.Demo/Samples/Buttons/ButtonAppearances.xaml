@@ -1,14 +1,31 @@
-﻿<UserControl
+<UserControl
     x:Class="Fluence.Wpf.Demo.Samples.Buttons.ButtonAppearances"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
-    <StackPanel Orientation="Horizontal">
-        <ui:Button Margin="0,0,12,0" Content="Standard" />
+    <WrapPanel>
+        <ui:Button Margin="0,0,8,8" Content="Standard" />
         <ui:Button
-            Margin="0,0,12,0"
+            Margin="0,0,8,8"
             Appearance="Accent"
             Content="Accent" />
-        <ui:Button Appearance="Subtle" Content="Subtle" />
-    </StackPanel>
+        <ui:Button
+            Margin="0,0,8,8"
+            Appearance="Subtle"
+            Content="Subtle" />
+        <ui:Button
+            Margin="0,0,8,8"
+            Content="Standard"
+            IsEnabled="False" />
+        <ui:Button
+            Margin="0,0,8,8"
+            Appearance="Accent"
+            Content="Accent"
+            IsEnabled="False" />
+        <ui:Button
+            Margin="0,0,8,8"
+            Appearance="Subtle"
+            Content="Subtle"
+            IsEnabled="False" />
+    </WrapPanel>
 </UserControl>
