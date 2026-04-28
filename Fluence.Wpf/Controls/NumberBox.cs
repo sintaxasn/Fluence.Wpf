@@ -108,7 +108,8 @@ namespace Fluence.Wpf.Controls
                 new FrameworkPropertyMetadata(
                     0.0,
                     FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
-                    OnValuePropertyChanged));
+                    OnValuePropertyChanged,
+                    CoerceValueCallback));
 
         /// <summary>
         /// Identifies the <see cref="Minimum"/> dependency property.
@@ -444,33 +445,31 @@ namespace Fluence.Wpf.Controls
             UpdateTextFromValue();
         }
 
-        private static void OnValuePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static object CoerceValueCallback(DependencyObject d, object baseValue)
         {
             var box = (NumberBox)d;
-            double oldValue = (double)e.OldValue;
-            double newValue = (double)e.NewValue;
-            double clamped = box.ClampValue(newValue);
-            if (!double.IsNaN(clamped) && !double.IsInfinity(clamped))
-            {
-                if (!AreClose(clamped, newValue))
-                {
-                    box.SetCurrentValue(ValueProperty, clamped);
-                    return;
-                }
-            }
+            double v = (double)baseValue;
+            if (double.IsNaN(v) || double.IsInfinity(v))
+                return baseValue;
+            double min = box.Minimum;
+            double max = box.Maximum;
+            if (v < min) return min;
+            if (v > max) return max;
+            return baseValue;
+        }
 
-            box.OnValueChanged(oldValue, clamped);
+        private static void OnValuePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            // Value is already clamped by CoerceValueCallback; OldValue/NewValue are both committed values.
+            var box = (NumberBox)d;
+            box.OnValueChanged((double)e.OldValue, (double)e.NewValue);
             box.UpdateTextFromValue();
         }
 
         private static void OnMinMaxPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var box = (NumberBox)d;
-            double clamped = box.ClampValue(box.Value);
-            if (!AreClose(clamped, box.Value))
-            {
-                box.SetCurrentValue(ValueProperty, clamped);
-            }
+            // Re-coerce Value so it stays within the new bounds.
+            ((NumberBox)d).CoerceValue(ValueProperty);
         }
 
         private static void OnTextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

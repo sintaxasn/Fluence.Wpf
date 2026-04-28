@@ -194,38 +194,41 @@
         </Setter>
     </Style>
 
-    <Style x:Key="PageTitleStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+    <Style
+        x:Key="PageTitleStyle"
+        BasedOn="{StaticResource {x:Type TextBlock}}"
+        TargetType="{x:Type TextBlock}">
         <Setter Property="FontSize" Value="28" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="Margin" Value="0,0,0,36" />
         <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
     </Style>
 
-    <Style x:Key="SectionHeaderStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+    <Style
+        x:Key="SectionHeaderStyle"
+        BasedOn="{StaticResource {x:Type TextBlock}}"
+        TargetType="{x:Type TextBlock}">
         <Setter Property="FontSize" Value="20" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="Margin" Value="0,36,0,4" />
         <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
     </Style>
 
-    <Style x:Key="SectionDescriptionStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
-        <Setter Property="FontSize" Value="14" />
+    <Style
+        x:Key="SectionDescriptionStyle"
+        BasedOn="{StaticResource {x:Type TextBlock}}"
+        TargetType="{x:Type TextBlock}">
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
         <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="Margin" Value="0,0,0,12" />
     </Style>
 
-    <Style x:Key="StateLabelStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+    <Style
+        x:Key="StateLabelStyle"
+        BasedOn="{StaticResource {x:Type TextBlock}}"
+        TargetType="{x:Type TextBlock}">
         <Setter Property="FontSize" Value="12" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorTertiaryBrush}" />
         <Setter Property="Margin" Value="0,4,0,0" />
@@ -301,43 +304,51 @@
     </Style>
 
     <!--  Swatch section header (category name inside the Colors tab)  -->
-    <Style x:Key="SwatchSectionHeaderStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+    <Style
+        x:Key="SwatchSectionHeaderStyle"
+        BasedOn="{StaticResource {x:Type TextBlock}}"
+        TargetType="{x:Type TextBlock}">
         <Setter Property="FontSize" Value="20" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="Margin" Value="0,0,0,4" />
         <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
     </Style>
 
     <!--  Swatch section description  -->
-    <Style x:Key="SwatchSectionDescStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+    <Style
+        x:Key="SwatchSectionDescStyle"
+        BasedOn="{StaticResource {x:Type TextBlock}}"
+        TargetType="{x:Type TextBlock}">
         <Setter Property="FontSize" Value="13" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
         <Setter Property="Margin" Value="0,0,0,12" />
     </Style>
 
     <!--  Swatch cell: brush name label  -->
-    <Style x:Key="SwatchNameStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+    <Style
+        x:Key="SwatchNameStyle"
+        BasedOn="{StaticResource {x:Type TextBlock}}"
+        TargetType="{x:Type TextBlock}">
         <Setter Property="FontSize" Value="13" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
 
     <!--  Swatch cell: usage description  -->
-    <Style x:Key="SwatchUsageStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+    <Style
+        x:Key="SwatchUsageStyle"
+        BasedOn="{StaticResource {x:Type TextBlock}}"
+        TargetType="{x:Type TextBlock}">
         <Setter Property="FontSize" Value="11" />
         <Setter Property="Opacity" Value="0.7" />
     </Style>
 
     <!--  Swatch cell: resource key label at bottom  -->
-    <Style x:Key="SwatchKeyStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+    <Style
+        x:Key="SwatchKeyStyle"
+        BasedOn="{StaticResource {x:Type TextBlock}}"
+        TargetType="{x:Type TextBlock}">
         <Setter Property="FontSize" Value="11" />
         <Setter Property="Opacity" Value="0.6" />
         <Setter Property="Margin" Value="0,8,0,0" />

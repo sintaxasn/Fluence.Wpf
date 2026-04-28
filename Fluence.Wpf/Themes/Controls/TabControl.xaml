@@ -144,7 +144,7 @@
                             Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"
                             BorderBrush="{DynamicResource CardStrokeColorDefaultSolidBrush}"
                             BorderThickness="1"
-                            CornerRadius="8"
+                            CornerRadius="{DynamicResource OverlayCornerRadius}"
                             KeyboardNavigation.DirectionalNavigation="Contained"
                             KeyboardNavigation.TabIndex="2"
                             KeyboardNavigation.TabNavigation="Local">

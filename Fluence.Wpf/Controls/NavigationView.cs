@@ -664,22 +664,24 @@ namespace Fluence.Wpf.Controls
             var ease = new QuarticEase { EasingMode = EasingMode.EaseOut };
             var arriveDelay = TimeSpan.FromMilliseconds(83);
 
-            string scaleProp = topMode
-                ? "RenderTransform.Children[0].ScaleX"
-                : "RenderTransform.Children[0].ScaleY";
-            string translateProp = topMode
-                ? "RenderTransform.Children[1].X"
-                : "RenderTransform.Children[1].Y";
+            // Use typed property paths targeting the actual transform objects so layout
+            // changes that reorder the TransformGroup children cannot silently break animations.
+            var group = (TransformGroup)_selectionIndicator.RenderTransform;
+            var scale = (ScaleTransform)group.Children[0];
+            var translate = (TranslateTransform)group.Children[1];
+
+            DependencyProperty scaleProp = topMode ? ScaleTransform.ScaleXProperty : ScaleTransform.ScaleYProperty;
+            DependencyProperty translateProp = topMode ? TranslateTransform.XProperty : TranslateTransform.YProperty;
 
             var sb = new Storyboard();
 
             var scaleDown = new DoubleAnimation(1.0, 0.0, departDuration) { EasingFunction = ease };
-            Storyboard.SetTarget(scaleDown, _selectionIndicator);
+            Storyboard.SetTarget(scaleDown, scale);
             Storyboard.SetTargetProperty(scaleDown, new PropertyPath(scaleProp));
             sb.Children.Add(scaleDown);
 
             var slideDepart = new DoubleAnimation(fromOffset, fromOffset + direction * travel, departDuration) { EasingFunction = ease };
-            Storyboard.SetTarget(slideDepart, _selectionIndicator);
+            Storyboard.SetTarget(slideDepart, translate);
             Storyboard.SetTargetProperty(slideDepart, new PropertyPath(translateProp));
             sb.Children.Add(slideDepart);
 
@@ -692,12 +694,12 @@ namespace Fluence.Wpf.Controls
             sb.Children.Add(fadeOut);
 
             var scaleUp = new DoubleAnimation(0.0, 1.0, arriveDuration) { EasingFunction = ease, BeginTime = arriveDelay };
-            Storyboard.SetTarget(scaleUp, _selectionIndicator);
+            Storyboard.SetTarget(scaleUp, scale);
             Storyboard.SetTargetProperty(scaleUp, new PropertyPath(scaleProp));
             sb.Children.Add(scaleUp);
 
             var slideArrive = new DoubleAnimation(toOffset - direction * travel, toOffset, arriveDuration) { EasingFunction = ease, BeginTime = arriveDelay };
-            Storyboard.SetTarget(slideArrive, _selectionIndicator);
+            Storyboard.SetTarget(slideArrive, translate);
             Storyboard.SetTargetProperty(slideArrive, new PropertyPath(translateProp));
             sb.Children.Add(slideArrive);
 

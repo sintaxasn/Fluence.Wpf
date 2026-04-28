@@ -190,6 +190,7 @@ namespace Fluence.Wpf.Controls
             base.OnApplyTemplate();
             _starsPanel = GetTemplateChild(PART_StarsPanel) as WpfStackPanel;
             _captionText = GetTemplateChild(PART_Caption) as WpfTextBlock;
+            IsEnabledChanged -= OnIsEnabledChanged;
             IsEnabledChanged += OnIsEnabledChanged;
             BuildAndRefreshStars();
             UpdateCaption();

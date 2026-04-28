@@ -19,7 +19,7 @@
                     <Border
                         x:Name="HeaderBorder"
                         Background="{TemplateBinding Background}"
-                        CornerRadius="4"
+                        CornerRadius="{DynamicResource ControlCornerRadius}"
                         SnapsToDevicePixels="True">
                         <Grid Margin="{TemplateBinding Padding}">
                             <Grid.ColumnDefinitions>

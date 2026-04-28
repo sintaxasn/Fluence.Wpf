@@ -83,7 +83,7 @@
                                         <Border
                                             x:Name="ButtonRoot"
                                             Background="{TemplateBinding Background}"
-                                            CornerRadius="4"
+                                            CornerRadius="{DynamicResource ControlCornerRadius}"
                                             SnapsToDevicePixels="True">
                                             <Path
                                                 HorizontalAlignment="Center"
@@ -267,7 +267,7 @@
                                         <Border
                                             x:Name="ScrollBackRoot"
                                             Background="{TemplateBinding Background}"
-                                            CornerRadius="4"
+                                            CornerRadius="{DynamicResource ControlCornerRadius}"
                                             SnapsToDevicePixels="True">
                                             <TextBlock
                                                 HorizontalAlignment="Center"
@@ -331,7 +331,7 @@
                                         <Border
                                             x:Name="ScrollForwardRoot"
                                             Background="{TemplateBinding Background}"
-                                            CornerRadius="4"
+                                            CornerRadius="{DynamicResource ControlCornerRadius}"
                                             SnapsToDevicePixels="True">
                                             <TextBlock
                                                 HorizontalAlignment="Center"
@@ -372,7 +372,7 @@
                                         <Border
                                             x:Name="AddButtonRoot"
                                             Background="{TemplateBinding Background}"
-                                            CornerRadius="4"
+                                            CornerRadius="{DynamicResource ControlCornerRadius}"
                                             SnapsToDevicePixels="True">
                                             <Path
                                                 HorizontalAlignment="Center"

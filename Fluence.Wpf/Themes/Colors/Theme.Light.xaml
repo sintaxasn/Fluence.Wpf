@@ -132,6 +132,15 @@
     <Color x:Key="SystemFillColorSolidAttentionBackground">#FFF7F7F7</Color>
     <Color x:Key="SystemFillColorSolidNeutralBackground">#FFF3F3F3</Color>
 
+    <!--  Window Chrome - Close Button  -->
+    <!--  These are the canonical Fluent close-button reds (#C42B1C / #B4271C).  -->
+    <!--  Unlike SystemFillColorCritical they are identical in Light and Dark;  -->
+    <!--  using tokens here lets High Contrast override via the resource system.  -->
+    <Color x:Key="WindowCloseFillColorHover">#FFC42B1C</Color>
+    <Color x:Key="WindowCloseFillColorPressed">#FFB4271C</Color>
+    <Color x:Key="WindowCloseForegroundHover">#FFFFFFFF</Color>
+    <Color x:Key="WindowCloseForegroundPressed">#FFFFFFFF</Color>
+
     <!--  Accent Fill Colors  -->
     <Color x:Key="AccentFillColorDisabled">#37000000</Color>
 
@@ -145,6 +154,6 @@
     <Color x:Key="TextOnAccentFillColorDisabled">#FFFFFFFF</Color>
 
     <!--  NavigationView content area tint (semi-transparent, shows Mica/Acrylic beneath)  -->
-    <Color x:Key="NavigationViewContentBackground">#A6FFFFFF</Color>
+    <Color x:Key="NavigationViewContentBackground">#A6FEFEFE</Color>
 
 </ResourceDictionary>

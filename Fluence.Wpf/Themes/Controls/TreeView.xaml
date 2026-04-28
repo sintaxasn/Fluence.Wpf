@@ -39,7 +39,7 @@
                             Grid.Row="0"
                             MinHeight="{TemplateBinding MinHeight}"
                             Background="Transparent"
-                            CornerRadius="4"
+                            CornerRadius="{DynamicResource ControlCornerRadius}"
                             SnapsToDevicePixels="True">
                             <Grid>
                                 <Grid.ColumnDefinitions>

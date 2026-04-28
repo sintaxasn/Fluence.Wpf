@@ -124,7 +124,7 @@
                                                         <Border
                                                             x:Name="ButtonBackground"
                                                             Background="Transparent"
-                                                            CornerRadius="4" />
+                                                            CornerRadius="{DynamicResource ControlCornerRadius}" />
                                                         <Path
                                                             x:Name="GlyphPath"
                                                             Width="10"

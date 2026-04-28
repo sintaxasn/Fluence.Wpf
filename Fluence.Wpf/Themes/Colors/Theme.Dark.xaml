@@ -132,6 +132,12 @@
     <Color x:Key="SystemFillColorSolidAttentionBackground">#FF2E2E2E</Color>
     <Color x:Key="SystemFillColorSolidNeutralBackground">#FF2E2E2E</Color>
 
+    <!--  Window Chrome - Close Button  -->
+    <Color x:Key="WindowCloseFillColorHover">#FFC42B1C</Color>
+    <Color x:Key="WindowCloseFillColorPressed">#FFB4271C</Color>
+    <Color x:Key="WindowCloseForegroundHover">#FFFFFFFF</Color>
+    <Color x:Key="WindowCloseForegroundPressed">#FFFFFFFF</Color>
+
     <!--  Accent Fill Colors  -->
     <Color x:Key="AccentFillColorDisabled">#28FFFFFF</Color>
 
@@ -145,6 +151,6 @@
     <Color x:Key="TextOnAccentFillColorDisabled">#87FFFFFF</Color>
 
     <!--  NavigationView content area tint (semi-transparent, shows Mica/Acrylic beneath)  -->
-    <Color x:Key="NavigationViewContentBackground">#402A2A2A</Color>
+    <Color x:Key="NavigationViewContentBackground">#AF2A2A2A</Color>
 
 </ResourceDictionary>

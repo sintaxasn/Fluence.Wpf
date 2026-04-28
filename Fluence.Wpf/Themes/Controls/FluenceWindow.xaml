@@ -62,10 +62,9 @@
         </Setter>
     </Style>
 
-    <!--  Close button style with Windows 11 red hover (#C42B1C / #B4271C).  -->
-    <!--  These are the canonical Fluent close-button reds — same in both Light  -->
-    <!--  and Dark themes (unlike SystemFillColorCritical which shifts to pink  -->
-    <!--  in dark mode and would look wrong on a title bar close button).  -->
+    <!--  Close button style — hover/pressed colors driven by WindowCloseFillColor* tokens.  -->
+    <!--  Token values (#C42B1C / #B4271C) are canonical Fluent close-button reds, identical  -->
+    <!--  in Light and Dark. High Contrast overrides flow through the resource system.  -->
     <Style x:Key="WindowCloseButtonStyle" TargetType="{x:Type Button}">
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
@@ -102,12 +101,12 @@
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                         </DataTrigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="RootGrid" Property="Background" Value="#C42B1C" />
-                            <Setter Property="Foreground" Value="#FFFFFF" />
+                            <Setter TargetName="RootGrid" Property="Background" Value="{DynamicResource WindowCloseFillColorHoverBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource WindowCloseForegroundHoverBrush}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="RootGrid" Property="Background" Value="#B4271C" />
-                            <Setter Property="Foreground" Value="#FFFFFF" />
+                            <Setter TargetName="RootGrid" Property="Background" Value="{DynamicResource WindowCloseFillColorPressedBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource WindowCloseForegroundPressedBrush}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter TargetName="contentPresenter" Property="Opacity" Value=".5" />
@@ -142,7 +141,7 @@
                         Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="8">
+                        CornerRadius="{DynamicResource OverlayCornerRadius}">
                         <Grid Margin="{TemplateBinding MarginMaximized}">
                             <Grid.RowDefinitions>
                                 <RowDefinition x:Name="TitleBarRow" Height="Auto" />

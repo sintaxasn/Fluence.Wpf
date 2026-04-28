@@ -137,6 +137,12 @@
     <SolidColorBrush x:Key="SystemFillColorSolidAttentionBackgroundBrush" Color="{DynamicResource SystemFillColorSolidAttentionBackground}" />
     <SolidColorBrush x:Key="SystemFillColorSolidNeutralBackgroundBrush" Color="{DynamicResource SystemFillColorSolidNeutralBackground}" />
 
+    <!--  Window Chrome - Close Button  -->
+    <SolidColorBrush x:Key="WindowCloseFillColorHoverBrush" Color="{DynamicResource WindowCloseFillColorHover}" />
+    <SolidColorBrush x:Key="WindowCloseFillColorPressedBrush" Color="{DynamicResource WindowCloseFillColorPressed}" />
+    <SolidColorBrush x:Key="WindowCloseForegroundHoverBrush" Color="{DynamicResource WindowCloseForegroundHover}" />
+    <SolidColorBrush x:Key="WindowCloseForegroundPressedBrush" Color="{DynamicResource WindowCloseForegroundPressed}" />
+
     <!--  Elevation Border Brushes (LinearGradientBrush)  -->
     <LinearGradientBrush x:Key="ControlElevationBorderBrush" x:Shared="False" MappingMode="Absolute" StartPoint="0,0" EndPoint="0,3">
         <LinearGradientBrush.RelativeTransform>

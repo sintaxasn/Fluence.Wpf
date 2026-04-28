@@ -39,7 +39,7 @@
                             Margin="-3"
                             BorderBrush="{DynamicResource FocusStrokeColorOuterBrush}"
                             BorderThickness="2"
-                            CornerRadius="4"
+                            CornerRadius="{DynamicResource ControlCornerRadius}"
                             SnapsToDevicePixels="True" />
                         <Border
                             Margin="-2"

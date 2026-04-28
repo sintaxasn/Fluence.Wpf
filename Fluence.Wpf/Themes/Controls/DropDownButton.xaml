@@ -18,6 +18,7 @@
         <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
         <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
         <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
+        <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
         <Setter Property="DropdownCornerRadius" Value="{DynamicResource OverlayCornerRadius}" />
         <Setter Property="Template">
             <Setter.Value>

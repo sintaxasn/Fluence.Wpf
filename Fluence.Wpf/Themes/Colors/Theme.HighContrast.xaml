@@ -136,6 +136,12 @@
     <Color x:Key="SystemFillColorSolidAttentionBackground">#FF1AEBFF</Color>
     <Color x:Key="SystemFillColorSolidNeutralBackground">#FF000000</Color>
 
+    <!--  Window Chrome - Close Button (HC static fallbacks)  -->
+    <Color x:Key="WindowCloseFillColorHover">#FF1AEBFF</Color>
+    <Color x:Key="WindowCloseFillColorPressed">#FF1AEBFF</Color>
+    <Color x:Key="WindowCloseForegroundHover">#FF000000</Color>
+    <Color x:Key="WindowCloseForegroundPressed">#FF000000</Color>
+
     <!--  Accent Color fallbacks (static HC defaults)  -->
     <Color x:Key="SystemAccentColor">#FF1AEBFF</Color>
     <Color x:Key="SystemAccentColorLight1">#FF1AEBFF</Color>
@@ -305,6 +311,12 @@
     <SolidColorBrush x:Key="SystemFillColorNeutralBackgroundBrush" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
     <SolidColorBrush x:Key="SystemFillColorSolidAttentionBackgroundBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
     <SolidColorBrush x:Key="SystemFillColorSolidNeutralBackgroundBrush" Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" />
+
+    <!--  Window Chrome - Close Button (HC live brushes)  -->
+    <SolidColorBrush x:Key="WindowCloseFillColorHoverBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="WindowCloseFillColorPressedBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="WindowCloseForegroundHoverBrush" Color="{DynamicResource {x:Static SystemColors.HighlightTextColorKey}}" />
+    <SolidColorBrush x:Key="WindowCloseForegroundPressedBrush" Color="{DynamicResource {x:Static SystemColors.HighlightTextColorKey}}" />
 
     <!--  System Accent Colors  -->
     <SolidColorBrush x:Key="SystemAccentColorBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />

@@ -1,6 +1,7 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
 
     <Style TargetType="{x:Type controls:TitleBar}">
         <Setter Property="SnapsToDevicePixels" Value="True" />
@@ -17,10 +18,11 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:TitleBar}">
-                    <Border x:Name="RootBorder"
-                            Background="{TemplateBinding Background}"
-                            Height="{TemplateBinding Height}"
-                            SnapsToDevicePixels="True">
+                    <Border
+                        x:Name="RootBorder"
+                        Height="{TemplateBinding Height}"
+                        Background="{TemplateBinding Background}"
+                        SnapsToDevicePixels="True">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto" />
@@ -29,41 +31,44 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
 
-                            <!-- Back Button -->
-                            <Button x:Name="BackButton"
-                                    Grid.Column="0"
-                                    Width="40" Height="32"
-                                    Margin="4,0,0,0"
-                                    Padding="0"
-                                    Background="Transparent"
-                                    BorderThickness="0"
-                                    Command="{TemplateBinding BackCommand}"
-                                    CommandParameter="{TemplateBinding BackCommandParameter}"
-                                    Visibility="Collapsed"
-                                    VerticalAlignment="Center"
-                                    ToolTip="Back"
-                                    Cursor="Hand">
+                            <!--  Back Button  -->
+                            <Button
+                                x:Name="BackButton"
+                                Grid.Column="0"
+                                Width="40"
+                                Height="32"
+                                Margin="4,0,0,0"
+                                Padding="0"
+                                VerticalAlignment="Center"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Command="{TemplateBinding BackCommand}"
+                                CommandParameter="{TemplateBinding BackCommandParameter}"
+                                Cursor="Hand"
+                                ToolTip="Back"
+                                Visibility="Collapsed">
                                 <Button.Template>
                                     <ControlTemplate TargetType="Button">
-                                        <Border x:Name="BtnBorder"
-                                                Background="Transparent"
-                                                CornerRadius="4">
-                                            <Path x:Name="Arrow"
-                                                  Width="12" Height="12"
-                                                  HorizontalAlignment="Center"
-                                                  VerticalAlignment="Center"
-                                                  Stretch="Uniform"
-                                                  Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                                  Data="M 20 9 L 8.14 9 L 13.07 4.07 L 12 3 L 5 10 L 12 17 L 13.07 15.93 L 8.14 11 L 20 11 Z" />
+                                        <Border
+                                            x:Name="BtnBorder"
+                                            Background="Transparent"
+                                            CornerRadius="{DynamicResource ControlCornerRadius}">
+                                            <Path
+                                                x:Name="Arrow"
+                                                Width="12"
+                                                Height="12"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center"
+                                                Data="M 20 9 L 8.14 9 L 13.07 4.07 L 12 3 L 5 10 L 12 17 L 13.07 15.93 L 8.14 11 L 20 11 Z"
+                                                Fill="{DynamicResource TextFillColorPrimaryBrush}"
+                                                Stretch="Uniform" />
                                         </Border>
                                         <ControlTemplate.Triggers>
                                             <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="BtnBorder" Property="Background"
-                                                        Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                                <Setter TargetName="BtnBorder" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
                                             </Trigger>
                                             <Trigger Property="IsPressed" Value="True">
-                                                <Setter TargetName="BtnBorder" Property="Background"
-                                                        Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                                                <Setter TargetName="BtnBorder" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
                                                 <Setter TargetName="Arrow" Property="Opacity" Value="0.7" />
                                             </Trigger>
                                         </ControlTemplate.Triggers>
@@ -71,31 +76,35 @@
                                 </Button.Template>
                             </Button>
 
-                            <!-- Icon -->
-                            <ContentPresenter x:Name="IconPresenter"
-                                              Grid.Column="1"
-                                              Content="{TemplateBinding Icon}"
-                                              Margin="12,0,8,0"
-                                              VerticalAlignment="Center"
-                                              MaxWidth="16" MaxHeight="16"
-                                              Visibility="Collapsed" />
+                            <!--  Icon  -->
+                            <ContentPresenter
+                                x:Name="IconPresenter"
+                                Grid.Column="1"
+                                MaxWidth="16"
+                                MaxHeight="16"
+                                Margin="12,0,8,0"
+                                VerticalAlignment="Center"
+                                Content="{TemplateBinding Icon}"
+                                Visibility="Collapsed" />
 
-                            <!-- Title -->
-                            <TextBlock x:Name="TitleText"
-                                       Grid.Column="2"
-                                       Text="{TemplateBinding Title}"
-                                       FontSize="{TemplateBinding FontSize}"
-                                       Foreground="{TemplateBinding Foreground}"
-                                       VerticalAlignment="Center"
-                                       TextTrimming="CharacterEllipsis" />
+                            <!--  Title  -->
+                            <TextBlock
+                                x:Name="TitleText"
+                                Grid.Column="2"
+                                VerticalAlignment="Center"
+                                FontSize="{TemplateBinding FontSize}"
+                                Foreground="{TemplateBinding Foreground}"
+                                Text="{TemplateBinding Title}"
+                                TextTrimming="CharacterEllipsis" />
 
-                            <!-- Custom Content -->
-                            <ContentPresenter x:Name="CustomContentPresenter"
-                                              Grid.Column="3"
-                                              Content="{TemplateBinding CustomContent}"
-                                              HorizontalAlignment="Stretch"
-                                              VerticalAlignment="Center"
-                                              Margin="8,0,0,0" />
+                            <!--  Custom Content  -->
+                            <ContentPresenter
+                                x:Name="CustomContentPresenter"
+                                Grid.Column="3"
+                                Margin="8,0,0,0"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Center"
+                                Content="{TemplateBinding CustomContent}" />
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>

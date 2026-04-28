@@ -154,9 +154,10 @@ namespace Fluence.Wpf.Tests
         {
             var style = application.TryFindResource(styleKey) as Style;
             Assert.IsNotNull(style, styleKey + " should resolve.");
-            AssertStyleSetter(style, TextOptions.TextFormattingModeProperty, expectedFormattingMode, styleKey);
-            AssertStyleSetter(style, TextOptions.TextRenderingModeProperty, TextRenderingMode.ClearType, styleKey);
-            AssertStyleSetter(style, TextOptions.TextHintingModeProperty, TextHintingMode.Fixed, styleKey);
+            // Named styles may inherit TextOptions via BasedOn; walk the full chain.
+            AssertStyleSetterOrBasedOn(style, TextOptions.TextFormattingModeProperty, expectedFormattingMode, styleKey);
+            AssertStyleSetterOrBasedOn(style, TextOptions.TextRenderingModeProperty, TextRenderingMode.ClearType, styleKey);
+            AssertStyleSetterOrBasedOn(style, TextOptions.TextHintingModeProperty, TextHintingMode.Fixed, styleKey);
         }
 
         private static void AssertStyleSetter(Style style, DependencyProperty property, object expectedValue, string description)
@@ -172,6 +173,32 @@ namespace Fluence.Wpf.Tests
             }
 
             Assert.Fail(description + " should set " + property.Name + ".");
+        }
+
+        /// <summary>
+        /// Walks the <see cref="Style.BasedOn"/> chain looking for a setter that matches
+        /// <paramref name="property"/> with <paramref name="expectedValue"/>.  A style that
+        /// inherits the correct value through <c>BasedOn</c> satisfies the assertion.
+        /// </summary>
+        private static void AssertStyleSetterOrBasedOn(Style style, DependencyProperty property, object expectedValue, string description)
+        {
+            var current = style;
+            while (current != null)
+            {
+                foreach (var setterBase in current.Setters)
+                {
+                    var setter = setterBase as Setter;
+                    if (setter != null && setter.Property == property)
+                    {
+                        Assert.AreEqual(expectedValue, setter.Value, description + " should set " + property.Name + ".");
+                        return;
+                    }
+                }
+
+                current = current.BasedOn;
+            }
+
+            Assert.Fail(description + " should set " + property.Name + " (searched full BasedOn chain).");
         }
 
         private static void AssertDemoAppTextMetadataOverrides(string relativePath)

@@ -56,13 +56,13 @@
                     <Border
                         x:Name="OuterBorder"
                         Background="{TemplateBinding Background}"
-                        CornerRadius="4"
+                        CornerRadius="{DynamicResource ControlCornerRadius}"
                         SnapsToDevicePixels="True">
                         <Grid>
                             <Border
                                 x:Name="SelectedOverlay"
                                 Background="{DynamicResource SubtleFillColorTransparentBrush}"
-                                CornerRadius="4"
+                                CornerRadius="{DynamicResource ControlCornerRadius}"
                                 Opacity="1" />
                             <ContentPresenter
                                 Margin="{TemplateBinding Padding}"

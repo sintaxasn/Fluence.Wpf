@@ -112,7 +112,7 @@
                             Margin="-3"
                             BorderBrush="{DynamicResource FocusStrokeColorOuterBrush}"
                             BorderThickness="2"
-                            CornerRadius="4"
+                            CornerRadius="{DynamicResource ControlCornerRadius}"
                             SnapsToDevicePixels="True" />
                         <Border
                             Margin="-2"
@@ -155,7 +155,7 @@
                         x:Name="OuterBorder"
                         Margin="4,2"
                         Background="{TemplateBinding Background}"
-                        CornerRadius="4"
+                        CornerRadius="{DynamicResource ControlCornerRadius}"
                         SnapsToDevicePixels="True">
                         <Grid MinHeight="32">
                             <Grid.ColumnDefinitions>
@@ -271,7 +271,7 @@
         <Border
             x:Name="BackBorder"
             Background="Transparent"
-            CornerRadius="4"
+            CornerRadius="{DynamicResource ControlCornerRadius}"
             SnapsToDevicePixels="True">
             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
         </Border>
@@ -730,7 +730,7 @@
             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
             BorderThickness="1"
             ClipToBounds="True"
-            CornerRadius="8"
+            CornerRadius="{DynamicResource OverlayCornerRadius}"
             SnapsToDevicePixels="True">
             <Grid>
                 <Grid.RowDefinitions>

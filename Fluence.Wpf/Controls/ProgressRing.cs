@@ -117,7 +117,7 @@ namespace Fluence.Wpf.Controls
                 nameof(Value),
                 typeof(double),
                 typeof(ProgressRing),
-                new FrameworkPropertyMetadata(0.0, OnRangePropertyChanged));
+                new FrameworkPropertyMetadata(0.0, OnRangePropertyChanged, CoerceRingValue));
 
         /// <summary>Gets or sets the current progress value in determinate mode.</summary>
         public double Value
@@ -132,7 +132,7 @@ namespace Fluence.Wpf.Controls
                 nameof(Minimum),
                 typeof(double),
                 typeof(ProgressRing),
-                new FrameworkPropertyMetadata(0.0, OnRangePropertyChanged));
+                new FrameworkPropertyMetadata(0.0, OnMinMaxPropertyChanged));
 
         /// <summary>Gets or sets the minimum value.</summary>
         public double Minimum
@@ -147,7 +147,7 @@ namespace Fluence.Wpf.Controls
                 nameof(Maximum),
                 typeof(double),
                 typeof(ProgressRing),
-                new FrameworkPropertyMetadata(100.0, OnRangePropertyChanged));
+                new FrameworkPropertyMetadata(100.0, OnMinMaxPropertyChanged));
 
         /// <summary>Gets or sets the maximum value.</summary>
         public double Maximum
@@ -308,6 +308,24 @@ namespace Fluence.Wpf.Controls
                 ring.AnimatedFraction = ring.ComputeFraction();
                 ring.RenderDeterminateArc(ring.AnimatedFraction);
             }
+        }
+
+        private static object CoerceRingValue(DependencyObject d, object baseValue)
+        {
+            var ring = (ProgressRing)d;
+            double v = (double)baseValue;
+            double min = ring.Minimum;
+            double max = ring.Maximum;
+            if (v < min) return min;
+            if (v > max) return max;
+            return baseValue;
+        }
+
+        private static void OnMinMaxPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            // Re-coerce Value so it stays within the new bounds, then redraw.
+            d.CoerceValue(ValueProperty);
+            OnRangePropertyChanged(d, e);
         }
 
         private static void OnRangePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

@@ -8,21 +8,18 @@
     xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
     d:DesignHeight="800"
     d:DesignWidth="900"
-    mc:Ignorable="d"
-    >
+    mc:Ignorable="d">
     <ui:SmoothScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="24" HorizontalAlignment="Stretch">
             <TextBlock
                 Margin="0,0,0,4"
                 Style="{StaticResource SectionHeaderStyle}"
-                Text="ProgressBar"
-                />
+                Text="ProgressBar" />
             <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Standard progress bar bound to a slider." />
             <ui:Card
                 Margin="0,0,0,16"
                 Padding="16"
-                Variant="{x:Static uicore:CardVariant.Default}"
-                >
+                Variant="{x:Static uicore:CardVariant.Default}">
                 <StackPanel>
                     <ui:ProgressBar
                         x:Name="StandardProgressBar"
@@ -31,8 +28,7 @@
                         HorizontalAlignment="Stretch"
                         Maximum="100"
                         Minimum="0"
-                        Value="45"
-                        />
+                        Value="45" />
                     <ui:Slider
                         x:Name="ProgressSlider"
                         IsSnapToTickEnabled="False"
@@ -40,13 +36,11 @@
                         Minimum="0"
                         TickFrequency="5"
                         ValueChanged="ProgressSlider_ValueChanged"
-                        Value="45"
-                        />
+                        Value="45" />
                     <TextBlock
                         x:Name="SliderValueLabel"
                         Style="{StaticResource StateLabelStyle}"
-                        Text="Value: 45"
-                        />
+                        Text="Value: 45" />
                 </StackPanel>
             </ui:Card>
 
@@ -55,29 +49,25 @@
             <ui:Card
                 Margin="0,0,0,16"
                 Padding="16"
-                Variant="{x:Static uicore:CardVariant.Default}"
-                >
+                Variant="{x:Static uicore:CardVariant.Default}">
                 <StackPanel>
                     <ui:ProgressBar
                         x:Name="IndeterminateProgressBar"
                         Height="8"
                         Margin="0,0,0,12"
                         HorizontalAlignment="Stretch"
-                        ProgressMode="Indeterminate"
-                        />
+                        ProgressMode="Indeterminate" />
                     <StackPanel Orientation="Horizontal">
                         <ui:ToggleSwitch
                             x:Name="IndeterminateToggle"
                             Margin="0,0,12,0"
                             Checked="IndeterminateToggle_Toggled"
                             IsChecked="True"
-                            Unchecked="IndeterminateToggle_Toggled"
-                            />
+                            Unchecked="IndeterminateToggle_Toggled" />
                         <TextBlock
                             VerticalAlignment="Center"
                             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                            Text="Indeterminate"
-                            />
+                            Text="Indeterminate" />
                     </StackPanel>
                 </StackPanel>
             </ui:Card>
@@ -87,8 +77,7 @@
             <ui:Card
                 Margin="0,0,0,16"
                 Padding="16"
-                Variant="{x:Static uicore:CardVariant.Default}"
-                >
+                Variant="{x:Static uicore:CardVariant.Default}">
                 <StackPanel>
                     <ui:ProgressBar
                         x:Name="StepProgressBar"
@@ -97,69 +86,54 @@
                         HorizontalAlignment="Stretch"
                         CurrentStep="1"
                         ProgressMode="StepProgress"
-                        Steps="5"
-                        />
+                        Steps="5" />
                     <StackPanel Orientation="Horizontal">
                         <ui:Button
                             Margin="0,0,12,0"
                             Click="ProgressStep_Click"
                             Content="Back"
-                            Tag="Back"
-                            />
+                            Tag="Back" />
                         <ui:Button
                             Margin="0,0,16,0"
                             Appearance="Accent"
                             Click="ProgressStep_Click"
                             Content="Next"
-                            Tag="Next"
-                            />
+                            Tag="Next" />
                         <TextBlock
                             x:Name="StepLabel"
                             VerticalAlignment="Center"
                             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                            Text="Step 1 of 5"
-                            />
+                            Text="Step 1 of 5" />
                     </StackPanel>
                 </StackPanel>
             </ui:Card>
 
             <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="ProgressRing" />
-            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Circular progress indicators: indeterminate spinner, determinate arc with slider, and inactive state." />
+            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Circular progress indicators: indeterminate spinner with on/off toggle, determinate arc with slider, and inactive state." />
             <ui:Card
                 Margin="0,0,0,16"
                 Padding="16"
-                Variant="{x:Static uicore:CardVariant.Default}"
-                >
-                <UniformGrid HorizontalAlignment="Stretch" Columns="4">
+                Variant="{x:Static uicore:CardVariant.Default}">
+                <UniformGrid HorizontalAlignment="Stretch" Columns="3">
                     <StackPanel HorizontalAlignment="Center">
                         <ui:ProgressRing
+                            x:Name="IndeterminateProgressRing"
                             Width="48"
                             Height="48"
                             HorizontalAlignment="Center"
                             IsActive="True"
-                            IsIndeterminate="True"
-                            />
-                        <TextBlock
+                            IsIndeterminate="True" />
+                        <ui:ToggleSwitch
                             Margin="0,10,0,0"
                             HorizontalAlignment="Center"
-                            Style="{StaticResource StateLabelStyle}"
-                            Text="Indeterminate"
-                            />
-                    </StackPanel>
-                    <StackPanel HorizontalAlignment="Center">
-                        <ui:ProgressRing
-                            Width="48"
-                            Height="48"
-                            HorizontalAlignment="Center"
-                            IsActive="True"
-                            IsIndeterminate="True"
-                            />
+                            IsChecked="{Binding IsActive, ElementName=IndeterminateProgressRing, Mode=TwoWay}"
+                            OffContent="Off"
+                            OnContent="On" />
                         <TextBlock
-                            Margin="0,10,0,0"
+                            Margin="0,4,0,0"
                             HorizontalAlignment="Center"
                             Style="{StaticResource StateLabelStyle}"
-                            Text="Active (spinning)"
-                            />
+                            Text="Indeterminate" />
                     </StackPanel>
                     <StackPanel HorizontalAlignment="Center">
                         <ui:ProgressRing
@@ -171,8 +145,7 @@
                             IsIndeterminate="False"
                             Maximum="100"
                             Minimum="0"
-                            Value="50"
-                            />
+                            Value="50" />
                         <ui:Slider
                             x:Name="ProgressRingSlider"
                             Width="120"
@@ -181,28 +154,24 @@
                             Maximum="100"
                             Minimum="0"
                             ValueChanged="ProgressRingSlider_ValueChanged"
-                            Value="50"
-                            />
+                            Value="50" />
                         <TextBlock
                             Margin="0,4,0,0"
                             HorizontalAlignment="Center"
                             Style="{StaticResource StateLabelStyle}"
-                            Text="Determinate"
-                            />
+                            Text="Determinate" />
                     </StackPanel>
                     <StackPanel HorizontalAlignment="Center">
                         <ui:ProgressRing
                             Width="48"
                             Height="48"
                             HorizontalAlignment="Center"
-                            IsActive="False"
-                            />
+                            IsActive="False" />
                         <TextBlock
                             Margin="0,10,0,0"
                             HorizontalAlignment="Center"
                             Style="{StaticResource StateLabelStyle}"
-                            Text="Inactive"
-                            />
+                            Text="Inactive" />
                     </StackPanel>
                 </UniformGrid>
             </ui:Card>
@@ -218,8 +187,7 @@
                         HorizontalAlignment="Stretch"
                         IsOpen="True"
                         Message="This is a general information message."
-                        Severity="Informational"
-                        />
+                        Severity="Informational" />
                     <ui:InfoBar
                         x:Name="InfoBarSuccess"
                         Title="Success"
@@ -227,8 +195,7 @@
                         HorizontalAlignment="Stretch"
                         IsOpen="True"
                         Message="The operation completed successfully."
-                        Severity="Success"
-                        />
+                        Severity="Success" />
                     <ui:InfoBar
                         x:Name="InfoBarWarning"
                         Title="Warning"
@@ -236,8 +203,7 @@
                         HorizontalAlignment="Stretch"
                         IsOpen="True"
                         Message="Proceed with caution."
-                        Severity="Warning"
-                        />
+                        Severity="Warning" />
                     <ui:InfoBar
                         x:Name="InfoBarError"
                         Title="Error"
@@ -245,8 +211,7 @@
                         HorizontalAlignment="Stretch"
                         IsOpen="True"
                         Message="Something went wrong."
-                        Severity="Error"
-                        >
+                        Severity="Error">
                         <ui:InfoBar.ActionButton>
                             <ui:Button Appearance="Accent" Content="Retry" />
                         </ui:InfoBar.ActionButton>
@@ -254,8 +219,7 @@
                     <ui:Button
                         Margin="0,4,0,0"
                         Click="ResetInfoBars_Click"
-                        Content="Reset All InfoBars"
-                        />
+                        Content="Reset All InfoBars" />
                 </StackPanel>
             </ui:Card>
         </StackPanel>

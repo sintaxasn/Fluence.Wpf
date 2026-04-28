@@ -40,7 +40,7 @@
                     <Border
                         x:Name="OuterBorder"
                         Background="Transparent"
-                        CornerRadius="4"
+                        CornerRadius="{DynamicResource ControlCornerRadius}"
                         SnapsToDevicePixels="True">
                         <Grid>
                             <ContentPresenter
@@ -100,7 +100,7 @@
                             Margin="-3"
                             BorderBrush="{DynamicResource FocusStrokeColorOuterBrush}"
                             BorderThickness="2"
-                            CornerRadius="4"
+                            CornerRadius="{DynamicResource ControlCornerRadius}"
                             SnapsToDevicePixels="True" />
                         <Border
                             Margin="-2"

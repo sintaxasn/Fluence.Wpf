@@ -89,6 +89,29 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
+        /// Identifies the <see cref="CornerRadius"/> dependency property.
+        /// </summary>
+        /// <remarks>
+        /// Shadows the <c>Control.CornerRadiusProperty</c> introduced in net6+ so the property
+        /// is also available on net472 where <c>Control</c> does not declare it.
+        /// </remarks>
+        public new static readonly DependencyProperty CornerRadiusProperty =
+            DependencyProperty.Register(
+                nameof(CornerRadius),
+                typeof(CornerRadius),
+                typeof(DropDownButton),
+                new FrameworkPropertyMetadata(new CornerRadius(4)));
+
+        /// <summary>
+        /// Gets or sets the corner radius of the button border.
+        /// </summary>
+        public new CornerRadius CornerRadius
+        {
+            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
+            set { SetValue(CornerRadiusProperty, value); }
+        }
+
+        /// <summary>
         /// Identifies the <see cref="DropdownCornerRadius"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty DropdownCornerRadiusProperty =

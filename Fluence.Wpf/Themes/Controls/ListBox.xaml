@@ -26,13 +26,13 @@
                     <Border
                         x:Name="OuterBorder"
                         Background="{TemplateBinding Background}"
-                        CornerRadius="4"
+                        CornerRadius="{DynamicResource ControlCornerRadius}"
                         SnapsToDevicePixels="True">
                         <Grid>
                             <Border
                                 x:Name="HoverOverlay"
                                 Background="{DynamicResource SubtleFillColorTransparentBrush}"
-                                CornerRadius="4" />
+                                CornerRadius="{DynamicResource ControlCornerRadius}" />
                             <ContentPresenter
                                 Margin="{TemplateBinding Padding}"
                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"

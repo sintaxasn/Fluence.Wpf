@@ -73,7 +73,7 @@
                         x:Name="Bd"
                         Margin="2,1"
                         Background="{TemplateBinding Background}"
-                        CornerRadius="4"
+                        CornerRadius="{DynamicResource ControlCornerRadius}"
                         SnapsToDevicePixels="True">
                         <Grid MinHeight="32" Margin="4,0">
                             <Grid.ColumnDefinitions>
