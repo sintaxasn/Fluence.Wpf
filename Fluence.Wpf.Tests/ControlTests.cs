@@ -978,7 +978,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    SelectMainWindowNavPage(window, window.Dispatcher, "Window");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "FluenceWindow");
 
                     var accentSwatchButtons = FindVisualChildren<Fluent.Button>(window)
                         .Where(b => b.Tag is string hex && hex.Length > 0 && hex[0] == '#')
@@ -1018,7 +1018,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    SelectMainWindowNavPage(window, window.Dispatcher, "Window");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "FluenceWindow");
 
                     Assert.IsInstanceOfType(FindVisualChildByName<Fluent.RadioButton>(window, "ThemeLight"), typeof(Fluent.RadioButton));
                     Assert.IsInstanceOfType(FindVisualChildByName<Fluent.RadioButton>(window, "ThemeDark"), typeof(Fluent.RadioButton));
@@ -1055,7 +1055,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    SelectMainWindowNavPage(window, window.Dispatcher, "Window");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "FluenceWindow");
 
                     var themeDark = FindVisualChildByName<Fluent.RadioButton>(window, "ThemeDark");
                     var themeStateLabel = FindVisualChildByName<TextBlock>(window, "ThemeStateLabel");
@@ -1370,7 +1370,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    SelectMainWindowNavPage(window, window.Dispatcher, "Window");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "FluenceWindow");
 
                     var toggle = FindVisualChildByName<Fluent.ToggleSwitch>(window, "ThemeWatcherToggle");
                     var label = FindVisualChildByName<TextBlock>(window, "SystemThemeLabel");

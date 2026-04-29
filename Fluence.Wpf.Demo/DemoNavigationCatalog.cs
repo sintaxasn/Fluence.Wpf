@@ -159,9 +159,9 @@ namespace Fluence.Wpf.Demo
 
             new DemoNavigationItem("Text", "TextBlock", "textblock text typography", "\uE8D2", false, () => DemoTextPages.TextBlock()),
 
-            new DemoNavigationItem("Windowing", "CaptionButtonChrome", "captionbuttonchrome caption chrome window", "\uE8BB", false, () => new GalleryWindowPage()),
-            new DemoNavigationItem("Windowing", "FluenceWindow", "fluencewindow window theme backdrop mica accent titlebar chrome shell", "\uE737", false, () => new GalleryWindowPage()),
-            new DemoNavigationItem("Windowing", "TitleBar", "titlebar window chrome caption", "\uE8BB", false, () => new GalleryWindowPage())
+            new DemoNavigationItem("Windowing", "CaptionButtonChrome", "captionbuttonchrome caption chrome window", "\uE8BB", false, () => DemoWindowingPages.CaptionButtonChrome()),
+            new DemoNavigationItem("Windowing", "FluenceWindow", "fluencewindow window theme backdrop mica accent titlebar chrome shell", "\uE737", false, () => DemoWindowingPages.FluenceWindow()),
+            new DemoNavigationItem("Windowing", "TitleBar", "titlebar window chrome caption", "\uE8BB", false, () => DemoWindowingPages.TitleBar())
         };
 
         public static IEnumerable<DemoNavigationItem> Items

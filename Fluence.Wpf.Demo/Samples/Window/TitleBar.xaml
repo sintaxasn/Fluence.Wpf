@@ -1,0 +1,41 @@
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Samples.Window.TitleBar"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:fluence="http://schemas.fluencewpf.com">
+    <fluence:StackPanel Spacing="12">
+        <Border
+            Width="520"
+            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="8">
+            <fluence:TitleBar
+                IsBackButtonVisible="True"
+                Title="Documents">
+                <fluence:TitleBar.Icon>
+                    <fluence:FontIcon Glyph="&#xE8A5;" IconFontSize="14" />
+                </fluence:TitleBar.Icon>
+                <fluence:TitleBar.CustomContent>
+                    <fluence:TextBox Width="180" PlaceholderText="Search" />
+                </fluence:TitleBar.CustomContent>
+            </fluence:TitleBar>
+        </Border>
+        <Border
+            Width="520"
+            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            CornerRadius="8">
+            <fluence:TitleBar
+                IsBackButtonVisible="True"
+                IsCompact="True"
+                Title="Compact title bar">
+                <fluence:TitleBar.Icon>
+                    <fluence:FontIcon Glyph="&#xE8A5;" IconFontSize="14" />
+                </fluence:TitleBar.Icon>
+                <fluence:TitleBar.CustomContent>
+                    <fluence:TextBox Width="180" PlaceholderText="Search" />
+                </fluence:TitleBar.CustomContent>
+            </fluence:TitleBar>
+        </Border>
+    </fluence:StackPanel>
+</UserControl>
