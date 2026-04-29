@@ -168,6 +168,48 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void NavigationViewItem_Template_RendersInfoBadge()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var badge = new Fluent.FontIcon { Glyph = "\uE70D", IconFontSize = 12 };
+                    var item = new Fluent.NavigationViewItem
+                    {
+                        Content = "Section",
+                        Icon = new Fluent.FontIcon { Glyph = "\uE8FD", IconFontSize = 20 },
+                        InfoBadge = badge
+                    };
+
+                    window.Content = item;
+                    window.Width = 240;
+                    window.Height = 80;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    var presenter = FindVisualChildByName<ContentPresenter>(item, "InfoBadgePresenter");
+                    Assert.IsNotNull(presenter, "NavigationViewItem template must render InfoBadge content.");
+                    Assert.AreSame(badge, presenter.Content,
+                        "NavigationViewItem InfoBadge presenter must bind to NavigationViewItem.InfoBadge.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
         public void NavigationView_SelectedItem_UpdatesOnItemClick()
         {
             RunOnStaThread(() =>

@@ -1,0 +1,62 @@
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.GalleryTypographyPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
+    d:DesignHeight="800"
+    d:DesignWidth="900"
+    mc:Ignorable="d">
+    <ui:SmoothScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24">
+            <TextBlock
+                Margin="0,0,0,4"
+                Style="{StaticResource SectionHeaderStyle}"
+                Text="Typography" />
+            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Fluent type styles use Segoe UI Variable when available and fall back to Segoe UI." />
+
+            <Border
+                Margin="0,12,0,0"
+                Padding="20"
+                Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1"
+                CornerRadius="8">
+                <StackPanel>
+                    <TextBlock
+                        Margin="0,0,0,20"
+                        Style="{DynamicResource DisplayTextBlockStyle}"
+                        Text="Display" />
+                    <TextBlock
+                        Margin="0,0,0,18"
+                        Style="{DynamicResource TitleLargeTextBlockStyle}"
+                        Text="Title large" />
+                    <TextBlock
+                        Margin="0,0,0,16"
+                        Style="{DynamicResource TitleTextBlockStyle}"
+                        Text="Title" />
+                    <TextBlock
+                        Margin="0,0,0,14"
+                        Style="{DynamicResource SubtitleTextBlockStyle}"
+                        Text="Subtitle" />
+                    <TextBlock
+                        Margin="0,0,0,12"
+                        Style="{DynamicResource BodyLargeTextBlockStyle}"
+                        Text="Body large" />
+                    <TextBlock
+                        Margin="0,0,0,10"
+                        Style="{DynamicResource BodyStrongTextBlockStyle}"
+                        Text="Body strong" />
+                    <TextBlock
+                        Margin="0,0,0,8"
+                        Style="{DynamicResource BodyTextBlockStyle}"
+                        Text="Body" />
+                    <TextBlock
+                        Style="{DynamicResource CaptionTextBlockStyle}"
+                        Text="Caption" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+    </ui:SmoothScrollViewer>
+</UserControl>

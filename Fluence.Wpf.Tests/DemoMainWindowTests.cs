@@ -171,8 +171,8 @@ namespace Fluence.Wpf.Tests
 
                     var selected = nav.SelectedItem as NavigationViewItem;
                     Assert.IsNotNull(selected, "Enter must select a NavigationViewItem.");
-                    Assert.AreEqual("Buttons", selected.Content as string,
-                        "Top match for 'button' must be the 'Buttons' item.");
+                    Assert.AreEqual("Button", selected.Content as string,
+                        "Top match for 'button' must be the 'Button' page.");
                 }
                 finally
                 {
@@ -271,9 +271,9 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        // WI-1 F3: Empty query restores all items to Visible (regression guard on filter reset).
+        // WI-1 F3: Empty query restores the grouped pane to its expanded/collapsed state.
         [TestMethod]
-        public void NavSearch_EmptyQuery_RestoresAllItemsVisible()
+        public void NavSearch_EmptyQuery_RestoresGroupedPaneVisibility()
         {
             RunOnSta(() =>
             {
@@ -293,59 +293,35 @@ namespace Fluence.Wpf.Tests
                     search.Text = string.Empty;
                     Drain(window.Dispatcher);
 
+                    var selected = nav.SelectedItem as NavigationViewItem;
+                    Assert.IsNotNull(selected, "The search result should remain selected before clearing.");
+
                     foreach (var obj in nav.Items)
                     {
+                        var header = obj as NavigationViewItemHeader;
+                        if (header != null)
+                        {
+                            Assert.AreEqual(Visibility.Visible, header.Visibility,
+                                "Empty query must restore navigation headers to Visible.");
+                            continue;
+                        }
+
                         var el = obj as FrameworkElement;
                         if (el == null)
                         {
                             continue;
                         }
 
-                        Assert.AreEqual(Visibility.Visible, el.Visibility,
-                            "Empty query must restore every pane element (including headers) to Visible.");
-                    }
-                }
-                finally
-                {
-                    if (window != null)
-                    {
-                        window.Close();
-                    }
-
-                    if (dict != null)
-                    {
-                        app.Resources.MergedDictionaries.Remove(dict);
-                    }
-                }
-            });
-        }
-
-        // WI-1 Paradigm A: nav pane must be grouped by NavigationViewItemHeader sections.
-        [TestMethod]
-        public void MainWindow_NavigationPane_ContainsSectionHeaders()
-        {
-            RunOnSta(() =>
-            {
-                var app = EnsureApp();
-                var dict = MergeTheme(app);
-
-                MainWindow window = null;
-                try
-                {
-                    window = CreateShownMainWindow();
-                    var nav = GetDemoNav(window);
-
-                    var headerCount = 0;
-                    foreach (var obj in nav.Items)
-                    {
-                        if (obj is NavigationViewItemHeader)
+                        var item = el as NavigationViewItem;
+                        if (item != null && item.PageContent == null)
                         {
-                            headerCount++;
+                            Assert.AreEqual(Visibility.Visible, item.Visibility,
+                                "Empty query must restore navigation group headings to Visible.");
                         }
                     }
 
-                    Assert.IsTrue(headerCount >= 2,
-                        "Paradigm A: pane must declare at least 2 NavigationViewItemHeader section headers to group controls.");
+                    Assert.AreEqual(Visibility.Visible, selected.Visibility,
+                        "The selected search result should stay visible after clearing the filter.");
                 }
                 finally
                 {
@@ -362,8 +338,9 @@ namespace Fluence.Wpf.Tests
             });
         }
 
+        // WinUI Gallery pattern: one Controls header plus expandable navigation groups.
         [TestMethod]
-        public void MainWindow_NavigationPane_UsesApprovedCategoryHeaders()
+        public void MainWindow_NavigationPane_UsesExpandableWinUIGalleryGroups()
         {
             RunOnSta(() =>
             {
@@ -377,6 +354,8 @@ namespace Fluence.Wpf.Tests
                     var nav = GetDemoNav(window);
 
                     var headers = new System.Collections.Generic.List<string>();
+                    var parentItems = new System.Collections.Generic.List<string>();
+                    NavigationViewItem buttonItem = null;
                     foreach (var obj in nav.Items)
                     {
                         var header = obj as NavigationViewItemHeader;
@@ -384,21 +363,88 @@ namespace Fluence.Wpf.Tests
                         {
                             headers.Add(header.Content as string);
                         }
+
+                        var item = obj as NavigationViewItem;
+                        if (item == null)
+                        {
+                            continue;
+                        }
+
+                        var title = item.Content as string;
+                        if (string.Equals(title, "Design", StringComparison.Ordinal)
+                            || string.Equals(title, "Accessibility", StringComparison.Ordinal)
+                            || string.Equals(title, "Basic input", StringComparison.Ordinal))
+                        {
+                            parentItems.Add(title);
+                            Assert.IsNotNull(item.Icon, "Navigation group headings should have icons.");
+                            Assert.IsNotNull(item.InfoBadge, "Navigation group headings should show an expand/collapse glyph.");
+                        }
+
+                        if (string.Equals(title, "Button", StringComparison.Ordinal))
+                        {
+                            buttonItem = item;
+                        }
                     }
 
-                    CollectionAssert.AreEqual(
-                        new[]
+                    CollectionAssert.AreEqual(new[] { "Controls" }, headers,
+                        "The old flat Fundamentals/Basic input/etc. headers should be replaced by a single Controls header.");
+                    CollectionAssert.Contains(parentItems, "Design");
+                    CollectionAssert.Contains(parentItems, "Accessibility");
+                    CollectionAssert.Contains(parentItems, "Basic input");
+                    Assert.IsNotNull(buttonItem, "Basic input should contain a Button child page.");
+                    Assert.IsNull(buttonItem.Icon, "Child pages should not have icons; only section headings should.");
+
+                    AssertNavigationItemExists(nav, "Color");
+                    AssertNavigationItemExists(nav, "Iconography");
+                    AssertNavigationItemExists(nav, "Typography");
+                    AssertNavigationItemExists(nav, "Screen reader support");
+                    AssertNavigationItemExists(nav, "Keyboard support");
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void MainWindow_NavigationPane_OmitsFundamentalsSection()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                MainWindow window = null;
+                try
+                {
+                    window = CreateShownMainWindow();
+                    var nav = GetDemoNav(window);
+
+                    foreach (var obj in nav.Items)
+                    {
+                        var header = obj as NavigationViewItemHeader;
+                        if (header != null)
                         {
-                            "Fundamentals",
-                            "Basic input",
-                            "Collections",
-                            "Navigation",
-                            "Status and info",
-                            "Styles",
-                            "Windowing"
-                        },
-                        headers,
-                        "The demo pane should be organized as category groups before per-control pages are rebuilt.");
+                            Assert.AreNotEqual("Fundamentals", header.Content as string,
+                                "The demo navigation should not expose a Fundamentals section.");
+                        }
+
+                        var item = obj as NavigationViewItem;
+                        if (item != null)
+                        {
+                            Assert.AreNotEqual("Fundamentals", item.Content as string,
+                                "The demo navigation should not expose a Fundamentals section.");
+                        }
+                    }
                 }
                 finally
                 {
@@ -1936,6 +1982,21 @@ namespace Fluence.Wpf.Tests
                 }
             }
 
+            return null;
+        }
+
+        private static NavigationViewItem AssertNavigationItemExists(NavigationView nav, string content)
+        {
+            foreach (var obj in nav.Items)
+            {
+                var item = obj as NavigationViewItem;
+                if (item != null && string.Equals(item.Content as string, content, StringComparison.Ordinal))
+                {
+                    return item;
+                }
+            }
+
+            Assert.Fail("Navigation item should exist: " + content);
             return null;
         }
 

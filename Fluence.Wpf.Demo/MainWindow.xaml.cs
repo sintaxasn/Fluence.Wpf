@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -33,6 +34,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using Fluence.Wpf;
 using Fluence.Wpf.Controls;
+using Fluence.Wpf.Demo.Pages;
 
 namespace Fluence.Wpf.Demo
 {
@@ -50,6 +52,15 @@ namespace Fluence.Wpf.Demo
         private string _userTitle;
         private DependencyPropertyDescriptor _extendsDpd;
         private DependencyPropertyDescriptor _paneModeDpd;
+        private readonly Dictionary<NavigationViewItem, List<NavigationViewItem>> _sectionChildrenByHeader =
+            new Dictionary<NavigationViewItem, List<NavigationViewItem>>();
+        private readonly Dictionary<NavigationViewItem, NavigationViewItem> _sectionHeaderByChild =
+            new Dictionary<NavigationViewItem, NavigationViewItem>();
+        private readonly Dictionary<NavigationViewItem, bool> _sectionExpandedByHeader =
+            new Dictionary<NavigationViewItem, bool>();
+        private NavigationViewItemHeader _controlsHeader;
+        private NavigationViewItem _lastSelectedLeafItem;
+        private bool _restoringSelection;
 
         public MainWindow()
         {
@@ -58,6 +69,10 @@ namespace Fluence.Wpf.Demo
             SystemThemeWatcher.Watch(this);
             ApplicationThemeManager.Apply(ApplicationTheme.Auto, BackdropType.Mica, true);
             PopulateNavigation();
+            if (DemoNav != null)
+            {
+                DemoNav.SelectionChanged += DemoNav_SelectionChanged;
+            }
 
             // Seed user-intent from XAML defaults so the first toggle does not reset to
             // an uninitialised value.
@@ -99,8 +114,15 @@ namespace Fluence.Wpf.Demo
             }
 
             DemoNav.Items.Clear();
+            _sectionChildrenByHeader.Clear();
+            _sectionHeaderByChild.Clear();
+            _sectionExpandedByHeader.Clear();
+            _controlsHeader = null;
+            _lastSelectedLeafItem = null;
 
             var currentCategory = string.Empty;
+            NavigationViewItem currentSectionItem = null;
+            var controlsHeaderAdded = false;
             foreach (var item in DemoNavigationCatalog.Items)
             {
                 if (!string.Equals(currentCategory, item.Category, StringComparison.Ordinal))
@@ -108,24 +130,199 @@ namespace Fluence.Wpf.Demo
                     currentCategory = item.Category;
                     if (!string.IsNullOrEmpty(currentCategory))
                     {
-                        DemoNav.Items.Add(new NavigationViewItemHeader { Content = currentCategory });
+                        DemoNavigationCategory category;
+                        if (!DemoNavigationCatalog.TryGetCategory(currentCategory, out category))
+                        {
+                            currentSectionItem = null;
+                            continue;
+                        }
+
+                        if (category.IsControlCategory && !controlsHeaderAdded)
+                        {
+                            _controlsHeader = new NavigationViewItemHeader { Content = "Controls" };
+                            DemoNav.Items.Add(_controlsHeader);
+                            DemoNav.Items.Add(new NavigationViewItem
+                            {
+                                Content = "All",
+                                Tag = "all controls gallery overview",
+                                Icon = CreateFontIcon("\uECA5", 20),
+                                PageContent = new GalleryHomePage()
+                            });
+                            controlsHeaderAdded = true;
+                        }
+
+                        currentSectionItem = CreateSectionItem(category);
+                        DemoNav.Items.Add(currentSectionItem);
+                        _sectionChildrenByHeader[currentSectionItem] = new List<NavigationViewItem>();
+                        _sectionExpandedByHeader[currentSectionItem] = category.IsExpandedByDefault;
+                    }
+                    else
+                    {
+                        currentSectionItem = null;
                     }
                 }
 
-                var navItem = new NavigationViewItem
+                var navItem = CreatePageItem(item, currentSectionItem == null);
+                if (currentSectionItem != null)
                 {
-                    Content = item.Title,
-                    Tag = item.Tag,
-                    Icon = new FontIcon { Glyph = item.Glyph, IconFontSize = 20 },
-                    PageContent = item.CreatePage()
-                };
+                    _sectionChildrenByHeader[currentSectionItem].Add(navItem);
+                    _sectionHeaderByChild[navItem] = currentSectionItem;
+                    navItem.Visibility = _sectionExpandedByHeader[currentSectionItem]
+                        ? Visibility.Visible
+                        : Visibility.Collapsed;
+                }
 
                 DemoNav.Items.Add(navItem);
                 if (item.IsDefault)
                 {
                     DemoNav.SelectedItem = navItem;
+                    _lastSelectedLeafItem = navItem;
                 }
             }
+        }
+
+        private static NavigationViewItem CreateSectionItem(DemoNavigationCategory category)
+        {
+            return new NavigationViewItem
+            {
+                Content = category.Title,
+                Tag = category.Tag,
+                Icon = CreateFontIcon(category.Glyph, 20),
+                InfoBadge = CreateChevronIcon(category.IsExpandedByDefault)
+            };
+        }
+
+        private static NavigationViewItem CreatePageItem(DemoNavigationItem item, bool showIcon)
+        {
+            return new NavigationViewItem
+            {
+                Content = item.Title,
+                Tag = item.Tag,
+                Icon = showIcon ? CreateFontIcon(item.Glyph, 20) : null,
+                PageContent = item.CreatePage()
+            };
+        }
+
+        private static FontIcon CreateFontIcon(string glyph, double size)
+        {
+            return new FontIcon { Glyph = glyph, IconFontSize = size };
+        }
+
+        private static FontIcon CreateChevronIcon(bool expanded)
+        {
+            return CreateFontIcon(expanded ? "\uE70E" : "\uE70D", 12);
+        }
+
+        private void DemoNav_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (_restoringSelection)
+            {
+                return;
+            }
+
+            var selected = DemoNav.SelectedItem as NavigationViewItem;
+            if (selected == null)
+            {
+                return;
+            }
+
+            if (_sectionChildrenByHeader.ContainsKey(selected))
+            {
+                ToggleSection(selected);
+                RestoreLastLeafSelection();
+                return;
+            }
+
+            if (selected.PageContent != null)
+            {
+                EnsureParentExpanded(selected);
+                _lastSelectedLeafItem = selected;
+            }
+        }
+
+        private void ToggleSection(NavigationViewItem sectionItem)
+        {
+            bool expanded;
+            if (!_sectionExpandedByHeader.TryGetValue(sectionItem, out expanded))
+            {
+                return;
+            }
+
+            SetSectionExpanded(sectionItem, !expanded);
+        }
+
+        private void SetSectionExpanded(NavigationViewItem sectionItem, bool expanded)
+        {
+            _sectionExpandedByHeader[sectionItem] = expanded;
+            SetSectionChevron(sectionItem, expanded);
+
+            List<NavigationViewItem> children;
+            if (!_sectionChildrenByHeader.TryGetValue(sectionItem, out children))
+            {
+                return;
+            }
+
+            foreach (var child in children)
+            {
+                child.Visibility = expanded ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
+        private static void SetSectionChevron(NavigationViewItem sectionItem, bool expanded)
+        {
+            var chevron = sectionItem.InfoBadge as FontIcon;
+            if (chevron != null)
+            {
+                chevron.Glyph = expanded ? "\uE70E" : "\uE70D";
+            }
+        }
+
+        private void EnsureParentExpanded(NavigationViewItem childItem)
+        {
+            NavigationViewItem sectionItem;
+            if (_sectionHeaderByChild.TryGetValue(childItem, out sectionItem))
+            {
+                SetSectionExpanded(sectionItem, true);
+            }
+        }
+
+        private void RestoreLastLeafSelection()
+        {
+            var target = _lastSelectedLeafItem;
+            if (target == null)
+            {
+                target = FindFirstLeafItem();
+            }
+
+            if (target == null)
+            {
+                return;
+            }
+
+            EnsureParentExpanded(target);
+            _restoringSelection = true;
+            try
+            {
+                DemoNav.SelectedItem = target;
+            }
+            finally
+            {
+                _restoringSelection = false;
+            }
+        }
+
+        private NavigationViewItem FindFirstLeafItem()
+        {
+            foreach (var obj in DemoNav.Items)
+            {
+                var item = obj as NavigationViewItem;
+                if (item != null && item.PageContent != null)
+                {
+                    return item;
+                }
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -198,6 +395,7 @@ namespace Fluence.Wpf.Demo
             var match = FindFirstMatchingItem(tag);
             if (match != null)
             {
+                EnsureParentExpanded(match);
                 DemoNav.SelectedItem = match;
             }
         }
@@ -242,7 +440,7 @@ namespace Fluence.Wpf.Demo
             foreach (var obj in DemoNav.Items)
             {
                 var nvi = obj as NavigationViewItem;
-                if (nvi == null || nvi.Visibility != Visibility.Visible)
+                if (nvi == null || nvi.PageContent == null)
                 {
                     continue;
                 }
@@ -289,13 +487,42 @@ namespace Fluence.Wpf.Demo
                     continue;
                 }
 
+                if (_sectionChildrenByHeader.ContainsKey(nvi))
+                {
+                    var sectionMatches = ItemMatches(nvi, ql);
+                    var anyChildMatch = false;
+                    var children = _sectionChildrenByHeader[nvi];
+                    foreach (var child in children)
+                    {
+                        var childMatches = sectionMatches || ItemMatches(child, ql);
+                        child.Visibility = childMatches ? Visibility.Visible : Visibility.Collapsed;
+                        if (childMatches)
+                        {
+                            anyChildMatch = true;
+                        }
+                    }
+
+                    nvi.Visibility = sectionMatches || anyChildMatch ? Visibility.Visible : Visibility.Collapsed;
+                    if (nvi.Visibility == Visibility.Visible)
+                    {
+                        SetSectionChevron(nvi, true);
+                        anyItemMatch = true;
+                    }
+
+                    continue;
+                }
+
+                if (_sectionHeaderByChild.ContainsKey(nvi))
+                {
+                    continue;
+                }
+
                 var match = ItemMatches(nvi, ql);
+                nvi.Visibility = match ? Visibility.Visible : Visibility.Collapsed;
                 if (match)
                 {
                     anyItemMatch = true;
                 }
-
-                nvi.Visibility = match ? Visibility.Visible : Visibility.Collapsed;
             }
 
             // If no item matches, fall back to "restore everything" so the user is never stranded
@@ -306,75 +533,85 @@ namespace Fluence.Wpf.Demo
                 return;
             }
 
-            // Collapse any section header (NavigationViewItemHeader) whose items are all hidden.
-            // A header "owns" the run of NavigationViewItem siblings that follow it until the next
-            // header. Separators are treated as passthrough — they follow the owning header.
-            CollapseEmptySectionHeaders();
+            UpdateControlsHeaderVisibility();
         }
 
         private void RestoreAllPaneElementsVisible()
         {
             foreach (var obj in DemoNav.Items)
             {
-                var fe = obj as FrameworkElement;
-                if (fe != null)
+                var header = obj as NavigationViewItemHeader;
+                if (header != null)
                 {
-                    fe.Visibility = Visibility.Visible;
+                    header.Visibility = Visibility.Visible;
+                    continue;
                 }
+
+                var item = obj as NavigationViewItem;
+                if (item == null)
+                {
+                    continue;
+                }
+
+                if (_sectionChildrenByHeader.ContainsKey(item))
+                {
+                    item.Visibility = Visibility.Visible;
+                    SetSectionChevron(item, _sectionExpandedByHeader[item]);
+                    continue;
+                }
+
+                NavigationViewItem sectionItem;
+                if (_sectionHeaderByChild.TryGetValue(item, out sectionItem))
+                {
+                    item.Visibility = _sectionExpandedByHeader[sectionItem]
+                        ? Visibility.Visible
+                        : Visibility.Collapsed;
+                    continue;
+                }
+
+                item.Visibility = Visibility.Visible;
             }
         }
 
-        private void CollapseEmptySectionHeaders()
+        private void UpdateControlsHeaderVisibility()
         {
-            NavigationViewItemHeader currentHeader = null;
-            NavigationViewItemSeparator pendingSeparator = null;
-            var currentSectionHasVisibleItem = false;
-
-            foreach (var obj in DemoNav.Items)
-            {
-                if (obj is NavigationViewItemHeader header)
-                {
-                    FlushHeader(currentHeader, pendingSeparator, currentSectionHasVisibleItem);
-                    currentHeader = header;
-                    pendingSeparator = null;
-                    currentSectionHasVisibleItem = false;
-                }
-                else if (obj is NavigationViewItemSeparator separator)
-                {
-                    pendingSeparator = separator;
-                }
-                else if (obj is NavigationViewItem item)
-                {
-                    if (item.Visibility == Visibility.Visible)
-                    {
-                        currentSectionHasVisibleItem = true;
-                    }
-                }
-            }
-
-            FlushHeader(currentHeader, pendingSeparator, currentSectionHasVisibleItem);
-        }
-
-        private static void FlushHeader(
-            NavigationViewItemHeader header,
-            NavigationViewItemSeparator separator,
-            bool sectionHasVisibleItem)
-        {
-            if (header == null)
+            if (_controlsHeader == null)
             {
                 return;
             }
 
-            var show = sectionHasVisibleItem ? Visibility.Visible : Visibility.Collapsed;
-            header.Visibility = show;
-            if (separator != null)
+            var hasVisibleControlItem = false;
+            var afterControlsHeader = false;
+            foreach (var obj in DemoNav.Items)
             {
-                separator.Visibility = show;
+                if (ReferenceEquals(obj, _controlsHeader))
+                {
+                    afterControlsHeader = true;
+                    continue;
+                }
+
+                if (!afterControlsHeader)
+                {
+                    continue;
+                }
+
+                var item = obj as NavigationViewItem;
+                if (item != null && item.Visibility == Visibility.Visible)
+                {
+                    hasVisibleControlItem = true;
+                    break;
+                }
             }
+
+            _controlsHeader.Visibility = hasVisibleControlItem ? Visibility.Visible : Visibility.Collapsed;
         }
 
         protected override void OnClosed(EventArgs e)
         {
+            if (DemoNav != null)
+            {
+                DemoNav.SelectionChanged -= DemoNav_SelectionChanged;
+            }
             if (_extendsDpd != null)
             {
                 _extendsDpd.RemoveValueChanged(this, OnTitleBarDependencyChanged);

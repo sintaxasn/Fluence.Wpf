@@ -62,38 +62,126 @@ namespace Fluence.Wpf.Demo
         public Func<object> CreatePage { get; private set; }
     }
 
+    public sealed class DemoNavigationCategory
+    {
+        public DemoNavigationCategory(
+            string title,
+            string tag,
+            string glyph,
+            bool isControlCategory,
+            bool isExpandedByDefault)
+        {
+            Title = title;
+            Tag = tag;
+            Glyph = glyph;
+            IsControlCategory = isControlCategory;
+            IsExpandedByDefault = isExpandedByDefault;
+        }
+
+        public string Title { get; private set; }
+
+        public string Tag { get; private set; }
+
+        public string Glyph { get; private set; }
+
+        public bool IsControlCategory { get; private set; }
+
+        public bool IsExpandedByDefault { get; private set; }
+    }
+
     public static class DemoNavigationCatalog
     {
+        private static readonly DemoNavigationCategory[] CatalogCategories =
+        {
+            new DemoNavigationCategory("Design", "design color iconography typography", "\uEB3C", false, true),
+            new DemoNavigationCategory("Accessibility", "accessibility screen reader keyboard contrast", "\uE776", false, true),
+            new DemoNavigationCategory("Basic input", "controls basic input button checkbox combobox slider toggle", "\uE73E", true, false),
+            new DemoNavigationCategory("Collections", "controls collections list card tree", "\uE80A", true, false),
+            new DemoNavigationCategory("Menus and toolbars", "controls menu contextmenu tooltip toolbar command", "\uE115", true, false),
+            new DemoNavigationCategory("Navigation", "controls navigation navigationview tabview", "\uE700", true, false),
+            new DemoNavigationCategory("Status and info", "controls status info progress infobar badge person", "\uE916", true, false),
+            new DemoNavigationCategory("Layout", "controls layout border dockpanel stackpanel expander separator", "\uECA5", true, false),
+            new DemoNavigationCategory("Text", "controls text textblock typography", "\uE8D2", true, false),
+            new DemoNavigationCategory("Windowing", "controls window titlebar caption chrome", "\uE737", true, false)
+        };
+
         private static readonly DemoNavigationItem[] CatalogItems =
         {
             new DemoNavigationItem(string.Empty, "Home", "home overview welcome", "\uE80F", true, () => new GalleryHomePage()),
 
-            new DemoNavigationItem("Fundamentals", "Data Binding", "databinding observablecollection listview selectionmode", "\uEA37", false, () => new GalleryDataBindingPage()),
-            new DemoNavigationItem("Fundamentals", "Accessibility", "accessibility focus tab rtl highcontrast automation narrator", "\uE776", false, () => new GalleryAccessibilityPage()),
+            new DemoNavigationItem("Design", "Color", "color colors brush swatch theme resource high contrast", "\uE790", false, () => new GalleryColorsPage()),
+            new DemoNavigationItem("Design", "Iconography", "fonticon icon glyph segoe fluent", "\uED58", false, () => new GalleryGlyphsPage()),
+            new DemoNavigationItem("Design", "Typography", "typography text textblock font style", "\uE8D2", false, () => new GalleryTypographyPage()),
 
-            new DemoNavigationItem("Basic input", "Buttons", "button hyperlink accent", "\uE8E5", false, () => new GalleryButtonsPage()),
-            new DemoNavigationItem("Basic input", "Selection", "checkbox radiobutton toggleswitch toggle", "\uE73E", false, () => new GallerySelectionPage()),
-            new DemoNavigationItem("Basic input", "Inputs", "textbox password combobox slider number", "\uE70F", false, () => new GalleryInputsPage()),
-            new DemoNavigationItem("Basic input", "Forms", "form validation password email numberbox", "\uE943", false, () => new GalleryFormsPage()),
+            new DemoNavigationItem("Accessibility", "Screen reader support", "accessibility screen reader narrator automation properties", "\uE776", false, () => new GalleryAccessibilityPage()),
+            new DemoNavigationItem("Accessibility", "Keyboard support", "accessibility keyboard focus tab order accelerator", "\uE765", false, () => new GalleryAccessibilityPage()),
+            new DemoNavigationItem("Accessibility", "Color contrast", "accessibility high contrast color contrast theme", "\uE7F4", false, () => new GalleryAccessibilityPage()),
 
-            new DemoNavigationItem("Collections", "Data", "listview list layout card dock stack scroll", "\uE80A", false, () => new GalleryDataPage()),
-            new DemoNavigationItem("Collections", "Trees", "treeview tree hierarchy expand collapse", "\uE8EB", false, () => new GalleryTreesPage()),
+            new DemoNavigationItem("Basic input", "Button", "button buttons accent icon", "\uE8E5", false, () => new GalleryButtonsPage()),
+            new DemoNavigationItem("Basic input", "DropDownButton", "dropdownbutton button menu flyout buttons", "\uE70D", false, () => new GalleryButtonsPage()),
+            new DemoNavigationItem("Basic input", "HyperlinkButton", "hyperlinkbutton hyperlink button link buttons", "\uE71B", false, () => new GalleryButtonsPage()),
+            new DemoNavigationItem("Basic input", "RepeatButton", "repeatbutton button repeat buttons", "\uE8EE", false, () => new GalleryButtonsPage()),
+            new DemoNavigationItem("Basic input", "ToggleButton", "togglebutton button toggle buttons", "\uE73A", false, () => new GalleryButtonsPage()),
+            new DemoNavigationItem("Basic input", "SplitButton", "splitbutton button menu buttons", "\uE8A5", false, () => new GalleryButtonsPage()),
+            new DemoNavigationItem("Basic input", "CheckBox", "checkbox check selection", "\uE73E", false, () => new GallerySelectionPage()),
+            new DemoNavigationItem("Basic input", "ComboBox", "combobox combo dropdown selection", "\uE70D", false, () => new GallerySelectionPage()),
+            new DemoNavigationItem("Basic input", "RadioButton", "radiobutton radio selection", "\uE915", false, () => new GallerySelectionPage()),
+            new DemoNavigationItem("Basic input", "RatingControl", "ratingcontrol rating selection", "\uE734", false, () => new GallerySelectionPage()),
+            new DemoNavigationItem("Basic input", "Slider", "slider range input inputs", "\uE9E9", false, () => new GalleryInputsPage()),
+            new DemoNavigationItem("Basic input", "ToggleSwitch", "toggleswitch toggle switch selection", "\uE73A", false, () => new GallerySelectionPage()),
+            new DemoNavigationItem("Basic input", "TextBox", "textbox text input inputs form", "\uE70F", false, () => new GalleryInputsPage()),
+            new DemoNavigationItem("Basic input", "PasswordBox", "passwordbox password input inputs form", "\uE72E", false, () => new GalleryInputsPage()),
+            new DemoNavigationItem("Basic input", "NumberBox", "numberbox number input inputs form", "\uF16E", false, () => new GalleryInputsPage()),
 
-            new DemoNavigationItem("Navigation", "Navigation", "navigationview pane back", "\uE700", false, () => new GalleryNavigationPage()),
-            new DemoNavigationItem("Navigation", "Tabs", "tabcontrol tabview tab close add document", "\uF22C", false, () => new GalleryTabsPage()),
-            new DemoNavigationItem("Navigation", "Menus", "menu contextmenu tooltip dropdownbutton splitbutton", "\uE115", false, () => new GalleryMenusPage()),
+            new DemoNavigationItem("Collections", "Card", "card collection data", "\uECA5", false, () => new GalleryDataPage()),
+            new DemoNavigationItem("Collections", "ListBox", "listbox list collection data selection", "\uEA37", false, () => new GalleryDataPage()),
+            new DemoNavigationItem("Collections", "ListView", "listview list collection data", "\uE8FD", false, () => new GalleryDataPage()),
+            new DemoNavigationItem("Collections", "TreeView", "treeview tree hierarchy expand collapse", "\uE8EB", false, () => new GalleryTreesPage()),
 
-            new DemoNavigationItem("Status and info", "Status", "progress infobar ring bar", "\uE916", false, () => new GalleryStatusPage()),
+            new DemoNavigationItem("Menus and toolbars", "Menu", "menu menuitem command toolbar", "\uE115", false, () => new GalleryMenusPage()),
+            new DemoNavigationItem("Menus and toolbars", "ContextMenu", "contextmenu menu command", "\uE700", false, () => new GalleryMenusPage()),
+            new DemoNavigationItem("Menus and toolbars", "ToolTip", "tooltip tip help", "\uE946", false, () => new GalleryMenusPage()),
 
-            new DemoNavigationItem("Styles", "Colors", "brush swatch theme resource high contrast", "\uE790", false, () => new GalleryColorsPage()),
-            new DemoNavigationItem("Styles", "Glyphs", "fonticon icon segoe fluent", "\uED58", false, () => new GalleryGlyphsPage()),
+            new DemoNavigationItem("Navigation", "NavigationView", "navigationview navigation pane back", "\uE700", false, () => new GalleryNavigationPage()),
+            new DemoNavigationItem("Navigation", "TabView", "tabview tab tabs close add document", "\uF22C", false, () => new GalleryTabsPage()),
 
-            new DemoNavigationItem("Windowing", "Window", "window theme backdrop mica accent titlebar chrome shell", "\uE737", false, () => new GalleryWindowPage())
+            new DemoNavigationItem("Status and info", "InfoBadge", "infobadge badge status info", "\uE946", false, () => new GalleryStatusPage()),
+            new DemoNavigationItem("Status and info", "InfoBar", "infobar status info message", "\uE946", false, () => new GalleryStatusPage()),
+            new DemoNavigationItem("Status and info", "ProgressBar", "progressbar progress status determinate indeterminate", "\uE9D9", false, () => new GalleryStatusPage()),
+            new DemoNavigationItem("Status and info", "ProgressRing", "progressring progress status determinate indeterminate ring", "\uE9D9", false, () => new GalleryStatusPage()),
+            new DemoNavigationItem("Status and info", "PersonPicture", "personpicture avatar profile status", "\uE77B", false, () => new GalleryDataPage()),
+
+            new DemoNavigationItem("Layout", "Border", "border layout", "\uECA5", false, () => new GalleryFormsPage()),
+            new DemoNavigationItem("Layout", "DockPanel", "dockpanel layout panel", "\uF0E2", false, () => new GalleryDataPage()),
+            new DemoNavigationItem("Layout", "Expander", "expander layout disclosure", "\uE70D", false, () => new GalleryDataPage()),
+            new DemoNavigationItem("Layout", "Separator", "separator layout divider", "\uE738", false, () => new GalleryDataPage()),
+            new DemoNavigationItem("Layout", "StackPanel", "stackpanel layout panel", "\uF0E2", false, () => new GalleryDataPage()),
+
+            new DemoNavigationItem("Text", "TextBlock", "textblock text typography", "\uE8D2", false, () => new GalleryTypographyPage()),
+
+            new DemoNavigationItem("Windowing", "CaptionButtonChrome", "captionbuttonchrome caption chrome window", "\uE8BB", false, () => new GalleryWindowPage()),
+            new DemoNavigationItem("Windowing", "FluenceWindow", "fluencewindow window theme backdrop mica accent titlebar chrome shell", "\uE737", false, () => new GalleryWindowPage()),
+            new DemoNavigationItem("Windowing", "TitleBar", "titlebar window chrome caption", "\uE8BB", false, () => new GalleryWindowPage())
         };
 
         public static IEnumerable<DemoNavigationItem> Items
         {
             get { return CatalogItems; }
+        }
+
+        public static bool TryGetCategory(string title, out DemoNavigationCategory category)
+        {
+            foreach (var item in CatalogCategories)
+            {
+                if (string.Equals(item.Title, title, StringComparison.Ordinal))
+                {
+                    category = item;
+                    return true;
+                }
+            }
+
+            category = null;
+            return false;
         }
     }
 }

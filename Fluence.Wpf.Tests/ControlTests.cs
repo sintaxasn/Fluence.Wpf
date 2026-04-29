@@ -1259,7 +1259,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void MainWindow_NavigationView_HasSixteenNavItems()
+        public void MainWindow_NavigationView_UsesGroupedGalleryTaxonomy()
         {
             RunOnStaThread(() =>
             {
@@ -1276,16 +1276,33 @@ namespace Fluence.Wpf.Tests
 
                     var nav = window.FindName("DemoNav") as Fluent.NavigationView;
                     Assert.IsNotNull(nav);
-                    var count = 0;
+                    var groups = new List<string>();
+                    var pages = new List<string>();
                     foreach (var obj in nav.Items)
                     {
-                        if (obj is Fluent.NavigationViewItem)
+                        var item = obj as Fluent.NavigationViewItem;
+                        if (item == null)
                         {
-                            count++;
+                            continue;
+                        }
+
+                        var content = item.Content as string;
+                        if (item.PageContent == null)
+                        {
+                            groups.Add(content);
+                        }
+                        else
+                        {
+                            pages.Add(content);
                         }
                     }
 
-                    Assert.AreEqual(16, count, "Demo navigation should expose 16 pages (11 original + 5 gallery additions).");
+                    CollectionAssert.Contains(groups, "Design");
+                    CollectionAssert.Contains(groups, "Accessibility");
+                    CollectionAssert.Contains(groups, "Basic input");
+                    CollectionAssert.Contains(pages, "Button");
+                    CollectionAssert.Contains(pages, "Typography");
+                    Assert.IsFalse(groups.Contains("Fundamentals"), "Demo navigation should not expose the old Fundamentals section.");
                 }
                 finally
                 {
@@ -2565,7 +2582,12 @@ namespace Fluence.Wpf.Tests
             foreach (var obj in nav.Items)
             {
                 var nvi = obj as Fluent.NavigationViewItem;
-                if (nvi != null && string.Equals(nvi.Content as string, itemContent, StringComparison.Ordinal))
+                var label = nvi == null ? null : nvi.Content as string;
+                var tag = nvi == null ? null : nvi.Tag as string;
+                if (nvi != null &&
+                    nvi.PageContent != null &&
+                    (string.Equals(label, itemContent, StringComparison.Ordinal) ||
+                     (tag != null && tag.IndexOf(itemContent, StringComparison.OrdinalIgnoreCase) >= 0)))
                 {
                     nav.SelectedItem = nvi;
                     DrainDispatcher(dispatcher);
