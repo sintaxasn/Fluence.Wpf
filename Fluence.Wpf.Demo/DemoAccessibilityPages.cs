@@ -38,6 +38,8 @@ namespace Fluence.Wpf.Demo
 {
     internal static class DemoAccessibilityPages
     {
+        private const int KeyboardSupportColumns = 4;
+
         public static GalleryControlPage ScreenReaderSupport()
         {
             return CreatePage(
@@ -96,50 +98,83 @@ namespace Fluence.Wpf.Demo
         private static UIElement CreateFocusAndTabOrder()
         {
             var stack = new Fluent.StackPanel { Spacing = 12 };
-            var wrap = new WrapPanel();
-            wrap.Children.Add(NamedButton("Button 1", "First focusable button"));
-            wrap.Children.Add(NamedButton("Button 2", "Second focusable button"));
+            var controls = CreateCenteredControlRow("KeyboardSupportPrimaryControls");
+            AddCenteredControl(controls, NamedButton("Button 1", "First focusable button"));
+            AddCenteredControl(controls, NamedButton("Button 2", "Second focusable button"));
 
-            var checkBox = new Fluent.CheckBox { Margin = new Thickness(0, 0, 8, 8), Content = "CheckBox" };
+            var checkBox = new Fluent.CheckBox { Content = "CheckBox" };
             AutomationProperties.SetName(checkBox, "Focusable checkbox");
-            wrap.Children.Add(checkBox);
+            AddCenteredControl(controls, checkBox);
 
-            var toggle = new Fluent.ToggleSwitch { Margin = new Thickness(0, 0, 8, 8) };
+            var toggle = new Fluent.ToggleSwitch();
             AutomationProperties.SetName(toggle, "Focusable toggle");
-            wrap.Children.Add(toggle);
+            AddCenteredControl(controls, toggle);
 
-            var textBox = new Fluent.TextBox { Width = 160, Margin = new Thickness(0, 0, 8, 8), PlaceholderText = "TextBox" };
+            var textBox = new Fluent.TextBox { Width = 160, PlaceholderText = "TextBox" };
             AutomationProperties.SetName(textBox, "Focusable text input");
-            wrap.Children.Add(textBox);
+            AddCenteredControl(controls, textBox);
 
-            var comboBox = new Fluent.ComboBox { Width = 140, Margin = new Thickness(0, 0, 8, 8) };
+            var comboBox = new Fluent.ComboBox { Width = 140 };
             AutomationProperties.SetName(comboBox, "Focusable combo box");
             comboBox.Items.Add(new ComboBoxItem { Content = "Option A", IsSelected = true });
             comboBox.Items.Add(new ComboBoxItem { Content = "Option B" });
-            wrap.Children.Add(comboBox);
+            AddCenteredControl(controls, comboBox);
 
-            var slider = new Fluent.Slider { Width = 140, Margin = new Thickness(0, 0, 8, 8), Minimum = 0, Maximum = 100, Value = 40 };
+            var slider = new Fluent.Slider { Width = 140, Minimum = 0, Maximum = 100, Value = 40 };
             AutomationProperties.SetName(slider, "Focusable slider");
-            wrap.Children.Add(slider);
+            AddCenteredControl(controls, slider);
 
-            var link = new Fluent.HyperlinkButton { Margin = new Thickness(0, 0, 0, 8), Content = "HyperlinkButton" };
+            var link = new Fluent.HyperlinkButton { Content = "HyperlinkButton" };
             AutomationProperties.SetName(link, "Focusable hyperlink");
-            wrap.Children.Add(link);
-            stack.Children.Add(wrap);
+            AddCenteredControl(controls, link);
+            stack.Children.Add(controls);
 
             var caption = new TextBlock { Text = "The buttons below have an explicit reverse tab order: 3, 2, 1." };
             caption.SetResourceReference(TextBlock.ForegroundProperty, "TextFillColorSecondaryBrush");
             stack.Children.Add(caption);
 
-            var explicitOrder = new StackPanel { Orientation = Orientation.Horizontal };
-            var third = new Fluent.Button { Margin = new Thickness(0, 0, 8, 0), Content = "Tab order: 3", TabIndex = 3 };
-            var second = new Fluent.Button { Margin = new Thickness(0, 0, 8, 0), Content = "Tab order: 2", TabIndex = 2 };
+            var explicitOrder = CreateCenteredControlRow("KeyboardSupportExplicitOrderControls");
+            var third = new Fluent.Button { Content = "Tab order: 3", TabIndex = 3 };
+            var second = new Fluent.Button { Content = "Tab order: 2", TabIndex = 2 };
             var first = new Fluent.Button { Content = "Tab order: 1 (first)", TabIndex = 1, Appearance = ControlAppearance.Accent };
-            explicitOrder.Children.Add(third);
-            explicitOrder.Children.Add(second);
-            explicitOrder.Children.Add(first);
+            AddCenteredControl(explicitOrder, third);
+            AddCenteredControl(explicitOrder, second);
+            AddCenteredControl(explicitOrder, first);
             stack.Children.Add(explicitOrder);
             return stack;
+        }
+
+        private static Grid CreateCenteredControlRow(string name)
+        {
+            var grid = new Grid
+            {
+                Name = name,
+                Margin = new Thickness(0, 0, 0, 8)
+            };
+
+            for (var column = 0; column < KeyboardSupportColumns; column++)
+            {
+                grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            }
+
+            return grid;
+        }
+
+        private static void AddCenteredControl(Grid row, FrameworkElement control)
+        {
+            var index = row.Children.Count;
+            var rowIndex = index / KeyboardSupportColumns;
+            while (row.RowDefinitions.Count <= rowIndex)
+            {
+                row.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            }
+
+            var column = index % KeyboardSupportColumns;
+            control.Margin = new Thickness(0, 0, 12, 0);
+            control.VerticalAlignment = VerticalAlignment.Center;
+            Grid.SetRow(control, rowIndex);
+            Grid.SetColumn(control, column);
+            row.Children.Add(control);
         }
 
         private static UIElement CreateHighContrastMapping()

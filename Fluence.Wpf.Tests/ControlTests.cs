@@ -632,7 +632,13 @@ namespace Fluence.Wpf.Tests
                 var genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
-                var window = new Window();
+                var window = new Window
+                {
+                    Left = -20000,
+                    Top = -20000,
+                    WindowStartupLocation = WindowStartupLocation.Manual,
+                    ShowInTaskbar = false
+                };
                 var listView = new Fluent.ListView
                 {
                     Width = 260,

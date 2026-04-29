@@ -168,8 +168,12 @@ namespace Fluence.Wpf.Tests
 
                 ThemeTestHelpers.ApplyStandardThemeCycle();
                 DrainDispatcher(w.Dispatcher);
+                cb.ApplyTemplate();
+                w.UpdateLayout();
+                DrainDispatcher(w.Dispatcher);
 
-                VisualStateManager.GoToState(cb, "Focused", false);
+                bool transitioned = VisualStateManager.GoToState(cb, "Focused", false);
+                Assert.IsTrue(transitioned, "GoToState('Focused') must return true after theme cycle.");
                 DrainDispatcher(w.Dispatcher);
 
                 var accentLine = FindVisualChildByName<WpfBorder>(cb, "FocusAccentLine");

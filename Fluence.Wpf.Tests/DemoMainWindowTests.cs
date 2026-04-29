@@ -764,16 +764,28 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(chevron, "Category headers should expose a FontIcon chevron.");
                     Assert.AreEqual("\uE70D", chevron.Glyph,
                         "Category chevrons should use the down glyph and rotate rather than swapping glyphs.");
-                    Assert.AreEqual(0.0, chevron.Rotation, 0.01,
-                        "Collapsed category chevron should start at 0 degrees.");
 
-                    nav.SelectedItem = basicInput;
+                    nav.IsPaneOpen = true;
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
+                    nav.IsPaneOpen = false;
+                    WaitForAnimationAndDrain(window.Dispatcher, 180);
+                    nav.IsPaneOpen = true;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.AreEqual(0.0, chevron.Rotation, 0.01,
+                        "Collapsed category chevron should start at 0 degrees.");
+
+                    nav.SelectedItem = basicInput;
                     Assert.IsTrue(chevron.HasAnimatedProperties,
                         "Expanding a category should animate the chevron rotation.");
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
                     WaitForAnimationAndDrain(window.Dispatcher, 180);
                     Assert.AreEqual(180.0, chevron.Rotation, 0.01,
                         "Expanded category chevron should settle at 180 degrees.");
@@ -784,12 +796,11 @@ namespace Fluence.Wpf.Tests
                     Drain(window.Dispatcher);
 
                     nav.SelectedItem = basicInput;
+                    Assert.IsTrue(chevron.HasAnimatedProperties,
+                        "Collapsing a category should animate the chevron rotation.");
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
-
-                    Assert.IsTrue(chevron.HasAnimatedProperties,
-                        "Collapsing a category should animate the chevron rotation.");
                     WaitForAnimationAndDrain(window.Dispatcher, 140);
                     Assert.AreEqual(0.0, chevron.Rotation, 0.01,
                         "Collapsed category chevron should settle back at 0 degrees.");
@@ -900,6 +911,11 @@ namespace Fluence.Wpf.Tests
                     Drain(window.Dispatcher);
                     Assert.AreEqual(Visibility.Visible, button.Visibility,
                         "The test section must be expanded before pane collapse.");
+
+                    nav.IsPaneOpen = true;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
 
                     nav.IsPaneOpen = false;
                     WaitForAnimationAndDrain(window.Dispatcher, 180);
@@ -1405,6 +1421,51 @@ namespace Fluence.Wpf.Tests
                         AssertPageHasSourceActions(selectedContent, pageTitle);
 
                     }
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void KeyboardSupportPage_CenterAlignsControlRows()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+                MainWindow window = null;
+
+                try
+                {
+                    window = CreateShownMainWindow();
+                    window.NavigateTo("Keyboard support");
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    var selectedContent = GetDemoNav(window).SelectedContent as DependencyObject;
+                    Assert.IsNotNull(selectedContent, "Keyboard support should open a page object.");
+
+                    var primaryControls = FindByName<System.Windows.Controls.Grid>(selectedContent, "KeyboardSupportPrimaryControls");
+                    AssertCenteredChildren(primaryControls, "Primary keyboard support controls");
+                    Assert.IsTrue(GetMaxGridColumn(primaryControls) <= 3,
+                        "Primary keyboard support controls should not exceed four grid columns.");
+                    Assert.IsTrue(GetMaxGridRow(primaryControls) >= 1,
+                        "Primary keyboard support controls should wrap to a second row instead of clipping horizontally.");
+                    AssertCenteredChildren(
+                        FindByName<System.Windows.Controls.Grid>(selectedContent, "KeyboardSupportExplicitOrderControls"),
+                        "Explicit tab order controls");
                 }
                 finally
                 {
@@ -3935,6 +3996,42 @@ namespace Fluence.Wpf.Tests
             }
 
             return false;
+        }
+
+        private static void AssertCenteredChildren(System.Windows.Controls.Grid row, string rowName)
+        {
+            Assert.IsNotNull(row, rowName + " row should exist.");
+            Assert.IsTrue(row.Children.Count > 0, rowName + " row should contain controls.");
+
+            foreach (UIElement child in row.Children)
+            {
+                var element = child as FrameworkElement;
+                Assert.IsNotNull(element, rowName + " row children should be framework elements.");
+                Assert.AreEqual(VerticalAlignment.Center, element.VerticalAlignment,
+                    rowName + " row should vertically center " + element.GetType().Name + ".");
+            }
+        }
+
+        private static int GetMaxGridColumn(System.Windows.Controls.Grid row)
+        {
+            var max = 0;
+            foreach (UIElement child in row.Children)
+            {
+                max = Math.Max(max, Grid.GetColumn(child));
+            }
+
+            return max;
+        }
+
+        private static int GetMaxGridRow(System.Windows.Controls.Grid row)
+        {
+            var max = 0;
+            foreach (UIElement child in row.Children)
+            {
+                max = Math.Max(max, Grid.GetRow(child));
+            }
+
+            return max;
         }
 
         private static T FindByName<T>(DependencyObject root, string name) where T : FrameworkElement
