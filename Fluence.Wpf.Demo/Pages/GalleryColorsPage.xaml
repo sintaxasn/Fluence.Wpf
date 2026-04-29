@@ -17,6 +17,47 @@
                 Text="Color" />
             <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="The brushes below are part of Fluence.Wpf and you can reference them in your app via DynamicResource." />
 
+            <UniformGrid
+                Margin="0,12,0,16"
+                Columns="4">
+                <StackPanel Margin="0,0,8,0">
+                    <TextBlock
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Text="Text and accent" />
+                    <ui:HyperlinkButton
+                        x:Name="TextAndAccentBrushesSourceLink"
+                        HorizontalAlignment="Left"
+                        Content="Source" />
+                </StackPanel>
+                <StackPanel Margin="0,0,8,0">
+                    <TextBlock
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Text="Fills and surfaces" />
+                    <ui:HyperlinkButton
+                        x:Name="FillAndSurfaceBrushesSourceLink"
+                        HorizontalAlignment="Left"
+                        Content="Source" />
+                </StackPanel>
+                <StackPanel Margin="0,0,8,0">
+                    <TextBlock
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Text="Strokes" />
+                    <ui:HyperlinkButton
+                        x:Name="StrokeBrushesSourceLink"
+                        HorizontalAlignment="Left"
+                        Content="Source" />
+                </StackPanel>
+                <StackPanel>
+                    <TextBlock
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Text="System colors" />
+                    <ui:HyperlinkButton
+                        x:Name="SystemAndHighContrastBrushesSourceLink"
+                        HorizontalAlignment="Left"
+                        Content="Source" />
+                </StackPanel>
+            </UniformGrid>
+
             <TabControl Style="{DynamicResource TabControlStyle}">
 
                 <!--  ═══ TEXT TAB ═══  -->

@@ -34,6 +34,11 @@ namespace Fluence.Wpf.Demo.Pages
         public GalleryColorsPage()
         {
             InitializeComponent();
+
+            TextAndAccentBrushesSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Colors/TextAndAccentBrushes.xaml");
+            FillAndSurfaceBrushesSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Colors/FillAndSurfaceBrushes.xaml");
+            StrokeBrushesSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Colors/StrokeBrushes.xaml");
+            SystemAndHighContrastBrushesSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Colors/SystemAndHighContrastBrushes.xaml");
         }
     }
 }
