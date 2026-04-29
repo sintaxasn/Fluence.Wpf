@@ -1,0 +1,42 @@
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Samples.Accessibility.AutomationProperties"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
+    <StackPanel>
+        <TextBlock
+            Margin="0,0,0,8"
+            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+            Text="These icon-only buttons all have AutomationProperties.Name so Narrator announces their purpose:"
+            TextWrapping="Wrap" />
+        <StackPanel Orientation="Horizontal">
+            <ui:Button
+                Margin="0,0,8,0"
+                Padding="8"
+                AutomationProperties.Name="New document">
+                <ui:FontIcon Glyph="&#xE8A5;" IconFontSize="18" />
+            </ui:Button>
+            <ui:Button
+                Margin="0,0,8,0"
+                Padding="8"
+                AutomationProperties.Name="Open file">
+                <ui:FontIcon Glyph="&#xE8E5;" IconFontSize="18" />
+            </ui:Button>
+            <ui:Button
+                Margin="0,0,8,0"
+                Padding="8"
+                AutomationProperties.Name="Save">
+                <ui:FontIcon Glyph="&#xE74E;" IconFontSize="18" />
+            </ui:Button>
+            <ui:Button
+                Margin="0,0,8,0"
+                Padding="8"
+                AutomationProperties.Name="Delete">
+                <ui:FontIcon Glyph="&#xE74D;" IconFontSize="18" />
+            </ui:Button>
+            <ui:Button Padding="8" AutomationProperties.Name="Share">
+                <ui:FontIcon Glyph="&#xE72D;" IconFontSize="18" />
+            </ui:Button>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

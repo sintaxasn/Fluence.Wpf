@@ -1,0 +1,34 @@
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Samples.Accessibility.RtlLayout"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
+    xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf">
+    <StackPanel>
+        <ui:ToggleSwitch
+            x:Name="RtlToggle"
+            Margin="0,0,0,12"
+            Checked="RtlToggle_Changed"
+            Content="Enable RTL on demo card"
+            Unchecked="RtlToggle_Changed" />
+        <ui:Card
+            x:Name="RtlDemoCard"
+            Padding="16"
+            Variant="{x:Static uicore:CardVariant.Outlined}">
+            <StackPanel>
+                <TextBlock
+                    Margin="0,0,0,8"
+                    ui:TextBlockExtensions.Typography="BodyStrong"
+                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                    Text="نموذج عنصر تحكم" />
+                <StackPanel Orientation="Horizontal">
+                    <ui:Button
+                        Margin="0,0,8,0"
+                        Appearance="Accent"
+                        Content="زر رئيسي" />
+                    <ui:Button Content="إلغاء" />
+                </StackPanel>
+            </StackPanel>
+        </ui:Card>
+    </StackPanel>
+</UserControl>
