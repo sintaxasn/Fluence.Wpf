@@ -11,6 +11,144 @@
                         <StackPanel Margin="24" HorizontalAlignment="Stretch">
                             <TextBlock
                                 Margin="0,0,0,4"
+                                ui:TextBlockExtensions.Typography="Title"
+                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                Text="Glyphs"
+                                />
+                            <TextBlock
+                                Margin="0,0,0,24"
+                                Style="{StaticResource SectionDescriptionStyle}"
+                                Text="FontIcon renders Segoe Fluent Icons glyphs for commands, navigation, status, and compact UI labels." />
+
+                            <UniformGrid
+                                Margin="0,0,0,16"
+                                Columns="3">
+                                <ui:Card
+                                    Margin="0,0,8,0"
+                                    Padding="16"
+                                    Variant="{x:Static uicore:CardVariant.Default}">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="Common icons" />
+                                        <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Use familiar glyphs to support common destinations and object types." />
+                                        <WrapPanel Margin="0,8,0,12">
+                                            <StackPanel Margin="0,0,20,8">
+                                                <ui:FontIcon
+                                                    HorizontalAlignment="Center"
+                                                    Glyph="&#xE80F;"
+                                                    IconFontSize="24" />
+                                                <TextBlock
+                                                    Margin="0,6,0,0"
+                                                    HorizontalAlignment="Center"
+                                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                    Text="Home" />
+                                            </StackPanel>
+                                            <StackPanel Margin="0,0,20,8">
+                                                <ui:FontIcon
+                                                    HorizontalAlignment="Center"
+                                                    Glyph="&#xE8B7;"
+                                                    IconFontSize="24" />
+                                                <TextBlock
+                                                    Margin="0,6,0,0"
+                                                    HorizontalAlignment="Center"
+                                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                    Text="Folder" />
+                                            </StackPanel>
+                                            <StackPanel Margin="0,0,20,8">
+                                                <ui:FontIcon
+                                                    HorizontalAlignment="Center"
+                                                    Glyph="&#xE77B;"
+                                                    IconFontSize="24" />
+                                                <TextBlock
+                                                    Margin="0,6,0,0"
+                                                    HorizontalAlignment="Center"
+                                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                    Text="Contact" />
+                                            </StackPanel>
+                                        </WrapPanel>
+                                        <ui:HyperlinkButton
+                                            x:Name="CommonGlyphsSourceLink"
+                                            HorizontalAlignment="Left"
+                                            Content="Source" />
+                                    </StackPanel>
+                                </ui:Card>
+
+                                <ui:Card
+                                    Margin="8,0,8,0"
+                                    Padding="16"
+                                    Variant="{x:Static uicore:CardVariant.Default}">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="Command icons" />
+                                        <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Place FontIcon in the Icon slot when a button benefits from a visual cue." />
+                                        <WrapPanel Margin="0,8,0,12">
+                                            <ui:Button Margin="0,0,8,8" Content="Save">
+                                                <ui:Button.Icon>
+                                                    <ui:FontIcon Glyph="&#xE74E;" IconFontSize="14" />
+                                                </ui:Button.Icon>
+                                            </ui:Button>
+                                            <ui:Button
+                                                Margin="0,0,8,8"
+                                                Appearance="Subtle"
+                                                Content="Refresh">
+                                                <ui:Button.Icon>
+                                                    <ui:FontIcon Glyph="&#xE72C;" IconFontSize="14" />
+                                                </ui:Button.Icon>
+                                            </ui:Button>
+                                            <ui:Button
+                                                Margin="0,0,8,8"
+                                                Content="Share"
+                                                IconPlacement="Right">
+                                                <ui:Button.Icon>
+                                                    <ui:FontIcon Glyph="&#xE72D;" IconFontSize="14" />
+                                                </ui:Button.Icon>
+                                            </ui:Button>
+                                        </WrapPanel>
+                                        <ui:HyperlinkButton
+                                            x:Name="CommandGlyphsSourceLink"
+                                            HorizontalAlignment="Left"
+                                            Content="Source" />
+                                    </StackPanel>
+                                </ui:Card>
+
+                                <ui:Card
+                                    Margin="8,0,0,0"
+                                    Padding="16"
+                                    Variant="{x:Static uicore:CardVariant.Default}">
+                                    <StackPanel>
+                                        <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="Status icons" />
+                                        <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Pair glyphs with text and color to reinforce state without relying on color alone." />
+                                        <StackPanel Margin="0,8,0,12">
+                                            <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
+                                                <ui:FontIcon Glyph="&#xE73E;" IconFontSize="16" />
+                                                <TextBlock
+                                                    Margin="8,0,0,0"
+                                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                    Text="Completed" />
+                                            </StackPanel>
+                                            <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
+                                                <ui:FontIcon Glyph="&#xE946;" IconFontSize="16" />
+                                                <TextBlock
+                                                    Margin="8,0,0,0"
+                                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                    Text="Information" />
+                                            </StackPanel>
+                                            <StackPanel Orientation="Horizontal">
+                                                <ui:FontIcon Glyph="&#xE7BA;" IconFontSize="16" />
+                                                <TextBlock
+                                                    Margin="8,0,0,0"
+                                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                                    Text="Attention" />
+                                            </StackPanel>
+                                        </StackPanel>
+                                        <ui:HyperlinkButton
+                                            x:Name="StatusGlyphsSourceLink"
+                                            HorizontalAlignment="Left"
+                                            Content="Source" />
+                                    </StackPanel>
+                                </ui:Card>
+                            </UniformGrid>
+
+                            <TextBlock
+                                Margin="0,0,0,4"
                                 Style="{StaticResource SectionHeaderStyle}"
                                 Text="Segoe Fluent Icons"
                                 />

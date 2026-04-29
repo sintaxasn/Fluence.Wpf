@@ -34,6 +34,10 @@ namespace Fluence.Wpf.Demo.Pages
         public GalleryGlyphsPage()
         {
             InitializeComponent();
+
+            CommonGlyphsSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Glyphs/CommonGlyphs.xaml");
+            CommandGlyphsSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Glyphs/CommandGlyphs.xaml");
+            StatusGlyphsSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Glyphs/StatusGlyphs.xaml");
         }
     }
 }
