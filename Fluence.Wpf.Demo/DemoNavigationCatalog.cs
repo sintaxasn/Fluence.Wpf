@@ -142,8 +142,8 @@ namespace Fluence.Wpf.Demo
             new DemoNavigationItem("Menus and toolbars", "ContextMenu", "contextmenu menu command", "\uE700", false, () => DemoMenuPages.ContextMenu()),
             new DemoNavigationItem("Menus and toolbars", "ToolTip", "tooltip tip help", "\uE946", false, () => DemoMenuPages.ToolTip()),
 
-            new DemoNavigationItem("Navigation", "NavigationView", "navigationview navigation pane back", "\uE700", false, () => new GalleryNavigationPage()),
-            new DemoNavigationItem("Navigation", "TabView", "tabview tab tabs close add document", "\uF22C", false, () => new GalleryTabsPage()),
+            new DemoNavigationItem("Navigation", "NavigationView", "navigationview navigation pane back", "\uE700", false, () => DemoNavigationPages.NavigationView()),
+            new DemoNavigationItem("Navigation", "TabView", "tabview tab tabs close add document", "\uF22C", false, () => DemoNavigationPages.TabView()),
 
             new DemoNavigationItem("Status and info", "InfoBadge", "infobadge badge status info", "\uE946", false, () => DemoStatusPages.InfoBadge()),
             new DemoNavigationItem("Status and info", "InfoBar", "infobar status info message", "\uE946", false, () => DemoStatusPages.InfoBar()),
