@@ -1245,7 +1245,7 @@ namespace Fluence.Wpf.Tests
                     SelectMainWindowNavPage(window, window.Dispatcher, "ProgressBar");
                     Assert.IsNotNull(FindVisualChildByName<Fluent.ProgressBar>(window, "StepProgressBar"));
 
-                    SelectMainWindowNavPage(window, window.Dispatcher, "Data");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "ListView");
                     Assert.IsNotNull(FindVisualChildByName<Fluent.ListView>(window, "EmptyStateListView"));
                 }
                 finally

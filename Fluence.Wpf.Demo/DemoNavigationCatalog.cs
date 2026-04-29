@@ -133,10 +133,10 @@ namespace Fluence.Wpf.Demo
             new DemoNavigationItem("Basic input", "PasswordBox", "passwordbox password input form", "\uE72E", false, () => DemoControlPages.PasswordBox()),
             new DemoNavigationItem("Basic input", "NumberBox", "numberbox number input form", "\uF16E", false, () => DemoControlPages.NumberBox()),
 
-            new DemoNavigationItem("Collections", "Card", "card collection data", "\uECA5", false, () => new GalleryDataPage()),
-            new DemoNavigationItem("Collections", "ListBox", "listbox list collection data selection", "\uEA37", false, () => new GalleryDataPage()),
-            new DemoNavigationItem("Collections", "ListView", "listview list collection data", "\uE8FD", false, () => new GalleryDataPage()),
-            new DemoNavigationItem("Collections", "TreeView", "treeview tree hierarchy expand collapse", "\uE8EB", false, () => new GalleryTreesPage()),
+            new DemoNavigationItem("Collections", "Card", "card collection data", "\uECA5", false, () => DemoCollectionPages.Card()),
+            new DemoNavigationItem("Collections", "ListBox", "listbox list collection data selection", "\uEA37", false, () => DemoCollectionPages.ListBox()),
+            new DemoNavigationItem("Collections", "ListView", "listview list collection data", "\uE8FD", false, () => DemoCollectionPages.ListView()),
+            new DemoNavigationItem("Collections", "TreeView", "treeview tree hierarchy expand collapse", "\uE8EB", false, () => DemoCollectionPages.TreeView()),
 
             new DemoNavigationItem("Menus and toolbars", "Menu", "menu menuitem command toolbar", "\uE115", false, () => new GalleryMenusPage()),
             new DemoNavigationItem("Menus and toolbars", "ContextMenu", "contextmenu menu command", "\uE700", false, () => new GalleryMenusPage()),
