@@ -99,6 +99,7 @@ namespace Fluence.Wpf.Demo.Pages
 
             var button = new Fluent.DropDownButton
             {
+                Appearance = ControlAppearance.Accent,
                 Content = CreateSourceLabel(),
                 Flyout = flyout,
                 HorizontalAlignment = HorizontalAlignment.Right,
@@ -146,12 +147,14 @@ namespace Fluence.Wpf.Demo.Pages
             };
 
             panel.Children.Add(CreateUrlIcon());
-            panel.Children.Add(new System.Windows.Controls.TextBlock
+            var label = new System.Windows.Controls.TextBlock
             {
                 Margin = new Thickness(6, 0, 0, 0),
                 Text = "Source",
                 VerticalAlignment = VerticalAlignment.Center
-            });
+            };
+            label.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "TextOnAccentFillColorPrimaryBrush");
+            panel.Children.Add(label);
 
             return panel;
         }

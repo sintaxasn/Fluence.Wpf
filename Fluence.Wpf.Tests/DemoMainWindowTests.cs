@@ -1845,6 +1845,89 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void DemoSourceActions_ForegroundFollowsTextOnAccentThemeResource()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                try
+                {
+                    AssertSourceActionForegroundFollowsTextOnAccent(ApplicationTheme.Light);
+                    AssertSourceActionForegroundFollowsTextOnAccent(ApplicationTheme.Dark);
+                }
+                finally
+                {
+                    if (dict != null && app.Resources.MergedDictionaries.Contains(dict))
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void DemoSourceActions_CodeBehindDropdownUsesAccentHoverPresentation()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                try
+                {
+                    var sourceDropdown = DemoSourceAction.Create("Buttons/ButtonAppearances.xaml") as DropDownButton;
+                    Assert.IsNotNull(sourceDropdown, "Samples with code-behind should create a source dropdown.");
+
+                    var appearancePropertyInfo = typeof(DropDownButton).GetProperty("Appearance");
+                    Assert.IsNotNull(appearancePropertyInfo, "Source dropdowns need an accent appearance state.");
+                    Assert.AreEqual(ControlAppearance.Accent, appearancePropertyInfo.GetValue(sourceDropdown, null),
+                        "Source dropdowns should use accent appearance.");
+
+                    var appearanceProperty = Fluence.Wpf.Controls.ToggleButton.AppearanceProperty;
+
+                    var host = new System.Windows.Controls.Grid();
+                    host.Children.Add(sourceDropdown);
+                    var window = new Window
+                    {
+                        Left = -20000,
+                        Top = -20000,
+                        Width = 320,
+                        Height = 120,
+                        WindowStartupLocation = WindowStartupLocation.Manual,
+                        ShowInTaskbar = false,
+                        Content = host
+                    };
+
+                    try
+                    {
+                        window.Show();
+                        Drain(window.Dispatcher);
+                        window.UpdateLayout();
+                        Drain(window.Dispatcher);
+
+                        AssertTemplateHasAccentMouseOverFill(
+                            sourceDropdown.Template,
+                            appearanceProperty,
+                            "AccentFillColorSecondaryBrush");
+                    }
+                    finally
+                    {
+                        window.Close();
+                    }
+                }
+                finally
+                {
+                    if (dict != null && app.Resources.MergedDictionaries.Contains(dict))
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
         public void DemoSourceActions_SamplesWithCodeBehindUseDropdownTargets()
         {
             RunOnSta(() =>
@@ -3807,6 +3890,132 @@ namespace Fluence.Wpf.Tests
             var localForeground = icon.ReadLocalValue(System.Windows.Controls.Control.ForegroundProperty);
             Assert.AreNotSame(DependencyProperty.UnsetValue, localForeground,
                 "Source URL glyph should set its own TextOnAccentFillColorPrimaryBrush foreground.");
+        }
+
+        private static void AssertSourceActionForegroundFollowsTextOnAccent(ApplicationTheme theme)
+        {
+            ApplicationThemeManager.Apply(theme, BackdropType.None, true);
+            ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
+
+            var sourceButton = DemoSourceAction.Create("Experimental/XamlOnly.xaml") as Fluence.Wpf.Controls.Button;
+            Assert.IsNotNull(sourceButton, "XAML-only samples should create an accent source button.");
+
+            var sourceDropdown = DemoSourceAction.Create("Buttons/ButtonAppearances.xaml") as DropDownButton;
+            Assert.IsNotNull(sourceDropdown, "Samples with code-behind should create a source dropdown.");
+
+            var host = new System.Windows.Controls.StackPanel();
+            host.Children.Add(sourceButton);
+            host.Children.Add(sourceDropdown);
+            var window = new Window
+            {
+                Left = -20000,
+                Top = -20000,
+                Width = 360,
+                Height = 160,
+                WindowStartupLocation = WindowStartupLocation.Manual,
+                ShowInTaskbar = false,
+                Content = host
+            };
+
+            try
+            {
+                window.Show();
+                Drain(window.Dispatcher);
+                window.UpdateLayout();
+                Drain(window.Dispatcher);
+
+                var expected = GetThemeBrushColor("TextOnAccentFillColorPrimaryBrush");
+                AssertBrushColor(sourceButton.Foreground, expected,
+                    theme + " source button foreground should use text-on-accent.");
+                AssertBrushColor(((FontIcon)sourceButton.Icon).Foreground, expected,
+                    theme + " source button URL glyph should use text-on-accent.");
+
+                AssertBrushColor(sourceDropdown.Foreground, expected,
+                    theme + " source dropdown foreground should use text-on-accent.");
+
+                var label = sourceDropdown.Content as System.Windows.Controls.StackPanel;
+                Assert.IsNotNull(label, "Source dropdown should use an icon/text label.");
+                Assert.IsTrue(label.Children.Count >= 2, "Source dropdown label should include icon and text.");
+                AssertBrushColor(((FontIcon)label.Children[0]).Foreground, expected,
+                    theme + " source dropdown URL glyph should use text-on-accent.");
+
+                var text = label.Children[1] as System.Windows.Controls.TextBlock;
+                Assert.IsNotNull(text, "Source dropdown label should include a text label.");
+                AssertBrushColor(text.Foreground, expected,
+                    theme + " source dropdown text should use text-on-accent.");
+            }
+            finally
+            {
+                window.Close();
+            }
+        }
+
+        private static Color GetThemeBrushColor(string resourceKey)
+        {
+            var brush = Application.Current.Resources[resourceKey] as SolidColorBrush;
+            Assert.IsNotNull(brush, "Theme resource should be a SolidColorBrush: " + resourceKey);
+            return brush.Color;
+        }
+
+        private static void AssertBrushColor(Brush brush, Color expected, string message)
+        {
+            var solidBrush = brush as SolidColorBrush;
+            Assert.IsNotNull(solidBrush, message);
+            Assert.AreEqual(expected, solidBrush.Color, message);
+        }
+
+        private static void AssertTemplateHasAccentMouseOverFill(
+            ControlTemplate template,
+            DependencyProperty appearanceProperty,
+            string resourceKey)
+        {
+            Assert.IsNotNull(template, "Source dropdown should have an applied template.");
+
+            foreach (TriggerBase triggerBase in template.Triggers)
+            {
+                var multiTrigger = triggerBase as MultiTrigger;
+                if (multiTrigger == null)
+                {
+                    continue;
+                }
+
+                if (!HasCondition(multiTrigger, UIElement.IsMouseOverProperty, true) ||
+                    !HasCondition(multiTrigger, appearanceProperty, ControlAppearance.Accent))
+                {
+                    continue;
+                }
+
+                foreach (Setter setter in multiTrigger.Setters)
+                {
+                    if (string.Equals(setter.TargetName, "RestFill", StringComparison.Ordinal) &&
+                        setter.Property == System.Windows.Controls.Border.BackgroundProperty &&
+                        IsDynamicResource(setter.Value, resourceKey))
+                    {
+                        return;
+                    }
+                }
+            }
+
+            Assert.Fail("Accent source dropdown hover should use " + resourceKey + ".");
+        }
+
+        private static bool HasCondition(MultiTrigger trigger, DependencyProperty property, object value)
+        {
+            foreach (Condition condition in trigger.Conditions)
+            {
+                if (condition.Property == property && Equals(condition.Value, value))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        private static bool IsDynamicResource(object value, string resourceKey)
+        {
+            var dynamicResource = value as DynamicResourceExtension;
+            return dynamicResource != null && Equals(dynamicResource.ResourceKey, resourceKey);
         }
 
         private static System.Collections.Generic.List<FrameworkElement> FindSourceActionControls(DependencyObject root)
