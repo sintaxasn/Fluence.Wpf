@@ -25,12 +25,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Demo.Pages
 {
@@ -38,108 +34,46 @@ namespace Fluence.Wpf.Demo.Pages
     {
         private int _addCounter;
 
-        private static readonly string[] SampleNames = { "Liam Torres", "Nora Fischer", "Eli Nakamura", "Priya Kapoor", "Dante Reeves", "Clara Johansson", "Jasper Cheng", "Mila Petrov" };
-        private static readonly string[] SampleTitles = { "Frontend Engineer", "QA Specialist", "Solutions Architect", "Product Manager", "Cloud Engineer", "Technical Writer", "SRE Lead", "Mobile Developer" };
+        private static readonly string[] SampleNames =
+        {
+            "Liam Torres",
+            "Nora Fischer",
+            "Eli Nakamura",
+            "Priya Kapoor",
+            "Dante Reeves"
+        };
 
         public GalleryDataPage()
         {
             InitializeComponent();
-            Loaded += GalleryDataPage_Loaded;
-        }
 
-        private void GalleryDataPage_Loaded(object sender, RoutedEventArgs e)
-        {
-            Loaded -= GalleryDataPage_Loaded;
-            UpdateFontDetectionLabel();
+            ListViewItemsSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Data/ListViewItems.xaml");
+            ListViewEmptyStateSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Data/ListViewEmptyState.xaml");
+            CardVariantsSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Data/CardVariants.xaml");
         }
 
         private void AddListItem_Click(object sender, RoutedEventArgs e)
         {
-            if (DemoListView == null)
+            if (EmptyStateListView == null)
             {
                 return;
             }
 
-            int idx = _addCounter % SampleNames.Length;
-            string name = SampleNames[idx];
-            string title = SampleTitles[idx];
+            var name = SampleNames[_addCounter % SampleNames.Length];
             _addCounter++;
 
-            DemoListView.Items.Add(new ListViewItem { Content = name });
-
-            if (DemoListViewDetail != null)
-            {
-                var item = new ListViewItem();
-                item.Tag = string.Format("{0}|{1}", name, title);
-                item.Content = BuildDetailListItemContent(name, title);
-                DemoListViewDetail.Items.Add(item);
-            }
+            EmptyStateListView.Items.Add(new ListViewItem { Content = name });
         }
 
         private void RemoveListItem_Click(object sender, RoutedEventArgs e)
         {
-            if (DemoListView == null || DemoListView.Items.Count == 0)
+            if (EmptyStateListView == null || EmptyStateListView.Items.Count == 0)
             {
                 return;
             }
 
-            var lastItem = DemoListView.Items[DemoListView.Items.Count - 1];
-            DemoListView.AnimateRemove(lastItem, null);
-
-            if (DemoListViewDetail != null && DemoListViewDetail.Items.Count > 0)
-            {
-                var detailItem = DemoListViewDetail.Items[DemoListViewDetail.Items.Count - 1];
-                DemoListViewDetail.AnimateRemove(detailItem, null);
-            }
-        }
-
-        private void FontIconDemo_Click(object sender, RoutedEventArgs e)
-        {
-            if (ClickableFontIcon == null)
-            {
-                return;
-            }
-
-            var animation = new DoubleAnimation
-            {
-                By = 180,
-                Duration = TimeSpan.FromMilliseconds(220),
-                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
-            };
-            ClickableFontIcon.BeginAnimation(FontIcon.RotationProperty, animation);
-        }
-
-        private void UpdateFontDetectionLabel()
-        {
-            if (FontDetectionLabel == null)
-            {
-                return;
-            }
-
-            var w = Window.GetWindow(this);
-            FontDetectionLabel.Text = w != null && w.FontFamily != null
-                ? string.Format("FontFamily: {0}", w.FontFamily.Source)
-                : "FontFamily: (unknown)";
-        }
-
-        private static UIElement BuildDetailListItemContent(string header, string subtitle)
-        {
-            var grid = new Grid { Margin = new Thickness(0, 4, 0, 4) };
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(36) });
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-
-            var icon = new FontIcon { Glyph = "\uE77B", IconFontSize = 20, VerticalAlignment = VerticalAlignment.Center };
-            icon.SetResourceReference(FontIcon.ForegroundProperty, "TextFillColorSecondaryBrush");
-            Grid.SetColumn(icon, 0);
-
-            var stack = new System.Windows.Controls.StackPanel();
-            stack.Children.Add(new System.Windows.Controls.TextBlock { Text = header, FontWeight = FontWeights.SemiBold });
-            stack.Children.Add(new System.Windows.Controls.TextBlock { Text = subtitle, FontSize = 12 });
-            Grid.SetColumn(stack, 1);
-
-            grid.Children.Add(icon);
-            grid.Children.Add(stack);
-            return grid;
+            var lastItem = EmptyStateListView.Items[EmptyStateListView.Items.Count - 1];
+            EmptyStateListView.AnimateRemove(lastItem, null);
         }
     }
 }
