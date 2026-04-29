@@ -45,6 +45,7 @@ namespace Fluence.Wpf.Tests
             window.Content = null;
             window.UpdateLayout();
             window.Close();
+            DrainDispatcher(WpfTestSta.Dispatcher);
         }
 
         // Pump the dispatcher for `milliseconds` so any in-flight storyboard

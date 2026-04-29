@@ -28,6 +28,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Media.Animation;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Fluence.Wpf;
 
@@ -43,6 +44,68 @@ namespace Fluence.Wpf.Tests
         // ---------------------------------------------------------------------------
         // WI-5A.3 ScrollBar — PART names found in ScrollViewer
         // ---------------------------------------------------------------------------
+
+        private static void AssertScrollBarVisualStateDoubleKeyFrame(
+            ScrollBar scrollBar,
+            string stateName,
+            string targetName,
+            string targetProperty,
+            double expectedValue)
+        {
+            var root = FindVisualChildByName<Grid>(scrollBar, "Root");
+            Assert.IsNotNull(root, "Root Grid must be present in ScrollBar template.");
+
+            var groups = VisualStateManager.GetVisualStateGroups(root);
+            VisualState state = null;
+            foreach (VisualStateGroup group in groups)
+            {
+                foreach (VisualState candidate in group.States)
+                {
+                    if (candidate.Name == stateName)
+                    {
+                        state = candidate;
+                        break;
+                    }
+                }
+
+                if (state != null)
+                {
+                    break;
+                }
+            }
+
+            Assert.IsNotNull(state, "Visual state must exist: " + stateName);
+            Assert.IsNotNull(state.Storyboard, "Visual state must define a storyboard: " + stateName);
+
+            foreach (Timeline timeline in state.Storyboard.Children)
+            {
+                var animation = timeline as DoubleAnimationUsingKeyFrames;
+                if (animation == null ||
+                    Storyboard.GetTargetName(animation) != targetName ||
+                    Storyboard.GetTargetProperty(animation).Path != targetProperty)
+                {
+                    continue;
+                }
+
+                foreach (DoubleKeyFrame keyFrame in animation.KeyFrames)
+                {
+                    Assert.AreEqual(expectedValue, keyFrame.Value, 0.01,
+                        string.Format(
+                            "State {0} must set {1}.{2} to {3}.",
+                            stateName,
+                            targetName,
+                            targetProperty,
+                            expectedValue));
+                    return;
+                }
+            }
+
+            Assert.Fail(string.Format(
+                "State {0} must animate {1}.{2}.",
+                stateName,
+                targetName,
+                targetProperty));
+        }
 
         [TestMethod]
         public void ScrollBar_ScrollViewerTemplate_ContainsBothScrollBarParts()
@@ -128,10 +191,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsTrue(stateApplied,
                         "GoToState('MouseIndicator') must return true — VSM group must be present.");
 
-                    var root = FindVisualChildByName<Grid>(sb, "Root");
-                    Assert.IsNotNull(root, "Root Grid must be present in VerticalScrollBarTemplate.");
-                    Assert.IsTrue(root.Width >= 10.0,
-                        "Root.Width must be >= 10 in MouseIndicator state (actual: " + root.Width + ").");
+                    AssertScrollBarVisualStateDoubleKeyFrame(sb, "MouseIndicator", "Root", "Width", 10.0);
                 }
                 finally
                 {
@@ -177,10 +237,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsTrue(stateApplied,
                         "GoToState('NoIndicator') must return true — VSM group must be present.");
 
-                    var root = FindVisualChildByName<Grid>(sb, "Root");
-                    Assert.IsNotNull(root, "Root Grid must be present in VerticalScrollBarTemplate.");
-                    Assert.IsTrue(root.Width <= 6.0,
-                        "Root.Width must be <= 6 in NoIndicator state (actual: " + root.Width + ").");
+                    AssertScrollBarVisualStateDoubleKeyFrame(sb, "NoIndicator", "Root", "Width", 6.0);
                 }
                 finally
                 {
@@ -222,10 +279,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsTrue(stateApplied,
                         "GoToState('MouseIndicator') on horizontal ScrollBar must return true.");
 
-                    var root = FindVisualChildByName<Grid>(sb, "Root");
-                    Assert.IsNotNull(root, "Root Grid must be present in HorizontalScrollBarTemplate.");
-                    Assert.IsTrue(root.Height >= 10.0,
-                        "Root.Height must be >= 10 in MouseIndicator state (actual: " + root.Height + ").");
+                    AssertScrollBarVisualStateDoubleKeyFrame(sb, "MouseIndicator", "Root", "Height", 10.0);
                 }
                 finally
                 {

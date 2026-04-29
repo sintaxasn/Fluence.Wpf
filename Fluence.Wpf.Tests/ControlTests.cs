@@ -50,6 +50,49 @@ namespace Fluence.Wpf.Tests
         private static readonly Uri GenericDictionaryUri =
             new Uri("/Fluence.Wpf;component/Themes/Generic.xaml", UriKind.Relative);
 
+        [TestInitialize]
+        public void ControlTestsInitialize()
+        {
+            WpfTestSta.Invoke(ResetSharedWpfState);
+        }
+
+        [TestCleanup]
+        public void ControlTestsCleanup()
+        {
+            WpfTestSta.Invoke(ResetSharedWpfState);
+        }
+
+        private static void ResetSharedWpfState()
+        {
+            var application = Application.Current;
+            if (application == null)
+            {
+                application = new Application
+                {
+                    ShutdownMode = ShutdownMode.OnExplicitShutdown
+                };
+            }
+
+            Keyboard.ClearFocus();
+
+            var windows = application.Windows.Cast<Window>().ToArray();
+            foreach (var window in windows)
+            {
+                window.Content = null;
+                window.Close();
+            }
+
+            var dispatcher = Dispatcher.CurrentDispatcher;
+            dispatcher.Invoke(DispatcherPriority.Loaded, new Action(delegate { }));
+            dispatcher.Invoke(DispatcherPriority.ContextIdle, new Action(delegate { }));
+            dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
+
+            ApplicationThemeManager.ResetForTesting();
+            ApplicationAccentColorManager.ResetForTesting();
+            application.Resources.MergedDictionaries.Clear();
+            application.Resources.Clear();
+        }
+
         private static void RunOnStaThread(Action action)
         {
             var dispatcher = WpfTestSta.Dispatcher;
