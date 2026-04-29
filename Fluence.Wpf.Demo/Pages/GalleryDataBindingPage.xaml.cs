@@ -37,11 +37,17 @@ namespace Fluence.Wpf.Demo.Pages
     public partial class GalleryDataBindingPage : UserControl
     {
         private readonly ObservableCollection<DemoItem> _items = new ObservableCollection<DemoItem>();
+        private readonly ObservableCollection<DemoItem> _templateItems = new ObservableCollection<DemoItem>();
 
         /// <summary>Initializes a new instance of <see cref="GalleryDataBindingPage"/>.</summary>
         public GalleryDataBindingPage()
         {
             InitializeComponent();
+
+            ObservableCollectionListViewSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("DataBinding/ObservableCollectionListView.xaml");
+            ListViewSelectionModeSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("DataBinding/ListViewSelectionMode.xaml");
+            DataTemplateRowSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("DataBinding/DataTemplateRow.xaml");
+
             Loaded += OnLoaded;
         }
 
@@ -49,21 +55,31 @@ namespace Fluence.Wpf.Demo.Pages
         {
             Loaded -= OnLoaded;
             BoundListView.ItemsSource = _items;
+            DataTemplateListView.ItemsSource = _templateItems;
 
             // Seed a few items so the list is not empty on first load.
             AddDemoItem("Fluence.Wpf");
             AddDemoItem("WinUI 3 parity controls");
             AddDemoItem("net472 + net10.0-windows");
+            AddDataTemplateItem("Release notes");
+            AddDataTemplateItem("Design tokens");
+            AddDataTemplateItem("Control states");
             UpdateCount();
         }
 
-        // ── ObservableCollection demo ────────────────────────────────────
-
         private void AddItem_Click(object sender, RoutedEventArgs e)
         {
-            if (NewItemBox == null) return;
+            if (NewItemBox == null)
+            {
+                return;
+            }
+
             var text = (NewItemBox.Text ?? string.Empty).Trim();
-            if (string.IsNullOrEmpty(text)) return;
+            if (string.IsNullOrEmpty(text))
+            {
+                return;
+            }
+
             AddDemoItem(text);
             NewItemBox.Text = string.Empty;
             NewItemBox.Focus();
@@ -81,7 +97,11 @@ namespace Fluence.Wpf.Demo.Pages
 
         private void RemoveItem_Click(object sender, RoutedEventArgs e)
         {
-            if (BoundListView == null) return;
+            if (BoundListView == null)
+            {
+                return;
+            }
+
             var selected = BoundListView.SelectedItem as DemoItem;
             if (selected != null)
             {
@@ -99,24 +119,42 @@ namespace Fluence.Wpf.Demo.Pages
             });
         }
 
+        private void AddDataTemplateItem(string name)
+        {
+            _templateItems.Add(new DemoItem
+            {
+                Name = name,
+                AddedAt = DateTime.Now.ToString("HH:mm:ss")
+            });
+        }
+
         private void UpdateCount()
         {
             if (ItemCountLabel != null)
+            {
                 ItemCountLabel.Text = string.Format("{0} item{1}", _items.Count, _items.Count == 1 ? "" : "s");
+            }
         }
-
-        // ── SelectionMode demo ───────────────────────────────────────────
 
         private void SelectionMode_Changed(object sender, RoutedEventArgs e)
         {
-            if (SelectionModeListView == null) return;
+            if (SelectionModeListView == null)
+            {
+                return;
+            }
 
             if (MultipleModeRadio?.IsChecked == true)
+            {
                 SelectionModeListView.SelectionMode = SelectionMode.Multiple;
+            }
             else if (ExtendedModeRadio?.IsChecked == true)
+            {
                 SelectionModeListView.SelectionMode = SelectionMode.Extended;
+            }
             else
+            {
                 SelectionModeListView.SelectionMode = SelectionMode.Single;
+            }
 
             SelectionModeListView.UnselectAll();
             UpdateSelectionLabel();
@@ -129,11 +167,15 @@ namespace Fluence.Wpf.Demo.Pages
 
         private void UpdateSelectionLabel()
         {
-            if (SelectionCountLabel == null || SelectionModeListView == null) return;
+            if (SelectionCountLabel == null || SelectionModeListView == null)
+            {
+                return;
+            }
+
             var count = SelectionModeListView.SelectedItems.Count;
             if (count == 0)
             {
-                SelectionCountLabel.Text = "Selected: —";
+                SelectionCountLabel.Text = "Selected: none";
                 return;
             }
 

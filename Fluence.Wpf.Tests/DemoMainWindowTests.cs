@@ -701,6 +701,27 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void DemoSourceDataBindingSamples_CopyToOutput()
+        {
+            var outputDirectory = Path.GetDirectoryName(typeof(MainWindow).Assembly.Location);
+            var samplePaths = new[]
+            {
+                "ObservableCollectionListView",
+                "ListViewSelectionMode",
+                "DataTemplateRow"
+            };
+
+            foreach (var samplePath in samplePaths)
+            {
+                var xaml = Path.Combine(outputDirectory, "Samples", "DataBinding", samplePath + ".xaml");
+                var codeBehind = Path.Combine(outputDirectory, "Samples", "DataBinding", samplePath + ".xaml.cs");
+
+                Assert.IsTrue(File.Exists(xaml), "DataBinding sample XAML must be copied beside the demo assembly: " + samplePath);
+                Assert.IsTrue(File.Exists(codeBehind), "DataBinding sample code-behind must be copied beside the demo assembly: " + samplePath);
+            }
+        }
+
+        [TestMethod]
         public void ButtonsPage_ContainsSourceLinksForEachExample()
         {
             RunOnSta(() =>
@@ -1498,6 +1519,73 @@ namespace Fluence.Wpf.Tests
                             expected,
                             actual,
                             "Each Glyphs page example must expose a Source link to its sample XAML.");
+                    }
+                    finally
+                    {
+                        window.Close();
+                    }
+                }
+                finally
+                {
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void DataBindingPage_ContainsSourceLinksForEachExample()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                try
+                {
+                    var page = new GalleryDataBindingPage();
+                    var host = new System.Windows.Controls.Grid();
+                    host.Children.Add(page);
+                    var window = new Window
+                    {
+                        Left = -20000,
+                        Top = -20000,
+                        Width = 1040,
+                        Height = 720,
+                        WindowStartupLocation = WindowStartupLocation.Manual,
+                        ShowInTaskbar = false,
+                        Content = host
+                    };
+
+                    try
+                    {
+                        window.Show();
+                        Drain(window.Dispatcher);
+                        window.UpdateLayout();
+                        Drain(window.Dispatcher);
+
+                        var expected = new[]
+                        {
+                            DemoSourceLinkSettings.GetSourceUri("DataBinding/ObservableCollectionListView.xaml").AbsoluteUri,
+                            DemoSourceLinkSettings.GetSourceUri("DataBinding/ListViewSelectionMode.xaml").AbsoluteUri,
+                            DemoSourceLinkSettings.GetSourceUri("DataBinding/DataTemplateRow.xaml").AbsoluteUri
+                        };
+
+                        var actual = new System.Collections.Generic.List<string>();
+                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(page))
+                        {
+                            if (link.NavigateUri != null && link.Content as string == "Source")
+                            {
+                                actual.Add(link.NavigateUri.AbsoluteUri);
+                            }
+                        }
+
+                        CollectionAssert.AreEquivalent(
+                            expected,
+                            actual,
+                            "Each Data Binding page example must expose a Source link to its sample XAML.");
                     }
                     finally
                     {

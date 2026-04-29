@@ -1,0 +1,47 @@
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Samples.DataBinding.ListViewSelectionMode"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
+    <StackPanel>
+        <StackPanel Margin="0,0,0,12" Orientation="Horizontal">
+            <ui:RadioButton
+                x:Name="SingleModeRadio"
+                Margin="0,0,16,0"
+                Checked="SelectionMode_Changed"
+                Content="Single"
+                GroupName="SelectionModeGroup"
+                IsChecked="True" />
+            <ui:RadioButton
+                x:Name="MultipleModeRadio"
+                Margin="0,0,16,0"
+                Checked="SelectionMode_Changed"
+                Content="Multiple"
+                GroupName="SelectionModeGroup" />
+            <ui:RadioButton
+                x:Name="ExtendedModeRadio"
+                Checked="SelectionMode_Changed"
+                Content="Extended (Shift+Click)"
+                GroupName="SelectionModeGroup" />
+        </StackPanel>
+        <ui:ListView
+            x:Name="SelectionModeListView"
+            Height="200"
+            SelectionChanged="SelectionModeListView_SelectionChanged"
+            SelectionMode="Single">
+            <ListViewItem Content="Alpha" />
+            <ListViewItem Content="Bravo" />
+            <ListViewItem Content="Charlie" />
+            <ListViewItem Content="Delta" />
+            <ListViewItem Content="Echo" />
+            <ListViewItem Content="Foxtrot" />
+            <ListViewItem Content="Golf" />
+            <ListViewItem Content="Hotel" />
+        </ui:ListView>
+        <TextBlock
+            x:Name="SelectionCountLabel"
+            Margin="0,8,0,0"
+            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+            Text="Selected: none" />
+    </StackPanel>
+</UserControl>
