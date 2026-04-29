@@ -109,13 +109,13 @@
                 <ControlTemplate>
                     <Grid>
                         <Border
-                            Margin="-3"
+                            Margin="0"
                             BorderBrush="{DynamicResource FocusStrokeColorOuterBrush}"
                             BorderThickness="2"
                             CornerRadius="{DynamicResource ControlCornerRadius}"
                             SnapsToDevicePixels="True" />
                         <Border
-                            Margin="-2"
+                            Margin="2"
                             BorderBrush="{DynamicResource FocusStrokeColorInnerBrush}"
                             BorderThickness="1"
                             CornerRadius="3"

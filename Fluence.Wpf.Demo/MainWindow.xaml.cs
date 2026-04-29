@@ -154,7 +154,8 @@ namespace Fluence.Wpf.Demo
                             controlsHeaderAdded = true;
                         }
 
-                        currentSectionItem = CreateSectionItem(category);
+                        const bool sectionStartsExpanded = false;
+                        currentSectionItem = CreateSectionItem(category, sectionStartsExpanded);
                         currentSectionItem.PageContent = CreateCategoryPage(category);
                         currentSectionItem.AddHandler(
                             UIElement.PreviewMouseLeftButtonDownEvent,
@@ -162,7 +163,7 @@ namespace Fluence.Wpf.Demo
                             true);
                         DemoNav.Items.Add(currentSectionItem);
                         _sectionChildrenByHeader[currentSectionItem] = new List<NavigationViewItem>();
-                        _sectionExpandedByHeader[currentSectionItem] = category.IsExpandedByDefault;
+                        _sectionExpandedByHeader[currentSectionItem] = sectionStartsExpanded;
                     }
                     else
                     {
@@ -189,14 +190,14 @@ namespace Fluence.Wpf.Demo
             }
         }
 
-        private static NavigationViewItem CreateSectionItem(DemoNavigationCategory category)
+        private static NavigationViewItem CreateSectionItem(DemoNavigationCategory category, bool isExpanded)
         {
             return new NavigationViewItem
             {
                 Content = category.Title,
                 Tag = category.Tag,
                 Icon = CreateFontIcon(category.Glyph, 20),
-                InfoBadge = CreateChevronIcon(category.IsExpandedByDefault)
+                InfoBadge = CreateChevronIcon(isExpanded)
             };
         }
 

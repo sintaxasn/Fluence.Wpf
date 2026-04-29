@@ -614,6 +614,62 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void MainWindow_NavigationHeaders_StartCollapsed()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                MainWindow window = null;
+                try
+                {
+                    window = CreateShownMainWindow();
+                    var nav = GetDemoNav(window);
+                    var sawCategoryHeader = false;
+
+                    foreach (var obj in nav.Items)
+                    {
+                        var item = obj as NavigationViewItem;
+                        if (item == null)
+                        {
+                            continue;
+                        }
+
+                        if (item.InfoBadge is FontIcon)
+                        {
+                            sawCategoryHeader = true;
+                            var chevron = (FontIcon)item.InfoBadge;
+                            Assert.AreEqual(0.0, chevron.Rotation, 0.01,
+                                "Every category chevron should start collapsed.");
+                            continue;
+                        }
+
+                        if (item.IsChildItem)
+                        {
+                            Assert.AreEqual(Visibility.Collapsed, item.Visibility,
+                                "Category child pages should start collapsed until the header is expanded.");
+                        }
+                    }
+
+                    Assert.IsTrue(sawCategoryHeader, "The navigation pane should include expandable category headers.");
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
         public void MainWindow_CategoryHeader_OpensOverviewPageWithChildCards()
         {
             RunOnSta(() =>

@@ -71,13 +71,14 @@ namespace Fluence.Wpf.Controls
         private const double NavigationItemOuterHorizontalMargin = 4.0;
         private const double NavigationItemIconColumnWidth = 40.0;
         private const double NavigationItemGapColumnWidth = 12.0;
+        private const double NavigationItemChildIndicatorOffset = 44.0;
 
         private System.Windows.Controls.Button _backButton;
         private System.Windows.Controls.Button _paneToggleButton;
         private ScrollViewer _paneScrollViewer;
         private FrameworkElement _selectionIndicator;
         private FrameworkElement _indicatorHost;
-        private Storyboard _activeStoryboard;
+        private int _indicatorAnimationGeneration;
         private bool _indicatorPositioned;
 
         /// <summary>Identifies the <see cref="PaneDisplayMode"/> dependency property.</summary>
@@ -599,7 +600,7 @@ namespace Fluence.Wpf.Controls
                 var x = itemPos.X + NavigationItemOuterHorizontalMargin;
                 if (ShouldIndentSelectionIndicator(item, topMode))
                 {
-                    x += NavigationItemIconColumnWidth + NavigationItemGapColumnWidth;
+                    x += NavigationItemChildIndicatorOffset;
                 }
 
                 return new Point(x, itemPos.Y + (item.ActualHeight - _selectionIndicator.Height) / 2.0);
@@ -663,90 +664,65 @@ namespace Fluence.Wpf.Controls
             _indicatorPositioned = true;
         }
 
-        /// <summary>
-        /// Runs a two-phase depart/arrive animation: the indicator shrinks at the old
-        /// position, then grows at the new position, giving the appearance of sliding.
-        /// </summary>
         private void AnimateIndicator(Point fromPosition, Point toPosition, bool topMode)
         {
             StopAnimation();
             EnsureMutableTransform();
 
-            double fromOffset = topMode ? fromPosition.X : fromPosition.Y;
-            double toOffset = topMode ? toPosition.X : toPosition.Y;
-            double fromCrossOffset = topMode ? fromPosition.Y : fromPosition.X;
-            double toCrossOffset = topMode ? toPosition.Y : toPosition.X;
-            int direction = toOffset >= fromOffset ? 1 : -1;
-            double travel = 3.0;
-
-            var departDuration = new Duration(TimeSpan.FromMilliseconds(167));
-            var arriveDuration = new Duration(TimeSpan.FromMilliseconds(250));
-            var ease = new QuarticEase { EasingMode = EasingMode.EaseOut };
-            var arriveDelay = TimeSpan.FromMilliseconds(83);
-
-            // Use typed property paths targeting the actual transform objects so layout
-            // changes that reorder the TransformGroup children cannot silently break animations.
             var group = (TransformGroup)_selectionIndicator.RenderTransform;
             var scale = (ScaleTransform)group.Children[0];
             var translate = (TranslateTransform)group.Children[1];
+            var animationId = _indicatorAnimationGeneration;
 
-            DependencyProperty scaleProp = topMode ? ScaleTransform.ScaleXProperty : ScaleTransform.ScaleYProperty;
-            DependencyProperty translateProp = topMode ? TranslateTransform.XProperty : TranslateTransform.YProperty;
-            DependencyProperty crossTranslateProp = topMode ? TranslateTransform.YProperty : TranslateTransform.XProperty;
+            scale.ScaleX = 1.0;
+            scale.ScaleY = 1.0;
+            translate.X = fromPosition.X;
+            translate.Y = fromPosition.Y;
+            _selectionIndicator.Opacity = 1.0;
 
-            var sb = new Storyboard();
-
-            var scaleDown = new DoubleAnimation(1.0, 0.0, departDuration) { EasingFunction = ease };
-            Storyboard.SetTarget(scaleDown, scale);
-            Storyboard.SetTargetProperty(scaleDown, new PropertyPath(scaleProp));
-            sb.Children.Add(scaleDown);
-
-            var slideDepart = new DoubleAnimation(fromOffset, fromOffset + direction * travel, departDuration) { EasingFunction = ease };
-            Storyboard.SetTarget(slideDepart, translate);
-            Storyboard.SetTargetProperty(slideDepart, new PropertyPath(translateProp));
-            sb.Children.Add(slideDepart);
-
-            var fadeOut = new DoubleAnimation(1.0, 0.0, new Duration(TimeSpan.FromMilliseconds(100)))
+            var duration = new Duration(TimeSpan.FromMilliseconds(250));
+            var ease = new CubicEase { EasingMode = EasingMode.EaseOut };
+            var xAnimation = new DoubleAnimation(fromPosition.X, toPosition.X, duration)
             {
-                BeginTime = TimeSpan.FromMilliseconds(67)
+                EasingFunction = ease,
+                FillBehavior = FillBehavior.Stop
             };
-            Storyboard.SetTarget(fadeOut, _selectionIndicator);
-            Storyboard.SetTargetProperty(fadeOut, new PropertyPath(UIElement.OpacityProperty));
-            sb.Children.Add(fadeOut);
-
-            var scaleUp = new DoubleAnimation(0.0, 1.0, arriveDuration) { EasingFunction = ease, BeginTime = arriveDelay };
-            Storyboard.SetTarget(scaleUp, scale);
-            Storyboard.SetTargetProperty(scaleUp, new PropertyPath(scaleProp));
-            sb.Children.Add(scaleUp);
-
-            var slideArrive = new DoubleAnimation(toOffset - direction * travel, toOffset, arriveDuration) { EasingFunction = ease, BeginTime = arriveDelay };
-            Storyboard.SetTarget(slideArrive, translate);
-            Storyboard.SetTargetProperty(slideArrive, new PropertyPath(translateProp));
-            sb.Children.Add(slideArrive);
-
-            var slideCross = new DoubleAnimation(fromCrossOffset, toCrossOffset, arriveDuration) { EasingFunction = ease };
-            Storyboard.SetTarget(slideCross, translate);
-            Storyboard.SetTargetProperty(slideCross, new PropertyPath(crossTranslateProp));
-            sb.Children.Add(slideCross);
-
-            var fadeIn = new DoubleAnimation(0.0, 1.0, new Duration(TimeSpan.FromMilliseconds(83)))
+            var yAnimation = new DoubleAnimation(fromPosition.Y, toPosition.Y, duration)
             {
-                BeginTime = arriveDelay
+                EasingFunction = ease,
+                FillBehavior = FillBehavior.Stop
             };
-            Storyboard.SetTarget(fadeIn, _selectionIndicator);
-            Storyboard.SetTargetProperty(fadeIn, new PropertyPath(UIElement.OpacityProperty));
-            sb.Children.Add(fadeIn);
-
-            Point capturedPosition = toPosition;
-            sb.Completed += delegate
+            var scaleAnimation = new DoubleAnimation(0.72, 1.0, duration)
             {
-                _activeStoryboard = null;
-                SnapIndicator(capturedPosition);
+                EasingFunction = ease,
+                FillBehavior = FillBehavior.Stop
             };
 
-            _activeStoryboard = sb;
+            yAnimation.Completed += delegate
+            {
+                if (animationId != _indicatorAnimationGeneration)
+                {
+                    return;
+                }
+
+                translate.BeginAnimation(TranslateTransform.XProperty, null);
+                translate.BeginAnimation(TranslateTransform.YProperty, null);
+                scale.BeginAnimation(topMode ? ScaleTransform.ScaleXProperty : ScaleTransform.ScaleYProperty, null);
+                translate.X = toPosition.X;
+                translate.Y = toPosition.Y;
+                scale.ScaleX = 1.0;
+                scale.ScaleY = 1.0;
+                _selectionIndicator.Opacity = 1.0;
+                _indicatorPositioned = true;
+            };
+
             _indicatorPositioned = true;
-            sb.Begin();
+            translate.BeginAnimation(TranslateTransform.XProperty, xAnimation, HandoffBehavior.SnapshotAndReplace);
+            translate.BeginAnimation(TranslateTransform.YProperty, yAnimation, HandoffBehavior.SnapshotAndReplace);
+            scale.BeginAnimation(
+                topMode ? ScaleTransform.ScaleXProperty : ScaleTransform.ScaleYProperty,
+                scaleAnimation,
+                HandoffBehavior.SnapshotAndReplace);
         }
 
         private void HideIndicator()
@@ -762,10 +738,29 @@ namespace Fluence.Wpf.Controls
 
         private void StopAnimation()
         {
-            if (_activeStoryboard != null)
+            _indicatorAnimationGeneration++;
+            if (_selectionIndicator == null)
             {
-                _activeStoryboard.Stop();
-                _activeStoryboard = null;
+                return;
+            }
+
+            _selectionIndicator.BeginAnimation(UIElement.OpacityProperty, null);
+            var group = _selectionIndicator.RenderTransform as TransformGroup;
+            if (group != null && group.Children.Count >= 2)
+            {
+                var scale = group.Children[0] as ScaleTransform;
+                var translate = group.Children[1] as TranslateTransform;
+                if (scale != null && !scale.IsFrozen)
+                {
+                    scale.BeginAnimation(ScaleTransform.ScaleXProperty, null);
+                    scale.BeginAnimation(ScaleTransform.ScaleYProperty, null);
+                }
+
+                if (translate != null && !translate.IsFrozen)
+                {
+                    translate.BeginAnimation(TranslateTransform.XProperty, null);
+                    translate.BeginAnimation(TranslateTransform.YProperty, null);
+                }
             }
         }
 

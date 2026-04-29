@@ -659,8 +659,71 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
 
                     var childItemX = GetSelectionIndicatorTranslate(indicator).X;
-                    Assert.AreEqual(56.0, childItemX, 0.5,
-                        "Iconless child item indicator should move inward to the content column.");
+                    Assert.AreEqual(48.0, childItemX, 0.5,
+                        "Iconless child item indicator should move inward without overlapping the content column.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NavigationView_LeftMode_SharedIndicator_AnimatesBetweenSelections()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 400,
+                        Height = 320,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left
+                    };
+                    nav.Items.Add(new Fluent.NavigationViewItem
+                    {
+                        Content = "Home",
+                        Icon = new Fluent.FontIcon { Glyph = "\uE80F", IconFontSize = 20 }
+                    });
+                    nav.Items.Add(new Fluent.NavigationViewItem
+                    {
+                        Content = "Settings",
+                        Icon = new Fluent.FontIcon { Glyph = "\uE713", IconFontSize = 20 }
+                    });
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    nav.SelectedIndex = 0;
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    var indicator = nav.GetSelectionIndicatorForTesting();
+                    Assert.IsNotNull(indicator, "PART_SelectionIndicator should exist in the NavigationView template.");
+                    var translate = GetSelectionIndicatorTranslate(indicator);
+                    Assert.IsFalse(translate.HasAnimatedProperties,
+                        "Initial selection should snap before later changes animate.");
+
+                    nav.SelectedIndex = 1;
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    Assert.IsTrue(translate.HasAnimatedProperties,
+                        "Changing selection should animate the shared indicator transform.");
+                    WaitForAnimationAndDrain(window.Dispatcher, 600);
                 }
                 finally
                 {
@@ -722,6 +785,51 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NavigationViewItem_FocusVisual_StaysInsideItemBounds()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+
+                try
+                {
+                    var style = application.TryFindResource("NavigationViewItemFocusVisual") as Style;
+                    Assert.IsNotNull(style, "NavigationViewItemFocusVisual should be present in Generic.xaml.");
+
+                    ControlTemplate template = null;
+                    foreach (var setterBase in style.Setters)
+                    {
+                        var setter = setterBase as Setter;
+                        if (setter != null && setter.Property == Control.TemplateProperty)
+                        {
+                            template = setter.Value as ControlTemplate;
+                            break;
+                        }
+                    }
+
+                    Assert.IsNotNull(template, "NavigationViewItemFocusVisual should provide a ControlTemplate.");
+
+                    var root = template.LoadContent() as DependencyObject;
+                    Assert.IsNotNull(root, "Focus visual template should load a visual tree.");
+
+                    foreach (var border in FindVisualChildren<System.Windows.Controls.Border>(root))
+                    {
+                        Assert.IsTrue(border.Margin.Left >= 0.0 && border.Margin.Right >= 0.0,
+                            "Navigation item focus strokes should stay inside the selected item bounds horizontally.");
+                    }
+                }
+                finally
+                {
                     if (genericDictionary != null)
                     {
                         application.Resources.MergedDictionaries.Remove(genericDictionary);
