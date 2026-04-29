@@ -689,6 +689,71 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void MainWindow_CategoryHeader_AnimatesChevronRotation()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                MainWindow window = null;
+                try
+                {
+                    window = CreateShownMainWindow();
+                    var nav = GetDemoNav(window);
+                    var home = AssertNavigationItemExists(nav, "Home");
+                    var basicInput = AssertNavigationItemExists(nav, "Basic input");
+                    var chevron = basicInput.InfoBadge as FontIcon;
+
+                    Assert.IsNotNull(chevron, "Category headers should expose a FontIcon chevron.");
+                    Assert.AreEqual("\uE70D", chevron.Glyph,
+                        "Category chevrons should use the down glyph and rotate rather than swapping glyphs.");
+                    Assert.AreEqual(0.0, chevron.Rotation, 0.01,
+                        "Collapsed category chevron should start at 0 degrees.");
+
+                    nav.SelectedItem = basicInput;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.IsTrue(chevron.HasAnimatedProperties,
+                        "Expanding a category should animate the chevron rotation.");
+                    WaitForAnimationAndDrain(window.Dispatcher, 180);
+                    Assert.AreEqual(180.0, chevron.Rotation, 0.01,
+                        "Expanded category chevron should settle at 180 degrees.");
+
+                    nav.SelectedItem = home;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    nav.SelectedItem = basicInput;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.IsTrue(chevron.HasAnimatedProperties,
+                        "Collapsing a category should animate the chevron rotation.");
+                    WaitForAnimationAndDrain(window.Dispatcher, 140);
+                    Assert.AreEqual(0.0, chevron.Rotation, 0.01,
+                        "Collapsed category chevron should settle back at 0 degrees.");
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
         public void MainWindow_CategoryCardNavigation_ClearsActiveSearchFilter()
         {
             RunOnSta(() =>

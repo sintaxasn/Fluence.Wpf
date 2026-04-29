@@ -248,7 +248,9 @@ namespace Fluence.Wpf.Demo
 
         private static FontIcon CreateChevronIcon(bool expanded)
         {
-            return CreateFontIcon(expanded ? "\uE70E" : "\uE70D", 12);
+            var icon = CreateFontIcon("\uE70D", 12);
+            icon.Rotation = expanded ? 180.0 : 0.0;
+            return icon;
         }
 
         private void DemoNav_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -328,7 +330,7 @@ namespace Fluence.Wpf.Demo
         private void SetSectionExpanded(NavigationViewItem sectionItem, bool expanded, bool animate)
         {
             _sectionExpandedByHeader[sectionItem] = expanded;
-            SetSectionChevron(sectionItem, expanded);
+            SetSectionChevron(sectionItem, expanded, animate);
 
             List<NavigationViewItem> children;
             if (!_sectionChildrenByHeader.TryGetValue(sectionItem, out children))
@@ -395,12 +397,34 @@ namespace Fluence.Wpf.Demo
             child.BeginAnimation(UIElement.OpacityProperty, animation);
         }
 
-        private static void SetSectionChevron(NavigationViewItem sectionItem, bool expanded)
+        private static void SetSectionChevron(NavigationViewItem sectionItem, bool expanded, bool animate)
         {
             var chevron = sectionItem.InfoBadge as FontIcon;
             if (chevron != null)
             {
-                chevron.Glyph = expanded ? "\uE70E" : "\uE70D";
+                const double CollapsedRotation = 0.0;
+                const double ExpandedRotation = 180.0;
+
+                var targetRotation = expanded ? ExpandedRotation : CollapsedRotation;
+                chevron.Glyph = "\uE70D";
+                chevron.BeginAnimation(FontIcon.RotationProperty, null);
+
+                if (!animate)
+                {
+                    chevron.Rotation = targetRotation;
+                    return;
+                }
+
+                var animation = new DoubleAnimation(targetRotation, new Duration(TimeSpan.FromMilliseconds(expanded ? 120 : 80)))
+                {
+                    EasingFunction = new CubicEase { EasingMode = expanded ? EasingMode.EaseOut : EasingMode.EaseIn }
+                };
+                animation.Completed += delegate
+                {
+                    chevron.BeginAnimation(FontIcon.RotationProperty, null);
+                    chevron.Rotation = targetRotation;
+                };
+                chevron.BeginAnimation(FontIcon.RotationProperty, animation, HandoffBehavior.SnapshotAndReplace);
             }
         }
 
@@ -657,7 +681,7 @@ namespace Fluence.Wpf.Demo
                     nvi.Visibility = sectionMatches || anyChildMatch ? Visibility.Visible : Visibility.Collapsed;
                     if (nvi.Visibility == Visibility.Visible)
                     {
-                        SetSectionChevron(nvi, true);
+                        SetSectionChevron(nvi, true, false);
                         anyItemMatch = true;
                     }
 
@@ -708,7 +732,7 @@ namespace Fluence.Wpf.Demo
                 if (_sectionChildrenByHeader.ContainsKey(item))
                 {
                     item.Visibility = Visibility.Visible;
-                    SetSectionChevron(item, _sectionExpandedByHeader[item]);
+                    SetSectionChevron(item, _sectionExpandedByHeader[item], false);
                     continue;
                 }
 
