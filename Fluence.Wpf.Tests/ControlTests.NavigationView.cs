@@ -1571,6 +1571,8 @@ namespace Fluence.Wpf.Tests
 
                 var scrollViewer = FindVisualChildByName<ScrollViewer>(nav, Fluent.NavigationView.PartPaneItemsScrollViewer);
                 Assert.IsNotNull(scrollViewer, "NavigationView template must expose PART_PaneItemsScrollViewer.");
+                Assert.IsInstanceOfType(scrollViewer, typeof(Fluent.SmoothScrollViewer),
+                    "NavigationView pane items should use SmoothScrollViewer so the pane scrollbar uses the Fluent scrolling surface.");
                 Assert.AreSame(expected, scrollViewer.Style,
                     "NavigationView pane items ScrollViewer must use the Fluence ScrollViewerStyle.");
             }

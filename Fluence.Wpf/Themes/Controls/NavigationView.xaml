@@ -368,7 +368,7 @@
                         </StackPanel>
 
                         <!--  Padding="3,4": 3px horizontal gives focus-ring Margin="-3" clearance so it is not clipped.  -->
-                        <ScrollViewer
+                        <controls:SmoothScrollViewer
                             x:Name="PART_PaneItemsScrollViewer"
                             Grid.Row="1"
                             Padding="3,4"
@@ -398,7 +398,7 @@
                                     </Border.RenderTransform>
                                 </Border>
                             </Grid>
-                        </ScrollViewer>
+                        </controls:SmoothScrollViewer>
 
                         <Border Grid.Row="2" Padding="8,0,8,8">
                             <ContentPresenter Content="{TemplateBinding PaneFooter}" />
@@ -589,7 +589,7 @@
                         </StackPanel>
 
                         <!--  Padding="3,4": 3px horizontal gives focus-ring Margin="-3" clearance so it is not clipped.  -->
-                        <ScrollViewer
+                        <controls:SmoothScrollViewer
                             x:Name="PART_PaneItemsScrollViewer"
                             Grid.Row="1"
                             Padding="3,4"
@@ -619,7 +619,7 @@
                                     </Border.RenderTransform>
                                 </Border>
                             </Grid>
-                        </ScrollViewer>
+                        </controls:SmoothScrollViewer>
 
                         <Border Grid.Row="2" Padding="8,0,8,8">
                             <ContentPresenter Content="{TemplateBinding PaneFooter}" />
@@ -789,7 +789,7 @@
                             Margin="0,0,12,0"
                             VerticalAlignment="Center"
                             Content="{TemplateBinding PaneHeader}" />
-                        <ScrollViewer
+                        <controls:SmoothScrollViewer
                             x:Name="PART_PaneItemsScrollViewer"
                             Grid.Column="2"
                             VerticalAlignment="Stretch"
@@ -819,7 +819,7 @@
                                     </Border.RenderTransform>
                                 </Border>
                             </Grid>
-                        </ScrollViewer>
+                        </controls:SmoothScrollViewer>
                         <ContentPresenter
                             Grid.Column="3"
                             HorizontalAlignment="Right"
