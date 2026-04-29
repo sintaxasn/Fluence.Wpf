@@ -1,0 +1,49 @@
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Samples.Status.InfoBars"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
+    <StackPanel>
+        <ui:InfoBar
+            x:Name="InfoBarInformational"
+            Title="Informational"
+            Margin="0,0,0,8"
+            HorizontalAlignment="Stretch"
+            IsOpen="True"
+            Message="This is a general information message."
+            Severity="Informational" />
+        <ui:InfoBar
+            x:Name="InfoBarSuccess"
+            Title="Success"
+            Margin="0,0,0,8"
+            HorizontalAlignment="Stretch"
+            IsOpen="True"
+            Message="The operation completed successfully."
+            Severity="Success" />
+        <ui:InfoBar
+            x:Name="InfoBarWarning"
+            Title="Warning"
+            Margin="0,0,0,8"
+            HorizontalAlignment="Stretch"
+            IsOpen="True"
+            Message="Proceed with caution."
+            Severity="Warning" />
+        <ui:InfoBar
+            x:Name="InfoBarError"
+            Title="Error"
+            Margin="0,0,0,8"
+            HorizontalAlignment="Stretch"
+            IsOpen="True"
+            Message="Something went wrong."
+            Severity="Error">
+            <ui:InfoBar.ActionButton>
+                <ui:Button Appearance="Accent" Content="Retry" />
+            </ui:InfoBar.ActionButton>
+        </ui:InfoBar>
+        <ui:Button
+            Margin="0,4,0,0"
+            HorizontalAlignment="Left"
+            Click="ResetInfoBars_Click"
+            Content="Reset All InfoBars" />
+    </StackPanel>
+</UserControl>

@@ -1,0 +1,26 @@
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Samples.Status.ProgressBarIndeterminate"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
+    <StackPanel>
+        <ui:ProgressBar
+            x:Name="IndeterminateProgressBar"
+            Height="8"
+            Margin="0,0,0,12"
+            HorizontalAlignment="Stretch"
+            ProgressMode="Indeterminate" />
+        <StackPanel Orientation="Horizontal">
+            <ui:ToggleSwitch
+                x:Name="IndeterminateToggle"
+                Margin="0,0,12,0"
+                Checked="IndeterminateToggle_Toggled"
+                IsChecked="True"
+                Unchecked="IndeterminateToggle_Toggled" />
+            <TextBlock
+                VerticalAlignment="Center"
+                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                Text="Indeterminate" />
+        </StackPanel>
+    </StackPanel>
+</UserControl>

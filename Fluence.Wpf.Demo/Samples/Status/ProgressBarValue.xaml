@@ -1,0 +1,29 @@
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Samples.Status.ProgressBarValue"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
+    <StackPanel>
+        <ui:ProgressBar
+            x:Name="StandardProgressBar"
+            Height="8"
+            Margin="0,0,0,12"
+            HorizontalAlignment="Stretch"
+            Maximum="100"
+            Minimum="0"
+            Value="45" />
+        <ui:Slider
+            x:Name="ProgressSlider"
+            IsSnapToTickEnabled="False"
+            Maximum="100"
+            Minimum="0"
+            TickFrequency="5"
+            ValueChanged="ProgressSlider_ValueChanged"
+            Value="45" />
+        <TextBlock
+            x:Name="SliderValueLabel"
+            Margin="0,8,0,0"
+            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+            Text="Value: 45" />
+    </StackPanel>
+</UserControl>

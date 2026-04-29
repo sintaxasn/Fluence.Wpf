@@ -1,0 +1,34 @@
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Samples.Status.ProgressBarSteps"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
+    <StackPanel>
+        <ui:ProgressBar
+            x:Name="StepProgressBar"
+            Height="8"
+            Margin="0,0,0,12"
+            HorizontalAlignment="Stretch"
+            CurrentStep="1"
+            ProgressMode="StepProgress"
+            Steps="5" />
+        <StackPanel Orientation="Horizontal">
+            <ui:Button
+                Margin="0,0,12,0"
+                Click="ProgressStep_Click"
+                Content="Back"
+                Tag="Back" />
+            <ui:Button
+                Margin="0,0,16,0"
+                Appearance="Accent"
+                Click="ProgressStep_Click"
+                Content="Next"
+                Tag="Next" />
+            <TextBlock
+                x:Name="StepLabel"
+                VerticalAlignment="Center"
+                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                Text="Step 1 of 5" />
+        </StackPanel>
+    </StackPanel>
+</UserControl>
