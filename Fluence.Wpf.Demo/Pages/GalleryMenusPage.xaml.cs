@@ -30,71 +30,43 @@ using System.Windows.Controls;
 
 namespace Fluence.Wpf.Demo.Pages
 {
-    /// <summary>Gallery page demonstrating menus, tooltips, and flyout controls.</summary>
     public partial class GalleryMenusPage : UserControl
     {
-        /// <summary>Initializes a new instance of <see cref="GalleryMenusPage"/>.</summary>
         public GalleryMenusPage()
         {
             InitializeComponent();
+
+            MenuBarSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Menus/MenuBar.xaml");
+            ContextMenuSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Menus/ContextMenuActions.xaml");
+            ToolTipsSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Menus/ToolTips.xaml");
+            DropDownAndSplitButtonsSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Menus/DropDownAndSplitButtonMenus.xaml");
         }
-
-        // ── ContextMenu ──────────────────────────────────────────────────
-
-        private void CutMenuItem_Click(object sender, RoutedEventArgs e)
-            => SetContextResult("Cut");
-
-        private void CopyMenuItem_Click(object sender, RoutedEventArgs e)
-            => SetContextResult("Copy");
-
-        private void PasteMenuItem_Click(object sender, RoutedEventArgs e)
-            => SetContextResult("Paste");
-
-        private void ShareCopyLink_Click(object sender, RoutedEventArgs e)
-            => SetContextResult("Share → Copy link");
-
-        private void ShareEmail_Click(object sender, RoutedEventArgs e)
-            => SetContextResult("Share → Send via email");
-
-        private void SetContextResult(string action)
-        {
-            if (ContextMenuResultLabel != null)
-                ContextMenuResultLabel.Text = string.Format("Last action: {0}", action);
-        }
-
-        // ── DropDownButton / SplitButton ─────────────────────────────────
-
-        private void Sort_Click(object sender, RoutedEventArgs e)
-        {
-            var mi = sender as FrameworkElement;
-            var tag = mi?.Tag as string ?? string.Empty;
-            SetMenuAction(string.Format("Sort: {0}", tag));
-        }
-
-        private void ExportPrimary_Click(object sender, RoutedEventArgs e)
-            => SetMenuAction("Export (primary) clicked");
-
-        private void ExportFormat_Click(object sender, RoutedEventArgs e)
-        {
-            var mi = sender as FrameworkElement;
-            var tag = mi?.Tag as string ?? string.Empty;
-            SetMenuAction(string.Format("Export: {0}", tag));
-        }
-
-        private void SetMenuAction(string action)
-        {
-            if (MenuActionLabel != null)
-                MenuActionLabel.Text = string.Format("Last action: {0}", action);
-        }
-
-        // ── Menu bar ─────────────────────────────────────────────────────
 
         private void MenuBar_Click(object sender, RoutedEventArgs e)
         {
-            var mi = sender as FrameworkElement;
-            var tag = mi?.Tag as string ?? string.Empty;
-            if (MenuBarResultLabel != null)
-                MenuBarResultLabel.Text = string.Format("Last menu action: {0}", tag);
+            SetTextFromTag(MenuBarResultLabel, "Last menu action", sender);
+        }
+
+        private void ContextMenu_Click(object sender, RoutedEventArgs e)
+        {
+            SetTextFromTag(ContextMenuResultLabel, "Last action", sender);
+        }
+
+        private void ExportPrimary_Click(object sender, RoutedEventArgs e)
+        {
+            FlyoutResultLabel.Text = "Last action: Export - Default";
+        }
+
+        private void FlyoutAction_Click(object sender, RoutedEventArgs e)
+        {
+            SetTextFromTag(FlyoutResultLabel, "Last action", sender);
+        }
+
+        private static void SetTextFromTag(TextBlock label, string prefix, object sender)
+        {
+            var element = sender as FrameworkElement;
+            var action = element != null ? element.Tag as string : null;
+            label.Text = string.Format("{0}: {1}", prefix, string.IsNullOrEmpty(action) ? "None" : action);
         }
     }
 }
