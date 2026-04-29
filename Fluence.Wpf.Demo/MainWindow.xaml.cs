@@ -32,6 +32,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using Fluence.Wpf;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Demo.Pages;
@@ -60,6 +61,7 @@ namespace Fluence.Wpf.Demo
             new Dictionary<NavigationViewItem, bool>();
         private NavigationViewItemHeader _controlsHeader;
         private NavigationViewItem _lastSelectedLeafItem;
+        private NavigationViewItem _sectionPointerSelectionToIgnore;
         private bool _restoringSelection;
 
         public MainWindow()
@@ -72,6 +74,7 @@ namespace Fluence.Wpf.Demo
             if (DemoNav != null)
             {
                 DemoNav.SelectionChanged += DemoNav_SelectionChanged;
+                DemoNav.PaneClosed += DemoNav_PaneClosed;
             }
 
             // Seed user-intent from XAML defaults so the first toggle does not reset to
@@ -152,6 +155,11 @@ namespace Fluence.Wpf.Demo
                         }
 
                         currentSectionItem = CreateSectionItem(category);
+                        currentSectionItem.PageContent = CreateCategoryPage(category);
+                        currentSectionItem.AddHandler(
+                            UIElement.PreviewMouseLeftButtonDownEvent,
+                            new MouseButtonEventHandler(SectionItem_PreviewMouseLeftButtonDown),
+                            true);
                         DemoNav.Items.Add(currentSectionItem);
                         _sectionChildrenByHeader[currentSectionItem] = new List<NavigationViewItem>();
                         _sectionExpandedByHeader[currentSectionItem] = category.IsExpandedByDefault;
@@ -192,6 +200,35 @@ namespace Fluence.Wpf.Demo
             };
         }
 
+        private static GalleryCategoryPage CreateCategoryPage(DemoNavigationCategory category)
+        {
+            var children = new List<DemoNavigationItem>();
+            foreach (var item in DemoNavigationCatalog.Items)
+            {
+                if (string.Equals(item.Category, category.Title, StringComparison.Ordinal))
+                {
+                    children.Add(item);
+                }
+            }
+
+            return new GalleryCategoryPage(category.Title, GetCategoryDescription(category), children);
+        }
+
+        private static string GetCategoryDescription(DemoNavigationCategory category)
+        {
+            if (string.Equals(category.Title, "Design", StringComparison.Ordinal))
+            {
+                return "Color, iconography, and typography resources used across Fluence controls.";
+            }
+
+            if (string.Equals(category.Title, "Accessibility", StringComparison.Ordinal))
+            {
+                return "Screen reader, keyboard, and contrast guidance for accessible WPF surfaces.";
+            }
+
+            return "Single-control pages and variants in this section.";
+        }
+
         private static NavigationViewItem CreatePageItem(DemoNavigationItem item, bool showIcon)
         {
             return new NavigationViewItem
@@ -228,8 +265,9 @@ namespace Fluence.Wpf.Demo
 
             if (_sectionChildrenByHeader.ContainsKey(selected))
             {
-                ToggleSection(selected);
-                RestoreLastLeafSelection();
+                _sectionPointerSelectionToIgnore = selected;
+                Dispatcher.BeginInvoke(new Action(ClearSectionPointerSelectionToIgnore), System.Windows.Threading.DispatcherPriority.Background);
+                ToggleSection(selected, true);
                 return;
             }
 
@@ -240,7 +278,37 @@ namespace Fluence.Wpf.Demo
             }
         }
 
-        private void ToggleSection(NavigationViewItem sectionItem)
+        private void SectionItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var sectionItem = sender as NavigationViewItem;
+            if (sectionItem == null || DemoNav == null)
+            {
+                return;
+            }
+
+            if (ReferenceEquals(DemoNav.SelectedItem, sectionItem))
+            {
+                if (ReferenceEquals(_sectionPointerSelectionToIgnore, sectionItem))
+                {
+                    _sectionPointerSelectionToIgnore = null;
+                    return;
+                }
+
+                ToggleSection(sectionItem, true);
+            }
+        }
+
+        private void ClearSectionPointerSelectionToIgnore()
+        {
+            _sectionPointerSelectionToIgnore = null;
+        }
+
+        private void DemoNav_PaneClosed(object sender, EventArgs e)
+        {
+            CollapseAllSections(true);
+        }
+
+        private void ToggleSection(NavigationViewItem sectionItem, bool animate)
         {
             bool expanded;
             if (!_sectionExpandedByHeader.TryGetValue(sectionItem, out expanded))
@@ -248,10 +316,15 @@ namespace Fluence.Wpf.Demo
                 return;
             }
 
-            SetSectionExpanded(sectionItem, !expanded);
+            SetSectionExpanded(sectionItem, !expanded, animate);
         }
 
         private void SetSectionExpanded(NavigationViewItem sectionItem, bool expanded)
+        {
+            SetSectionExpanded(sectionItem, expanded, false);
+        }
+
+        private void SetSectionExpanded(NavigationViewItem sectionItem, bool expanded, bool animate)
         {
             _sectionExpandedByHeader[sectionItem] = expanded;
             SetSectionChevron(sectionItem, expanded);
@@ -264,8 +337,61 @@ namespace Fluence.Wpf.Demo
 
             foreach (var child in children)
             {
-                child.Visibility = expanded ? Visibility.Visible : Visibility.Collapsed;
+                SetChildVisibility(sectionItem, child, expanded, animate);
             }
+        }
+
+        private void CollapseAllSections(bool animate)
+        {
+            foreach (var pair in _sectionChildrenByHeader)
+            {
+                SetSectionExpanded(pair.Key, false, animate);
+            }
+        }
+
+        private void SetChildVisibility(NavigationViewItem sectionItem, NavigationViewItem child, bool visible, bool animate)
+        {
+            child.BeginAnimation(UIElement.OpacityProperty, null);
+
+            if (!animate)
+            {
+                child.Opacity = 1.0;
+                child.Visibility = visible ? Visibility.Visible : Visibility.Collapsed;
+                return;
+            }
+
+            var duration = new Duration(TimeSpan.FromMilliseconds(visible ? 120 : 80));
+            var easing = new CubicEase { EasingMode = visible ? EasingMode.EaseOut : EasingMode.EaseIn };
+
+            if (visible)
+            {
+                child.Visibility = Visibility.Visible;
+                child.Opacity = 0.0;
+                child.BeginAnimation(
+                    UIElement.OpacityProperty,
+                    new DoubleAnimation(1.0, duration) { EasingFunction = easing });
+                return;
+            }
+
+            if (child.Visibility != Visibility.Visible)
+            {
+                child.Visibility = Visibility.Collapsed;
+                child.Opacity = 1.0;
+                return;
+            }
+
+            var animation = new DoubleAnimation(0.0, duration) { EasingFunction = easing };
+            animation.Completed += delegate
+            {
+                bool stillExpanded;
+                if (_sectionExpandedByHeader.TryGetValue(sectionItem, out stillExpanded) && !stillExpanded)
+                {
+                    child.Visibility = Visibility.Collapsed;
+                }
+
+                child.Opacity = 1.0;
+            };
+            child.BeginAnimation(UIElement.OpacityProperty, animation);
         }
 
         private static void SetSectionChevron(NavigationViewItem sectionItem, bool expanded)
@@ -392,6 +518,11 @@ namespace Fluence.Wpf.Demo
                 return;
             }
 
+            if (NavSearchBox != null && !string.IsNullOrEmpty(NavSearchBox.Text))
+            {
+                NavSearchBox.Text = string.Empty;
+            }
+
             var match = FindFirstMatchingItem(tag);
             if (match != null)
             {
@@ -437,7 +568,8 @@ namespace Fluence.Wpf.Demo
             }
 
             var needle = query.Trim().ToLowerInvariant();
-            NavigationViewItem fallback = null;
+            NavigationViewItem fallbackLeaf = null;
+            NavigationViewItem fallbackSection = null;
             foreach (var obj in DemoNav.Items)
             {
                 var nvi = obj as NavigationViewItem;
@@ -452,13 +584,25 @@ namespace Fluence.Wpf.Demo
                     return nvi;
                 }
 
-                if (fallback == null && ItemMatches(nvi, needle))
+                if (!ItemMatches(nvi, needle))
                 {
-                    fallback = nvi;
+                    continue;
+                }
+
+                if (_sectionChildrenByHeader.ContainsKey(nvi))
+                {
+                    if (fallbackSection == null)
+                    {
+                        fallbackSection = nvi;
+                    }
+                }
+                else if (fallbackLeaf == null)
+                {
+                    fallbackLeaf = nvi;
                 }
             }
 
-            return fallback;
+            return fallbackLeaf ?? fallbackSection;
         }
 
         private static bool ItemMatches(NavigationViewItem nvi, string loweredNeedle)
@@ -618,6 +762,7 @@ namespace Fluence.Wpf.Demo
             if (DemoNav != null)
             {
                 DemoNav.SelectionChanged -= DemoNav_SelectionChanged;
+                DemoNav.PaneClosed -= DemoNav_PaneClosed;
             }
             if (_extendsDpd != null)
             {

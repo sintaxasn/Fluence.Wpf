@@ -1289,11 +1289,11 @@ namespace Fluence.Wpf.Tests
                         }
 
                         var content = item.Content as string;
-                        if (item.PageContent == null)
+                        if (item.InfoBadge != null)
                         {
                             groups.Add(content);
                         }
-                        else
+                        else if (item.PageContent != null)
                         {
                             pages.Add(content);
                         }
@@ -2587,6 +2587,7 @@ namespace Fluence.Wpf.Tests
                 var label = nvi == null ? null : nvi.Content as string;
                 var tag = nvi == null ? null : nvi.Tag as string;
                 if (nvi != null &&
+                    nvi.InfoBadge == null &&
                     nvi.PageContent != null &&
                     (string.Equals(label, itemContent, StringComparison.Ordinal) ||
                      (tag != null && tag.IndexOf(itemContent, StringComparison.OrdinalIgnoreCase) >= 0)))

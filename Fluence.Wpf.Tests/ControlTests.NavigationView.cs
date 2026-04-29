@@ -568,6 +568,112 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void NavigationView_PreTemplateSelection_PositionsSharedIndicatorAfterTemplateApplied()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 400,
+                        Height = 320,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left
+                    };
+                    var item = new Fluent.NavigationViewItem
+                    {
+                        Content = "Home",
+                        Icon = new Fluent.FontIcon { Glyph = "\uE80F", IconFontSize = 20 }
+                    };
+                    nav.Items.Add(item);
+                    nav.SelectedItem = item;
+
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    var indicator = nav.GetSelectionIndicatorForTesting();
+                    Assert.IsNotNull(indicator, "PART_SelectionIndicator should exist in the NavigationView template.");
+                    Assert.AreEqual(1.0, indicator.Opacity, 0.01,
+                        "Selection made before template application should show the shared indicator after layout.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NavigationView_LeftMode_SharedIndicator_TracksHorizontalItemPlacement()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 400,
+                        Height = 320,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left
+                    };
+                    nav.Items.Add(new Fluent.NavigationViewItem
+                    {
+                        Content = "Home",
+                        Icon = new Fluent.FontIcon { Glyph = "\uE80F", IconFontSize = 20 }
+                    });
+                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Child" });
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    nav.SelectedIndex = 0;
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    var indicator = nav.GetSelectionIndicatorForTesting();
+                    Assert.IsNotNull(indicator, "PART_SelectionIndicator should exist in the NavigationView template.");
+                    var iconItemX = GetSelectionIndicatorTranslate(indicator).X;
+                    Assert.AreEqual(4.0, iconItemX, 0.5,
+                        "Icon item indicator should sit inside the selected item background.");
+
+                    nav.SelectedIndex = 1;
+                    WaitForAnimationAndDrain(window.Dispatcher, 600);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    var childItemX = GetSelectionIndicatorTranslate(indicator).X;
+                    Assert.AreEqual(56.0, childItemX, 0.5,
+                        "Iconless child item indicator should move inward to the content column.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
         public void NavigationView_SharedIndicator_HidesWhenSelectionCleared()
         {
             RunOnStaThread(() =>
@@ -1415,6 +1521,16 @@ namespace Fluence.Wpf.Tests
             {
                 CloseWindowAndDrain(window);
             }
+        }
+
+        private static TranslateTransform GetSelectionIndicatorTranslate(FrameworkElement indicator)
+        {
+            var group = indicator.RenderTransform as TransformGroup;
+            Assert.IsNotNull(group, "Selection indicator must use a TransformGroup.");
+            Assert.IsTrue(group.Children.Count >= 2, "Selection indicator TransformGroup must contain scale and translate transforms.");
+            var translate = group.Children[1] as TranslateTransform;
+            Assert.IsNotNull(translate, "Selection indicator transform index 1 must be a TranslateTransform.");
+            return translate;
         }
 
         [TestMethod]

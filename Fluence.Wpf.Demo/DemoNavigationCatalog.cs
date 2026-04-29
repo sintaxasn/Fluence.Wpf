@@ -99,8 +99,8 @@ namespace Fluence.Wpf.Demo
             new DemoNavigationCategory("Collections", "controls collections list card tree", "\uE80A", true, false),
             new DemoNavigationCategory("Menus and toolbars", "controls menu contextmenu tooltip toolbar command", "\uE115", true, false),
             new DemoNavigationCategory("Navigation", "controls navigation navigationview tabview", "\uE700", true, false),
-            new DemoNavigationCategory("Status and info", "controls status info progress infobar badge person", "\uE916", true, false),
             new DemoNavigationCategory("Layout", "controls layout border dockpanel stackpanel expander separator", "\uECA5", true, false),
+            new DemoNavigationCategory("Status and info", "controls status info progress infobar badge person", "\uE916", true, false),
             new DemoNavigationCategory("Text", "controls text textblock typography", "\uE8D2", true, false),
             new DemoNavigationCategory("Windowing", "controls window titlebar caption chrome", "\uE737", true, false)
         };
@@ -129,9 +129,6 @@ namespace Fluence.Wpf.Demo
             new DemoNavigationItem("Basic input", "RatingControl", "ratingcontrol rating selection", "\uE734", false, () => DemoControlPages.RatingControl()),
             new DemoNavigationItem("Basic input", "Slider", "slider range input", "\uE9E9", false, () => DemoControlPages.Slider()),
             new DemoNavigationItem("Basic input", "ToggleSwitch", "toggleswitch toggle switch selection", "\uE73A", false, () => DemoControlPages.ToggleSwitch()),
-            new DemoNavigationItem("Basic input", "TextBox", "textbox text input inputs form", "\uE70F", false, () => DemoControlPages.TextBox()),
-            new DemoNavigationItem("Basic input", "PasswordBox", "passwordbox password input form", "\uE72E", false, () => DemoControlPages.PasswordBox()),
-            new DemoNavigationItem("Basic input", "NumberBox", "numberbox number input form", "\uF16E", false, () => DemoControlPages.NumberBox()),
 
             new DemoNavigationItem("Collections", "Card", "card collection data", "\uECA5", false, () => DemoCollectionPages.Card()),
             new DemoNavigationItem("Collections", "ListBox", "listbox list collection data selection", "\uEA37", false, () => DemoCollectionPages.ListBox()),
@@ -158,6 +155,9 @@ namespace Fluence.Wpf.Demo
             new DemoNavigationItem("Layout", "StackPanel", "stackpanel layout panel", "\uF0E2", false, () => DemoLayoutPages.StackPanel()),
 
             new DemoNavigationItem("Text", "TextBlock", "textblock text typography", "\uE8D2", false, () => DemoTextPages.TextBlock()),
+            new DemoNavigationItem("Text", "TextBox", "textbox text input inputs form", "\uE70F", false, () => DemoControlPages.TextBox()),
+            new DemoNavigationItem("Text", "PasswordBox", "passwordbox password input form", "\uE72E", false, () => DemoControlPages.PasswordBox()),
+            new DemoNavigationItem("Text", "NumberBox", "numberbox number input form", "\uF16E", false, () => DemoControlPages.NumberBox()),
 
             new DemoNavigationItem("Windowing", "CaptionButtonChrome", "captionbuttonchrome caption chrome window", "\uE8BB", false, () => DemoWindowingPages.CaptionButtonChrome()),
             new DemoNavigationItem("Windowing", "FluenceWindow", "fluencewindow window theme backdrop mica accent titlebar chrome shell", "\uE737", false, () => DemoWindowingPages.FluenceWindow()),

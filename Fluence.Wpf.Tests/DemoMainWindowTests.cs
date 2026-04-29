@@ -98,6 +98,20 @@ namespace Fluence.Wpf.Tests
             dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() => { }));
         }
 
+        private static void WaitForAnimationAndDrain(Dispatcher dispatcher, int milliseconds)
+        {
+            var frame = new DispatcherFrame();
+            var timer = new DispatcherTimer(
+                TimeSpan.FromMilliseconds(milliseconds),
+                DispatcherPriority.Normal,
+                delegate { frame.Continue = false; },
+                dispatcher);
+            timer.Start();
+            Dispatcher.PushFrame(frame);
+            timer.Stop();
+            dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() => { }));
+        }
+
         private static MainWindow CreateShownMainWindow()
         {
             var window = new MainWindow
@@ -313,7 +327,7 @@ namespace Fluence.Wpf.Tests
                         }
 
                         var item = el as NavigationViewItem;
-                        if (item != null && item.PageContent == null)
+                        if (item != null && item.InfoBadge != null)
                         {
                             Assert.AreEqual(Visibility.Visible, item.Visibility,
                                 "Empty query must restore navigation group headings to Visible.");
@@ -462,6 +476,273 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void MainWindow_NavigationCatalog_PlacesTextInputsUnderTextSection()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                MainWindow window = null;
+                try
+                {
+                    window = CreateShownMainWindow();
+                    var nav = GetDemoNav(window);
+
+                    var categories = new System.Collections.Generic.List<string>();
+                    var basicInputChildren = new System.Collections.Generic.List<string>();
+                    var textChildren = new System.Collections.Generic.List<string>();
+                    var currentCategory = string.Empty;
+
+                    foreach (var obj in nav.Items)
+                    {
+                        var item = obj as NavigationViewItem;
+                        if (item == null)
+                        {
+                            continue;
+                        }
+
+                        var title = item.Content as string;
+                        if (item.InfoBadge != null)
+                        {
+                            currentCategory = title;
+                            categories.Add(title);
+                            continue;
+                        }
+
+                        if (string.Equals(currentCategory, "Basic input", StringComparison.Ordinal))
+                        {
+                            basicInputChildren.Add(title);
+                        }
+                        else if (string.Equals(currentCategory, "Text", StringComparison.Ordinal))
+                        {
+                            textChildren.Add(title);
+                        }
+                    }
+
+                    Assert.IsTrue(categories.IndexOf("Status and info") >= 0, "Status and info category should exist.");
+                    Assert.IsTrue(categories.IndexOf("Text") >= 0, "Text category should exist.");
+                    Assert.IsTrue(categories.IndexOf("Status and info") < categories.IndexOf("Text"),
+                        "Status and info should appear above Text.");
+
+                    Assert.IsFalse(basicInputChildren.Contains("TextBox"), "TextBox should move out of Basic input.");
+                    Assert.IsFalse(basicInputChildren.Contains("PasswordBox"), "PasswordBox should move out of Basic input.");
+                    Assert.IsFalse(basicInputChildren.Contains("NumberBox"), "NumberBox should move out of Basic input.");
+
+                    CollectionAssert.Contains(textChildren, "TextBlock");
+                    CollectionAssert.Contains(textChildren, "TextBox");
+                    CollectionAssert.Contains(textChildren, "PasswordBox");
+                    CollectionAssert.Contains(textChildren, "NumberBox");
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void MainWindow_CategoryHeader_OpensOverviewPageWithChildCards()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                MainWindow window = null;
+                try
+                {
+                    window = CreateShownMainWindow();
+                    var nav = GetDemoNav(window);
+                    var basicInput = AssertNavigationItemExists(nav, "Basic input");
+                    var button = AssertNavigationItemExists(nav, "Button");
+
+                    Assert.AreEqual(Visibility.Collapsed, button.Visibility,
+                        "Basic input starts collapsed so selecting its header must reveal children.");
+
+                    nav.SelectedItem = basicInput;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.AreSame(basicInput, nav.SelectedItem,
+                        "Selecting a category header should keep the header selected instead of restoring the last leaf.");
+                    Assert.AreEqual(Visibility.Visible, button.Visibility,
+                        "Selecting a category header should expand its child pages.");
+
+                    var selectedContent = nav.SelectedContent as DependencyObject;
+                    Assert.IsNotNull(selectedContent, "Category headers should open an overview page.");
+                    Assert.AreEqual("GalleryCategoryPage", selectedContent.GetType().Name,
+                        "Category headers should use the category overview page shell.");
+
+                    var title = FindByName<System.Windows.Controls.TextBlock>(selectedContent, "CategoryPageTitle");
+                    Assert.IsNotNull(title, "Category overview should expose CategoryPageTitle.");
+                    Assert.AreEqual("Basic input", title.Text);
+
+                    Card buttonCard = null;
+                    foreach (var card in FindAllVisualChildren<Card>(selectedContent))
+                    {
+                        if (string.Equals(card.Tag as string, "Button", StringComparison.Ordinal))
+                        {
+                            buttonCard = card;
+                            break;
+                        }
+                    }
+
+                    Assert.IsNotNull(buttonCard, "Category overview should include a clickable card for Button.");
+                    Assert.IsTrue(buttonCard.IsClickable, "Category overview cards should be clickable.");
+
+                    buttonCard.RaiseEvent(new RoutedEventArgs(Card.ClickEvent, buttonCard));
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    var selected = nav.SelectedItem as NavigationViewItem;
+                    Assert.IsNotNull(selected, "Clicking a category card should navigate to its child page.");
+                    Assert.AreEqual("Button", selected.Content as string);
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void MainWindow_CategoryCardNavigation_ClearsActiveSearchFilter()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                MainWindow window = null;
+                try
+                {
+                    window = CreateShownMainWindow();
+                    var search = GetNavSearchBox(window);
+                    var nav = GetDemoNav(window);
+                    var basicInput = AssertNavigationItemExists(nav, "Basic input");
+                    var button = AssertNavigationItemExists(nav, "Button");
+
+                    nav.SelectedItem = basicInput;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    search.Text = "progress";
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+                    Assert.AreEqual("progress", search.Text, "The test must start with an active search filter.");
+
+                    var selectedContent = nav.SelectedContent as DependencyObject;
+                    Assert.IsNotNull(selectedContent, "Category overview should remain visible while filtering.");
+
+                    Card buttonCard = null;
+                    foreach (var card in FindAllVisualChildren<Card>(selectedContent))
+                    {
+                        if (string.Equals(card.Tag as string, "Button", StringComparison.Ordinal))
+                        {
+                            buttonCard = card;
+                            break;
+                        }
+                    }
+
+                    Assert.IsNotNull(buttonCard, "Category overview should include a Button card.");
+                    buttonCard.RaiseEvent(new RoutedEventArgs(Card.ClickEvent, buttonCard));
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.AreEqual(string.Empty, search.Text,
+                        "Navigating from a category card should clear the active search filter.");
+                    Assert.AreSame(button, nav.SelectedItem,
+                        "Navigating from a category card should select the matching child item.");
+                    Assert.AreEqual(Visibility.Visible, button.Visibility,
+                        "The selected child item should be visible after category-card navigation.");
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void MainWindow_PaneCollapse_CollapsesOpenSections()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                MainWindow window = null;
+                try
+                {
+                    window = CreateShownMainWindow();
+                    var nav = GetDemoNav(window);
+                    var basicInput = AssertNavigationItemExists(nav, "Basic input");
+                    var button = AssertNavigationItemExists(nav, "Button");
+
+                    nav.SelectedItem = basicInput;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+                    Assert.AreEqual(Visibility.Visible, button.Visibility,
+                        "The test section must be expanded before pane collapse.");
+
+                    nav.IsPaneOpen = false;
+                    WaitForAnimationAndDrain(window.Dispatcher, 180);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.AreEqual(Visibility.Collapsed, button.Visibility,
+                        "Pane collapse should collapse open category children so compact mode has no child gaps.");
+                    var chevron = basicInput.InfoBadge as FontIcon;
+                    Assert.IsNotNull(chevron, "Category header should keep its chevron glyph.");
+                    Assert.AreEqual("\uE70D", chevron.Glyph, "Pane collapse should reset category chevrons to collapsed.");
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
         public void MainWindow_BasicInputChildren_OpenSingleControlPages()
         {
             RunOnSta(() =>
@@ -487,10 +768,7 @@ namespace Fluence.Wpf.Tests
                         "RadioButton",
                         "RatingControl",
                         "Slider",
-                        "ToggleSwitch",
-                        "TextBox",
-                        "PasswordBox",
-                        "NumberBox"
+                        "ToggleSwitch"
                     };
 
                     foreach (var pageTitle in pageTitles)
@@ -924,7 +1202,10 @@ namespace Fluence.Wpf.Tests
                     var nav = GetDemoNav(window);
                     var pageTitles = new[]
                     {
-                        "TextBlock"
+                        "TextBlock",
+                        "TextBox",
+                        "PasswordBox",
+                        "NumberBox"
                     };
 
                     foreach (var pageTitle in pageTitles)

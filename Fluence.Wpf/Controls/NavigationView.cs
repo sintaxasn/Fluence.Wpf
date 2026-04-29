@@ -68,6 +68,10 @@ namespace Fluence.Wpf.Controls
         /// <summary>Name of the shared selection indicator element.</summary>
         public const string PartSelectionIndicator = "PART_SelectionIndicator";
 
+        private const double NavigationItemOuterHorizontalMargin = 4.0;
+        private const double NavigationItemIconColumnWidth = 40.0;
+        private const double NavigationItemGapColumnWidth = 12.0;
+
         private System.Windows.Controls.Button _backButton;
         private System.Windows.Controls.Button _paneToggleButton;
         private ScrollViewer _paneScrollViewer;
@@ -565,24 +569,22 @@ namespace Fluence.Wpf.Controls
             }
 
             bool topMode = PaneDisplayMode == NavigationViewPaneDisplayMode.Top;
-            double targetOffset = CalculateIndicatorOffset(nvi, topMode);
+            Point targetPosition = CalculateIndicatorPosition(nvi, topMode);
 
             if (!animate || !_indicatorPositioned)
             {
-                SnapIndicator(targetOffset, topMode);
+                SnapIndicator(targetPosition);
                 return;
             }
 
-            double currentOffset = GetCurrentIndicatorOffset(topMode);
-            AnimateIndicator(currentOffset, targetOffset, topMode);
+            Point currentPosition = GetCurrentIndicatorPosition();
+            AnimateIndicator(currentPosition, targetPosition, topMode);
         }
 
         /// <summary>
-        /// Calculates the offset for the indicator relative to its host Grid.
-        /// Left modes: Y offset to vertically center on the item.
-        /// Top mode: X offset to horizontally center on the item.
+        /// Calculates the translate position for the indicator relative to its host Grid.
         /// </summary>
-        private double CalculateIndicatorOffset(NavigationViewItem item, bool topMode)
+        private Point CalculateIndicatorPosition(NavigationViewItem item, bool topMode)
         {
             try
             {
@@ -591,18 +593,24 @@ namespace Fluence.Wpf.Controls
 
                 if (topMode)
                 {
-                    return itemPos.X + (item.ActualWidth - _selectionIndicator.Width) / 2.0;
+                    return new Point(itemPos.X + (item.ActualWidth - _selectionIndicator.Width) / 2.0, 0.0);
                 }
 
-                return itemPos.Y + (item.ActualHeight - _selectionIndicator.Height) / 2.0;
+                var x = itemPos.X + NavigationItemOuterHorizontalMargin;
+                if (item.Icon == null)
+                {
+                    x += NavigationItemIconColumnWidth + NavigationItemGapColumnWidth;
+                }
+
+                return new Point(x, itemPos.Y + (item.ActualHeight - _selectionIndicator.Height) / 2.0);
             }
             catch
             {
-                return 0;
+                return new Point(0, 0);
             }
         }
 
-        private double GetCurrentIndicatorOffset(bool topMode)
+        private Point GetCurrentIndicatorPosition()
         {
             var group = _selectionIndicator.RenderTransform as TransformGroup;
             if (group != null && group.Children.Count >= 2)
@@ -610,17 +618,17 @@ namespace Fluence.Wpf.Controls
                 var translate = group.Children[1] as TranslateTransform;
                 if (translate != null)
                 {
-                    return topMode ? translate.X : translate.Y;
+                    return new Point(translate.X, translate.Y);
                 }
             }
 
-            return 0;
+            return new Point(0, 0);
         }
 
         /// <summary>
         /// Immediately places the indicator at the target offset with no animation.
         /// </summary>
-        private void SnapIndicator(double targetOffset, bool topMode)
+        private void SnapIndicator(Point targetPosition)
         {
             StopAnimation();
             EnsureMutableTransform();
@@ -631,17 +639,8 @@ namespace Fluence.Wpf.Controls
 
             scale.ScaleX = 1.0;
             scale.ScaleY = 1.0;
-
-            if (topMode)
-            {
-                translate.X = targetOffset;
-                translate.Y = 0;
-            }
-            else
-            {
-                translate.X = 0;
-                translate.Y = targetOffset;
-            }
+            translate.X = targetPosition.X;
+            translate.Y = targetPosition.Y;
 
             _selectionIndicator.Opacity = 1.0;
             _indicatorPositioned = true;
@@ -651,11 +650,15 @@ namespace Fluence.Wpf.Controls
         /// Runs a two-phase depart/arrive animation: the indicator shrinks at the old
         /// position, then grows at the new position, giving the appearance of sliding.
         /// </summary>
-        private void AnimateIndicator(double fromOffset, double toOffset, bool topMode)
+        private void AnimateIndicator(Point fromPosition, Point toPosition, bool topMode)
         {
             StopAnimation();
             EnsureMutableTransform();
 
+            double fromOffset = topMode ? fromPosition.X : fromPosition.Y;
+            double toOffset = topMode ? toPosition.X : toPosition.Y;
+            double fromCrossOffset = topMode ? fromPosition.Y : fromPosition.X;
+            double toCrossOffset = topMode ? toPosition.Y : toPosition.X;
             int direction = toOffset >= fromOffset ? 1 : -1;
             double travel = 3.0;
 
@@ -672,6 +675,7 @@ namespace Fluence.Wpf.Controls
 
             DependencyProperty scaleProp = topMode ? ScaleTransform.ScaleXProperty : ScaleTransform.ScaleYProperty;
             DependencyProperty translateProp = topMode ? TranslateTransform.XProperty : TranslateTransform.YProperty;
+            DependencyProperty crossTranslateProp = topMode ? TranslateTransform.YProperty : TranslateTransform.XProperty;
 
             var sb = new Storyboard();
 
@@ -703,6 +707,11 @@ namespace Fluence.Wpf.Controls
             Storyboard.SetTargetProperty(slideArrive, new PropertyPath(translateProp));
             sb.Children.Add(slideArrive);
 
+            var slideCross = new DoubleAnimation(fromCrossOffset, toCrossOffset, arriveDuration) { EasingFunction = ease };
+            Storyboard.SetTarget(slideCross, translate);
+            Storyboard.SetTargetProperty(slideCross, new PropertyPath(crossTranslateProp));
+            sb.Children.Add(slideCross);
+
             var fadeIn = new DoubleAnimation(0.0, 1.0, new Duration(TimeSpan.FromMilliseconds(83)))
             {
                 BeginTime = arriveDelay
@@ -711,12 +720,11 @@ namespace Fluence.Wpf.Controls
             Storyboard.SetTargetProperty(fadeIn, new PropertyPath(UIElement.OpacityProperty));
             sb.Children.Add(fadeIn);
 
-            double capturedTarget = toOffset;
-            bool capturedTopMode = topMode;
+            Point capturedPosition = toPosition;
             sb.Completed += delegate
             {
                 _activeStoryboard = null;
-                SnapIndicator(capturedTarget, capturedTopMode);
+                SnapIndicator(capturedPosition);
             };
 
             _activeStoryboard = sb;
