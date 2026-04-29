@@ -592,6 +592,27 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void DemoSourceTabsSamples_CopyToOutput()
+        {
+            var outputDirectory = Path.GetDirectoryName(typeof(MainWindow).Assembly.Location);
+            var samplePaths = new[]
+            {
+                "TabControlBasics",
+                "TabControlPlacement",
+                "TabViewDocuments"
+            };
+
+            foreach (var samplePath in samplePaths)
+            {
+                var xaml = Path.Combine(outputDirectory, "Samples", "Tabs", samplePath + ".xaml");
+                var codeBehind = Path.Combine(outputDirectory, "Samples", "Tabs", samplePath + ".xaml.cs");
+
+                Assert.IsTrue(File.Exists(xaml), "Tabs sample XAML must be copied beside the demo assembly: " + samplePath);
+                Assert.IsTrue(File.Exists(codeBehind), "Tabs sample code-behind must be copied beside the demo assembly: " + samplePath);
+            }
+        }
+
+        [TestMethod]
         public void ButtonsPage_ContainsSourceLinksForEachExample()
         {
             RunOnSta(() =>
@@ -1050,6 +1071,73 @@ namespace Fluence.Wpf.Tests
                             expected,
                             actual,
                             "Each Navigation page example must expose a Source link to its sample XAML.");
+                    }
+                    finally
+                    {
+                        window.Close();
+                    }
+                }
+                finally
+                {
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void TabsPage_ContainsSourceLinksForEachExample()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                try
+                {
+                    var page = new GalleryTabsPage();
+                    var host = new System.Windows.Controls.Grid();
+                    host.Children.Add(page);
+                    var window = new Window
+                    {
+                        Left = -20000,
+                        Top = -20000,
+                        Width = 1040,
+                        Height = 720,
+                        WindowStartupLocation = WindowStartupLocation.Manual,
+                        ShowInTaskbar = false,
+                        Content = host
+                    };
+
+                    try
+                    {
+                        window.Show();
+                        Drain(window.Dispatcher);
+                        window.UpdateLayout();
+                        Drain(window.Dispatcher);
+
+                        var expected = new[]
+                        {
+                            DemoSourceLinkSettings.GetSourceUri("Tabs/TabControlBasics.xaml").AbsoluteUri,
+                            DemoSourceLinkSettings.GetSourceUri("Tabs/TabControlPlacement.xaml").AbsoluteUri,
+                            DemoSourceLinkSettings.GetSourceUri("Tabs/TabViewDocuments.xaml").AbsoluteUri
+                        };
+
+                        var actual = new System.Collections.Generic.List<string>();
+                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(page))
+                        {
+                            if (link.NavigateUri != null && link.Content as string == "Source")
+                            {
+                                actual.Add(link.NavigateUri.AbsoluteUri);
+                            }
+                        }
+
+                        CollectionAssert.AreEquivalent(
+                            expected,
+                            actual,
+                            "Each Tabs page example must expose a Source link to its sample XAML.");
                     }
                     finally
                     {

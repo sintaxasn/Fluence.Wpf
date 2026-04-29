@@ -38,6 +38,10 @@ namespace Fluence.Wpf.Demo.Pages
         public GalleryTabsPage()
         {
             InitializeComponent();
+
+            TabControlBasicsSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Tabs/TabControlBasics.xaml");
+            TabControlPlacementSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Tabs/TabControlPlacement.xaml");
+            TabViewDocumentsSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Tabs/TabViewDocuments.xaml");
         }
 
         private void DemoTabView_AddTabButtonClick(object sender, RoutedEventArgs e)
