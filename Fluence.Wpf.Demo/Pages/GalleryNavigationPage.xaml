@@ -94,7 +94,8 @@
                     </Border>
                     <ui:HyperlinkButton
                         x:Name="LeftNavigationViewSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -155,7 +156,8 @@
                     </Border>
                     <ui:HyperlinkButton
                         x:Name="TopNavigationViewSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -227,7 +229,8 @@
                     </StackPanel>
                     <ui:HyperlinkButton
                         x:Name="CompactNavigationViewSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>

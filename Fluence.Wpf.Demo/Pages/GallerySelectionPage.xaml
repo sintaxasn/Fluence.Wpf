@@ -54,7 +54,8 @@
                         Description="Additional detail about this option" />
                     <ui:HyperlinkButton
                         x:Name="CheckBoxStatesSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -106,7 +107,8 @@
                         GroupName="DescGroup" />
                     <ui:HyperlinkButton
                         x:Name="RadioButtonGroupsSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -159,7 +161,8 @@
                         Text="Default toggle: Off" />
                     <ui:HyperlinkButton
                         x:Name="ToggleSwitchStatesSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -204,7 +207,8 @@
                         Text="Selected: none" />
                     <ui:HyperlinkButton
                         x:Name="ComboBoxSelectionSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>

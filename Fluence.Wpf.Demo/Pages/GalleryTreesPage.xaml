@@ -53,7 +53,8 @@
                     </ui:TreeView>
                     <ui:HyperlinkButton
                         x:Name="TreeViewHierarchySourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -94,7 +95,8 @@
                         Text="Selected: -" />
                     <ui:HyperlinkButton
                         x:Name="TreeViewSelectionSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -129,7 +131,8 @@
                     </StackPanel>
                     <ui:HyperlinkButton
                         x:Name="TreeViewExpansionSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>

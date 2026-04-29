@@ -58,7 +58,8 @@
                     </WrapPanel>
                     <ui:HyperlinkButton
                         x:Name="ButtonAppearancesSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -95,7 +96,8 @@
                     </WrapPanel>
                     <ui:HyperlinkButton
                         x:Name="ButtonIconsSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -131,7 +133,8 @@
                     </WrapPanel>
                     <ui:HyperlinkButton
                         x:Name="HyperlinkButtonsSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -190,7 +193,8 @@
                     </WrapPanel>
                     <ui:HyperlinkButton
                         x:Name="DropDownButtonsSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -254,7 +258,8 @@
                     </WrapPanel>
                     <ui:HyperlinkButton
                         x:Name="SplitButtonsSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -287,7 +292,8 @@
                     </WrapPanel>
                     <ui:HyperlinkButton
                         x:Name="ToggleAndRepeatButtonsSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>

@@ -118,7 +118,8 @@
                     </Grid>
                     <ui:HyperlinkButton
                         x:Name="ListViewItemsSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -155,7 +156,8 @@
                     </StackPanel>
                     <ui:HyperlinkButton
                         x:Name="ListViewEmptyStateSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -198,7 +200,8 @@
             <ui:HyperlinkButton
                 x:Name="CardVariantsSourceLink"
                 Margin="0,0,0,16"
-                HorizontalAlignment="Left"
+                HorizontalAlignment="Right"
+                Style="{StaticResource DemoSourceLinkButtonStyle}"
                 Content="Source" />
         </StackPanel>
     </ui:SmoothScrollViewer>

@@ -181,7 +181,8 @@
                     <ui:HyperlinkButton
                         x:Name="ThemeAndAccentSourceLink"
                         Margin="0,12,0,0"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -318,7 +319,8 @@
                     <ui:HyperlinkButton
                         x:Name="BackdropAndCaptionButtonsSourceLink"
                         Margin="0,12,0,0"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -384,7 +386,8 @@
                     <ui:HyperlinkButton
                         x:Name="TitleBarChromeSourceLink"
                         Margin="0,4,0,0"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>

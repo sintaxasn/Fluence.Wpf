@@ -97,7 +97,8 @@
                     <ui:HyperlinkButton
                         x:Name="MenuBarSourceLink"
                         Margin="8,0,0,0"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -168,7 +169,8 @@
                     </ui:Card>
                     <ui:HyperlinkButton
                         x:Name="ContextMenuSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -217,7 +219,8 @@
                     </WrapPanel>
                     <ui:HyperlinkButton
                         x:Name="ToolTipsSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -296,7 +299,8 @@
                         Text="Last action: None" />
                     <ui:HyperlinkButton
                         x:Name="DropDownAndSplitButtonsSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>

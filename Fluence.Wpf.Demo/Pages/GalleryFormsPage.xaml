@@ -77,7 +77,8 @@
                         Title="Ready" />
                     <ui:HyperlinkButton
                         x:Name="SignInFormSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -138,7 +139,8 @@
                     </StackPanel>
                     <ui:HyperlinkButton
                         x:Name="CheckoutFormSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -192,7 +194,8 @@
                         Title="Saved" />
                     <ui:HyperlinkButton
                         x:Name="SettingsFormSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>

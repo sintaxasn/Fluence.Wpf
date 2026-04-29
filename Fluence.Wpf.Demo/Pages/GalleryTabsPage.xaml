@@ -77,7 +77,8 @@
                     </TabControl>
                     <ui:HyperlinkButton
                         x:Name="TabControlBasicsSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -133,7 +134,8 @@
                     </Grid>
                     <ui:HyperlinkButton
                         x:Name="TabControlPlacementSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -212,7 +214,8 @@
                         Text="Tabs: 3" />
                     <ui:HyperlinkButton
                         x:Name="TabViewDocumentsSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>

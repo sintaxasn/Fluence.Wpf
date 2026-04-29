@@ -111,7 +111,8 @@
                         <ui:HyperlinkButton
                             x:Name="ObservableCollectionListViewSourceLink"
                             Margin="0,8,0,0"
-                            HorizontalAlignment="Left"
+                            HorizontalAlignment="Right"
+                            Style="{StaticResource DemoSourceLinkButtonStyle}"
                             Content="Source" />
                     </StackPanel>
                 </Grid>
@@ -173,7 +174,8 @@
                     <ui:HyperlinkButton
                         x:Name="ListViewSelectionModeSourceLink"
                         Margin="0,8,0,0"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -233,7 +235,8 @@
                     <ui:HyperlinkButton
                         x:Name="DataTemplateRowSourceLink"
                         Margin="0,8,0,0"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>

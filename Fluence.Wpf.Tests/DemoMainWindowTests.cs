@@ -509,6 +509,92 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void DemoSourceLinks_UseRightAlignedIconPresentation()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                try
+                {
+                    var pages = new UserControl[]
+                    {
+                        new GalleryAccessibilityPage(),
+                        new GalleryButtonsPage(),
+                        new GalleryColorsPage(),
+                        new GalleryDataBindingPage(),
+                        new GalleryDataPage(),
+                        new GalleryFormsPage(),
+                        new GalleryGlyphsPage(),
+                        new GalleryInputsPage(),
+                        new GalleryMenusPage(),
+                        new GalleryNavigationPage(),
+                        new GallerySelectionPage(),
+                        new GalleryStatusPage(),
+                        new GalleryTabsPage(),
+                        new GalleryTreesPage(),
+                        new GalleryWindowPage()
+                    };
+
+                    foreach (var page in pages)
+                    {
+                        var host = new System.Windows.Controls.Grid();
+                        host.Children.Add(page);
+                        var window = new Window
+                        {
+                            Left = -20000,
+                            Top = -20000,
+                            Width = 1040,
+                            Height = 720,
+                            WindowStartupLocation = WindowStartupLocation.Manual,
+                            ShowInTaskbar = false,
+                            Content = host
+                        };
+
+                        try
+                        {
+                            window.Show();
+                            Drain(window.Dispatcher);
+                            window.UpdateLayout();
+                            Drain(window.Dispatcher);
+
+                            var sourceLinkCount = 0;
+                            foreach (var link in FindAllVisualChildren<HyperlinkButton>(page))
+                            {
+                                if (link.Name == null || !link.Name.EndsWith("SourceLink", StringComparison.Ordinal))
+                                {
+                                    continue;
+                                }
+
+                                sourceLinkCount++;
+                                Assert.AreEqual("Source", link.Content as string,
+                                    "Source-link content should stay textual for screen readers and existing URI tests.");
+                                Assert.AreEqual(HorizontalAlignment.Right, link.HorizontalAlignment,
+                                    page.GetType().Name + "." + link.Name + " should be right-aligned.");
+                                Assert.IsNotNull(link.Icon,
+                                    page.GetType().Name + "." + link.Name + " should display a URL/link icon.");
+                            }
+
+                            Assert.IsTrue(sourceLinkCount > 0, page.GetType().Name + " should expose source links.");
+                        }
+                        finally
+                        {
+                            window.Close();
+                        }
+                    }
+                }
+                finally
+                {
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
         public void DemoSourceSelectionSamples_CopyToOutput()
         {
             var outputDirectory = Path.GetDirectoryName(typeof(MainWindow).Assembly.Location);

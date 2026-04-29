@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
     x:Class="Fluence.Wpf.Demo.Pages.GalleryColorsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -26,7 +26,8 @@
                         Text="Text and accent" />
                     <ui:HyperlinkButton
                         x:Name="TextAndAccentBrushesSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
                 <StackPanel Margin="0,0,8,0">
@@ -35,7 +36,8 @@
                         Text="Fills and surfaces" />
                     <ui:HyperlinkButton
                         x:Name="FillAndSurfaceBrushesSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
                 <StackPanel Margin="0,0,8,0">
@@ -44,7 +46,8 @@
                         Text="Strokes" />
                     <ui:HyperlinkButton
                         x:Name="StrokeBrushesSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
                 <StackPanel>
@@ -53,7 +56,8 @@
                         Text="System colors" />
                     <ui:HyperlinkButton
                         x:Name="SystemAndHighContrastBrushesSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </UniformGrid>

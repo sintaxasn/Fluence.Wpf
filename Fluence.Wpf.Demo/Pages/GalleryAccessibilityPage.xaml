@@ -96,7 +96,8 @@
                     <ui:HyperlinkButton
                         x:Name="FocusAndTabOrderSourceLink"
                         Margin="0,12,0,0"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -184,7 +185,8 @@
                     <ui:HyperlinkButton
                         x:Name="HighContrastMappingSourceLink"
                         Margin="12,8,0,12"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -246,7 +248,8 @@
                     <ui:HyperlinkButton
                         x:Name="AutomationPropertiesSourceLink"
                         Margin="0,8,0,0"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -292,7 +295,8 @@
                     <ui:HyperlinkButton
                         x:Name="RtlLayoutSourceLink"
                         Margin="0,12,0,0"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>

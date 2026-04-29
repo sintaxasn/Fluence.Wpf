@@ -67,7 +67,8 @@
                                         </WrapPanel>
                                         <ui:HyperlinkButton
                                             x:Name="CommonGlyphsSourceLink"
-                                            HorizontalAlignment="Left"
+                                            HorizontalAlignment="Right"
+                                            Style="{StaticResource DemoSourceLinkButtonStyle}"
                                             Content="Source" />
                                     </StackPanel>
                                 </ui:Card>
@@ -104,7 +105,8 @@
                                         </WrapPanel>
                                         <ui:HyperlinkButton
                                             x:Name="CommandGlyphsSourceLink"
-                                            HorizontalAlignment="Left"
+                                            HorizontalAlignment="Right"
+                                            Style="{StaticResource DemoSourceLinkButtonStyle}"
                                             Content="Source" />
                                     </StackPanel>
                                 </ui:Card>
@@ -141,7 +143,8 @@
                                         </StackPanel>
                                         <ui:HyperlinkButton
                                             x:Name="StatusGlyphsSourceLink"
-                                            HorizontalAlignment="Left"
+                                            HorizontalAlignment="Right"
+                                            Style="{StaticResource DemoSourceLinkButtonStyle}"
                                             Content="Source" />
                                     </StackPanel>
                                 </ui:Card>

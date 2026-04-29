@@ -60,7 +60,8 @@
                         Text="Characters: 0" />
                     <ui:HyperlinkButton
                         x:Name="TextBoxInputSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -101,7 +102,8 @@
                         ValidationState="{x:Static uicore:ValidationState.Error}" />
                     <ui:HyperlinkButton
                         x:Name="TextBoxValidationSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -133,7 +135,8 @@
                         PlaceholderText="Disabled" />
                     <ui:HyperlinkButton
                         x:Name="PasswordBoxInputSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -179,7 +182,8 @@
                     </WrapPanel>
                     <ui:HyperlinkButton
                         x:Name="NumberBoxInputSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
@@ -237,7 +241,8 @@
                     </WrapPanel>
                     <ui:HyperlinkButton
                         x:Name="SliderInputSourceLink"
-                        HorizontalAlignment="Left"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />
                 </StackPanel>
             </ui:Card>
