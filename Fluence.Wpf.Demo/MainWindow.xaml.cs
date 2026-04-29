@@ -67,6 +67,7 @@ namespace Fluence.Wpf.Demo
         public MainWindow()
         {
             InitializeComponent();
+            PreviewKeyDown += MainWindow_PreviewKeyDown;
             Title = GalleryWindowTitle;
             SystemThemeWatcher.Watch(this);
             ApplicationThemeManager.Apply(ApplicationTheme.Auto, BackdropType.Mica, true);
@@ -107,6 +108,36 @@ namespace Fluence.Wpf.Demo
             }
 
             ApplyTitleBarContentVisibility();
+        }
+
+        private void MainWindow_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Handled || e.Key != Key.Tab)
+            {
+                return;
+            }
+
+            var modifiers = Keyboard.Modifiers;
+            if ((modifiers & (ModifierKeys.Alt | ModifierKeys.Control | ModifierKeys.Shift)) != ModifierKeys.None)
+            {
+                return;
+            }
+
+            var focused = Keyboard.FocusedElement as DependencyObject;
+            if (IsFocusWithinSelectedNavigationItem(focused))
+            {
+                if (FocusSearchBox())
+                {
+                    e.Handled = true;
+                }
+
+                return;
+            }
+
+            if (NavSearchBox != null && IsDescendantOrSelf(focused, NavSearchBox) && FocusFirstSelectedPageElement())
+            {
+                e.Handled = true;
+            }
         }
 
         private void PopulateNavigation()
@@ -529,6 +560,105 @@ namespace Fluence.Wpf.Demo
             {
                 NavSearchBox.Visibility = hideForTopExtends ? Visibility.Collapsed : Visibility.Visible;
             }
+        }
+
+        private bool IsFocusWithinSelectedNavigationItem(DependencyObject focused)
+        {
+            if (DemoNav == null)
+            {
+                return false;
+            }
+
+            var selected = DemoNav.SelectedItem as DependencyObject;
+            return IsDescendantOrSelf(focused, selected);
+        }
+
+        private bool FocusSearchBox()
+        {
+            if (NavSearchBox == null || NavSearchBox.Visibility != Visibility.Visible || !NavSearchBox.IsEnabled)
+            {
+                return false;
+            }
+
+            return NavSearchBox.Focus();
+        }
+
+        private bool FocusFirstSelectedPageElement()
+        {
+            if (DemoNav == null)
+            {
+                return false;
+            }
+
+            var target = FindFirstFocusableElement(DemoNav.SelectedContent as DependencyObject);
+            return target != null && target.Focus();
+        }
+
+        private static UIElement FindFirstFocusableElement(DependencyObject root)
+        {
+            var element = root as UIElement;
+            if (element != null && element.Focusable && element.IsEnabled && element.IsVisible)
+            {
+                return element;
+            }
+
+            if (root == null)
+            {
+                return null;
+            }
+
+            var childCount = GetVisualChildCount(root);
+            for (var i = 0; i < childCount; i++)
+            {
+                var match = FindFirstFocusableElement(VisualTreeHelper.GetChild(root, i));
+                if (match != null)
+                {
+                    return match;
+                }
+            }
+
+            return null;
+        }
+
+        private static int GetVisualChildCount(DependencyObject root)
+        {
+            if (root is Visual || root is System.Windows.Media.Media3D.Visual3D)
+            {
+                return VisualTreeHelper.GetChildrenCount(root);
+            }
+
+            return 0;
+        }
+
+        private static bool IsDescendantOrSelf(DependencyObject candidate, DependencyObject ancestor)
+        {
+            if (candidate == null || ancestor == null)
+            {
+                return false;
+            }
+
+            var current = candidate;
+            while (current != null)
+            {
+                if (ReferenceEquals(current, ancestor))
+                {
+                    return true;
+                }
+
+                current = GetVisualOrLogicalParent(current);
+            }
+
+            return false;
+        }
+
+        private static DependencyObject GetVisualOrLogicalParent(DependencyObject current)
+        {
+            if (current is Visual || current is System.Windows.Media.Media3D.Visual3D)
+            {
+                return VisualTreeHelper.GetParent(current) ?? LogicalTreeHelper.GetParent(current);
+            }
+
+            return LogicalTreeHelper.GetParent(current);
         }
 
         /// <summary>

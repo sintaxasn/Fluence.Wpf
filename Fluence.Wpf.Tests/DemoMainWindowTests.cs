@@ -890,6 +890,61 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void MainWindow_TabFromSelectedNavigationItem_FocusesSearchThenSelectedPage()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                MainWindow window = null;
+                try
+                {
+                    window = CreateShownMainWindow();
+                    var search = GetNavSearchBox(window);
+                    var nav = GetDemoNav(window);
+                    var button = AssertNavigationItemExists(nav, "Button");
+
+                    nav.SelectedItem = button;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.IsTrue(button.Focus(), "The selected navigation item should be focusable.");
+                    Drain(window.Dispatcher);
+                    Assert.AreSame(button, Keyboard.FocusedElement,
+                        "The test must start with keyboard focus on the selected navigation item.");
+
+                    RaisePreviewKeyDown(button, Key.Tab);
+                    Drain(window.Dispatcher);
+                    Assert.AreSame(search, Keyboard.FocusedElement,
+                        "Tab from the selected navigation item should move to search.");
+
+                    RaisePreviewKeyDown(search, Key.Tab);
+                    Drain(window.Dispatcher);
+
+                    var focused = Keyboard.FocusedElement as DependencyObject;
+                    var selectedPage = nav.SelectedContent as DependencyObject;
+                    Assert.IsNotNull(selectedPage, "The selected navigation item should have page content.");
+                    Assert.IsTrue(IsDescendantOrSelf(focused, selectedPage),
+                        "Tab from search should move into the selected page content.");
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+
+                    if (dict != null && app.Resources.MergedDictionaries.Contains(dict))
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
         public void MainWindow_PaneCollapse_CollapsesOpenSections()
         {
             RunOnSta(() =>
@@ -4282,6 +4337,37 @@ namespace Fluence.Wpf.Tests
 
             Assert.Fail("Navigation item should exist: " + content);
             return null;
+        }
+
+        private static bool IsDescendantOrSelf(DependencyObject candidate, DependencyObject ancestor)
+        {
+            if (candidate == null || ancestor == null)
+            {
+                return false;
+            }
+
+            var current = candidate;
+            while (current != null)
+            {
+                if (ReferenceEquals(current, ancestor))
+                {
+                    return true;
+                }
+
+                current = GetVisualOrLogicalParent(current);
+            }
+
+            return false;
+        }
+
+        private static DependencyObject GetVisualOrLogicalParent(DependencyObject current)
+        {
+            if (current is Visual || current is System.Windows.Media.Media3D.Visual3D)
+            {
+                return VisualTreeHelper.GetParent(current) ?? LogicalTreeHelper.GetParent(current);
+            }
+
+            return LogicalTreeHelper.GetParent(current);
         }
 
         private static System.Collections.Generic.IEnumerable<T> FindAllVisualChildren<T>(DependencyObject root) where T : DependencyObject
