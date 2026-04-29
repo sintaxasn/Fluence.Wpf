@@ -1,0 +1,12 @@
+using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Samples.Layout
+{
+    public partial class Expander : UserControl
+    {
+        public Expander()
+        {
+            InitializeComponent();
+        }
+    }
+}

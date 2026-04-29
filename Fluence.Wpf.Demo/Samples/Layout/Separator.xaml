@@ -1,0 +1,11 @@
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Samples.Layout.Separator"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:fluence="http://schemas.fluencewpf.com">
+    <fluence:StackPanel Spacing="12">
+        <TextBlock Text="First group" />
+        <fluence:Separator />
+        <TextBlock Text="Second group" />
+    </fluence:StackPanel>
+</UserControl>

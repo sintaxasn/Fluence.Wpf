@@ -151,11 +151,11 @@ namespace Fluence.Wpf.Demo
             new DemoNavigationItem("Status and info", "ProgressRing", "progressring progress status determinate indeterminate ring", "\uE9D9", false, () => DemoStatusPages.ProgressRing()),
             new DemoNavigationItem("Status and info", "PersonPicture", "personpicture avatar profile status", "\uE77B", false, () => DemoStatusPages.PersonPicture()),
 
-            new DemoNavigationItem("Layout", "Border", "border layout", "\uECA5", false, () => new GalleryFormsPage()),
-            new DemoNavigationItem("Layout", "DockPanel", "dockpanel layout panel", "\uF0E2", false, () => new GalleryDataPage()),
-            new DemoNavigationItem("Layout", "Expander", "expander layout disclosure", "\uE70D", false, () => new GalleryDataPage()),
-            new DemoNavigationItem("Layout", "Separator", "separator layout divider", "\uE738", false, () => new GalleryDataPage()),
-            new DemoNavigationItem("Layout", "StackPanel", "stackpanel layout panel", "\uF0E2", false, () => new GalleryDataPage()),
+            new DemoNavigationItem("Layout", "Border", "border layout", "\uECA5", false, () => DemoLayoutPages.Border()),
+            new DemoNavigationItem("Layout", "DockPanel", "dockpanel layout panel", "\uF0E2", false, () => DemoLayoutPages.DockPanel()),
+            new DemoNavigationItem("Layout", "Expander", "expander layout disclosure", "\uE70D", false, () => DemoLayoutPages.Expander()),
+            new DemoNavigationItem("Layout", "Separator", "separator layout divider", "\uE738", false, () => DemoLayoutPages.Separator()),
+            new DemoNavigationItem("Layout", "StackPanel", "stackpanel layout panel", "\uF0E2", false, () => DemoLayoutPages.StackPanel()),
 
             new DemoNavigationItem("Text", "TextBlock", "textblock text typography", "\uE8D2", false, () => new GalleryTypographyPage()),
 

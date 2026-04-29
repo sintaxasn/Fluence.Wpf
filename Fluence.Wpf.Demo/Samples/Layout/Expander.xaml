@@ -1,0 +1,14 @@
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Samples.Layout.Expander"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:fluence="http://schemas.fluencewpf.com">
+    <fluence:StackPanel Spacing="8">
+        <fluence:Expander Header="Open details" IsExpanded="True">
+            <TextBlock Margin="12" Text="Expanded content can include any WPF element." />
+        </fluence:Expander>
+        <fluence:Expander Header="Collapsed details">
+            <TextBlock Margin="12" Text="This starts collapsed." />
+        </fluence:Expander>
+    </fluence:StackPanel>
+</UserControl>
