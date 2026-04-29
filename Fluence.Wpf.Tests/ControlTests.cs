@@ -1236,8 +1236,10 @@ namespace Fluence.Wpf.Tests
                     SelectMainWindowNavPage(window, window.Dispatcher, "Inputs");
                     Assert.IsNotNull(FindVisualChildByName<Fluent.TextBox>(window, "CharCountTextBox"));
 
-                    SelectMainWindowNavPage(window, window.Dispatcher, "Selection");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "ToggleSwitch");
                     Assert.IsNotNull(FindVisualChildByName<Fluent.ToggleSwitch>(window, "DefaultToggle"));
+
+                    SelectMainWindowNavPage(window, window.Dispatcher, "ComboBox");
                     Assert.IsNotNull(FindVisualChildByName<Fluent.ComboBox>(window, "SelectionDemoCombo"));
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Status");
@@ -2073,10 +2075,10 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    SelectMainWindowNavPage(window, window.Dispatcher, "Selection");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "ComboBox");
 
                     var combo = FindVisualChildByName<Fluent.ComboBox>(window, "SelectionDemoCombo");
-                    Assert.IsNotNull(combo, "SelectionDemoCombo should exist on the Selection page.");
+                    Assert.IsNotNull(combo, "SelectionDemoCombo should exist on the ComboBox page.");
                     Assert.AreEqual(3, combo.Items.Count, "SelectionDemoCombo should list three items.");
 
                     combo.SelectedIndex = 1;
