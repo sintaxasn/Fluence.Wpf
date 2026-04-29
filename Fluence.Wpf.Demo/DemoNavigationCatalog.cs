@@ -157,7 +157,7 @@ namespace Fluence.Wpf.Demo
             new DemoNavigationItem("Layout", "Separator", "separator layout divider", "\uE738", false, () => DemoLayoutPages.Separator()),
             new DemoNavigationItem("Layout", "StackPanel", "stackpanel layout panel", "\uF0E2", false, () => DemoLayoutPages.StackPanel()),
 
-            new DemoNavigationItem("Text", "TextBlock", "textblock text typography", "\uE8D2", false, () => new GalleryTypographyPage()),
+            new DemoNavigationItem("Text", "TextBlock", "textblock text typography", "\uE8D2", false, () => DemoTextPages.TextBlock()),
 
             new DemoNavigationItem("Windowing", "CaptionButtonChrome", "captionbuttonchrome caption chrome window", "\uE8BB", false, () => new GalleryWindowPage()),
             new DemoNavigationItem("Windowing", "FluenceWindow", "fluencewindow window theme backdrop mica accent titlebar chrome shell", "\uE737", false, () => new GalleryWindowPage()),

@@ -910,6 +910,76 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void MainWindow_TextChildren_OpenSingleControlPages()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+                MainWindow window = null;
+
+                try
+                {
+                    window = CreateShownMainWindow();
+                    var nav = GetDemoNav(window);
+                    var pageTitles = new[]
+                    {
+                        "TextBlock"
+                    };
+
+                    foreach (var pageTitle in pageTitles)
+                    {
+                        window.NavigateTo(pageTitle);
+                        Drain(window.Dispatcher);
+                        window.UpdateLayout();
+                        Drain(window.Dispatcher);
+
+                        var selected = nav.SelectedItem as NavigationViewItem;
+                        Assert.IsNotNull(selected, "Navigation should select a Text child for " + pageTitle + ".");
+                        Assert.AreEqual(pageTitle, selected.Content as string);
+
+                        var selectedContent = nav.SelectedContent as DependencyObject;
+                        Assert.IsNotNull(selectedContent, pageTitle + " should open a page object.");
+                        Assert.AreEqual("GalleryControlPage", selectedContent.GetType().Name,
+                            pageTitle + " should use the single-control page shell.");
+
+                        var title = FindByName<System.Windows.Controls.TextBlock>(selectedContent, "ControlPageTitle");
+                        Assert.IsNotNull(title, pageTitle + " page should expose ControlPageTitle.");
+                        Assert.AreEqual(pageTitle, title.Text);
+
+                        var sourceLinkCount = 0;
+                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(selectedContent))
+                        {
+                            if (!string.Equals(link.Content as string, "Source", StringComparison.Ordinal))
+                            {
+                                continue;
+                            }
+
+                            sourceLinkCount++;
+                            Assert.AreEqual(HorizontalAlignment.Right, link.HorizontalAlignment,
+                                pageTitle + " source link should be right-aligned.");
+                            Assert.IsNotNull(link.Icon, pageTitle + " source link should display a URL/link icon.");
+                        }
+
+                        Assert.IsTrue(sourceLinkCount > 0, pageTitle + " should expose a source link.");
+                    }
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
         public void DemoSourceLinks_ResolveLocalAndGitHubUris()
         {
             var settingsType = typeof(MainWindow).Assembly.GetType("Fluence.Wpf.Demo.DemoSourceLinkSettings");
@@ -1084,6 +1154,25 @@ namespace Fluence.Wpf.Tests
 
                 Assert.IsTrue(File.Exists(xaml), "Inputs sample XAML must be copied beside the demo assembly: " + samplePath);
                 Assert.IsTrue(File.Exists(codeBehind), "Inputs sample code-behind must be copied beside the demo assembly: " + samplePath);
+            }
+        }
+
+        [TestMethod]
+        public void DemoSourceTextSamples_CopyToOutput()
+        {
+            var outputDirectory = Path.GetDirectoryName(typeof(MainWindow).Assembly.Location);
+            var samplePaths = new[]
+            {
+                "TextBlock"
+            };
+
+            foreach (var samplePath in samplePaths)
+            {
+                var xaml = Path.Combine(outputDirectory, "Samples", "Text", samplePath + ".xaml");
+                var codeBehind = Path.Combine(outputDirectory, "Samples", "Text", samplePath + ".xaml.cs");
+
+                Assert.IsTrue(File.Exists(xaml), "Text sample XAML must be copied beside the demo assembly: " + samplePath);
+                Assert.IsTrue(File.Exists(codeBehind), "Text sample code-behind must be copied beside the demo assembly: " + samplePath);
             }
         }
 
