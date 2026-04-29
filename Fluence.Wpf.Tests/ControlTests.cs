@@ -1242,7 +1242,7 @@ namespace Fluence.Wpf.Tests
                     SelectMainWindowNavPage(window, window.Dispatcher, "ComboBox");
                     Assert.IsNotNull(FindVisualChildByName<Fluent.ComboBox>(window, "SelectionDemoCombo"));
 
-                    SelectMainWindowNavPage(window, window.Dispatcher, "Status");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "ProgressBar");
                     Assert.IsNotNull(FindVisualChildByName<Fluent.ProgressBar>(window, "StepProgressBar"));
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Data");
@@ -2034,7 +2034,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    SelectMainWindowNavPage(window, window.Dispatcher, "Status");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "ProgressBar");
 
                     var slider = FindVisualChildByName<Fluent.Slider>(window, "ProgressSlider");
                     var label = FindVisualChildByName<TextBlock>(window, "SliderValueLabel");
