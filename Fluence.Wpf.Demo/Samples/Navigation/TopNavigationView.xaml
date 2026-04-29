@@ -1,0 +1,50 @@
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Samples.Navigation.TopNavigationView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
+    <Border
+        Height="240"
+        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+        BorderThickness="1">
+        <ui:NavigationView
+            Header="Insights"
+            PaneDisplayMode="Top">
+            <ui:NavigationViewItem
+                Content="Overview"
+                IsSelected="True">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph="&#xE9D2;" IconFontSize="16" />
+                </ui:NavigationViewItem.Icon>
+                <ui:NavigationViewItem.PageContent>
+                    <TextBlock
+                        Margin="20"
+                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                        Text="Overview dashboard" />
+                </ui:NavigationViewItem.PageContent>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="Activity">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph="&#xE7F4;" IconFontSize="16" />
+                </ui:NavigationViewItem.Icon>
+                <ui:NavigationViewItem.PageContent>
+                    <TextBlock
+                        Margin="20"
+                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                        Text="Recent activity" />
+                </ui:NavigationViewItem.PageContent>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="Settings">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph="&#xE713;" IconFontSize="16" />
+                </ui:NavigationViewItem.Icon>
+                <ui:NavigationViewItem.PageContent>
+                    <TextBlock
+                        Margin="20"
+                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                        Text="Settings" />
+                </ui:NavigationViewItem.PageContent>
+            </ui:NavigationViewItem>
+        </ui:NavigationView>
+    </Border>
+</UserControl>

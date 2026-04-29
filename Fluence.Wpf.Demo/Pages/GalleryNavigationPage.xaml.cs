@@ -27,87 +27,59 @@
  */
 using System.Windows;
 using System.Windows.Controls;
-using Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryNavigationPage : UserControl
     {
+        private int _backRequestCount;
+
         public GalleryNavigationPage()
         {
             InitializeComponent();
+
+            LeftNavigationViewSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Navigation/LeftNavigationView.xaml");
+            TopNavigationViewSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Navigation/TopNavigationView.xaml");
+            CompactNavigationViewSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Navigation/CompactNavigationView.xaml");
+
             Loaded += GalleryNavigationPage_Loaded;
         }
 
         private void GalleryNavigationPage_Loaded(object sender, RoutedEventArgs e)
         {
             Loaded -= GalleryNavigationPage_Loaded;
-            InlineBackEnabledToggle_Changed(null, null);
+
+            LeftNavigationDemo.SelectedItem = LeftNavigationHomeItem;
+            TopNavigationDemo.SelectedItem = TopNavigationOverviewItem;
+            CompactNavigationDemo.SelectedItem = CompactNavigationDashboardItem;
+            UpdateBackState();
         }
 
-        private void InlineNavTopDemo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void BackEnabledToggle_Changed(object sender, RoutedEventArgs e)
         {
-            if (InlineNavTopDemo == null || InlineNavTopLabel == null || InlineNavTopContentHost == null)
-            {
-                return;
-            }
-
-            var item = TryGetSelectedNavigationViewItem(InlineNavTopDemo);
-            var selectedLabel = item != null ? item.Content as string : "Home";
-            InlineNavTopLabel.Text = string.Format("Top: {0}", selectedLabel);
+            UpdateBackState();
         }
 
-        private void InlineNavLeftDemo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void CompactNavigationDemo_BackRequested(object sender, Fluence.Wpf.Controls.NavigationViewBackRequestedEventArgs e)
         {
-            if (InlineNavLeftDemo == null || InlineNavLeftLabel == null || InlineNavLeftContentHost == null)
-            {
-                return;
-            }
-
-            var item = TryGetSelectedNavigationViewItem(InlineNavLeftDemo);
-            var selectedLabel = item != null ? item.Content as string : "Files";
-            InlineNavLeftLabel.Text = string.Format("Left: {0}", selectedLabel);
+            _backRequestCount++;
+            UpdateBackState();
         }
 
-        private static NavigationViewItem TryGetSelectedNavigationViewItem(NavigationView nav)
+        private void UpdateBackState()
         {
-            if (nav == null)
+            var isBackEnabled = BackEnabledToggle != null && BackEnabledToggle.IsChecked == true;
+
+            if (CompactNavigationDemo != null)
             {
-                return null;
+                CompactNavigationDemo.IsBackEnabled = isBackEnabled;
             }
 
-            var direct = nav.SelectedItem as NavigationViewItem;
-            if (direct != null)
+            if (BackStatusLabel != null)
             {
-                return direct;
-            }
-
-            if (nav.SelectedItem == null)
-            {
-                return null;
-            }
-
-            var container = nav.ItemContainerGenerator.ContainerFromItem(nav.SelectedItem) as NavigationViewItem;
-            return container;
-        }
-
-        private void InlineBackEnabledToggle_Changed(object sender, RoutedEventArgs e)
-        {
-            var enabled = InlineBackEnabledToggle != null && InlineBackEnabledToggle.IsChecked == true;
-
-            if (InlineNavTopDemo != null)
-            {
-                InlineNavTopDemo.IsBackEnabled = enabled;
-            }
-
-            if (InlineNavLeftDemo != null)
-            {
-                InlineNavLeftDemo.IsBackEnabled = enabled;
-            }
-
-            if (InlineBackStatusLabel != null)
-            {
-                InlineBackStatusLabel.Text = enabled ? "Back button enabled" : "Back button disabled";
+                BackStatusLabel.Text = isBackEnabled
+                    ? string.Format("Back button enabled ({0} requests)", _backRequestCount)
+                    : "Back button disabled";
             }
         }
     }

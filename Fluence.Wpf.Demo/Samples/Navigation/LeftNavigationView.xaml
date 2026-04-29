@@ -1,0 +1,64 @@
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Samples.Navigation.LeftNavigationView"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
+    <Border
+        Height="320"
+        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+        BorderThickness="1">
+        <ui:NavigationView
+            Header="Workspace"
+            PaneDisplayMode="Left">
+            <ui:NavigationView.PaneHeader>
+                <TextBlock
+                    Margin="12,8"
+                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                    Text="Navigation" />
+            </ui:NavigationView.PaneHeader>
+            <ui:NavigationViewItem
+                Content="Home"
+                IsSelected="True">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph="&#xE80F;" IconFontSize="18" />
+                </ui:NavigationViewItem.Icon>
+                <ui:NavigationViewItem.PageContent>
+                    <StackPanel Margin="20">
+                        <TextBlock
+                            FontSize="18"
+                            FontWeight="SemiBold"
+                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                            Text="Home" />
+                        <TextBlock
+                            Margin="0,6,0,0"
+                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                            Text="A persistent left pane keeps destinations available while content changes."
+                            TextWrapping="Wrap" />
+                    </StackPanel>
+                </ui:NavigationViewItem.PageContent>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="Files">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph="&#xE8B7;" IconFontSize="18" />
+                </ui:NavigationViewItem.Icon>
+                <ui:NavigationViewItem.PageContent>
+                    <TextBlock
+                        Margin="20"
+                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                        Text="Files" />
+                </ui:NavigationViewItem.PageContent>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content="Reports">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph="&#xE9D9;" IconFontSize="18" />
+                </ui:NavigationViewItem.Icon>
+                <ui:NavigationViewItem.PageContent>
+                    <TextBlock
+                        Margin="20"
+                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                        Text="Reports" />
+                </ui:NavigationViewItem.PageContent>
+            </ui:NavigationViewItem>
+        </ui:NavigationView>
+    </Border>
+</UserControl>
