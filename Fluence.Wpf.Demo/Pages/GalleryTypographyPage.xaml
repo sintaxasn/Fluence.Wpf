@@ -23,39 +23,15 @@
                 BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="8">
-                <StackPanel>
-                    <TextBlock
-                        Margin="0,0,0,20"
-                        Style="{DynamicResource DisplayTextBlockStyle}"
-                        Text="Display" />
-                    <TextBlock
-                        Margin="0,0,0,18"
-                        Style="{DynamicResource TitleLargeTextBlockStyle}"
-                        Text="Title large" />
-                    <TextBlock
-                        Margin="0,0,0,16"
-                        Style="{DynamicResource TitleTextBlockStyle}"
-                        Text="Title" />
-                    <TextBlock
-                        Margin="0,0,0,14"
-                        Style="{DynamicResource SubtitleTextBlockStyle}"
-                        Text="Subtitle" />
-                    <TextBlock
-                        Margin="0,0,0,12"
-                        Style="{DynamicResource BodyLargeTextBlockStyle}"
-                        Text="Body large" />
-                    <TextBlock
-                        Margin="0,0,0,10"
-                        Style="{DynamicResource BodyStrongTextBlockStyle}"
-                        Text="Body strong" />
-                    <TextBlock
-                        Margin="0,0,0,8"
-                        Style="{DynamicResource BodyTextBlockStyle}"
-                        Text="Body" />
-                    <TextBlock
-                        Style="{DynamicResource CaptionTextBlockStyle}"
-                        Text="Caption" />
-                </StackPanel>
+                <Grid x:Name="TypographyTable">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="2.2*" MinWidth="180" />
+                        <ColumnDefinition Width="1.2*" MinWidth="140" />
+                        <ColumnDefinition Width="1*" MinWidth="120" />
+                        <ColumnDefinition Width="1.7*" MinWidth="180" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                </Grid>
             </Border>
         </StackPanel>
     </ui:SmoothScrollViewer>

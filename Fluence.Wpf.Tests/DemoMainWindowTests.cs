@@ -2639,6 +2639,144 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void TypographyPage_RendersTypographyStylesAsTable()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                try
+                {
+                    var page = new GalleryTypographyPage();
+                    var host = new System.Windows.Controls.Grid();
+                    host.Children.Add(page);
+                    var window = new Window
+                    {
+                        Left = -20000,
+                        Top = -20000,
+                        Width = 1040,
+                        Height = 720,
+                        WindowStartupLocation = WindowStartupLocation.Manual,
+                        ShowInTaskbar = false,
+                        Content = host
+                    };
+
+                    try
+                    {
+                        window.Show();
+                        Drain(window.Dispatcher);
+                        window.UpdateLayout();
+                        Drain(window.Dispatcher);
+
+                        var table = FindByName<System.Windows.Controls.Grid>(page, "TypographyTable");
+                        Assert.IsNotNull(table, "The Typography page should present the supported text styles in a table.");
+
+                        var texts = CollectTextBlockTexts(table);
+                        CollectionAssert.Contains(texts, "Example");
+                        CollectionAssert.Contains(texts, "Variable Font");
+                        CollectionAssert.Contains(texts, "Size/Line height");
+                        CollectionAssert.Contains(texts, "Style");
+
+                        CollectionAssert.Contains(texts, "CaptionTextBlockStyle");
+                        CollectionAssert.Contains(texts, "BodyTextBlockStyle");
+                        CollectionAssert.Contains(texts, "BodyStrongTextBlockStyle");
+                        CollectionAssert.Contains(texts, "BodyLargeTextBlockStyle");
+                        CollectionAssert.Contains(texts, "SubtitleTextBlockStyle");
+                        CollectionAssert.Contains(texts, "TitleTextBlockStyle");
+                        CollectionAssert.Contains(texts, "TitleLargeTextBlockStyle");
+                        CollectionAssert.Contains(texts, "DisplayTextBlockStyle");
+                    }
+                    finally
+                    {
+                        window.Close();
+                    }
+                }
+                finally
+                {
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void TypographyPage_TableRowsExposeCopyButtonsForStyleKeys()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                try
+                {
+                    var page = new GalleryTypographyPage();
+                    var host = new System.Windows.Controls.Grid();
+                    host.Children.Add(page);
+                    var window = new Window
+                    {
+                        Left = -20000,
+                        Top = -20000,
+                        Width = 1040,
+                        Height = 720,
+                        WindowStartupLocation = WindowStartupLocation.Manual,
+                        ShowInTaskbar = false,
+                        Content = host
+                    };
+
+                    try
+                    {
+                        window.Show();
+                        Drain(window.Dispatcher);
+                        window.UpdateLayout();
+                        Drain(window.Dispatcher);
+
+                        var table = FindByName<System.Windows.Controls.Grid>(page, "TypographyTable");
+                        Assert.IsNotNull(table, "The Typography page should present the supported text styles in a table.");
+
+                        var expected = new[]
+                        {
+                            "CaptionTextBlockStyle",
+                            "BodyTextBlockStyle",
+                            "BodyStrongTextBlockStyle",
+                            "BodyLargeTextBlockStyle",
+                            "SubtitleTextBlockStyle",
+                            "TitleTextBlockStyle",
+                            "TitleLargeTextBlockStyle",
+                            "DisplayTextBlockStyle"
+                        };
+
+                        var actual = new System.Collections.ArrayList();
+                        foreach (var button in FindAllVisualChildren<Fluence.Wpf.Controls.Button>(table))
+                        {
+                            var styleKey = button.Tag as string;
+                            if (!string.IsNullOrEmpty(styleKey) && styleKey.EndsWith("TextBlockStyle", StringComparison.Ordinal))
+                            {
+                                actual.Add(styleKey);
+                            }
+                        }
+
+                        CollectionAssert.AreEquivalent(expected, actual,
+                            "Each typography table row should expose a copy button tagged with its text style key.");
+                    }
+                    finally
+                    {
+                        window.Close();
+                    }
+                }
+                finally
+                {
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
         public void StatusPage_ProgressRingDemo_UsesDisabledRingAndAlignedLabels()
         {
             RunOnSta(() =>
