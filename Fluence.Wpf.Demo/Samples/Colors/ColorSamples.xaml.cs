@@ -27,15 +27,13 @@
  */
 using System.Windows.Controls;
 
-namespace Fluence.Wpf.Demo.Pages
+namespace Fluence.Wpf.Demo.Samples.Colors
 {
-    public partial class GalleryColorsPage : UserControl
+    public partial class ColorSamples : UserControl
     {
-        public GalleryColorsPage()
+        public ColorSamples()
         {
             InitializeComponent();
-
-            DemoSourceAction.Replace(ColorSamplesSourceLink, "Colors/ColorSamples.xaml");
         }
     }
 }

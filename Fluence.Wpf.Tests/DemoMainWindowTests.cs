@@ -1803,6 +1803,7 @@ namespace Fluence.Wpf.Tests
             var outputDirectory = Path.GetDirectoryName(typeof(MainWindow).Assembly.Location);
             var samplePaths = new[]
             {
+                "ColorSamples",
                 "TextAndAccentBrushes",
                 "FillAndSurfaceBrushes",
                 "StrokeBrushes",
@@ -2525,7 +2526,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void ColorsPage_ContainsSourceLinksForEachExample()
+        public void ColorsPage_ContainsSingleCombinedSourceAction()
         {
             RunOnSta(() =>
             {
@@ -2556,10 +2557,7 @@ namespace Fluence.Wpf.Tests
                         Drain(window.Dispatcher);
 
                         var expected = ExpectedSourceUris(
-                            "Colors/TextAndAccentBrushes.xaml",
-                            "Colors/FillAndSurfaceBrushes.xaml",
-                            "Colors/StrokeBrushes.xaml",
-                            "Colors/SystemAndHighContrastBrushes.xaml"
+                            "Colors/ColorSamples.xaml"
                         );
 
 
@@ -2569,7 +2567,61 @@ namespace Fluence.Wpf.Tests
                         CollectionAssert.AreEquivalent(
                             expected,
                             actual,
-                            "Each Colors page example must expose source targets to its sample files.");
+                            "The Colors page should expose a single combined source sample.");
+                    }
+                    finally
+                    {
+                        window.Close();
+                    }
+                }
+                finally
+                {
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void ColorsPage_RemovesIntroductorySourceGridText()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                try
+                {
+                    var page = new GalleryColorsPage();
+                    var host = new System.Windows.Controls.Grid();
+                    host.Children.Add(page);
+                    var window = new Window
+                    {
+                        Left = -20000,
+                        Top = -20000,
+                        Width = 1040,
+                        Height = 720,
+                        WindowStartupLocation = WindowStartupLocation.Manual,
+                        ShowInTaskbar = false,
+                        Content = host
+                    };
+
+                    try
+                    {
+                        window.Show();
+                        Drain(window.Dispatcher);
+                        window.UpdateLayout();
+                        Drain(window.Dispatcher);
+
+                        var texts = CollectTextBlockTexts(page);
+                        CollectionAssert.DoesNotContain(texts,
+                            "The brushes below are part of Fluence.Wpf and you can reference them in your app via DynamicResource.");
+                        CollectionAssert.DoesNotContain(texts, "Text and accent");
+                        CollectionAssert.DoesNotContain(texts, "Fills and surfaces");
+                        CollectionAssert.DoesNotContain(texts, "Strokes");
+                        CollectionAssert.DoesNotContain(texts, "System colors");
                     }
                     finally
                     {
@@ -3073,6 +3125,21 @@ namespace Fluence.Wpf.Tests
             var outputDirectory = Path.GetDirectoryName(typeof(MainWindow).Assembly.Location);
             var localPath = samplePath.Replace('/', Path.DirectorySeparatorChar);
             return File.Exists(Path.Combine(outputDirectory, "Samples", localPath));
+        }
+
+        private static System.Collections.ArrayList CollectTextBlockTexts(DependencyObject root)
+        {
+            var texts = new System.Collections.ArrayList();
+
+            foreach (var textBlock in FindAllVisualChildren<System.Windows.Controls.TextBlock>(root))
+            {
+                if (!string.IsNullOrEmpty(textBlock.Text))
+                {
+                    texts.Add(textBlock.Text);
+                }
+            }
+
+            return texts;
         }
 
         private static System.Collections.Generic.List<FrameworkElement> FindSourceActionControls(DependencyObject root)
