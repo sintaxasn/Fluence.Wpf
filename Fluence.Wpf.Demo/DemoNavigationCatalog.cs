@@ -113,9 +113,9 @@ namespace Fluence.Wpf.Demo
             new DemoNavigationItem("Design", "Iconography", "fonticon icon glyph segoe fluent", "\uED58", false, () => new GalleryGlyphsPage()),
             new DemoNavigationItem("Design", "Typography", "typography text textblock font style", "\uE8D2", false, () => new GalleryTypographyPage()),
 
-            new DemoNavigationItem("Accessibility", "Screen reader support", "accessibility screen reader narrator automation properties", "\uE776", false, () => new GalleryAccessibilityPage()),
-            new DemoNavigationItem("Accessibility", "Keyboard support", "accessibility keyboard focus tab order accelerator", "\uE765", false, () => new GalleryAccessibilityPage()),
-            new DemoNavigationItem("Accessibility", "Color contrast", "accessibility high contrast color contrast theme", "\uE7F4", false, () => new GalleryAccessibilityPage()),
+            new DemoNavigationItem("Accessibility", "Screen reader support", "accessibility screen reader narrator automation properties", "\uE776", false, () => DemoAccessibilityPages.ScreenReaderSupport()),
+            new DemoNavigationItem("Accessibility", "Keyboard support", "accessibility keyboard focus tab order accelerator", "\uE765", false, () => DemoAccessibilityPages.KeyboardSupport()),
+            new DemoNavigationItem("Accessibility", "Color contrast", "accessibility high contrast color contrast theme", "\uE7F4", false, () => DemoAccessibilityPages.ColorContrast()),
 
             new DemoNavigationItem("Basic input", "Button", "button buttons accent icon", "\uE8E5", false, () => DemoControlPages.Button()),
             new DemoNavigationItem("Basic input", "DropDownButton", "dropdownbutton button menu flyout buttons", "\uE70D", false, () => DemoControlPages.DropDownButton()),
