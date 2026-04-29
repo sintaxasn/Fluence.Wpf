@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
     x:Class="Fluence.Wpf.Demo.Pages.GalleryFormsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -10,286 +10,192 @@
     d:DesignWidth="900"
     mc:Ignorable="d">
     <ui:SmoothScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <StackPanel
-            MaxWidth="720"
-            Margin="24"
-            HorizontalAlignment="Stretch">
-
-            <!--  ── Page heading ──  -->
+        <StackPanel Margin="24" HorizontalAlignment="Stretch">
             <TextBlock
                 Margin="0,0,0,4"
-                Style="{StaticResource SectionHeaderStyle}"
+                ui:TextBlockExtensions.Typography="Title"
+                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                 Text="Forms" />
             <TextBlock
                 Margin="0,0,0,24"
                 Style="{StaticResource SectionDescriptionStyle}"
-                Text="Cohesive sign-up / settings form anchoring text input, validation, selection, and submission patterns." />
+                Text="Forms group related inputs, labels, validation feedback, and actions into a single task flow." />
 
-            <!--  ── Sign-up form ──  -->
-            <ui:Card
-                Margin="0,0,0,24"
-                Padding="24"
-                Variant="{x:Static uicore:CardVariant.Default}">
-                <StackPanel>
-                    <TextBlock
-                        Margin="0,0,0,20"
-                        ui:TextBlockExtensions.Typography="BodyStrong"
-                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                        Text="Create account" />
-
-                    <!--  Name row  -->
-                    <Grid Margin="0,0,0,16">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="12" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <StackPanel Grid.Column="0">
-                            <TextBlock
-                                Margin="0,0,0,4"
-                                ui:TextBlockExtensions.Typography="Caption"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Text="First name" />
-                            <ui:TextBox
-                                x:Name="FirstNameBox"
-                                PlaceholderText="Jane"
-                                TextChanged="NameBox_TextChanged" />
-                        </StackPanel>
-                        <StackPanel Grid.Column="2">
-                            <TextBlock
-                                Margin="0,0,0,4"
-                                ui:TextBlockExtensions.Typography="Caption"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Text="Last name" />
-                            <ui:TextBox
-                                x:Name="LastNameBox"
-                                PlaceholderText="Doe"
-                                TextChanged="NameBox_TextChanged" />
-                        </StackPanel>
-                    </Grid>
-
-                    <!--  Email  -->
-                    <StackPanel Margin="0,0,0,16">
-                        <TextBlock
-                            Margin="0,0,0,4"
-                            ui:TextBlockExtensions.Typography="Caption"
-                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                            Text="Email address" />
-                        <ui:TextBox
-                            x:Name="EmailBox"
-                            PlaceholderText="jane.doe@example.com"
-                            TextChanged="EmailBox_TextChanged" />
-                        <TextBlock
-                            x:Name="EmailValidationLabel"
-                            Margin="0,4,0,0"
-                            ui:TextBlockExtensions.Typography="Caption"
-                            Foreground="{DynamicResource SystemFillColorCriticalBrush}"
-                            Text="Enter a valid email address."
-                            Visibility="Collapsed" />
-                    </StackPanel>
-
-                    <!--  Password  -->
-                    <StackPanel Margin="0,0,0,16">
-                        <TextBlock
-                            Margin="0,0,0,4"
-                            ui:TextBlockExtensions.Typography="Caption"
-                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                            Text="Password" />
-                        <ui:PasswordBox x:Name="PasswordBoxControl" PlaceholderText="Minimum 8 characters" />
-                        <!--  Strength meter  -->
-                        <Grid Height="4" Margin="0,6,0,0">
-                            <Rectangle
-                                HorizontalAlignment="Stretch"
-                                Fill="{DynamicResource ControlFillColorDefaultBrush}"
-                                RadiusX="2"
-                                RadiusY="2" />
-                            <Rectangle
-                                x:Name="StrengthBar"
-                                Width="0"
-                                HorizontalAlignment="Left"
-                                Fill="{DynamicResource AccentFillColorDefaultBrush}"
-                                RadiusX="2"
-                                RadiusY="2" />
-                        </Grid>
-                        <TextBlock
-                            x:Name="StrengthLabel"
-                            Margin="0,4,0,0"
-                            ui:TextBlockExtensions.Typography="Caption"
-                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                            Text="Strength: —" />
-                    </StackPanel>
-
-                    <!--  Country  -->
-                    <StackPanel Margin="0,0,0,16">
-                        <TextBlock
-                            Margin="0,0,0,4"
-                            ui:TextBlockExtensions.Typography="Caption"
-                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                            Text="Country" />
-                        <ui:ComboBox
-                            x:Name="CountryCombo"
-                            HorizontalAlignment="Stretch"
-                            SelectionChanged="CountryCombo_SelectionChanged">
-                            <ComboBoxItem Content="United States" IsSelected="True" />
-                            <ComboBoxItem Content="United Kingdom" />
-                            <ComboBoxItem Content="Canada" />
-                            <ComboBoxItem Content="Australia" />
-                            <ComboBoxItem Content="Germany" />
-                            <ComboBoxItem Content="France" />
-                            <ComboBoxItem Content="Japan" />
-                            <ComboBoxItem Content="Other" />
-                        </ui:ComboBox>
-                    </StackPanel>
-
-                    <!--  Tier selection  -->
-                    <StackPanel Margin="0,0,0,16">
-                        <TextBlock
-                            Margin="0,0,0,8"
-                            ui:TextBlockExtensions.Typography="Caption"
-                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                            Text="Plan" />
-                        <StackPanel Orientation="Horizontal">
-                            <ui:RadioButton
-                                x:Name="FreeTierRadio"
-                                Margin="0,0,16,0"
-                                Content="Free"
-                                GroupName="PlanGroup"
-                                IsChecked="True" />
-                            <ui:RadioButton
-                                x:Name="ProTierRadio"
-                                Margin="0,0,16,0"
-                                Content="Pro"
-                                GroupName="PlanGroup" />
-                            <ui:RadioButton
-                                x:Name="EnterpriseTierRadio"
-                                Content="Enterprise"
-                                GroupName="PlanGroup" />
-                        </StackPanel>
-                    </StackPanel>
-
-                    <!--  Terms  -->
-                    <StackPanel Margin="0,0,0,20">
-                        <ui:CheckBox
-                            x:Name="TermsCheckBox"
-                            Checked="Terms_Changed"
-                            Unchecked="Terms_Changed">
-                            <TextBlock
-                                ui:TextBlockExtensions.Typography="Body"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Text="I agree to the Terms of Service and Privacy Policy"
-                                TextWrapping="Wrap" />
-                        </ui:CheckBox>
-                        <ui:CheckBox
-                            x:Name="MarketingCheckBox"
-                            Margin="0,8,0,0"
-                            Content="Send me product updates and news" />
-                    </StackPanel>
-
-                    <!--  Submission row  -->
-                    <StackPanel HorizontalAlignment="Right" Orientation="Horizontal">
-                        <ui:Button
-                            x:Name="CancelButton"
-                            Margin="0,0,8,0"
-                            Click="Cancel_Click"
-                            Content="Cancel" />
-                        <ui:Button
-                            x:Name="SubmitButton"
-                            Appearance="Accent"
-                            Click="Submit_Click"
-                            Content="Create account"
-                            IsEnabled="False" />
-                    </StackPanel>
-
-                    <!--  Confirmation  -->
-                    <ui:InfoBar
-                        x:Name="ConfirmationBar"
-                        Title="Done"
-                        Margin="0,16,0,0"
-                        IsClosable="True"
-                        IsOpen="False"
-                        Message="Account created successfully. Check your email for a confirmation link."
-                        Severity="{x:Static uicore:InfoBarSeverity.Success}" />
-                </StackPanel>
-            </ui:Card>
-
-            <!--  ── Multi-line TextBox ──  -->
             <TextBlock
                 Margin="0,0,0,4"
                 Style="{StaticResource SectionHeaderStyle}"
-                Text="Multi-line TextBox" />
+                Text="Sign in" />
             <TextBlock
-                Margin="0,0,0,8"
                 Style="{StaticResource SectionDescriptionStyle}"
-                Text="TextWrapping=Wrap, AcceptsReturn=True, vertical scrollbar." />
+                Text="Use a compact form for account access, with clear labels and a primary action." />
             <ui:Card
                 Margin="0,0,0,16"
                 Padding="16"
                 Variant="{x:Static uicore:CardVariant.Default}">
-                <ui:TextBox
-                    Height="120"
-                    AcceptsReturn="True"
-                    PlaceholderText="Type your bio here…"
-                    TextWrapping="Wrap"
-                    VerticalScrollBarVisibility="Auto" />
-            </ui:Card>
-
-            <!--  ── Read-only TextBox ──  -->
-            <TextBlock
-                Margin="0,0,0,4"
-                Style="{StaticResource SectionHeaderStyle}"
-                Text="Read-only TextBox" />
-            <TextBlock
-                Margin="0,0,0,8"
-                Style="{StaticResource SectionDescriptionStyle}"
-                Text="IsReadOnly=True — shows a non-editable value, still selectable." />
-            <ui:Card
-                Margin="0,0,0,16"
-                Padding="16"
-                Variant="{x:Static uicore:CardVariant.Default}">
-                <ui:TextBox
-                    HorizontalAlignment="Stretch"
-                    IsReadOnly="True"
-                    Text="user-id-a3f9b2c1-d0e7" />
-            </ui:Card>
-
-            <!--  ── NumberBox ──  -->
-            <TextBlock
-                Margin="0,0,0,4"
-                Style="{StaticResource SectionHeaderStyle}"
-                Text="NumberBox" />
-            <TextBlock
-                Margin="0,0,0,8"
-                Style="{StaticResource SectionDescriptionStyle}"
-                Text="Header label, validation (clamp to range), placeholder and two-way Value binding." />
-            <ui:Card
-                Margin="0,0,0,16"
-                Padding="16"
-                Variant="{x:Static uicore:CardVariant.Default}">
-                <StackPanel>
+                <StackPanel MaxWidth="480" HorizontalAlignment="Left">
                     <TextBlock
                         Margin="0,0,0,4"
                         ui:TextBlockExtensions.Typography="Caption"
                         Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                        Text="Quantity (1–100)" />
-                    <ui:NumberBox
-                        x:Name="QuantityBox"
-                        Width="200"
-                        HorizontalAlignment="Left"
-                        Maximum="100"
-                        Minimum="1"
-                        PlaceholderText="Enter quantity"
-                        SpinButtonPlacementMode="Compact"
-                        ValueChanged="QuantityBox_ValueChanged"
-                        Value="1" />
+                        Text="Email" />
+                    <ui:TextBox
+                        x:Name="SignInEmailBox"
+                        Margin="0,0,0,12"
+                        PlaceholderText="name@example.com"
+                        TextChanged="SignInField_Changed" />
                     <TextBlock
-                        x:Name="QuantityLabel"
-                        Margin="0,8,0,0"
-                        ui:TextBlockExtensions.Typography="Body"
-                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                        Text="Value: 1" />
+                        Margin="0,0,0,4"
+                        ui:TextBlockExtensions.Typography="Caption"
+                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                        Text="Password" />
+                    <ui:PasswordBox
+                        x:Name="SignInPasswordBox"
+                        Margin="0,0,0,12"
+                        PlaceholderText="Password"
+                        RevealButtonEnabled="True" />
+                    <ui:CheckBox
+                        x:Name="RememberMeCheckBox"
+                        Margin="0,0,0,16"
+                        Content="Remember me" />
+                    <StackPanel Margin="0,0,0,12" Orientation="Horizontal">
+                        <ui:Button
+                            x:Name="SignInButton"
+                            Margin="0,0,8,0"
+                            Appearance="Accent"
+                            Click="SignInButton_Click"
+                            Content="Sign in"
+                            IsEnabled="False" />
+                        <ui:Button Content="Create account" />
+                    </StackPanel>
+                    <ui:InfoBar
+                        x:Name="SignInStatusBar"
+                        Margin="0,0,0,12"
+                        IsClosable="True"
+                        IsOpen="False"
+                        Message="Signed in for this demo session."
+                        Severity="{x:Static uicore:InfoBarSeverity.Success}"
+                        Title="Ready" />
+                    <ui:HyperlinkButton
+                        x:Name="SignInFormSourceLink"
+                        HorizontalAlignment="Left"
+                        Content="Source" />
                 </StackPanel>
             </ui:Card>
 
+            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="Checkout" />
+            <TextBlock
+                Style="{StaticResource SectionDescriptionStyle}"
+                Text="Combine contact, shipping, and quantity fields when a form needs several related decisions." />
+            <ui:Card
+                Margin="0,0,0,16"
+                Padding="16"
+                Variant="{x:Static uicore:CardVariant.Default}">
+                <StackPanel MaxWidth="560" HorizontalAlignment="Left">
+                    <TextBlock
+                        Margin="0,0,0,4"
+                        ui:TextBlockExtensions.Typography="Caption"
+                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                        Text="Contact email" />
+                    <ui:TextBox
+                        Margin="0,0,0,12"
+                        PlaceholderText="name@example.com" />
+                    <TextBlock
+                        Margin="0,0,0,4"
+                        ui:TextBlockExtensions.Typography="Caption"
+                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                        Text="Shipping speed" />
+                    <ui:ComboBox
+                        Margin="0,0,0,12"
+                        SelectedIndex="1">
+                        <ComboBoxItem Content="Standard" />
+                        <ComboBoxItem Content="Priority" />
+                        <ComboBoxItem Content="Overnight" />
+                    </ui:ComboBox>
+                    <WrapPanel Margin="0,0,0,12">
+                        <ui:NumberBox
+                            Width="180"
+                            Margin="0,0,16,12"
+                            Header="Quantity"
+                            Maximum="10"
+                            Minimum="1"
+                            SpinButtonPlacementMode="Compact"
+                            Value="2" />
+                        <ui:TextBox
+                            Width="280"
+                            Margin="0,0,0,12"
+                            PlaceholderText="Optional" />
+                    </WrapPanel>
+                    <ui:CheckBox
+                        Margin="0,0,0,16"
+                        Content="This is a gift"
+                        Description="Hide prices on the packing slip." />
+                    <StackPanel Margin="0,0,0,12" Orientation="Horizontal">
+                        <ui:Button
+                            Margin="0,0,8,0"
+                            Appearance="Accent"
+                            Content="Place order" />
+                        <ui:Button Content="Save for later" />
+                    </StackPanel>
+                    <ui:HyperlinkButton
+                        x:Name="CheckoutFormSourceLink"
+                        HorizontalAlignment="Left"
+                        Content="Source" />
+                </StackPanel>
+            </ui:Card>
+
+            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="Settings" />
+            <TextBlock
+                Style="{StaticResource SectionDescriptionStyle}"
+                Text="Use form controls to edit a small set of preferences and show confirmation after saving." />
+            <ui:Card Padding="16" Variant="{x:Static uicore:CardVariant.Default}">
+                <StackPanel MaxWidth="560" HorizontalAlignment="Left">
+                    <TextBlock
+                        Margin="0,0,0,4"
+                        ui:TextBlockExtensions.Typography="Caption"
+                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                        Text="Display name" />
+                    <ui:TextBox
+                        Margin="0,0,0,12"
+                        Text="Avery Stone" />
+                    <TextBlock
+                        Margin="0,0,0,4"
+                        ui:TextBlockExtensions.Typography="Caption"
+                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                        Text="Theme" />
+                    <ui:ComboBox
+                        Margin="0,0,0,12"
+                        SelectedIndex="0">
+                        <ComboBoxItem Content="Use system setting" />
+                        <ComboBoxItem Content="Light" />
+                        <ComboBoxItem Content="Dark" />
+                    </ui:ComboBox>
+                    <ui:ToggleSwitch
+                        x:Name="EmailUpdatesToggle"
+                        Margin="0,0,0,16"
+                        Content="Email updates"
+                        IsChecked="True"
+                        OffContent="Off"
+                        OnContent="On" />
+                    <ui:Button
+                        Margin="0,0,0,12"
+                        HorizontalAlignment="Left"
+                        Appearance="Accent"
+                        Click="SaveSettingsButton_Click"
+                        Content="Save settings" />
+                    <ui:InfoBar
+                        x:Name="SettingsSavedBar"
+                        Margin="0,0,0,12"
+                        IsClosable="True"
+                        IsOpen="False"
+                        Message="Your preferences were saved."
+                        Severity="{x:Static uicore:InfoBarSeverity.Success}"
+                        Title="Saved" />
+                    <ui:HyperlinkButton
+                        x:Name="SettingsFormSourceLink"
+                        HorizontalAlignment="Left"
+                        Content="Source" />
+                </StackPanel>
+            </ui:Card>
         </StackPanel>
     </ui:SmoothScrollViewer>
 </UserControl>

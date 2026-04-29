@@ -508,6 +508,27 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void DemoSourceFormsSamples_CopyToOutput()
+        {
+            var outputDirectory = Path.GetDirectoryName(typeof(MainWindow).Assembly.Location);
+            var samplePaths = new[]
+            {
+                "SignInForm",
+                "CheckoutForm",
+                "SettingsForm"
+            };
+
+            foreach (var samplePath in samplePaths)
+            {
+                var xaml = Path.Combine(outputDirectory, "Samples", "Forms", samplePath + ".xaml");
+                var codeBehind = Path.Combine(outputDirectory, "Samples", "Forms", samplePath + ".xaml.cs");
+
+                Assert.IsTrue(File.Exists(xaml), "Forms sample XAML must be copied beside the demo assembly: " + samplePath);
+                Assert.IsTrue(File.Exists(codeBehind), "Forms sample code-behind must be copied beside the demo assembly: " + samplePath);
+            }
+        }
+
+        [TestMethod]
         public void ButtonsPage_ContainsSourceLinksForEachExample()
         {
             RunOnSta(() =>
@@ -630,6 +651,73 @@ namespace Fluence.Wpf.Tests
                             expected,
                             actual,
                             "Each Inputs page example must expose a Source link to its sample XAML.");
+                    }
+                    finally
+                    {
+                        window.Close();
+                    }
+                }
+                finally
+                {
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void FormsPage_ContainsSourceLinksForEachExample()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                try
+                {
+                    var page = new GalleryFormsPage();
+                    var host = new System.Windows.Controls.Grid();
+                    host.Children.Add(page);
+                    var window = new Window
+                    {
+                        Left = -20000,
+                        Top = -20000,
+                        Width = 1040,
+                        Height = 720,
+                        WindowStartupLocation = WindowStartupLocation.Manual,
+                        ShowInTaskbar = false,
+                        Content = host
+                    };
+
+                    try
+                    {
+                        window.Show();
+                        Drain(window.Dispatcher);
+                        window.UpdateLayout();
+                        Drain(window.Dispatcher);
+
+                        var expected = new[]
+                        {
+                            DemoSourceLinkSettings.GetSourceUri("Forms/SignInForm.xaml").AbsoluteUri,
+                            DemoSourceLinkSettings.GetSourceUri("Forms/CheckoutForm.xaml").AbsoluteUri,
+                            DemoSourceLinkSettings.GetSourceUri("Forms/SettingsForm.xaml").AbsoluteUri
+                        };
+
+                        var actual = new System.Collections.Generic.List<string>();
+                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(page))
+                        {
+                            if (link.NavigateUri != null && link.Content as string == "Source")
+                            {
+                                actual.Add(link.NavigateUri.AbsoluteUri);
+                            }
+                        }
+
+                        CollectionAssert.AreEquivalent(
+                            expected,
+                            actual,
+                            "Each Forms page example must expose a Source link to its sample XAML.");
                     }
                     finally
                     {
