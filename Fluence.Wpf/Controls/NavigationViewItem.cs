@@ -67,6 +67,15 @@ namespace Fluence.Wpf.Controls
             new PropertyMetadata(null));
 
         /// <summary>
+        /// Identifies the <see cref="IsChildItem"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty IsChildItemProperty = DependencyProperty.Register(
+            "IsChildItem",
+            typeof(bool),
+            typeof(NavigationViewItem),
+            new FrameworkPropertyMetadata(false));
+
+        /// <summary>
         /// Identifies the <see cref="PageContent"/> dependency property.
         /// </summary>
         /// <remarks>
@@ -102,6 +111,16 @@ namespace Fluence.Wpf.Controls
         {
             get { return GetValue(InfoBadgeProperty); }
             set { SetValue(InfoBadgeProperty, value); }
+        }
+
+        /// <summary>
+        /// Gets or sets whether this item is a child entry in an expanded navigation section.
+        /// Child entries keep their selection indicator aligned with the content column.
+        /// </summary>
+        public bool IsChildItem
+        {
+            get { return (bool)GetValue(IsChildItemProperty); }
+            set { SetValue(IsChildItemProperty, value); }
         }
 
         /// <summary>

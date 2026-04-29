@@ -236,6 +236,7 @@ namespace Fluence.Wpf.Demo
                 Content = item.Title,
                 Tag = item.Tag,
                 Icon = showIcon ? CreateFontIcon(item.Glyph, 20) : null,
+                IsChildItem = !showIcon,
                 PageContent = item.CreatePage()
             };
         }

@@ -597,7 +597,7 @@ namespace Fluence.Wpf.Controls
                 }
 
                 var x = itemPos.X + NavigationItemOuterHorizontalMargin;
-                if (item.Icon == null)
+                if (ShouldIndentSelectionIndicator(item, topMode))
                 {
                     x += NavigationItemIconColumnWidth + NavigationItemGapColumnWidth;
                 }
@@ -608,6 +608,23 @@ namespace Fluence.Wpf.Controls
             {
                 return new Point(0, 0);
             }
+        }
+
+        private bool ShouldIndentSelectionIndicator(NavigationViewItem item, bool topMode)
+        {
+            if (topMode || item == null || !item.IsChildItem)
+            {
+                return false;
+            }
+
+            if (!IsPaneOpen
+                && (PaneDisplayMode == NavigationViewPaneDisplayMode.Left
+                    || PaneDisplayMode == NavigationViewPaneDisplayMode.LeftCompact))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private Point GetCurrentIndicatorPosition()

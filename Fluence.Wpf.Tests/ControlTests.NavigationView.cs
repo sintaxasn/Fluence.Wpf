@@ -636,7 +636,7 @@ namespace Fluence.Wpf.Tests
                         Content = "Home",
                         Icon = new Fluent.FontIcon { Glyph = "\uE80F", IconFontSize = 20 }
                     });
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Child" });
+                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Child", IsChildItem = true });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
@@ -661,6 +661,63 @@ namespace Fluence.Wpf.Tests
                     var childItemX = GetSelectionIndicatorTranslate(indicator).X;
                     Assert.AreEqual(56.0, childItemX, 0.5,
                         "Iconless child item indicator should move inward to the content column.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NavigationView_LeftMode_TopLevelIconlessItem_DoesNotUseChildIndicatorIndent()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 400,
+                        Height = 320,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left
+                    };
+                    nav.Items.Add(new Fluent.NavigationViewItem
+                    {
+                        Content = "Home",
+                        Icon = new Fluent.FontIcon { Glyph = "\uE80F", IconFontSize = 20 }
+                    });
+                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "No icon top-level" });
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    nav.SelectedIndex = 0;
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    var indicator = nav.GetSelectionIndicatorForTesting();
+                    Assert.IsNotNull(indicator, "PART_SelectionIndicator should exist in the NavigationView template.");
+                    var iconItemX = GetSelectionIndicatorTranslate(indicator).X;
+
+                    nav.SelectedIndex = 1;
+                    WaitForAnimationAndDrain(window.Dispatcher, 600);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    var noIconItemX = GetSelectionIndicatorTranslate(indicator).X;
+                    Assert.AreEqual(iconItemX, noIconItemX, 0.5,
+                        "A top-level item without an icon should keep the top-level indicator position; child indentation must be explicit.");
                 }
                 finally
                 {

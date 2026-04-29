@@ -550,6 +550,70 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void MainWindow_NavigationCatalog_MarksOnlySectionChildrenAsChildItems()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                MainWindow window = null;
+                try
+                {
+                    window = CreateShownMainWindow();
+                    var nav = GetDemoNav(window);
+                    var currentCategory = string.Empty;
+
+                    foreach (var obj in nav.Items)
+                    {
+                        var header = obj as NavigationViewItemHeader;
+                        if (header != null)
+                        {
+                            currentCategory = string.Empty;
+                            continue;
+                        }
+
+                        var item = obj as NavigationViewItem;
+                        if (item == null)
+                        {
+                            continue;
+                        }
+
+                        if (item.InfoBadge != null)
+                        {
+                            currentCategory = item.Content as string;
+                            Assert.IsFalse(item.IsChildItem,
+                                "Section headers should keep top-level indicator positioning: " + item.Content);
+                            continue;
+                        }
+
+                        if (string.IsNullOrEmpty(currentCategory))
+                        {
+                            Assert.IsFalse(item.IsChildItem,
+                                "Top-level navigation items should not be marked as child items: " + item.Content);
+                            continue;
+                        }
+
+                        Assert.IsTrue(item.IsChildItem,
+                            "Navigation children should be explicitly marked so selected indicators indent with the child row: " + item.Content);
+                    }
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
         public void MainWindow_CategoryHeader_OpensOverviewPageWithChildCards()
         {
             RunOnSta(() =>
