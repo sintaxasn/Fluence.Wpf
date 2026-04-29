@@ -21,6 +21,7 @@
     <Resource Include="Resources\AppIcon.png" />
     <Resource Include="Resources\BannerDark.png" />
     <Resource Include="Resources\BannerLight.png" />
+    <Resource Include="Resources\SegoeFluentIcons.tsv" />
   </ItemGroup>
 
   <ItemGroup>

@@ -1890,6 +1890,7 @@ namespace Fluence.Wpf.Tests
             var outputDirectory = Path.GetDirectoryName(typeof(MainWindow).Assembly.Location);
             var samplePaths = new[]
             {
+                "IconCatalog",
                 "CommonGlyphs",
                 "CommandGlyphs",
                 "StatusGlyphs"
@@ -2909,6 +2910,74 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void GlyphsPage_RendersEveryAvailableSegoeFluentIcon()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                try
+                {
+                    var page = new GalleryGlyphsPage();
+                    var host = new System.Windows.Controls.Grid();
+                    host.Children.Add(page);
+                    var window = new Window
+                    {
+                        Left = -20000,
+                        Top = -20000,
+                        Width = 1040,
+                        Height = 720,
+                        WindowStartupLocation = WindowStartupLocation.Manual,
+                        ShowInTaskbar = false,
+                        Content = host
+                    };
+
+                    try
+                    {
+                        window.Show();
+                        Drain(window.Dispatcher);
+                        window.UpdateLayout();
+                        Drain(window.Dispatcher);
+
+                        var list = FindByName<System.Windows.Controls.ListView>(page, "IconCatalogList");
+                        Assert.IsNotNull(list, "The Iconography page should render a single virtualized icon catalog.");
+
+                        var expectedCount = GetSegoeFluentPrivateUseGlyphCount();
+                        Assert.IsTrue(expectedCount > 1000, "Segoe Fluent Icons should expose a large private-use glyph set on this machine.");
+                        Assert.AreEqual(expectedCount, list.Items.Count, "The Iconography page should include every private-use glyph exposed by Segoe Fluent Icons.");
+                        Assert.IsTrue(VirtualizingStackPanel.GetIsVirtualizing(list), "The icon catalog should stay virtualized because it contains more than 1,000 rows.");
+                        Assert.AreEqual(VirtualizationMode.Recycling, VirtualizingStackPanel.GetVirtualizationMode(list));
+
+                        var names = CollectItemPropertyValues(list, "Name");
+                        CollectionAssert.Contains(names, "GlobalNavButton");
+                        CollectionAssert.Contains(names, "Settings");
+
+                        var codes = CollectItemPropertyValues(list, "DisplayCode");
+                        CollectionAssert.Contains(codes, "U+E700");
+                        CollectionAssert.Contains(codes, "U+E713");
+
+                        var texts = CollectTextBlockTexts(page);
+                        CollectionAssert.DoesNotContain(texts, "Common icons");
+                        CollectionAssert.DoesNotContain(texts, "Command icons");
+                        CollectionAssert.DoesNotContain(texts, "Status icons");
+                    }
+                    finally
+                    {
+                        window.Close();
+                    }
+                }
+                finally
+                {
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
         public void GlyphsPage_ContainsSourceLinksForEachExample()
         {
             RunOnSta(() =>
@@ -2940,9 +3009,7 @@ namespace Fluence.Wpf.Tests
                         Drain(window.Dispatcher);
 
                         var expected = ExpectedSourceUris(
-                            "Glyphs/CommonGlyphs.xaml",
-                            "Glyphs/CommandGlyphs.xaml",
-                            "Glyphs/StatusGlyphs.xaml"
+                            "Glyphs/IconCatalog.xaml"
                         );
 
 
@@ -3342,6 +3409,57 @@ namespace Fluence.Wpf.Tests
             }
 
             return texts;
+        }
+
+        private static System.Collections.ArrayList CollectItemPropertyValues(ItemsControl control, string propertyName)
+        {
+            var values = new System.Collections.ArrayList();
+
+            foreach (var item in control.Items)
+            {
+                if (item == null)
+                {
+                    continue;
+                }
+
+                var property = item.GetType().GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public);
+                if (property == null)
+                {
+                    continue;
+                }
+
+                var value = property.GetValue(item, null) as string;
+                if (!string.IsNullOrEmpty(value))
+                {
+                    values.Add(value);
+                }
+            }
+
+            return values;
+        }
+
+        private static int GetSegoeFluentPrivateUseGlyphCount()
+        {
+            var typeface = new Typeface(
+                new FontFamily("Segoe Fluent Icons"),
+                FontStyles.Normal,
+                FontWeights.Normal,
+                FontStretches.Normal);
+
+            GlyphTypeface glyphTypeface;
+            Assert.IsTrue(typeface.TryGetGlyphTypeface(out glyphTypeface),
+                "Segoe Fluent Icons must be installed for the iconography catalog test.");
+
+            var count = 0;
+            foreach (var character in glyphTypeface.CharacterToGlyphMap.Keys)
+            {
+                if (character >= 0xE000 && character <= 0xF8FF)
+                {
+                    count++;
+                }
+            }
+
+            return count;
         }
 
         private static System.Collections.Generic.List<FrameworkElement> FindSourceActionControls(DependencyObject root)
