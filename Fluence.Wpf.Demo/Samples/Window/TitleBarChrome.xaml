@@ -1,0 +1,53 @@
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Samples.Window.TitleBarChrome"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
+    <StackPanel>
+        <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
+            <ui:ToggleSwitch
+                x:Name="ExtendsContentToggle"
+                Margin="0,0,10,0"
+                Checked="TitleBarToggle_Changed"
+                IsChecked="False"
+                Unchecked="TitleBarToggle_Changed" />
+            <TextBlock
+                VerticalAlignment="Center"
+                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                Text="Extends into title bar" />
+        </StackPanel>
+        <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
+            <ui:ToggleSwitch
+                x:Name="HasShadowToggle"
+                Margin="0,0,10,0"
+                Checked="TitleBarToggle_Changed"
+                IsChecked="True"
+                Unchecked="TitleBarToggle_Changed" />
+            <TextBlock
+                VerticalAlignment="Center"
+                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                Text="Title bar shadow" />
+        </StackPanel>
+        <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
+            <TextBlock
+                Width="60"
+                Margin="0,0,8,0"
+                VerticalAlignment="Center"
+                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                Text="Height" />
+            <ui:Slider
+                x:Name="TitleBarHeightSlider"
+                Width="180"
+                Maximum="64"
+                Minimum="32"
+                ValueChanged="TitleBarHeightSlider_Changed"
+                Value="48" />
+            <TextBlock
+                x:Name="TitleBarHeightLabel"
+                Margin="8,0,0,0"
+                VerticalAlignment="Center"
+                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                Text="48" />
+        </StackPanel>
+    </StackPanel>
+</UserControl>

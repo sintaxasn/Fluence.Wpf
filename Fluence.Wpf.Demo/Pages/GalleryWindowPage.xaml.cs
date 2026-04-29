@@ -43,6 +43,11 @@ namespace Fluence.Wpf.Demo.Pages
         public GalleryWindowPage()
         {
             InitializeComponent();
+
+            ThemeAndAccentSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Window/ThemeAndAccent.xaml");
+            BackdropAndCaptionButtonsSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Window/BackdropAndCaptionButtons.xaml");
+            TitleBarChromeSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Window/TitleBarChrome.xaml");
+
             Loaded += GalleryWindowPage_Loaded;
             Unloaded += GalleryWindowPage_Unloaded;
         }
