@@ -1644,6 +1644,74 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void StatusPage_ProgressRingDemo_UsesDisabledRingAndAlignedLabels()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                try
+                {
+                    var page = new GalleryStatusPage();
+                    var host = new System.Windows.Controls.Grid();
+                    host.Children.Add(page);
+                    var window = new Window
+                    {
+                        Left = -20000,
+                        Top = -20000,
+                        Width = 1040,
+                        Height = 720,
+                        WindowStartupLocation = WindowStartupLocation.Manual,
+                        ShowInTaskbar = false,
+                        Content = host
+                    };
+
+                    try
+                    {
+                        window.Show();
+                        Drain(window.Dispatcher);
+                        window.UpdateLayout();
+                        Drain(window.Dispatcher);
+
+                        var disabledRing = FindByName<ProgressRing>(page, "DisabledProgressRing");
+                        Assert.IsNotNull(disabledRing, "The third ProgressRing example should be a disabled ring, not an inactive ring.");
+                        Assert.IsFalse(disabledRing.IsEnabled, "The disabled ProgressRing example should use IsEnabled=False.");
+                        Assert.IsTrue(disabledRing.IsActive, "The disabled ProgressRing should still be active so its disabled visual is visible.");
+                        Assert.IsTrue(disabledRing.IsIndeterminate, "The disabled ProgressRing example should use the indeterminate ring visual.");
+
+                        var indeterminateLabel = FindByName<System.Windows.Controls.TextBlock>(page, "IndeterminateProgressRingLabel");
+                        var determinateLabel = FindByName<System.Windows.Controls.TextBlock>(page, "DeterminateProgressRingLabel");
+                        var disabledLabel = FindByName<System.Windows.Controls.TextBlock>(page, "DisabledProgressRingLabel");
+                        Assert.IsNotNull(indeterminateLabel);
+                        Assert.IsNotNull(determinateLabel);
+                        Assert.IsNotNull(disabledLabel);
+
+                        var indeterminateY = indeterminateLabel.TransformToAncestor(window).Transform(new Point(0, 0)).Y;
+                        var determinateY = determinateLabel.TransformToAncestor(window).Transform(new Point(0, 0)).Y;
+                        var disabledY = disabledLabel.TransformToAncestor(window).Transform(new Point(0, 0)).Y;
+
+                        Assert.AreEqual(indeterminateY, determinateY, 1.0,
+                            "Indeterminate and determinate ProgressRing labels should share the same vertical position.");
+                        Assert.AreEqual(indeterminateY, disabledY, 1.0,
+                            "Indeterminate and disabled ProgressRing labels should share the same vertical position.");
+                    }
+                    finally
+                    {
+                        window.Close();
+                    }
+                }
+                finally
+                {
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
         public void GlyphsPage_ContainsSourceLinksForEachExample()
         {
             RunOnSta(() =>

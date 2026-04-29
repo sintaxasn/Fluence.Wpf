@@ -3,64 +3,93 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
-    <UniformGrid HorizontalAlignment="Stretch" Columns="3">
-        <StackPanel HorizontalAlignment="Center">
-            <ui:ProgressRing
-                x:Name="IndeterminateProgressRing"
-                Width="48"
-                Height="48"
-                HorizontalAlignment="Center"
-                IsActive="True"
-                IsIndeterminate="True" />
-            <ui:ToggleSwitch
-                Margin="0,10,0,0"
-                HorizontalAlignment="Center"
-                IsChecked="{Binding IsActive, ElementName=IndeterminateProgressRing, Mode=TwoWay}"
-                OffContent="Off"
-                OnContent="On" />
-            <TextBlock
-                Margin="0,4,0,0"
-                HorizontalAlignment="Center"
-                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                Text="Indeterminate" />
-        </StackPanel>
-        <StackPanel HorizontalAlignment="Center">
-            <ui:ProgressRing
-                x:Name="DeterminateProgressRing"
-                Width="48"
-                Height="48"
-                HorizontalAlignment="Center"
-                IsActive="True"
-                IsIndeterminate="False"
-                Maximum="100"
-                Minimum="0"
-                Value="50" />
-            <ui:Slider
-                x:Name="ProgressRingSlider"
-                Width="120"
-                Margin="0,8,0,0"
-                HorizontalAlignment="Center"
-                Maximum="100"
-                Minimum="0"
-                ValueChanged="ProgressRingSlider_ValueChanged"
-                Value="50" />
-            <TextBlock
-                Margin="0,4,0,0"
-                HorizontalAlignment="Center"
-                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                Text="Determinate" />
-        </StackPanel>
-        <StackPanel HorizontalAlignment="Center">
-            <ui:ProgressRing
-                Width="48"
-                Height="48"
-                HorizontalAlignment="Center"
-                IsActive="False" />
-            <TextBlock
-                Margin="0,10,0,0"
-                HorizontalAlignment="Center"
-                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                Text="Inactive" />
-        </StackPanel>
-    </UniformGrid>
+    <Grid HorizontalAlignment="Stretch">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <ui:ProgressRing
+            x:Name="IndeterminateProgressRing"
+            Grid.Row="0"
+            Grid.Column="0"
+            Width="48"
+            Height="48"
+            HorizontalAlignment="Center"
+            IsActive="True"
+            IsIndeterminate="True" />
+        <ui:ToggleSwitch
+            Grid.Row="1"
+            Grid.Column="0"
+            Margin="0,10,0,0"
+            HorizontalAlignment="Center"
+            IsChecked="{Binding IsActive, ElementName=IndeterminateProgressRing, Mode=TwoWay}"
+            OffContent="Off"
+            OnContent="On" />
+        <TextBlock
+            x:Name="IndeterminateProgressRingLabel"
+            Grid.Row="2"
+            Grid.Column="0"
+            Margin="0,4,0,0"
+            HorizontalAlignment="Center"
+            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+            Text="Indeterminate" />
+
+        <ui:ProgressRing
+            x:Name="DeterminateProgressRing"
+            Grid.Row="0"
+            Grid.Column="1"
+            Width="48"
+            Height="48"
+            HorizontalAlignment="Center"
+            IsActive="True"
+            IsIndeterminate="False"
+            Maximum="100"
+            Minimum="0"
+            Value="50" />
+        <ui:Slider
+            x:Name="ProgressRingSlider"
+            Grid.Row="1"
+            Grid.Column="1"
+            Width="120"
+            Margin="0,8,0,0"
+            HorizontalAlignment="Center"
+            Maximum="100"
+            Minimum="0"
+            ValueChanged="ProgressRingSlider_ValueChanged"
+            Value="50" />
+        <TextBlock
+            x:Name="DeterminateProgressRingLabel"
+            Grid.Row="2"
+            Grid.Column="1"
+            Margin="0,4,0,0"
+            HorizontalAlignment="Center"
+            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+            Text="Determinate" />
+
+        <ui:ProgressRing
+            x:Name="DisabledProgressRing"
+            Grid.Row="0"
+            Grid.Column="2"
+            Width="48"
+            Height="48"
+            HorizontalAlignment="Center"
+            IsActive="True"
+            IsEnabled="False"
+            IsIndeterminate="True" />
+        <TextBlock
+            x:Name="DisabledProgressRingLabel"
+            Grid.Row="2"
+            Grid.Column="2"
+            Margin="0,4,0,0"
+            HorizontalAlignment="Center"
+            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+            Text="Disabled" />
+    </Grid>
 </UserControl>
