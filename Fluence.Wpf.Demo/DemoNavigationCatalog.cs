@@ -138,9 +138,9 @@ namespace Fluence.Wpf.Demo
             new DemoNavigationItem("Collections", "ListView", "listview list collection data", "\uE8FD", false, () => DemoCollectionPages.ListView()),
             new DemoNavigationItem("Collections", "TreeView", "treeview tree hierarchy expand collapse", "\uE8EB", false, () => DemoCollectionPages.TreeView()),
 
-            new DemoNavigationItem("Menus and toolbars", "Menu", "menu menuitem command toolbar", "\uE115", false, () => new GalleryMenusPage()),
-            new DemoNavigationItem("Menus and toolbars", "ContextMenu", "contextmenu menu command", "\uE700", false, () => new GalleryMenusPage()),
-            new DemoNavigationItem("Menus and toolbars", "ToolTip", "tooltip tip help", "\uE946", false, () => new GalleryMenusPage()),
+            new DemoNavigationItem("Menus and toolbars", "Menu", "menu menuitem command toolbar", "\uE115", false, () => DemoMenuPages.Menu()),
+            new DemoNavigationItem("Menus and toolbars", "ContextMenu", "contextmenu menu command", "\uE700", false, () => DemoMenuPages.ContextMenu()),
+            new DemoNavigationItem("Menus and toolbars", "ToolTip", "tooltip tip help", "\uE946", false, () => DemoMenuPages.ToolTip()),
 
             new DemoNavigationItem("Navigation", "NavigationView", "navigationview navigation pane back", "\uE700", false, () => new GalleryNavigationPage()),
             new DemoNavigationItem("Navigation", "TabView", "tabview tab tabs close add document", "\uF22C", false, () => new GalleryTabsPage()),

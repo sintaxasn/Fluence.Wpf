@@ -437,6 +437,7 @@ namespace Fluence.Wpf.Demo
             }
 
             var needle = query.Trim().ToLowerInvariant();
+            NavigationViewItem fallback = null;
             foreach (var obj in DemoNav.Items)
             {
                 var nvi = obj as NavigationViewItem;
@@ -445,13 +446,19 @@ namespace Fluence.Wpf.Demo
                     continue;
                 }
 
-                if (ItemMatches(nvi, needle))
+                var label = (nvi.Content as string) ?? string.Empty;
+                if (string.Equals(label, query.Trim(), StringComparison.OrdinalIgnoreCase))
                 {
                     return nvi;
                 }
+
+                if (fallback == null && ItemMatches(nvi, needle))
+                {
+                    fallback = nvi;
+                }
             }
 
-            return null;
+            return fallback;
         }
 
         private static bool ItemMatches(NavigationViewItem nvi, string loweredNeedle)
