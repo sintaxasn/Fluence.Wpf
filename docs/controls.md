@@ -3,16 +3,23 @@
 The **Fluence.Wpf.Demo** gallery is the live inventory: `FluenceWindow` chrome with a search box in the title bar, a left `NavigationView` (compact / expanded), and grouped `UserControl` pages under `Fluence.Wpf.Demo/Pages/`:
 
 - Home (clickable hero cards)
-- Window (backdrop, caption, theme)
+- Data Binding (ObservableCollection, selection modes, data templates)
+- Accessibility (focus order, high contrast, automation, RTL)
 - Buttons
 - Selection (CheckBox, RadioButton, ToggleSwitch, Slider)
 - Inputs (TextBox, PasswordBox, NumberBox, ComboBox)
-- Status (InfoBar, InfoBadge, ProgressBar, ProgressRing)
+- Forms (sign-in, checkout, settings)
 - Data (ListView, ListBox, Expander)
-- Tabs (TabControl, TabView)
-- Glyphs (FontIcon)
+- Trees (TreeView)
 - Navigation (NavigationView modes)
+- Tabs (TabControl, TabView)
+- Menus (Menu, ContextMenu, ToolTip, command buttons)
+- Status (InfoBar, InfoBadge, ProgressBar, ProgressRing)
 - Colors (accent ramp, theme brush swatches)
+- Glyphs (FontIcon)
+- Window (backdrop, caption, theme)
+
+Each non-Home gallery page renders examples inline and exposes a Source link for every example. The linked `.xaml` and `.xaml.cs` sample files are copied to the demo output under `Samples/`.
 
 **Fluence.Wpf.Demo.Mvvm** is a minimal Task Manager demonstrating `FluenceWindow` + Fluence controls with zero code-behind (CommunityToolkit.Mvvm). See [CLAUDE.md §8](../CLAUDE.md) for architecture notes.
 
