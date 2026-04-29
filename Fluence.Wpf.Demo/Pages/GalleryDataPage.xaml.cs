@@ -47,9 +47,9 @@ namespace Fluence.Wpf.Demo.Pages
         {
             InitializeComponent();
 
-            ListViewItemsSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Data/ListViewItems.xaml");
-            ListViewEmptyStateSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Data/ListViewEmptyState.xaml");
-            CardVariantsSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Data/CardVariants.xaml");
+            DemoSourceAction.Replace(ListViewItemsSourceLink, "Data/ListViewItems.xaml");
+            DemoSourceAction.Replace(ListViewEmptyStateSourceLink, "Data/ListViewEmptyState.xaml");
+            DemoSourceAction.Replace(CardVariantsSourceLink, "Data/CardVariants.xaml");
         }
 
         private void AddListItem_Click(object sender, RoutedEventArgs e)

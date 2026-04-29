@@ -35,11 +35,11 @@ namespace Fluence.Wpf.Demo.Pages
         {
             InitializeComponent();
 
-            TextBoxInputSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Inputs/TextBoxInput.xaml");
-            TextBoxValidationSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Inputs/TextBoxValidation.xaml");
-            PasswordBoxInputSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Inputs/PasswordBoxInput.xaml");
-            NumberBoxInputSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Inputs/NumberBoxInput.xaml");
-            SliderInputSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Inputs/SliderInput.xaml");
+            DemoSourceAction.Replace(TextBoxInputSourceLink, "Inputs/TextBoxInput.xaml");
+            DemoSourceAction.Replace(TextBoxValidationSourceLink, "Inputs/TextBoxValidation.xaml");
+            DemoSourceAction.Replace(PasswordBoxInputSourceLink, "Inputs/PasswordBoxInput.xaml");
+            DemoSourceAction.Replace(NumberBoxInputSourceLink, "Inputs/NumberBoxInput.xaml");
+            DemoSourceAction.Replace(SliderInputSourceLink, "Inputs/SliderInput.xaml");
         }
 
         private void CharCountTextBox_TextChanged(object sender, TextChangedEventArgs e)

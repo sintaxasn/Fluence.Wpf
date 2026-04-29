@@ -791,21 +791,9 @@ namespace Fluence.Wpf.Tests
                         Assert.IsNotNull(title, pageTitle + " page should expose ControlPageTitle.");
                         Assert.AreEqual(pageTitle, title.Text);
 
-                        var sourceLinkCount = 0;
-                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(selectedContent))
-                        {
-                            if (!string.Equals(link.Content as string, "Source", StringComparison.Ordinal))
-                            {
-                                continue;
-                            }
 
-                            sourceLinkCount++;
-                            Assert.AreEqual(HorizontalAlignment.Right, link.HorizontalAlignment,
-                                pageTitle + " source link should be right-aligned.");
-                            Assert.IsNotNull(link.Icon, pageTitle + " source link should display a URL/link icon.");
-                        }
+                        AssertPageHasSourceActions(selectedContent, pageTitle);
 
-                        Assert.IsTrue(sourceLinkCount > 0, pageTitle + " should expose a source link.");
                     }
                 }
                 finally
@@ -865,21 +853,9 @@ namespace Fluence.Wpf.Tests
                         Assert.IsNotNull(title, pageTitle + " page should expose ControlPageTitle.");
                         Assert.AreEqual(pageTitle, title.Text);
 
-                        var sourceLinkCount = 0;
-                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(selectedContent))
-                        {
-                            if (!string.Equals(link.Content as string, "Source", StringComparison.Ordinal))
-                            {
-                                continue;
-                            }
 
-                            sourceLinkCount++;
-                            Assert.AreEqual(HorizontalAlignment.Right, link.HorizontalAlignment,
-                                pageTitle + " source link should be right-aligned.");
-                            Assert.IsNotNull(link.Icon, pageTitle + " source link should display a URL/link icon.");
-                        }
+                        AssertPageHasSourceActions(selectedContent, pageTitle);
 
-                        Assert.IsTrue(sourceLinkCount > 0, pageTitle + " should expose a source link.");
                     }
                 }
                 finally
@@ -938,21 +914,9 @@ namespace Fluence.Wpf.Tests
                         Assert.IsNotNull(title, pageTitle + " page should expose ControlPageTitle.");
                         Assert.AreEqual(pageTitle, title.Text);
 
-                        var sourceLinkCount = 0;
-                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(selectedContent))
-                        {
-                            if (!string.Equals(link.Content as string, "Source", StringComparison.Ordinal))
-                            {
-                                continue;
-                            }
 
-                            sourceLinkCount++;
-                            Assert.AreEqual(HorizontalAlignment.Right, link.HorizontalAlignment,
-                                pageTitle + " source link should be right-aligned.");
-                            Assert.IsNotNull(link.Icon, pageTitle + " source link should display a URL/link icon.");
-                        }
+                        AssertPageHasSourceActions(selectedContent, pageTitle);
 
-                        Assert.IsTrue(sourceLinkCount > 0, pageTitle + " should expose a source link.");
                     }
                 }
                 finally
@@ -1010,21 +974,9 @@ namespace Fluence.Wpf.Tests
                         Assert.IsNotNull(title, pageTitle + " page should expose ControlPageTitle.");
                         Assert.AreEqual(pageTitle, title.Text);
 
-                        var sourceLinkCount = 0;
-                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(selectedContent))
-                        {
-                            if (!string.Equals(link.Content as string, "Source", StringComparison.Ordinal))
-                            {
-                                continue;
-                            }
 
-                            sourceLinkCount++;
-                            Assert.AreEqual(HorizontalAlignment.Right, link.HorizontalAlignment,
-                                pageTitle + " source link should be right-aligned.");
-                            Assert.IsNotNull(link.Icon, pageTitle + " source link should display a URL/link icon.");
-                        }
+                        AssertPageHasSourceActions(selectedContent, pageTitle);
 
-                        Assert.IsTrue(sourceLinkCount > 0, pageTitle + " should expose a source link.");
                     }
                 }
                 finally
@@ -1081,21 +1033,9 @@ namespace Fluence.Wpf.Tests
                         Assert.IsNotNull(title, pageTitle + " page should expose ControlPageTitle.");
                         Assert.AreEqual(pageTitle, title.Text);
 
-                        var sourceLinkCount = 0;
-                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(selectedContent))
-                        {
-                            if (!string.Equals(link.Content as string, "Source", StringComparison.Ordinal))
-                            {
-                                continue;
-                            }
 
-                            sourceLinkCount++;
-                            Assert.AreEqual(HorizontalAlignment.Right, link.HorizontalAlignment,
-                                pageTitle + " source link should be right-aligned.");
-                            Assert.IsNotNull(link.Icon, pageTitle + " source link should display a URL/link icon.");
-                        }
+                        AssertPageHasSourceActions(selectedContent, pageTitle);
 
-                        Assert.IsTrue(sourceLinkCount > 0, pageTitle + " should expose a source link.");
                     }
                 }
                 finally
@@ -1155,21 +1095,9 @@ namespace Fluence.Wpf.Tests
                         Assert.IsNotNull(title, pageTitle + " page should expose ControlPageTitle.");
                         Assert.AreEqual(pageTitle, title.Text);
 
-                        var sourceLinkCount = 0;
-                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(selectedContent))
-                        {
-                            if (!string.Equals(link.Content as string, "Source", StringComparison.Ordinal))
-                            {
-                                continue;
-                            }
 
-                            sourceLinkCount++;
-                            Assert.AreEqual(HorizontalAlignment.Right, link.HorizontalAlignment,
-                                pageTitle + " source link should be right-aligned.");
-                            Assert.IsNotNull(link.Icon, pageTitle + " source link should display a URL/link icon.");
-                        }
+                        AssertPageHasSourceActions(selectedContent, pageTitle);
 
-                        Assert.IsTrue(sourceLinkCount > 0, pageTitle + " should expose a source link.");
                     }
                 }
                 finally
@@ -1228,21 +1156,9 @@ namespace Fluence.Wpf.Tests
                         Assert.IsNotNull(title, pageTitle + " page should expose ControlPageTitle.");
                         Assert.AreEqual(pageTitle, title.Text);
 
-                        var sourceLinkCount = 0;
-                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(selectedContent))
-                        {
-                            if (!string.Equals(link.Content as string, "Source", StringComparison.Ordinal))
-                            {
-                                continue;
-                            }
 
-                            sourceLinkCount++;
-                            Assert.AreEqual(HorizontalAlignment.Right, link.HorizontalAlignment,
-                                pageTitle + " source link should be right-aligned.");
-                            Assert.IsNotNull(link.Icon, pageTitle + " source link should display a URL/link icon.");
-                        }
+                        AssertPageHasSourceActions(selectedContent, pageTitle);
 
-                        Assert.IsTrue(sourceLinkCount > 0, pageTitle + " should expose a source link.");
                     }
                 }
                 finally
@@ -1300,21 +1216,9 @@ namespace Fluence.Wpf.Tests
                         Assert.IsNotNull(title, pageTitle + " page should expose ControlPageTitle.");
                         Assert.AreEqual(pageTitle, title.Text);
 
-                        var sourceLinkCount = 0;
-                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(selectedContent))
-                        {
-                            if (!string.Equals(link.Content as string, "Source", StringComparison.Ordinal))
-                            {
-                                continue;
-                            }
 
-                            sourceLinkCount++;
-                            Assert.AreEqual(HorizontalAlignment.Right, link.HorizontalAlignment,
-                                pageTitle + " source link should be right-aligned.");
-                            Assert.IsNotNull(link.Icon, pageTitle + " source link should display a URL/link icon.");
-                        }
+                        AssertPageHasSourceActions(selectedContent, pageTitle);
 
-                        Assert.IsTrue(sourceLinkCount > 0, pageTitle + " should expose a source link.");
                     }
                 }
                 finally
@@ -1372,21 +1276,9 @@ namespace Fluence.Wpf.Tests
                         Assert.IsNotNull(title, pageTitle + " page should expose ControlPageTitle.");
                         Assert.AreEqual(pageTitle, title.Text);
 
-                        var sourceLinkCount = 0;
-                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(selectedContent))
-                        {
-                            if (!string.Equals(link.Content as string, "Source", StringComparison.Ordinal))
-                            {
-                                continue;
-                            }
 
-                            sourceLinkCount++;
-                            Assert.AreEqual(HorizontalAlignment.Right, link.HorizontalAlignment,
-                                pageTitle + " source link should be right-aligned.");
-                            Assert.IsNotNull(link.Icon, pageTitle + " source link should display a URL/link icon.");
-                        }
+                        AssertPageHasSourceActions(selectedContent, pageTitle);
 
-                        Assert.IsTrue(sourceLinkCount > 0, pageTitle + " should expose a source link.");
                     }
                 }
                 finally
@@ -1503,20 +1395,13 @@ namespace Fluence.Wpf.Tests
                             Drain(window.Dispatcher);
 
                             var sourceLinkCount = 0;
-                            foreach (var link in FindAllVisualChildren<HyperlinkButton>(page))
+                            foreach (var action in FindSourceActionControls(page))
                             {
-                                if (link.Name == null || !link.Name.EndsWith("SourceLink", StringComparison.Ordinal))
-                                {
-                                    continue;
-                                }
-
                                 sourceLinkCount++;
-                                Assert.AreEqual("Source", link.Content as string,
-                                    "Source-link content should stay textual for screen readers and existing URI tests.");
-                                Assert.AreEqual(HorizontalAlignment.Right, link.HorizontalAlignment,
-                                    page.GetType().Name + "." + link.Name + " should be right-aligned.");
-                                Assert.IsNotNull(link.Icon,
-                                    page.GetType().Name + "." + link.Name + " should display a URL/link icon.");
+                                Assert.AreEqual(HorizontalAlignment.Right, action.HorizontalAlignment,
+                                    page.GetType().Name + "." + action.Name + " should be right-aligned.");
+                                Assert.IsTrue(ContainsUrlGlyph(action),
+                                    page.GetType().Name + "." + action.Name + " should display a URL/link icon.");
                             }
 
                             Assert.IsTrue(sourceLinkCount > 0, page.GetType().Name + " should expose source links.");
@@ -1534,6 +1419,167 @@ namespace Fluence.Wpf.Tests
                         app.Resources.MergedDictionaries.Remove(dict);
                     }
                 }
+            });
+        }
+
+        [TestMethod]
+        public void DemoSourceActions_ClickTargetsUseGitHubUris()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                try
+                {
+                    var pages = new UserControl[]
+                    {
+                        new GalleryButtonsPage(),
+                        new GalleryControlPage(
+                            "Button",
+                            "Use Button for immediate actions.",
+                            new[]
+                            {
+                                new DemoExample(
+                                    "Default buttons",
+                                    "Buttons use standard, accent, subtle, and disabled states.",
+                                    "Buttons/ButtonAppearances.xaml",
+                                    delegate { return new System.Windows.Controls.TextBlock { Text = "Sample" }; })
+                            })
+                    };
+
+                    foreach (var page in pages)
+                    {
+                        var host = new System.Windows.Controls.Grid();
+                        host.Children.Add(page);
+                        var window = new Window
+                        {
+                            Left = -20000,
+                            Top = -20000,
+                            Width = 1040,
+                            Height = 720,
+                            WindowStartupLocation = WindowStartupLocation.Manual,
+                            ShowInTaskbar = false,
+                            Content = host
+                        };
+
+                        try
+                        {
+                            window.Show();
+                            Drain(window.Dispatcher);
+                            window.UpdateLayout();
+                            Drain(window.Dispatcher);
+
+                            var sourceUris = CollectSourceActionTargetUris(page);
+                            Assert.IsTrue(sourceUris.Count > 0, page.GetType().Name + " should expose clickable source targets.");
+
+                            foreach (var sourceUri in sourceUris)
+                            {
+                                Assert.IsFalse(sourceUri.StartsWith("pack:", StringComparison.OrdinalIgnoreCase),
+                                    "Clickable source targets should not attempt to launch pack URIs.");
+                                StringAssert.StartsWith(sourceUri,
+                                    DemoSourceLinkSettings.RepositoryUrl + "/blob/" + DemoSourceLinkSettings.RepositoryBranch + "/");
+                            }
+                        }
+                        finally
+                        {
+                            window.Close();
+                        }
+                    }
+                }
+                finally
+                {
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void DemoSourceActions_SamplesWithCodeBehindUseDropdownTargets()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                try
+                {
+                    var page = new GalleryButtonsPage();
+                    var host = new System.Windows.Controls.Grid();
+                    host.Children.Add(page);
+                    var window = new Window
+                    {
+                        Left = -20000,
+                        Top = -20000,
+                        Width = 1040,
+                        Height = 720,
+                        WindowStartupLocation = WindowStartupLocation.Manual,
+                        ShowInTaskbar = false,
+                        Content = host
+                    };
+
+                    try
+                    {
+                        window.Show();
+                        Drain(window.Dispatcher);
+                        window.UpdateLayout();
+                        Drain(window.Dispatcher);
+
+                        var sourceDropdowns = FindSourceDropDownButtons(page);
+                        Assert.AreEqual(6, sourceDropdowns.Count,
+                            "Buttons page examples all have code-behind and should use source dropdowns.");
+
+                        foreach (var dropdown in sourceDropdowns)
+                        {
+                            Assert.AreEqual(HorizontalAlignment.Right, dropdown.HorizontalAlignment,
+                                dropdown.Name + " should be right-aligned.");
+                            Assert.IsTrue(ContainsUrlGlyph(dropdown),
+                                dropdown.Name + " should display a URL/link icon.");
+
+                            var targetUris = CollectSourceActionTargetUris(dropdown);
+                            Assert.AreEqual(2, targetUris.Count,
+                                dropdown.Name + " should expose XAML and C# source targets.");
+                            Assert.IsTrue(targetUris[0].EndsWith(".xaml", StringComparison.OrdinalIgnoreCase),
+                                dropdown.Name + " should expose the sample XAML first.");
+                            Assert.IsTrue(targetUris[1].EndsWith(".xaml.cs", StringComparison.OrdinalIgnoreCase),
+                                dropdown.Name + " should expose the sample code-behind second.");
+                        }
+                    }
+                    finally
+                    {
+                        window.Close();
+                    }
+                }
+                finally
+                {
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void DemoSourceActions_XamlOnlySamplesUseAccentButton()
+        {
+            RunOnSta(() =>
+            {
+                var action = DemoSourceAction.Create("Experimental/XamlOnly.xaml") as Fluence.Wpf.Controls.Button;
+                Assert.IsNotNull(action, "XAML-only samples should use a single source button.");
+                Assert.AreEqual(ControlAppearance.Accent, action.Appearance,
+                    "XAML-only source buttons should use accent appearance.");
+                Assert.AreEqual("Source", action.Content as string);
+                Assert.IsTrue(ContainsUrlGlyph(action), "XAML-only source buttons should display a URL/link icon.");
+
+                var target = action.Tag as Uri;
+                Assert.IsNotNull(target, "XAML-only source buttons should carry their GitHub target URI.");
+                Assert.AreEqual(
+                    DemoSourceLinkSettings.GetGitHubSourceUri("Experimental/XamlOnly.xaml").AbsoluteUri,
+                    target.AbsoluteUri);
             });
         }
 
@@ -1890,29 +1936,23 @@ namespace Fluence.Wpf.Tests
                         window.UpdateLayout();
                         Drain(window.Dispatcher);
 
-                        var expected = new[]
-                        {
-                            DemoSourceLinkSettings.GetSourceUri("Buttons/ButtonAppearances.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Buttons/ButtonIcons.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Buttons/HyperlinkButtons.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Buttons/DropDownButtons.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Buttons/SplitButtons.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Buttons/ToggleAndRepeatButtons.xaml").AbsoluteUri
-                        };
+                        var expected = ExpectedSourceUris(
+                            "Buttons/ButtonAppearances.xaml",
+                            "Buttons/ButtonIcons.xaml",
+                            "Buttons/HyperlinkButtons.xaml",
+                            "Buttons/DropDownButtons.xaml",
+                            "Buttons/SplitButtons.xaml",
+                            "Buttons/ToggleAndRepeatButtons.xaml"
+                        );
 
-                        var actual = new System.Collections.Generic.List<string>();
-                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(page))
-                        {
-                            if (link.NavigateUri != null && link.Content as string == "Source")
-                            {
-                                actual.Add(link.NavigateUri.AbsoluteUri);
-                            }
-                        }
+
+                        var actual = CollectSourceActionTargetUris(page);
+
 
                         CollectionAssert.AreEquivalent(
                             expected,
                             actual,
-                            "Each Buttons page example must expose a Source link to its sample XAML.");
+                            "Each Buttons page example must expose source targets to its sample files.");
                     }
                     finally
                     {
@@ -1960,28 +2000,22 @@ namespace Fluence.Wpf.Tests
                         window.UpdateLayout();
                         Drain(window.Dispatcher);
 
-                        var expected = new[]
-                        {
-                            DemoSourceLinkSettings.GetSourceUri("Inputs/TextBoxInput.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Inputs/TextBoxValidation.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Inputs/PasswordBoxInput.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Inputs/NumberBoxInput.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Inputs/SliderInput.xaml").AbsoluteUri
-                        };
+                        var expected = ExpectedSourceUris(
+                            "Inputs/TextBoxInput.xaml",
+                            "Inputs/TextBoxValidation.xaml",
+                            "Inputs/PasswordBoxInput.xaml",
+                            "Inputs/NumberBoxInput.xaml",
+                            "Inputs/SliderInput.xaml"
+                        );
 
-                        var actual = new System.Collections.Generic.List<string>();
-                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(page))
-                        {
-                            if (link.NavigateUri != null && link.Content as string == "Source")
-                            {
-                                actual.Add(link.NavigateUri.AbsoluteUri);
-                            }
-                        }
+
+                        var actual = CollectSourceActionTargetUris(page);
+
 
                         CollectionAssert.AreEquivalent(
                             expected,
                             actual,
-                            "Each Inputs page example must expose a Source link to its sample XAML.");
+                            "Each Inputs page example must expose source targets to its sample files.");
                     }
                     finally
                     {
@@ -2029,26 +2063,20 @@ namespace Fluence.Wpf.Tests
                         window.UpdateLayout();
                         Drain(window.Dispatcher);
 
-                        var expected = new[]
-                        {
-                            DemoSourceLinkSettings.GetSourceUri("Forms/SignInForm.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Forms/CheckoutForm.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Forms/SettingsForm.xaml").AbsoluteUri
-                        };
+                        var expected = ExpectedSourceUris(
+                            "Forms/SignInForm.xaml",
+                            "Forms/CheckoutForm.xaml",
+                            "Forms/SettingsForm.xaml"
+                        );
 
-                        var actual = new System.Collections.Generic.List<string>();
-                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(page))
-                        {
-                            if (link.NavigateUri != null && link.Content as string == "Source")
-                            {
-                                actual.Add(link.NavigateUri.AbsoluteUri);
-                            }
-                        }
+
+                        var actual = CollectSourceActionTargetUris(page);
+
 
                         CollectionAssert.AreEquivalent(
                             expected,
                             actual,
-                            "Each Forms page example must expose a Source link to its sample XAML.");
+                            "Each Forms page example must expose source targets to its sample files.");
                     }
                     finally
                     {
@@ -2096,27 +2124,21 @@ namespace Fluence.Wpf.Tests
                         window.UpdateLayout();
                         Drain(window.Dispatcher);
 
-                        var expected = new[]
-                        {
-                            DemoSourceLinkSettings.GetSourceUri("Selection/CheckBoxStates.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Selection/RadioButtonGroups.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Selection/ToggleSwitchStates.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Selection/ComboBoxSelection.xaml").AbsoluteUri
-                        };
+                        var expected = ExpectedSourceUris(
+                            "Selection/CheckBoxStates.xaml",
+                            "Selection/RadioButtonGroups.xaml",
+                            "Selection/ToggleSwitchStates.xaml",
+                            "Selection/ComboBoxSelection.xaml"
+                        );
 
-                        var actual = new System.Collections.Generic.List<string>();
-                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(page))
-                        {
-                            if (link.NavigateUri != null && link.Content as string == "Source")
-                            {
-                                actual.Add(link.NavigateUri.AbsoluteUri);
-                            }
-                        }
+
+                        var actual = CollectSourceActionTargetUris(page);
+
 
                         CollectionAssert.AreEquivalent(
                             expected,
                             actual,
-                            "Each Selection page example must expose a Source link to its sample XAML.");
+                            "Each Selection page example must expose source targets to its sample files.");
                     }
                     finally
                     {
@@ -2164,26 +2186,20 @@ namespace Fluence.Wpf.Tests
                         window.UpdateLayout();
                         Drain(window.Dispatcher);
 
-                        var expected = new[]
-                        {
-                            DemoSourceLinkSettings.GetSourceUri("Data/ListViewItems.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Data/ListViewEmptyState.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Data/CardVariants.xaml").AbsoluteUri
-                        };
+                        var expected = ExpectedSourceUris(
+                            "Data/ListViewItems.xaml",
+                            "Data/ListViewEmptyState.xaml",
+                            "Data/CardVariants.xaml"
+                        );
 
-                        var actual = new System.Collections.Generic.List<string>();
-                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(page))
-                        {
-                            if (link.NavigateUri != null && link.Content as string == "Source")
-                            {
-                                actual.Add(link.NavigateUri.AbsoluteUri);
-                            }
-                        }
+
+                        var actual = CollectSourceActionTargetUris(page);
+
 
                         CollectionAssert.AreEquivalent(
                             expected,
                             actual,
-                            "Each Data page example must expose a Source link to its sample XAML.");
+                            "Each Data page example must expose source targets to its sample files.");
                     }
                     finally
                     {
@@ -2231,26 +2247,20 @@ namespace Fluence.Wpf.Tests
                         window.UpdateLayout();
                         Drain(window.Dispatcher);
 
-                        var expected = new[]
-                        {
-                            DemoSourceLinkSettings.GetSourceUri("Trees/TreeViewHierarchy.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Trees/TreeViewSelection.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Trees/TreeViewExpansion.xaml").AbsoluteUri
-                        };
+                        var expected = ExpectedSourceUris(
+                            "Trees/TreeViewHierarchy.xaml",
+                            "Trees/TreeViewSelection.xaml",
+                            "Trees/TreeViewExpansion.xaml"
+                        );
 
-                        var actual = new System.Collections.Generic.List<string>();
-                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(page))
-                        {
-                            if (link.NavigateUri != null && link.Content as string == "Source")
-                            {
-                                actual.Add(link.NavigateUri.AbsoluteUri);
-                            }
-                        }
+
+                        var actual = CollectSourceActionTargetUris(page);
+
 
                         CollectionAssert.AreEquivalent(
                             expected,
                             actual,
-                            "Each Trees page example must expose a Source link to its sample XAML.");
+                            "Each Trees page example must expose source targets to its sample files.");
                     }
                     finally
                     {
@@ -2298,26 +2308,20 @@ namespace Fluence.Wpf.Tests
                         window.UpdateLayout();
                         Drain(window.Dispatcher);
 
-                        var expected = new[]
-                        {
-                            DemoSourceLinkSettings.GetSourceUri("Navigation/LeftNavigationView.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Navigation/TopNavigationView.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Navigation/CompactNavigationView.xaml").AbsoluteUri
-                        };
+                        var expected = ExpectedSourceUris(
+                            "Navigation/LeftNavigationView.xaml",
+                            "Navigation/TopNavigationView.xaml",
+                            "Navigation/CompactNavigationView.xaml"
+                        );
 
-                        var actual = new System.Collections.Generic.List<string>();
-                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(page))
-                        {
-                            if (link.NavigateUri != null && link.Content as string == "Source")
-                            {
-                                actual.Add(link.NavigateUri.AbsoluteUri);
-                            }
-                        }
+
+                        var actual = CollectSourceActionTargetUris(page);
+
 
                         CollectionAssert.AreEquivalent(
                             expected,
                             actual,
-                            "Each Navigation page example must expose a Source link to its sample XAML.");
+                            "Each Navigation page example must expose source targets to its sample files.");
                     }
                     finally
                     {
@@ -2365,26 +2369,20 @@ namespace Fluence.Wpf.Tests
                         window.UpdateLayout();
                         Drain(window.Dispatcher);
 
-                        var expected = new[]
-                        {
-                            DemoSourceLinkSettings.GetSourceUri("Tabs/TabControlBasics.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Tabs/TabControlPlacement.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Tabs/TabViewDocuments.xaml").AbsoluteUri
-                        };
+                        var expected = ExpectedSourceUris(
+                            "Tabs/TabControlBasics.xaml",
+                            "Tabs/TabControlPlacement.xaml",
+                            "Tabs/TabViewDocuments.xaml"
+                        );
 
-                        var actual = new System.Collections.Generic.List<string>();
-                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(page))
-                        {
-                            if (link.NavigateUri != null && link.Content as string == "Source")
-                            {
-                                actual.Add(link.NavigateUri.AbsoluteUri);
-                            }
-                        }
+
+                        var actual = CollectSourceActionTargetUris(page);
+
 
                         CollectionAssert.AreEquivalent(
                             expected,
                             actual,
-                            "Each Tabs page example must expose a Source link to its sample XAML.");
+                            "Each Tabs page example must expose source targets to its sample files.");
                     }
                     finally
                     {
@@ -2432,27 +2430,21 @@ namespace Fluence.Wpf.Tests
                         window.UpdateLayout();
                         Drain(window.Dispatcher);
 
-                        var expected = new[]
-                        {
-                            DemoSourceLinkSettings.GetSourceUri("Menus/MenuBar.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Menus/ContextMenuActions.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Menus/ToolTips.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Menus/DropDownAndSplitButtonMenus.xaml").AbsoluteUri
-                        };
+                        var expected = ExpectedSourceUris(
+                            "Menus/MenuBar.xaml",
+                            "Menus/ContextMenuActions.xaml",
+                            "Menus/ToolTips.xaml",
+                            "Menus/DropDownAndSplitButtonMenus.xaml"
+                        );
 
-                        var actual = new System.Collections.Generic.List<string>();
-                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(page))
-                        {
-                            if (link.NavigateUri != null && link.Content as string == "Source")
-                            {
-                                actual.Add(link.NavigateUri.AbsoluteUri);
-                            }
-                        }
+
+                        var actual = CollectSourceActionTargetUris(page);
+
 
                         CollectionAssert.AreEquivalent(
                             expected,
                             actual,
-                            "Each Menus page example must expose a Source link to its sample XAML.");
+                            "Each Menus page example must expose source targets to its sample files.");
                     }
                     finally
                     {
@@ -2500,28 +2492,22 @@ namespace Fluence.Wpf.Tests
                         window.UpdateLayout();
                         Drain(window.Dispatcher);
 
-                        var expected = new[]
-                        {
-                            DemoSourceLinkSettings.GetSourceUri("Status/ProgressBarValue.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Status/ProgressBarIndeterminate.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Status/ProgressBarSteps.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Status/ProgressRings.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Status/InfoBars.xaml").AbsoluteUri
-                        };
+                        var expected = ExpectedSourceUris(
+                            "Status/ProgressBarValue.xaml",
+                            "Status/ProgressBarIndeterminate.xaml",
+                            "Status/ProgressBarSteps.xaml",
+                            "Status/ProgressRings.xaml",
+                            "Status/InfoBars.xaml"
+                        );
 
-                        var actual = new System.Collections.Generic.List<string>();
-                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(page))
-                        {
-                            if (link.NavigateUri != null && link.Content as string == "Source")
-                            {
-                                actual.Add(link.NavigateUri.AbsoluteUri);
-                            }
-                        }
+
+                        var actual = CollectSourceActionTargetUris(page);
+
 
                         CollectionAssert.AreEquivalent(
                             expected,
                             actual,
-                            "Each Status page example must expose a Source link to its sample XAML.");
+                            "Each Status page example must expose source targets to its sample files.");
                     }
                     finally
                     {
@@ -2569,27 +2555,21 @@ namespace Fluence.Wpf.Tests
                         window.UpdateLayout();
                         Drain(window.Dispatcher);
 
-                        var expected = new[]
-                        {
-                            DemoSourceLinkSettings.GetSourceUri("Colors/TextAndAccentBrushes.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Colors/FillAndSurfaceBrushes.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Colors/StrokeBrushes.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Colors/SystemAndHighContrastBrushes.xaml").AbsoluteUri
-                        };
+                        var expected = ExpectedSourceUris(
+                            "Colors/TextAndAccentBrushes.xaml",
+                            "Colors/FillAndSurfaceBrushes.xaml",
+                            "Colors/StrokeBrushes.xaml",
+                            "Colors/SystemAndHighContrastBrushes.xaml"
+                        );
 
-                        var actual = new System.Collections.Generic.List<string>();
-                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(page))
-                        {
-                            if (link.NavigateUri != null && link.Content as string == "Source")
-                            {
-                                actual.Add(link.NavigateUri.AbsoluteUri);
-                            }
-                        }
+
+                        var actual = CollectSourceActionTargetUris(page);
+
 
                         CollectionAssert.AreEquivalent(
                             expected,
                             actual,
-                            "Each Colors page example must expose a Source link to its sample XAML.");
+                            "Each Colors page example must expose source targets to its sample files.");
                     }
                     finally
                     {
@@ -2705,26 +2685,20 @@ namespace Fluence.Wpf.Tests
                         window.UpdateLayout();
                         Drain(window.Dispatcher);
 
-                        var expected = new[]
-                        {
-                            DemoSourceLinkSettings.GetSourceUri("Glyphs/CommonGlyphs.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Glyphs/CommandGlyphs.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Glyphs/StatusGlyphs.xaml").AbsoluteUri
-                        };
+                        var expected = ExpectedSourceUris(
+                            "Glyphs/CommonGlyphs.xaml",
+                            "Glyphs/CommandGlyphs.xaml",
+                            "Glyphs/StatusGlyphs.xaml"
+                        );
 
-                        var actual = new System.Collections.Generic.List<string>();
-                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(page))
-                        {
-                            if (link.NavigateUri != null && link.Content as string == "Source")
-                            {
-                                actual.Add(link.NavigateUri.AbsoluteUri);
-                            }
-                        }
+
+                        var actual = CollectSourceActionTargetUris(page);
+
 
                         CollectionAssert.AreEquivalent(
                             expected,
                             actual,
-                            "Each Glyphs page example must expose a Source link to its sample XAML.");
+                            "Each Glyphs page example must expose source targets to its sample files.");
                     }
                     finally
                     {
@@ -2772,26 +2746,20 @@ namespace Fluence.Wpf.Tests
                         window.UpdateLayout();
                         Drain(window.Dispatcher);
 
-                        var expected = new[]
-                        {
-                            DemoSourceLinkSettings.GetSourceUri("DataBinding/ObservableCollectionListView.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("DataBinding/ListViewSelectionMode.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("DataBinding/DataTemplateRow.xaml").AbsoluteUri
-                        };
+                        var expected = ExpectedSourceUris(
+                            "DataBinding/ObservableCollectionListView.xaml",
+                            "DataBinding/ListViewSelectionMode.xaml",
+                            "DataBinding/DataTemplateRow.xaml"
+                        );
 
-                        var actual = new System.Collections.Generic.List<string>();
-                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(page))
-                        {
-                            if (link.NavigateUri != null && link.Content as string == "Source")
-                            {
-                                actual.Add(link.NavigateUri.AbsoluteUri);
-                            }
-                        }
+
+                        var actual = CollectSourceActionTargetUris(page);
+
 
                         CollectionAssert.AreEquivalent(
                             expected,
                             actual,
-                            "Each Data Binding page example must expose a Source link to its sample XAML.");
+                            "Each Data Binding page example must expose source targets to its sample files.");
                     }
                     finally
                     {
@@ -2839,27 +2807,21 @@ namespace Fluence.Wpf.Tests
                         window.UpdateLayout();
                         Drain(window.Dispatcher);
 
-                        var expected = new[]
-                        {
-                            DemoSourceLinkSettings.GetSourceUri("Accessibility/FocusAndTabOrder.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Accessibility/HighContrastMapping.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Accessibility/AutomationProperties.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Accessibility/RtlLayout.xaml").AbsoluteUri
-                        };
+                        var expected = ExpectedSourceUris(
+                            "Accessibility/FocusAndTabOrder.xaml",
+                            "Accessibility/HighContrastMapping.xaml",
+                            "Accessibility/AutomationProperties.xaml",
+                            "Accessibility/RtlLayout.xaml"
+                        );
 
-                        var actual = new System.Collections.Generic.List<string>();
-                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(page))
-                        {
-                            if (link.NavigateUri != null && link.Content as string == "Source")
-                            {
-                                actual.Add(link.NavigateUri.AbsoluteUri);
-                            }
-                        }
+
+                        var actual = CollectSourceActionTargetUris(page);
+
 
                         CollectionAssert.AreEquivalent(
                             expected,
                             actual,
-                            "Each Accessibility page example must expose a Source link to its sample XAML.");
+                            "Each Accessibility page example must expose source targets to its sample files.");
                     }
                     finally
                     {
@@ -2907,26 +2869,20 @@ namespace Fluence.Wpf.Tests
                         window.UpdateLayout();
                         Drain(window.Dispatcher);
 
-                        var expected = new[]
-                        {
-                            DemoSourceLinkSettings.GetSourceUri("Window/ThemeAndAccent.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Window/BackdropAndCaptionButtons.xaml").AbsoluteUri,
-                            DemoSourceLinkSettings.GetSourceUri("Window/TitleBarChrome.xaml").AbsoluteUri
-                        };
+                        var expected = ExpectedSourceUris(
+                            "Window/ThemeAndAccent.xaml",
+                            "Window/BackdropAndCaptionButtons.xaml",
+                            "Window/TitleBarChrome.xaml"
+                        );
 
-                        var actual = new System.Collections.Generic.List<string>();
-                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(page))
-                        {
-                            if (link.NavigateUri != null && link.Content as string == "Source")
-                            {
-                                actual.Add(link.NavigateUri.AbsoluteUri);
-                            }
-                        }
+
+                        var actual = CollectSourceActionTargetUris(page);
+
 
                         CollectionAssert.AreEquivalent(
                             expected,
                             actual,
-                            "Each Window page example must expose a Source link to its sample XAML.");
+                            "Each Window page example must expose source targets to its sample files.");
                     }
                     finally
                     {
@@ -3074,6 +3030,238 @@ namespace Fluence.Wpf.Tests
                     }
                 }
             });
+        }
+
+        private static void AssertPageHasSourceActions(DependencyObject root, string pageTitle)
+        {
+            var actions = FindSourceActionControls(root);
+            Assert.IsTrue(actions.Count > 0, pageTitle + " should expose a source action.");
+
+            foreach (var action in actions)
+            {
+                Assert.AreEqual(HorizontalAlignment.Right, action.HorizontalAlignment,
+                    pageTitle + " source action should be right-aligned.");
+                Assert.IsTrue(ContainsUrlGlyph(action),
+                    pageTitle + " source action should display a URL/link icon.");
+            }
+
+            var targetUris = CollectSourceActionTargetUris(root);
+            Assert.IsTrue(targetUris.Count >= actions.Count,
+                pageTitle + " source actions should expose clickable source targets.");
+        }
+
+        private static string[] ExpectedSourceUris(params string[] samplePaths)
+        {
+            var expected = new System.Collections.Generic.List<string>();
+
+            foreach (var samplePath in samplePaths)
+            {
+                expected.Add(DemoSourceLinkSettings.GetGitHubSourceUri(samplePath).AbsoluteUri);
+
+                var codeBehindPath = samplePath.Replace('\\', '/').Trim('/') + ".cs";
+                if (SampleFileExists(codeBehindPath))
+                {
+                    expected.Add(DemoSourceLinkSettings.GetGitHubSourceUri(codeBehindPath).AbsoluteUri);
+                }
+            }
+
+            return expected.ToArray();
+        }
+
+        private static bool SampleFileExists(string samplePath)
+        {
+            var outputDirectory = Path.GetDirectoryName(typeof(MainWindow).Assembly.Location);
+            var localPath = samplePath.Replace('/', Path.DirectorySeparatorChar);
+            return File.Exists(Path.Combine(outputDirectory, "Samples", localPath));
+        }
+
+        private static System.Collections.Generic.List<FrameworkElement> FindSourceActionControls(DependencyObject root)
+        {
+            var actions = new System.Collections.Generic.List<FrameworkElement>();
+
+            foreach (var dropdown in FindSourceDropDownButtons(root))
+            {
+                actions.Add(dropdown);
+            }
+
+            foreach (var button in FindAllVisualChildren<Fluence.Wpf.Controls.Button>(root))
+            {
+                if (IsSourceActionElement(button))
+                {
+                    actions.Add(button);
+                }
+            }
+
+            foreach (var link in FindAllVisualChildren<HyperlinkButton>(root))
+            {
+                if (IsSourceActionElement(link))
+                {
+                    actions.Add(link);
+                }
+            }
+
+            return actions;
+        }
+
+        private static System.Collections.Generic.List<DropDownButton> FindSourceDropDownButtons(DependencyObject root)
+        {
+            var dropdowns = new System.Collections.Generic.List<DropDownButton>();
+
+            foreach (var dropdown in FindAllVisualChildren<DropDownButton>(root))
+            {
+                if (IsSourceActionElement(dropdown))
+                {
+                    dropdowns.Add(dropdown);
+                }
+            }
+
+            return dropdowns;
+        }
+
+        private static bool IsSourceActionElement(FrameworkElement element)
+        {
+            if (element == null)
+            {
+                return false;
+            }
+
+            if (!string.IsNullOrEmpty(element.Name) && element.Name.EndsWith("SourceLink", StringComparison.Ordinal))
+            {
+                return true;
+            }
+
+            var tagText = element.Tag as string;
+            if (!string.IsNullOrEmpty(tagText) && tagText.EndsWith(".xaml", StringComparison.OrdinalIgnoreCase))
+            {
+                return true;
+            }
+
+            var tagUri = element.Tag as Uri;
+            if (tagUri != null && string.Equals(GetContentText(element), "Source", StringComparison.Ordinal))
+            {
+                return true;
+            }
+
+            return string.Equals(GetContentText(element), "Source", StringComparison.Ordinal);
+        }
+
+        private static string GetContentText(object value)
+        {
+            var contentControl = value as ContentControl;
+            if (contentControl == null)
+            {
+                return null;
+            }
+
+            return contentControl.Content as string;
+        }
+
+        private static System.Collections.Generic.List<string> CollectSourceActionTargetUris(DependencyObject root)
+        {
+            var uris = new System.Collections.Generic.List<string>();
+            var rootElement = root as FrameworkElement;
+            if (IsSourceActionElement(rootElement))
+            {
+                AddSourceActionTargetUris(rootElement, uris);
+            }
+
+            foreach (var action in FindSourceActionControls(root))
+            {
+                AddSourceActionTargetUris(action, uris);
+            }
+
+            return uris;
+        }
+
+        private static void AddSourceActionTargetUris(object value, System.Collections.Generic.List<string> uris)
+        {
+            if (value == null)
+            {
+                return;
+            }
+
+            var hyperlink = value as HyperlinkButton;
+            if (hyperlink != null && hyperlink.NavigateUri != null)
+            {
+                uris.Add(hyperlink.NavigateUri.AbsoluteUri);
+            }
+
+            var button = value as System.Windows.Controls.Button;
+            if (button != null)
+            {
+                var uri = button.Tag as Uri;
+                if (uri != null)
+                {
+                    uris.Add(uri.AbsoluteUri);
+                }
+            }
+
+            var dropdown = value as DropDownButton;
+            if (dropdown != null)
+            {
+                AddSourceActionTargetUris(dropdown.Flyout, uris);
+            }
+
+            var panel = value as Panel;
+            if (panel != null)
+            {
+                foreach (UIElement child in panel.Children)
+                {
+                    AddSourceActionTargetUris(child, uris);
+                }
+            }
+
+            var contentControl = value as ContentControl;
+            if (contentControl != null)
+            {
+                AddSourceActionTargetUris(contentControl.Content, uris);
+            }
+        }
+
+        private static bool ContainsUrlGlyph(object value)
+        {
+            if (value == null)
+            {
+                return false;
+            }
+
+            var fontIcon = value as FontIcon;
+            if (fontIcon != null && string.Equals(fontIcon.Glyph, "\uE71B", StringComparison.Ordinal))
+            {
+                return true;
+            }
+
+            var hyperlink = value as HyperlinkButton;
+            if (hyperlink != null && ContainsUrlGlyph(hyperlink.Icon))
+            {
+                return true;
+            }
+
+            var button = value as Fluence.Wpf.Controls.Button;
+            if (button != null && ContainsUrlGlyph(button.Icon))
+            {
+                return true;
+            }
+
+            var contentControl = value as ContentControl;
+            if (contentControl != null && ContainsUrlGlyph(contentControl.Content))
+            {
+                return true;
+            }
+
+            var panel = value as Panel;
+            if (panel != null)
+            {
+                foreach (UIElement child in panel.Children)
+                {
+                    if (ContainsUrlGlyph(child))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         private static T FindByName<T>(DependencyObject root, string name) where T : FrameworkElement

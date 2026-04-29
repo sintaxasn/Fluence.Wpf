@@ -38,9 +38,9 @@ namespace Fluence.Wpf.Demo.Pages
         {
             InitializeComponent();
 
-            LeftNavigationViewSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Navigation/LeftNavigationView.xaml");
-            TopNavigationViewSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Navigation/TopNavigationView.xaml");
-            CompactNavigationViewSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Navigation/CompactNavigationView.xaml");
+            DemoSourceAction.Replace(LeftNavigationViewSourceLink, "Navigation/LeftNavigationView.xaml");
+            DemoSourceAction.Replace(TopNavigationViewSourceLink, "Navigation/TopNavigationView.xaml");
+            DemoSourceAction.Replace(CompactNavigationViewSourceLink, "Navigation/CompactNavigationView.xaml");
 
             Loaded += GalleryNavigationPage_Loaded;
         }

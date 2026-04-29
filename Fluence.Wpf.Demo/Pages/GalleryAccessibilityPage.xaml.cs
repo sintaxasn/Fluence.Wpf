@@ -57,10 +57,10 @@ namespace Fluence.Wpf.Demo.Pages
         {
             InitializeComponent();
 
-            FocusAndTabOrderSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Accessibility/FocusAndTabOrder.xaml");
-            HighContrastMappingSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Accessibility/HighContrastMapping.xaml");
-            AutomationPropertiesSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Accessibility/AutomationProperties.xaml");
-            RtlLayoutSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Accessibility/RtlLayout.xaml");
+            DemoSourceAction.Replace(FocusAndTabOrderSourceLink, "Accessibility/FocusAndTabOrder.xaml");
+            DemoSourceAction.Replace(HighContrastMappingSourceLink, "Accessibility/HighContrastMapping.xaml");
+            DemoSourceAction.Replace(AutomationPropertiesSourceLink, "Accessibility/AutomationProperties.xaml");
+            DemoSourceAction.Replace(RtlLayoutSourceLink, "Accessibility/RtlLayout.xaml");
 
             Loaded += OnLoaded;
         }

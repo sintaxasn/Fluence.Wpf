@@ -39,11 +39,11 @@ namespace Fluence.Wpf.Demo.Pages
         {
             InitializeComponent();
 
-            ProgressBarValueSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Status/ProgressBarValue.xaml");
-            ProgressBarIndeterminateSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Status/ProgressBarIndeterminate.xaml");
-            ProgressBarStepsSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Status/ProgressBarSteps.xaml");
-            ProgressRingsSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Status/ProgressRings.xaml");
-            InfoBarsSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Status/InfoBars.xaml");
+            DemoSourceAction.Replace(ProgressBarValueSourceLink, "Status/ProgressBarValue.xaml");
+            DemoSourceAction.Replace(ProgressBarIndeterminateSourceLink, "Status/ProgressBarIndeterminate.xaml");
+            DemoSourceAction.Replace(ProgressBarStepsSourceLink, "Status/ProgressBarSteps.xaml");
+            DemoSourceAction.Replace(ProgressRingsSourceLink, "Status/ProgressRings.xaml");
+            DemoSourceAction.Replace(InfoBarsSourceLink, "Status/InfoBars.xaml");
 
             Loaded += GalleryStatusPage_Loaded;
         }

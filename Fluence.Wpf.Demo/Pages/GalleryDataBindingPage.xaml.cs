@@ -44,9 +44,9 @@ namespace Fluence.Wpf.Demo.Pages
         {
             InitializeComponent();
 
-            ObservableCollectionListViewSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("DataBinding/ObservableCollectionListView.xaml");
-            ListViewSelectionModeSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("DataBinding/ListViewSelectionMode.xaml");
-            DataTemplateRowSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("DataBinding/DataTemplateRow.xaml");
+            DemoSourceAction.Replace(ObservableCollectionListViewSourceLink, "DataBinding/ObservableCollectionListView.xaml");
+            DemoSourceAction.Replace(ListViewSelectionModeSourceLink, "DataBinding/ListViewSelectionMode.xaml");
+            DemoSourceAction.Replace(DataTemplateRowSourceLink, "DataBinding/DataTemplateRow.xaml");
 
             Loaded += OnLoaded;
         }

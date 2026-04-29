@@ -35,10 +35,10 @@ namespace Fluence.Wpf.Demo.Pages
         {
             InitializeComponent();
 
-            TextAndAccentBrushesSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Colors/TextAndAccentBrushes.xaml");
-            FillAndSurfaceBrushesSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Colors/FillAndSurfaceBrushes.xaml");
-            StrokeBrushesSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Colors/StrokeBrushes.xaml");
-            SystemAndHighContrastBrushesSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Colors/SystemAndHighContrastBrushes.xaml");
+            DemoSourceAction.Replace(TextAndAccentBrushesSourceLink, "Colors/TextAndAccentBrushes.xaml");
+            DemoSourceAction.Replace(FillAndSurfaceBrushesSourceLink, "Colors/FillAndSurfaceBrushes.xaml");
+            DemoSourceAction.Replace(StrokeBrushesSourceLink, "Colors/StrokeBrushes.xaml");
+            DemoSourceAction.Replace(SystemAndHighContrastBrushesSourceLink, "Colors/SystemAndHighContrastBrushes.xaml");
         }
     }
 }

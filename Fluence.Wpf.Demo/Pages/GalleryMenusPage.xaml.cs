@@ -36,10 +36,10 @@ namespace Fluence.Wpf.Demo.Pages
         {
             InitializeComponent();
 
-            MenuBarSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Menus/MenuBar.xaml");
-            ContextMenuSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Menus/ContextMenuActions.xaml");
-            ToolTipsSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Menus/ToolTips.xaml");
-            DropDownAndSplitButtonsSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Menus/DropDownAndSplitButtonMenus.xaml");
+            DemoSourceAction.Replace(MenuBarSourceLink, "Menus/MenuBar.xaml");
+            DemoSourceAction.Replace(ContextMenuSourceLink, "Menus/ContextMenuActions.xaml");
+            DemoSourceAction.Replace(ToolTipsSourceLink, "Menus/ToolTips.xaml");
+            DemoSourceAction.Replace(DropDownAndSplitButtonsSourceLink, "Menus/DropDownAndSplitButtonMenus.xaml");
         }
 
         private void MenuBar_Click(object sender, RoutedEventArgs e)

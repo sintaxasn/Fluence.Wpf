@@ -38,9 +38,9 @@ namespace Fluence.Wpf.Demo.Pages
         {
             InitializeComponent();
 
-            SignInFormSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Forms/SignInForm.xaml");
-            CheckoutFormSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Forms/CheckoutForm.xaml");
-            SettingsFormSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Forms/SettingsForm.xaml");
+            DemoSourceAction.Replace(SignInFormSourceLink, "Forms/SignInForm.xaml");
+            DemoSourceAction.Replace(CheckoutFormSourceLink, "Forms/CheckoutForm.xaml");
+            DemoSourceAction.Replace(SettingsFormSourceLink, "Forms/SettingsForm.xaml");
 
             Loaded += GalleryFormsPage_Loaded;
         }

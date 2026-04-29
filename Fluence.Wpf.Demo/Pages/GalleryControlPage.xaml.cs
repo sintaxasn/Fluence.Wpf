@@ -110,14 +110,9 @@ namespace Fluence.Wpf.Demo.Pages
 
             panel.Children.Add(content);
 
-            var sourceLink = new Fluent.HyperlinkButton
-            {
-                Content = "Source",
-                HorizontalAlignment = HorizontalAlignment.Right,
-                NavigateUri = DemoSourceLinkSettings.GetSourceUri(example.SourcePath)
-            };
-            sourceLink.SetResourceReference(FrameworkElement.StyleProperty, "DemoSourceLinkButtonStyle");
-            panel.Children.Add(sourceLink);
+            var sourceAction = DemoSourceAction.Create(example.SourcePath);
+            sourceAction.Name = "SourceLink";
+            panel.Children.Add(sourceAction);
 
             card.Content = panel;
             PageStack.Children.Add(card);

@@ -38,9 +38,9 @@ namespace Fluence.Wpf.Demo.Pages
         {
             InitializeComponent();
 
-            TreeViewHierarchySourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Trees/TreeViewHierarchy.xaml");
-            TreeViewSelectionSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Trees/TreeViewSelection.xaml");
-            TreeViewExpansionSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Trees/TreeViewExpansion.xaml");
+            DemoSourceAction.Replace(TreeViewHierarchySourceLink, "Trees/TreeViewHierarchy.xaml");
+            DemoSourceAction.Replace(TreeViewSelectionSourceLink, "Trees/TreeViewSelection.xaml");
+            DemoSourceAction.Replace(TreeViewExpansionSourceLink, "Trees/TreeViewExpansion.xaml");
         }
 
         private void SelectionTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)

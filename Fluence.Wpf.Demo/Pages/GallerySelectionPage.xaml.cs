@@ -36,10 +36,10 @@ namespace Fluence.Wpf.Demo.Pages
         {
             InitializeComponent();
 
-            CheckBoxStatesSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Selection/CheckBoxStates.xaml");
-            RadioButtonGroupsSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Selection/RadioButtonGroups.xaml");
-            ToggleSwitchStatesSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Selection/ToggleSwitchStates.xaml");
-            ComboBoxSelectionSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Selection/ComboBoxSelection.xaml");
+            DemoSourceAction.Replace(CheckBoxStatesSourceLink, "Selection/CheckBoxStates.xaml");
+            DemoSourceAction.Replace(RadioButtonGroupsSourceLink, "Selection/RadioButtonGroups.xaml");
+            DemoSourceAction.Replace(ToggleSwitchStatesSourceLink, "Selection/ToggleSwitchStates.xaml");
+            DemoSourceAction.Replace(ComboBoxSelectionSourceLink, "Selection/ComboBoxSelection.xaml");
 
             Loaded += GallerySelectionPage_Loaded;
         }
