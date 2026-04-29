@@ -144,6 +144,30 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void NavigationView_PaneItemsScrollViewer_UsesFluentScrollViewerStyle()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+
+                try
+                {
+                    AssertPaneItemsScrollViewerUsesFluentStyle(NavigationViewPaneDisplayMode.Left, true);
+                    AssertPaneItemsScrollViewerUsesFluentStyle(NavigationViewPaneDisplayMode.LeftCompact, false);
+                    AssertPaneItemsScrollViewerUsesFluentStyle(NavigationViewPaneDisplayMode.Top, true);
+                }
+                finally
+                {
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
         public void NavigationView_SelectedItem_UpdatesOnItemClick()
         {
             RunOnStaThread(() =>
@@ -1315,6 +1339,40 @@ namespace Fluence.Wpf.Tests
                 return;
 
             Assert.Fail(message + " Actual: " + brush);
+        }
+
+        private static void AssertPaneItemsScrollViewerUsesFluentStyle(NavigationViewPaneDisplayMode mode, bool isPaneOpen)
+        {
+            var application = EnsureApplication();
+            var expected = application.TryFindResource("ScrollViewerStyle") as Style;
+            Assert.IsNotNull(expected, "ScrollViewerStyle must be present in merged Fluence resources.");
+
+            var window = new Window();
+            try
+            {
+                var nav = new Fluent.NavigationView
+                {
+                    Width = 640,
+                    Height = 420,
+                    PaneDisplayMode = mode,
+                    IsPaneOpen = isPaneOpen
+                };
+                nav.Items.Add(new Fluent.NavigationViewItem { Content = "Item" });
+
+                window.Content = nav;
+                window.Show();
+                DrainDispatcher(window.Dispatcher);
+                window.UpdateLayout();
+
+                var scrollViewer = FindVisualChildByName<ScrollViewer>(nav, Fluent.NavigationView.PartPaneItemsScrollViewer);
+                Assert.IsNotNull(scrollViewer, "NavigationView template must expose PART_PaneItemsScrollViewer.");
+                Assert.AreSame(expected, scrollViewer.Style,
+                    "NavigationView pane items ScrollViewer must use the Fluence ScrollViewerStyle.");
+            }
+            finally
+            {
+                CloseWindowAndDrain(window);
+            }
         }
 
         [TestMethod]

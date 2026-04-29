@@ -360,6 +360,7 @@
                             Padding="3,4"
                             Focusable="False"
                             HorizontalScrollBarVisibility="Disabled"
+                            Style="{DynamicResource ScrollViewerStyle}"
                             VerticalScrollBarVisibility="Auto">
                             <Grid>
                                 <ItemsPresenter />
@@ -580,6 +581,7 @@
                             Padding="3,4"
                             Focusable="False"
                             HorizontalScrollBarVisibility="Disabled"
+                            Style="{DynamicResource ScrollViewerStyle}"
                             VerticalScrollBarVisibility="Auto">
                             <Grid>
                                 <ItemsPresenter />
@@ -779,6 +781,7 @@
                             VerticalAlignment="Stretch"
                             Focusable="False"
                             HorizontalScrollBarVisibility="Auto"
+                            Style="{DynamicResource ScrollViewerStyle}"
                             VerticalScrollBarVisibility="Disabled">
                             <Grid>
                                 <ItemsPresenter VerticalAlignment="Center" />
