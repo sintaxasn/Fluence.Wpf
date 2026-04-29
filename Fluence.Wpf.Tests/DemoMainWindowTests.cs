@@ -1683,6 +1683,107 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void GalleryControlPage_SourceActions_AreTopRightInExampleCards()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                try
+                {
+                    var page = new GalleryControlPage(
+                        "Button",
+                        "Use Button for immediate actions.",
+                        new[]
+                        {
+                            new DemoExample(
+                                "Default buttons",
+                                "Buttons use standard, accent, subtle, and disabled states.",
+                                "Experimental/XamlOnly.xaml",
+                                delegate { return new System.Windows.Controls.TextBlock { Text = "Sample" }; })
+                        });
+
+                    var window = new Window
+                    {
+                        Left = -20000,
+                        Top = -20000,
+                        Width = 1040,
+                        Height = 720,
+                        WindowStartupLocation = WindowStartupLocation.Manual,
+                        ShowInTaskbar = false,
+                        Content = page
+                    };
+
+                    try
+                    {
+                        window.Show();
+                        Drain(window.Dispatcher);
+                        window.UpdateLayout();
+                        Drain(window.Dispatcher);
+
+                        var actions = FindSourceActionControls(page);
+                        Assert.AreEqual(1, actions.Count, "The generated control page should expose one source action for the sample.");
+
+                        var action = actions[0];
+                        Assert.AreEqual(HorizontalAlignment.Right, action.HorizontalAlignment,
+                            "Control-page source actions should sit at the right edge of the example header.");
+                        Assert.AreEqual(VerticalAlignment.Top, action.VerticalAlignment,
+                            "Control-page source actions should sit at the top edge of the example header.");
+
+                        var parentGrid = action.Parent as System.Windows.Controls.Grid;
+                        Assert.IsNotNull(parentGrid, "Control-page source actions should be hosted in the example header grid.");
+                        Assert.AreEqual(0, Grid.GetRow(action), "Source action should be in the header row.");
+                        Assert.AreEqual(1, Grid.GetColumn(action), "Source action should be in the right header column.");
+                    }
+                    finally
+                    {
+                        window.Close();
+                    }
+                }
+                finally
+                {
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void DemoSourceActions_UrlIconsUseOnAccentForegroundResource()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                try
+                {
+                    var sourceButton = DemoSourceAction.Create("Experimental/XamlOnly.xaml") as Fluence.Wpf.Controls.Button;
+                    Assert.IsNotNull(sourceButton, "XAML-only samples should create an accent source button.");
+                    var icon = sourceButton.Icon as FontIcon;
+                    AssertSourceUrlIconUsesOnAccentForeground(icon);
+
+                    var sourceDropdown = DemoSourceAction.Create("Buttons/ButtonAppearances.xaml") as DropDownButton;
+                    Assert.IsNotNull(sourceDropdown, "Samples with code-behind should create a source dropdown.");
+                    var label = sourceDropdown.Content as System.Windows.Controls.StackPanel;
+                    Assert.IsNotNull(label, "Source dropdown should use an icon/text label.");
+                    Assert.IsTrue(label.Children.Count > 0, "Source dropdown label should include the URL glyph.");
+                    AssertSourceUrlIconUsesOnAccentForeground(label.Children[0] as FontIcon);
+                }
+                finally
+                {
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
         public void DemoSourceActions_SamplesWithCodeBehindUseDropdownTargets()
         {
             RunOnSta(() =>
@@ -3581,6 +3682,16 @@ namespace Fluence.Wpf.Tests
             }
 
             return count;
+        }
+
+        private static void AssertSourceUrlIconUsesOnAccentForeground(FontIcon icon)
+        {
+            Assert.IsNotNull(icon, "Source action should expose a URL glyph.");
+            Assert.AreEqual("\uE71B", icon.Glyph, "Source action should use the URL glyph.");
+
+            var localForeground = icon.ReadLocalValue(System.Windows.Controls.Control.ForegroundProperty);
+            Assert.AreNotSame(DependencyProperty.UnsetValue, localForeground,
+                "Source URL glyph should set its own TextOnAccentFillColorPrimaryBrush foreground.");
         }
 
         private static System.Collections.Generic.List<FrameworkElement> FindSourceActionControls(DependencyObject root)

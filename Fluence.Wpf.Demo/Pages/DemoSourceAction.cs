@@ -158,12 +158,14 @@ namespace Fluence.Wpf.Demo.Pages
 
         private static Fluent.FontIcon CreateUrlIcon()
         {
-            return new Fluent.FontIcon
+            var icon = new Fluent.FontIcon
             {
                 Glyph = UrlGlyph,
                 IconFontSize = 14,
                 VerticalAlignment = VerticalAlignment.Center
             };
+            icon.SetResourceReference(Control.ForegroundProperty, "TextOnAccentFillColorPrimaryBrush");
+            return icon;
         }
 
         private static void ApplyAccentBrushes(Control control)

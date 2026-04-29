@@ -77,7 +77,22 @@ namespace Fluence.Wpf.Demo.Pages
                 Variant = CardVariant.Default
             };
 
-            var panel = new StackPanel();
+            var panel = new Grid();
+            panel.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            panel.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+
+            var header = new Grid
+            {
+                Margin = new Thickness(0, 0, 0, 12)
+            };
+            header.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            header.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+
+            var headerText = new StackPanel
+            {
+                Margin = new Thickness(0, 0, 12, 0)
+            };
+
             if (!string.IsNullOrEmpty(example.Title))
             {
                 var heading = new TextBlock
@@ -86,33 +101,41 @@ namespace Fluence.Wpf.Demo.Pages
                     Text = example.Title
                 };
                 heading.SetResourceReference(FrameworkElement.StyleProperty, "BodyStrongTextBlockStyle");
-                panel.Children.Add(heading);
+                headerText.Children.Add(heading);
             }
 
             if (!string.IsNullOrEmpty(example.Description))
             {
                 var description = new TextBlock
                 {
-                    Margin = new Thickness(0, 0, 0, 12),
                     Text = example.Description,
                     TextWrapping = TextWrapping.Wrap
                 };
                 description.SetResourceReference(TextBlock.ForegroundProperty, "TextFillColorSecondaryBrush");
-                panel.Children.Add(description);
+                headerText.Children.Add(description);
             }
+
+            Grid.SetColumn(headerText, 0);
+            header.Children.Add(headerText);
+
+            var sourceAction = DemoSourceAction.Create(example.SourcePath);
+            sourceAction.Name = "SourceLink";
+            sourceAction.HorizontalAlignment = HorizontalAlignment.Right;
+            sourceAction.VerticalAlignment = VerticalAlignment.Top;
+            Grid.SetColumn(sourceAction, 1);
+            header.Children.Add(sourceAction);
+            Grid.SetRow(header, 0);
+            panel.Children.Add(header);
 
             var content = example.CreateContent();
             var contentElement = content as FrameworkElement;
             if (contentElement != null)
             {
-                contentElement.Margin = new Thickness(0, 0, 0, 12);
+                contentElement.Margin = new Thickness(0);
             }
 
+            Grid.SetRow(content, 1);
             panel.Children.Add(content);
-
-            var sourceAction = DemoSourceAction.Create(example.SourcePath);
-            sourceAction.Name = "SourceLink";
-            panel.Children.Add(sourceAction);
 
             card.Content = panel;
             PageStack.Children.Add(card);
