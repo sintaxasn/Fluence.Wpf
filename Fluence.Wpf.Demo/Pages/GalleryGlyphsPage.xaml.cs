@@ -38,6 +38,8 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryGlyphsPage : UserControl
     {
+        private const int IconsPerRow = 4;
+
         private static readonly Uri KnownIconNamesResourceUri = new Uri(
             "/Fluence.Wpf.Demo;component/Resources/SegoeFluentIcons.tsv",
             UriKind.Relative);
@@ -47,7 +49,7 @@ namespace Fluence.Wpf.Demo.Pages
             InitializeComponent();
 
             var icons = LoadIconCatalog();
-            IconCatalogList.ItemsSource = icons;
+            IconCatalogList.ItemsSource = CreateIconRows(icons);
             IconCatalogCountText.Text = string.Format(
                 CultureInfo.InvariantCulture,
                 "{0:N0} Segoe Fluent Icons",
@@ -105,6 +107,23 @@ namespace Fluence.Wpf.Demo.Pages
             return icons;
         }
 
+        private static IList<IconCatalogRow> CreateIconRows(IList<IconCatalogItem> icons)
+        {
+            var rows = new List<IconCatalogRow>((icons.Count + IconsPerRow - 1) / IconsPerRow);
+            for (var index = 0; index < icons.Count; index += IconsPerRow)
+            {
+                var rowItems = new List<IconCatalogItem>(IconsPerRow);
+                for (var offset = 0; offset < IconsPerRow && index + offset < icons.Count; offset++)
+                {
+                    rowItems.Add(icons[index + offset]);
+                }
+
+                rows.Add(new IconCatalogRow(rowItems));
+            }
+
+            return rows;
+        }
+
         private static Dictionary<string, string> LoadKnownIconNames()
         {
             var info = Application.GetResourceStream(KnownIconNamesResourceUri);
@@ -142,6 +161,16 @@ namespace Fluence.Wpf.Demo.Pages
             }
 
             return names;
+        }
+
+        public sealed class IconCatalogRow
+        {
+            public IconCatalogRow(IList<IconCatalogItem> items)
+            {
+                Items = items;
+            }
+
+            public IList<IconCatalogItem> Items { get; private set; }
         }
 
         public sealed class IconCatalogItem

@@ -3167,8 +3167,13 @@ namespace Fluence.Wpf.Tests
 
                         var expectedCount = GetSegoeFluentPrivateUseGlyphCount();
                         Assert.IsTrue(expectedCount > 1000, "Segoe Fluent Icons should expose a large private-use glyph set on this machine.");
-                        Assert.AreEqual(expectedCount, list.Items.Count, "The Iconography page should include every private-use glyph exposed by Segoe Fluent Icons.");
-                        Assert.IsTrue(VirtualizingStackPanel.GetIsVirtualizing(list), "The icon catalog should stay virtualized because it contains more than 1,000 rows.");
+                        Assert.AreEqual((expectedCount + 3) / 4, list.Items.Count,
+                            "The Iconography page should virtualize rows, with four icon cards per grid row.");
+                        Assert.IsTrue(list.Items.Count < expectedCount,
+                            "The virtualized grid should reduce item containers by grouping glyphs into rows.");
+                        Assert.AreEqual(4, GetNestedItemCount(list.Items[0], "Items"),
+                            "Each full iconography grid row should render four glyph cards.");
+                        Assert.IsTrue(VirtualizingStackPanel.GetIsVirtualizing(list), "The icon catalog should stay virtualized because it contains more than 1,000 glyphs.");
                         Assert.AreEqual(VirtualizationMode.Recycling, VirtualizingStackPanel.GetVirtualizationMode(list));
 
                         var names = CollectItemPropertyValues(list, "Name");
@@ -3639,25 +3644,74 @@ namespace Fluence.Wpf.Tests
 
             foreach (var item in control.Items)
             {
-                if (item == null)
+                AddItemPropertyValue(values, item, propertyName);
+
+                var nestedItems = GetNestedItems(item, "Items");
+                if (nestedItems == null)
                 {
                     continue;
                 }
 
-                var property = item.GetType().GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public);
-                if (property == null)
+                foreach (var nestedItem in nestedItems)
                 {
-                    continue;
-                }
-
-                var value = property.GetValue(item, null) as string;
-                if (!string.IsNullOrEmpty(value))
-                {
-                    values.Add(value);
+                    AddItemPropertyValue(values, nestedItem, propertyName);
                 }
             }
 
             return values;
+        }
+
+        private static void AddItemPropertyValue(System.Collections.ArrayList values, object item, string propertyName)
+        {
+            if (item == null)
+            {
+                return;
+            }
+
+            var property = item.GetType().GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public);
+            if (property == null)
+            {
+                return;
+            }
+
+            var value = property.GetValue(item, null) as string;
+            if (!string.IsNullOrEmpty(value))
+            {
+                values.Add(value);
+            }
+        }
+
+        private static int GetNestedItemCount(object item, string propertyName)
+        {
+            var nestedItems = GetNestedItems(item, propertyName);
+            if (nestedItems == null)
+            {
+                return 0;
+            }
+
+            var count = 0;
+            foreach (var ignored in nestedItems)
+            {
+                count++;
+            }
+
+            return count;
+        }
+
+        private static System.Collections.IEnumerable GetNestedItems(object item, string propertyName)
+        {
+            if (item == null)
+            {
+                return null;
+            }
+
+            var property = item.GetType().GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public);
+            if (property == null)
+            {
+                return null;
+            }
+
+            return property.GetValue(item, null) as System.Collections.IEnumerable;
         }
 
         private static int GetSegoeFluentPrivateUseGlyphCount()
