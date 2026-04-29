@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
     x:Class="Fluence.Wpf.Demo.Pages.GalleryTreesPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -11,207 +11,128 @@
     mc:Ignorable="d">
     <ui:SmoothScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="24" HorizontalAlignment="Stretch">
+            <TextBlock
+                Margin="0,0,0,4"
+                ui:TextBlockExtensions.Typography="Title"
+                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                Text="Trees" />
+            <TextBlock
+                Margin="0,0,0,24"
+                Style="{StaticResource SectionDescriptionStyle}"
+                Text="TreeView presents nested items that users can expand, collapse, and select." />
 
-            <!--  ── Basic TreeView ──  -->
             <TextBlock
                 Margin="0,0,0,4"
                 Style="{StaticResource SectionHeaderStyle}"
-                Text="TreeView — file system hierarchy" />
-            <TextBlock
-                Margin="0,0,0,8"
-                Style="{StaticResource SectionDescriptionStyle}"
-                Text="Nested folders with expand/collapse animation. Click an item to see its path in the label below." />
+                Text="TreeView hierarchy" />
+            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Use TreeViewItem nesting for compact folder, outline, or category hierarchies." />
             <ui:Card
-                Margin="0,0,0,8"
-                Padding="8"
-                Variant="{x:Static uicore:CardVariant.Default}">
-                <ui:TreeView
-                    x:Name="FileTreeView"
-                    MaxHeight="340"
-                    SelectedItemChanged="FileTreeView_SelectedItemChanged">
-                    <ui:TreeViewItem
-                        x:Name="RootSrcItem"
-                        Header="src"
-                        IsExpanded="True">
-                        <ui:TreeViewItem Header="Controls" IsExpanded="True">
-                            <ui:TreeViewItem Header="Button.cs" />
-                            <ui:TreeViewItem Header="Card.cs" />
-                            <ui:TreeViewItem Header="ComboBox.cs" />
-                            <ui:TreeViewItem Header="NavigationView.cs" />
-                            <ui:TreeViewItem Header="ProgressRing.cs" />
-                            <ui:TreeViewItem Header="TreeView.cs" />
-                        </ui:TreeViewItem>
-                        <ui:TreeViewItem Header="Themes">
-                            <ui:TreeViewItem Header="Colors">
-                                <ui:TreeViewItem Header="Theme.Light.xaml" />
-                                <ui:TreeViewItem Header="Theme.Dark.xaml" />
-                                <ui:TreeViewItem Header="Theme.HighContrast.xaml" />
-                            </ui:TreeViewItem>
-                            <ui:TreeViewItem Header="Controls">
-                                <ui:TreeViewItem Header="Button.xaml" />
-                                <ui:TreeViewItem Header="Card.xaml" />
-                                <ui:TreeViewItem Header="TreeView.xaml" />
-                            </ui:TreeViewItem>
-                            <ui:TreeViewItem Header="Generic.xaml" />
-                        </ui:TreeViewItem>
-                        <ui:TreeViewItem Header="Helpers">
-                            <ui:TreeViewItem Header="GridLengthAnimation.cs" />
-                            <ui:TreeViewItem Header="OsVersionHelper.cs" />
-                        </ui:TreeViewItem>
-                    </ui:TreeViewItem>
-                    <ui:TreeViewItem Header="docs">
-                        <ui:TreeViewItem Header="controls.md" />
-                        <ui:TreeViewItem Header="theming.md" />
-                        <ui:TreeViewItem Header="getting-started.md" />
-                        <ui:TreeViewItem Header="_internal">
-                            <ui:TreeViewItem Header="uplift-plan.md" />
-                            <ui:TreeViewItem Header="winui-tranche-3-backlog.md" />
-                        </ui:TreeViewItem>
-                    </ui:TreeViewItem>
-                    <ui:TreeViewItem Header="Fluence.Wpf.Tests">
-                        <ui:TreeViewItem Header="ControlTests.Card.cs" />
-                        <ui:TreeViewItem Header="ControlTests.TreeView.cs" />
-                        <ui:TreeViewItem Header="WpfTestSta.cs" />
-                    </ui:TreeViewItem>
-                    <ui:TreeViewItem Header="Fluence.Wpf.Demo">
-                        <ui:TreeViewItem Header="Pages">
-                            <ui:TreeViewItem Header="GalleryHomePage.xaml" />
-                            <ui:TreeViewItem Header="GalleryTreesPage.xaml" />
-                            <ui:TreeViewItem Header="GalleryMenusPage.xaml" />
-                        </ui:TreeViewItem>
-                        <ui:TreeViewItem Header="MainWindow.xaml" />
-                    </ui:TreeViewItem>
-                    <ui:TreeViewItem Header="CHANGELOG.md" />
-                    <ui:TreeViewItem Header="CLAUDE.md" />
-                </ui:TreeView>
-            </ui:Card>
-            <TextBlock
-                x:Name="TreeSelectionLabel"
-                Margin="0,0,0,24"
-                ui:TextBlockExtensions.Typography="Caption"
-                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                Text="Selected: —" />
-
-            <!--  ── TreeView keyboard navigation info ──  -->
-            <TextBlock
-                Margin="0,0,0,4"
-                Style="{StaticResource SectionHeaderStyle}"
-                Text="Keyboard navigation" />
-            <TextBlock
-                Margin="0,0,0,8"
-                Style="{StaticResource SectionDescriptionStyle}"
-                Text="The TreeView above fully supports keyboard navigation. Use the shortcuts below." />
-            <ui:Card
-                Margin="0,0,0,24"
+                Margin="0,0,0,16"
                 Padding="16"
                 Variant="{x:Static uicore:CardVariant.Default}">
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="16" />
-                        <ColumnDefinition Width="*" />
-                    </Grid.ColumnDefinitions>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="8" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="8" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="8" />
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="8" />
-                        <RowDefinition Height="Auto" />
-                    </Grid.RowDefinitions>
-
-                    <TextBlock
-                        Grid.Row="0"
-                        Grid.Column="0"
-                        ui:TextBlockExtensions.Typography="BodyStrong"
-                        Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
-                        Text="↑ / ↓" />
-                    <TextBlock
-                        Grid.Row="0"
-                        Grid.Column="2"
-                        ui:TextBlockExtensions.Typography="Body"
-                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                        Text="Move selection up / down" />
-
-                    <TextBlock
-                        Grid.Row="2"
-                        Grid.Column="0"
-                        ui:TextBlockExtensions.Typography="BodyStrong"
-                        Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
-                        Text="→" />
-                    <TextBlock
-                        Grid.Row="2"
-                        Grid.Column="2"
-                        ui:TextBlockExtensions.Typography="Body"
-                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                        Text="Expand selected node (or move into first child if already expanded)" />
-
-                    <TextBlock
-                        Grid.Row="4"
-                        Grid.Column="0"
-                        ui:TextBlockExtensions.Typography="BodyStrong"
-                        Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
-                        Text="←" />
-                    <TextBlock
-                        Grid.Row="4"
-                        Grid.Column="2"
-                        ui:TextBlockExtensions.Typography="Body"
-                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                        Text="Collapse selected node (or move to parent if already collapsed)" />
-
-                    <TextBlock
-                        Grid.Row="6"
-                        Grid.Column="0"
-                        ui:TextBlockExtensions.Typography="BodyStrong"
-                        Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
-                        Text="Space / Enter" />
-                    <TextBlock
-                        Grid.Row="6"
-                        Grid.Column="2"
-                        ui:TextBlockExtensions.Typography="Body"
-                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                        Text="Toggle expand / collapse for the focused node" />
-
-                    <TextBlock
-                        Grid.Row="8"
-                        Grid.Column="0"
-                        ui:TextBlockExtensions.Typography="BodyStrong"
-                        Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
-                        Text="Home / End" />
-                    <TextBlock
-                        Grid.Row="8"
-                        Grid.Column="2"
-                        ui:TextBlockExtensions.Typography="Body"
-                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                        Text="Jump to first / last visible item" />
-                </Grid>
-            </ui:Card>
-
-            <!--  ── Programmatic expand / collapse ──  -->
-            <TextBlock
-                Margin="0,0,0,4"
-                Style="{StaticResource SectionHeaderStyle}"
-                Text="Programmatic control" />
-            <TextBlock
-                Margin="0,0,0,8"
-                Style="{StaticResource SectionDescriptionStyle}"
-                Text="Expand or collapse the entire tree from code." />
-            <ui:Card
-                Margin="0,0,0,24"
-                Padding="16"
-                Variant="{x:Static uicore:CardVariant.Default}">
-                <StackPanel Orientation="Horizontal">
-                    <ui:Button
-                        Margin="0,0,8,0"
-                        Click="ExpandAll_Click"
-                        Content="Expand all" />
-                    <ui:Button Click="CollapseAll_Click" Content="Collapse all" />
+                <StackPanel>
+                    <ui:TreeView
+                        MaxHeight="260"
+                        Margin="0,0,0,12">
+                        <ui:TreeViewItem
+                            Header="Workspace"
+                            IsExpanded="True">
+                            <ui:TreeViewItem Header="Pages" IsExpanded="True">
+                                <ui:TreeViewItem Header="GalleryButtonsPage.xaml" />
+                                <ui:TreeViewItem Header="GalleryTreesPage.xaml" />
+                                <ui:TreeViewItem Header="GalleryDataPage.xaml" />
+                            </ui:TreeViewItem>
+                            <ui:TreeViewItem Header="Samples">
+                                <ui:TreeViewItem Header="Buttons" />
+                                <ui:TreeViewItem Header="Trees" />
+                            </ui:TreeViewItem>
+                        </ui:TreeViewItem>
+                        <ui:TreeViewItem Header="Resources">
+                            <ui:TreeViewItem Header="DemoSharedStyles.xaml" />
+                        </ui:TreeViewItem>
+                    </ui:TreeView>
+                    <ui:HyperlinkButton
+                        x:Name="TreeViewHierarchySourceLink"
+                        HorizontalAlignment="Left"
+                        Content="Source" />
                 </StackPanel>
             </ui:Card>
 
+            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="Selection" />
+            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Handle SelectedItemChanged when selecting a node should update related content." />
+            <ui:Card
+                Margin="0,0,0,16"
+                Padding="16"
+                Variant="{x:Static uicore:CardVariant.Default}">
+                <StackPanel>
+                    <ui:TreeView
+                        x:Name="SelectionTreeView"
+                        MaxHeight="260"
+                        Margin="0,0,0,12"
+                        SelectedItemChanged="SelectionTreeView_SelectedItemChanged">
+                        <ui:TreeViewItem
+                            Header="Inbox"
+                            IsExpanded="True">
+                            <ui:TreeViewItem Header="Priority" IsExpanded="True">
+                                <ui:TreeViewItem Header="Contract review" />
+                                <ui:TreeViewItem Header="Customer follow-up" />
+                            </ui:TreeViewItem>
+                            <ui:TreeViewItem Header="Later">
+                                <ui:TreeViewItem Header="Design notes" />
+                                <ui:TreeViewItem Header="Release checklist" />
+                            </ui:TreeViewItem>
+                        </ui:TreeViewItem>
+                        <ui:TreeViewItem Header="Archive">
+                            <ui:TreeViewItem Header="March" />
+                            <ui:TreeViewItem Header="April" />
+                        </ui:TreeViewItem>
+                    </ui:TreeView>
+                    <TextBlock
+                        x:Name="TreeSelectionLabel"
+                        Margin="0,0,0,12"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Text="Selected: -" />
+                    <ui:HyperlinkButton
+                        x:Name="TreeViewSelectionSourceLink"
+                        HorizontalAlignment="Left"
+                        Content="Source" />
+                </StackPanel>
+            </ui:Card>
+
+            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="Expand and collapse" />
+            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Set IsExpanded directly, or walk the item collection when a command controls the tree." />
+            <ui:Card Padding="16" Variant="{x:Static uicore:CardVariant.Default}">
+                <StackPanel>
+                    <ui:TreeView
+                        x:Name="ExpansionTreeView"
+                        MaxHeight="260"
+                        Margin="0,0,0,12">
+                        <ui:TreeViewItem
+                            Header="Project"
+                            IsExpanded="True">
+                            <ui:TreeViewItem Header="Source" IsExpanded="True">
+                                <ui:TreeViewItem Header="Controls" />
+                                <ui:TreeViewItem Header="Themes" />
+                            </ui:TreeViewItem>
+                            <ui:TreeViewItem Header="Tests">
+                                <ui:TreeViewItem Header="Control tests" />
+                                <ui:TreeViewItem Header="Demo tests" />
+                            </ui:TreeViewItem>
+                        </ui:TreeViewItem>
+                    </ui:TreeView>
+                    <StackPanel Margin="0,0,0,12" Orientation="Horizontal">
+                        <ui:Button
+                            Margin="0,0,8,0"
+                            Click="ExpandAll_Click"
+                            Content="Expand all" />
+                        <ui:Button Click="CollapseAll_Click" Content="Collapse all" />
+                    </StackPanel>
+                    <ui:HyperlinkButton
+                        x:Name="TreeViewExpansionSourceLink"
+                        HorizontalAlignment="Left"
+                        Content="Source" />
+                </StackPanel>
+            </ui:Card>
         </StackPanel>
     </ui:SmoothScrollViewer>
 </UserControl>

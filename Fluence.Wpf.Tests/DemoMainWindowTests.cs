@@ -550,6 +550,27 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void DemoSourceTreesSamples_CopyToOutput()
+        {
+            var outputDirectory = Path.GetDirectoryName(typeof(MainWindow).Assembly.Location);
+            var samplePaths = new[]
+            {
+                "TreeViewHierarchy",
+                "TreeViewSelection",
+                "TreeViewExpansion"
+            };
+
+            foreach (var samplePath in samplePaths)
+            {
+                var xaml = Path.Combine(outputDirectory, "Samples", "Trees", samplePath + ".xaml");
+                var codeBehind = Path.Combine(outputDirectory, "Samples", "Trees", samplePath + ".xaml.cs");
+
+                Assert.IsTrue(File.Exists(xaml), "Trees sample XAML must be copied beside the demo assembly: " + samplePath);
+                Assert.IsTrue(File.Exists(codeBehind), "Trees sample code-behind must be copied beside the demo assembly: " + samplePath);
+            }
+        }
+
+        [TestMethod]
         public void ButtonsPage_ContainsSourceLinksForEachExample()
         {
             RunOnSta(() =>
@@ -874,6 +895,73 @@ namespace Fluence.Wpf.Tests
                             expected,
                             actual,
                             "Each Data page example must expose a Source link to its sample XAML.");
+                    }
+                    finally
+                    {
+                        window.Close();
+                    }
+                }
+                finally
+                {
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void TreesPage_ContainsSourceLinksForEachExample()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                try
+                {
+                    var page = new GalleryTreesPage();
+                    var host = new System.Windows.Controls.Grid();
+                    host.Children.Add(page);
+                    var window = new Window
+                    {
+                        Left = -20000,
+                        Top = -20000,
+                        Width = 1040,
+                        Height = 720,
+                        WindowStartupLocation = WindowStartupLocation.Manual,
+                        ShowInTaskbar = false,
+                        Content = host
+                    };
+
+                    try
+                    {
+                        window.Show();
+                        Drain(window.Dispatcher);
+                        window.UpdateLayout();
+                        Drain(window.Dispatcher);
+
+                        var expected = new[]
+                        {
+                            DemoSourceLinkSettings.GetSourceUri("Trees/TreeViewHierarchy.xaml").AbsoluteUri,
+                            DemoSourceLinkSettings.GetSourceUri("Trees/TreeViewSelection.xaml").AbsoluteUri,
+                            DemoSourceLinkSettings.GetSourceUri("Trees/TreeViewExpansion.xaml").AbsoluteUri
+                        };
+
+                        var actual = new System.Collections.Generic.List<string>();
+                        foreach (var link in FindAllVisualChildren<HyperlinkButton>(page))
+                        {
+                            if (link.NavigateUri != null && link.Content as string == "Source")
+                            {
+                                actual.Add(link.NavigateUri.AbsoluteUri);
+                            }
+                        }
+
+                        CollectionAssert.AreEquivalent(
+                            expected,
+                            actual,
+                            "Each Trees page example must expose a Source link to its sample XAML.");
                     }
                     finally
                     {

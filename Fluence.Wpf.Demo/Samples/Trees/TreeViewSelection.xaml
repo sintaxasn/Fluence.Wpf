@@ -1,0 +1,34 @@
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Samples.Trees.TreeViewSelection"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
+    <StackPanel>
+        <ui:TreeView
+            x:Name="SelectionTreeView"
+            MaxHeight="260"
+            Margin="0,0,0,12"
+            SelectedItemChanged="SelectionTreeView_SelectedItemChanged">
+            <ui:TreeViewItem
+                Header="Inbox"
+                IsExpanded="True">
+                <ui:TreeViewItem Header="Priority" IsExpanded="True">
+                    <ui:TreeViewItem Header="Contract review" />
+                    <ui:TreeViewItem Header="Customer follow-up" />
+                </ui:TreeViewItem>
+                <ui:TreeViewItem Header="Later">
+                    <ui:TreeViewItem Header="Design notes" />
+                    <ui:TreeViewItem Header="Release checklist" />
+                </ui:TreeViewItem>
+            </ui:TreeViewItem>
+            <ui:TreeViewItem Header="Archive">
+                <ui:TreeViewItem Header="March" />
+                <ui:TreeViewItem Header="April" />
+            </ui:TreeViewItem>
+        </ui:TreeView>
+        <TextBlock
+            x:Name="TreeSelectionLabel"
+            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+            Text="Selected: -" />
+    </StackPanel>
+</UserControl>

@@ -28,28 +28,32 @@
 using System.Windows;
 using System.Windows.Controls;
 
-// Alias to disambiguate Fluence.Wpf.Controls.TreeViewItem vs System.Windows.Controls.TreeViewItem.
 using FluenceTreeViewItem = Fluence.Wpf.Controls.TreeViewItem;
 
 namespace Fluence.Wpf.Demo.Pages
 {
-    /// <summary>Gallery page demonstrating TreeView with nested items and keyboard navigation.</summary>
     public partial class GalleryTreesPage : UserControl
     {
-        /// <summary>Initializes a new instance of <see cref="GalleryTreesPage"/>.</summary>
         public GalleryTreesPage()
         {
             InitializeComponent();
+
+            TreeViewHierarchySourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Trees/TreeViewHierarchy.xaml");
+            TreeViewSelectionSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Trees/TreeViewSelection.xaml");
+            TreeViewExpansionSourceLink.NavigateUri = DemoSourceLinkSettings.GetSourceUri("Trees/TreeViewExpansion.xaml");
         }
 
-        private void FileTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private void SelectionTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            if (TreeSelectionLabel == null) return;
+            if (TreeSelectionLabel == null)
+            {
+                return;
+            }
 
             var item = e.NewValue as FluenceTreeViewItem;
             if (item == null)
             {
-                TreeSelectionLabel.Text = "Selected: —";
+                TreeSelectionLabel.Text = "Selected: -";
                 return;
             }
 
@@ -59,12 +63,17 @@ namespace Fluence.Wpf.Demo.Pages
 
         private static string BuildPath(FluenceTreeViewItem item)
         {
-            if (item == null) return string.Empty;
+            if (item == null)
+            {
+                return string.Empty;
+            }
 
             var header = item.Header as string ?? string.Empty;
             var parent = ItemsControl.ItemsControlFromItemContainer(item) as FluenceTreeViewItem;
             if (parent == null)
+            {
                 return header;
+            }
 
             var parentPath = BuildPath(parent);
             return string.IsNullOrEmpty(parentPath)
@@ -74,14 +83,22 @@ namespace Fluence.Wpf.Demo.Pages
 
         private void ExpandAll_Click(object sender, RoutedEventArgs e)
         {
-            if (FileTreeView == null) return;
-            SetExpanded(FileTreeView.Items, true);
+            if (ExpansionTreeView == null)
+            {
+                return;
+            }
+
+            SetExpanded(ExpansionTreeView.Items, true);
         }
 
         private void CollapseAll_Click(object sender, RoutedEventArgs e)
         {
-            if (FileTreeView == null) return;
-            SetExpanded(FileTreeView.Items, false);
+            if (ExpansionTreeView == null)
+            {
+                return;
+            }
+
+            SetExpanded(ExpansionTreeView.Items, false);
         }
 
         private static void SetExpanded(ItemCollection items, bool expanded)
@@ -89,10 +106,16 @@ namespace Fluence.Wpf.Demo.Pages
             foreach (var obj in items)
             {
                 var tvi = obj as FluenceTreeViewItem;
-                if (tvi == null) continue;
+                if (tvi == null)
+                {
+                    continue;
+                }
+
                 tvi.IsExpanded = expanded;
                 if (tvi.Items.Count > 0)
+                {
                     SetExpanded(tvi.Items, expanded);
+                }
             }
         }
     }
