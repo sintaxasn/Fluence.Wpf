@@ -389,6 +389,7 @@ WORKFLOW:
  6. Run the TestHarness (net10 first, then net472):
       dotnet run --project PSAppDeployToolkit/src/PSADT/PSADT.UserInterface.TestHarness
     Exercise: Light / Dark / High Contrast swap, each affected dialog, each supported backdrop (Mica / Acrylic / None). Capture screenshots if the visual contract changes.
+    If the harness reaches the restart dialog, terminate the TestHarness process immediately. Do not click `Restart Now`; automatic restart behavior is not part of this visual verification.
  7. Update docs on both sides:
     - Fluence.Wpf: CHANGELOG.md (always), docs/*.md (public surface), KNOWN_ISSUES.md (gaps).
     - PSADT: MIGRATION_PLAN.md (when a migration checkpoint moves), consumer docs if the visible contract changes.
