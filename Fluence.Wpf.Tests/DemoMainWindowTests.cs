@@ -1199,7 +1199,7 @@ namespace Fluence.Wpf.Tests
                         Assert.AreEqual(pageTitle, title.Text);
 
 
-                        AssertPageHasSourceActions(selectedContent, pageTitle);
+                        AssertPageUsesInlineSourceSamples(selectedContent, pageTitle);
 
                     }
                 }
@@ -1261,7 +1261,7 @@ namespace Fluence.Wpf.Tests
                         Assert.AreEqual(pageTitle, title.Text);
 
 
-                        AssertPageHasSourceActions(selectedContent, pageTitle);
+                        AssertPageUsesInlineSourceSamples(selectedContent, pageTitle);
 
                     }
                 }
@@ -1322,7 +1322,7 @@ namespace Fluence.Wpf.Tests
                         Assert.AreEqual(pageTitle, title.Text);
 
 
-                        AssertPageHasSourceActions(selectedContent, pageTitle);
+                        AssertPageUsesInlineSourceSamples(selectedContent, pageTitle);
 
                     }
                 }
@@ -1382,7 +1382,7 @@ namespace Fluence.Wpf.Tests
                         Assert.AreEqual(pageTitle, title.Text);
 
 
-                        AssertPageHasSourceActions(selectedContent, pageTitle);
+                        AssertPageUsesInlineSourceSamples(selectedContent, pageTitle);
 
                     }
                 }
@@ -1441,7 +1441,7 @@ namespace Fluence.Wpf.Tests
                         Assert.AreEqual(pageTitle, title.Text);
 
 
-                        AssertPageHasSourceActions(selectedContent, pageTitle);
+                        AssertPageUsesInlineSourceSamples(selectedContent, pageTitle);
 
                     }
                 }
@@ -1503,7 +1503,7 @@ namespace Fluence.Wpf.Tests
                         Assert.AreEqual(pageTitle, title.Text);
 
 
-                        AssertPageHasSourceActions(selectedContent, pageTitle);
+                        AssertPageUsesInlineSourceSamples(selectedContent, pageTitle);
 
                     }
                 }
@@ -1564,7 +1564,7 @@ namespace Fluence.Wpf.Tests
                         Assert.AreEqual(pageTitle, title.Text);
 
 
-                        AssertPageHasSourceActions(selectedContent, pageTitle);
+                        AssertPageUsesInlineSourceSamples(selectedContent, pageTitle);
 
                     }
                 }
@@ -1624,7 +1624,7 @@ namespace Fluence.Wpf.Tests
                         Assert.AreEqual(pageTitle, title.Text);
 
 
-                        AssertPageHasSourceActions(selectedContent, pageTitle);
+                        AssertPageUsesInlineSourceSamples(selectedContent, pageTitle);
 
                     }
                 }
@@ -1729,7 +1729,7 @@ namespace Fluence.Wpf.Tests
                         Assert.AreEqual(pageTitle, title.Text);
 
 
-                        AssertPageHasSourceActions(selectedContent, pageTitle);
+                        AssertPageUsesInlineSourceSamples(selectedContent, pageTitle);
 
                     }
                 }
@@ -4101,22 +4101,28 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        private static void AssertPageHasSourceActions(DependencyObject root, string pageTitle)
+        private static void AssertPageUsesInlineSourceSamples(DependencyObject root, string pageTitle)
         {
             var actions = FindSourceActionControls(root);
-            Assert.IsTrue(actions.Count > 0, pageTitle + " should expose a source action.");
+            Assert.AreEqual(0, actions.Count,
+                pageTitle + " should expose source through inline sample expanders instead of source action buttons.");
 
-            foreach (var action in actions)
+            var samples = new System.Collections.Generic.List<DemoSampleControl>();
+            foreach (var sample in FindAllVisualChildren<DemoSampleControl>(root))
             {
-                Assert.AreEqual(HorizontalAlignment.Right, action.HorizontalAlignment,
-                    pageTitle + " source action should be right-aligned.");
-                Assert.IsTrue(ContainsUrlGlyph(action),
-                    pageTitle + " source action should display a URL/link icon.");
+                samples.Add(sample);
             }
 
-            var targetUris = CollectSourceActionTargetUris(root);
-            Assert.IsTrue(targetUris.Count >= actions.Count,
-                pageTitle + " source actions should expose clickable source targets.");
+            Assert.IsTrue(samples.Count > 0, pageTitle + " should host examples in DemoSampleControl.");
+            foreach (var sample in samples)
+            {
+                Assert.IsFalse(string.IsNullOrEmpty(sample.SourcePath),
+                    pageTitle + " inline source samples should keep a copied source path.");
+                var expander = FindByName<Fluence.Wpf.Controls.Expander>(sample, "SourceExpander");
+                Assert.IsNotNull(expander, pageTitle + " inline source samples should expose a source expander.");
+                Assert.IsFalse(expander.IsExpanded,
+                    pageTitle + " source expanders should stay collapsed until the user opens them.");
+            }
         }
 
         private static string[] ExpectedSourceUris(params string[] samplePaths)
