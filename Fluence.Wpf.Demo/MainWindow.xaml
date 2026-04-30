@@ -7,7 +7,7 @@
     Title="Fluence.Wpf — Control Gallery"
     Width="1120"
     Height="900"
-    MinWidth="900"
+    MinWidth="1000"
     MinHeight="520"
     ExtendsContentIntoTitleBar="False"
     Icon="Resources/AppIcon.png"
