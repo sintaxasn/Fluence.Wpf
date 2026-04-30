@@ -349,7 +349,8 @@ namespace Fluence.Wpf.Demo
                 Width = 480,
                 Margin = new Thickness(0, 0, 0, 12),
                 HorizontalAlignment = HorizontalAlignment.Left,
-                PlaceholderText = "Choose an option..."
+                PlaceholderText = "Choose an option...",
+                SelectedIndex = -1
             };
             combo.Items.Add(new ComboBoxItem { Content = "First item" });
             combo.Items.Add(new ComboBoxItem { Content = "Second item" });
@@ -361,7 +362,8 @@ namespace Fluence.Wpf.Demo
                 Margin = new Thickness(0, 0, 0, 12),
                 HorizontalAlignment = HorizontalAlignment.Left,
                 PlaceholderText = "With icon",
-                Icon = Icon("\uE721")
+                Icon = Icon("\uE721"),
+                SelectedIndex = -1
             };
             iconCombo.Items.Add(new ComboBoxItem { Content = "Alpha" });
             iconCombo.Items.Add(new ComboBoxItem { Content = "Beta" });

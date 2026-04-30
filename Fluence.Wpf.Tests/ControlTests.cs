@@ -2106,6 +2106,50 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void MainWindow_ComboBoxPage_InitialComboBoxesHaveNoSelection()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                MainWindow window = null;
+
+                try
+                {
+                    window = new MainWindow();
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    SelectMainWindowNavPage(window, window.Dispatcher, "ComboBox");
+                    var nav = window.FindName("DemoNav") as Fluent.NavigationView;
+                    Assert.IsNotNull(nav, "Main window should expose DemoNav.");
+
+                    var selectedContent = nav.SelectedContent as DependencyObject;
+                    Assert.IsNotNull(selectedContent, "ComboBox page should be selected.");
+
+                    var comboBoxes = FindVisualChildren<Fluent.ComboBox>(selectedContent).ToList();
+                    Assert.IsTrue(comboBoxes.Count >= 2, "ComboBox page should display multiple ComboBox examples.");
+
+                    foreach (var comboBox in comboBoxes)
+                    {
+                        Assert.AreEqual(-1, comboBox.SelectedIndex,
+                            "ComboBox page examples should not look selected before the user chooses an item.");
+                    }
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+
+                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                }
+            });
+        }
+
+        [TestMethod]
         public void HyperlinkButton_DefaultForeground_IsAccent()
         {
             RunOnStaThread(() =>
