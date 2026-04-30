@@ -31,6 +31,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Fluence.Wpf.Controls;
 using WpfTextBlock = System.Windows.Controls.TextBlock;
 using WpfGrid = System.Windows.Controls.Grid;
+using WpfBorder = System.Windows.Controls.Border;
 
 namespace Fluence.Wpf.Tests
 {
@@ -200,6 +201,48 @@ namespace Fluence.Wpf.Tests
                 Assert.IsNotNull(badgeText);
                 Assert.AreEqual("3", badgeText.Text,
                     "PART_BadgeText must display the BadgeNumber.");
+                w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void PersonPicture_BadgeBackground_CoversNumberAndGlyphContent()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                var app = EnsureApplication();
+                MergeGenericDictionary(app);
+
+                var pp = new PersonPicture { Width = 48, Height = 48, BadgeNumber = 150 };
+                var w = new Window { Content = pp, Width = 200, Height = 200 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+                w.UpdateLayout();
+                DrainDispatcher(w.Dispatcher);
+
+                var badgeGrid = FindVisualChildByName<WpfGrid>(pp, "PART_BadgeGrid");
+                var badgeBackground = FindVisualChildByName<WpfBorder>(pp, "PART_BadgeBackground");
+                var badgeText = FindVisualChildByName<WpfTextBlock>(pp, "PART_BadgeText");
+                Assert.IsNotNull(badgeGrid);
+                Assert.IsNotNull(badgeBackground);
+                Assert.IsNotNull(badgeText);
+                Assert.AreEqual("99+", badgeText.Text);
+                Assert.IsTrue(badgeGrid.ActualWidth >= badgeText.ActualWidth + 8.0,
+                    "Numeric badges must use a pill surface wide enough to cover their rendered text.");
+                Assert.IsTrue(badgeBackground.ActualWidth >= badgeGrid.ActualWidth,
+                    "The badge background must cover the full badge layout width.");
+
+                pp.BadgeNumber = 0;
+                pp.BadgeGlyph = "\uE73E";
+                DrainDispatcher(w.Dispatcher);
+                w.UpdateLayout();
+                DrainDispatcher(w.Dispatcher);
+
+                Assert.AreEqual("\uE73E", badgeText.Text);
+                Assert.IsTrue(badgeGrid.ActualWidth >= badgeText.ActualWidth + 8.0,
+                    "Glyph badges must keep enough background around the rendered glyph.");
+                Assert.IsTrue(badgeBackground.ActualWidth >= badgeGrid.ActualWidth,
+                    "The badge background must cover the full badge layout width.");
                 w.Close();
             });
         }

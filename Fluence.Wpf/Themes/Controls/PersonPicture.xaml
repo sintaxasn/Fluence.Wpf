@@ -58,18 +58,23 @@
                         <!--  Badge: bottom-right corner, AccentFillColorDefaultBrush background.  -->
                         <Grid
                             x:Name="PART_BadgeGrid"
-                            Width="16"
+                            MinWidth="16"
                             Height="16"
                             Margin="0,0,-2,-2"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Bottom"
                             Visibility="Collapsed">
-                            <Ellipse
-                                Fill="{DynamicResource AccentFillColorDefaultBrush}"
-                                Stroke="{TemplateBinding Background}"
-                                StrokeThickness="2" />
+                            <Border
+                                x:Name="PART_BadgeBackground"
+                                MinWidth="16"
+                                Height="16"
+                                Background="{DynamicResource AccentFillColorDefaultBrush}"
+                                BorderBrush="{TemplateBinding Background}"
+                                BorderThickness="2"
+                                CornerRadius="8" />
                             <TextBlock
                                 x:Name="PART_BadgeText"
+                                Margin="4,0"
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
                                 FontFamily="{TemplateBinding FontFamily}"
