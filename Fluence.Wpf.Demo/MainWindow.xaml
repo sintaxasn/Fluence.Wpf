@@ -5,7 +5,7 @@
     xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
     xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
     Title="Fluence.Wpf — Control Gallery"
-    Width="1120"
+    Width="1200"
     Height="900"
     MinWidth="1000"
     MinHeight="520"
