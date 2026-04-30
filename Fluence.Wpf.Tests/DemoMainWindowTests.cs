@@ -158,6 +158,19 @@ namespace Fluence.Wpf.Tests
             source.RaiseEvent(args);
         }
 
+        private static void RaisePreviewMouseLeftButtonDown(FrameworkElement source)
+        {
+            var args = new MouseButtonEventArgs(
+                Mouse.PrimaryDevice,
+                Environment.TickCount,
+                MouseButton.Left)
+            {
+                RoutedEvent = UIElement.PreviewMouseLeftButtonDownEvent,
+                Source = source
+            };
+            source.RaiseEvent(args);
+        }
+
         // WI-1 F3: Enter in the search box must select the top visible match.
         [TestMethod]
         public void NavSearch_EnterKey_SelectsTopMatch()
@@ -982,6 +995,121 @@ namespace Fluence.Wpf.Tests
                     var chevron = basicInput.InfoBadge as FontIcon;
                     Assert.IsNotNull(chevron, "Category header should keep its chevron glyph.");
                     Assert.AreEqual("\uE70D", chevron.Glyph, "Pane collapse should reset category chevrons to collapsed.");
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void MainWindow_CollapsedParentClick_OpensChildFlyoutWithoutInlineChildren()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                MainWindow window = null;
+                try
+                {
+                    window = CreateShownMainWindow();
+                    var nav = GetDemoNav(window);
+                    var basicInput = AssertNavigationItemExists(nav, "Basic input");
+                    var button = AssertNavigationItemExists(nav, "Button");
+
+                    nav.IsPaneOpen = false;
+                    WaitForAnimationAndDrain(window.Dispatcher, 180);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    RaisePreviewMouseLeftButtonDown(basicInput);
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    var popup = GetPrivateField<System.Windows.Controls.Primitives.Popup>(window, "_compactSectionPopup");
+                    Assert.IsNotNull(popup, "Clicking a collapsed parent section should create the child flyout popup.");
+                    Assert.IsTrue(popup.IsOpen, "Clicking a collapsed parent section should open its child flyout.");
+                    Assert.AreSame(basicInput, popup.PlacementTarget,
+                        "The compact child flyout should be positioned beside the clicked parent item.");
+                    Assert.AreEqual(Visibility.Collapsed, button.Visibility,
+                        "Inline child items should stay collapsed while compact flyout children are shown.");
+
+                    var popupTexts = CollectTextBlockTexts(popup.Child);
+                    CollectionAssert.Contains(popupTexts, "Button");
+                    CollectionAssert.Contains(popupTexts, "DropDownButton");
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void MainWindow_CollapsedChildFlyoutClick_NavigatesButKeepsParentSelected()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                MainWindow window = null;
+                try
+                {
+                    window = CreateShownMainWindow();
+                    var nav = GetDemoNav(window);
+                    var basicInput = AssertNavigationItemExists(nav, "Basic input");
+                    var button = AssertNavigationItemExists(nav, "Button");
+
+                    nav.IsPaneOpen = false;
+                    WaitForAnimationAndDrain(window.Dispatcher, 180);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    RaisePreviewMouseLeftButtonDown(basicInput);
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    var popup = GetPrivateField<System.Windows.Controls.Primitives.Popup>(window, "_compactSectionPopup");
+                    var popupButton = FindCompactFlyoutButton(popup.Child, "Button");
+                    Assert.IsNotNull(popupButton, "The Basic input flyout should include a Button row.");
+
+                    popupButton.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent, popupButton));
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.IsFalse(popup.IsOpen, "Selecting a compact flyout child should close the flyout.");
+                    Assert.AreSame(basicInput, nav.SelectedItem,
+                        "The compact rail should keep the parent glyph selected after child navigation.");
+                    Assert.AreEqual(Visibility.Collapsed, button.Visibility,
+                        "The hidden child item should stay collapsed after compact flyout navigation.");
+
+                    var selectedContent = nav.SelectedContent as DependencyObject;
+                    Assert.IsNotNull(selectedContent, "Compact flyout child navigation should show the child page content.");
+                    var title = FindByName<System.Windows.Controls.TextBlock>(selectedContent, "ControlPageTitle");
+                    Assert.IsNotNull(title, "The Button child page should expose ControlPageTitle.");
+                    Assert.AreEqual("Button", title.Text);
                 }
                 finally
                 {
@@ -3909,6 +4037,20 @@ namespace Fluence.Wpf.Tests
             }
 
             return texts;
+        }
+
+        private static Fluence.Wpf.Controls.Button FindCompactFlyoutButton(DependencyObject root, string label)
+        {
+            foreach (var button in FindAllVisualChildren<Fluence.Wpf.Controls.Button>(root))
+            {
+                var texts = CollectTextBlockTexts(button);
+                if (texts.Contains(label))
+                {
+                    return button;
+                }
+            }
+
+            return null;
         }
 
         private static System.Collections.ArrayList CollectItemPropertyValues(ItemsControl control, string propertyName)

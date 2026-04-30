@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -59,15 +60,20 @@ namespace Fluence.Wpf.Demo
             new Dictionary<NavigationViewItem, NavigationViewItem>();
         private readonly Dictionary<NavigationViewItem, bool> _sectionExpandedByHeader =
             new Dictionary<NavigationViewItem, bool>();
+        private readonly Dictionary<NavigationViewItem, DemoNavigationItem> _navigationItemByContainer =
+            new Dictionary<NavigationViewItem, DemoNavigationItem>();
         private NavigationViewItemHeader _controlsHeader;
         private NavigationViewItem _lastSelectedLeafItem;
         private NavigationViewItem _sectionPointerSelectionToIgnore;
+        private Popup _compactSectionPopup;
+        private System.Windows.Controls.StackPanel _compactSectionPopupItemsPanel;
         private bool _restoringSelection;
 
         public MainWindow()
         {
             InitializeComponent();
             PreviewKeyDown += MainWindow_PreviewKeyDown;
+            PreviewMouseDown += MainWindow_PreviewMouseDown;
             Title = GalleryWindowTitle;
             SystemThemeWatcher.Watch(this);
             ApplicationThemeManager.Apply(ApplicationTheme.Auto, BackdropType.Mica, true);
@@ -76,6 +82,7 @@ namespace Fluence.Wpf.Demo
             {
                 DemoNav.SelectionChanged += DemoNav_SelectionChanged;
                 DemoNav.PaneClosed += DemoNav_PaneClosed;
+                DemoNav.PaneOpening += DemoNav_PaneOpening;
             }
 
             // Seed user-intent from XAML defaults so the first toggle does not reset to
@@ -140,6 +147,22 @@ namespace Fluence.Wpf.Demo
             }
         }
 
+        private void MainWindow_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (_compactSectionPopup == null || !_compactSectionPopup.IsOpen)
+            {
+                return;
+            }
+
+            var source = e.OriginalSource as DependencyObject;
+            if (IsDescendantOrSelf(source, _compactSectionPopup.PlacementTarget as DependencyObject))
+            {
+                return;
+            }
+
+            HideCompactSectionPopup();
+        }
+
         private void PopulateNavigation()
         {
             if (DemoNav == null)
@@ -151,6 +174,7 @@ namespace Fluence.Wpf.Demo
             _sectionChildrenByHeader.Clear();
             _sectionHeaderByChild.Clear();
             _sectionExpandedByHeader.Clear();
+            _navigationItemByContainer.Clear();
             _controlsHeader = null;
             _lastSelectedLeafItem = null;
 
@@ -203,6 +227,7 @@ namespace Fluence.Wpf.Demo
                 }
 
                 var navItem = CreatePageItem(item, currentSectionItem == null);
+                _navigationItemByContainer[navItem] = item;
                 if (currentSectionItem != null)
                 {
                     _sectionChildrenByHeader[currentSectionItem].Add(navItem);
@@ -302,13 +327,26 @@ namespace Fluence.Wpf.Demo
             {
                 _sectionPointerSelectionToIgnore = selected;
                 Dispatcher.BeginInvoke(new Action(ClearSectionPointerSelectionToIgnore), System.Windows.Threading.DispatcherPriority.Background);
+                if (!DemoNav.IsPaneOpen)
+                {
+                    CollapseAllSections(false);
+                    ShowCompactSectionPopup(selected);
+                    return;
+                }
+
+                HideCompactSectionPopup();
                 ToggleSection(selected, true);
                 return;
             }
 
+            HideCompactSectionPopup();
             if (selected.PageContent != null)
             {
-                EnsureParentExpanded(selected);
+                if (DemoNav.IsPaneOpen)
+                {
+                    EnsureParentExpanded(selected);
+                }
+
                 _lastSelectedLeafItem = selected;
             }
         }
@@ -318,6 +356,16 @@ namespace Fluence.Wpf.Demo
             var sectionItem = sender as NavigationViewItem;
             if (sectionItem == null || DemoNav == null)
             {
+                return;
+            }
+
+            if (!DemoNav.IsPaneOpen)
+            {
+                Activate();
+                DemoNav.SelectedItem = sectionItem;
+                CollapseAllSections(false);
+                ShowCompactSectionPopup(sectionItem);
+                e.Handled = true;
                 return;
             }
 
@@ -341,6 +389,167 @@ namespace Fluence.Wpf.Demo
         private void DemoNav_PaneClosed(object sender, EventArgs e)
         {
             CollapseAllSections(true);
+        }
+
+        private void DemoNav_PaneOpening(object sender, EventArgs e)
+        {
+            HideCompactSectionPopup();
+        }
+
+        private void ShowCompactSectionPopup(NavigationViewItem sectionItem)
+        {
+            if (sectionItem == null || DemoNav == null || DemoNav.IsPaneOpen)
+            {
+                HideCompactSectionPopup();
+                return;
+            }
+
+            List<NavigationViewItem> children;
+            if (!_sectionChildrenByHeader.TryGetValue(sectionItem, out children) || children.Count == 0)
+            {
+                HideCompactSectionPopup();
+                return;
+            }
+
+            EnsureCompactSectionPopup();
+            _compactSectionPopup.PlacementTarget = sectionItem;
+            _compactSectionPopupItemsPanel.Children.Clear();
+
+            foreach (var child in children)
+            {
+                _compactSectionPopupItemsPanel.Children.Add(CreateCompactSectionPopupButton(child));
+            }
+
+            _compactSectionPopup.IsOpen = true;
+        }
+
+        private void HideCompactSectionPopup()
+        {
+            if (_compactSectionPopup != null)
+            {
+                _compactSectionPopup.IsOpen = false;
+            }
+        }
+
+        private void EnsureCompactSectionPopup()
+        {
+            if (_compactSectionPopup != null)
+            {
+                return;
+            }
+
+            _compactSectionPopupItemsPanel = new System.Windows.Controls.StackPanel
+            {
+                Orientation = Orientation.Vertical
+            };
+
+            var popupSurface = new System.Windows.Controls.Border
+            {
+                MinWidth = 230.0,
+                MaxHeight = 520.0,
+                CornerRadius = new CornerRadius(8.0),
+                BorderThickness = new Thickness(1.0),
+                Padding = new Thickness(8.0),
+                Child = _compactSectionPopupItemsPanel
+            };
+            popupSurface.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, "CardBackgroundFillColorDefaultBrush");
+            popupSurface.SetResourceReference(System.Windows.Controls.Border.BorderBrushProperty, "CardStrokeColorDefaultBrush");
+
+            _compactSectionPopup = new Popup
+            {
+                AllowsTransparency = true,
+                Placement = PlacementMode.Right,
+                HorizontalOffset = 8.0,
+                VerticalOffset = -8.0,
+                PopupAnimation = PopupAnimation.Fade,
+                StaysOpen = true,
+                Child = popupSurface
+            };
+        }
+
+        private Fluence.Wpf.Controls.Button CreateCompactSectionPopupButton(NavigationViewItem child)
+        {
+            DemoNavigationItem item;
+            _navigationItemByContainer.TryGetValue(child, out item);
+
+            var glyph = item == null ? "\uE700" : item.Glyph;
+            var label = child.Content as string;
+            if (string.IsNullOrEmpty(label))
+            {
+                label = item == null ? string.Empty : item.Title;
+            }
+
+            var icon = CreateFontIcon(glyph, 20.0);
+            icon.Width = 40.0;
+            icon.HorizontalAlignment = HorizontalAlignment.Left;
+            icon.VerticalAlignment = VerticalAlignment.Center;
+            icon.SetResourceReference(System.Windows.Controls.Control.ForegroundProperty, "TextFillColorPrimaryBrush");
+
+            var text = new System.Windows.Controls.TextBlock
+            {
+                Text = label,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            text.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "TextFillColorPrimaryBrush");
+
+            var content = new System.Windows.Controls.Grid();
+            content.ColumnDefinitions.Add(new System.Windows.Controls.ColumnDefinition { Width = new GridLength(40.0) });
+            content.ColumnDefinitions.Add(new System.Windows.Controls.ColumnDefinition { Width = new GridLength(1.0, GridUnitType.Star) });
+            System.Windows.Controls.Grid.SetColumn(icon, 0);
+            System.Windows.Controls.Grid.SetColumn(text, 1);
+            content.Children.Add(icon);
+            content.Children.Add(text);
+
+            var button = new Fluence.Wpf.Controls.Button
+            {
+                Appearance = ControlAppearance.Subtle,
+                Content = content,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                HorizontalContentAlignment = HorizontalAlignment.Stretch,
+                Padding = new Thickness(8.0, 9.0, 12.0, 9.0),
+                Margin = new Thickness(0.0, 2.0, 0.0, 2.0),
+                Tag = child
+            };
+            button.SetResourceReference(System.Windows.Controls.Control.ForegroundProperty, "TextFillColorPrimaryBrush");
+            button.Click += CompactSectionPopupChild_Click;
+            return button;
+        }
+
+        private void CompactSectionPopupChild_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as Fluence.Wpf.Controls.Button;
+            var child = button == null ? null : button.Tag as NavigationViewItem;
+            if (child == null)
+            {
+                return;
+            }
+
+            HideCompactSectionPopup();
+            NavigateToCompactChild(child);
+        }
+
+        private void NavigateToCompactChild(NavigationViewItem child)
+        {
+            NavigationViewItem sectionItem;
+            if (!_sectionHeaderByChild.TryGetValue(child, out sectionItem))
+            {
+                return;
+            }
+
+            _lastSelectedLeafItem = child;
+            CollapseAllSections(false);
+
+            _restoringSelection = true;
+            try
+            {
+                DemoNav.SelectedItem = sectionItem;
+            }
+            finally
+            {
+                _restoringSelection = false;
+            }
+
+            DemoNav.SelectedContent = child.PageContent ?? child.Content;
         }
 
         private void ToggleSection(NavigationViewItem sectionItem, bool animate)
@@ -915,11 +1124,15 @@ namespace Fluence.Wpf.Demo
 
         protected override void OnClosed(EventArgs e)
         {
+            PreviewMouseDown -= MainWindow_PreviewMouseDown;
+            PreviewKeyDown -= MainWindow_PreviewKeyDown;
             if (DemoNav != null)
             {
                 DemoNav.SelectionChanged -= DemoNav_SelectionChanged;
                 DemoNav.PaneClosed -= DemoNav_PaneClosed;
+                DemoNav.PaneOpening -= DemoNav_PaneOpening;
             }
+            HideCompactSectionPopup();
             if (_extendsDpd != null)
             {
                 _extendsDpd.RemoveValueChanged(this, OnTitleBarDependencyChanged);
