@@ -682,17 +682,6 @@ namespace Fluence.Wpf.Controls
             NavigationViewItem previousItem,
             NavigationViewItem targetItem)
         {
-            if (topMode)
-            {
-                AnimateIndicatorDirect(fromPosition, toPosition, true);
-                return;
-            }
-
-            AnimateIndicatorDepartArrive(fromPosition, toPosition, previousItem, targetItem);
-        }
-
-        private void AnimateIndicatorDirect(Point fromPosition, Point toPosition, bool topMode)
-        {
             StopAnimation();
             EnsureMutableTransform();
 
@@ -700,6 +689,11 @@ namespace Fluence.Wpf.Controls
             var scale = (ScaleTransform)group.Children[0];
             var translate = (TranslateTransform)group.Children[1];
             var animationId = _indicatorAnimationGeneration;
+            var axisProperty = topMode ? TranslateTransform.XProperty : TranslateTransform.YProperty;
+            var scaleProperty = topMode ? ScaleTransform.ScaleXProperty : ScaleTransform.ScaleYProperty;
+            var fromAxis = topMode ? fromPosition.X : fromPosition.Y;
+            var toAxis = topMode ? toPosition.X : toPosition.Y;
+            var direction = toAxis < fromAxis ? -1.0 : 1.0;
 
             scale.ScaleX = 1.0;
             scale.ScaleY = 1.0;
@@ -707,79 +701,16 @@ namespace Fluence.Wpf.Controls
             translate.Y = fromPosition.Y;
             _selectionIndicator.Opacity = 1.0;
 
-            var duration = new Duration(TimeSpan.FromMilliseconds(250));
-            var ease = new CubicEase { EasingMode = EasingMode.EaseOut };
-            var xAnimation = new DoubleAnimation(fromPosition.X, toPosition.X, duration)
-            {
-                EasingFunction = ease,
-                FillBehavior = FillBehavior.Stop
-            };
-            var yAnimation = new DoubleAnimation(fromPosition.Y, toPosition.Y, duration)
-            {
-                EasingFunction = ease,
-                FillBehavior = FillBehavior.Stop
-            };
-            var scaleAnimation = new DoubleAnimation(0.72, 1.0, duration)
-            {
-                EasingFunction = ease,
-                FillBehavior = FillBehavior.Stop
-            };
-
-            yAnimation.Completed += delegate
-            {
-                if (animationId != _indicatorAnimationGeneration)
-                {
-                    return;
-                }
-
-                translate.BeginAnimation(TranslateTransform.XProperty, null);
-                translate.BeginAnimation(TranslateTransform.YProperty, null);
-                scale.BeginAnimation(topMode ? ScaleTransform.ScaleXProperty : ScaleTransform.ScaleYProperty, null);
-                translate.X = toPosition.X;
-                translate.Y = toPosition.Y;
-                scale.ScaleX = 1.0;
-                scale.ScaleY = 1.0;
-                _selectionIndicator.Opacity = 1.0;
-                _indicatorPositioned = true;
-            };
-
-            _indicatorPositioned = true;
-            translate.BeginAnimation(TranslateTransform.XProperty, xAnimation, HandoffBehavior.SnapshotAndReplace);
-            translate.BeginAnimation(TranslateTransform.YProperty, yAnimation, HandoffBehavior.SnapshotAndReplace);
-            scale.BeginAnimation(
-                topMode ? ScaleTransform.ScaleXProperty : ScaleTransform.ScaleYProperty,
-                scaleAnimation,
-                HandoffBehavior.SnapshotAndReplace);
-        }
-
-        private void AnimateIndicatorDepartArrive(
-            Point fromPosition,
-            Point toPosition,
-            NavigationViewItem previousItem,
-            NavigationViewItem targetItem)
-        {
-            StopAnimation();
-            EnsureMutableTransform();
-
-            var group = (TransformGroup)_selectionIndicator.RenderTransform;
-            var scale = (ScaleTransform)group.Children[0];
-            var translate = (TranslateTransform)group.Children[1];
-            var animationId = _indicatorAnimationGeneration;
-
-            scale.ScaleX = 1.0;
-            scale.ScaleY = 1.0;
-            translate.X = fromPosition.X;
-            translate.Y = fromPosition.Y;
-            _selectionIndicator.Opacity = 1.0;
-
-            var departPosition = CalculateDepartPosition(fromPosition, previousItem);
-            var arriveStartPosition = CalculateArriveStartPosition(toPosition, targetItem);
+            var departPosition = CalculateDepartPosition(fromPosition, previousItem, topMode, direction);
+            var arriveStartPosition = CalculateArriveStartPosition(toPosition, targetItem, topMode, direction);
+            var departAxis = topMode ? departPosition.X : departPosition.Y;
+            var arriveStartAxis = topMode ? arriveStartPosition.X : arriveStartPosition.Y;
             var departDuration = new Duration(TimeSpan.FromMilliseconds(90));
             var arriveDuration = new Duration(TimeSpan.FromMilliseconds(140));
             var departEase = new CubicEase { EasingMode = EasingMode.EaseIn };
             var arriveEase = new CubicEase { EasingMode = EasingMode.EaseOut };
 
-            var departYAnimation = new DoubleAnimation(fromPosition.Y, departPosition.Y, departDuration)
+            var departAxisAnimation = new DoubleAnimation(fromAxis, departAxis, departDuration)
             {
                 EasingFunction = departEase,
                 FillBehavior = FillBehavior.Stop
@@ -795,24 +726,35 @@ namespace Fluence.Wpf.Controls
                 FillBehavior = FillBehavior.Stop
             };
 
-            departYAnimation.Completed += delegate
+            departAxisAnimation.Completed += delegate
             {
                 if (animationId != _indicatorAnimationGeneration)
                 {
                     return;
                 }
 
-                translate.BeginAnimation(TranslateTransform.YProperty, null);
-                scale.BeginAnimation(ScaleTransform.ScaleYProperty, null);
+                translate.BeginAnimation(axisProperty, null);
+                scale.BeginAnimation(scaleProperty, null);
                 _selectionIndicator.BeginAnimation(UIElement.OpacityProperty, null);
 
-                translate.X = toPosition.X;
-                translate.Y = arriveStartPosition.Y;
-                scale.ScaleX = 1.0;
-                scale.ScaleY = 0.72;
+                if (topMode)
+                {
+                    translate.X = arriveStartPosition.X;
+                    translate.Y = toPosition.Y;
+                    scale.ScaleX = 0.72;
+                    scale.ScaleY = 1.0;
+                }
+                else
+                {
+                    translate.X = toPosition.X;
+                    translate.Y = arriveStartPosition.Y;
+                    scale.ScaleX = 1.0;
+                    scale.ScaleY = 0.72;
+                }
+
                 _selectionIndicator.Opacity = 0.0;
 
-                var arriveYAnimation = new DoubleAnimation(arriveStartPosition.Y, toPosition.Y, arriveDuration)
+                var arriveAxisAnimation = new DoubleAnimation(arriveStartAxis, toAxis, arriveDuration)
                 {
                     EasingFunction = arriveEase,
                     FillBehavior = FillBehavior.Stop
@@ -828,15 +770,15 @@ namespace Fluence.Wpf.Controls
                     FillBehavior = FillBehavior.Stop
                 };
 
-                arriveYAnimation.Completed += delegate
+                arriveAxisAnimation.Completed += delegate
                 {
                     if (animationId != _indicatorAnimationGeneration)
                     {
                         return;
                     }
 
-                    translate.BeginAnimation(TranslateTransform.YProperty, null);
-                    scale.BeginAnimation(ScaleTransform.ScaleYProperty, null);
+                    translate.BeginAnimation(axisProperty, null);
+                    scale.BeginAnimation(scaleProperty, null);
                     _selectionIndicator.BeginAnimation(UIElement.OpacityProperty, null);
 
                     translate.X = toPosition.X;
@@ -847,27 +789,51 @@ namespace Fluence.Wpf.Controls
                     _indicatorPositioned = true;
                 };
 
-                translate.BeginAnimation(TranslateTransform.YProperty, arriveYAnimation, HandoffBehavior.SnapshotAndReplace);
-                scale.BeginAnimation(ScaleTransform.ScaleYProperty, arriveScaleAnimation, HandoffBehavior.SnapshotAndReplace);
+                translate.BeginAnimation(axisProperty, arriveAxisAnimation, HandoffBehavior.SnapshotAndReplace);
+                scale.BeginAnimation(scaleProperty, arriveScaleAnimation, HandoffBehavior.SnapshotAndReplace);
                 _selectionIndicator.BeginAnimation(UIElement.OpacityProperty, arriveOpacityAnimation, HandoffBehavior.SnapshotAndReplace);
             };
 
             _indicatorPositioned = true;
-            translate.BeginAnimation(TranslateTransform.YProperty, departYAnimation, HandoffBehavior.SnapshotAndReplace);
-            scale.BeginAnimation(ScaleTransform.ScaleYProperty, departScaleAnimation, HandoffBehavior.SnapshotAndReplace);
+            translate.BeginAnimation(axisProperty, departAxisAnimation, HandoffBehavior.SnapshotAndReplace);
+            scale.BeginAnimation(scaleProperty, departScaleAnimation, HandoffBehavior.SnapshotAndReplace);
             _selectionIndicator.BeginAnimation(UIElement.OpacityProperty, departOpacityAnimation, HandoffBehavior.SnapshotAndReplace);
         }
 
-        private Point CalculateDepartPosition(Point fromPosition, NavigationViewItem previousItem)
+        private Point CalculateDepartPosition(
+            Point fromPosition,
+            NavigationViewItem previousItem,
+            bool topMode,
+            double direction)
         {
-            double y = fromPosition.Y + GetIndicatorLength();
+            var length = GetIndicatorLength(topMode);
+            if (topMode)
+            {
+                double x = fromPosition.X + (direction * length);
+                if (previousItem != null && previousItem.IsVisible && previousItem.ActualWidth > 0)
+                {
+                    try
+                    {
+                        var transform = previousItem.TransformToAncestor(_indicatorHost);
+                        var itemPos = transform.Transform(new Point(0, 0));
+                        x = direction > 0 ? itemPos.X + previousItem.ActualWidth : itemPos.X - length;
+                    }
+                    catch
+                    {
+                    }
+                }
+
+                return new Point(x, fromPosition.Y);
+            }
+
+            double y = fromPosition.Y + (direction * length);
             if (previousItem != null && previousItem.IsVisible && previousItem.ActualHeight > 0)
             {
                 try
                 {
                     var transform = previousItem.TransformToAncestor(_indicatorHost);
                     var itemPos = transform.Transform(new Point(0, 0));
-                    y = itemPos.Y + previousItem.ActualHeight;
+                    y = direction > 0 ? itemPos.Y + previousItem.ActualHeight : itemPos.Y - length;
                 }
                 catch
                 {
@@ -877,16 +843,40 @@ namespace Fluence.Wpf.Controls
             return new Point(fromPosition.X, y);
         }
 
-        private Point CalculateArriveStartPosition(Point toPosition, NavigationViewItem targetItem)
+        private Point CalculateArriveStartPosition(
+            Point toPosition,
+            NavigationViewItem targetItem,
+            bool topMode,
+            double direction)
         {
-            double y = toPosition.Y - GetIndicatorLength();
-            if (targetItem != null && targetItem.IsVisible)
+            var length = GetIndicatorLength(topMode);
+            if (topMode)
+            {
+                double x = toPosition.X - (direction * length);
+                if (targetItem != null && targetItem.IsVisible && targetItem.ActualWidth > 0)
+                {
+                    try
+                    {
+                        var transform = targetItem.TransformToAncestor(_indicatorHost);
+                        var itemPos = transform.Transform(new Point(0, 0));
+                        x = direction > 0 ? itemPos.X - length : itemPos.X + targetItem.ActualWidth;
+                    }
+                    catch
+                    {
+                    }
+                }
+
+                return new Point(x, toPosition.Y);
+            }
+
+            double y = toPosition.Y - (direction * length);
+            if (targetItem != null && targetItem.IsVisible && targetItem.ActualHeight > 0)
             {
                 try
                 {
                     var transform = targetItem.TransformToAncestor(_indicatorHost);
                     var itemPos = transform.Transform(new Point(0, 0));
-                    y = itemPos.Y - GetIndicatorLength();
+                    y = direction > 0 ? itemPos.Y - length : itemPos.Y + targetItem.ActualHeight;
                 }
                 catch
                 {
@@ -896,14 +886,16 @@ namespace Fluence.Wpf.Controls
             return new Point(toPosition.X, y);
         }
 
-        private double GetIndicatorLength()
+        private double GetIndicatorLength(bool topMode)
         {
-            if (_selectionIndicator.ActualHeight > 0)
+            var actual = topMode ? _selectionIndicator.ActualWidth : _selectionIndicator.ActualHeight;
+            if (actual > 0)
             {
-                return _selectionIndicator.ActualHeight;
+                return actual;
             }
 
-            return _selectionIndicator.Height > 0 ? _selectionIndicator.Height : 16.0;
+            var explicitLength = topMode ? _selectionIndicator.Width : _selectionIndicator.Height;
+            return explicitLength > 0 ? explicitLength : 16.0;
         }
 
         private void HideIndicator()

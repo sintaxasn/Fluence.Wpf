@@ -807,6 +807,76 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void NavigationView_LeftMode_IndicatorExitsUpwardWhenNewSelectionIsAbove()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 400,
+                        Height = 320,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left
+                    };
+                    nav.Items.Add(new Fluent.NavigationViewItem
+                    {
+                        Content = "Parent",
+                        Icon = new Fluent.FontIcon { Glyph = "\uE80F", IconFontSize = 20 }
+                    });
+                    nav.Items.Add(new Fluent.NavigationViewItem
+                    {
+                        Content = "Child",
+                        IsChildItem = true
+                    });
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    nav.SelectedIndex = 1;
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    var indicator = nav.GetSelectionIndicatorForTesting();
+                    Assert.IsNotNull(indicator, "PART_SelectionIndicator should exist in the NavigationView template.");
+                    var translate = GetSelectionIndicatorTranslate(indicator);
+                    var childX = translate.X;
+                    var childY = translate.Y;
+
+                    nav.SelectedIndex = 0;
+                    WaitForAnimationAndDrain(window.Dispatcher, 45);
+
+                    Assert.AreEqual(childX, translate.X, 0.5,
+                        "The selection indicator should not move horizontally while exiting the child item.");
+                    Assert.IsTrue(translate.Y < childY,
+                        "The selection indicator should move upward when the newly selected item is above the old item.");
+                    Assert.IsTrue(indicator.Opacity < 1.0,
+                        "The selection indicator should fade out before it moves to the parent item's X position.");
+
+                    WaitForAnimationAndDrain(window.Dispatcher, 400);
+                    Assert.AreEqual(4.0, translate.X, 0.5,
+                        "After the depart/arrive animation completes, the parent item indicator should sit at the parent inset.");
+                    Assert.AreEqual(1.0, indicator.Opacity, 0.01,
+                        "After the depart/arrive animation completes, the indicator should be visible on the new item.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
         public void NavigationView_LeftMode_TopLevelIconlessItem_DoesNotUseChildIndicatorIndent()
         {
             RunOnStaThread(() =>
