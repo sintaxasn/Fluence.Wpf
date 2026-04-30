@@ -29,8 +29,6 @@ using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
-using Fluence.Wpf;
-using Fluent = Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Demo.Pages
 {
@@ -70,63 +68,6 @@ namespace Fluence.Wpf.Demo.Pages
 
         private void AddExample(DemoExample example)
         {
-            var card = new Fluent.Card
-            {
-                Margin = new Thickness(0, 0, 0, 16),
-                Padding = new Thickness(16),
-                Variant = CardVariant.Default
-            };
-
-            var panel = new Grid();
-            panel.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            panel.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-
-            var header = new Grid
-            {
-                Margin = new Thickness(0, 0, 0, 12)
-            };
-            header.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            header.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-
-            var headerText = new StackPanel
-            {
-                Margin = new Thickness(0, 0, 12, 0)
-            };
-
-            if (!string.IsNullOrEmpty(example.Title))
-            {
-                var heading = new TextBlock
-                {
-                    Margin = new Thickness(0, 0, 0, 4),
-                    Text = example.Title
-                };
-                heading.SetResourceReference(FrameworkElement.StyleProperty, "BodyStrongTextBlockStyle");
-                headerText.Children.Add(heading);
-            }
-
-            if (!string.IsNullOrEmpty(example.Description))
-            {
-                var description = new TextBlock
-                {
-                    Text = example.Description,
-                    TextWrapping = TextWrapping.Wrap
-                };
-                description.SetResourceReference(TextBlock.ForegroundProperty, "TextFillColorSecondaryBrush");
-                headerText.Children.Add(description);
-            }
-
-            Grid.SetColumn(headerText, 0);
-            header.Children.Add(headerText);
-
-            var sourceAction = DemoSourceAction.Create(example.SourcePath);
-            sourceAction.Name = "SourceLink";
-            sourceAction.HorizontalAlignment = HorizontalAlignment.Right;
-            sourceAction.VerticalAlignment = VerticalAlignment.Top;
-            Grid.SetColumn(sourceAction, 1);
-            header.Children.Add(sourceAction);
-            Grid.SetRow(header, 0);
-            panel.Children.Add(header);
-
             var content = example.CreateContent();
             var contentElement = content as FrameworkElement;
             if (contentElement != null)
@@ -134,11 +75,13 @@ namespace Fluence.Wpf.Demo.Pages
                 contentElement.Margin = new Thickness(0);
             }
 
-            Grid.SetRow(content, 1);
-            panel.Children.Add(content);
-
-            card.Content = panel;
-            PageStack.Children.Add(card);
+            PageStack.Children.Add(new DemoSampleControl
+            {
+                Title = example.Title,
+                Description = example.Description,
+                SourcePath = example.SourcePath,
+                SampleContent = content
+            });
         }
     }
 }

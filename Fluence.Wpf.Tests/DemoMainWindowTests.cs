@@ -1863,18 +1863,7 @@ namespace Fluence.Wpf.Tests
                 {
                     var pages = new UserControl[]
                     {
-                        new GalleryButtonsPage(),
-                        new GalleryControlPage(
-                            "Button",
-                            "Use Button for immediate actions.",
-                            new[]
-                            {
-                                new DemoExample(
-                                    "Default buttons",
-                                    "Buttons use standard, accent, subtle, and disabled states.",
-                                    "Buttons/ButtonAppearances.xaml",
-                                    delegate { return new System.Windows.Controls.TextBlock { Text = "Sample" }; })
-                            })
+                        new GalleryButtonsPage()
                     };
 
                     foreach (var page in pages)
@@ -1927,7 +1916,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void GalleryControlPage_SourceActions_AreTopRightInExampleCards()
+        public void GalleryControlPage_ExamplesUseInlineSourceExpander()
         {
             RunOnSta(() =>
             {
@@ -1944,7 +1933,7 @@ namespace Fluence.Wpf.Tests
                             new DemoExample(
                                 "Default buttons",
                                 "Buttons use standard, accent, subtle, and disabled states.",
-                                "Experimental/XamlOnly.xaml",
+                                "Selection/ComboBoxSelection.xaml",
                                 delegate { return new System.Windows.Controls.TextBlock { Text = "Sample" }; })
                         });
 
@@ -1967,18 +1956,58 @@ namespace Fluence.Wpf.Tests
                         Drain(window.Dispatcher);
 
                         var actions = FindSourceActionControls(page);
-                        Assert.AreEqual(1, actions.Count, "The generated control page should expose one source action for the sample.");
+                        Assert.AreEqual(0, actions.Count,
+                            "Generated control pages should display source inline rather than as top-right source buttons.");
 
-                        var action = actions[0];
-                        Assert.AreEqual(HorizontalAlignment.Right, action.HorizontalAlignment,
-                            "Control-page source actions should sit at the right edge of the example header.");
-                        Assert.AreEqual(VerticalAlignment.Top, action.VerticalAlignment,
-                            "Control-page source actions should sit at the top edge of the example header.");
+                        DemoSampleControl sample = null;
+                        foreach (var candidate in FindAllVisualChildren<DemoSampleControl>(page))
+                        {
+                            sample = candidate;
+                            break;
+                        }
 
-                        var parentGrid = action.Parent as System.Windows.Controls.Grid;
-                        Assert.IsNotNull(parentGrid, "Control-page source actions should be hosted in the example header grid.");
-                        Assert.AreEqual(0, Grid.GetRow(action), "Source action should be in the header row.");
-                        Assert.AreEqual(1, Grid.GetColumn(action), "Source action should be in the right header column.");
+                        Assert.IsNotNull(sample, "Generated control page examples should be hosted by DemoSampleControl.");
+
+                        var expander = FindByName<Fluence.Wpf.Controls.Expander>(sample, "SourceExpander");
+                        Assert.IsNotNull(expander, "DemoSampleControl should expose a source expander.");
+                        Assert.IsFalse(expander.IsExpanded, "Source should stay collapsed until the user asks for it.");
+
+                        expander.IsExpanded = true;
+                        Drain(window.Dispatcher);
+                        window.UpdateLayout();
+                        Drain(window.Dispatcher);
+
+                        var tabs = FindByName<System.Windows.Controls.TabControl>(sample, "SourceTabs");
+                        Assert.IsNotNull(tabs, "Expanded sample source should be shown in a tab control.");
+                        Assert.AreEqual(2, tabs.Items.Count,
+                            "Samples with code-behind should display XAML and C# Code-behind tabs.");
+
+                        var sourceBoxes = 0;
+                        var sawXaml = false;
+                        var sawCodeBehind = false;
+                        foreach (var obj in tabs.Items)
+                        {
+                            var tabItem = obj as System.Windows.Controls.TabItem;
+                            Assert.IsNotNull(tabItem, "SourceTabs should contain TabItem entries.");
+
+                            var textBox = tabItem.Content as System.Windows.Controls.TextBox;
+                            Assert.IsNotNull(textBox, "Each source tab should host a read-only source text box.");
+
+                            sourceBoxes++;
+                            if (textBox.Text.IndexOf("<ui:ComboBox", StringComparison.Ordinal) >= 0)
+                            {
+                                sawXaml = true;
+                            }
+
+                            if (textBox.Text.IndexOf("public partial class ComboBoxSelection", StringComparison.Ordinal) >= 0)
+                            {
+                                sawCodeBehind = true;
+                            }
+                        }
+
+                        Assert.IsTrue(sourceBoxes >= 2, "Expanded source tabs should each host a read-only source text box.");
+                        Assert.IsTrue(sawXaml, "The XAML tab should display the sample XAML source.");
+                        Assert.IsTrue(sawCodeBehind, "The C# tab should display the sample code-behind source.");
                     }
                     finally
                     {

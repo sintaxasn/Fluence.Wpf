@@ -1,0 +1,49 @@
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.DemoSampleControl"
+    x:Name="Root"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:fluence="http://schemas.fluencewpf.com">
+    <fluence:Card
+        Margin="0,0,0,16"
+        Padding="16"
+        Variant="Default">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <StackPanel
+                x:Name="HeaderPanel"
+                Grid.Row="0"
+                Margin="0,0,0,12">
+                <TextBlock
+                    x:Name="TitleTextBlock"
+                    Margin="0,0,0,4"
+                    Style="{StaticResource BodyStrongTextBlockStyle}"
+                    Text="{Binding Title, ElementName=Root}" />
+                <TextBlock
+                    x:Name="DescriptionTextBlock"
+                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                    Text="{Binding Description, ElementName=Root}"
+                    TextWrapping="Wrap" />
+            </StackPanel>
+
+            <ContentPresenter
+                x:Name="SampleContentPresenter"
+                Grid.Row="1"
+                Content="{Binding SampleContent, ElementName=Root}" />
+
+            <fluence:Expander
+                x:Name="SourceExpander"
+                Grid.Row="2"
+                Margin="0,16,0,0"
+                Expanded="SourceExpander_Expanded"
+                Header="Source">
+                <TabControl x:Name="SourceTabs" />
+            </fluence:Expander>
+        </Grid>
+    </fluence:Card>
+</UserControl>
