@@ -26,15 +26,99 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Media;
 
 namespace Fluence.Wpf.Demo.Pages
 {
     public partial class DemoSampleControl : UserControl
     {
+        private enum SourceLanguage
+        {
+            PlainText,
+            Xaml,
+            CSharp
+        }
+
+        private static readonly HashSet<string> CSharpKeywords = new HashSet<string>(StringComparer.Ordinal)
+        {
+            "abstract",
+            "as",
+            "base",
+            "bool",
+            "break",
+            "case",
+            "catch",
+            "class",
+            "const",
+            "continue",
+            "decimal",
+            "default",
+            "delegate",
+            "do",
+            "double",
+            "else",
+            "enum",
+            "event",
+            "explicit",
+            "extern",
+            "false",
+            "finally",
+            "fixed",
+            "float",
+            "for",
+            "foreach",
+            "if",
+            "implicit",
+            "in",
+            "int",
+            "interface",
+            "internal",
+            "is",
+            "lock",
+            "namespace",
+            "new",
+            "null",
+            "object",
+            "operator",
+            "out",
+            "override",
+            "params",
+            "private",
+            "protected",
+            "public",
+            "readonly",
+            "ref",
+            "return",
+            "sealed",
+            "short",
+            "sizeof",
+            "static",
+            "string",
+            "struct",
+            "switch",
+            "this",
+            "throw",
+            "true",
+            "try",
+            "typeof",
+            "uint",
+            "ulong",
+            "unchecked",
+            "unsafe",
+            "ushort",
+            "using",
+            "var",
+            "virtual",
+            "void",
+            "volatile",
+            "while"
+        };
+
         public static readonly DependencyProperty TitleProperty =
             DependencyProperty.Register(
                 "Title",
@@ -174,33 +258,311 @@ namespace Fluence.Wpf.Demo.Pages
 
         private void AddSourceTab(string header, string samplePath)
         {
-            SourceTabs.Items.Add(new TabItem
+            var source = ReadSample(samplePath);
+            SourceTabs.Items.Add(new Fluence.Wpf.Controls.TabViewItem
             {
                 Header = header,
-                Content = CreateSourceTextBox(ReadSample(samplePath))
+                IsClosable = false,
+                Content = CreateSourcePane(source, GetSourceLanguage(samplePath))
             });
+
+            if (SourceTabs.SelectedIndex < 0)
+            {
+                SourceTabs.SelectedIndex = 0;
+            }
         }
 
-        private static TextBox CreateSourceTextBox(string source)
+        private UIElement CreateSourcePane(string source, SourceLanguage language)
         {
-            var textBox = new TextBox
+            var panel = new Grid();
+            panel.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            panel.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+
+            var copyButton = CreateCopyButton(source);
+            Grid.SetRow(copyButton, 0);
+            panel.Children.Add(copyButton);
+
+            var viewer = CreateSourceViewer(source, language);
+            Grid.SetRow(viewer, 1);
+            panel.Children.Add(viewer);
+
+            return panel;
+        }
+
+        private Fluence.Wpf.Controls.Button CreateCopyButton(string source)
+        {
+            var button = new Fluence.Wpf.Controls.Button
             {
-                AcceptsReturn = true,
-                AcceptsTab = true,
+                Name = "CopySourceButton",
+                Appearance = ControlAppearance.Subtle,
+                Content = "Copy",
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Icon = new Fluence.Wpf.Controls.FontIcon { Glyph = "\uE8C8" },
+                Margin = new Thickness(0, 0, 0, 8),
+                Tag = source
+            };
+            button.Click += OnCopySourceButtonClick;
+            return button;
+        }
+
+        private void OnCopySourceButtonClick(object sender, RoutedEventArgs e)
+        {
+            var element = sender as FrameworkElement;
+            var source = element != null ? element.Tag as string : null;
+            if (!string.IsNullOrEmpty(source))
+            {
+                Clipboard.SetText(source);
+            }
+        }
+
+        private static RichTextBox CreateSourceViewer(string source, SourceLanguage language)
+        {
+            var viewer = new RichTextBox
+            {
                 FontFamily = new FontFamily("Consolas"),
                 FontSize = 12,
                 HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
                 IsReadOnly = true,
-                MinHeight = 180,
-                Padding = new Thickness(12),
-                Text = source,
-                TextWrapping = TextWrapping.NoWrap,
+                MinHeight = 220,
+                Name = "SourceTextViewer",
+                Padding = new Thickness(0),
                 VerticalScrollBarVisibility = ScrollBarVisibility.Auto
             };
-            textBox.SetResourceReference(Control.BackgroundProperty, "CardBackgroundFillColorDefaultBrush");
-            textBox.SetResourceReference(Control.ForegroundProperty, "TextFillColorPrimaryBrush");
-            textBox.SetResourceReference(Control.BorderBrushProperty, "CardStrokeColorDefaultBrush");
-            return textBox;
+            viewer.SetResourceReference(Control.BackgroundProperty, "SolidBackgroundFillColorTertiaryBrush");
+            viewer.SetResourceReference(Control.ForegroundProperty, "TextFillColorPrimaryBrush");
+            viewer.SetResourceReference(Control.BorderBrushProperty, "CardStrokeColorDefaultBrush");
+            viewer.Document = CreateSourceDocument(source, language);
+            return viewer;
+        }
+
+        private static FlowDocument CreateSourceDocument(string source, SourceLanguage language)
+        {
+            var document = new FlowDocument
+            {
+                FontFamily = new FontFamily("Consolas"),
+                FontSize = 12,
+                PagePadding = new Thickness(12)
+            };
+            document.SetResourceReference(TextElement.ForegroundProperty, "TextFillColorPrimaryBrush");
+
+            var paragraph = new Paragraph
+            {
+                LineHeight = 18,
+                Margin = new Thickness(0)
+            };
+            document.Blocks.Add(paragraph);
+
+            var normalized = (source ?? string.Empty).Replace("\r\n", "\n").Replace('\r', '\n');
+            var lines = normalized.Split('\n');
+            for (var i = 0; i < lines.Length; i++)
+            {
+                AddFormattedLine(paragraph, lines[i], language);
+                if (i < lines.Length - 1)
+                {
+                    paragraph.Inlines.Add(new LineBreak());
+                }
+            }
+
+            return document;
+        }
+
+        private static void AddFormattedLine(Paragraph paragraph, string line, SourceLanguage language)
+        {
+            if (language == SourceLanguage.Xaml)
+            {
+                AddXamlLine(paragraph, line);
+                return;
+            }
+
+            if (language == SourceLanguage.CSharp)
+            {
+                AddCSharpLine(paragraph, line);
+                return;
+            }
+
+            AddRun(paragraph, line, "TextFillColorPrimaryBrush");
+        }
+
+        private static void AddXamlLine(Paragraph paragraph, string line)
+        {
+            var index = 0;
+            while (index < line.Length)
+            {
+                if (StartsWith(line, index, "<!--"))
+                {
+                    AddRun(paragraph, line.Substring(index), "TextFillColorSecondaryBrush");
+                    return;
+                }
+
+                var current = line[index];
+                if (current == '"' || current == '\'')
+                {
+                    var end = FindQuotedTextEnd(line, index, current);
+                    AddRun(paragraph, line.Substring(index, end - index), "SystemFillColorCautionBrush");
+                    index = end;
+                    continue;
+                }
+
+                if (current == '<' || current == '>' || current == '/')
+                {
+                    AddRun(paragraph, line.Substring(index, 1), "AccentTextFillColorPrimaryBrush");
+                    index++;
+                    continue;
+                }
+
+                if (IsXamlNameStart(current))
+                {
+                    var start = index;
+                    while (index < line.Length && IsXamlNameChar(line[index]))
+                    {
+                        index++;
+                    }
+
+                    var name = line.Substring(start, index - start);
+                    var next = SkipWhiteSpace(line, index);
+                    var resourceKey = next < line.Length && line[next] == '='
+                        ? "SystemFillColorSuccessBrush"
+                        : "AccentTextFillColorPrimaryBrush";
+                    AddRun(paragraph, name, resourceKey);
+                    continue;
+                }
+
+                var plainStart = index;
+                while (index < line.Length &&
+                       line[index] != '<' &&
+                       line[index] != '>' &&
+                       line[index] != '/' &&
+                       line[index] != '"' &&
+                       line[index] != '\'' &&
+                       !IsXamlNameStart(line[index]))
+                {
+                    index++;
+                }
+
+                AddRun(paragraph, line.Substring(plainStart, index - plainStart), "TextFillColorPrimaryBrush");
+            }
+        }
+
+        private static void AddCSharpLine(Paragraph paragraph, string line)
+        {
+            var index = 0;
+            while (index < line.Length)
+            {
+                if (StartsWith(line, index, "//"))
+                {
+                    AddRun(paragraph, line.Substring(index), "TextFillColorSecondaryBrush");
+                    return;
+                }
+
+                var current = line[index];
+                if (current == '"')
+                {
+                    var end = FindQuotedTextEnd(line, index, current);
+                    AddRun(paragraph, line.Substring(index, end - index), "SystemFillColorCautionBrush");
+                    index = end;
+                    continue;
+                }
+
+                if (current == '\'' && index + 2 < line.Length)
+                {
+                    var end = FindQuotedTextEnd(line, index, current);
+                    AddRun(paragraph, line.Substring(index, end - index), "SystemFillColorCautionBrush");
+                    index = end;
+                    continue;
+                }
+
+                if (char.IsLetter(current) || current == '_')
+                {
+                    var start = index;
+                    while (index < line.Length && (char.IsLetterOrDigit(line[index]) || line[index] == '_'))
+                    {
+                        index++;
+                    }
+
+                    var word = line.Substring(start, index - start);
+                    AddRun(paragraph, word, CSharpKeywords.Contains(word)
+                        ? "AccentTextFillColorPrimaryBrush"
+                        : "TextFillColorPrimaryBrush");
+                    continue;
+                }
+
+                var plainStart = index;
+                while (index < line.Length &&
+                       !StartsWith(line, index, "//") &&
+                       line[index] != '"' &&
+                       line[index] != '\'' &&
+                       !char.IsLetter(line[index]) &&
+                       line[index] != '_')
+                {
+                    index++;
+                }
+
+                AddRun(paragraph, line.Substring(plainStart, index - plainStart), "TextFillColorPrimaryBrush");
+            }
+        }
+
+        private static void AddRun(Paragraph paragraph, string text, string resourceKey)
+        {
+            if (string.IsNullOrEmpty(text))
+            {
+                return;
+            }
+
+            var run = new Run(text);
+            run.SetResourceReference(TextElement.ForegroundProperty, resourceKey);
+            paragraph.Inlines.Add(run);
+        }
+
+        private static bool StartsWith(string text, int index, string value)
+        {
+            return index + value.Length <= text.Length &&
+                   string.Compare(text, index, value, 0, value.Length, StringComparison.Ordinal) == 0;
+        }
+
+        private static int FindQuotedTextEnd(string text, int start, char quote)
+        {
+            var index = start + 1;
+            while (index < text.Length)
+            {
+                if (text[index] == '\\')
+                {
+                    index += 2;
+                    continue;
+                }
+
+                if (text[index] == quote)
+                {
+                    return index + 1;
+                }
+
+                index++;
+            }
+
+            return text.Length;
+        }
+
+        private static int SkipWhiteSpace(string text, int index)
+        {
+            while (index < text.Length && char.IsWhiteSpace(text[index]))
+            {
+                index++;
+            }
+
+            return index;
+        }
+
+        private static bool IsXamlNameStart(char value)
+        {
+            return char.IsLetter(value) || value == '_' || value == ':';
+        }
+
+        private static bool IsXamlNameChar(char value)
+        {
+            return char.IsLetterOrDigit(value) ||
+                   value == '_' ||
+                   value == ':' ||
+                   value == '.' ||
+                   value == '-';
         }
 
         private static string ReadSample(string samplePath)
@@ -229,6 +591,22 @@ namespace Fluence.Wpf.Demo.Pages
         private static string GetCodeBehindPath(string samplePath)
         {
             return NormalizeSamplePath(samplePath) + ".cs";
+        }
+
+        private static SourceLanguage GetSourceLanguage(string samplePath)
+        {
+            var normalized = NormalizeSamplePath(samplePath);
+            if (normalized.EndsWith(".cs", StringComparison.OrdinalIgnoreCase))
+            {
+                return SourceLanguage.CSharp;
+            }
+
+            if (normalized.EndsWith(".xaml", StringComparison.OrdinalIgnoreCase))
+            {
+                return SourceLanguage.Xaml;
+            }
+
+            return SourceLanguage.PlainText;
         }
 
         private static string NormalizeSamplePath(string samplePath)

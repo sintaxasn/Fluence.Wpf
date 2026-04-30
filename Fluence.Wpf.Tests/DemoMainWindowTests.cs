@@ -31,6 +31,7 @@ using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -1968,44 +1969,87 @@ namespace Fluence.Wpf.Tests
 
                         Assert.IsNotNull(sample, "Generated control page examples should be hosted by DemoSampleControl.");
 
+                        var sampleCard = FindByName<Card>(sample, "SampleCard");
+                        Assert.IsNotNull(sampleCard, "DemoSampleControl should expose the sample card surface.");
+                        Assert.AreEqual(0.0, sampleCard.CornerRadius.BottomLeft,
+                            "The sample card should remove its lower-left radius when it is joined to the source expander.");
+                        Assert.AreEqual(0.0, sampleCard.CornerRadius.BottomRight,
+                            "The sample card should remove its lower-right radius when it is joined to the source expander.");
+
                         var expander = FindByName<Fluence.Wpf.Controls.Expander>(sample, "SourceExpander");
                         Assert.IsNotNull(expander, "DemoSampleControl should expose a source expander.");
                         Assert.IsFalse(expander.IsExpanded, "Source should stay collapsed until the user asks for it.");
+                        Assert.AreEqual(0.0, expander.Margin.Top,
+                            "The source expander should be flush against the sample card.");
+                        Assert.AreEqual(0.0, expander.BorderThickness.Top,
+                            "The source expander should not add a second border between the sample card and source area.");
+                        Assert.AreEqual(0.0, expander.CornerRadius.TopLeft,
+                            "The source expander should remove its upper-left radius when it is joined to the sample card.");
+                        Assert.AreEqual(0.0, expander.CornerRadius.TopRight,
+                            "The source expander should remove its upper-right radius when it is joined to the sample card.");
 
                         expander.IsExpanded = true;
                         Drain(window.Dispatcher);
                         window.UpdateLayout();
                         Drain(window.Dispatcher);
 
-                        var tabs = FindByName<System.Windows.Controls.TabControl>(sample, "SourceTabs");
-                        Assert.IsNotNull(tabs, "Expanded sample source should be shown in a tab control.");
+                        var tabs = FindByName<Fluence.Wpf.Controls.TabView>(sample, "SourceTabs");
+                        Assert.IsNotNull(tabs, "Expanded sample source should be shown in a styled TabView.");
+                        Assert.IsFalse(tabs.IsAddTabButtonVisible,
+                            "Sample source TabViews should not show an add-tab affordance.");
                         Assert.AreEqual(2, tabs.Items.Count,
                             "Samples with code-behind should display XAML and C# Code-behind tabs.");
 
-                        var sourceBoxes = 0;
+                        var sourcePanes = 0;
                         var sawXaml = false;
                         var sawCodeBehind = false;
+                        var sawCopyButton = false;
+                        var verifiedCopyButton = false;
                         foreach (var obj in tabs.Items)
                         {
-                            var tabItem = obj as System.Windows.Controls.TabItem;
-                            Assert.IsNotNull(tabItem, "SourceTabs should contain TabItem entries.");
+                            var tabItem = obj as Fluence.Wpf.Controls.TabViewItem;
+                            Assert.IsNotNull(tabItem, "SourceTabs should contain TabViewItem entries.");
+                            Assert.IsFalse(tabItem.IsClosable, "Sample source tabs should not show close buttons.");
 
-                            var textBox = tabItem.Content as System.Windows.Controls.TextBox;
-                            Assert.IsNotNull(textBox, "Each source tab should host a read-only source text box.");
+                            var sourcePane = tabItem.Content as DependencyObject;
+                            Assert.IsNotNull(sourcePane, "Each source tab should host a source pane.");
 
-                            sourceBoxes++;
-                            if (textBox.Text.IndexOf("<ui:ComboBox", StringComparison.Ordinal) >= 0)
+                            var viewer = FindByName<RichTextBox>(sourcePane, "SourceTextViewer");
+                            Assert.IsNotNull(viewer, "Each source tab should host a read-only formatted source viewer.");
+                            Assert.IsTrue(viewer.IsReadOnly, "Source viewers should be read-only.");
+                            Assert.IsTrue(HasColoredSourceRuns(viewer),
+                                "Source viewers should use colored runs for code formatting.");
+
+                            var copyButton = FindByName<Fluence.Wpf.Controls.Button>(sourcePane, "CopySourceButton");
+                            Assert.IsNotNull(copyButton, "Each source tab should include a copy button.");
+                            var sourceText = copyButton.Tag as string;
+                            Assert.IsFalse(string.IsNullOrEmpty(sourceText),
+                                "Copy buttons should keep the source text they copy in their Tag.");
+                            sawCopyButton = true;
+                            if (!verifiedCopyButton)
+                            {
+                                Clipboard.SetText("before-copy");
+                                copyButton.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
+                                Assert.AreEqual(sourceText, Clipboard.GetText(),
+                                    "Copy buttons should copy their tab source text to the clipboard.");
+                                verifiedCopyButton = true;
+                            }
+
+                            sourcePanes++;
+                            if (sourceText.IndexOf("<ui:ComboBox", StringComparison.Ordinal) >= 0)
                             {
                                 sawXaml = true;
                             }
 
-                            if (textBox.Text.IndexOf("public partial class ComboBoxSelection", StringComparison.Ordinal) >= 0)
+                            if (sourceText.IndexOf("public partial class ComboBoxSelection", StringComparison.Ordinal) >= 0)
                             {
                                 sawCodeBehind = true;
                             }
                         }
 
-                        Assert.IsTrue(sourceBoxes >= 2, "Expanded source tabs should each host a read-only source text box.");
+                        Assert.IsTrue(sourcePanes >= 2, "Expanded source tabs should each host a formatted source pane.");
+                        Assert.IsTrue(sawCopyButton, "Expanded source tabs should expose copy buttons.");
+                        Assert.IsTrue(verifiedCopyButton, "At least one source copy button should be exercised.");
                         Assert.IsTrue(sawXaml, "The XAML tab should display the sample XAML source.");
                         Assert.IsTrue(sawCodeBehind, "The C# tab should display the sample code-behind source.");
                     }
@@ -4498,6 +4542,29 @@ namespace Fluence.Wpf.Tests
                 foreach (UIElement child in panel.Children)
                 {
                     if (ContainsUrlGlyph(child))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        private static bool HasColoredSourceRuns(RichTextBox sourceViewer)
+        {
+            foreach (Block block in sourceViewer.Document.Blocks)
+            {
+                var paragraph = block as Paragraph;
+                if (paragraph == null)
+                {
+                    continue;
+                }
+
+                foreach (Inline inline in paragraph.Inlines)
+                {
+                    var run = inline as Run;
+                    if (run != null && !string.IsNullOrEmpty(run.Text) && run.Foreground != null)
                     {
                         return true;
                     }
