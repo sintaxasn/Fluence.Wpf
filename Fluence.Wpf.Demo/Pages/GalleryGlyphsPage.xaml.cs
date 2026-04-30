@@ -55,7 +55,16 @@ namespace Fluence.Wpf.Demo.Pages
                 "{0:N0} Segoe Fluent Icons",
                 icons.Count);
 
-            DemoSourceAction.Replace(IconCatalogSourceLink, "Glyphs/IconCatalog.xaml");
+            var sample = new DemoSampleControl
+            {
+                Title = "Icon catalog",
+                Description = "Every private-use glyph exposed by the Segoe Fluent Icons font.",
+                SourcePath = "Glyphs/IconCatalog.xaml",
+                SampleContent = IconCatalogList
+            };
+            Grid.SetRow(sample, 2);
+            PageRoot.Children.Remove(IconCatalogList);
+            PageRoot.Children.Add(sample);
         }
 
         private static IList<IconCatalogItem> LoadIconCatalog()

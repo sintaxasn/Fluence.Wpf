@@ -12,26 +12,14 @@
     <ui:SmoothScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="24" HorizontalAlignment="Stretch">
             <Grid Margin="0,0,0,16">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-
                 <TextBlock
-                    Grid.Column="0"
-                    Margin="0,0,16,0"
                     Style="{StaticResource SectionHeaderStyle}"
                     Text="Color" />
-                <ui:HyperlinkButton
-                    x:Name="ColorSamplesSourceLink"
-                    Grid.Column="1"
-                    HorizontalAlignment="Right"
-                    VerticalAlignment="Top"
-                    Style="{StaticResource DemoSourceLinkButtonStyle}"
-                    Content="Source" />
             </Grid>
 
-            <TabControl Style="{DynamicResource TabControlStyle}">
+            <TabControl
+                x:Name="ColorSamplesContent"
+                Style="{DynamicResource TabControlStyle}">
 
                 <!--  ═══ TEXT TAB ═══  -->
                 <TabItem Header="Text" Style="{DynamicResource TabItemStyle}">

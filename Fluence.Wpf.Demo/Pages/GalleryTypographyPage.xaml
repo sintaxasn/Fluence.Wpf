@@ -16,23 +16,18 @@
                 Text="Typography" />
             <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Fluent type styles use Segoe UI Variable when available and fall back to Segoe UI." />
 
-            <Border
+            <Grid
+                x:Name="TypographyTable"
                 Margin="0,12,0,0"
-                Padding="20"
-                Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                BorderThickness="1"
-                CornerRadius="8">
-                <Grid x:Name="TypographyTable">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="2.2*" MinWidth="180" />
-                        <ColumnDefinition Width="1.2*" MinWidth="140" />
-                        <ColumnDefinition Width="1*" MinWidth="120" />
-                        <ColumnDefinition Width="1.7*" MinWidth="180" />
-                        <ColumnDefinition Width="Auto" />
-                    </Grid.ColumnDefinitions>
-                </Grid>
-            </Border>
+                HorizontalAlignment="Stretch">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2.2*" MinWidth="180" />
+                    <ColumnDefinition Width="1.2*" MinWidth="140" />
+                    <ColumnDefinition Width="1*" MinWidth="120" />
+                    <ColumnDefinition Width="1.7*" MinWidth="180" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+            </Grid>
         </StackPanel>
     </ui:SmoothScrollViewer>
 </UserControl>

@@ -3235,7 +3235,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void ColorsPage_ContainsSingleCombinedSourceAction()
+        public void DesignPages_UseInlineSourceSampleControls()
         {
             RunOnSta(() =>
             {
@@ -3244,43 +3244,67 @@ namespace Fluence.Wpf.Tests
 
                 try
                 {
-                    var page = new GalleryColorsPage();
-                    var host = new System.Windows.Controls.Grid();
-                    host.Children.Add(page);
-                    var window = new Window
+                    var cases = new[]
                     {
-                        Left = -20000,
-                        Top = -20000,
-                        Width = 1040,
-                        Height = 720,
-                        WindowStartupLocation = WindowStartupLocation.Manual,
-                        ShowInTaskbar = false,
-                        Content = host
+                        new DesignPageCase("Color", "Colors/ColorSamples.xaml", delegate { return new GalleryColorsPage(); }),
+                        new DesignPageCase("Iconography", "Glyphs/IconCatalog.xaml", delegate { return new GalleryGlyphsPage(); }),
+                        new DesignPageCase("Typography", "Typography/TypographyTable.xaml", delegate { return new GalleryTypographyPage(); })
                     };
 
-                    try
+                    foreach (var testCase in cases)
                     {
-                        window.Show();
-                        Drain(window.Dispatcher);
-                        window.UpdateLayout();
-                        Drain(window.Dispatcher);
+                        var page = testCase.CreatePage();
+                        var host = new System.Windows.Controls.Grid();
+                        host.Children.Add(page);
+                        var window = new Window
+                        {
+                            Left = -20000,
+                            Top = -20000,
+                            Width = 1040,
+                            Height = 720,
+                            WindowStartupLocation = WindowStartupLocation.Manual,
+                            ShowInTaskbar = false,
+                            Content = host
+                        };
 
-                        var expected = ExpectedSourceUris(
-                            "Colors/ColorSamples.xaml"
-                        );
+                        try
+                        {
+                            window.Show();
+                            Drain(window.Dispatcher);
+                            window.UpdateLayout();
+                            Drain(window.Dispatcher);
 
+                            var actions = FindSourceActionControls(page);
+                            Assert.AreEqual(0, actions.Count,
+                                testCase.Title + " should use inline source tabs rather than source action buttons.");
 
-                        var actual = CollectSourceActionTargetUris(page);
+                            DemoSampleControl sample = null;
+                            foreach (var candidate in FindAllVisualChildren<DemoSampleControl>(page))
+                            {
+                                sample = candidate;
+                                break;
+                            }
 
+                            Assert.IsNotNull(sample, testCase.Title + " should host its visible example in DemoSampleControl.");
+                            Assert.AreEqual(testCase.SourcePath, sample.SourcePath,
+                                testCase.Title + " should load source from the expected sample file.");
 
-                        CollectionAssert.AreEquivalent(
-                            expected,
-                            actual,
-                            "The Colors page should expose a single combined source sample.");
-                    }
-                    finally
-                    {
-                        window.Close();
+                            var expander = FindByName<Fluence.Wpf.Controls.Expander>(sample, "SourceExpander");
+                            Assert.IsNotNull(expander, testCase.Title + " should expose a source expander.");
+                            expander.IsExpanded = true;
+                            Drain(window.Dispatcher);
+                            window.UpdateLayout();
+                            Drain(window.Dispatcher);
+
+                            var tabs = FindByName<Fluence.Wpf.Controls.TabView>(sample, "SourceTabs");
+                            Assert.IsNotNull(tabs, testCase.Title + " should show source in TabView.");
+                            Assert.AreEqual(2, tabs.Items.Count,
+                                testCase.Title + " should expose XAML and C# source tabs.");
+                        }
+                        finally
+                        {
+                            window.Close();
+                        }
                     }
                 }
                 finally
@@ -3701,7 +3725,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void GlyphsPage_ContainsSourceLinksForEachExample()
+        public void GlyphsPage_UsesInlineIconCatalogSourceSample()
         {
             RunOnSta(() =>
             {
@@ -3731,18 +3755,19 @@ namespace Fluence.Wpf.Tests
                         window.UpdateLayout();
                         Drain(window.Dispatcher);
 
-                        var expected = ExpectedSourceUris(
-                            "Glyphs/IconCatalog.xaml"
-                        );
+                        var actions = FindSourceActionControls(page);
+                        Assert.AreEqual(0, actions.Count,
+                            "The Iconography page should expose source through the inline sample expander.");
 
+                        DemoSampleControl sample = null;
+                        foreach (var candidate in FindAllVisualChildren<DemoSampleControl>(page))
+                        {
+                            sample = candidate;
+                            break;
+                        }
 
-                        var actual = CollectSourceActionTargetUris(page);
-
-
-                        CollectionAssert.AreEquivalent(
-                            expected,
-                            actual,
-                            "Each Glyphs page example must expose source targets to its sample files.");
+                        Assert.IsNotNull(sample, "The Iconography page should host its catalog in DemoSampleControl.");
+                        Assert.AreEqual("Glyphs/IconCatalog.xaml", sample.SourcePath);
                     }
                     finally
                     {
@@ -4571,6 +4596,22 @@ namespace Fluence.Wpf.Tests
             }
 
             return false;
+        }
+
+        private sealed class DesignPageCase
+        {
+            public DesignPageCase(string title, string sourcePath, Func<UserControl> createPage)
+            {
+                Title = title;
+                SourcePath = sourcePath;
+                CreatePage = createPage;
+            }
+
+            public string Title { get; private set; }
+
+            public string SourcePath { get; private set; }
+
+            public Func<UserControl> CreatePage { get; private set; }
         }
 
         private static bool HasColoredSourceRuns(RichTextBox sourceViewer)

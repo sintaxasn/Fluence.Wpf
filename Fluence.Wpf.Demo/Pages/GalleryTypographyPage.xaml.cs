@@ -54,6 +54,7 @@ namespace Fluence.Wpf.Demo.Pages
         {
             InitializeComponent();
             BuildTypographyTable();
+            WrapTypographyTable();
         }
 
         private void BuildTypographyTable()
@@ -142,6 +143,27 @@ namespace Fluence.Wpf.Demo.Pages
             Grid.SetRow(element, row);
             Grid.SetColumn(element, column);
             TypographyTable.Children.Add(element);
+        }
+
+        private void WrapTypographyTable()
+        {
+            var parent = TypographyTable.Parent as Panel;
+            if (parent == null)
+            {
+                return;
+            }
+
+            var index = parent.Children.IndexOf(TypographyTable);
+            TypographyTable.Margin = new Thickness(0);
+            parent.Children.Remove(TypographyTable);
+            parent.Children.Insert(index, new DemoSampleControl
+            {
+                Margin = new Thickness(0, 12, 0, 0),
+                Title = "Typography scale",
+                Description = "Supported text styles, variable font roles, and line-height guidance.",
+                SourcePath = "Typography/TypographyTable.xaml",
+                SampleContent = TypographyTable
+            });
         }
 
         private static void CopyStyleKey_Click(object sender, RoutedEventArgs e)
