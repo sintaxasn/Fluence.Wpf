@@ -18,7 +18,7 @@
                 x:Name="CategoryPageDescription"
                 Margin="0,0,0,24"
                 Style="{StaticResource SectionDescriptionStyle}" />
-            <UniformGrid x:Name="CategoryCardsGrid" Columns="3" />
+            <WrapPanel x:Name="CategoryCardsGrid" />
         </StackPanel>
     </ui:SmoothScrollViewer>
 </UserControl>

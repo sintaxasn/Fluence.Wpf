@@ -733,6 +733,28 @@ namespace Fluence.Wpf.Tests
 
                     Assert.IsNotNull(buttonCard, "Category overview should include a clickable card for Button.");
                     Assert.IsTrue(buttonCard.IsClickable, "Category overview cards should be clickable.");
+                    Assert.AreEqual(300.0, buttonCard.Width,
+                        "Category cards should match the WinUI Gallery overview card width.");
+                    Assert.AreEqual(96.0, buttonCard.Height,
+                        "Category cards should match the WinUI Gallery overview card height.");
+
+                    System.Windows.Controls.Image buttonCardImage = null;
+                    foreach (var image in FindAllVisualChildren<System.Windows.Controls.Image>(buttonCard))
+                    {
+                        buttonCardImage = image;
+                        break;
+                    }
+                    Assert.IsNotNull(buttonCardImage, "Category cards should show the WinUI Gallery control asset.");
+                    Assert.AreEqual(32.0, buttonCardImage.Width,
+                        "Category card images should match the WinUI Gallery 32px icon slot.");
+                    Assert.IsNotNull(buttonCardImage.Source, "Category card images should resolve to a WPF resource.");
+                    StringAssert.Contains(buttonCardImage.Source.ToString(), "/Resources/ControlImages/Button.png");
+
+                    var cardTexts = CollectTextBlockTexts(buttonCard);
+                    CollectionAssert.Contains(cardTexts, "Button",
+                        "Category cards should show the child page title.");
+                    CollectionAssert.Contains(cardTexts, "A control that responds to user input and raises a Click event.",
+                        "Category cards should show the WinUI Gallery card subtitle.");
 
                     buttonCard.RaiseEvent(new RoutedEventArgs(Card.ClickEvent, buttonCard));
                     Drain(window.Dispatcher);
