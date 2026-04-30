@@ -3404,6 +3404,80 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void GlyphsPage_DarkTheme_UsesFluentListViewSurface()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                ApplicationThemeManager.ResetForTesting();
+                ApplicationAccentColorManager.ResetForTesting();
+                app.Resources.MergedDictionaries.Clear();
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, true);
+                var demoShared = new ResourceDictionary
+                {
+                    Source = new Uri("/Fluence.Wpf.Demo;component/Resources/DemoSharedStyles.xaml", UriKind.Relative)
+                };
+                app.Resources.MergedDictionaries.Add(demoShared);
+
+                try
+                {
+                    var page = new GalleryGlyphsPage();
+                    var host = new System.Windows.Controls.Grid();
+                    host.Children.Add(page);
+                    var window = new Window
+                    {
+                        Left = -20000,
+                        Top = -20000,
+                        Width = 1040,
+                        Height = 720,
+                        WindowStartupLocation = WindowStartupLocation.Manual,
+                        ShowInTaskbar = false,
+                        Content = host
+                    };
+
+                    try
+                    {
+                        window.Show();
+                        Drain(window.Dispatcher);
+                        window.UpdateLayout();
+                        Drain(window.Dispatcher);
+
+                        var list = FindByName<System.Windows.Controls.ListView>(page, "IconCatalogList");
+                        Assert.IsNotNull(list, "The Iconography page should render the icon catalog list in dark mode.");
+                        Assert.IsInstanceOfType(
+                            list,
+                            typeof(Fluence.Wpf.Controls.ListView),
+                            "The Iconography catalog must use the Fluence ListView so its surface and scroll viewer follow dark theme resources.");
+
+                        var background = list.Background as SolidColorBrush;
+                        Assert.IsNotNull(background, "The themed icon catalog surface should resolve a concrete brush in dark mode.");
+                        Assert.AreEqual(Colors.Transparent, background.Color,
+                            "The dark Iconography catalog should not paint the stock WPF Window background over its Fluent cards.");
+
+                        var realizedIconCount = 0;
+                        foreach (var icon in FindAllVisualChildren<FontIcon>(list))
+                        {
+                            if (icon.IsVisible)
+                            {
+                                realizedIconCount++;
+                            }
+                        }
+
+                        Assert.IsTrue(realizedIconCount > 0, "The dark Iconography catalog should realize visible icon cells.");
+                    }
+                    finally
+                    {
+                        window.Close();
+                    }
+                }
+                finally
+                {
+                    app.Resources.MergedDictionaries.Remove(demoShared);
+                }
+            });
+        }
+
+        [TestMethod]
         public void GlyphsPage_ContainsSourceLinksForEachExample()
         {
             RunOnSta(() =>

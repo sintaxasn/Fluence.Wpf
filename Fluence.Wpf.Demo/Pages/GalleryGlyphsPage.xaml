@@ -54,7 +54,7 @@
             Grid.Row="2"
             Padding="0"
             Variant="{x:Static uicore:CardVariant.Default}">
-            <ListView
+            <ui:ListView
                 x:Name="IconCatalogList"
                 BorderThickness="0"
                 ScrollViewer.CanContentScroll="True"
@@ -62,7 +62,7 @@
                 ScrollViewer.VerticalScrollBarVisibility="Auto"
                 VirtualizingStackPanel.IsVirtualizing="True"
                 VirtualizingStackPanel.VirtualizationMode="Recycling">
-                <ListView.ItemContainerStyle>
+                <ui:ListView.ItemContainerStyle>
                     <Style TargetType="{x:Type ListViewItem}">
                         <Setter Property="Focusable" Value="False" />
                         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -80,13 +80,13 @@
                             </Setter.Value>
                         </Setter>
                     </Style>
-                </ListView.ItemContainerStyle>
-                <ListView.ItemsPanel>
+                </ui:ListView.ItemContainerStyle>
+                <ui:ListView.ItemsPanel>
                     <ItemsPanelTemplate>
                         <VirtualizingStackPanel />
                     </ItemsPanelTemplate>
-                </ListView.ItemsPanel>
-                <ListView.ItemTemplate>
+                </ui:ListView.ItemsPanel>
+                <ui:ListView.ItemTemplate>
                     <DataTemplate>
                         <ItemsControl Margin="10,6" ItemsSource="{Binding Items}">
                             <ItemsControl.ItemsPanel>
@@ -135,8 +135,8 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </DataTemplate>
-                </ListView.ItemTemplate>
-            </ListView>
+                </ui:ListView.ItemTemplate>
+            </ui:ListView>
         </ui:Card>
     </Grid>
 </UserControl>
