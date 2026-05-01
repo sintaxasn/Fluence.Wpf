@@ -221,6 +221,8 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateItemContainersFocusable()
         {
+            // Only realized containers exist when virtualization is active. Future
+            // containers receive the same mirrored value in PrepareContainerForItemOverride.
             foreach (var item in Items)
             {
                 var container = ItemContainerGenerator.ContainerFromItem(item) as DependencyObject;

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -35,8 +35,8 @@ using Fluence.Wpf.Controls;
 namespace Fluence.Wpf.Tests
 {
     /// <summary>
-    /// Tests for the rewritten <see cref="ProgressRing"/> — XAML-driven 5-dot orbit
-    /// indeterminate animation (WinUI canonical) plus code-driven determinate arc.
+    /// Tests for the rewritten <see cref="ProgressRing"/> — arc-based indeterminate
+    /// animation plus code-driven determinate arc.
     /// </summary>
     public partial class ControlTests
     {
@@ -82,11 +82,11 @@ namespace Fluence.Wpf.Tests
         }
 
         // ──────────────────────────────────────────────────────────────────────
-        // Indeterminate template — five orbit dots with rotate transforms
+        // Indeterminate template — caterpillar arc path
         // ──────────────────────────────────────────────────────────────────────
 
         [TestMethod]
-        public void ProgressRing_Indeterminate_TemplateContainsFiveOrbitDots()
+        public void ProgressRing_Indeterminate_TemplateContainsCaterpillarArc()
         {
             WpfTestSta.Invoke(() =>
             {
@@ -98,11 +98,15 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                for (int i = 1; i <= 5; i++)
-                {
-                    var dot = FindVisualChildByName<Ellipse>(ring, "E" + i);
-                    Assert.IsNotNull(dot, "ProgressRing template must contain orbit-dot Ellipse E" + i + ".");
-                }
+                var arc = FindVisualChildByName<Path>(ring, "PART_IndeterminateArc");
+                Assert.IsNotNull(arc, "ProgressRing template must contain PART_IndeterminateArc.");
+                Assert.AreEqual(Visibility.Visible, arc.Visibility,
+                    "Indeterminate arc should be visible when IsActive=True and IsIndeterminate=True.");
+                Assert.IsNotNull(arc.Data,
+                    "Indeterminate arc Path.Data should be populated by the caterpillar geometry renderer.");
+
+                var dotHost = FindVisualChildByName<Grid>(ring, "DotHost");
+                Assert.IsNull(dotHost, "Default ProgressRing template should no longer use the legacy orbit-dot host.");
 
                 w.Close();
             });
@@ -253,6 +257,70 @@ namespace Fluence.Wpf.Tests
                     "Switching to indeterminate must clear the determinate arc geometry.");
 
                 w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void ProgressRing_SwitchToDeterminate_ClearsIndeterminateArcGeometry()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                var app = EnsureApplication();
+                MergeGenericDictionary(app);
+
+                var ring = new ProgressRing
+                {
+                    IsIndeterminate = true,
+                    Width = 64,
+                    Height = 64,
+                    Value = 75
+                };
+                var w = new Window { Content = ring, Width = 200, Height = 200 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                var indeterminateArc = FindVisualChildByName<Path>(ring, "PART_IndeterminateArc");
+                Assert.IsNotNull(indeterminateArc, "PART_IndeterminateArc must exist.");
+                Assert.IsNotNull(indeterminateArc.Data, "Pre-condition: indeterminate arc has geometry.");
+
+                ring.IsIndeterminate = false;
+                DrainDispatcher(w.Dispatcher);
+
+                Assert.IsNull(indeterminateArc.Data,
+                    "Switching to determinate must clear the indeterminate arc geometry.");
+
+                w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void ProgressRing_Unloaded_ClearsIndeterminateArcGeometry()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                var app = EnsureApplication();
+                MergeGenericDictionary(app);
+
+                var ring = new ProgressRing
+                {
+                    IsIndeterminate = true,
+                    Width = 64,
+                    Height = 64,
+                    IsActive = true
+                };
+                var w = new Window { Content = ring, Width = 200, Height = 200 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                var indeterminateArc = FindVisualChildByName<Path>(ring, "PART_IndeterminateArc");
+                Assert.IsNotNull(indeterminateArc, "PART_IndeterminateArc must exist.");
+                Assert.IsNotNull(indeterminateArc.Data, "Pre-condition: indeterminate arc has geometry.");
+
+                w.Close();
+                DrainDispatcher(w.Dispatcher);
+
+                Assert.IsNull(indeterminateArc.Data,
+                    "Unloading an active indeterminate ProgressRing must clear repeat-forever animation geometry.");
             });
         }
 

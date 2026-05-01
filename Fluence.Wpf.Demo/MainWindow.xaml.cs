@@ -415,6 +415,9 @@ namespace Fluence.Wpf.Demo
             _compactSectionPopup.PlacementTarget = sectionItem;
             _compactSectionPopupItemsPanel.Children.Clear();
 
+            // The real child NavigationViewItems stay in DemoNav so selection/content
+            // routing remains single-source. The popup creates lightweight buttons that
+            // point back to those existing containers through Tag.
             foreach (var child in children)
             {
                 _compactSectionPopupItemsPanel.Children.Add(CreateCompactSectionPopupButton(child));
@@ -542,6 +545,9 @@ namespace Fluence.Wpf.Demo
             _restoringSelection = true;
             try
             {
+                // In compact mode the selected rail item is the section header, but the
+                // displayed content belongs to the clicked child. Suppress the normal
+                // selection handler so it does not immediately toggle the section popup.
                 DemoNav.SelectedItem = sectionItem;
             }
             finally

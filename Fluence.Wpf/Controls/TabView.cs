@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -188,6 +188,9 @@ namespace Fluence.Wpf.Controls
         {
             base.OnApplyTemplate();
 
+            // Templates can be replaced at runtime. Detach old part handlers before
+            // reading the new template parts so repeated ApplyTemplate calls do not
+            // accumulate event subscriptions.
             if (_addTabButton != null)
             {
                 _addTabButton.Click -= OnAddTabButtonClick;
@@ -306,6 +309,8 @@ namespace Fluence.Wpf.Controls
 
             var forwarded = new TabViewTabCloseRequestedEventArgs(TabCloseRequestedEvent, this, inner.Tab, inner.Item);
             RaiseEvent(forwarded);
+            // Consumers should handle one aggregate close request from TabView rather
+            // than both the child TabViewItem event and the forwarded parent event.
             e.Handled = true;
         }
     }

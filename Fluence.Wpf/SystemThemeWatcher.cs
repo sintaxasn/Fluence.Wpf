@@ -77,6 +77,8 @@ namespace Fluence.Wpf
                 }
                 else
                 {
+                    // HwndSource does not exist until SourceInitialized. Defer the native
+                    // hook rather than forcing handle creation during construction.
                     window.SourceInitialized += OnWindowSourceInitialized;
                 }
             }
@@ -206,6 +208,8 @@ namespace Fluence.Wpf
 
             Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
+                // Settings messages arrive on the HWND hook path. Re-enter through the
+                // Dispatcher so ResourceDictionary mutation stays on the WPF UI thread.
                 if (ApplicationThemeManager.CurrentTheme == ApplicationTheme.Auto)
                 {
                     ApplicationThemeManager.ApplySystemTheme();

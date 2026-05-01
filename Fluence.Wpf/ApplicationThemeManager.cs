@@ -169,6 +169,9 @@ namespace Fluence.Wpf
             var typographyDict = LoadDictionary(PackBase + "Themes/Typography/Typography.xaml");
             var genericDict = LoadDictionary(PackBase + "Themes/Generic.xaml");
 
+            // Insert into fixed slots instead of appending. Tests assert this shape because
+            // theme swaps depend on replacing slot 0 while preserving accent, brushes,
+            // typography, and control-template dictionaries.
             dictionaries.Insert(SlotTheme, themeDict);
             dictionaries.Insert(SlotAccent, accentDict);
             dictionaries.Insert(SlotBrushes, brushesDict);
@@ -199,6 +202,9 @@ namespace Fluence.Wpf
 
             if (resolvedTheme != ApplicationTheme.HighContrast)
             {
+                // Leaving High Contrast must restore normal brush precedence. Reloading the
+                // brush dictionary recreates dynamic SolidColorBrush bindings against the
+                // newly-promoted color keys.
                 ReloadAndPromoteBrushes(dictionaries);
             }
 

@@ -441,6 +441,9 @@ namespace Fluence.Wpf.Controls
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
+            // These part names match the shipped FluenceWindow.xaml template. They remain
+            // deliberately tolerant: an incomplete design-time template should disable only
+            // caption-button behavior rather than failing the whole window.
             _minimizeButton = GetTemplateChild("MinimizeButton") as System.Windows.Controls.Button;
             _maximizeButton = GetTemplateChild("MaximizeButton") as System.Windows.Controls.Button;
             _restoreButton = GetTemplateChild("RestoreButton") as System.Windows.Controls.Button;
@@ -809,6 +812,9 @@ namespace Fluence.Wpf.Controls
         {
             if (msg == NativeConstants.WM_NCHITTEST)
             {
+                // WindowChrome routes the whole title bar through WM_NCHITTEST. We return
+                // HTCAPTION for drag regions, HTMAXBUTTON for Windows 11 snap-layout hover,
+                // and 0 for WPF-controlled buttons or interactive custom title-bar content.
                 var result = HitTestTitleBar(lParam);
                 if (result == NativeConstants.HTMAXBUTTON)
                 {

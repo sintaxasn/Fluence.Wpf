@@ -298,6 +298,9 @@ namespace Fluence.Wpf.Controls
 
                 ApplyFillBrushForMode();
 
+                // PART_Track can report 0 width during template application. Queue one
+                // layout-priority update so determinate fills render correctly after the
+                // first measure/arrange pass.
                 Dispatcher.BeginInvoke(
                     new Action(() => UpdateFillWidth(false)),
                     System.Windows.Threading.DispatcherPriority.Loaded);
@@ -357,7 +360,7 @@ namespace Fluence.Wpf.Controls
             }
 
             // WinUI 3 canonical timing: both bars on a 2.0 s repeat cycle.
-            // Bar 1 travels 0 → 1.5 s then holds; bar 2 is delayed 0.75 s.
+            // Bar 1 travels 0 to 1.5 s then holds; bar 2 is delayed 0.75 s.
             // (Authority: WinUI_XAML/Controls/ProgressBar.xaml Indeterminate VSM)
             StartTranslateAnimation(
                 _indeterminateTranslate,

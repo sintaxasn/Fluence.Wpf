@@ -2546,12 +2546,8 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void ProgressRing_Indeterminate_DotHostBecomesVisible()
+        public void ProgressRing_Indeterminate_CaterpillarArcBecomesVisible()
         {
-            // The 2026-04-27 ProgressRing rewrite replaced the single PART_IndeterminateRing
-            // ellipse + StrokeDashArray approximation with the WinUI canonical 5-dot orbit
-            // (E1…E5), wrapped in a "DotHost" Grid that flips to Visible via a MultiTrigger
-            // on (IsActive=True, IsIndeterminate=True).
             RunOnStaThread(() =>
             {
                 var application = EnsureApplication();
@@ -2573,13 +2569,15 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     ring.ApplyTemplate();
-                    var dotHost = ring.Template.FindName("DotHost", ring) as FrameworkElement;
-                    Assert.IsNotNull(dotHost, "DotHost Grid should exist in the indeterminate template.");
-                    Assert.AreEqual(Visibility.Visible, dotHost.Visibility,
-                        "DotHost should be Visible when IsActive=True and IsIndeterminate=True.");
+                    var indeterminateArc = ring.Template.FindName("PART_IndeterminateArc", ring) as System.Windows.Shapes.Path;
+                    Assert.IsNotNull(indeterminateArc, "PART_IndeterminateArc should exist in the indeterminate template.");
+                    Assert.AreEqual(Visibility.Visible, indeterminateArc.Visibility,
+                        "PART_IndeterminateArc should be Visible when IsActive=True and IsIndeterminate=True.");
+                    Assert.IsNotNull(indeterminateArc.Data,
+                        "PART_IndeterminateArc should have non-null Data for the caterpillar geometry.");
 
-                    var firstDot = ring.Template.FindName("E1", ring) as System.Windows.Shapes.Ellipse;
-                    Assert.IsNotNull(firstDot, "Orbit-dot E1 should exist in the indeterminate template.");
+                    var dotHost = ring.Template.FindName("DotHost", ring) as FrameworkElement;
+                    Assert.IsNull(dotHost, "DotHost should not exist in the default arc-based template.");
                 }
                 finally
                 {

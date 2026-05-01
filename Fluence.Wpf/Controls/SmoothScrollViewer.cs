@@ -113,6 +113,9 @@ namespace Fluence.Wpf.Controls
         /// <inheritdoc />
         protected override void OnMouseWheel(MouseWheelEventArgs e)
         {
+            // Animate an internal DP rather than repeatedly calling ScrollTo* from the
+            // wheel handler. The DP callback performs the actual scroll, while the target
+            // offset lets quick wheel input coalesce into a single eased destination.
             double delta = e.Delta * 0.6;
             bool isHorizontal = (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift;
 

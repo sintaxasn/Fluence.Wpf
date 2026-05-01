@@ -2,12 +2,28 @@
 
 This file tracks optional follow-ups and deliberate non-features. Filed bugs with reproductions live on the issue tracker; this is the consolidated view for maintainers.
 
-## Current follow-ups (not defects)
+## Current follow-ups (validated 2026-05-01)
 
-- **`TabView` drag-to-reorder** - `TabView` / `TabViewItem` ship with closable tabs, an add-tab button, per-tab icons, overflow scroll, and width / overlay modes. Drag-and-drop tab reordering (including cross-window tear-off) is **not** implemented; consumers that need it should handle `PreviewMouseMove` / drag-drop themselves. This is the main remaining gap vs. WinUI 3 `TabView`.
-- **Navigation back-stack** - `NavigationView.IsBackButtonVisible` + `IsBackEnabled` + `BackRequested` are exposed, but the library does **not** track page history. The demo does not use the back button; consumers are expected to own their own back stack and route `BackRequested`.
-- **Per-control screenshots** - `docs/screenshots/` now contains `banner-{light|dark|highcontrast}-{1|1.5}x.png`, regenerated via the opt-in `GalleryScreenshotHarness` (`FLUENCE_CAPTURE_SCREENSHOTS=1`). Per-control captures (buttons, inputs, navigation, etc.) at 100 % / 150 % are still pending and can reuse the same harness by pointing it at a different demo page.
-- **`RenderTargetBitmap` vs DWM backdrop** - DWM Mica / Acrylic is composed by the window manager and is **not** visible to `RenderTargetBitmap`. The screenshot harness therefore hosts the gallery inside a plain `Window` with a solid `SolidBackgroundFillColorBaseBrush`. Any future automated capture of the full `FluenceWindow` chrome will need a different approach (e.g. `PrintWindow` / GDI screen capture).
+- **`TabView` drag-to-reorder** - `TabView` / `TabViewItem` ship with closable tabs, an add-tab button, per-tab icons, overflow scroll, and width / overlay modes.
+  - **Status:** Valid non-feature. Drag-and-drop tab reordering and cross-window tear-off are not implemented.
+  - **Evidence:** `TabView.cs` exposes add/close/scroll events and container generation, but no `AllowDrop`, drag-event, or reorder logic exists in `Fluence.Wpf/Controls/TabView*.cs`; `TabViewTests.cs` covers close/add/visibility behavior only.
+  - **Plan:** Add as a separate feature: define whether the API is item-reordering only or also tear-off; add routed reorder events and keyboard-accessible move commands; test item-source and direct-item modes; visually verify reorder insertion cues against WinUI 3 guidance.
+- **Navigation back-stack** - `NavigationView.IsBackButtonVisible` + `IsBackEnabled` + `BackRequested` are exposed, but the library does **not** track page history.
+  - **Status:** Valid deliberate design boundary. Consumers own page routing and history.
+  - **Evidence:** `NavigationView.cs` raises `BackRequested`; the gallery `MainWindow` drives navigation from `DemoNavigationCatalog` and selected items without a journal/back-stack type.
+  - **Plan:** Keep library behavior unchanged unless a future request asks for a history helper. If added, implement it as an optional demo/service layer component rather than coupling `NavigationView` to page lifetime.
+- **Per-control screenshots** - `docs/screenshots/` contains `banner-{light|dark|highcontrast}-{1|1.5}x.png`, regenerated via the opt-in `GalleryScreenshotHarness` (`FLUENCE_CAPTURE_SCREENSHOTS=1`).
+  - **Status:** Valid documentation backlog. Per-control captures at 100 % / 150 % are still pending.
+  - **Evidence:** `GalleryScreenshotHarness.cs` only writes `banner-*` images; `docs/controls.md` documents the banner capture workflow and notes that per-control screenshots remain under `docs/images/`.
+  - **Plan:** Extend the harness with named page/control capture targets, write deterministic filenames under `docs/images/`, and update `docs/controls.md` with capture commands and image references.
+- **`RenderTargetBitmap` vs DWM backdrop** - DWM Mica / Acrylic is composed by the window manager and is **not** visible to `RenderTargetBitmap`.
+  - **Status:** Valid technical limitation.
+  - **Evidence:** `GalleryScreenshotHarness.cs` hosts `GalleryHomePage` in a plain `Window` with `SolidBackgroundFillColorBaseBrush`, and comments there document why `FluenceWindow` DWM backdrops are excluded.
+  - **Plan:** Keep `RenderTargetBitmap` for control-surface captures. If full chrome/backdrop screenshots are required, add a separate Windows-only capture path using `PrintWindow`/GDI or a screen-capture helper and gate it behind an explicit environment variable.
+- **TreeView large-data virtualization** - `TreeView` currently favors smooth pixel scrolling over container virtualization.
+  - **Status:** Valid performance follow-up, not a correctness defect for current demo-scale trees.
+  - **Evidence:** `Themes/Controls/TreeView.xaml` sets `CanContentScroll="False"` and does not enable `VirtualizingPanel.IsVirtualizing`; this is a known WPF virtualization breaker for large item counts. `ListView.xaml` and `ListBox.xaml` already enable recycling virtualization, so the gap is TreeView-specific.
+  - **Plan:** Add a focused TreeView virtualization spike: test large hierarchical item counts, decide whether smooth scrolling or virtualization wins by default, and consider an opt-in style/resource key for virtualized trees if changing the default would alter existing scrolling behavior.
 
 ## Resolved (Unreleased)
 
