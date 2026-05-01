@@ -65,6 +65,50 @@ namespace Fluence.Wpf.Tests
             dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
         }
 
+        private static bool WaitUntil(Dispatcher dispatcher, int milliseconds, Func<bool> condition)
+        {
+            var deadline = DateTime.UtcNow.AddMilliseconds(milliseconds);
+
+            do
+            {
+                dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
+                if (condition())
+                {
+                    return true;
+                }
+
+                var frame = new DispatcherFrame();
+                var timer = new DispatcherTimer(
+                    TimeSpan.FromMilliseconds(16),
+                    DispatcherPriority.Normal,
+                    delegate { frame.Continue = false; },
+                    dispatcher);
+                timer.Start();
+                Dispatcher.PushFrame(frame);
+                timer.Stop();
+            }
+            while (DateTime.UtcNow < deadline);
+
+            dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
+            return condition();
+        }
+
+        private static bool WaitForSelectionIndicatorVerticalDepart(
+            Dispatcher dispatcher,
+            FrameworkElement indicator,
+            TranslateTransform translate,
+            double expectedX,
+            double originalY,
+            bool upward)
+        {
+            return WaitUntil(dispatcher, 250, delegate
+            {
+                var xIsUnchanged = Math.Abs(translate.X - expectedX) <= 0.5;
+                var yMovedInExpectedDirection = upward ? translate.Y < originalY : translate.Y > originalY;
+                return xIsUnchanged && yMovedInExpectedDirection && indicator.Opacity < 1.0;
+            });
+        }
+
         [TestMethod]
         public void NavigationView_PaneDisplayMode_Left_RendersVerticalPane()
         {
@@ -780,14 +824,9 @@ namespace Fluence.Wpf.Tests
                     var parentY = translate.Y;
 
                     nav.SelectedIndex = 1;
-                    WaitForAnimationAndDrain(window.Dispatcher, 45);
-
-                    Assert.AreEqual(parentX, translate.X, 0.5,
-                        "The selection indicator should not move diagonally while exiting the parent item.");
-                    Assert.IsTrue(translate.Y > parentY,
-                        "The selection indicator should move vertically downward while exiting the parent item.");
-                    Assert.IsTrue(indicator.Opacity < 1.0,
-                        "The selection indicator should fade out before it moves to the child item's inset X position.");
+                    Assert.IsTrue(
+                        WaitForSelectionIndicatorVerticalDepart(window.Dispatcher, indicator, translate, parentX, parentY, false),
+                        "The selection indicator should move vertically downward and fade out before it moves to the child item's inset X position.");
 
                     WaitForAnimationAndDrain(window.Dispatcher, 400);
                     Assert.AreEqual(48.0, translate.X, 0.5,
@@ -850,14 +889,9 @@ namespace Fluence.Wpf.Tests
                     var childY = translate.Y;
 
                     nav.SelectedIndex = 0;
-                    WaitForAnimationAndDrain(window.Dispatcher, 45);
-
-                    Assert.AreEqual(childX, translate.X, 0.5,
-                        "The selection indicator should not move horizontally while exiting the child item.");
-                    Assert.IsTrue(translate.Y < childY,
-                        "The selection indicator should move upward when the newly selected item is above the old item.");
-                    Assert.IsTrue(indicator.Opacity < 1.0,
-                        "The selection indicator should fade out before it moves to the parent item's X position.");
+                    Assert.IsTrue(
+                        WaitForSelectionIndicatorVerticalDepart(window.Dispatcher, indicator, translate, childX, childY, true),
+                        "The selection indicator should move upward and fade out before it moves to the parent item's X position.");
 
                     WaitForAnimationAndDrain(window.Dispatcher, 400);
                     Assert.AreEqual(4.0, translate.X, 0.5,

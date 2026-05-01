@@ -9,6 +9,7 @@
     <AssemblyName>Fluence.Wpf.Tests</AssemblyName>
     <IsPackable>false</IsPackable>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <TestTfmsInParallel>false</TestTfmsInParallel>
   </PropertyGroup>
 
   <ItemGroup>

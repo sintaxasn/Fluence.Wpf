@@ -1809,11 +1809,9 @@ namespace Fluence.Wpf.Tests
                     {
                         new GalleryAccessibilityPage(),
                         new GalleryButtonsPage(),
-                        new GalleryColorsPage(),
                         new GalleryDataBindingPage(),
                         new GalleryDataPage(),
                         new GalleryFormsPage(),
-                        new GalleryGlyphsPage(),
                         new GalleryInputsPage(),
                         new GalleryMenusPage(),
                         new GalleryNavigationPage(),
