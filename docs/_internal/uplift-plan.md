@@ -1,4 +1,4 @@
-# Fluence.Wpf Control Uplift Plan
+﻿# Fluence.Wpf Control Uplift Plan
 
 > Internal working document. Not part of the public `docs/` set per CLAUDE.md §10.
 

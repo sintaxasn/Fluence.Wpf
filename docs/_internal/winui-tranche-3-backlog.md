@@ -1,4 +1,4 @@
-# WinUI Tranche-3 Backlog
+﻿# WinUI Tranche-3 Backlog
 
 > **Date:** 2026-04-26
 > **Source scanned:** `F:\StagedMigration\microsoft-ui-xaml-main\src\controls\dev\`

@@ -1,4 +1,4 @@
-# WI-1 / Migration Baseline Evidence
+﻿# WI-1 / Migration Baseline Evidence
 
 Internal working doc for the Fluence.Wpf / PSADT migration plan. Records
 baselines at each stage so regressions are provable. Not part of the public
@@ -185,7 +185,7 @@ Post-fix baseline:
 
 Audit + TDD regression guard — no source change needed. Caption buttons on
 [FluenceWindow.xaml:203-251](../../Fluence.Wpf/Themes/Controls/FluenceWindow.xaml)
-(`MinimizeButton`, `MaximizeButton`, `RestoreButton`, `CloseButton`) are already
+(`PART_MinimizeButton`, `PART_MaximizeButton`, `PART_RestoreButton`, `PART_CloseButton`) are already
 bound to `SystemCommands.{Minimize,Maximize,Restore,Close}WindowCommand` via
 `Command="{x:Static ...}"`. The matching `CommandBinding`s are registered in
 [FluenceWindow.cs:394-397](../../Fluence.Wpf/Controls/FluenceWindow.cs) and

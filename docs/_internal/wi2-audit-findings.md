@@ -12,9 +12,9 @@
 
 ## Summary
 
-**No functional defects.** The audit surfaced four convention-level findings; none alter observable behaviour, none break the PSADT consumer contract (`ApplicationThemeManager.Apply`, `.Changed`, `.CurrentTheme`; `ApplicationAccentColorManager.ApplyCustomAccent`; `MinimizeButtonVisibility`, `IsMinimizable`, `SystemBackdropType`, `CornerStyle`, `TitleBarHeight`, `ExtendsContentIntoTitleBar`, `ShowIcon`, `ShowTitle`).
+**No functional defects.** The audit surfaced four convention-level findings; none alter observable behaviour, none break the PSADT consumer contract (`ApplicationThemeManager.Apply`, `.Changed`, `.CurrentTheme`; `ApplicationAccentColorManager.ApplyCustomAccent`; `IsMinimizeButtonVisible`, `IsMinimizable`, `IsMoveable`, `SystemBackdropType`, `CornerStyle`, `TitleBarHeight`, `ExtendsContentIntoTitleBar`, `ShowIcon`, `ShowTitle`). The older `MinimizeButtonVisibility` and `CanMove` names are retained as obsolete FluenceWindow aliases.
 
-All four findings are judgment calls that can be deferred, documented, or landed under WI-2 Step 2.7 when the `wpf-xaml-designer` subagent touches the default template.
+**Remediated 2026-05-02.** Findings 1-3 are now landed in `FluenceWindow.xaml`, `FluenceWindow.cs`, the managed theme dictionaries, and regression tests. Finding 4 remains an accepted WPF-specific divergence.
 
 ---
 
@@ -38,37 +38,43 @@ No `StaticResource` usage in this file (it is pure C#, no XAML).
 
 ### Finding 1 — close button hover/pressed hex is hard-coded
 
-Lines ~145-180 (`WindowCloseButtonStyle`): `#C42B1C` (hover), `#B4271C` (pressed), `#FFFFFF` (foreground on hover/pressed).
+Original audit observation (`WindowCloseButtonStyle`): `#C42B1C` (hover), `#B4271C` (pressed), `#FFFFFF` (foreground on hover/pressed) were inlined in the control template.
 
 **Assessment:** The CommonStyles counterpart is `TitleBarCloseButtonBackgroundPointerOver` (which is also always that same red across Light/Dark/HighContrast because the system convention is "close button is always red on hover"). The values are correct, but CLAUDE.md §2 bans hard-coded hex in production templates.
 
 **Recommendation:** Add three brush keys (`WindowCloseButtonBackgroundPointerOver`, `WindowCloseButtonBackgroundPressed`, `WindowCloseButtonForegroundPointerOver`) to `Themes/Brushes/Brushes.xaml` and `Themes/Colors/Theme.{Light|Dark|HighContrast}.xaml`, swap the hard-coded hex for `DynamicResource` references. Preserve the existing red values across all three themes.
 
+**Status:** Remediated. The template now consumes `WindowCloseButtonBackgroundPointerOverBrush`, `WindowCloseButtonBackgroundPressedBrush`, and `WindowCloseButtonForegroundPointerOverBrush`; color values live in the three managed theme dictionaries.
+
 **Severity:** S (small, single template + 4 dictionary edits).
 
 ### Finding 2 — caption buttons lack `PART_` prefix on `x:Name`
 
-Lines ~230-290: `MinimizeButton`, `MaximizeButton`, `RestoreButton`, `CloseButton`.
+Original audit observation: the caption buttons were named `MinimizeButton`, `MaximizeButton`, `RestoreButton`, `CloseButton`.
 
-**Assessment:** CLAUDE.md §2 mandates `PART_Whatever` naming for template parts wired up in `OnApplyTemplate`. The `x:Name` values here are referenced directly from `FluenceWindow.OnApplyTemplate` via `GetTemplateChild("MinimizeButton")` etc.; the lookup works, but the naming convention drifts from the rest of the library.
+**Assessment:** CLAUDE.md §2 mandates `PART_Whatever` naming for template parts wired up in `OnApplyTemplate`. The old `x:Name` values were referenced directly from `FluenceWindow.OnApplyTemplate` via `GetTemplateChild("MinimizeButton")` etc.; the lookup worked, but the naming convention drifted from the rest of the library.
 
 **Recommendation:** Rename to `PART_MinimizeButton`, `PART_MaximizeButton`, `PART_RestoreButton`, `PART_CloseButton`. Update `FluenceWindow.OnApplyTemplate` accordingly. Add `[TemplatePart(Name = "PART_MinimizeButton", Type = typeof(Button))]` etc. to the class — see Finding 3.
+
+**Status:** Remediated. The default template now names all four caption buttons with the `PART_` prefix and tests locate those names.
 
 **Severity:** S (rename in two files).
 
 ### Finding 3 — no `[TemplatePart]` attributes on FluenceWindow class
 
-[FluenceWindow.cs](../../Fluence.Wpf/Controls/FluenceWindow.cs) currently has no `[TemplatePart]` attributes.
+Original audit observation: [FluenceWindow.cs](../../Fluence.Wpf/Controls/FluenceWindow.cs) had no `[TemplatePart]` attributes.
 
 **Assessment:** CLAUDE.md §2: "Template parts: `const string PART_Whatever = "PART_Whatever"`; annotate the class with `[TemplatePart(Name = PART_..., Type = typeof(T))]`."
 
 **Recommendation:** Co-land with Finding 2. Emit `const string PART_MinimizeButton = "PART_MinimizeButton"` etc. and attribute the class.
 
+**Status:** Remediated. `FluenceWindow` declares caption-button template-part constants and `[TemplatePart]` metadata for all four buttons.
+
 **Severity:** S (co-land with Finding 2).
 
 ### Finding 4 — Maximize and Restore are separate Button elements
 
-Rather than a single `PART_MaximizeRestoreButton` that swaps glyph via visual state (WinUI 3 idiom), the template has two Buttons (`MaximizeButton` + `RestoreButton`) that toggle `Visibility` via a Boolean-to-Visibility converter bound to `IsMaximized`.
+Rather than a single `PART_MaximizeRestoreButton` that swaps glyph via visual state (WinUI 3 idiom), the template has two Buttons (`PART_MaximizeButton` + `PART_RestoreButton`) that toggle `Visibility` via a Boolean-to-Visibility converter bound to `IsMaximized`.
 
 **Assessment:** WPF-idiomatic. Two separate buttons avoid the need for a visual state on glyph content (which is awkward in WPF Path-based templates), and command routing is cleaner because each button binds to its own `SystemCommands.Maximize` / `.Restore`. `CaptionButtonChrome.GetMaximizeRestoreChrome` returns the visibility pair.
 
@@ -112,9 +118,9 @@ The audit uncovered **zero** functional defects. Step 2.6 (TDD harden) therefore
 Test plan for Step 2.6:
 
 1. **Backdrop swap** — `SystemBackdropType=None` → `Acrylic` → `Mica` → `Tabbed` → `None`; assert `WindowPolicy.ResolveEffectiveBackdrop` downgrades on capability failure; assert no exception when window is shown.
-2. **Theme swap while shown** — Light → Dark → HighContrast → Light; assert four caption-button brush keys resolve to fresh brushes each swap (not stale references from previous theme).
-3. **Caption button routing** — synthesize `Click` on `MinimizeButton` / `MaximizeButton` / `RestoreButton` / `CloseButton`; assert `WindowState` transitions correctly. (`F4` from WI-1C is landed here.)
+2. **Theme swap while shown** — Light → Dark → HighContrast → Light; assert caption-button brush keys resolve to fresh brushes each swap (not stale references from previous theme).
+3. **Caption button routing** — synthesize `Click` on `PART_MinimizeButton` / `PART_MaximizeButton` / `PART_RestoreButton` / `PART_CloseButton`; assert `WindowState` transitions correctly. (`F4` from WI-1C is landed here.)
 4. **DPI change** — raise `DpiChanged`; assert caption height DP stays canonical and glyph container scales proportionally.
-5. **Win11 snap hit-test** — call `HitTestTitleBar` with points inside `MaximizeButton` bounds; assert returns `HTMAXBUTTON`; inside `MinimizeButton` bounds; assert returns `0`.
+5. **Win11 snap hit-test** — call `HitTestTitleBar` with points inside `PART_MaximizeButton` bounds; assert returns `HTMAXBUTTON`; inside `PART_MinimizeButton` bounds; assert returns `0`.
 
-Findings 1-3 are queued for Step 2.7 and can be batched into a single `wpf-xaml-designer` dispatch against `FluenceWindow.xaml` + `Theme.{Light|Dark|HC}.xaml` + `Brushes.xaml`. Finding 4 stays as-is.
+Findings 1-3 are landed and covered by `FluenceWindowHardenTests` plus caption-button routing tests. Finding 4 stays as-is.
