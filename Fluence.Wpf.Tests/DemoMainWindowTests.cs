@@ -908,6 +908,56 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void MainWindow_AllControlsItem_OpensAllControlsCategoryPage()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                MainWindow window = null;
+                try
+                {
+                    window = CreateShownMainWindow();
+                    var nav = GetDemoNav(window);
+                    var all = AssertNavigationItemExists(nav, "All");
+
+                    nav.SelectedItem = all;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    var selectedContent = nav.SelectedContent as DependencyObject;
+                    Assert.IsNotNull(selectedContent, "All controls should show a real page.");
+                    Assert.AreEqual("GalleryCategoryPage", selectedContent.GetType().Name,
+                        "All controls should use the same category overview shell as regular control groups.");
+
+                    var title = FindByName<System.Windows.Controls.TextBlock>(selectedContent, "CategoryPageTitle");
+                    Assert.IsNotNull(title, "All controls page should expose CategoryPageTitle.");
+                    Assert.AreEqual("All controls", title.Text);
+
+                    var texts = CollectTextBlockTexts(selectedContent);
+                    CollectionAssert.Contains(texts, "Button",
+                        "All controls page should list implemented controls, not the home page featured grid.");
+                    Assert.IsNull(FindByName<FrameworkElement>(selectedContent, "FeaturedControlsGrid"),
+                        "All controls should not route back to the home page.");
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
         public void MainWindow_CategoryCardNavigation_ClearsActiveSearchFilter()
         {
             RunOnSta(() =>
@@ -1184,6 +1234,159 @@ namespace Fluence.Wpf.Tests
                     var title = FindByName<System.Windows.Controls.TextBlock>(selectedContent, "ControlPageTitle");
                     Assert.IsNotNull(title, "The Button child page should expose ControlPageTitle.");
                     Assert.AreEqual("Button", title.Text);
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void MainWindow_NavigateTo_CompactChildRoutesThroughParentSelection()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                MainWindow window = null;
+                try
+                {
+                    window = CreateShownMainWindow();
+                    var nav = GetDemoNav(window);
+                    var basicInput = AssertNavigationItemExists(nav, "Basic input");
+                    var button = AssertNavigationItemExists(nav, "Button");
+
+                    nav.IsPaneOpen = false;
+                    WaitForAnimationAndDrain(window.Dispatcher, 180);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    window.NavigateTo("Button");
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.AreSame(basicInput, nav.SelectedItem,
+                        "Programmatic compact navigation to a child should keep the parent rail item selected.");
+                    Assert.AreEqual(Visibility.Collapsed, button.Visibility,
+                        "Programmatic compact navigation should not reveal inline child rows.");
+
+                    var selectedContent = nav.SelectedContent as DependencyObject;
+                    Assert.IsNotNull(selectedContent, "Compact programmatic navigation should show child page content.");
+                    var title = FindByName<System.Windows.Controls.TextBlock>(selectedContent, "ControlPageTitle");
+                    Assert.IsNotNull(title, "The Button child page should expose ControlPageTitle.");
+                    Assert.AreEqual("Button", title.Text);
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NavSearch_CompactPane_SearchOpensAndFocusedClearRestoresPaneState()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                MainWindow window = null;
+                try
+                {
+                    window = CreateShownMainWindow();
+                    var nav = GetDemoNav(window);
+                    var search = GetNavSearchBox(window);
+
+                    nav.IsPaneOpen = false;
+                    WaitForAnimationAndDrain(window.Dispatcher, 180);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+                    Assert.IsFalse(nav.IsPaneOpen, "The test must start from compact closed navigation.");
+
+                    Assert.IsTrue(search.Focus(), "Search box should be focusable in the title bar.");
+                    search.Text = "button";
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.IsTrue(nav.IsPaneOpen,
+                        "Typing a search query while the pane is closed should open the pane for visible results.");
+
+                    search.Text = string.Empty;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.IsFalse(nav.IsPaneOpen,
+                        "Clearing a query that opened the pane should restore the compact closed state while search remains focused.");
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+
+                    if (dict != null)
+                    {
+                        app.Resources.MergedDictionaries.Remove(dict);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void MainWindow_PageAnimation_DoesNotRestartForSamePageContent()
+        {
+            RunOnSta(() =>
+            {
+                var app = EnsureApp();
+                var dict = MergeTheme(app);
+
+                MainWindow window = null;
+                try
+                {
+                    window = CreateShownMainWindow();
+                    var nav = GetDemoNav(window);
+
+                    window.NavigateTo("Button");
+                    WaitForAnimationAndDrain(window.Dispatcher, 360);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    var selectedContent = nav.SelectedContent as UIElement;
+                    Assert.IsNotNull(selectedContent, "Navigation should show UIElement page content.");
+                    Assert.AreSame(selectedContent, GetPrivateField<object>(window, "_lastAnimatedPageContent"),
+                        "The animation tracker should store the last page content it animated.");
+
+                    selectedContent.Opacity = 0.37;
+                    window.NavigateTo("Button");
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.AreEqual(0.37, selectedContent.Opacity, 0.001,
+                        "Navigating to the same page content should not restart the page-in animation.");
                 }
                 finally
                 {
@@ -2429,20 +2632,36 @@ namespace Fluence.Wpf.Tests
         public void DemoSourceDataSamples_CopyToOutput()
         {
             var outputDirectory = Path.GetDirectoryName(typeof(MainWindow).Assembly.Location);
-            var samplePaths = new[]
+            var samplesWithCodeBehind = new[]
             {
                 "ListViewItems",
                 "ListViewEmptyState",
                 "CardVariants"
             };
+            var xamlOnlySamples = new[]
+            {
+                "ListViewSelection",
+                "ListViewGrouped",
+                "ListViewFiltering",
+                "ListViewMessages",
+                "ListViewImages",
+                "ListViewContextMenu"
+            };
 
-            foreach (var samplePath in samplePaths)
+            foreach (var samplePath in samplesWithCodeBehind)
             {
                 var xaml = Path.Combine(outputDirectory, "Samples", "Data", samplePath + ".xaml");
                 var codeBehind = Path.Combine(outputDirectory, "Samples", "Data", samplePath + ".xaml.cs");
 
                 Assert.IsTrue(File.Exists(xaml), "Data sample XAML must be copied beside the demo assembly: " + samplePath);
                 Assert.IsTrue(File.Exists(codeBehind), "Data sample code-behind must be copied beside the demo assembly: " + samplePath);
+            }
+
+            foreach (var samplePath in xamlOnlySamples)
+            {
+                var xaml = Path.Combine(outputDirectory, "Samples", "Data", samplePath + ".xaml");
+
+                Assert.IsTrue(File.Exists(xaml), "XAML-only Data sample must be copied beside the demo assembly: " + samplePath);
             }
         }
 

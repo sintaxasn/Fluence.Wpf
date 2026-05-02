@@ -36,7 +36,7 @@ using WpfButton = System.Windows.Controls.Button;
 namespace Fluence.Wpf.Tests
 {
     // WI-1 F4 regression guard. The four caption buttons on FluenceWindow
-    // (MinimizeButton / MaximizeButton / RestoreButton / CloseButton, see
+    // (PART_MinimizeButton / PART_MaximizeButton / PART_RestoreButton / PART_CloseButton, see
     // Themes/Controls/FluenceWindow.xaml:203-251) bind to SystemCommands via XAML
     // and are routed through CommandBindings registered in FluenceWindow's
     // constructor (FluenceWindow.cs:394-397) to private handlers that drive
@@ -85,19 +85,19 @@ namespace Fluence.Wpf.Tests
                 {
                     window = CreateAndShowOffScreenFluenceWindow();
 
-                    var minimize = GetCaptionButton(window, "MinimizeButton");
-                    var maximize = GetCaptionButton(window, "MaximizeButton");
-                    var restore = GetCaptionButton(window, "RestoreButton");
-                    var close = GetCaptionButton(window, "CloseButton");
+                    var minimize = GetCaptionButton(window, "PART_MinimizeButton");
+                    var maximize = GetCaptionButton(window, "PART_MaximizeButton");
+                    var restore = GetCaptionButton(window, "PART_RestoreButton");
+                    var close = GetCaptionButton(window, "PART_CloseButton");
 
                     Assert.AreSame(SystemCommands.MinimizeWindowCommand, minimize.Command,
-                        "MinimizeButton must bind to SystemCommands.MinimizeWindowCommand.");
+                        "PART_MinimizeButton must bind to SystemCommands.MinimizeWindowCommand.");
                     Assert.AreSame(SystemCommands.MaximizeWindowCommand, maximize.Command,
-                        "MaximizeButton must bind to SystemCommands.MaximizeWindowCommand.");
+                        "PART_MaximizeButton must bind to SystemCommands.MaximizeWindowCommand.");
                     Assert.AreSame(SystemCommands.RestoreWindowCommand, restore.Command,
-                        "RestoreButton must bind to SystemCommands.RestoreWindowCommand.");
+                        "PART_RestoreButton must bind to SystemCommands.RestoreWindowCommand.");
                     Assert.AreSame(SystemCommands.CloseWindowCommand, close.Command,
-                        "CloseButton must bind to SystemCommands.CloseWindowCommand.");
+                        "PART_CloseButton must bind to SystemCommands.CloseWindowCommand.");
                 }
                 finally
                 {

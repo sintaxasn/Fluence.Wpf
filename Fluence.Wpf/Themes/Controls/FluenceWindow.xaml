@@ -62,9 +62,7 @@
         </Setter>
     </Style>
 
-    <!--  Close button style — hover/pressed colors driven by WindowCloseFillColor* tokens.  -->
-    <!--  Token values (#C42B1C / #B4271C) are canonical Fluent close-button reds, identical  -->
-    <!--  in Light and Dark. High Contrast overrides flow through the resource system.  -->
+    <!--  Close button style — hover/pressed colors driven by caption-specific tokens.  -->
     <Style x:Key="WindowCloseButtonStyle" TargetType="{x:Type Button}">
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
@@ -101,12 +99,12 @@
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                         </DataTrigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="RootGrid" Property="Background" Value="{DynamicResource WindowCloseFillColorHoverBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource WindowCloseForegroundHoverBrush}" />
+                            <Setter TargetName="RootGrid" Property="Background" Value="{DynamicResource WindowCloseButtonBackgroundPointerOverBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource WindowCloseButtonForegroundPointerOverBrush}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="RootGrid" Property="Background" Value="{DynamicResource WindowCloseFillColorPressedBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource WindowCloseForegroundPressedBrush}" />
+                            <Setter TargetName="RootGrid" Property="Background" Value="{DynamicResource WindowCloseButtonBackgroundPressedBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource WindowCloseButtonForegroundPointerOverBrush}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter TargetName="contentPresenter" Property="Opacity" Value=".5" />
@@ -219,7 +217,7 @@
                                     Orientation="Horizontal"
                                     WindowChrome.IsHitTestVisibleInChrome="True">
                                     <Button
-                                        x:Name="MinimizeButton"
+                                        x:Name="PART_MinimizeButton"
                                         Command="{x:Static SystemCommands.MinimizeWindowCommand}"
                                         Style="{StaticResource WindowButtonStyle}"
                                         ToolTip="Minimize">
@@ -231,7 +229,7 @@
                                             Stretch="Uniform" />
                                     </Button>
                                     <Button
-                                        x:Name="MaximizeButton"
+                                        x:Name="PART_MaximizeButton"
                                         Command="{x:Static SystemCommands.MaximizeWindowCommand}"
                                         Style="{StaticResource WindowButtonStyle}"
                                         ToolTip="Maximize">
@@ -243,7 +241,7 @@
                                             Stretch="Uniform" />
                                     </Button>
                                     <Button
-                                        x:Name="RestoreButton"
+                                        x:Name="PART_RestoreButton"
                                         Command="{x:Static SystemCommands.RestoreWindowCommand}"
                                         Style="{StaticResource WindowButtonStyle}"
                                         ToolTip="Restore"
@@ -256,7 +254,7 @@
                                             Stretch="Uniform" />
                                     </Button>
                                     <Button
-                                        x:Name="CloseButton"
+                                        x:Name="PART_CloseButton"
                                         Command="{x:Static SystemCommands.CloseWindowCommand}"
                                         Style="{StaticResource WindowCloseButtonStyle}"
                                         ToolTip="Close">

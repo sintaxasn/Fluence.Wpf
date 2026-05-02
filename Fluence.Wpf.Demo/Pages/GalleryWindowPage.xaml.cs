@@ -259,9 +259,9 @@ namespace Fluence.Wpf.Demo.Pages
                 return;
             }
 
-            ApplyCaptionVisibility(MinimizeVisibilityCombo, v => fw.SetMinimizeButtonVisibility(v), en => fw.IsMinimizable = en);
-            ApplyCaptionVisibility(MaximizeVisibilityCombo, v => fw.SetMaximizeButtonVisibility(v), en => fw.IsMaximizable = en);
-            ApplyCaptionVisibility(CloseVisibilityCombo, v => fw.SetCloseButtonVisibility(v), en => fw.IsClosable = en);
+            ApplyCaptionVisibility(MinimizeVisibilityCombo, v => fw.IsMinimizeButtonVisible = v, en => fw.IsMinimizable = en);
+            ApplyCaptionVisibility(MaximizeVisibilityCombo, v => fw.IsMaximizeButtonVisible = v, en => fw.IsMaximizable = en);
+            ApplyCaptionVisibility(CloseVisibilityCombo, v => fw.IsCloseButtonVisible = v, en => fw.IsClosable = en);
         }
 
         private void WindowChromeToggle_Changed(object sender, RoutedEventArgs e)

@@ -241,9 +241,9 @@ namespace Fluence.Wpf.Tests
         {
             RunWithWindow(w =>
             {
-                Assert.AreEqual(Visibility.Visible, w.MinimizeButtonVisibility);
-                Assert.AreEqual(Visibility.Visible, w.MaximizeButtonVisibility);
-                Assert.AreEqual(Visibility.Visible, w.CloseButtonVisibility);
+                Assert.AreEqual(Visibility.Visible, w.IsMinimizeButtonVisible);
+                Assert.AreEqual(Visibility.Visible, w.IsMaximizeButtonVisible);
+                Assert.AreEqual(Visibility.Visible, w.IsCloseButtonVisible);
             });
         }
 
@@ -637,7 +637,7 @@ namespace Fluence.Wpf.Tests
         {
             RunWithShownWindow(w =>
             {
-                w.SetMaximizeButtonVisibility(Visibility.Hidden);
+                w.IsMaximizeButtonVisible = Visibility.Hidden;
                 w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
 
                 var btn = GetCaptionButtonField(w, "_maximizeButton");
@@ -686,33 +686,33 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void HitTestTitleBar_CanMoveFalse_TitleBarDragAreaReturnsZero()
+        public void HitTestTitleBar_IsMoveableFalse_TitleBarDragAreaReturnsZero()
         {
             RunWithShownWindow(w =>
             {
-                w.CanMove = false;
+                w.IsMoveable = false;
                 w.UpdateLayout();
 
                 var clientMidTitle = new Point(Math.Max(40, w.ActualWidth / 2), Math.Max(1, w.TitleBarHeight / 2));
                 var screen = w.PointToScreen(clientMidTitle);
                 int hit = InvokeHitTestTitleBar(w, MakeLParamScreen(screen.X, screen.Y));
                 Assert.AreEqual(0, hit,
-                    "CanMove=false must suppress HTCAPTION for title-bar drag regions.");
+                    "IsMoveable=false must suppress HTCAPTION for title-bar drag regions.");
             });
         }
 
         [TestMethod]
-        public void WndProc_CanMoveFalse_SuppressesSystemMove()
+        public void WndProc_IsMoveableFalse_SuppressesSystemMove()
         {
             RunWithWindow(w =>
             {
-                w.CanMove = false;
+                w.IsMoveable = false;
                 InvokeWndProc(w, NativeConstants.WM_SYSCOMMAND, new IntPtr(NativeConstants.SC_MOVE), IntPtr.Zero, out var handled);
-                Assert.IsTrue(handled, "CanMove=false must handle SC_MOVE.");
+                Assert.IsTrue(handled, "IsMoveable=false must handle SC_MOVE.");
 
-                w.CanMove = true;
+                w.IsMoveable = true;
                 InvokeWndProc(w, NativeConstants.WM_SYSCOMMAND, new IntPtr(NativeConstants.SC_MOVE), IntPtr.Zero, out handled);
-                Assert.IsFalse(handled, "CanMove=true must leave SC_MOVE available.");
+                Assert.IsFalse(handled, "IsMoveable=true must leave SC_MOVE available.");
             });
         }
 
@@ -727,14 +727,14 @@ namespace Fluence.Wpf.Tests
         #region Caption button DP overrides (authoritative when explicitly set)
 
         [TestMethod]
-        public void MinimizeButtonVisibility_ExplicitVisible_UnderNoResize_ShowsAndEnablesButton()
+        public void IsMinimizeButtonVisible_ExplicitVisible_UnderNoResize_ShowsAndEnablesButton()
         {
             RunWithShownWindow(w =>
             {
-                // Mirror the real PSADT lifecycle: XAML sets MinimizeButtonVisibility=Collapsed
+                // Mirror the real PSADT lifecycle: XAML sets IsMinimizeButtonVisible=Collapsed
                 // on the FluentDialog template, then code-behind flips it back to Visible when
-                // DialogAllowMinimize is honoured (SetMinimizeButtonVisibility(Visibility.Visible)).
-                w.MinimizeButtonVisibility = Visibility.Collapsed;
+                // DialogAllowMinimize is honoured (IsMinimizeButtonVisible=Visibility.Visible).
+                w.IsMinimizeButtonVisible = Visibility.Collapsed;
                 w.ResizeMode = ResizeMode.NoResize;
                 w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
 
@@ -743,7 +743,7 @@ namespace Fluence.Wpf.Tests
                 Assert.AreEqual(Visibility.Collapsed, btn.Visibility,
                     "Pre-flip state: XAML-style local Collapsed must hide the minimize button under NoResize.");
 
-                w.MinimizeButtonVisibility = Visibility.Visible;
+                w.IsMinimizeButtonVisible = Visibility.Visible;
                 w.IsMinimizable = true;
                 w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
 
@@ -755,29 +755,29 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void MinimizeButtonVisibility_ExplicitCollapsed_UnderCanResize_HidesButton()
+        public void IsMinimizeButtonVisible_ExplicitCollapsed_UnderCanResize_HidesButton()
         {
             RunWithShownWindow(w =>
             {
                 w.ResizeMode = ResizeMode.CanResize;
-                w.MinimizeButtonVisibility = Visibility.Collapsed;
+                w.IsMinimizeButtonVisible = Visibility.Collapsed;
                 w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
 
                 var btn = GetCaptionButtonField(w, "_minimizeButton");
                 Assert.IsNotNull(btn);
                 Assert.AreEqual(Visibility.Collapsed, btn.Visibility,
-                    "Explicit MinimizeButtonVisibility=Collapsed must hide the button even under CanResize.");
+                    "Explicit IsMinimizeButtonVisible=Collapsed must hide the button even under CanResize.");
                 Assert.IsFalse(btn.IsEnabled,
                     "Explicit Collapsed must also disable the button.");
             });
         }
 
         [TestMethod]
-        public void MaximizeButtonVisibility_ExplicitVisible_UnderNoResize_ShowsAndEnablesMaximize()
+        public void IsMaximizeButtonVisible_ExplicitVisible_UnderNoResize_ShowsAndEnablesMaximize()
         {
             RunWithShownWindow(w =>
             {
-                w.MaximizeButtonVisibility = Visibility.Collapsed;
+                w.IsMaximizeButtonVisible = Visibility.Collapsed;
                 w.ResizeMode = ResizeMode.NoResize;
                 w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
 
@@ -786,7 +786,7 @@ namespace Fluence.Wpf.Tests
                 Assert.AreEqual(Visibility.Collapsed, max.Visibility,
                     "Pre-flip state: XAML-style local Collapsed must hide the maximize button under NoResize.");
 
-                w.MaximizeButtonVisibility = Visibility.Visible;
+                w.IsMaximizeButtonVisible = Visibility.Visible;
                 w.IsMaximizable = true;
                 w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
 
@@ -799,11 +799,11 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void MaximizeButtonVisibility_Hidden_ReservesOnlyTheActiveButtonSlot()
+        public void IsMaximizeButtonVisible_Hidden_ReservesOnlyTheActiveButtonSlot()
         {
             RunWithShownWindow(w =>
             {
-                w.SetMaximizeButtonVisibility(Visibility.Hidden);
+                w.IsMaximizeButtonVisible = Visibility.Hidden;
                 w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
 
                 var max = GetCaptionButtonField(w, "_maximizeButton");
@@ -824,10 +824,30 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void CaptionButtonVisibilityMethods_SetTheVisibilityDps()
+        public void CaptionButtonVisibleProperties_SetTheVisibilityDps()
         {
             RunWithWindow(w =>
             {
+                var values = new[] { Visibility.Visible, Visibility.Hidden, Visibility.Collapsed };
+                foreach (var value in values)
+                {
+                    w.IsMinimizeButtonVisible = value;
+                    w.IsMaximizeButtonVisible = value;
+                    w.IsCloseButtonVisible = value;
+
+                    Assert.AreEqual(value, w.IsMinimizeButtonVisible);
+                    Assert.AreEqual(value, w.IsMaximizeButtonVisible);
+                    Assert.AreEqual(value, w.IsCloseButtonVisible);
+                }
+            });
+        }
+
+        [TestMethod]
+        public void ObsoleteCaptionButtonVisibilityMethods_UpdateCanonicalProperties()
+        {
+            RunWithWindow(w =>
+            {
+#pragma warning disable CS0618
                 var values = new[] { Visibility.Visible, Visibility.Hidden, Visibility.Collapsed };
                 foreach (var value in values)
                 {
@@ -835,10 +855,51 @@ namespace Fluence.Wpf.Tests
                     w.SetMaximizeButtonVisibility(value);
                     w.SetCloseButtonVisibility(value);
 
-                    Assert.AreEqual(value, w.MinimizeButtonVisibility);
-                    Assert.AreEqual(value, w.MaximizeButtonVisibility);
-                    Assert.AreEqual(value, w.CloseButtonVisibility);
+                    Assert.AreEqual(value, w.IsMinimizeButtonVisible);
+                    Assert.AreEqual(value, w.IsMaximizeButtonVisible);
+                    Assert.AreEqual(value, w.IsCloseButtonVisible);
                 }
+#pragma warning restore CS0618
+            });
+        }
+
+        [TestMethod]
+        public void ObsoleteCaptionButtonVisibilityProperties_UpdateCanonicalProperties()
+        {
+            RunWithWindow(w =>
+            {
+#pragma warning disable CS0618
+                var values = new[] { Visibility.Visible, Visibility.Hidden, Visibility.Collapsed };
+                foreach (var value in values)
+                {
+                    w.MinimizeButtonVisibility = value;
+                    w.MaximizeButtonVisibility = value;
+                    w.CloseButtonVisibility = value;
+
+                    Assert.AreEqual(value, w.IsMinimizeButtonVisible);
+                    Assert.AreEqual(value, w.IsMaximizeButtonVisible);
+                    Assert.AreEqual(value, w.IsCloseButtonVisible);
+                    Assert.AreSame(FluenceWindow.IsMinimizeButtonVisibleProperty, FluenceWindow.MinimizeButtonVisibilityProperty);
+                    Assert.AreSame(FluenceWindow.IsMaximizeButtonVisibleProperty, FluenceWindow.MaximizeButtonVisibilityProperty);
+                    Assert.AreSame(FluenceWindow.IsCloseButtonVisibleProperty, FluenceWindow.CloseButtonVisibilityProperty);
+                }
+#pragma warning restore CS0618
+            });
+        }
+
+        [TestMethod]
+        public void ObsoleteCanMove_UpdatesIsMoveable()
+        {
+            RunWithWindow(w =>
+            {
+#pragma warning disable CS0618
+                w.CanMove = false;
+                Assert.IsFalse(w.IsMoveable);
+                Assert.AreSame(FluenceWindow.IsMoveableProperty, FluenceWindow.CanMoveProperty);
+
+                w.CanMove = true;
+                Assert.IsTrue(w.IsMoveable);
+#pragma warning restore CS0618
             });
         }
 
@@ -859,9 +920,9 @@ namespace Fluence.Wpf.Tests
                 var values = new[] { Visibility.Visible, Visibility.Hidden, Visibility.Collapsed };
                 foreach (var value in values)
                 {
-                    w.MinimizeButtonVisibility = value;
-                    w.MaximizeButtonVisibility = value;
-                    w.CloseButtonVisibility = value;
+                    w.IsMinimizeButtonVisible = value;
+                    w.IsMaximizeButtonVisible = value;
+                    w.IsCloseButtonVisible = value;
                     w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
 
                     Assert.AreEqual(value, minimize.Visibility);
@@ -929,10 +990,10 @@ namespace Fluence.Wpf.Tests
                 Assert.IsFalse(InvokeCanHandler(w, "OnCanMinimizeWindow", CreateCanExecuteArgs(SystemCommands.MinimizeWindowCommand)),
                     "Default: ResizeMode=NoResize must block MinimizeWindowCommand when the DP is at its declared default.");
 
-                w.MinimizeButtonVisibility = Visibility.Visible;
+                w.IsMinimizeButtonVisible = Visibility.Visible;
                 w.IsMinimizable = true;
                 Assert.IsTrue(InvokeCanHandler(w, "OnCanMinimizeWindow", CreateCanExecuteArgs(SystemCommands.MinimizeWindowCommand)),
-                    "Explicit MinimizeButtonVisibility=Visible + IsMinimizable=true must allow MinimizeWindowCommand to execute even under NoResize.");
+                    "Explicit IsMinimizeButtonVisible=Visible + IsMinimizable=true must allow MinimizeWindowCommand to execute even under NoResize.");
 
                 w.IsMinimizable = false;
                 Assert.IsFalse(InvokeCanHandler(w, "OnCanMinimizeWindow", CreateCanExecuteArgs(SystemCommands.MinimizeWindowCommand)),
@@ -950,10 +1011,10 @@ namespace Fluence.Wpf.Tests
                 Assert.IsFalse(InvokeCanHandler(w, "OnCanResizeWindow", CreateCanExecuteArgs(SystemCommands.MaximizeWindowCommand)),
                     "Default: ResizeMode=NoResize must block MaximizeWindowCommand when the DP is at its declared default.");
 
-                w.MaximizeButtonVisibility = Visibility.Visible;
+                w.IsMaximizeButtonVisible = Visibility.Visible;
                 w.IsMaximizable = true;
                 Assert.IsTrue(InvokeCanHandler(w, "OnCanResizeWindow", CreateCanExecuteArgs(SystemCommands.MaximizeWindowCommand)),
-                    "Explicit MaximizeButtonVisibility=Visible + IsMaximizable=true must allow MaximizeWindowCommand even under NoResize.");
+                    "Explicit IsMaximizeButtonVisible=Visible + IsMaximizable=true must allow MaximizeWindowCommand even under NoResize.");
             });
         }
 
@@ -1057,8 +1118,8 @@ namespace Fluence.Wpf.Tests
         public void MinimizeButton_EndToEnd_ClicksActuallyMinimizeUnderPsadtConfig()
         {
             // Reproduces the exact PSADT FluentDialog topology: Topmost=True + ResizeMode=NoResize
-            // + ExtendsContentIntoTitleBar=True + MinimizeButtonVisibility flipped from
-            // Collapsed (XAML baseline) to Visible (SetMinimizeButtonVisibility(Visibility.Visible)). The
+            // + ExtendsContentIntoTitleBar=True + IsMinimizeButtonVisible flipped from
+            // Collapsed (XAML baseline) to Visible (IsMinimizeButtonVisible=Visibility.Visible). The
             // test drives the Button via its ICommand to mirror the real click path (WPF
             // Button → SystemCommands.MinimizeWindowCommand → FluenceWindow CommandBinding →
             // OnMinimizeWindow) and asserts the caption is clickable AND the state lands on
@@ -1083,16 +1144,16 @@ namespace Fluence.Wpf.Tests
                         ShowInTaskbar = true,
                         Topmost = true,
                         ResizeMode = ResizeMode.NoResize,
-                        MinimizeButtonVisibility = Visibility.Collapsed,
-                        MaximizeButtonVisibility = Visibility.Collapsed,
-                        CloseButtonVisibility = Visibility.Collapsed,
+                        IsMinimizeButtonVisible = Visibility.Collapsed,
+                        IsMaximizeButtonVisible = Visibility.Collapsed,
+                        IsCloseButtonVisible = Visibility.Collapsed,
                     };
 
                     window.Show();
                     window.Dispatcher.Invoke(() => { }, DispatcherPriority.Loaded);
 
-                    // Flip visibility after Show() to mirror PSADT's SetMinimizeButtonVisibility(Visibility.Visible).
-                    window.MinimizeButtonVisibility = Visibility.Visible;
+                    // Flip visibility after Show() to mirror PSADT's IsMinimizeButtonVisible=Visibility.Visible.
+                    window.IsMinimizeButtonVisible = Visibility.Visible;
                     window.IsMinimizable = true;
                     window.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
                     CommandManager.InvalidateRequerySuggested();
@@ -1101,7 +1162,7 @@ namespace Fluence.Wpf.Tests
                     var minBtn = GetCaptionButtonField(window, "_minimizeButton");
                     Assert.IsNotNull(minBtn, "Minimize template part must exist after Show.");
                     Assert.AreEqual(Visibility.Visible, minBtn.Visibility,
-                        "PSADT flow: post-flip MinimizeButtonVisibility must render the button visible.");
+                        "PSADT flow: post-flip IsMinimizeButtonVisible must render the button visible.");
                     Assert.IsTrue(minBtn.IsEnabled,
                         "PSADT flow: Button.IsEnabled must be true so clicks dispatch the command.");
 
@@ -1170,9 +1231,9 @@ namespace Fluence.Wpf.Tests
                         ShowInTaskbar = true,
                         Topmost = true,
                         ResizeMode = ResizeMode.NoResize,
-                        MinimizeButtonVisibility = Visibility.Collapsed,
-                        MaximizeButtonVisibility = Visibility.Collapsed,
-                        CloseButtonVisibility = Visibility.Collapsed,
+                        IsMinimizeButtonVisible = Visibility.Collapsed,
+                        IsMaximizeButtonVisible = Visibility.Collapsed,
+                        IsCloseButtonVisible = Visibility.Collapsed,
                     };
 
                     var capturedWindow = window;
@@ -1182,7 +1243,7 @@ namespace Fluence.Wpf.Tests
                         {
                             try
                             {
-                                capturedWindow.MinimizeButtonVisibility = Visibility.Visible;
+                                capturedWindow.IsMinimizeButtonVisible = Visibility.Visible;
                                 capturedWindow.IsMinimizable = true;
                                 CommandManager.InvalidateRequerySuggested();
 
@@ -1231,7 +1292,7 @@ namespace Fluence.Wpf.Tests
                     }
 
                     Assert.AreEqual(Visibility.Visible, minimizeButtonVisibility,
-                        "PSADT ShowDialog flow: MinimizeButtonVisibility must render Visible after Loaded flip.");
+                        "PSADT ShowDialog flow: IsMinimizeButtonVisible must render Visible after Loaded flip.");
                     Assert.IsTrue(minimizeButtonIsEnabled,
                         "PSADT ShowDialog flow: Button.IsEnabled must be true inside the modal dispatcher frame.");
                     Assert.IsTrue(minimizeCommandCanExecute,

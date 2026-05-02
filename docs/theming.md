@@ -1,4 +1,4 @@
-# Theming
+﻿# Theming
 
 Design reference: **WinUI 3** resource key names and state behaviour. Fluence.Wpf targets WPF, not WinUI, but keys, state tables, and brush roles mirror `Common_themeresources.xaml` so XAML you read in the WinUI source tree maps one-to-one.
 
@@ -32,6 +32,7 @@ Fluence.Wpf defines the full WinUI 3 token ramp; these are the ones most commonl
 - **Fill**: `ControlFillColorDefault`, `ControlFillColorSecondary`, `ControlFillColorTertiary`, `ControlFillColorInputActive`, `ControlFillColorDisabled`, `AccentFillColorDefault` / `Secondary` / `Tertiary` / `Disabled`, `SubtleFillColorSecondary` / `Tertiary`, `LayerFillColorDefault`, `CardBackgroundFillColorDefault`.
 - **Stroke**: `ControlStrokeColorDefault` / `Secondary`, **`ControlStrongStrokeColorDefault`** (radio / check-box rings), **`ControlStrongStrokeColorDisabled`**, `CardStrokeColorDefault`, `DividerStrokeColorDefault`, `FocusStrokeColorOuter` / `Inner`.
 - **Background**: `SolidBackgroundFillColorBase`, `ApplicationBackgroundColor`.
+- **Window chrome**: `WindowCloseButtonBackgroundPointerOver`, `WindowCloseButtonBackgroundPressed`, `WindowCloseButtonForegroundPointerOver`.
 
 Each color token has a matching `*Brush` resource in `Brushes.xaml` (for example `ControlStrongStrokeColorDefaultBrush`) that binds back to the color via `DynamicResource` - consume the brush keys from XAML, not the raw color keys.
 

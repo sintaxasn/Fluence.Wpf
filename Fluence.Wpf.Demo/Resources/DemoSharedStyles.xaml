@@ -371,7 +371,7 @@
     <Style x:Key="IconGalleryCardStyle" TargetType="{x:Type ui:Border}">
         <Setter Property="Variant" Value="{x:Static uicore:BorderVariant.Subtle}" />
         <Setter Property="Padding" Value="12" />
-        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="CornerRadius" Value="8" />
         <Setter Property="Width" Value="100" />
         <Setter Property="Height" Value="80" />
         <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />

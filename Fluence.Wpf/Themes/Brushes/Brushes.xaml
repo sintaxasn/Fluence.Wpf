@@ -138,6 +138,9 @@
     <SolidColorBrush x:Key="SystemFillColorSolidNeutralBackgroundBrush" Color="{DynamicResource SystemFillColorSolidNeutralBackground}" />
 
     <!--  Window Chrome - Close Button  -->
+    <SolidColorBrush x:Key="WindowCloseButtonBackgroundPointerOverBrush" Color="{DynamicResource WindowCloseButtonBackgroundPointerOver}" />
+    <SolidColorBrush x:Key="WindowCloseButtonBackgroundPressedBrush" Color="{DynamicResource WindowCloseButtonBackgroundPressed}" />
+    <SolidColorBrush x:Key="WindowCloseButtonForegroundPointerOverBrush" Color="{DynamicResource WindowCloseButtonForegroundPointerOver}" />
     <SolidColorBrush x:Key="WindowCloseFillColorHoverBrush" Color="{DynamicResource WindowCloseFillColorHover}" />
     <SolidColorBrush x:Key="WindowCloseFillColorPressedBrush" Color="{DynamicResource WindowCloseFillColorPressed}" />
     <SolidColorBrush x:Key="WindowCloseForegroundHoverBrush" Color="{DynamicResource WindowCloseForegroundHover}" />

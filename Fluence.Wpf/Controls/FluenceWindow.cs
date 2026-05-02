@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,12 +39,28 @@ using Fluence.Wpf.Native;
 
 namespace Fluence.Wpf.Controls
 {
+    internal static class FluenceWindowTemplateParts
+    {
+        internal const string PART_MinimizeButton = "PART_MinimizeButton";
+        internal const string PART_MaximizeButton = "PART_MaximizeButton";
+        internal const string PART_RestoreButton = "PART_RestoreButton";
+        internal const string PART_CloseButton = "PART_CloseButton";
+    }
+
     /// <summary>
     /// A window with Windows 11 Fluent Design chrome, backdrop support, and custom caption buttons.
     /// </summary>
+    [TemplatePart(Name = FluenceWindowTemplateParts.PART_MinimizeButton, Type = typeof(System.Windows.Controls.Button))]
+    [TemplatePart(Name = FluenceWindowTemplateParts.PART_MaximizeButton, Type = typeof(System.Windows.Controls.Button))]
+    [TemplatePart(Name = FluenceWindowTemplateParts.PART_RestoreButton, Type = typeof(System.Windows.Controls.Button))]
+    [TemplatePart(Name = FluenceWindowTemplateParts.PART_CloseButton, Type = typeof(System.Windows.Controls.Button))]
     public class FluenceWindow : Window
     {
         private const double DefaultTitleBarHeight = 48d;
+        private const string PART_MinimizeButton = FluenceWindowTemplateParts.PART_MinimizeButton;
+        private const string PART_MaximizeButton = FluenceWindowTemplateParts.PART_MaximizeButton;
+        private const string PART_RestoreButton = FluenceWindowTemplateParts.PART_RestoreButton;
+        private const string PART_CloseButton = FluenceWindowTemplateParts.PART_CloseButton;
 
         private System.Windows.Controls.Button _minimizeButton;
         private System.Windows.Controls.Button _maximizeButton;
@@ -154,34 +170,52 @@ namespace Fluence.Wpf.Controls
                 new PropertyMetadata(true));
 
         /// <summary>
-        /// Identifies the <see cref="MinimizeButtonVisibility"/> dependency property.
+        /// Identifies the <see cref="IsMinimizeButtonVisible"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty MinimizeButtonVisibilityProperty =
+        public static readonly DependencyProperty IsMinimizeButtonVisibleProperty =
             DependencyProperty.Register(
-                nameof(MinimizeButtonVisibility),
+                nameof(IsMinimizeButtonVisible),
                 typeof(Visibility),
                 typeof(FluenceWindow),
                 new PropertyMetadata(Visibility.Visible, OnCaptionButtonChromeOverrideChanged));
+
+        /// <summary>
+        /// Identifies the <see cref="IsMaximizeButtonVisible"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty IsMaximizeButtonVisibleProperty =
+            DependencyProperty.Register(
+                nameof(IsMaximizeButtonVisible),
+                typeof(Visibility),
+                typeof(FluenceWindow),
+                new PropertyMetadata(Visibility.Visible, OnCaptionButtonChromeOverrideChanged));
+
+        /// <summary>
+        /// Identifies the <see cref="IsCloseButtonVisible"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty IsCloseButtonVisibleProperty =
+            DependencyProperty.Register(
+                nameof(IsCloseButtonVisible),
+                typeof(Visibility),
+                typeof(FluenceWindow),
+                new PropertyMetadata(Visibility.Visible, OnCaptionButtonChromeOverrideChanged));
+
+        /// <summary>
+        /// Identifies the <see cref="MinimizeButtonVisibility"/> dependency property.
+        /// </summary>
+        [Obsolete("Use IsMinimizeButtonVisibleProperty instead.")]
+        public static readonly DependencyProperty MinimizeButtonVisibilityProperty = IsMinimizeButtonVisibleProperty;
 
         /// <summary>
         /// Identifies the <see cref="MaximizeButtonVisibility"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty MaximizeButtonVisibilityProperty =
-            DependencyProperty.Register(
-                nameof(MaximizeButtonVisibility),
-                typeof(Visibility),
-                typeof(FluenceWindow),
-                new PropertyMetadata(Visibility.Visible, OnCaptionButtonChromeOverrideChanged));
+        [Obsolete("Use IsMaximizeButtonVisibleProperty instead.")]
+        public static readonly DependencyProperty MaximizeButtonVisibilityProperty = IsMaximizeButtonVisibleProperty;
 
         /// <summary>
         /// Identifies the <see cref="CloseButtonVisibility"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty CloseButtonVisibilityProperty =
-            DependencyProperty.Register(
-                nameof(CloseButtonVisibility),
-                typeof(Visibility),
-                typeof(FluenceWindow),
-                new PropertyMetadata(Visibility.Visible, OnCaptionButtonChromeOverrideChanged));
+        [Obsolete("Use IsCloseButtonVisibleProperty instead.")]
+        public static readonly DependencyProperty CloseButtonVisibilityProperty = IsCloseButtonVisibleProperty;
 
         /// <summary>
         /// Identifies the <see cref="IsMinimizable"/> dependency property.
@@ -214,14 +248,20 @@ namespace Fluence.Wpf.Controls
                 new PropertyMetadata(true, OnCaptionButtonChromeOverrideChanged));
 
         /// <summary>
-        /// Identifies the <see cref="CanMove"/> dependency property.
+        /// Identifies the <see cref="IsMoveable"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty CanMoveProperty =
+        public static readonly DependencyProperty IsMoveableProperty =
             DependencyProperty.Register(
-                nameof(CanMove),
+                nameof(IsMoveable),
                 typeof(bool),
                 typeof(FluenceWindow),
                 new PropertyMetadata(true));
+
+        /// <summary>
+        /// Identifies the <see cref="CanMove"/> dependency property.
+        /// </summary>
+        [Obsolete("Use IsMoveableProperty instead.")]
+        public static readonly DependencyProperty CanMoveProperty = IsMoveableProperty;
 
 
         /// <summary>
@@ -325,28 +365,58 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Gets or sets the visibility of the minimize button.
         /// </summary>
-        public Visibility MinimizeButtonVisibility
+        public Visibility IsMinimizeButtonVisible
         {
-            get { return (Visibility)GetValue(MinimizeButtonVisibilityProperty); }
-            set { SetValue(MinimizeButtonVisibilityProperty, value); }
+            get { return (Visibility)GetValue(IsMinimizeButtonVisibleProperty); }
+            set { SetValue(IsMinimizeButtonVisibleProperty, value); }
         }
 
         /// <summary>
         /// Gets or sets the visibility of the maximize button.
         /// </summary>
-        public Visibility MaximizeButtonVisibility
+        public Visibility IsMaximizeButtonVisible
         {
-            get { return (Visibility)GetValue(MaximizeButtonVisibilityProperty); }
-            set { SetValue(MaximizeButtonVisibilityProperty, value); }
+            get { return (Visibility)GetValue(IsMaximizeButtonVisibleProperty); }
+            set { SetValue(IsMaximizeButtonVisibleProperty, value); }
         }
 
         /// <summary>
         /// Gets or sets the visibility of the close button.
         /// </summary>
+        public Visibility IsCloseButtonVisible
+        {
+            get { return (Visibility)GetValue(IsCloseButtonVisibleProperty); }
+            set { SetValue(IsCloseButtonVisibleProperty, value); }
+        }
+
+        /// <summary>
+        /// Gets or sets the visibility of the minimize button.
+        /// </summary>
+        [Obsolete("Use IsMinimizeButtonVisible instead.")]
+        public Visibility MinimizeButtonVisibility
+        {
+            get { return IsMinimizeButtonVisible; }
+            set { IsMinimizeButtonVisible = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the visibility of the maximize button.
+        /// </summary>
+        [Obsolete("Use IsMaximizeButtonVisible instead.")]
+        public Visibility MaximizeButtonVisibility
+        {
+            get { return IsMaximizeButtonVisible; }
+            set { IsMaximizeButtonVisible = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the visibility of the close button.
+        /// </summary>
+        [Obsolete("Use IsCloseButtonVisible instead.")]
         public Visibility CloseButtonVisibility
         {
-            get { return (Visibility)GetValue(CloseButtonVisibilityProperty); }
-            set { SetValue(CloseButtonVisibilityProperty, value); }
+            get { return IsCloseButtonVisible; }
+            set { IsCloseButtonVisible = value; }
         }
 
         /// <summary>
@@ -382,10 +452,20 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Gets or sets whether the window can be moved by title-bar dragging or the system move command.
         /// </summary>
+        public bool IsMoveable
+        {
+            get { return (bool)GetValue(IsMoveableProperty); }
+            set { SetValue(IsMoveableProperty, value); }
+        }
+
+        /// <summary>
+        /// Gets or sets whether the window can be moved by title-bar dragging or the system move command.
+        /// </summary>
+        [Obsolete("Use IsMoveable instead.")]
         public bool CanMove
         {
-            get { return (bool)GetValue(CanMoveProperty); }
-            set { SetValue(CanMoveProperty, value); }
+            get { return IsMoveable; }
+            set { IsMoveable = value; }
         }
 
         /// <summary>
@@ -459,38 +539,40 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Sets the minimize button visibility.
         /// </summary>
+        [Obsolete("Use IsMinimizeButtonVisible instead.")]
         public void SetMinimizeButtonVisibility(Visibility visibility)
         {
-            MinimizeButtonVisibility = visibility;
+            IsMinimizeButtonVisible = visibility;
         }
 
         /// <summary>
         /// Sets the maximize/restore button visibility.
         /// </summary>
+        [Obsolete("Use IsMaximizeButtonVisible instead.")]
         public void SetMaximizeButtonVisibility(Visibility visibility)
         {
-            MaximizeButtonVisibility = visibility;
+            IsMaximizeButtonVisible = visibility;
         }
 
         /// <summary>
         /// Sets the close button visibility.
         /// </summary>
+        [Obsolete("Use IsCloseButtonVisible instead.")]
         public void SetCloseButtonVisibility(Visibility visibility)
         {
-            CloseButtonVisibility = visibility;
+            IsCloseButtonVisible = visibility;
         }
 
         /// <inheritdoc />
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            // These part names match the shipped FluenceWindow.xaml template. They remain
-            // deliberately tolerant: an incomplete design-time template should disable only
-            // caption-button behavior rather than failing the whole window.
-            _minimizeButton = GetTemplateChild("MinimizeButton") as System.Windows.Controls.Button;
-            _maximizeButton = GetTemplateChild("MaximizeButton") as System.Windows.Controls.Button;
-            _restoreButton = GetTemplateChild("RestoreButton") as System.Windows.Controls.Button;
-            _closeButton = GetTemplateChild("CloseButton") as System.Windows.Controls.Button;
+            // Be tolerant of incomplete design-time templates: missing caption parts should
+            // disable only caption-button behavior rather than failing the whole window.
+            _minimizeButton = GetTemplateChild(PART_MinimizeButton) as System.Windows.Controls.Button;
+            _maximizeButton = GetTemplateChild(PART_MaximizeButton) as System.Windows.Controls.Button;
+            _restoreButton = GetTemplateChild(PART_RestoreButton) as System.Windows.Controls.Button;
+            _closeButton = GetTemplateChild(PART_CloseButton) as System.Windows.Controls.Button;
             UpdateCaptionButtons();
         }
 
@@ -758,12 +840,12 @@ namespace Fluence.Wpf.Controls
                 ResizeMode,
                 out var minimizeVisibility,
                 out var minimizeEnabled);
-            // When the user has explicitly set MinimizeButtonVisibility (e.g. to re-enable the
+            // When the user has explicitly set IsMinimizeButtonVisible (e.g. to re-enable the
             // button under ResizeMode=NoResize), that value wins over the ResizeMode-derived
             // baseline. Otherwise we keep the chrome defaults.
-            if (IsCaptionChromeOverrideExplicit(MinimizeButtonVisibilityProperty))
+            if (IsCaptionChromeOverrideExplicit(IsMinimizeButtonVisibleProperty))
             {
-                minimizeVisibility = MinimizeButtonVisibility;
+                minimizeVisibility = IsMinimizeButtonVisible;
                 minimizeEnabled = minimizeVisibility == Visibility.Visible;
             }
 
@@ -782,10 +864,10 @@ namespace Fluence.Wpf.Controls
                 out var restVis,
                 out var maxEn,
                 out var restEn);
-            if (IsCaptionChromeOverrideExplicit(MaximizeButtonVisibilityProperty))
+            if (IsCaptionChromeOverrideExplicit(IsMaximizeButtonVisibleProperty))
             {
-                ApplyMaximizeRestoreVisibilityOverride(MaximizeButtonVisibility, out maxVis, out restVis);
-                bool explicitlyVisible = MaximizeButtonVisibility == Visibility.Visible;
+                ApplyMaximizeRestoreVisibilityOverride(IsMaximizeButtonVisible, out maxVis, out restVis);
+                bool explicitlyVisible = IsMaximizeButtonVisible == Visibility.Visible;
                 maxEn = explicitlyVisible && WindowState != WindowState.Maximized;
                 restEn = explicitlyVisible && WindowState == WindowState.Maximized;
             }
@@ -804,9 +886,9 @@ namespace Fluence.Wpf.Controls
             CaptionButtonChrome.GetCloseChrome(
                 out var closeVisibility,
                 out var closeEnabled);
-            if (IsCaptionChromeOverrideExplicit(CloseButtonVisibilityProperty))
+            if (IsCaptionChromeOverrideExplicit(IsCloseButtonVisibleProperty))
             {
-                closeVisibility = CloseButtonVisibility;
+                closeVisibility = IsCloseButtonVisible;
                 closeEnabled = closeVisibility == Visibility.Visible;
             }
 
@@ -900,7 +982,7 @@ namespace Fluence.Wpf.Controls
             }
             else if (msg == NativeConstants.WM_SYSCOMMAND &&
                 (wParam.ToInt64() & 0xFFF0L) == NativeConstants.SC_MOVE &&
-                !CanMove)
+                !IsMoveable)
             {
                 handled = true;
             }
@@ -1052,7 +1134,7 @@ namespace Fluence.Wpf.Controls
                 return 0;
             }
 
-            return CanMove ? NativeConstants.HTCAPTION : 0;
+            return IsMoveable ? NativeConstants.HTCAPTION : 0;
         }
 
         private void SetSnapHover(System.Windows.Controls.Button button)
@@ -1152,8 +1234,8 @@ namespace Fluence.Wpf.Controls
                 ResizeMode == ResizeMode.CanResize ||
                 ResizeMode == ResizeMode.CanResizeWithGrip;
             bool allowedByExplicitDp =
-                IsCaptionChromeOverrideExplicit(MaximizeButtonVisibilityProperty) &&
-                MaximizeButtonVisibility == Visibility.Visible;
+                IsCaptionChromeOverrideExplicit(IsMaximizeButtonVisibleProperty) &&
+                IsMaximizeButtonVisible == Visibility.Visible;
             e.CanExecute = (allowedByResizeMode || allowedByExplicitDp) && IsMaximizable;
         }
 
@@ -1161,8 +1243,8 @@ namespace Fluence.Wpf.Controls
         {
             bool allowedByResizeMode = ResizeMode != ResizeMode.NoResize;
             bool allowedByExplicitDp =
-                IsCaptionChromeOverrideExplicit(MinimizeButtonVisibilityProperty) &&
-                MinimizeButtonVisibility == Visibility.Visible;
+                IsCaptionChromeOverrideExplicit(IsMinimizeButtonVisibleProperty) &&
+                IsMinimizeButtonVisible == Visibility.Visible;
             e.CanExecute = (allowedByResizeMode || allowedByExplicitDp) && IsMinimizable;
         }
 

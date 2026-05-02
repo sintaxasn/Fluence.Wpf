@@ -67,7 +67,9 @@ namespace Fluence.Wpf.Demo
         private NavigationViewItem _sectionPointerSelectionToIgnore;
         private Popup _compactSectionPopup;
         private System.Windows.Controls.StackPanel _compactSectionPopupItemsPanel;
+        private object _lastAnimatedPageContent;
         private bool _restoringSelection;
+        private bool _searchOpenedPane;
 
         public MainWindow()
         {
@@ -204,7 +206,7 @@ namespace Fluence.Wpf.Demo
                                 Content = "All",
                                 Tag = "all controls gallery overview",
                                 Icon = CreateFontIcon("\uECA5", 20),
-                                PageContent = new GalleryHomePage()
+                                PageContent = CreateAllControlsPage()
                             });
                             controlsHeaderAdded = true;
                         }
@@ -271,6 +273,26 @@ namespace Fluence.Wpf.Demo
             return new GalleryCategoryPage(category.Title, GetCategoryDescription(category), children);
         }
 
+        private static GalleryCategoryPage CreateAllControlsPage()
+        {
+            var controls = new List<DemoNavigationItem>();
+            foreach (var item in DemoNavigationCatalog.Items)
+            {
+                DemoNavigationCategory category;
+                if (!string.IsNullOrEmpty(item.Category) &&
+                    DemoNavigationCatalog.TryGetCategory(item.Category, out category) &&
+                    category.IsControlCategory)
+                {
+                    controls.Add(item);
+                }
+            }
+
+            return new GalleryCategoryPage(
+                "All controls",
+                "Every Fluence.Wpf control page currently implemented in this demo.",
+                controls);
+        }
+
         private static string GetCategoryDescription(DemoNavigationCategory category)
         {
             if (string.Equals(category.Title, "Design", StringComparison.Ordinal))
@@ -306,6 +328,10 @@ namespace Fluence.Wpf.Demo
         private static FontIcon CreateChevronIcon(bool expanded)
         {
             var icon = CreateFontIcon("\uE70D", 12);
+            icon.Width = 16;
+            icon.Height = 16;
+            icon.HorizontalAlignment = HorizontalAlignment.Center;
+            icon.VerticalAlignment = VerticalAlignment.Center;
             icon.Rotation = expanded ? 180.0 : 0.0;
             return icon;
         }
@@ -330,6 +356,7 @@ namespace Fluence.Wpf.Demo
                 if (!DemoNav.IsPaneOpen)
                 {
                     CollapseAllSections(false);
+                    _searchOpenedPane = false;
                     ShowCompactSectionPopup(selected);
                     return;
                 }
@@ -348,6 +375,7 @@ namespace Fluence.Wpf.Demo
                 }
 
                 _lastSelectedLeafItem = selected;
+                AnimatePageInIfChanged(selected.PageContent);
             }
         }
 
@@ -455,7 +483,7 @@ namespace Fluence.Wpf.Demo
                 Padding = new Thickness(8.0),
                 Child = _compactSectionPopupItemsPanel
             };
-            popupSurface.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, "CardBackgroundFillColorDefaultBrush");
+            popupSurface.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, "SolidBackgroundFillColorQuarternaryBrush");
             popupSurface.SetResourceReference(System.Windows.Controls.Border.BorderBrushProperty, "CardStrokeColorDefaultBrush");
 
             _compactSectionPopup = new Popup
@@ -556,6 +584,7 @@ namespace Fluence.Wpf.Demo
             }
 
             DemoNav.SelectedContent = child.PageContent ?? child.Content;
+            AnimatePageInIfChanged(DemoNav.SelectedContent);
         }
 
         private void ToggleSection(NavigationViewItem sectionItem, bool animate)
@@ -681,6 +710,50 @@ namespace Fluence.Wpf.Demo
             if (_sectionHeaderByChild.TryGetValue(childItem, out sectionItem))
             {
                 SetSectionExpanded(sectionItem, true);
+            }
+        }
+
+        private static void AnimatePageIn(object page)
+        {
+            var element = page as UIElement;
+            if (element == null)
+            {
+                return;
+            }
+
+            element.BeginAnimation(UIElement.OpacityProperty, null);
+            element.RenderTransform = new TranslateTransform(0.0, 28.0);
+            element.Opacity = 0.0;
+
+            var easing = new CubicEase { EasingMode = EasingMode.EaseOut };
+            var opacityAnimation = new DoubleAnimation(0.0, 1.0, new Duration(TimeSpan.FromMilliseconds(260)))
+            {
+                EasingFunction = easing
+            };
+            opacityAnimation.Completed += delegate
+            {
+                element.BeginAnimation(UIElement.OpacityProperty, null);
+                element.Opacity = 1.0;
+            };
+            element.BeginAnimation(
+                UIElement.OpacityProperty,
+                opacityAnimation);
+
+            var transform = element.RenderTransform as TranslateTransform;
+            if (transform != null)
+            {
+                var slideAnimation = new DoubleAnimation(28.0, 0.0, new Duration(TimeSpan.FromMilliseconds(320)))
+                {
+                    EasingFunction = easing
+                };
+                slideAnimation.Completed += delegate
+                {
+                    transform.BeginAnimation(TranslateTransform.YProperty, null);
+                    transform.Y = 0.0;
+                };
+                transform.BeginAnimation(
+                    TranslateTransform.YProperty,
+                    slideAnimation);
             }
         }
 
@@ -897,14 +970,22 @@ namespace Fluence.Wpf.Demo
             var match = FindFirstMatchingItem(tag);
             if (match != null)
             {
-                EnsureParentExpanded(match);
-                DemoNav.SelectedItem = match;
+                NavigateToItem(match);
             }
         }
 
         private void NavSearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
+            UpdateSearchPaneState();
             ApplyNavSearchFilter();
+        }
+
+        private void NavSearchBox_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(NavSearchBox == null ? null : NavSearchBox.Text))
+            {
+                _searchOpenedPane = false;
+            }
         }
 
         // Enter commits the current filter: the first visible matching item is selected.
@@ -926,9 +1007,37 @@ namespace Fluence.Wpf.Demo
             var match = FindFirstMatchingItem(query);
             if (match != null)
             {
-                DemoNav.SelectedItem = match;
+                NavigateToItem(match);
                 e.Handled = true;
             }
+        }
+
+        private void NavigateToItem(NavigationViewItem match)
+        {
+            if (match == null)
+            {
+                return;
+            }
+
+            if (!DemoNav.IsPaneOpen && _sectionHeaderByChild.ContainsKey(match))
+            {
+                NavigateToCompactChild(match);
+                return;
+            }
+
+            EnsureParentExpanded(match);
+            DemoNav.SelectedItem = match;
+        }
+
+        private void AnimatePageInIfChanged(object page)
+        {
+            if (page == null || ReferenceEquals(_lastAnimatedPageContent, page))
+            {
+                return;
+            }
+
+            _lastAnimatedPageContent = page;
+            AnimatePageIn(page);
         }
 
         private NavigationViewItem FindFirstMatchingItem(string query)
@@ -1056,6 +1165,32 @@ namespace Fluence.Wpf.Demo
             }
 
             UpdateControlsHeaderVisibility();
+        }
+
+        private void UpdateSearchPaneState()
+        {
+            if (DemoNav == null || NavSearchBox == null)
+            {
+                return;
+            }
+
+            var hasQuery = !string.IsNullOrWhiteSpace(NavSearchBox.Text);
+            if (hasQuery)
+            {
+                if (!DemoNav.IsPaneOpen)
+                {
+                    _searchOpenedPane = true;
+                    DemoNav.IsPaneOpen = true;
+                }
+
+                return;
+            }
+
+            if (_searchOpenedPane && NavSearchBox.IsKeyboardFocusWithin && DemoNav.IsPaneOpen)
+            {
+                DemoNav.IsPaneOpen = false;
+                _searchOpenedPane = false;
+            }
         }
 
         private void RestoreAllPaneElementsVisible()

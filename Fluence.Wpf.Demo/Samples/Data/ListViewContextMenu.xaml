@@ -1,0 +1,34 @@
+﻿<UserControl
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
+    <ui:StackPanel Spacing="14">
+        <TextBlock
+            Width="560"
+            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+            Text="Right-click an item to open item-scoped commands."
+            TextWrapping="Wrap" />
+        <ui:ListView
+            Width="420"
+            Height="280"
+            HorizontalAlignment="Left"
+            BorderBrush="{DynamicResource ControlStrongStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            SelectedIndex="0">
+            <ListViewItem>
+                <ListViewItem.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Delete" />
+                    </ContextMenu>
+                </ListViewItem.ContextMenu>
+                <ui:StackPanel Margin="0,4" Spacing="2">
+                    <TextBlock FontWeight="SemiBold" Text="Ana Bowman" />
+                    <TextBlock
+                        FontSize="12"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Text="Contact - Contoso" />
+                </ui:StackPanel>
+            </ListViewItem>
+        </ui:ListView>
+    </ui:StackPanel>
+</UserControl>

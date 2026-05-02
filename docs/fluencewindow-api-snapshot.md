@@ -2,8 +2,10 @@
 
 Baseline captured 2026-04-20 against HEAD commit `46c4b93` for the WI-2 audit +
 harden pass. This file is the diff reference used to prove zero public-API
-regressions across WI-2: the only allowed changes are **additions**. Any
-rename, removal, or signature change is a stop-and-ask event (PSADT consumes
+regressions across WI-2. The caption-button and movement contract was updated
+2026-05-01: new property-style names are canonical, while the old public names
+remain as `[Obsolete]` pass-through aliases for source and binary consumers.
+Any removal or signature change is a stop-and-ask event (PSADT consumes
 these members via `ProjectReference`; see
 `docs/_internal/wi1-verification.md` Stage 0.2 for the PSADT build
 confirmation).
@@ -45,6 +47,10 @@ already bind to `FluenceWindow`. No WI-2 action required.
 ## `Fluence.Wpf.Controls.FluenceWindow`
 
 ```csharp
+[TemplatePart(Name = "PART_MinimizeButton", Type = typeof(System.Windows.Controls.Button))]
+[TemplatePart(Name = "PART_MaximizeButton", Type = typeof(System.Windows.Controls.Button))]
+[TemplatePart(Name = "PART_RestoreButton", Type = typeof(System.Windows.Controls.Button))]
+[TemplatePart(Name = "PART_CloseButton", Type = typeof(System.Windows.Controls.Button))]
 public class FluenceWindow : Window
 ```
 
@@ -54,9 +60,10 @@ public class FluenceWindow : Window
 |---------------------------------------|------------------|--------------------------------------------------------|
 | `IsNotNullConverter`                  | `IValueConverter`| Singleton `IsNotNullValueConverter`; used by template. |
 
-### Public dependency properties (16)
+### Public dependency properties (canonical registered contract)
 
 > Updated 2026-04-21: added `TitleBarLeftIndentProperty` (added in commit `da98e9e`/subsequent; not present at original snapshot time).
+> Updated 2026-05-01: `IsMoveable` and the three `Is*ButtonVisible` visibility properties are canonical. Old names remain as obsolete aliases.
 
 | DP field                               | CLR wrapper                   | Type              | Default                      | Metadata callback                         |
 |----------------------------------------|-------------------------------|-------------------|------------------------------|-------------------------------------------|
@@ -68,17 +75,30 @@ public class FluenceWindow : Window
 | `TitleBarHeightProperty`               | `TitleBarHeight`              | `double`          | `DefaultTitleBarHeight` (48) | `OnTitleBarHeightChanged`                 |
 | `ShowIconProperty`                     | `ShowIcon`                    | `bool`            | `true`                       | _(none)_                                  |
 | `ShowTitleProperty`                    | `ShowTitle`                   | `bool`            | `true`                       | _(none)_                                  |
-| `MinimizeButtonVisibilityProperty`     | `MinimizeButtonVisibility`    | `Visibility`      | `Visibility.Visible`         | `OnCaptionButtonChromeOverrideChanged`    |
-| `MaximizeButtonVisibilityProperty`     | `MaximizeButtonVisibility`    | `Visibility`      | `Visibility.Visible`         | `OnCaptionButtonChromeOverrideChanged`    |
-| `CloseButtonVisibilityProperty`        | `CloseButtonVisibility`       | `Visibility`      | `Visibility.Visible`         | `OnCaptionButtonChromeOverrideChanged`    |
+| `IsMinimizeButtonVisibleProperty`      | `IsMinimizeButtonVisible`     | `Visibility`      | `Visibility.Visible`         | `OnCaptionButtonChromeOverrideChanged`    |
+| `IsMaximizeButtonVisibleProperty`      | `IsMaximizeButtonVisible`     | `Visibility`      | `Visibility.Visible`         | `OnCaptionButtonChromeOverrideChanged`    |
+| `IsCloseButtonVisibleProperty`         | `IsCloseButtonVisible`        | `Visibility`      | `Visibility.Visible`         | `OnCaptionButtonChromeOverrideChanged`    |
 | `IsMinimizableProperty`                | `IsMinimizable`               | `bool`            | `true`                       | `OnCaptionButtonChromeOverrideChanged`    |
 | `IsMaximizableProperty`                | `IsMaximizable`               | `bool`            | `true`                       | `OnCaptionButtonChromeOverrideChanged`    |
 | `IsClosableProperty`                   | `IsClosable`                  | `bool`            | `true`                       | `OnCaptionButtonChromeOverrideChanged`    |
+| `IsMoveableProperty`                   | `IsMoveable`                  | `bool`            | `true`                       | _(none)_                                  |
 | `HasShadowProperty`                    | `HasShadow`                   | `bool`            | `true`                       | `OnHasShadowChanged`                      |
 | `TitleBarLeftIndentProperty`           | `TitleBarLeftIndent`          | `double`          | `0.0`                        | _(none)_                                  |
 
 All registered via `DependencyProperty.Register`; none read-only; none
 attached.
+
+### Obsolete compatibility aliases
+
+| Obsolete member                         | Replacement                     | Notes                                      |
+|-----------------------------------------|----------------------------------|--------------------------------------------|
+| `CanMoveProperty` / `CanMove`           | `IsMoveableProperty` / `IsMoveable` | Alias to the same registered DP.        |
+| `MinimizeButtonVisibilityProperty` / `MinimizeButtonVisibility` | `IsMinimizeButtonVisibleProperty` / `IsMinimizeButtonVisible` | Alias to the same registered DP. |
+| `MaximizeButtonVisibilityProperty` / `MaximizeButtonVisibility` | `IsMaximizeButtonVisibleProperty` / `IsMaximizeButtonVisible` | Alias to the same registered DP. |
+| `CloseButtonVisibilityProperty` / `CloseButtonVisibility` | `IsCloseButtonVisibleProperty` / `IsCloseButtonVisible` | Alias to the same registered DP. |
+| `SetMinimizeButtonVisibility(Visibility)` | `IsMinimizeButtonVisible`      | Pass-through method retained obsolete.     |
+| `SetMaximizeButtonVisibility(Visibility)` | `IsMaximizeButtonVisible`      | Pass-through method retained obsolete.     |
+| `SetCloseButtonVisibility(Visibility)` | `IsCloseButtonVisible`          | Pass-through method retained obsolete.     |
 
 ### Public instance members
 
@@ -86,6 +106,9 @@ attached.
 |----------------------------------------|-------------|-------------------------------------------------------------------------|
 | `FluenceWindow()`                      | constructor | `public FluenceWindow()`                                                |
 | `SetTitleBar`                          | method      | `public void SetTitleBar(UIElement titleBar)`                           |
+| `SetMinimizeButtonVisibility`          | obsolete method | `public void SetMinimizeButtonVisibility(Visibility visibility)`     |
+| `SetMaximizeButtonVisibility`          | obsolete method | `public void SetMaximizeButtonVisibility(Visibility visibility)`     |
+| `SetCloseButtonVisibility`             | obsolete method | `public void SetCloseButtonVisibility(Visibility visibility)`        |
 | `OnApplyTemplate`                      | override    | `public override void OnApplyTemplate()`                                |
 
 ### Protected overrides
@@ -112,6 +135,17 @@ to at construction and unsubscribes in `OnClosed`.
 
 None declared on `FluenceWindow`.
 
+### TemplatePart attributes
+
+`FluenceWindow` declares four caption-button template parts:
+
+| TemplatePart name       | Expected type                    |
+|-------------------------|----------------------------------|
+| `PART_MinimizeButton`   | `System.Windows.Controls.Button` |
+| `PART_MaximizeButton`   | `System.Windows.Controls.Button` |
+| `PART_RestoreButton`    | `System.Windows.Controls.Button` |
+| `PART_CloseButton`      | `System.Windows.Controls.Button` |
+
 ### Template contract
 
 The `Themes/Controls/FluenceWindow.xaml` default style names four caption
@@ -119,10 +153,10 @@ buttons that `OnApplyTemplate` looks up by name:
 
 | Template element name | Expected type                   | Used by                           |
 |-----------------------|---------------------------------|-----------------------------------|
-| `MinimizeButton`      | `System.Windows.Controls.Button`| `UpdateCaptionButtons()`          |
-| `MaximizeButton`      | `System.Windows.Controls.Button`| `UpdateCaptionButtons()`          |
-| `RestoreButton`       | `System.Windows.Controls.Button`| `UpdateCaptionButtons()`          |
-| `CloseButton`         | `System.Windows.Controls.Button`| `UpdateCaptionButtons()`          |
+| `PART_MinimizeButton` | `System.Windows.Controls.Button`| `UpdateCaptionButtons()`          |
+| `PART_MaximizeButton` | `System.Windows.Controls.Button`| `UpdateCaptionButtons()`          |
+| `PART_RestoreButton`  | `System.Windows.Controls.Button`| `UpdateCaptionButtons()`          |
+| `PART_CloseButton`    | `System.Windows.Controls.Button`| `UpdateCaptionButtons()`          |
 
 Each button binds to a `SystemCommands.*WindowCommand`; `FluenceWindow`
 registers matching `CommandBindings` in its constructor (see
@@ -196,13 +230,14 @@ survive WI-2 unchanged in name and semantic.
 - Theme manager: `ApplicationThemeManager.Apply(…)`, `.Changed`,
   `.CurrentTheme`.
 - Accent manager: `ApplicationAccentColorManager.ApplyCustomAccent(Color)`.
-- Dependency properties touched: `MinimizeButtonVisibility`, `IsMinimizable`.
+- Dependency properties touched: `IsMinimizeButtonVisible`, `IsMinimizable`, `IsMoveable`.
 
 **From [`FluentDialog.xaml`](../../PSAppDeployToolkit/src/PSADT/PSADT.UserInterface/Interfaces/Fluent/FluentDialog.xaml):**
 
 - Root element: `ui:FluenceWindow`.
 - Attributes set: `ExtendsContentIntoTitleBar`, `SystemBackdropType="Acrylic"`,
-  `CornerStyle="Round"`, `TitleBarHeight`.
+  `CornerStyle="Round"`, `TitleBarHeight`, `IsMinimizeButtonVisible`,
+  `IsMaximizeButtonVisible`, `IsCloseButtonVisible`.
 
 **Resource keys referenced (canonical WinUI 3; not this snapshot's
 responsibility but recorded for WI-2 cross-check):**

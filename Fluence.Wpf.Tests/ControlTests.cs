@@ -1344,7 +1344,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsTrue(window.IsMaximizable);
                     Assert.IsTrue(window.IsClosable);
 
-                    var closeButton = window.Template.FindName("CloseButton", window) as Button;
+                    var closeButton = window.Template.FindName("PART_CloseButton", window) as Button;
                     Assert.IsNotNull(closeButton);
                     Assert.AreEqual(Visibility.Visible, closeButton.Visibility);
                 }

@@ -1,0 +1,40 @@
+﻿<UserControl
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
+    <ui:StackPanel Spacing="14">
+        <ui:StackPanel Spacing="8">
+            <TextBlock Text="Filter by..." />
+            <ui:TextBox
+                Width="260"
+                HorizontalAlignment="Left"
+                PlaceholderText="Filter by name, role, or company" />
+        </ui:StackPanel>
+        <ui:ListView
+            Width="420"
+            Height="330"
+            HorizontalAlignment="Left"
+            BorderBrush="{DynamicResource ControlStrongStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            SelectedIndex="0">
+            <ListViewItem>
+                <ui:StackPanel Margin="0,4" Spacing="2">
+                    <TextBlock FontWeight="SemiBold" Text="Ana Bowman" />
+                    <TextBlock
+                        FontSize="12"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Text="Support Engineer - Contoso" />
+                </ui:StackPanel>
+            </ListViewItem>
+            <ListViewItem>
+                <ui:StackPanel Margin="0,4" Spacing="2">
+                    <TextBlock FontWeight="SemiBold" Text="Oscar Ward" />
+                    <TextBlock
+                        FontSize="12"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Text="DevOps Lead - Fabrikam" />
+                </ui:StackPanel>
+            </ListViewItem>
+        </ui:ListView>
+    </ui:StackPanel>
+</UserControl>

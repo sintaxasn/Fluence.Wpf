@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,6 +59,22 @@ namespace Fluence.Wpf.Tests
         private static Application EnsureApp()
         {
             return WpfTestSta.EnsureApplication();
+        }
+
+        private static string GetRepositoryFilePath(params string[] relativeSegments)
+        {
+            var root = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\.."));
+            var pathParts = new string[relativeSegments.Length + 1];
+            pathParts[0] = root;
+            Array.Copy(relativeSegments, 0, pathParts, 1, relativeSegments.Length);
+            return Path.Combine(pathParts);
+        }
+
+        private static string ReadRepositoryFile(params string[] relativeSegments)
+        {
+            var path = GetRepositoryFilePath(relativeSegments);
+            Assert.IsTrue(File.Exists(path), "Repository file must be readable at: " + path);
+            return File.ReadAllText(path);
         }
 
         private static void ResetAndApply(ApplicationTheme theme, Application app = null)
@@ -175,7 +191,10 @@ namespace Fluence.Wpf.Tests
                     "TextFillColorPrimaryBrush",
                     "TextFillColorSecondaryBrush",
                     "ControlFillColorDefaultBrush",
-                    "SystemFillColorCriticalBrush"
+                    "SystemFillColorCriticalBrush",
+                    "WindowCloseButtonBackgroundPointerOverBrush",
+                    "WindowCloseButtonBackgroundPressedBrush",
+                    "WindowCloseButtonForegroundPointerOverBrush"
                 };
 
                 foreach (var theme in new[] { ApplicationTheme.Dark, ApplicationTheme.HighContrast, ApplicationTheme.Light })
@@ -195,8 +214,8 @@ namespace Fluence.Wpf.Tests
         public void ThemeCycle_HighContrast_SystemFillColorCriticalBrush_Resolves()
         {
             // HC theme maps SystemFillColorCriticalBrush to WindowTextColorKey (white on black).
-            // If close button used a hardcoded #C42B1C this brush would be ignored in HC mode,
-            // breaking accessibility. This test verifies the resource is available for DynamicResource.
+            // Caption close-button chrome uses its own DynamicResource tokens; this guard keeps the
+            // general critical brush available for controls that intentionally consume it.
             RunOnStaThread(() =>
             {
                 var app = EnsureApp();
@@ -210,39 +229,77 @@ namespace Fluence.Wpf.Tests
         }
 
         // ---------------------------------------------------------------------------
-        // 4. Close button color regression guard
-        //    WI-2 Finding B originally switched to SystemFillColorCriticalBrush but
-        //    that resolves to pink (#FF99A4) in Dark theme — wrong for a title-bar
-        //    close button.  The canonical Fluent close-button red (#C42B1C hover /
-        //    #B4271C pressed) is theme-agnostic; it is the correct value in both
-        //    Light and Dark on Windows 11.  This test guards against accidentally
-        //    removing it.
+        // 4. Close button resource-token and template-part regression guards.
         // ---------------------------------------------------------------------------
 
         [TestMethod]
-        public void FluenceWindowXaml_CloseButtonHover_UsesCanonicalFluentRed()
+        public void FluenceWindowXaml_CloseButtonHover_UsesCanonicalCloseButtonBrushTokens()
         {
-            // Regression: close button hover must use the Fluent canonical red (#C42B1C) rather
-            // than SystemFillColorCriticalBrush, which resolves to a pink/salmon (#FF99A4) in the
-            // Dark theme and is visually wrong for a close button.
-            var xamlPath = Path.GetFullPath(Path.Combine(
-                AppDomain.CurrentDomain.BaseDirectory,
-                @"..\..\..\..\Fluence.Wpf\Themes\Controls\FluenceWindow.xaml"));
+            string xaml = ReadRepositoryFile("Fluence.Wpf", "Themes", "Controls", "FluenceWindow.xaml");
 
-            Assert.IsTrue(File.Exists(xamlPath),
-                "FluenceWindow.xaml must be readable at: " + xamlPath);
+            StringAssert.Contains(xaml, "WindowCloseButtonBackgroundPointerOverBrush");
+            StringAssert.Contains(xaml, "WindowCloseButtonBackgroundPressedBrush");
+            StringAssert.Contains(xaml, "WindowCloseButtonForegroundPointerOverBrush");
 
-            string xaml = File.ReadAllText(xamlPath);
+            Assert.IsFalse(xaml.Contains("WindowCloseFillColorHoverBrush"),
+                "FluenceWindow.xaml should consume the canonical close-button background token.");
+            Assert.IsFalse(xaml.Contains("WindowCloseFillColorPressedBrush"),
+                "FluenceWindow.xaml should consume the canonical close-button pressed token.");
+            Assert.IsFalse(xaml.Contains("WindowCloseForegroundHoverBrush"),
+                "FluenceWindow.xaml should consume the canonical close-button foreground token.");
+            Assert.IsFalse(xaml.Contains("SystemFillColorCriticalBrush"),
+                "Caption close-button hover must not use the general critical brush.");
+            Assert.IsFalse(xaml.Contains("#C42B1C") || xaml.Contains("#B4271C") || xaml.Contains("#FFFFFF"),
+                "Production control templates must not inline close-button hex colors.");
+        }
 
-            // Canonical Fluent close-button red must be present.
-            Assert.IsTrue(
-                xaml.Contains("#C42B1C"),
-                "FluenceWindow.xaml must retain hardcoded #C42B1C for close-button hover. " +
-                "SystemFillColorCritical resolves to pink (#FF99A4) in Dark theme — do not replace.");
+        [TestMethod]
+        public void FluenceWindowCloseButtonThemeTokens_AreDefinedForAllManagedThemes()
+        {
+            AssertCloseButtonThemeTokens("Theme.Light.xaml");
+            AssertCloseButtonThemeTokens("Theme.Dark.xaml");
+            AssertCloseButtonThemeTokens("Theme.HighContrast.xaml");
 
-            Assert.IsTrue(
-                xaml.Contains("#B4271C"),
-                "FluenceWindow.xaml must retain hardcoded #B4271C for close-button pressed.");
+            string brushes = ReadRepositoryFile("Fluence.Wpf", "Themes", "Brushes", "Brushes.xaml");
+            StringAssert.Contains(brushes, "WindowCloseButtonBackgroundPointerOverBrush");
+            StringAssert.Contains(brushes, "WindowCloseButtonBackgroundPressedBrush");
+            StringAssert.Contains(brushes, "WindowCloseButtonForegroundPointerOverBrush");
+            StringAssert.Contains(brushes, "WindowCloseButtonBackgroundPointerOver");
+            StringAssert.Contains(brushes, "WindowCloseButtonBackgroundPressed");
+            StringAssert.Contains(brushes, "WindowCloseButtonForegroundPointerOver");
+        }
+
+        [TestMethod]
+        public void FluenceWindow_DeclaresCaptionButtonTemplateParts()
+        {
+            var attributes = typeof(FluenceWindow).GetCustomAttributes(typeof(TemplatePartAttribute), false);
+
+            AssertTemplatePart(attributes, "PART_MinimizeButton");
+            AssertTemplatePart(attributes, "PART_MaximizeButton");
+            AssertTemplatePart(attributes, "PART_RestoreButton");
+            AssertTemplatePart(attributes, "PART_CloseButton");
+        }
+
+        private static void AssertCloseButtonThemeTokens(string themeFileName)
+        {
+            string theme = ReadRepositoryFile("Fluence.Wpf", "Themes", "Colors", themeFileName);
+
+            StringAssert.Contains(theme, "<Color x:Key=\"WindowCloseButtonBackgroundPointerOver\">#FFC42B1C</Color>");
+            StringAssert.Contains(theme, "<Color x:Key=\"WindowCloseButtonBackgroundPressed\">#FFB4271C</Color>");
+            StringAssert.Contains(theme, "<Color x:Key=\"WindowCloseButtonForegroundPointerOver\">#FFFFFFFF</Color>");
+        }
+
+        private static void AssertTemplatePart(object[] attributes, string name)
+        {
+            foreach (TemplatePartAttribute attribute in attributes)
+            {
+                if (attribute.Name == name && attribute.Type == typeof(System.Windows.Controls.Button))
+                {
+                    return;
+                }
+            }
+
+            Assert.Fail("FluenceWindow must declare TemplatePart '" + name + "' with type System.Windows.Controls.Button.");
         }
 
         // ---------------------------------------------------------------------------

@@ -374,15 +374,15 @@ namespace Fluence.Wpf.Demo
             var target = combo.Tag as string;
             if (string.Equals(target, "Minimize", StringComparison.Ordinal))
             {
-                ApplyCaptionVisibility(combo, delegate(Visibility value) { window.SetMinimizeButtonVisibility(value); }, delegate(bool enabled) { window.IsMinimizable = enabled; });
+                ApplyCaptionVisibility(combo, delegate(Visibility value) { window.IsMinimizeButtonVisible = value; }, delegate(bool enabled) { window.IsMinimizable = enabled; });
             }
             else if (string.Equals(target, "Maximize", StringComparison.Ordinal))
             {
-                ApplyCaptionVisibility(combo, delegate(Visibility value) { window.SetMaximizeButtonVisibility(value); }, delegate(bool enabled) { window.IsMaximizable = enabled; });
+                ApplyCaptionVisibility(combo, delegate(Visibility value) { window.IsMaximizeButtonVisible = value; }, delegate(bool enabled) { window.IsMaximizable = enabled; });
             }
             else if (string.Equals(target, "Close", StringComparison.Ordinal))
             {
-                ApplyCaptionVisibility(combo, delegate(Visibility value) { window.SetCloseButtonVisibility(value); }, delegate(bool enabled) { window.IsClosable = enabled; });
+                ApplyCaptionVisibility(combo, delegate(Visibility value) { window.IsCloseButtonVisible = value; }, delegate(bool enabled) { window.IsClosable = enabled; });
             }
         }
 

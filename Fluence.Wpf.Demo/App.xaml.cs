@@ -27,12 +27,17 @@
  */
 using System;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace Fluence.Wpf.Demo
 {
     public partial class App : Application
     {
+        private const string IconographyPageTitle = "Iconography";
+        private const string SmokeTestArgument = "--smoke-test";
+
         static App()
         {
             var textOptionsMetadata = FrameworkPropertyMetadataOptions.AffectsMeasure |
@@ -59,6 +64,110 @@ namespace Fluence.Wpf.Demo
             var mainWindow = new MainWindow();
             MainWindow = mainWindow;
             mainWindow.Show();
+
+            if (IsSmokeTest(e.Args))
+            {
+                Dispatcher.BeginInvoke(new Action(delegate { RunSmokeTest(mainWindow); }), DispatcherPriority.ApplicationIdle);
+            }
+        }
+
+        private static void RunSmokeTest(MainWindow mainWindow)
+        {
+            foreach (var item in DemoNavigationCatalog.Items)
+            {
+                mainWindow.NavigateTo(item.Title);
+                mainWindow.UpdateLayout();
+                DrainDispatcher(mainWindow.Dispatcher);
+                if (string.Equals(item.Title, IconographyPageTitle, StringComparison.Ordinal))
+                {
+                    RealizeIconographyList(mainWindow);
+                }
+            }
+
+            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.Auto, true);
+            ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.Auto, true);
+            ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.Auto, true);
+            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.Auto, true);
+
+            mainWindow.Close();
+        }
+
+        private static void RealizeIconographyList(DependencyObject root)
+        {
+            var list = FindVisualChildByName<ListView>(root, "IconCatalogList");
+            if (list == null)
+            {
+                throw new InvalidOperationException("The Iconography page did not create IconCatalogList.");
+            }
+
+            list.ApplyTemplate();
+            list.UpdateLayout();
+            if (list.Items.Count == 0)
+            {
+                throw new InvalidOperationException("The Iconography page did not load any icon rows.");
+            }
+
+            list.ScrollIntoView(list.Items[0]);
+            list.UpdateLayout();
+
+            var firstContainer = list.ItemContainerGenerator.ContainerFromIndex(0) as FrameworkElement;
+            if (firstContainer == null)
+            {
+                throw new InvalidOperationException("The Iconography page did not realize the first icon row.");
+            }
+
+            firstContainer.ApplyTemplate();
+            firstContainer.UpdateLayout();
+        }
+
+        private static T FindVisualChildByName<T>(DependencyObject root, string name)
+            where T : FrameworkElement
+        {
+            if (root == null)
+            {
+                return null;
+            }
+
+            var rootElement = root as T;
+            if (rootElement != null && string.Equals(rootElement.Name, name, StringComparison.Ordinal))
+            {
+                return rootElement;
+            }
+
+            var childCount = VisualTreeHelper.GetChildrenCount(root);
+            for (var i = 0; i < childCount; i++)
+            {
+                var match = FindVisualChildByName<T>(VisualTreeHelper.GetChild(root, i), name);
+                if (match != null)
+                {
+                    return match;
+                }
+            }
+
+            return null;
+        }
+
+        private static void DrainDispatcher(Dispatcher dispatcher)
+        {
+            dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
+        }
+
+        private static bool IsSmokeTest(string[] args)
+        {
+            if (args == null)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < args.Length; i++)
+            {
+                if (string.Equals(args[i], SmokeTestArgument, StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }
