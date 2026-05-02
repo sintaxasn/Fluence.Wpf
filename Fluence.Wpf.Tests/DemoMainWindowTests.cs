@@ -166,6 +166,16 @@ namespace Fluence.Wpf.Tests
             Assert.AreEqual(targetRotation, chevron.Rotation, 0.01, message);
         }
 
+        private static void AssertVisibilitySettles(
+            Dispatcher dispatcher,
+            UIElement element,
+            Visibility expected,
+            string message)
+        {
+            WaitUntil(dispatcher, 1000, () => element.Visibility == expected);
+            Assert.AreEqual(expected, element.Visibility, message);
+        }
+
         private static MainWindow CreateShownMainWindow()
         {
             var window = new MainWindow
@@ -1118,11 +1128,10 @@ namespace Fluence.Wpf.Tests
                     Drain(window.Dispatcher);
 
                     nav.IsPaneOpen = false;
-                    WaitForAnimationAndDrain(window.Dispatcher, 180);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
-                    Assert.AreEqual(Visibility.Collapsed, button.Visibility,
+                    AssertVisibilitySettles(window.Dispatcher, button, Visibility.Collapsed,
                         "Pane collapse should collapse open category children so compact mode has no child gaps.");
                     var chevron = basicInput.InfoBadge as FontIcon;
                     Assert.IsNotNull(chevron, "Category header should keep its chevron glyph.");
