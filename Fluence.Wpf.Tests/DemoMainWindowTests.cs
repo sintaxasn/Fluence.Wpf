@@ -156,6 +156,16 @@ namespace Fluence.Wpf.Tests
                 message);
         }
 
+        private static void AssertChevronRotationSettles(
+            Dispatcher dispatcher,
+            FontIcon chevron,
+            double targetRotation,
+            string message)
+        {
+            WaitUntil(dispatcher, 1000, () => Math.Abs(chevron.Rotation - targetRotation) <= 0.01);
+            Assert.AreEqual(targetRotation, chevron.Rotation, 0.01, message);
+        }
+
         private static MainWindow CreateShownMainWindow()
         {
             var window = new MainWindow
@@ -869,8 +879,7 @@ namespace Fluence.Wpf.Tests
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
-                    WaitForAnimationAndDrain(window.Dispatcher, 180);
-                    Assert.AreEqual(180.0, chevron.Rotation, 0.01,
+                    AssertChevronRotationSettles(window.Dispatcher, chevron, 180.0,
                         "Expanded category chevron should settle at 180 degrees.");
 
                     nav.SelectedItem = home;
@@ -888,8 +897,7 @@ namespace Fluence.Wpf.Tests
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
-                    WaitForAnimationAndDrain(window.Dispatcher, 140);
-                    Assert.AreEqual(0.0, chevron.Rotation, 0.01,
+                    AssertChevronRotationSettles(window.Dispatcher, chevron, 0.0,
                         "Collapsed category chevron should settle back at 0 degrees.");
                 }
                 finally
