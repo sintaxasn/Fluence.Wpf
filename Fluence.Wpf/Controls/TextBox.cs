@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -299,7 +300,7 @@ namespace Fluence.Wpf.Controls
             }
 
             counter.Visibility = Visibility.Visible;
-            counter.Text = string.Format("{0}/{1}", Text != null ? Text.Length : 0, MaxLength);
+            counter.Text = string.Format(CultureInfo.CurrentCulture, "{0}/{1}", Text != null ? Text.Length : 0, MaxLength);
         }
 
         private void UpdateHelperText()

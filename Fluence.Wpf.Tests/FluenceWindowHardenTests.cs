@@ -115,11 +115,11 @@ namespace Fluence.Wpf.Tests
         }
 
         // ---------------------------------------------------------------------------
-        // 2. WindowBackdrop DP defaults and round-trip
+        // 2. SystemBackdropType DP defaults and round-trip
         // ---------------------------------------------------------------------------
 
         [TestMethod]
-        public void WindowBackdrop_Default_IsAuto()
+        public void SystemBackdropType_Default_IsAuto()
         {
             RunOnStaThread(() =>
             {
@@ -128,15 +128,15 @@ namespace Fluence.Wpf.Tests
                 var w = new FluenceWindow();
                 try
                 {
-                    Assert.AreEqual(BackdropType.Auto, w.WindowBackdrop,
-                        "WindowBackdrop must default to BackdropType.Auto.");
+                    Assert.AreEqual(BackdropType.Auto, w.SystemBackdropType,
+                        "SystemBackdropType must default to BackdropType.Auto.");
                 }
                 finally { w.Close(); }
             });
         }
 
         [TestMethod]
-        public void WindowBackdrop_CanSetAllValues()
+        public void SystemBackdropType_CanSetAllValues()
         {
             // Verifies that the DP accepts all four BackdropType values without throwing.
             RunOnStaThread(() =>
@@ -148,9 +148,9 @@ namespace Fluence.Wpf.Tests
                 {
                     foreach (var bd in new[] { BackdropType.None, BackdropType.Mica, BackdropType.Acrylic, BackdropType.Tabbed, BackdropType.Auto })
                     {
-                        w.WindowBackdrop = bd;
-                        Assert.AreEqual(bd, w.WindowBackdrop,
-                            "WindowBackdrop DP must accept and reflect: " + bd);
+                        w.SystemBackdropType = bd;
+                        Assert.AreEqual(bd, w.SystemBackdropType,
+                            "SystemBackdropType DP must accept and reflect: " + bd);
                     }
                 }
                 finally { w.Close(); }

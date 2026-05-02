@@ -41,8 +41,20 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = "PART_RevealTextBox", Type = typeof(System.Windows.Controls.TextBox))]
     [TemplatePart(Name = "PART_RevealButton", Type = typeof(System.Windows.Controls.Button))]
     [TemplatePart(Name = "PART_CapsLockIndicator", Type = typeof(FrameworkElement))]
-    public class PasswordBox : Control
+    public partial class PasswordBox : Control
     {
+        private const string LowercasePasswordPattern = "[a-z]";
+        private const string UppercasePasswordPattern = "[A-Z]";
+        private const string DigitPasswordPattern = "[0-9]";
+        private const string SymbolPasswordPattern = "[^a-zA-Z0-9]";
+
+#if !NET7_0_OR_GREATER
+        private static readonly Regex LowercasePasswordRegexFallback = new Regex(LowercasePasswordPattern, RegexOptions.CultureInvariant);
+        private static readonly Regex UppercasePasswordRegexFallback = new Regex(UppercasePasswordPattern, RegexOptions.CultureInvariant);
+        private static readonly Regex DigitPasswordRegexFallback = new Regex(DigitPasswordPattern, RegexOptions.CultureInvariant);
+        private static readonly Regex SymbolPasswordRegexFallback = new Regex(SymbolPasswordPattern, RegexOptions.CultureInvariant);
+#endif
+
         private System.Windows.Controls.PasswordBox _passwordBox;
         private System.Windows.Controls.TextBox _revealTextBox;
         private System.Windows.Controls.Button _revealButton;
@@ -493,23 +505,73 @@ namespace Fluence.Wpf.Controls
                 score++;
             }
 
-            if (Regex.IsMatch(password, "[a-z]") && Regex.IsMatch(password, "[A-Z]"))
+            if (HasLowercasePasswordCharacter(password) && HasUppercasePasswordCharacter(password))
             {
                 score++;
             }
 
-            if (Regex.IsMatch(password, "[0-9]"))
+            if (HasDigitPasswordCharacter(password))
             {
                 score++;
             }
 
-            if (Regex.IsMatch(password, "[^a-zA-Z0-9]"))
+            if (HasSymbolPasswordCharacter(password))
             {
                 score++;
             }
 
             return Math.Min(4, score);
         }
+
+        private static bool HasLowercasePasswordCharacter(string password)
+        {
+#if NET7_0_OR_GREATER
+            return LowercasePasswordRegex().IsMatch(password);
+#else
+            return LowercasePasswordRegexFallback.IsMatch(password);
+#endif
+        }
+
+        private static bool HasUppercasePasswordCharacter(string password)
+        {
+#if NET7_0_OR_GREATER
+            return UppercasePasswordRegex().IsMatch(password);
+#else
+            return UppercasePasswordRegexFallback.IsMatch(password);
+#endif
+        }
+
+        private static bool HasDigitPasswordCharacter(string password)
+        {
+#if NET7_0_OR_GREATER
+            return DigitPasswordRegex().IsMatch(password);
+#else
+            return DigitPasswordRegexFallback.IsMatch(password);
+#endif
+        }
+
+        private static bool HasSymbolPasswordCharacter(string password)
+        {
+#if NET7_0_OR_GREATER
+            return SymbolPasswordRegex().IsMatch(password);
+#else
+            return SymbolPasswordRegexFallback.IsMatch(password);
+#endif
+        }
+
+#if NET7_0_OR_GREATER
+        [GeneratedRegex(LowercasePasswordPattern, RegexOptions.CultureInvariant)]
+        private static partial Regex LowercasePasswordRegex();
+
+        [GeneratedRegex(UppercasePasswordPattern, RegexOptions.CultureInvariant)]
+        private static partial Regex UppercasePasswordRegex();
+
+        [GeneratedRegex(DigitPasswordPattern, RegexOptions.CultureInvariant)]
+        private static partial Regex DigitPasswordRegex();
+
+        [GeneratedRegex(SymbolPasswordPattern, RegexOptions.CultureInvariant)]
+        private static partial Regex SymbolPasswordRegex();
+#endif
 
         private void UpdateCapsLockIndicator()
         {

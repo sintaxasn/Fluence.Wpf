@@ -59,15 +59,19 @@ namespace Fluence.Wpf.Demo
 
         private static string NormalizeSamplePath(string samplePath)
         {
+#if NET6_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(samplePath);
+#else
             if (samplePath == null)
             {
-                throw new ArgumentNullException("samplePath");
+                throw new ArgumentNullException(nameof(samplePath));
             }
+#endif
 
             var normalized = samplePath.Replace('\\', '/').Trim('/');
-            if (normalized.Length == 0 || normalized.IndexOf("..", StringComparison.Ordinal) >= 0)
+            if (normalized.Length == 0 || normalized.Contains(".."))
             {
-                throw new ArgumentException("Sample paths must be relative paths inside the Samples directory.", "samplePath");
+                throw new ArgumentException("Sample paths must be relative paths inside the Samples directory.", nameof(samplePath));
             }
 
             return normalized;

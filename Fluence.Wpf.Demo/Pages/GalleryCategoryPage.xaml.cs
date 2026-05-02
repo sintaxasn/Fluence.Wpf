@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -136,7 +136,7 @@ namespace Fluence.Wpf.Demo.Pages
             CategoryCardsGrid.Children.Add(card);
         }
 
-        private static UIElement CreateCardContent(DemoNavigationItem item)
+        private static Grid CreateCardContent(DemoNavigationItem item)
         {
             var grid = new Grid();
             grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
@@ -183,7 +183,7 @@ namespace Fluence.Wpf.Demo.Pages
             return grid;
         }
 
-        private static ImageSource CreateImageSource(string fileName)
+        private static BitmapImage CreateImageSource(string fileName)
         {
             return new BitmapImage(new System.Uri(ControlImageResourceBase + fileName, System.UriKind.Absolute));
         }

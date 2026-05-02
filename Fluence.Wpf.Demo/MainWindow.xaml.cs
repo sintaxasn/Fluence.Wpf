@@ -981,7 +981,7 @@ namespace Fluence.Wpf.Demo
             var label = (nvi.Content as string) ?? string.Empty;
             var tagText = (nvi.Tag as string) ?? string.Empty;
             var haystack = (label + " " + tagText).ToLowerInvariant();
-            return haystack.IndexOf(loweredNeedle, StringComparison.Ordinal) >= 0;
+            return haystack.Contains(loweredNeedle);
         }
 
         private void ApplyNavSearchFilter()
@@ -1009,11 +1009,11 @@ namespace Fluence.Wpf.Demo
                     continue;
                 }
 
-                if (_sectionChildrenByHeader.ContainsKey(nvi))
+                List<NavigationViewItem> children;
+                if (_sectionChildrenByHeader.TryGetValue(nvi, out children))
                 {
                     var sectionMatches = ItemMatches(nvi, ql);
                     var anyChildMatch = false;
-                    var children = _sectionChildrenByHeader[nvi];
                     foreach (var child in children)
                     {
                         var childMatches = sectionMatches || ItemMatches(child, ql);

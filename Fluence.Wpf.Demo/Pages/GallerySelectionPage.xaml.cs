@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -58,6 +59,7 @@ namespace Fluence.Wpf.Demo.Pages
             }
 
             ToggleStateLabel.Text = string.Format(
+                CultureInfo.CurrentCulture,
                 "Default toggle: {0}",
                 DefaultToggle.IsChecked == true ? "On" : "Off");
         }
@@ -71,6 +73,7 @@ namespace Fluence.Wpf.Demo.Pages
 
             var selectedItem = SelectionDemoCombo.SelectedItem as ComboBoxItem;
             ComboStateLabel.Text = string.Format(
+                CultureInfo.CurrentCulture,
                 "Selected: {0}",
                 selectedItem != null ? selectedItem.Content : "none");
         }

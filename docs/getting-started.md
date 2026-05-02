@@ -44,7 +44,7 @@ Derive your main window from `Fluence.Wpf.Controls.FluenceWindow`, **or** call `
     x:Class="YourApp.Shell"
     Title="Your App"
     Width="1200" Height="760"
-    WindowBackdrop="Mica"
+    SystemBackdropType="Mica"
     ExtendsContentIntoTitleBar="True">
 
     <!-- Custom content in the extended title bar (search, breadcrumbs, etc.) -->

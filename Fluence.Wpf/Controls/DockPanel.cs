@@ -75,7 +75,7 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <inheritdoc />
-        protected override Size MeasureOverride(Size constraint)
+        protected override Size MeasureOverride(Size availableSize)
         {
             var children = InternalChildren;
             var count = children.Count;
@@ -84,7 +84,7 @@ namespace Fluence.Wpf.Controls
                 return new Size(0, 0);
             }
 
-            var available = constraint;
+            var available = availableSize;
             var lastFill = LastChildFill;
             var lastIndex = lastFill ? count - 1 : count;
 
@@ -141,16 +141,16 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <inheritdoc />
-        protected override Size ArrangeOverride(Size arrangeSize)
+        protected override Size ArrangeOverride(Size finalSize)
         {
             var children = InternalChildren;
             var count = children.Count;
             if (count == 0)
             {
-                return arrangeSize;
+                return finalSize;
             }
 
-            var remaining = new Rect(0, 0, arrangeSize.Width, arrangeSize.Height);
+            var remaining = new Rect(0, 0, finalSize.Width, finalSize.Height);
             var lastFill = LastChildFill;
             var lastIndex = lastFill ? count - 1 : count;
 
@@ -209,7 +209,7 @@ namespace Fluence.Wpf.Controls
                 }
             }
 
-            return arrangeSize;
+            return finalSize;
         }
     }
 }

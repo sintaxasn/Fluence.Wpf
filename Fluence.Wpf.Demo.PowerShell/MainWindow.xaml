@@ -13,8 +13,8 @@
     TextOptions.TextRenderingMode="ClearType"
     TextOptions.TextHintingMode="Fixed"
     UseLayoutRounding="True"
-    WindowBackdrop="Mica"
-    WindowCorners="Round">
+    SystemBackdropType="Mica"
+    CornerStyle="Round">
 
     <Grid Margin="24,20,24,20">
         <Grid.RowDefinitions>

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Windows;
 using System.Windows.Controls;
 using Fluence.Wpf;
@@ -51,11 +51,11 @@ namespace Fluence.Wpf.Demo.Samples.Window
                     break;
             }
 
-            window.WindowBackdrop = backdrop;
+            window.SystemBackdropType = backdrop;
             ApplicationThemeManager.Apply(ApplicationThemeManager.CurrentTheme, backdrop, false);
         }
 
-        private void CaptionOverrideCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void CaptionVisibilityCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!IsLoaded)
             {
@@ -68,9 +68,9 @@ namespace Fluence.Wpf.Demo.Samples.Window
                 return;
             }
 
-            ApplyCaptionOverride(MinimizeOverrideCombo, v => window.MinimizeButtonVisibility = v, en => window.IsMinimizable = en);
-            ApplyCaptionOverride(MaximizeOverrideCombo, v => window.MaximizeButtonVisibility = v, en => window.IsMaximizable = en);
-            ApplyCaptionOverride(CloseOverrideCombo, v => window.CloseButtonVisibility = v, en => window.IsClosable = en);
+            ApplyCaptionVisibility(MinimizeVisibilityCombo, v => window.SetMinimizeButtonVisibility(v), en => window.IsMinimizable = en);
+            ApplyCaptionVisibility(MaximizeVisibilityCombo, v => window.SetMaximizeButtonVisibility(v), en => window.IsMaximizable = en);
+            ApplyCaptionVisibility(CloseVisibilityCombo, v => window.SetCloseButtonVisibility(v), en => window.IsClosable = en);
         }
 
         private void WindowChromeToggle_Changed(object sender, RoutedEventArgs e)
@@ -85,7 +85,7 @@ namespace Fluence.Wpf.Demo.Samples.Window
             window.ShowTitle = ShowWindowTitleToggle != null && ShowWindowTitleToggle.IsChecked == true;
         }
 
-        private static void ApplyCaptionOverride(
+        private static void ApplyCaptionVisibility(
             ComboBox combo,
             Action<Visibility> setVisibility,
             Action<bool> setEnabled)
@@ -93,7 +93,13 @@ namespace Fluence.Wpf.Demo.Samples.Window
             var item = combo != null ? combo.SelectedItem as ComboBoxItem : null;
             var content = item != null ? item.Content as string : null;
 
-            if (string.Equals(content, "Hide", StringComparison.Ordinal))
+            if (string.Equals(content, "Hidden", StringComparison.Ordinal))
+            {
+                setVisibility(Visibility.Hidden);
+                setEnabled(false);
+            }
+            else if (string.Equals(content, "Collapsed", StringComparison.Ordinal) ||
+                string.Equals(content, "Hide", StringComparison.Ordinal))
             {
                 setVisibility(Visibility.Collapsed);
                 setEnabled(false);

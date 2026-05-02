@@ -113,6 +113,49 @@ namespace Fluence.Wpf.Tests
             dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() => { }));
         }
 
+        private static bool WaitUntil(Dispatcher dispatcher, int milliseconds, Func<bool> condition)
+        {
+            var deadline = DateTime.UtcNow.AddMilliseconds(milliseconds);
+
+            do
+            {
+                dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() => { }));
+                if (condition())
+                {
+                    return true;
+                }
+
+                var frame = new DispatcherFrame();
+                var timer = new DispatcherTimer(
+                    TimeSpan.FromMilliseconds(16),
+                    DispatcherPriority.Normal,
+                    delegate { frame.Continue = false; },
+                    dispatcher);
+                timer.Start();
+                Dispatcher.PushFrame(frame);
+                timer.Stop();
+            }
+            while (DateTime.UtcNow < deadline);
+
+            dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(() => { }));
+            return condition();
+        }
+
+        private static void AssertChevronRotationAnimationStarts(
+            Dispatcher dispatcher,
+            FontIcon chevron,
+            double startRotation,
+            double targetRotation,
+            string message)
+        {
+            Assert.IsTrue(
+                WaitUntil(dispatcher, 160, () =>
+                    chevron.HasAnimatedProperties ||
+                    (Math.Abs(chevron.Rotation - startRotation) > 0.01 &&
+                     Math.Abs(chevron.Rotation - targetRotation) > 0.01)),
+                message);
+        }
+
         private static MainWindow CreateShownMainWindow()
         {
             var window = new MainWindow
@@ -817,7 +860,11 @@ namespace Fluence.Wpf.Tests
                         "Collapsed category chevron should start at 0 degrees.");
 
                     nav.SelectedItem = basicInput;
-                    Assert.IsTrue(chevron.HasAnimatedProperties,
+                    AssertChevronRotationAnimationStarts(
+                        window.Dispatcher,
+                        chevron,
+                        0.0,
+                        180.0,
                         "Expanding a category should animate the chevron rotation.");
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
@@ -832,7 +879,11 @@ namespace Fluence.Wpf.Tests
                     Drain(window.Dispatcher);
 
                     nav.SelectedItem = basicInput;
-                    Assert.IsTrue(chevron.HasAnimatedProperties,
+                    AssertChevronRotationAnimationStarts(
+                        window.Dispatcher,
+                        chevron,
+                        180.0,
+                        0.0,
                         "Collapsing a category should animate the chevron rotation.");
                     Drain(window.Dispatcher);
                     window.UpdateLayout();

@@ -504,7 +504,7 @@ namespace Fluence.Wpf.Controls
             }
         }
 
-        private static AnimationTimeline CreateIndeterminateStartAnimation()
+        private static DoubleAnimation CreateIndeterminateStartAnimation()
         {
             return new DoubleAnimation
             {
@@ -515,7 +515,7 @@ namespace Fluence.Wpf.Controls
             };
         }
 
-        private static AnimationTimeline CreateIndeterminateSweepAnimation()
+        private static DoubleAnimationUsingKeyFrames CreateIndeterminateSweepAnimation()
         {
             var animation = new DoubleAnimationUsingKeyFrames
             {

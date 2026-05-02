@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,7 @@
  */
 using System;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -115,7 +116,7 @@ namespace Fluence.Wpf.Demo.Pages
             _items.Add(new DemoItem
             {
                 Name = name,
-                AddedAt = DateTime.Now.ToString("HH:mm:ss")
+                AddedAt = DateTime.Now.ToString("HH:mm:ss", CultureInfo.CurrentCulture)
             });
         }
 
@@ -124,7 +125,7 @@ namespace Fluence.Wpf.Demo.Pages
             _templateItems.Add(new DemoItem
             {
                 Name = name,
-                AddedAt = DateTime.Now.ToString("HH:mm:ss")
+                AddedAt = DateTime.Now.ToString("HH:mm:ss", CultureInfo.CurrentCulture)
             });
         }
 
@@ -132,7 +133,7 @@ namespace Fluence.Wpf.Demo.Pages
         {
             if (ItemCountLabel != null)
             {
-                ItemCountLabel.Text = string.Format("{0} item{1}", _items.Count, _items.Count == 1 ? "" : "s");
+                ItemCountLabel.Text = string.Format(CultureInfo.CurrentCulture, "{0} item{1}", _items.Count, _items.Count == 1 ? "" : "s");
             }
         }
 
@@ -180,8 +181,8 @@ namespace Fluence.Wpf.Demo.Pages
             }
 
             SelectionCountLabel.Text = count == 1
-                ? string.Format("Selected: {0}", (SelectionModeListView.SelectedItem as ListViewItem)?.Content ?? "?")
-                : string.Format("Selected: {0} items", count);
+                ? string.Format(CultureInfo.CurrentCulture, "Selected: {0}", (SelectionModeListView.SelectedItem as ListViewItem)?.Content ?? "?")
+                : string.Format(CultureInfo.CurrentCulture, "Selected: {0} items", count);
         }
     }
 

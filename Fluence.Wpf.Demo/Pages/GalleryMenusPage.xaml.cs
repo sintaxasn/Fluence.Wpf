@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -66,7 +67,7 @@ namespace Fluence.Wpf.Demo.Pages
         {
             var element = sender as FrameworkElement;
             var action = element != null ? element.Tag as string : null;
-            label.Text = string.Format("{0}: {1}", prefix, string.IsNullOrEmpty(action) ? "None" : action);
+            label.Text = string.Format(CultureInfo.CurrentCulture, "{0}: {1}", prefix, string.IsNullOrEmpty(action) ? "None" : action);
         }
     }
 }

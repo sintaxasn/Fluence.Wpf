@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+using System.Globalization;
 using System.Windows.Controls;
 
 namespace Fluence.Wpf.Demo.Pages
@@ -50,7 +51,7 @@ namespace Fluence.Wpf.Demo.Pages
             }
 
             var len = CharCountTextBox.Text != null ? CharCountTextBox.Text.Length : 0;
-            CharCountLabel.Text = string.Format("Characters: {0}", len);
+            CharCountLabel.Text = string.Format(CultureInfo.CurrentCulture, "Characters: {0}", len);
         }
     }
 }

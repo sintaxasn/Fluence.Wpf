@@ -45,7 +45,7 @@ Each color token has a matching `*Brush` resource in `Brushes.xaml` (for example
 
 `BackdropType`: `None`, `Auto`, `Mica`, `Acrylic`, `Tabbed`.
 
-Behavior depends on OS support; unsupported combinations fall back per `FluenceWindow` / `WindowBackdrop` logic. Mica and Tabbed require Windows 11; `Acrylic` falls back on Windows 10 1809+.
+Behavior depends on OS support; unsupported combinations fall back per `FluenceWindow` / `SystemBackdropType` logic. Mica and Tabbed require Windows 11; `Acrylic` falls back on Windows 10 1809+.
 
 ## System theme watcher
 

@@ -64,9 +64,13 @@ namespace Fluence.Wpf.Native
         public const int WM_GETMINMAXINFO = 0x0024;
         public const int WM_SETTINGCHANGE = 0x001A;
         public const int WM_SYSCOLORCHANGE = 0x0015;
+        public const int WM_SYSCOMMAND = 0x0112;
         public const int WM_THEMECHANGED = 0x031A;
         public const int WM_DWMCOLORIZATIONCOLORCHANGED = 0x0320;
         public const int WM_DWMCOMPOSITIONCHANGED = 0x031E;
+
+        // System Commands
+        public const int SC_MOVE = 0xF010;
 
         // Hit Test Results
         public const int HTCLIENT = 1;

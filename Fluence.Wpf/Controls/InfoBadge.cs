@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -114,7 +115,7 @@ namespace Fluence.Wpf.Controls
             }
             else
             {
-                badge.Content = badge.Value >= 0 ? badge.Value.ToString() : null;
+                badge.Content = badge.Value >= 0 ? badge.Value.ToString(CultureInfo.CurrentCulture) : null;
             }
 
             badge.UpdateDisplayKindState();
@@ -127,7 +128,7 @@ namespace Fluence.Wpf.Controls
                 return;
 
             int val = (int)e.NewValue;
-            badge.Content = val >= 0 ? val.ToString() : null;
+            badge.Content = val >= 0 ? val.ToString(CultureInfo.CurrentCulture) : null;
             badge.UpdateDisplayKindState();
         }
 

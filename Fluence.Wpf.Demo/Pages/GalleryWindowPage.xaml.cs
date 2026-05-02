@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -65,7 +66,7 @@ namespace Fluence.Wpf.Demo.Pages
             SyncBackdropComboFromWindow();
             WindowChromeToggle_Changed(null, null);
             TitleBarToggle_Changed(null, null);
-            CaptionOverrideCombo_SelectionChanged(null, null);
+            CaptionVisibilityCombo_SelectionChanged(null, null);
         }
 
         private void GalleryWindowPage_Unloaded(object sender, RoutedEventArgs e)
@@ -92,7 +93,7 @@ namespace Fluence.Wpf.Demo.Pages
             try
             {
                 int idx;
-                switch (fw.WindowBackdrop)
+                switch (fw.SystemBackdropType)
                 {
                     case BackdropType.None:
                         idx = 1;
@@ -151,7 +152,7 @@ namespace Fluence.Wpf.Demo.Pages
             }
 
             var fw = HostFluenceWindow;
-            var backdrop = fw != null ? fw.WindowBackdrop : BackdropType.Mica;
+            var backdrop = fw != null ? fw.SystemBackdropType : BackdropType.Mica;
             ApplicationThemeManager.Apply(theme, backdrop, true);
             UpdateThemeStateLabel(ApplicationThemeManager.CurrentTheme);
         }
@@ -189,7 +190,7 @@ namespace Fluence.Wpf.Demo.Pages
                     break;
             }
 
-            fw.WindowBackdrop = backdrop;
+            fw.SystemBackdropType = backdrop;
             ApplicationThemeManager.Apply(ApplicationThemeManager.CurrentTheme, backdrop, false);
         }
 
@@ -245,7 +246,7 @@ namespace Fluence.Wpf.Demo.Pages
             }
         }
 
-        private void CaptionOverrideCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void CaptionVisibilityCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!IsLoaded)
             {
@@ -258,9 +259,9 @@ namespace Fluence.Wpf.Demo.Pages
                 return;
             }
 
-            ApplyCaptionOverride(MinimizeOverrideCombo, v => fw.MinimizeButtonVisibility = v, en => fw.IsMinimizable = en);
-            ApplyCaptionOverride(MaximizeOverrideCombo, v => fw.MaximizeButtonVisibility = v, en => fw.IsMaximizable = en);
-            ApplyCaptionOverride(CloseOverrideCombo, v => fw.CloseButtonVisibility = v, en => fw.IsClosable = en);
+            ApplyCaptionVisibility(MinimizeVisibilityCombo, v => fw.SetMinimizeButtonVisibility(v), en => fw.IsMinimizable = en);
+            ApplyCaptionVisibility(MaximizeVisibilityCombo, v => fw.SetMaximizeButtonVisibility(v), en => fw.IsMaximizable = en);
+            ApplyCaptionVisibility(CloseVisibilityCombo, v => fw.SetCloseButtonVisibility(v), en => fw.IsClosable = en);
         }
 
         private void WindowChromeToggle_Changed(object sender, RoutedEventArgs e)
@@ -353,7 +354,7 @@ namespace Fluence.Wpf.Demo.Pages
 
             if (TitleBarHeightLabel != null)
             {
-                TitleBarHeightLabel.Text = ((int)e.NewValue).ToString();
+                TitleBarHeightLabel.Text = ((int)e.NewValue).ToString(CultureInfo.CurrentCulture);
             }
         }
 
@@ -396,11 +397,11 @@ namespace Fluence.Wpf.Demo.Pages
         {
             if (ThemeStateLabel != null)
             {
-                ThemeStateLabel.Text = string.Format("Current: {0}", theme);
+                ThemeStateLabel.Text = string.Format(CultureInfo.CurrentCulture, "Current: {0}", theme);
             }
         }
 
-        private static void ApplyCaptionOverride(
+        private static void ApplyCaptionVisibility(
             System.Windows.Controls.ComboBox combo,
             Action<Visibility> setVisibility,
             Action<bool> setEnabled)
@@ -408,7 +409,13 @@ namespace Fluence.Wpf.Demo.Pages
             var item = combo != null ? combo.SelectedItem as ComboBoxItem : null;
             var content = item != null ? item.Content as string : null;
 
-            if (string.Equals(content, "Hide", StringComparison.Ordinal))
+            if (string.Equals(content, "Hidden", StringComparison.Ordinal))
+            {
+                setVisibility(Visibility.Hidden);
+                setEnabled(false);
+            }
+            else if (string.Equals(content, "Collapsed", StringComparison.Ordinal) ||
+                string.Equals(content, "Hide", StringComparison.Ordinal))
             {
                 setVisibility(Visibility.Collapsed);
                 setEnabled(false);

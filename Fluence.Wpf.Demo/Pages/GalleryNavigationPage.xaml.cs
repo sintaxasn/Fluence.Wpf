@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -78,7 +79,7 @@ namespace Fluence.Wpf.Demo.Pages
             if (BackStatusLabel != null)
             {
                 BackStatusLabel.Text = isBackEnabled
-                    ? string.Format("Back button enabled ({0} requests)", _backRequestCount)
+                    ? string.Format(CultureInfo.CurrentCulture, "Back button enabled ({0} requests)", _backRequestCount)
                     : "Back button disabled";
             }
         }

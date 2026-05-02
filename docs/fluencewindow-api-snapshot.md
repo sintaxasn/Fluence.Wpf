@@ -1,4 +1,4 @@
-# FluenceWindow public surface snapshot
+﻿# FluenceWindow public surface snapshot
 
 Baseline captured 2026-04-20 against HEAD commit `46c4b93` for the WI-2 audit +
 harden pass. This file is the diff reference used to prove zero public-API
@@ -60,8 +60,8 @@ public class FluenceWindow : Window
 
 | DP field                               | CLR wrapper                   | Type              | Default                      | Metadata callback                         |
 |----------------------------------------|-------------------------------|-------------------|------------------------------|-------------------------------------------|
-| `WindowBackdropProperty`               | `WindowBackdrop`              | `BackdropType`    | `BackdropType.Auto`          | `OnWindowBackdropChanged`                 |
-| `WindowCornersProperty`                | `WindowCorners`               | `CornerPreference`| `CornerPreference.Round`     | `OnWindowCornersChanged`                  |
+| `SystemBackdropTypeProperty`               | `SystemBackdropType`              | `BackdropType`    | `BackdropType.Auto`          | `OnSystemBackdropTypeChanged`                 |
+| `CornerStyleProperty`                | `CornerStyle`               | `CornerPreference`| `CornerPreference.Round`     | `OnCornerStyleChanged`                  |
 | `MarginMaximizedProperty`              | `MarginMaximized`             | `Thickness`       | `new Thickness(0)`           | _(none)_                                  |
 | `ExtendsContentIntoTitleBarProperty`   | `ExtendsContentIntoTitleBar`  | `bool`            | `false`                      | `OnExtendsContentIntoTitleBarChanged`     |
 | `TitleBarProperty`                     | `TitleBar`                    | `UIElement`       | `null`                       | _(none)_                                  |
@@ -201,8 +201,8 @@ survive WI-2 unchanged in name and semantic.
 **From [`FluentDialog.xaml`](../../PSAppDeployToolkit/src/PSADT/PSADT.UserInterface/Interfaces/Fluent/FluentDialog.xaml):**
 
 - Root element: `ui:FluenceWindow`.
-- Attributes set: `ExtendsContentIntoTitleBar`, `WindowBackdrop="Acrylic"`,
-  `WindowCorners="Round"`, `TitleBarHeight`.
+- Attributes set: `ExtendsContentIntoTitleBar`, `SystemBackdropType="Acrylic"`,
+  `CornerStyle="Round"`, `TitleBarHeight`.
 
 **Resource keys referenced (canonical WinUI 3; not this snapshot's
 responsibility but recorded for WI-2 cross-check):**

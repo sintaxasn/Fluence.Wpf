@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -105,7 +105,7 @@ namespace Fluence.Wpf.Demo.Pages
             AddCell(CreateCopyButton(row.StyleKey), rowIndex, 4);
         }
 
-        private TextBlock CreateTextBlock(string text, string styleKey, Thickness margin)
+        private static TextBlock CreateTextBlock(string text, string styleKey, Thickness margin)
         {
             var textBlock = new TextBlock
             {
@@ -118,7 +118,7 @@ namespace Fluence.Wpf.Demo.Pages
             return textBlock;
         }
 
-        private Fluent.Button CreateCopyButton(string styleKey)
+        private static Fluent.Button CreateCopyButton(string styleKey)
         {
             var button = new Fluent.Button
             {

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -178,14 +179,15 @@ namespace Fluence.Wpf.Demo
             combo.Items.Add(new ComboBoxItem { Content = "Default", IsSelected = true });
             combo.Items.Add(new ComboBoxItem { Content = "Enable" });
             combo.Items.Add(new ComboBoxItem { Content = "Disable" });
-            combo.Items.Add(new ComboBoxItem { Content = "Hide" });
-            combo.SelectionChanged += CaptionOverrideComboChanged;
+            combo.Items.Add(new ComboBoxItem { Content = "Hidden" });
+            combo.Items.Add(new ComboBoxItem { Content = "Collapsed" });
+            combo.SelectionChanged += CaptionVisibilityComboChanged;
             Grid.SetRow(combo, row);
             Grid.SetColumn(combo, column + 1);
             grid.Children.Add(combo);
         }
 
-        private static RadioButton ThemeRadio(string name, string content, ApplicationTheme theme)
+        private static Fluent.RadioButton ThemeRadio(string name, string content, ApplicationTheme theme)
         {
             var radio = new Fluent.RadioButton
             {
@@ -200,7 +202,7 @@ namespace Fluence.Wpf.Demo
             return radio;
         }
 
-        private static UIElement BackdropPicker()
+        private static Fluent.StackPanel BackdropPicker()
         {
             var stack = new Fluent.StackPanel { Spacing = 6 };
             stack.Children.Add(SectionLabel("Backdrop"));
@@ -238,7 +240,7 @@ namespace Fluence.Wpf.Demo
             return block;
         }
 
-        private static UIElement TitleBarPreview(bool compact)
+        private static System.Windows.Controls.Border TitleBarPreview(bool compact)
         {
             var titleBar = new Fluent.TitleBar
             {
@@ -272,12 +274,12 @@ namespace Fluence.Wpf.Demo
 
             var theme = (ApplicationTheme)radio.Tag;
             var window = Window.GetWindow(radio) as Fluent.FluenceWindow;
-            var backdrop = window != null ? window.WindowBackdrop : BackdropType.Mica;
+            var backdrop = window != null ? window.SystemBackdropType : BackdropType.Mica;
             ApplicationThemeManager.Apply(theme, backdrop, true);
             var stateLabel = FindNamedDescendant<TextBlock>(window, "ThemeStateLabel");
             if (stateLabel != null)
             {
-                stateLabel.Text = string.Format("Current: {0}", theme);
+                stateLabel.Text = string.Format(CultureInfo.CurrentCulture, "Current: {0}", theme);
             }
         }
 
@@ -296,7 +298,7 @@ namespace Fluence.Wpf.Demo
             }
 
             var backdrop = GetBackdrop(combo.SelectedIndex);
-            window.WindowBackdrop = backdrop;
+            window.SystemBackdropType = backdrop;
             ApplicationThemeManager.Apply(ApplicationThemeManager.CurrentTheme, backdrop, false);
         }
 
@@ -355,7 +357,7 @@ namespace Fluence.Wpf.Demo
             }
         }
 
-        private static void CaptionOverrideComboChanged(object sender, SelectionChangedEventArgs e)
+        private static void CaptionVisibilityComboChanged(object sender, SelectionChangedEventArgs e)
         {
             var combo = sender as ComboBox;
             if (combo == null || !combo.IsLoaded)
@@ -372,15 +374,15 @@ namespace Fluence.Wpf.Demo
             var target = combo.Tag as string;
             if (string.Equals(target, "Minimize", StringComparison.Ordinal))
             {
-                ApplyCaptionOverride(combo, delegate(Visibility value) { window.MinimizeButtonVisibility = value; }, delegate(bool enabled) { window.IsMinimizable = enabled; });
+                ApplyCaptionVisibility(combo, delegate(Visibility value) { window.SetMinimizeButtonVisibility(value); }, delegate(bool enabled) { window.IsMinimizable = enabled; });
             }
             else if (string.Equals(target, "Maximize", StringComparison.Ordinal))
             {
-                ApplyCaptionOverride(combo, delegate(Visibility value) { window.MaximizeButtonVisibility = value; }, delegate(bool enabled) { window.IsMaximizable = enabled; });
+                ApplyCaptionVisibility(combo, delegate(Visibility value) { window.SetMaximizeButtonVisibility(value); }, delegate(bool enabled) { window.IsMaximizable = enabled; });
             }
             else if (string.Equals(target, "Close", StringComparison.Ordinal))
             {
-                ApplyCaptionOverride(combo, delegate(Visibility value) { window.CloseButtonVisibility = value; }, delegate(bool enabled) { window.IsClosable = enabled; });
+                ApplyCaptionVisibility(combo, delegate(Visibility value) { window.SetCloseButtonVisibility(value); }, delegate(bool enabled) { window.IsClosable = enabled; });
             }
         }
 
@@ -425,11 +427,17 @@ namespace Fluence.Wpf.Demo
             }
         }
 
-        private static void ApplyCaptionOverride(ComboBox combo, Action<Visibility> setVisibility, Action<bool> setEnabled)
+        private static void ApplyCaptionVisibility(ComboBox combo, Action<Visibility> setVisibility, Action<bool> setEnabled)
         {
             var item = combo.SelectedItem as ComboBoxItem;
             var content = item != null ? item.Content as string : null;
-            if (string.Equals(content, "Hide", StringComparison.Ordinal))
+            if (string.Equals(content, "Hidden", StringComparison.Ordinal))
+            {
+                setVisibility(Visibility.Hidden);
+                setEnabled(false);
+            }
+            else if (string.Equals(content, "Collapsed", StringComparison.Ordinal) ||
+                string.Equals(content, "Hide", StringComparison.Ordinal))
             {
                 setVisibility(Visibility.Collapsed);
                 setEnabled(false);

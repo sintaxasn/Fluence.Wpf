@@ -10,6 +10,7 @@
     <IsPackable>false</IsPackable>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <TestTfmsInParallel>false</TestTfmsInParallel>
+    <NoWarn>$(NoWarn);CA1305;CA1707;CA1861;CA2249;CA2263</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

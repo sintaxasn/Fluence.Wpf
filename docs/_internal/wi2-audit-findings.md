@@ -1,4 +1,4 @@
-# WI-2 audit findings (Steps 2.3 - 2.5)
+﻿# WI-2 audit findings (Steps 2.3 - 2.5)
 
 > Internal working document. Not part of the public `docs/` set per CLAUDE.md §10.
 
@@ -12,7 +12,7 @@
 
 ## Summary
 
-**No functional defects.** The audit surfaced four convention-level findings; none alter observable behaviour, none break the PSADT consumer contract (`ApplicationThemeManager.Apply`, `.Changed`, `.CurrentTheme`; `ApplicationAccentColorManager.ApplyCustomAccent`; `MinimizeButtonVisibility`, `IsMinimizable`, `WindowBackdrop`, `WindowCorners`, `TitleBarHeight`, `ExtendsContentIntoTitleBar`, `ShowIcon`, `ShowTitle`).
+**No functional defects.** The audit surfaced four convention-level findings; none alter observable behaviour, none break the PSADT consumer contract (`ApplicationThemeManager.Apply`, `.Changed`, `.CurrentTheme`; `ApplicationAccentColorManager.ApplyCustomAccent`; `MinimizeButtonVisibility`, `IsMinimizable`, `SystemBackdropType`, `CornerStyle`, `TitleBarHeight`, `ExtendsContentIntoTitleBar`, `ShowIcon`, `ShowTitle`).
 
 All four findings are judgment calls that can be deferred, documented, or landed under WI-2 Step 2.7 when the `wpf-xaml-designer` subagent touches the default template.
 
@@ -111,7 +111,7 @@ The audit uncovered **zero** functional defects. Step 2.6 (TDD harden) therefore
 
 Test plan for Step 2.6:
 
-1. **Backdrop swap** — `WindowBackdrop=None` → `Acrylic` → `Mica` → `Tabbed` → `None`; assert `WindowPolicy.ResolveEffectiveBackdrop` downgrades on capability failure; assert no exception when window is shown.
+1. **Backdrop swap** — `SystemBackdropType=None` → `Acrylic` → `Mica` → `Tabbed` → `None`; assert `WindowPolicy.ResolveEffectiveBackdrop` downgrades on capability failure; assert no exception when window is shown.
 2. **Theme swap while shown** — Light → Dark → HighContrast → Light; assert four caption-button brush keys resolve to fresh brushes each swap (not stale references from previous theme).
 3. **Caption button routing** — synthesize `Click` on `MinimizeButton` / `MaximizeButton` / `RestoreButton` / `CloseButton`; assert `WindowState` transitions correctly. (`F4` from WI-1C is landed here.)
 4. **DPI change** — raise `DpiChanged`; assert caption height DP stays canonical and glyph container scales proportionally.

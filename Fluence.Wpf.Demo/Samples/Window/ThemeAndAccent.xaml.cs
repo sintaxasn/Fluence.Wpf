@@ -45,7 +45,7 @@ namespace Fluence.Wpf.Demo.Samples.Window
             }
 
             var host = System.Windows.Window.GetWindow(this) as Fluence.Wpf.Controls.FluenceWindow;
-            var backdrop = host != null ? host.WindowBackdrop : BackdropType.Mica;
+            var backdrop = host != null ? host.SystemBackdropType : BackdropType.Mica;
             ApplicationThemeManager.Apply(theme, backdrop, true);
             ThemeStateLabel.Text = string.Format("Current: {0}", theme);
         }

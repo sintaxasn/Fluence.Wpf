@@ -30,6 +30,7 @@ using System.Runtime.InteropServices;
 
 namespace Fluence.Wpf.Native
 {
+#pragma warning disable SYSLIB1054 // DllImport keeps the shared net472/net10 interop surface identical.
     internal static class NativeMethods
     {
         private const string Dwmapi = "dwmapi.dll";
@@ -214,7 +215,7 @@ namespace Fluence.Wpf.Native
         public static void HideAllWindowButtons(IntPtr hwnd)
         {
             int style = GetWindowLong(hwnd, GWL_STYLE);
-            SetWindowLong(hwnd, GWL_STYLE, style & ~WS_SYSMENU);
+            _ = SetWindowLong(hwnd, GWL_STYLE, style & ~WS_SYSMENU);
         }
 
         // Directly drives the native ShowWindow() API to minimize a window. Used as a
@@ -273,7 +274,7 @@ namespace Fluence.Wpf.Native
         {
             var versionInfo = new OSVERSIONINFOEX
             {
-                OSVersionInfoSize = Marshal.SizeOf(typeof(OSVERSIONINFOEX)),
+                OSVersionInfoSize = Marshal.SizeOf<OSVERSIONINFOEX>(),
                 CSDVersion = string.Empty
             };
 
@@ -292,4 +293,5 @@ namespace Fluence.Wpf.Native
 
         #endregion
     }
+#pragma warning restore SYSLIB1054
 }

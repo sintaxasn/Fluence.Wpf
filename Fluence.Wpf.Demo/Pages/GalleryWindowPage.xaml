@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
     x:Class="Fluence.Wpf.Demo.Pages.GalleryWindowPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -194,7 +194,7 @@
             <TextBlock
                 Margin="0,0,0,8"
                 Style="{StaticResource SectionDescriptionStyle}"
-                Text="Choose the active backdrop material and override individual caption buttons." />
+                Text="Choose the active backdrop material and set individual caption button availability." />
             <ui:Card
                 Margin="0,0,0,16"
                 Padding="16"
@@ -252,15 +252,16 @@
                                     Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                     Text="Minimize" />
                                 <ui:ComboBox
-                                    x:Name="MinimizeOverrideCombo"
+                                    x:Name="MinimizeVisibilityCombo"
                                     Grid.Row="0"
                                     Grid.Column="1"
                                     Width="110"
-                                    SelectionChanged="CaptionOverrideCombo_SelectionChanged">
+                                    SelectionChanged="CaptionVisibilityCombo_SelectionChanged">
                                     <ComboBoxItem Content="Default" IsSelected="True" />
                                     <ComboBoxItem Content="Enable" />
                                     <ComboBoxItem Content="Disable" />
-                                    <ComboBoxItem Content="Hide" />
+                                    <ComboBoxItem Content="Hidden" />
+                                    <ComboBoxItem Content="Collapsed" />
                                 </ui:ComboBox>
                                 <TextBlock
                                     Grid.Row="0"
@@ -270,15 +271,16 @@
                                     Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                     Text="Maximize" />
                                 <ui:ComboBox
-                                    x:Name="MaximizeOverrideCombo"
+                                    x:Name="MaximizeVisibilityCombo"
                                     Grid.Row="0"
                                     Grid.Column="4"
                                     Width="110"
-                                    SelectionChanged="CaptionOverrideCombo_SelectionChanged">
+                                    SelectionChanged="CaptionVisibilityCombo_SelectionChanged">
                                     <ComboBoxItem Content="Default" IsSelected="True" />
                                     <ComboBoxItem Content="Enable" />
                                     <ComboBoxItem Content="Disable" />
-                                    <ComboBoxItem Content="Hide" />
+                                    <ComboBoxItem Content="Hidden" />
+                                    <ComboBoxItem Content="Collapsed" />
                                 </ui:ComboBox>
                                 <TextBlock
                                     Grid.Row="2"
@@ -288,15 +290,16 @@
                                     Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                     Text="Close" />
                                 <ui:ComboBox
-                                    x:Name="CloseOverrideCombo"
+                                    x:Name="CloseVisibilityCombo"
                                     Grid.Row="2"
                                     Grid.Column="1"
                                     Width="110"
-                                    SelectionChanged="CaptionOverrideCombo_SelectionChanged">
+                                    SelectionChanged="CaptionVisibilityCombo_SelectionChanged">
                                     <ComboBoxItem Content="Default" IsSelected="True" />
                                     <ComboBoxItem Content="Enable" />
                                     <ComboBoxItem Content="Disable" />
-                                    <ComboBoxItem Content="Hide" />
+                                    <ComboBoxItem Content="Hidden" />
+                                    <ComboBoxItem Content="Collapsed" />
                                 </ui:ComboBox>
                             </Grid>
                             <WrapPanel>

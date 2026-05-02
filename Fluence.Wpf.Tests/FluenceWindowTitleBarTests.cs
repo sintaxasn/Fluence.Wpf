@@ -157,6 +157,19 @@ namespace Fluence.Wpf.Tests
             return (int)method.Invoke(window, new object[] { lParam });
         }
 
+        private static IntPtr InvokeWndProc(FluenceWindow window, int msg, IntPtr wParam, IntPtr lParam, out bool handled)
+        {
+            var method = typeof(FluenceWindow).GetMethod(
+                "WndProc",
+                BindingFlags.Instance | BindingFlags.NonPublic);
+            Assert.IsNotNull(method, "WndProc must exist for native message tests.");
+
+            object[] args = { IntPtr.Zero, msg, wParam, lParam, false };
+            var result = (IntPtr)method.Invoke(window, args);
+            handled = (bool)args[4];
+            return result;
+        }
+
         private static IntPtr MakeLParamScreen(double screenX, double screenY)
         {
             int x = (int)screenX;
@@ -620,6 +633,45 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void HitTestTitleBar_MaximizeButtonHidden_DoesNotReturnHtMaxButton()
+        {
+            RunWithShownWindow(w =>
+            {
+                w.SetMaximizeButtonVisibility(Visibility.Hidden);
+                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+
+                var btn = GetCaptionButtonField(w, "_maximizeButton");
+                Assert.IsNotNull(btn);
+                Assert.AreEqual(Visibility.Hidden, btn.Visibility);
+
+                var center = btn.PointToScreen(new Point(btn.RenderSize.Width / 2, btn.RenderSize.Height / 2));
+                int hit = InvokeHitTestTitleBar(w, MakeLParamScreen(center.X, center.Y));
+                Assert.AreNotEqual(NativeConstants.HTMAXBUTTON, hit,
+                    "Hidden maximize chrome must not expose Windows 11 snap layout.");
+            });
+        }
+
+        [TestMethod]
+        public void HitTestTitleBar_MaximizeButtonDisabled_DoesNotReturnHtMaxButton()
+        {
+            RunWithShownWindow(w =>
+            {
+                w.IsMaximizable = false;
+                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+
+                var btn = GetCaptionButtonField(w, "_maximizeButton");
+                Assert.IsNotNull(btn);
+                Assert.AreEqual(Visibility.Visible, btn.Visibility);
+                Assert.IsFalse(btn.IsEnabled);
+
+                var center = btn.PointToScreen(new Point(btn.RenderSize.Width / 2, btn.RenderSize.Height / 2));
+                int hit = InvokeHitTestTitleBar(w, MakeLParamScreen(center.X, center.Y));
+                Assert.AreNotEqual(NativeConstants.HTMAXBUTTON, hit,
+                    "Disabled maximize chrome must not expose Windows 11 snap layout.");
+            });
+        }
+
+        [TestMethod]
         public void HitTestTitleBar_TitleBarDragArea_ReturnsHtCaption()
         {
             RunWithShownWindow(w =>
@@ -630,6 +682,37 @@ namespace Fluence.Wpf.Tests
                 int hit = InvokeHitTestTitleBar(w, MakeLParamScreen(screen.X, screen.Y));
                 Assert.AreEqual(NativeConstants.HTCAPTION, hit,
                     "Title bar drag strip should return HTCAPTION.");
+            });
+        }
+
+        [TestMethod]
+        public void HitTestTitleBar_CanMoveFalse_TitleBarDragAreaReturnsZero()
+        {
+            RunWithShownWindow(w =>
+            {
+                w.CanMove = false;
+                w.UpdateLayout();
+
+                var clientMidTitle = new Point(Math.Max(40, w.ActualWidth / 2), Math.Max(1, w.TitleBarHeight / 2));
+                var screen = w.PointToScreen(clientMidTitle);
+                int hit = InvokeHitTestTitleBar(w, MakeLParamScreen(screen.X, screen.Y));
+                Assert.AreEqual(0, hit,
+                    "CanMove=false must suppress HTCAPTION for title-bar drag regions.");
+            });
+        }
+
+        [TestMethod]
+        public void WndProc_CanMoveFalse_SuppressesSystemMove()
+        {
+            RunWithWindow(w =>
+            {
+                w.CanMove = false;
+                InvokeWndProc(w, NativeConstants.WM_SYSCOMMAND, new IntPtr(NativeConstants.SC_MOVE), IntPtr.Zero, out var handled);
+                Assert.IsTrue(handled, "CanMove=false must handle SC_MOVE.");
+
+                w.CanMove = true;
+                InvokeWndProc(w, NativeConstants.WM_SYSCOMMAND, new IntPtr(NativeConstants.SC_MOVE), IntPtr.Zero, out handled);
+                Assert.IsFalse(handled, "CanMove=true must leave SC_MOVE available.");
             });
         }
 
@@ -650,7 +733,7 @@ namespace Fluence.Wpf.Tests
             {
                 // Mirror the real PSADT lifecycle: XAML sets MinimizeButtonVisibility=Collapsed
                 // on the FluentDialog template, then code-behind flips it back to Visible when
-                // DialogAllowMinimize is honoured (SetMinimizeButtonAvailability(true)).
+                // DialogAllowMinimize is honoured (SetMinimizeButtonVisibility(Visibility.Visible)).
                 w.MinimizeButtonVisibility = Visibility.Collapsed;
                 w.ResizeMode = ResizeMode.NoResize;
                 w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
@@ -712,6 +795,86 @@ namespace Fluence.Wpf.Tests
                 Assert.AreEqual(WindowState.Normal, w.WindowState);
                 Assert.IsTrue(max.IsEnabled,
                     "Maximize button must be enabled when the window is not already maximized and the DP is explicit.");
+            });
+        }
+
+        [TestMethod]
+        public void MaximizeButtonVisibility_Hidden_ReservesOnlyTheActiveButtonSlot()
+        {
+            RunWithShownWindow(w =>
+            {
+                w.SetMaximizeButtonVisibility(Visibility.Hidden);
+                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+
+                var max = GetCaptionButtonField(w, "_maximizeButton");
+                var restore = GetCaptionButtonField(w, "_restoreButton");
+                Assert.AreEqual(Visibility.Hidden, max.Visibility);
+                Assert.AreEqual(Visibility.Collapsed, restore.Visibility);
+                Assert.IsFalse(max.IsEnabled);
+                Assert.IsFalse(restore.IsEnabled);
+
+                w.WindowState = WindowState.Maximized;
+                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+
+                Assert.AreEqual(Visibility.Collapsed, max.Visibility);
+                Assert.AreEqual(Visibility.Hidden, restore.Visibility);
+                Assert.IsFalse(max.IsEnabled);
+                Assert.IsFalse(restore.IsEnabled);
+            });
+        }
+
+        [TestMethod]
+        public void CaptionButtonVisibilityMethods_SetTheVisibilityDps()
+        {
+            RunWithWindow(w =>
+            {
+                var values = new[] { Visibility.Visible, Visibility.Hidden, Visibility.Collapsed };
+                foreach (var value in values)
+                {
+                    w.SetMinimizeButtonVisibility(value);
+                    w.SetMaximizeButtonVisibility(value);
+                    w.SetCloseButtonVisibility(value);
+
+                    Assert.AreEqual(value, w.MinimizeButtonVisibility);
+                    Assert.AreEqual(value, w.MaximizeButtonVisibility);
+                    Assert.AreEqual(value, w.CloseButtonVisibility);
+                }
+            });
+        }
+
+        [TestMethod]
+        public void CaptionButtonVisibilityProperties_ApplyVisibleHiddenCollapsedToTemplateButtons()
+        {
+            RunWithShownWindow(w =>
+            {
+                var minimize = GetCaptionButtonField(w, "_minimizeButton");
+                var maximize = GetCaptionButtonField(w, "_maximizeButton");
+                var restore = GetCaptionButtonField(w, "_restoreButton");
+                var close = GetCaptionButtonField(w, "_closeButton");
+                Assert.IsNotNull(minimize);
+                Assert.IsNotNull(maximize);
+                Assert.IsNotNull(restore);
+                Assert.IsNotNull(close);
+
+                var values = new[] { Visibility.Visible, Visibility.Hidden, Visibility.Collapsed };
+                foreach (var value in values)
+                {
+                    w.MinimizeButtonVisibility = value;
+                    w.MaximizeButtonVisibility = value;
+                    w.CloseButtonVisibility = value;
+                    w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+
+                    Assert.AreEqual(value, minimize.Visibility);
+                    Assert.AreEqual(value, close.Visibility);
+                    Assert.AreEqual(value, maximize.Visibility);
+                    Assert.AreEqual(Visibility.Collapsed, restore.Visibility);
+
+                    bool enabled = value == Visibility.Visible;
+                    Assert.AreEqual(enabled, minimize.IsEnabled);
+                    Assert.AreEqual(enabled, maximize.IsEnabled);
+                    Assert.AreEqual(enabled, close.IsEnabled);
+                    Assert.IsFalse(restore.IsEnabled);
+                }
             });
         }
 
@@ -895,7 +1058,7 @@ namespace Fluence.Wpf.Tests
         {
             // Reproduces the exact PSADT FluentDialog topology: Topmost=True + ResizeMode=NoResize
             // + ExtendsContentIntoTitleBar=True + MinimizeButtonVisibility flipped from
-            // Collapsed (XAML baseline) to Visible (SetMinimizeButtonAvailability(true)). The
+            // Collapsed (XAML baseline) to Visible (SetMinimizeButtonVisibility(Visibility.Visible)). The
             // test drives the Button via its ICommand to mirror the real click path (WPF
             // Button → SystemCommands.MinimizeWindowCommand → FluenceWindow CommandBinding →
             // OnMinimizeWindow) and asserts the caption is clickable AND the state lands on
@@ -928,7 +1091,7 @@ namespace Fluence.Wpf.Tests
                     window.Show();
                     window.Dispatcher.Invoke(() => { }, DispatcherPriority.Loaded);
 
-                    // Flip visibility after Show() to mirror PSADT's SetMinimizeButtonAvailability(true).
+                    // Flip visibility after Show() to mirror PSADT's SetMinimizeButtonVisibility(Visibility.Visible).
                     window.MinimizeButtonVisibility = Visibility.Visible;
                     window.IsMinimizable = true;
                     window.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);

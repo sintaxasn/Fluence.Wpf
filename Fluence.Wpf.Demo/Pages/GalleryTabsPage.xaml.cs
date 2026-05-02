@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using Fluence.Wpf.Controls;
@@ -57,13 +58,13 @@ namespace Fluence.Wpf.Demo.Pages
             {
                 Margin = new Thickness(16),
                 Foreground = (System.Windows.Media.Brush)FindResource("TextFillColorSecondaryBrush"),
-                Text = string.Format("Fresh document {0} content.", number),
+                Text = string.Format(CultureInfo.CurrentCulture, "Fresh document {0} content.", number),
                 TextWrapping = TextWrapping.Wrap
             };
 
             var tab = new TabViewItem
             {
-                Header = string.Format("Document {0}", number),
+                Header = string.Format(CultureInfo.CurrentCulture, "Document {0}", number),
                 Icon = icon,
                 Content = body
             };
@@ -92,7 +93,7 @@ namespace Fluence.Wpf.Demo.Pages
                 return;
             }
 
-            DemoTabViewStatus.Text = string.Format("Tabs: {0}", DemoTabView.Items.Count);
+            DemoTabViewStatus.Text = string.Format(CultureInfo.CurrentCulture, "Tabs: {0}", DemoTabView.Items.Count);
         }
     }
 }

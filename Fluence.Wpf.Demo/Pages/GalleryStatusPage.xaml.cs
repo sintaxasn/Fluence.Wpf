@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using Fluence.Wpf;
@@ -77,7 +78,7 @@ namespace Fluence.Wpf.Demo.Pages
 
             if (SliderValueLabel != null)
             {
-                SliderValueLabel.Text = string.Format("Value: {0:0}", ProgressSlider.Value);
+                SliderValueLabel.Text = string.Format(CultureInfo.CurrentCulture, "Value: {0:0}", ProgressSlider.Value);
             }
 
             if (StandardProgressBar != null)
@@ -116,7 +117,7 @@ namespace Fluence.Wpf.Demo.Pages
                 StepProgressBar.CurrentStep--;
             }
 
-            StepLabel.Text = string.Format("Step {0} of {1}", StepProgressBar.CurrentStep, StepProgressBar.Steps);
+            StepLabel.Text = string.Format(CultureInfo.CurrentCulture, "Step {0} of {1}", StepProgressBar.CurrentStep, StepProgressBar.Steps);
         }
 
         private void ResetInfoBars_Click(object sender, RoutedEventArgs e)

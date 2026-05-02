@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -72,6 +73,7 @@ namespace Fluence.Wpf.Controls
         // Segoe Fluent Icons glyphs for placeholder states.
         private const string GlyphContact = "\uE77B";
         private const string GlyphPeople = "\uE716";
+        private static readonly char[] InitialsSeparators = { ' ', '\t' };
 
         private WpfTextBlock _initialsText;
         private Ellipse _imageEllipse;
@@ -326,7 +328,7 @@ namespace Fluence.Wpf.Controls
                 }
                 else if (BadgeNumber > 0)
                 {
-                    _badgeText.Text = BadgeNumber > 99 ? "99+" : BadgeNumber.ToString();
+                    _badgeText.Text = BadgeNumber > 99 ? "99+" : BadgeNumber.ToString(CultureInfo.CurrentCulture);
                     _badgeText.SetResourceReference(WpfTextBlock.FontFamilyProperty, "FluentFontFamily");
                     _badgeText.FontSize = BadgeNumber > 9 ? 8 : 10;
                 }
@@ -347,7 +349,7 @@ namespace Fluence.Wpf.Controls
 
             // Derive from DisplayName: take first character of up to two words.
             string name = DisplayName ?? string.Empty;
-            string[] parts = name.Trim().Split(new char[] { ' ', '\t' }, StringSplitOptions.RemoveEmptyEntries);
+            string[] parts = name.Trim().Split(InitialsSeparators, StringSplitOptions.RemoveEmptyEntries);
             if (parts.Length == 0) return string.Empty;
             if (parts.Length == 1) return parts[0][0].ToString().ToUpperInvariant();
             return (parts[0][0].ToString() + parts[parts.Length - 1][0].ToString()).ToUpperInvariant();

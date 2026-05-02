@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -67,7 +67,7 @@ namespace Fluence.Wpf.Demo.Pages
             PageRoot.Children.Add(sample);
         }
 
-        private static IList<IconCatalogItem> LoadIconCatalog()
+        private static List<IconCatalogItem> LoadIconCatalog()
         {
             var knownNames = LoadKnownIconNames();
             var typeface = new Typeface(
@@ -116,7 +116,7 @@ namespace Fluence.Wpf.Demo.Pages
             return icons;
         }
 
-        private static IList<IconCatalogRow> CreateIconRows(IList<IconCatalogItem> icons)
+        private static List<IconCatalogRow> CreateIconRows(List<IconCatalogItem> icons)
         {
             var rows = new List<IconCatalogRow>((icons.Count + IconsPerRow - 1) / IconsPerRow);
             for (var index = 0; index < icons.Count; index += IconsPerRow)

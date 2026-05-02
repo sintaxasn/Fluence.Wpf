@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -272,7 +272,7 @@ namespace Fluence.Wpf.Demo.Pages
             }
         }
 
-        private UIElement CreateSourcePane(string source, SourceLanguage language)
+        private Grid CreateSourcePane(string source, SourceLanguage language)
         {
             var panel = new Grid();
             panel.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });

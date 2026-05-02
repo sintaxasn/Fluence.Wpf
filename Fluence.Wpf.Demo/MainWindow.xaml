@@ -1,4 +1,4 @@
-﻿<ui:FluenceWindow
+<ui:FluenceWindow
     x:Class="Fluence.Wpf.Demo.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -18,8 +18,8 @@
     TextOptions.TextRenderingMode="ClearType"
     TitleBarHeight="48"
     UseLayoutRounding="True"
-    WindowBackdrop="Mica"
-    WindowCorners="Round"
+    SystemBackdropType="Mica"
+    CornerStyle="Round"
     >
 
     <ui:FluenceWindow.TitleBar>

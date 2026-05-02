@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -136,10 +136,14 @@ namespace Fluence.Wpf.Helpers
             object defaultDestinationValue,
             AnimationClock animationClock)
         {
+#if NET6_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(animationClock);
+#else
             if (animationClock == null)
             {
                 throw new ArgumentNullException(nameof(animationClock));
             }
+#endif
 
             // If From is left at its Auto sentinel (the common "To-only" case), start
             // from the property's current animated base value — this is what WPF does

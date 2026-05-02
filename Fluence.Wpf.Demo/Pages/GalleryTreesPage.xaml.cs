@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -58,7 +59,7 @@ namespace Fluence.Wpf.Demo.Pages
             }
 
             var path = BuildPath(item);
-            TreeSelectionLabel.Text = string.Format("Selected: {0}", path);
+            TreeSelectionLabel.Text = string.Format(CultureInfo.CurrentCulture, "Selected: {0}", path);
         }
 
         private static string BuildPath(FluenceTreeViewItem item)
@@ -78,7 +79,7 @@ namespace Fluence.Wpf.Demo.Pages
             var parentPath = BuildPath(parent);
             return string.IsNullOrEmpty(parentPath)
                 ? header
-                : string.Format("{0} / {1}", parentPath, header);
+                : string.Format(CultureInfo.CurrentCulture, "{0} / {1}", parentPath, header);
         }
 
         private void ExpandAll_Click(object sender, RoutedEventArgs e)

@@ -56,10 +56,14 @@ namespace Fluence.Wpf
         /// <exception cref="ArgumentNullException"><paramref name="window"/> is <c>null</c>.</exception>
         public static void Watch(Window window)
         {
+#if NET6_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(window);
+#else
             if (window == null)
             {
-                throw new ArgumentNullException("window");
+                throw new ArgumentNullException(nameof(window));
             }
+#endif
 
             lock (_lock)
             {
@@ -91,10 +95,14 @@ namespace Fluence.Wpf
         /// <exception cref="ArgumentNullException"><paramref name="window"/> is <c>null</c>.</exception>
         public static void UnWatch(Window window)
         {
+#if NET6_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(window);
+#else
             if (window == null)
             {
-                throw new ArgumentNullException("window");
+                throw new ArgumentNullException(nameof(window));
             }
+#endif
 
             lock (_lock)
             {

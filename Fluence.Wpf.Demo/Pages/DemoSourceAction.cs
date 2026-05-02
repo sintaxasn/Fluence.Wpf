@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,10 +52,14 @@ namespace Fluence.Wpf.Demo.Pages
 
         public static FrameworkElement Replace(FrameworkElement placeholder, string samplePath)
         {
+#if NET6_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(placeholder);
+#else
             if (placeholder == null)
             {
-                throw new ArgumentNullException("placeholder");
+                throw new ArgumentNullException(nameof(placeholder));
             }
+#endif
 
             var action = Create(samplePath);
             action.Name = placeholder.Name;
@@ -86,7 +90,7 @@ namespace Fluence.Wpf.Demo.Pages
             throw new InvalidOperationException("Source link placeholder must be hosted by a Panel or ContentControl.");
         }
 
-        private static FrameworkElement CreateDropDown(string samplePath, string codeBehindPath)
+        private static Fluent.DropDownButton CreateDropDown(string samplePath, string codeBehindPath)
         {
             var flyout = new StackPanel
             {
@@ -110,7 +114,7 @@ namespace Fluence.Wpf.Demo.Pages
             return button;
         }
 
-        private static FrameworkElement CreateSingleButton(string samplePath)
+        private static Fluent.Button CreateSingleButton(string samplePath)
         {
             var button = new Fluent.Button
             {

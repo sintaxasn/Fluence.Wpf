@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -29,6 +29,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -90,7 +91,7 @@ namespace Fluence.Wpf.Demo.Mvvm.ViewModels
             {
                 int total = _allTasks.Count;
                 int done  = _allTasks.Count(t => t.IsCompleted);
-                return total == 0 ? "No tasks" : string.Format("{0} of {1} completed", done, total);
+                return total == 0 ? "No tasks" : string.Format(CultureInfo.CurrentCulture, "{0} of {1} completed", done, total);
             }
         }
 
