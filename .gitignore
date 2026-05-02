@@ -31,6 +31,7 @@ bld/
 [Oo]bj/
 [Ll]og/
 [Ll]ogs/
+*.lscache
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
@@ -412,4 +413,5 @@ ehthumbs.db
 Thumbs.db
 
 # Unwanted AI generated files
+.pi/**
 .pi/

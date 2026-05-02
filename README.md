@@ -1,4 +1,4 @@
-# Fluence.Wpf
+﻿# Fluence.Wpf
 
 Windows 11 Fluent Design controls and theming for WPF applications targeting **.NET Framework 4.7.2** and **Windows 10** (1809+), with enhanced visuals on **Windows 11**.
 

@@ -1,4 +1,4 @@
-{
+﻿{
   "enabledPlugins": {
     "microsoft-docs@claude-plugins-official": true,
     "wpf-dev-pack@dotnet-claude-plugins": true

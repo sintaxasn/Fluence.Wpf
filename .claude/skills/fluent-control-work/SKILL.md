@@ -1,4 +1,4 @@
----
+﻿---
 name: fluent-control-work
 description: Use for Fluence.Wpf control, theme, demo, or test changes that must preserve WinUI parity, net472 compatibility, and repo verification gates.
 ---

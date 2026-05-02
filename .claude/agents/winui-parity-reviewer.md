@@ -1,4 +1,4 @@
----
+﻿---
 name: winui-parity-reviewer
 description: Read-only reviewer for Fluence.Wpf control and theme changes. Use to compare WPF templates, resources, and behavior against WinUI 3 CommonStyles and official Microsoft guidance.
 disallowedTools: Write, Edit, MultiEdit
