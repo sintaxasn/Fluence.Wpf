@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -74,24 +74,24 @@ namespace Fluence.Wpf.Controls
         #region Dependency Properties
 
         /// <summary>
-        /// Identifies the <see cref="WindowBackdrop"/> dependency property.
+        /// Identifies the <see cref="SystemBackdropType"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty WindowBackdropProperty =
+        public static readonly DependencyProperty SystemBackdropTypeProperty =
             DependencyProperty.Register(
-                "WindowBackdrop",
+                "SystemBackdropType",
                 typeof(BackdropType),
                 typeof(FluenceWindow),
-                new PropertyMetadata(BackdropType.Auto, OnWindowBackdropChanged));
+                new PropertyMetadata(BackdropType.Auto, OnSystemBackdropTypeChanged));
 
         /// <summary>
-        /// Identifies the <see cref="WindowCorners"/> dependency property.
+        /// Identifies the <see cref="CornerStyle"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty WindowCornersProperty =
+        public static readonly DependencyProperty CornerStyleProperty =
             DependencyProperty.Register(
-                "WindowCorners",
+                "CornerStyle",
                 typeof(CornerPreference),
                 typeof(FluenceWindow),
-                new PropertyMetadata(CornerPreference.Round, OnWindowCornersChanged));
+                new PropertyMetadata(CornerPreference.Round, OnCornerStyleChanged));
 
         /// <summary>
         /// Identifies the <see cref="MarginMaximized"/> dependency property.
@@ -213,6 +213,16 @@ namespace Fluence.Wpf.Controls
                 typeof(FluenceWindow),
                 new PropertyMetadata(true, OnCaptionButtonChromeOverrideChanged));
 
+        /// <summary>
+        /// Identifies the <see cref="CanMove"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty CanMoveProperty =
+            DependencyProperty.Register(
+                nameof(CanMove),
+                typeof(bool),
+                typeof(FluenceWindow),
+                new PropertyMetadata(true));
+
 
         /// <summary>
         /// Identifies the <see cref="HasShadow"/> dependency property.
@@ -241,19 +251,19 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Gets or sets the requested system backdrop (Mica, Acrylic, Tabbed, or none).
         /// </summary>
-        public BackdropType WindowBackdrop
+        public BackdropType SystemBackdropType
         {
-            get { return (BackdropType)GetValue(WindowBackdropProperty); }
-            set { SetValue(WindowBackdropProperty, value); }
+            get { return (BackdropType)GetValue(SystemBackdropTypeProperty); }
+            set { SetValue(SystemBackdropTypeProperty, value); }
         }
 
         /// <summary>
         /// Gets or sets the preferred window corner rounding policy for DWM.
         /// </summary>
-        public CornerPreference WindowCorners
+        public CornerPreference CornerStyle
         {
-            get { return (CornerPreference)GetValue(WindowCornersProperty); }
-            set { SetValue(WindowCornersProperty, value); }
+            get { return (CornerPreference)GetValue(CornerStyleProperty); }
+            set { SetValue(CornerStyleProperty, value); }
         }
 
         /// <summary>
@@ -370,6 +380,15 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
+        /// Gets or sets whether the window can be moved by title-bar dragging or the system move command.
+        /// </summary>
+        public bool CanMove
+        {
+            get { return (bool)GetValue(CanMoveProperty); }
+            set { SetValue(CanMoveProperty, value); }
+        }
+
+        /// <summary>
         /// Gets or sets whether the window has a drop shadow. Defaults to true.
         /// </summary>
         public bool HasShadow
@@ -435,6 +454,30 @@ namespace Fluence.Wpf.Controls
         public void SetTitleBar(UIElement titleBar)
         {
             TitleBar = titleBar;
+        }
+
+        /// <summary>
+        /// Sets the minimize button visibility.
+        /// </summary>
+        public void SetMinimizeButtonVisibility(Visibility visibility)
+        {
+            MinimizeButtonVisibility = visibility;
+        }
+
+        /// <summary>
+        /// Sets the maximize/restore button visibility.
+        /// </summary>
+        public void SetMaximizeButtonVisibility(Visibility visibility)
+        {
+            MaximizeButtonVisibility = visibility;
+        }
+
+        /// <summary>
+        /// Sets the close button visibility.
+        /// </summary>
+        public void SetCloseButtonVisibility(Visibility visibility)
+        {
+            CloseButtonVisibility = visibility;
         }
 
         /// <inheritdoc />
@@ -592,7 +635,7 @@ namespace Fluence.Wpf.Controls
             ApplyFrame();
         }
 
-        private static void OnWindowBackdropChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnSystemBackdropTypeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var window = d as FluenceWindow;
             if (window != null)
@@ -601,7 +644,7 @@ namespace Fluence.Wpf.Controls
             }
         }
 
-        private static void OnWindowCornersChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnCornerStyleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var window = d as FluenceWindow;
             if (window != null)
@@ -651,7 +694,7 @@ namespace Fluence.Wpf.Controls
         {
             var capabilities = WindowCapabilities.Current;
             var plan = WindowPolicy.BuildBackdropPlan(
-                WindowBackdrop,
+                SystemBackdropType,
                 ApplicationThemeManager.GetResolvedTheme(),
                 capabilities,
                 GetFallbackBackgroundColor());
@@ -741,8 +784,7 @@ namespace Fluence.Wpf.Controls
                 out var restEn);
             if (IsCaptionChromeOverrideExplicit(MaximizeButtonVisibilityProperty))
             {
-                maxVis = MaximizeButtonVisibility;
-                restVis = MaximizeButtonVisibility;
+                ApplyMaximizeRestoreVisibilityOverride(MaximizeButtonVisibility, out maxVis, out restVis);
                 bool explicitlyVisible = MaximizeButtonVisibility == Visibility.Visible;
                 maxEn = explicitlyVisible && WindowState != WindowState.Maximized;
                 restEn = explicitlyVisible && WindowState == WindowState.Maximized;
@@ -777,6 +819,26 @@ namespace Fluence.Wpf.Controls
             _closeButton.IsEnabled = closeEnabled;
         }
 
+        private void ApplyMaximizeRestoreVisibilityOverride(Visibility visibility, out Visibility maximizeVisibility, out Visibility restoreVisibility)
+        {
+            if (visibility == Visibility.Visible)
+            {
+                maximizeVisibility = WindowState == WindowState.Maximized ? Visibility.Collapsed : Visibility.Visible;
+                restoreVisibility = WindowState == WindowState.Maximized ? Visibility.Visible : Visibility.Collapsed;
+                return;
+            }
+
+            if (visibility == Visibility.Hidden)
+            {
+                maximizeVisibility = WindowState == WindowState.Maximized ? Visibility.Collapsed : Visibility.Hidden;
+                restoreVisibility = WindowState == WindowState.Maximized ? Visibility.Hidden : Visibility.Collapsed;
+                return;
+            }
+
+            maximizeVisibility = Visibility.Collapsed;
+            restoreVisibility = Visibility.Collapsed;
+        }
+
         /// <summary>
         /// Returns <c>true</c> when the caption-chrome override property has been explicitly assigned
         /// (via code, XAML local value, style, binding, etc.) rather than left at its declared default.
@@ -801,7 +863,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            NativeMethods.SetWindowCornerPreference(_handle, WindowPolicy.GetCornerPreference(WindowCorners));
+            NativeMethods.SetWindowCornerPreference(_handle, WindowPolicy.GetCornerPreference(CornerStyle));
         }
 
         #endregion
@@ -836,18 +898,24 @@ namespace Fluence.Wpf.Controls
             {
                 ClearSnapHover();
             }
+            else if (msg == NativeConstants.WM_SYSCOMMAND &&
+                (wParam.ToInt64() & 0xFFF0L) == NativeConstants.SC_MOVE &&
+                !CanMove)
+            {
+                handled = true;
+            }
             else if (msg == NativeConstants.WM_GETMINMAXINFO)
             {
                 var monitor = NativeMethods.MonitorFromWindow(hwnd, NativeConstants.MONITOR_DEFAULTTONEAREST);
                 if (monitor != IntPtr.Zero)
                 {
-                    var monitorInfo = new MONITORINFO { cbSize = Marshal.SizeOf(typeof(MONITORINFO)) };
+                    var monitorInfo = new MONITORINFO { cbSize = Marshal.SizeOf<MONITORINFO>() };
                     if (NativeMethods.GetMonitorInfo(monitor, ref monitorInfo))
                     {
                         var rcWork = monitorInfo.rcWork;
                         var rcMonitor = monitorInfo.rcMonitor;
 
-                        var mmi = (MINMAXINFO)Marshal.PtrToStructure(lParam, typeof(MINMAXINFO));
+                        var mmi = Marshal.PtrToStructure<MINMAXINFO>(lParam);
                         mmi.ptMaxPosition.X = rcWork.Left - rcMonitor.Left;
                         mmi.ptMaxPosition.Y = rcWork.Top - rcMonitor.Top;
                         mmi.ptMaxSize.X = rcWork.Width;
@@ -954,12 +1022,14 @@ namespace Fluence.Wpf.Controls
             }
 
             if (_maximizeButton != null && _maximizeButton.Visibility == Visibility.Visible &&
+                _maximizeButton.IsEnabled &&
                 IsOverElement(_maximizeButton, point))
             {
                 return NativeConstants.HTMAXBUTTON;
             }
 
             if (_restoreButton != null && _restoreButton.Visibility == Visibility.Visible &&
+                _restoreButton.IsEnabled &&
                 IsOverElement(_restoreButton, point))
             {
                 return NativeConstants.HTMAXBUTTON;
@@ -982,7 +1052,7 @@ namespace Fluence.Wpf.Controls
                 return 0;
             }
 
-            return NativeConstants.HTCAPTION;
+            return CanMove ? NativeConstants.HTCAPTION : 0;
         }
 
         private void SetSnapHover(System.Windows.Controls.Button button)
@@ -1057,7 +1127,7 @@ namespace Fluence.Wpf.Controls
 
         #endregion
 
-        private Color GetFallbackBackgroundColor()
+        private static Color GetFallbackBackgroundColor()
         {
             var resolvedTheme = ApplicationThemeManager.GetResolvedTheme();
 

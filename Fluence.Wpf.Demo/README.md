@@ -1,4 +1,4 @@
-# Fluence.Wpf.Demo
+﻿# Fluence.Wpf.Demo
 
 This folder contains the gallery application for visually exercising Fluence.Wpf controls. It is a WPF executable that targets `net472` and `net10.0-windows10.0.26100.0`, uses a project reference to the library, and is the primary manual verification surface for control behavior, theme switching, accent changes, and window chrome.
 

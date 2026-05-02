@@ -1,4 +1,4 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 
 namespace Fluence.Wpf.Demo.Samples.Status

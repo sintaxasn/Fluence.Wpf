@@ -1,4 +1,4 @@
-# Fluence.Wpf Library
+﻿# Fluence.Wpf Library
 
 This folder contains the reusable WPF control library. It targets `net472` and `net10.0-windows10.0.26100.0` and provides the Fluent/WinUI-style controls, theme resources, accent handling, window chrome, and native interop used by the demo applications.
 

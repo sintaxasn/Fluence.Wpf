@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
     x:Class="Fluence.Wpf.Demo.Samples.Buttons.RepeatButtons"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"

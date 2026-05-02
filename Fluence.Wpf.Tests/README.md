@@ -1,4 +1,4 @@
-# Fluence.Wpf.Tests
+﻿# Fluence.Wpf.Tests
 
 This folder contains the MSTest suite for the Fluence.Wpf library and demo shell. The tests target both `net472` and `net10.0-windows10.0.26100.0` and run WPF code through a shared STA dispatcher.
 

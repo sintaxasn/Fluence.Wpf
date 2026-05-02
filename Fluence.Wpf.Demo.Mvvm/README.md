@@ -1,4 +1,4 @@
-# Fluence.Wpf.Demo.Mvvm
+﻿# Fluence.Wpf.Demo.Mvvm
 
 This folder contains a small MVVM Task Manager demo for consumers who want to see Fluence.Wpf controls used without page-level code-behind. It targets `net10.0-windows10.0.26100.0` and uses CommunityToolkit.Mvvm.
 

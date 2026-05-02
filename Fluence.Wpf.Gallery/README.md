@@ -1,4 +1,4 @@
-# Fluence.Wpf.Gallery
+﻿# Fluence.Wpf.Gallery
 
 This folder is currently reserved and contains no buildable project. The active visual gallery lives in [Fluence.Wpf.Demo](../Fluence.Wpf.Demo/README.md).
 

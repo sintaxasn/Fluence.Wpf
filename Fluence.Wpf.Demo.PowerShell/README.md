@@ -1,4 +1,4 @@
-# Fluence.Wpf.Demo.PowerShell
+﻿# Fluence.Wpf.Demo.PowerShell
 
 This folder contains a self-contained Windows PowerShell 5.1 host for the `net472` Fluence.Wpf DLL. It demonstrates loading WPF assemblies, loading `Fluence.Wpf.dll`, applying Fluence resources, parsing XAML with `XamlReader`, enabling `SystemThemeWatcher`, and showing a non-modal `FluenceWindow` while the dispatcher pumps events.
 

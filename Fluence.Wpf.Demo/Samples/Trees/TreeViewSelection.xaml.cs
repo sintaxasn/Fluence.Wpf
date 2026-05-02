@@ -1,4 +1,4 @@
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 
 using FluenceTreeViewItem = Fluence.Wpf.Controls.TreeViewItem;

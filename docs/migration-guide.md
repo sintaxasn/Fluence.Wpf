@@ -1,4 +1,4 @@
-# Migration guide
+﻿# Migration guide
 
 This guide is **generic**: it describes moving from any older Fluent-style WPF theming stack to Fluence.Wpf **without** naming specific third-party libraries.
 

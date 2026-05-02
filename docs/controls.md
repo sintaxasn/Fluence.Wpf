@@ -1,4 +1,4 @@
-# Controls
+﻿# Controls
 
 The **Fluence.Wpf.Demo** gallery is the live inventory: `FluenceWindow` chrome with a search box in the title bar, a left `NavigationView` (compact / expanded), and grouped `UserControl` pages under `Fluence.Wpf.Demo/Pages/`:
 
