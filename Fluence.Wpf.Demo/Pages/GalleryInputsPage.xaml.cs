@@ -32,15 +32,268 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryInputsPage : UserControl
     {
-        public GalleryInputsPage()
+
+        private const string TextBoxInputXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Inputs.TextBoxInput""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <StackPanel>
+        <ui:TextBox
+            Width=""480""
+            Margin=""0,0,0,12""
+            HorizontalAlignment=""Left""
+            PlaceholderText=""Basic text box..."" />
+        <ui:TextBox
+            Width=""480""
+            Margin=""0,0,0,12""
+            HorizontalAlignment=""Left""
+            PlaceholderText=""Search"">
+            <ui:TextBox.Icon>
+                <ui:FontIcon Glyph=""&#xE721;"" IconFontSize=""14"" />
+            </ui:TextBox.Icon>
+        </ui:TextBox>
+        <ui:TextBox
+            Width=""480""
+            HorizontalAlignment=""Left""
+            MaxLength=""40""
+            PlaceholderText=""Limited to 40 characters..."" />
+    </StackPanel>
+</UserControl>
+";
+
+        private const string TextBoxInputCSharpSource = @"using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Inputs
+{
+    public partial class TextBoxInput : UserControl
+    {
+        public TextBoxInput()
+        {
+            InitializeComponent();
+        }
+    }
+}
+";
+        private const string TextBoxValidationXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Inputs.TextBoxValidation""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf""
+    xmlns:uicore=""clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"">
+    <StackPanel>
+        <ui:TextBox
+            Width=""480""
+            Margin=""0,0,0,12""
+            HorizontalAlignment=""Left""
+            HelperText=""Helper text can explain format before validation.""
+            PlaceholderText=""With helper text"" />
+        <ui:TextBox
+            Width=""480""
+            Margin=""0,0,0,12""
+            HorizontalAlignment=""Left""
+            Text=""Valid input""
+            ValidationMessage=""Looks good.""
+            ValidationState=""{x:Static uicore:ValidationState.Success}"" />
+        <ui:TextBox
+            Width=""480""
+            Margin=""0,0,0,12""
+            HorizontalAlignment=""Left""
+            Text=""Check this value""
+            ValidationMessage=""Review this before continuing.""
+            ValidationState=""{x:Static uicore:ValidationState.Warning}"" />
+        <ui:TextBox
+            Width=""480""
+            HorizontalAlignment=""Left""
+            Text=""Bad value""
+            ValidationMessage=""Please fix this field.""
+            ValidationState=""{x:Static uicore:ValidationState.Error}"" />
+    </StackPanel>
+</UserControl>
+";
+
+        private const string TextBoxValidationCSharpSource = @"using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Inputs
+{
+    public partial class TextBoxValidation : UserControl
+    {
+        public TextBoxValidation()
+        {
+            InitializeComponent();
+        }
+    }
+}
+";
+        private const string PasswordBoxInputXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Inputs.PasswordBoxInput""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <StackPanel>
+        <ui:PasswordBox
+            Width=""480""
+            Margin=""0,0,0,12""
+            HorizontalAlignment=""Left""
+            PlaceholderText=""Enter password...""
+            RevealButtonEnabled=""True"" />
+        <ui:PasswordBox
+            Width=""480""
+            Margin=""0,0,0,12""
+            HorizontalAlignment=""Left""
+            Password=""CorrectHorse7!""
+            RevealButtonEnabled=""True"" />
+        <ui:PasswordBox
+            Width=""480""
+            HorizontalAlignment=""Left""
+            IsEnabled=""False""
+            PlaceholderText=""Disabled"" />
+    </StackPanel>
+</UserControl>
+";
+
+        private const string PasswordBoxInputCSharpSource = @"using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Inputs
+{
+    public partial class PasswordBoxInput : UserControl
+    {
+        public PasswordBoxInput()
+        {
+            InitializeComponent();
+        }
+    }
+}
+";
+        private const string NumberBoxInputXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Inputs.NumberBoxInput""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <WrapPanel>
+        <ui:NumberBox
+            Width=""260""
+            Margin=""0,0,16,12""
+            Header=""Inline""
+            Maximum=""100""
+            Minimum=""0""
+            SpinButtonPlacementMode=""Inline""
+            Value=""5"" />
+        <ui:NumberBox
+            Width=""260""
+            Margin=""0,0,16,12""
+            Header=""Compact""
+            Maximum=""100""
+            Minimum=""0""
+            SpinButtonPlacementMode=""Compact""
+            Value=""25"" />
+        <ui:NumberBox
+            Width=""260""
+            Margin=""0,0,16,12""
+            Header=""Keyboard only""
+            Maximum=""100""
+            Minimum=""0""
+            SpinButtonPlacementMode=""Hidden""
+            Value=""50"" />
+        <ui:NumberBox
+            Width=""260""
+            Margin=""0,0,16,12""
+            Header=""Disabled""
+            IsEnabled=""False""
+            Value=""42"" />
+    </WrapPanel>
+</UserControl>
+";
+
+        private const string NumberBoxInputCSharpSource = @"using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Inputs
+{
+    public partial class NumberBoxInput : UserControl
+    {
+        public NumberBoxInput()
+        {
+            InitializeComponent();
+        }
+    }
+}
+";
+        private const string SliderInputXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Inputs.SliderInput""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <ui:StackPanel Spacing=""18"">
+        <ui:StackPanel Spacing=""8"">
+            <TextBlock Text=""Volume"" />
+            <ui:Slider
+                Maximum=""100""
+                Minimum=""0""
+                Value=""35"" />
+        </ui:StackPanel>
+        <ui:StackPanel Spacing=""8"">
+            <TextBlock Text=""Step frequency"" />
+            <ui:Slider
+                IsSnapToTickEnabled=""True""
+                Maximum=""10""
+                Minimum=""0""
+                TickFrequency=""1""
+                Value=""4"" />
+        </ui:StackPanel>
+        <Grid
+            MaxWidth=""260""
+            HorizontalAlignment=""Center"">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width=""*"" />
+                <ColumnDefinition Width=""*"" />
+            </Grid.ColumnDefinitions>
+            <ui:StackPanel Grid.Column=""0"" Spacing=""10"" HorizontalAlignment=""Center"">
+                <TextBlock HorizontalAlignment=""Center"" Text=""Vertical"" />
+                <ui:Slider
+                    Height=""210""
+                    Maximum=""100""
+                    Minimum=""0""
+                    Orientation=""Vertical""
+                    Value=""40"" />
+            </ui:StackPanel>
+            <ui:StackPanel Grid.Column=""1"" Spacing=""10"" HorizontalAlignment=""Center"">
+                <TextBlock HorizontalAlignment=""Center"" Text=""Disabled"" />
+                <ui:Slider
+                    Height=""210""
+                    IsEnabled=""False""
+                    Maximum=""100""
+                    Minimum=""0""
+                    Orientation=""Vertical""
+                    Value=""25"" />
+            </ui:StackPanel>
+        </Grid>
+    </ui:StackPanel>
+</UserControl>
+";
+
+        private const string SliderInputCSharpSource = @"using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Inputs
+{
+    public partial class SliderInput : UserControl
+    {
+        public SliderInput()
+        {
+            InitializeComponent();
+        }
+    }
+}
+";
+
+public GalleryInputsPage()
         {
             InitializeComponent();
 
-            DemoSourceAction.Replace(TextBoxInputSourceLink, "Inputs/TextBoxInput.xaml");
-            DemoSourceAction.Replace(TextBoxValidationSourceLink, "Inputs/TextBoxValidation.xaml");
-            DemoSourceAction.Replace(PasswordBoxInputSourceLink, "Inputs/PasswordBoxInput.xaml");
-            DemoSourceAction.Replace(NumberBoxInputSourceLink, "Inputs/NumberBoxInput.xaml");
-            DemoSourceAction.Replace(SliderInputSourceLink, "Inputs/SliderInput.xaml");
+            DemoSampleControl.ReplaceSourceLink(TextBoxInputSourceLink, TextBoxInputXamlSource, TextBoxInputCSharpSource);
+            DemoSampleControl.ReplaceSourceLink(TextBoxValidationSourceLink, TextBoxValidationXamlSource, TextBoxValidationCSharpSource);
+            DemoSampleControl.ReplaceSourceLink(PasswordBoxInputSourceLink, PasswordBoxInputXamlSource, PasswordBoxInputCSharpSource);
+            DemoSampleControl.ReplaceSourceLink(NumberBoxInputSourceLink, NumberBoxInputXamlSource, NumberBoxInputCSharpSource);
+            DemoSampleControl.ReplaceSourceLink(SliderInputSourceLink, SliderInputXamlSource, SliderInputCSharpSource);
         }
 
         private void CharCountTextBox_TextChanged(object sender, TextChangedEventArgs e)

@@ -270,7 +270,7 @@ namespace Fluence.Wpf.Controls
         {
             VisualStateManager.GoToState(
                 this,
-                IsKeyboardFocused ? "Focused" : "Unfocused",
+                IsKeyboardFocusWithin ? "Focused" : "Unfocused",
                 useTransitions);
         }
 

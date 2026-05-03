@@ -986,7 +986,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    SelectMainWindowNavPage(window, window.Dispatcher, "FluenceWindow");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "Windowing");
 
                     var accentSwatchButtons = FindVisualChildren<Fluent.Button>(window)
                         .Where(b => b.Tag is string hex && hex.Length > 0 && hex[0] == '#')
@@ -1026,7 +1026,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    SelectMainWindowNavPage(window, window.Dispatcher, "FluenceWindow");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "Windowing");
 
                     Assert.IsInstanceOfType(FindVisualChildByName<Fluent.RadioButton>(window, "ThemeLight"), typeof(Fluent.RadioButton));
                     Assert.IsInstanceOfType(FindVisualChildByName<Fluent.RadioButton>(window, "ThemeDark"), typeof(Fluent.RadioButton));
@@ -1063,7 +1063,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    SelectMainWindowNavPage(window, window.Dispatcher, "FluenceWindow");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "Windowing");
 
                     var themeDark = FindVisualChildByName<Fluent.RadioButton>(window, "ThemeDark");
                     var themeStateLabel = FindVisualChildByName<TextBlock>(window, "ThemeStateLabel");
@@ -1244,16 +1244,16 @@ namespace Fluence.Wpf.Tests
                     SelectMainWindowNavPage(window, window.Dispatcher, "Inputs");
                     Assert.IsNotNull(FindVisualChildByName<Fluent.TextBox>(window, "CharCountTextBox"));
 
-                    SelectMainWindowNavPage(window, window.Dispatcher, "ToggleSwitch");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "Selection");
                     Assert.IsNotNull(FindVisualChildByName<Fluent.ToggleSwitch>(window, "DefaultToggle"));
 
-                    SelectMainWindowNavPage(window, window.Dispatcher, "ComboBox");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "Selection");
                     Assert.IsNotNull(FindVisualChildByName<Fluent.ComboBox>(window, "SelectionDemoCombo"));
 
-                    SelectMainWindowNavPage(window, window.Dispatcher, "ProgressBar");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "Status");
                     Assert.IsNotNull(FindVisualChildByName<Fluent.ProgressBar>(window, "StepProgressBar"));
 
-                    SelectMainWindowNavPage(window, window.Dispatcher, "ListView");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "Data");
                     Assert.IsNotNull(FindVisualChildByName<Fluent.ListView>(window, "EmptyStateListView"));
                 }
                 finally
@@ -1269,7 +1269,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void MainWindow_NavigationView_UsesGroupedGalleryTaxonomy()
+        public void MainWindow_NavigationView_UsesFlatGalleryTaxonomy()
         {
             RunOnStaThread(() =>
             {
@@ -1286,7 +1286,6 @@ namespace Fluence.Wpf.Tests
 
                     var nav = window.FindName("DemoNav") as Fluent.NavigationView;
                     Assert.IsNotNull(nav);
-                    var groups = new List<string>();
                     var pages = new List<string>();
                     foreach (var obj in nav.Items)
                     {
@@ -1297,22 +1296,19 @@ namespace Fluence.Wpf.Tests
                         }
 
                         var content = item.Content as string;
-                        if (item.InfoBadge != null)
-                        {
-                            groups.Add(content);
-                        }
-                        else if (item.PageContent != null)
-                        {
-                            pages.Add(content);
-                        }
+                        Assert.IsNull(item.InfoBadge, "Simplified demo navigation should not use category group badges.");
+                        pages.Add(content);
                     }
 
-                    CollectionAssert.Contains(groups, "Design");
-                    CollectionAssert.Contains(groups, "Accessibility");
-                    CollectionAssert.Contains(groups, "Basic input");
-                    CollectionAssert.Contains(pages, "Button");
+                    CollectionAssert.Contains(pages, "Home");
+                    CollectionAssert.Contains(pages, "Buttons");
+                    CollectionAssert.Contains(pages, "Selection");
+                    CollectionAssert.Contains(pages, "Inputs");
                     CollectionAssert.Contains(pages, "Typography");
-                    Assert.IsFalse(groups.Contains("Fundamentals"), "Demo navigation should not expose the old Fundamentals section.");
+                    CollectionAssert.Contains(pages, "Iconography");
+                    CollectionAssert.Contains(pages, "Windowing");
+                    Assert.IsFalse(pages.Contains("Button"), "Demo navigation should use grouped pages, not generated per-control pages.");
+                    Assert.IsFalse(pages.Contains("Fundamentals"), "Demo navigation should not expose the old Fundamentals section.");
                 }
                 finally
                 {
@@ -1378,7 +1374,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    SelectMainWindowNavPage(window, window.Dispatcher, "FluenceWindow");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "Windowing");
 
                     var toggle = FindVisualChildByName<Fluent.ToggleSwitch>(window, "ThemeWatcherToggle");
                     var label = FindVisualChildByName<TextBlock>(window, "SystemThemeLabel");
@@ -2042,7 +2038,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    SelectMainWindowNavPage(window, window.Dispatcher, "ProgressBar");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "Status");
 
                     var slider = FindVisualChildByName<Fluent.Slider>(window, "ProgressSlider");
                     var label = FindVisualChildByName<TextBlock>(window, "SliderValueLabel");
@@ -2083,7 +2079,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    SelectMainWindowNavPage(window, window.Dispatcher, "ComboBox");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "Selection");
 
                     var combo = FindVisualChildByName<Fluent.ComboBox>(window, "SelectionDemoCombo");
                     Assert.IsNotNull(combo, "SelectionDemoCombo should exist on the ComboBox page.");
@@ -2123,7 +2119,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    SelectMainWindowNavPage(window, window.Dispatcher, "ComboBox");
+                    SelectMainWindowNavPage(window, window.Dispatcher, "Selection");
                     var nav = window.FindName("DemoNav") as Fluent.NavigationView;
                     Assert.IsNotNull(nav, "Main window should expose DemoNav.");
 
@@ -2631,28 +2627,22 @@ namespace Fluence.Wpf.Tests
             var nav = window.FindName("DemoNav") as Fluent.NavigationView;
             Assert.IsNotNull(nav, "Main window should expose DemoNav.");
 
-            foreach (var obj in nav.Items)
-            {
-                var nvi = obj as Fluent.NavigationViewItem;
-                var label = nvi == null ? null : nvi.Content as string;
-                var tag = nvi == null ? null : nvi.Tag as string;
-                if (nvi != null &&
-                    nvi.InfoBadge == null &&
-                    nvi.PageContent != null &&
-                    (string.Equals(label, itemContent, StringComparison.Ordinal) ||
-                     (tag != null && tag.IndexOf(itemContent, StringComparison.OrdinalIgnoreCase) >= 0)))
-                {
-                    nav.SelectedItem = nvi;
-                    DrainDispatcher(dispatcher);
-                    dispatcher.Invoke(new Action(delegate { }), DispatcherPriority.Loaded);
-                    dispatcher.Invoke(new Action(delegate { }), DispatcherPriority.ContextIdle);
-                    window.UpdateLayout();
-                    DrainDispatcher(dispatcher);
-                    return;
-                }
-            }
+            window.NavigateTo(itemContent);
+            DrainDispatcher(dispatcher);
+            dispatcher.Invoke(new Action(delegate { }), DispatcherPriority.Loaded);
+            dispatcher.Invoke(new Action(delegate { }), DispatcherPriority.ContextIdle);
+            window.UpdateLayout();
+            DrainDispatcher(dispatcher);
 
-            Assert.Fail(string.Format("Navigation item '{0}' should exist.", itemContent));
+            var selected = nav.SelectedItem as Fluent.NavigationViewItem;
+            var selectedLabel = selected == null ? null : selected.Content as string;
+            var selectedTag = selected == null ? null : selected.Tag as string;
+            var matchesRequest = string.Equals(selectedLabel, itemContent, StringComparison.OrdinalIgnoreCase) ||
+                (selectedTag != null && selectedTag.IndexOf(itemContent, StringComparison.OrdinalIgnoreCase) >= 0);
+            if (selected == null || selected.PageContent == null || !matchesRequest)
+            {
+                Assert.Fail(string.Format("Navigation item '{0}' should exist.", itemContent));
+            }
         }
 
         private static void AssertButtonShowsGlyph(Fluent.Button button, string glyph)

@@ -33,15 +33,273 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryNavigationPage : UserControl
     {
+
+        private const string LeftNavigationViewXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Navigation.LeftNavigationView""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <Border
+        Height=""320""
+        BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
+        BorderThickness=""1"">
+        <ui:NavigationView
+            PaneDisplayMode=""Left"">
+            <ui:NavigationView.PaneHeader>
+                <TextBlock
+                    Margin=""12,8""
+                    Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                    Text=""Navigation"" />
+            </ui:NavigationView.PaneHeader>
+            <ui:NavigationViewItem
+                Content=""Home""
+                IsSelected=""True"">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph=""&#xE80F;"" IconFontSize=""18"" />
+                </ui:NavigationViewItem.Icon>
+                <ui:NavigationViewItem.PageContent>
+                    <StackPanel Margin=""20"">
+                        <TextBlock
+                            FontSize=""18""
+                            FontWeight=""SemiBold""
+                            Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                            Text=""Home"" />
+                        <TextBlock
+                            Margin=""0,6,0,0""
+                            Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                            Text=""A persistent left pane keeps destinations available while content changes.""
+                            TextWrapping=""Wrap"" />
+                    </StackPanel>
+                </ui:NavigationViewItem.PageContent>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content=""Files"">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph=""&#xE8B7;"" IconFontSize=""18"" />
+                </ui:NavigationViewItem.Icon>
+                <ui:NavigationViewItem.PageContent>
+                    <TextBlock
+                        Margin=""20""
+                        Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                        Text=""Files"" />
+                </ui:NavigationViewItem.PageContent>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content=""Reports"">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph=""&#xE9D9;"" IconFontSize=""18"" />
+                </ui:NavigationViewItem.Icon>
+                <ui:NavigationViewItem.PageContent>
+                    <TextBlock
+                        Margin=""20""
+                        Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                        Text=""Reports"" />
+                </ui:NavigationViewItem.PageContent>
+            </ui:NavigationViewItem>
+        </ui:NavigationView>
+    </Border>
+</UserControl>
+";
+
+        private const string LeftNavigationViewCSharpSource = @"using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Navigation
+{
+    public partial class LeftNavigationView : UserControl
+    {
+        public LeftNavigationView()
+        {
+            InitializeComponent();
+        }
+    }
+}
+";
+        private const string TopNavigationViewXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Navigation.TopNavigationView""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <Border
+        Height=""240""
+        BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
+        BorderThickness=""1"">
+        <ui:NavigationView
+            Header=""Insights""
+            PaneDisplayMode=""Top"">
+            <ui:NavigationViewItem
+                Content=""Overview""
+                IsSelected=""True"">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph=""&#xE9D2;"" IconFontSize=""16"" />
+                </ui:NavigationViewItem.Icon>
+                <ui:NavigationViewItem.PageContent>
+                    <TextBlock
+                        Margin=""20""
+                        Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                        Text=""Overview dashboard"" />
+                </ui:NavigationViewItem.PageContent>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content=""Activity"">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph=""&#xE7F4;"" IconFontSize=""16"" />
+                </ui:NavigationViewItem.Icon>
+                <ui:NavigationViewItem.PageContent>
+                    <TextBlock
+                        Margin=""20""
+                        Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                        Text=""Recent activity"" />
+                </ui:NavigationViewItem.PageContent>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content=""Settings"">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph=""&#xE713;"" IconFontSize=""16"" />
+                </ui:NavigationViewItem.Icon>
+                <ui:NavigationViewItem.PageContent>
+                    <TextBlock
+                        Margin=""20""
+                        Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                        Text=""Settings"" />
+                </ui:NavigationViewItem.PageContent>
+            </ui:NavigationViewItem>
+        </ui:NavigationView>
+    </Border>
+</UserControl>
+";
+
+        private const string TopNavigationViewCSharpSource = @"using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Navigation
+{
+    public partial class TopNavigationView : UserControl
+    {
+        public TopNavigationView()
+        {
+            InitializeComponent();
+        }
+    }
+}
+";
+        private const string CompactNavigationViewXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Navigation.CompactNavigationView""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <StackPanel>
+        <Border
+            Height=""300""
+            Margin=""0,0,0,12""
+            BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
+            BorderThickness=""1"">
+            <ui:NavigationView
+                x:Name=""CompactNavigationDemo""
+                IsBackButtonVisible=""True""
+                IsBackEnabled=""False""
+                IsPaneOpen=""False""
+                PaneDisplayMode=""LeftCompact""
+                BackRequested=""CompactNavigationDemo_BackRequested"">
+                <ui:NavigationView.PaneFooter>
+                    <TextBlock
+                        Margin=""12""
+                        Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                        Text=""Footer content"" />
+                </ui:NavigationView.PaneFooter>
+                <ui:NavigationViewItem
+                    Content=""Dashboard""
+                    IsSelected=""True"">
+                    <ui:NavigationViewItem.Icon>
+                        <ui:FontIcon Glyph=""&#xE80F;"" IconFontSize=""18"" />
+                    </ui:NavigationViewItem.Icon>
+                    <ui:NavigationViewItem.PageContent>
+                        <StackPanel Margin=""20"">
+                            <TextBlock
+                                FontSize=""18""
+                                FontWeight=""SemiBold""
+                                Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                                Text=""Dashboard"" />
+                            <TextBlock
+                                Margin=""0,6,0,0""
+                                Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                                Text=""Toggle back availability below to update the back button state.""
+                                TextWrapping=""Wrap"" />
+                        </StackPanel>
+                    </ui:NavigationViewItem.PageContent>
+                </ui:NavigationViewItem>
+                <ui:NavigationViewItem Content=""Messages"">
+                    <ui:NavigationViewItem.Icon>
+                        <ui:FontIcon Glyph=""&#xE8BD;"" IconFontSize=""18"" />
+                    </ui:NavigationViewItem.Icon>
+                </ui:NavigationViewItem>
+            </ui:NavigationView>
+        </Border>
+        <StackPanel Orientation=""Horizontal"">
+            <ui:CheckBox
+                x:Name=""BackEnabledToggle""
+                Margin=""0,0,16,0""
+                Checked=""BackEnabledToggle_Changed""
+                Content=""Back enabled""
+                Unchecked=""BackEnabledToggle_Changed"" />
+            <TextBlock
+                x:Name=""BackStatusLabel""
+                VerticalAlignment=""Center""
+                Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                Text=""Back button disabled"" />
+        </StackPanel>
+    </StackPanel>
+</UserControl>
+";
+
+        private const string CompactNavigationViewCSharpSource = @"using System.Windows;
+using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Navigation
+{
+    public partial class CompactNavigationView : UserControl
+    {
         private int _backRequestCount;
+
+        public CompactNavigationView()
+        {
+            InitializeComponent();
+        }
+
+        private void BackEnabledToggle_Changed(object sender, RoutedEventArgs e)
+        {
+            UpdateBackState();
+        }
+
+        private void CompactNavigationDemo_BackRequested(object sender, Fluence.Wpf.Controls.NavigationViewBackRequestedEventArgs e)
+        {
+            _backRequestCount++;
+            UpdateBackState();
+        }
+
+        private void UpdateBackState()
+        {
+            var isBackEnabled = BackEnabledToggle != null && BackEnabledToggle.IsChecked == true;
+
+            if (CompactNavigationDemo != null)
+            {
+                CompactNavigationDemo.IsBackEnabled = isBackEnabled;
+            }
+
+            if (BackStatusLabel != null)
+            {
+                BackStatusLabel.Text = isBackEnabled
+                    ? string.Format(""Back button enabled ({0} requests)"", _backRequestCount)
+                    : ""Back button disabled"";
+            }
+        }
+    }
+}
+";
+
+private int _backRequestCount;
 
         public GalleryNavigationPage()
         {
             InitializeComponent();
 
-            DemoSourceAction.Replace(LeftNavigationViewSourceLink, "Navigation/LeftNavigationView.xaml");
-            DemoSourceAction.Replace(TopNavigationViewSourceLink, "Navigation/TopNavigationView.xaml");
-            DemoSourceAction.Replace(CompactNavigationViewSourceLink, "Navigation/CompactNavigationView.xaml");
+            DemoSampleControl.ReplaceSourceLink(LeftNavigationViewSourceLink, LeftNavigationViewXamlSource, LeftNavigationViewCSharpSource);
+            DemoSampleControl.ReplaceSourceLink(TopNavigationViewSourceLink, TopNavigationViewXamlSource, TopNavigationViewCSharpSource);
+            DemoSampleControl.ReplaceSourceLink(CompactNavigationViewSourceLink, CompactNavigationViewXamlSource, CompactNavigationViewCSharpSource);
 
             Loaded += GalleryNavigationPage_Loaded;
         }

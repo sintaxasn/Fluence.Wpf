@@ -153,6 +153,30 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void ComboBox_InitialTemplate_DoesNotShowFocusAccentLine()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                var app = EnsureApplication();
+                MergeGenericDictionary(app);
+
+                var cb = new FluenceComboBox();
+                cb.Items.Add("Alpha");
+                cb.SelectedIndex = 0;
+                var w = new Window { Content = cb, Width = 300, Height = 100 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                var accentLine = FindVisualChildByName<WpfBorder>(cb, "FocusAccentLine");
+                Assert.IsNotNull(accentLine, "FocusAccentLine border must be present in template.");
+                Assert.AreEqual(0.0, accentLine.Opacity, 0.01,
+                    "ComboBox should not show the focused underline before it receives focus.");
+
+                w.Close();
+            });
+        }
+
+        [TestMethod]
         public void ComboBox_ThemeCycle_FocusedStatePreservesAccentLine()
         {
             WpfTestSta.Invoke(() =>

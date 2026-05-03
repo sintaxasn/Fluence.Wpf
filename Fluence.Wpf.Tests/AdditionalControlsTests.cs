@@ -154,6 +154,62 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void DropDownButton_FlyoutPresenter_StretchesForLeftAlignedItems()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                var app = EnsureApp();
+                MergeGeneric(app);
+                var window = new Window();
+                var btn = new Fluent.DropDownButton { Content = "Open", Width = 160, Flyout = new StackPanel() };
+                try
+                {
+                    window.Content = btn;
+                    window.Show();
+                    Drain(window.Dispatcher);
+                    btn.ApplyTemplate();
+
+                    var presenter = btn.Template.FindName("FlyoutContentPresenter", btn) as ContentPresenter;
+                    Assert.IsNotNull(presenter, "DropDownButton template must expose FlyoutContentPresenter.");
+                    Assert.AreEqual(HorizontalAlignment.Stretch, presenter.HorizontalAlignment,
+                        "Flyout presenter should stretch so left-aligned menu buttons fill the flyout width.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void SplitButton_FlyoutPresenter_StretchesForLeftAlignedItems()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                var app = EnsureApp();
+                MergeGeneric(app);
+                var window = new Window();
+                var btn = new Fluent.SplitButton { Content = "Export", Width = 180, Flyout = new StackPanel() };
+                try
+                {
+                    window.Content = btn;
+                    window.Show();
+                    Drain(window.Dispatcher);
+                    btn.ApplyTemplate();
+
+                    var presenter = btn.Template.FindName("FlyoutContentPresenter", btn) as ContentPresenter;
+                    Assert.IsNotNull(presenter, "SplitButton template must expose FlyoutContentPresenter.");
+                    Assert.AreEqual(HorizontalAlignment.Stretch, presenter.HorizontalAlignment,
+                        "Flyout presenter should stretch so left-aligned menu buttons fill the flyout width.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
         public void InfoBadge_Value_Roundtrips()
         {
             WpfTestSta.Invoke(() =>

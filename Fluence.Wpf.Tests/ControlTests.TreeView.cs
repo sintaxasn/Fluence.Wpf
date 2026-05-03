@@ -214,6 +214,70 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void TreeViewItem_HoverTriggers_AreScopedToHeaderBorder()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                var app = EnsureApplication();
+                MergeGenericDictionary(app);
+
+                var item = new FluenceTreeViewItem { Header = "Parent" };
+                item.Items.Add(new FluenceTreeViewItem { Header = "Child" });
+                var tv = new FluenceTreeView();
+                tv.Items.Add(item);
+                var w = new Window { Content = tv, Width = 300, Height = 200 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                Assert.IsNotNull(item.Template, "TreeViewItem template should be applied.");
+                bool hasHeaderHoverTrigger = false;
+                bool hasAncestorHoverTrigger = false;
+
+                foreach (TriggerBase triggerBase in item.Template.Triggers)
+                {
+                    var trigger = triggerBase as Trigger;
+                    if (trigger != null && trigger.Property == UIElement.IsMouseOverProperty)
+                    {
+                        if (trigger.SourceName == "ItemBorder")
+                        {
+                            hasHeaderHoverTrigger = true;
+                        }
+                        else
+                        {
+                            hasAncestorHoverTrigger = true;
+                        }
+                    }
+
+                    var multiTrigger = triggerBase as MultiTrigger;
+                    if (multiTrigger != null)
+                    {
+                        foreach (Condition condition in multiTrigger.Conditions)
+                        {
+                            if (condition.Property == UIElement.IsMouseOverProperty)
+                            {
+                                if (condition.SourceName == "ItemBorder")
+                                {
+                                    hasHeaderHoverTrigger = true;
+                                }
+                                else
+                                {
+                                    hasAncestorHoverTrigger = true;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Assert.IsTrue(hasHeaderHoverTrigger,
+                    "TreeViewItem hover visuals should be scoped to the header border.");
+                Assert.IsFalse(hasAncestorHoverTrigger,
+                    "TreeViewItem hover visuals should not listen to the whole item, because child hover would light parents.");
+
+                w.Close();
+            });
+        }
+
+        [TestMethod]
         public void TreeView_ThemeCycle_StyleRemainsApplied()
         {
             WpfTestSta.Invoke(() =>

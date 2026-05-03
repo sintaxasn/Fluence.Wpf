@@ -25,7 +25,7 @@ Official references:
 The structure is therefore expected to look different from a repository-pattern or Clean Architecture WPF app:
 
 - There is no `Domain`, `Application`, `Infrastructure`, or `Repositories` project because the library has no durable data store or business use cases.
-- `Fluence.Wpf.Demo` is a gallery application. Its job is visual and interaction coverage, so it uses navigation metadata, page factories, and sample source files instead of repositories and service layers.
+- `Fluence.Wpf.Demo` is a gallery application. Its job is visual and interaction coverage, so it uses navigation metadata, concrete sample pages, and embedded source snippets instead of repositories and service layers.
 - `Fluence.Wpf.Demo.Mvvm` is the small MVVM example. It demonstrates view models and commands, but still does not need repositories because its task data is in-memory demo data.
 - `Fluence.Wpf.Tests` is intentionally broad because it verifies templates, theme dictionaries, demo shell behavior, and WPF dispatcher-sensitive interactions on both target frameworks.
 
@@ -128,10 +128,10 @@ The demo follows the standard WPF app shape at the outer level:
 - `Pages/*.xaml` / `Pages/*.xaml.cs` are normal compiled WPF `UserControl` pages.
 - `Resources/*.png`, `Resources/ControlImages/*.png`, and `Resources/SegoeFluentIcons.tsv` are WPF `Resource` items.
 
-The demo intentionally diverges from a plain Visual Studio WPF app in two places:
+The demo intentionally keeps its structure simple:
 
-- `DemoNavigationCatalog.cs` and `Demo*Pages.cs` act as gallery metadata and page factories. This keeps all gallery navigation and example registration in code instead of scattering it across individual pages.
-- `Samples/**/*.xaml` and `Samples/**/*.xaml.cs` are removed from `Page`/`Compile` and added as `Content` copied to output. This is deliberate: the gallery reads these files as source snippets for inline source tabs. If they were compiled only as WPF `Page` items, the source text would not be available in the output folder.
+- `DemoNavigationCatalog.cs` is metadata only. `MainWindow` maps routes to concrete `Pages/Gallery*Page.xaml` controls with a direct C# switch.
+- Sample source text lives beside the sample page in `const string` fields and is passed to `DemoSampleControl.XamlSource` / `DemoSampleControl.CSharpSource`. There is no copied `Samples/**` source tree.
 
 This is a normal structure for a control-gallery demo, but not a standard line-of-business MVVM structure. Do not add repositories or service layers here unless the demo starts persisting or retrieving real data.
 
@@ -139,40 +139,22 @@ This is a normal structure for a control-gallery demo, but not a standard line-o
 
 | Path | Purpose |
 |------|---------|
-| `Fluence.Wpf.Demo.csproj` | WPF executable project. References `Fluence.Wpf`, compiles app/pages/resources, and copies `Samples/**` source files to output as content. |
+| `Fluence.Wpf.Demo.csproj` | WPF executable project. References `Fluence.Wpf` and compiles app, page, and resource files. |
 | `README.md` | Demo-specific run and maintenance notes. |
 | `App.xaml` | WPF application definition. |
 | `App.xaml.cs` | Startup code that applies Fluence theme resources before the main window runs. |
 | `MainWindow.xaml` | Gallery shell layout: `FluenceWindow`, title bar, search box, and navigation host. |
-| `MainWindow.xaml.cs` | Gallery orchestration: navigation catalog loading, search, category expand/collapse, compact flyouts, theme/accent/backdrop controls, and page selection. |
-
-### Gallery Factory Files
-
-| File | Purpose |
-|------|---------|
-| `DemoNavigationCatalog.cs` | Central catalog of categories and leaf pages used to build the `NavigationView`. |
-| `DemoControlPages.cs` | Factories for basic control examples such as buttons, selection, inputs, status, tabs, trees, and layout controls. |
-| `DemoAccessibilityPages.cs` | Factories for accessibility examples. |
-| `DemoCollectionPages.cs` | Factories for data, list, tree, and collection examples. |
-| `DemoLayoutPages.cs` | Factories for layout and surface examples. |
-| `DemoMenuPages.cs` | Factories for menu, tooltip, context menu, and flyout examples. |
-| `DemoNavigationPages.cs` | Factories for `NavigationView` examples. |
-| `DemoStatusPages.cs` | Factories for status and feedback examples. |
-| `DemoTextPages.cs` | Factories for text, typography, and glyph examples. |
-| `DemoWindowingPages.cs` | Factories for theme, accent, backdrop, title-bar, and window chrome examples. |
-| `DemoSourceLinkSettings.cs` | Settings/helper values for source links shown in sample tabs. |
+| `MainWindow.xaml.cs` | Gallery orchestration: navigation catalog loading, search, theme/accent/backdrop controls, and direct page selection. |
+| `DemoNavigationCatalog.cs` | Flat navigation metadata used by `MainWindow` to build the `NavigationView`. |
 
 ### `Pages/`
 
-`Pages/` contains compiled WPF `UserControl` pages and reusable page controls. Most pages are shells that host one or more `DemoSampleControl` examples.
+`Pages/` contains compiled WPF `UserControl` pages and reusable page controls. Gallery pages declare live examples directly in XAML where practical and keep the matching source snippets in their code-behind.
 
 | File | Purpose |
 |------|---------|
-| `DemoSampleControl.xaml` / `.cs` | Reusable example host: sample surface plus collapsed inline source expander and source tabs. |
-| `DemoSourceAction.cs` | Describes source-related actions or source-link metadata used by gallery pages. |
+| `DemoSampleControl.xaml` / `.cs` | Reusable example host: sample surface plus collapsed inline source expander backed by `XamlSource` and optional `CSharpSource` strings. |
 | `GalleryHomePage.xaml` / `.cs` | Landing page with banner and high-level navigation cards. |
-| `GalleryCategoryPage.xaml` / `.cs` | Overview page for a grouped control category. |
-| `GalleryControlPage.xaml` / `.cs` | Generic generated page used by the `Demo*Pages.cs` factories. |
 | `GalleryAccessibilityPage.xaml` / `.cs` | Accessibility overview page. |
 | `GalleryButtonsPage.xaml` / `.cs` | Button family gallery page. |
 | `GalleryColorsPage.xaml` / `.cs` | Theme, accent, and brush gallery page. |
@@ -181,6 +163,7 @@ This is a normal structure for a control-gallery demo, but not a standard line-o
 | `GalleryFormsPage.xaml` / `.cs` | Form composition examples. |
 | `GalleryGlyphsPage.xaml` / `.cs` | Fluent glyph browsing examples. |
 | `GalleryInputsPage.xaml` / `.cs` | Text and numeric input examples. |
+| `GalleryLayoutPage.xaml` / `.cs` | Layout and surface examples. |
 | `GalleryMenusPage.xaml` / `.cs` | Menu, context menu, tooltip, and flyout examples. |
 | `GalleryNavigationPage.xaml` / `.cs` | Navigation control examples. |
 | `GallerySelectionPage.xaml` / `.cs` | CheckBox, RadioButton, ToggleSwitch, Slider, and Rating examples. |
@@ -199,31 +182,6 @@ This is a normal structure for a control-gallery demo, but not a standard line-o
 | `DemoSharedStyles.xaml` | Gallery-only shared styles. |
 | `SegoeFluentIcons.tsv` | Data source for glyph browsing. |
 | `ControlImages/*.png` | WinUI Gallery-style control thumbnails. Filenames correspond to control or feature names, for example `Button.png`, `NavigationView.png`, `TabView.png`, `ProgressRing.png`, and `FluenceWindow`-adjacent windowing images. |
-
-### `Samples/`
-
-`Samples/**` contains source examples displayed in the gallery. Each sample is copied to output as text source. A `.xaml` file defines the sample UI; a `.xaml.cs` file is present when the sample needs code-behind.
-
-| Folder | Purpose |
-|--------|---------|
-| `Samples/Accessibility/` | Automation properties, keyboard focus/tab order, high contrast, and RTL examples. |
-| `Samples/Buttons/` | Button, HyperlinkButton, DropDownButton, SplitButton, RepeatButton, and ToggleButton examples. |
-| `Samples/Colors/` | Accent, text, stroke, fill, surface, system, and high contrast brush examples. |
-| `Samples/Data/` | Card variants and ListBox/ListView examples, including selection, grouping, filtering, images, messages, and empty state. |
-| `Samples/DataBinding/` | Observable collection, data template row, and selection-mode binding examples. |
-| `Samples/Forms/` | Sign-in, checkout, and settings form compositions. |
-| `Samples/Glyphs/` | Common, command, status, and catalog glyph examples. |
-| `Samples/Inputs/` | TextBox, PasswordBox, NumberBox, Slider, and validation examples. |
-| `Samples/Layout/` | Border, DockPanel, Expander, Separator, and StackPanel examples. |
-| `Samples/Menus/` | MenuBar, ContextMenu, ToolTip, DropDownButton, and SplitButton menu examples. |
-| `Samples/Navigation/` | Left, compact, and top NavigationView examples. |
-| `Samples/Selection/` | CheckBox, ComboBox, RadioButton, RatingControl, and ToggleSwitch examples. |
-| `Samples/Status/` | InfoBadge, InfoBar, PersonPicture, ProgressBar, and ProgressRing examples. |
-| `Samples/Tabs/` | TabControl and TabView examples. |
-| `Samples/Text/` | TextBlock example. |
-| `Samples/Trees/` | TreeView hierarchy, selection, and expansion examples. |
-| `Samples/Typography/` | Typography table sample. |
-| `Samples/Window/` | Backdrop, caption button, theme/accent, title bar, and title-bar chrome examples. |
 
 ## `Fluence.Wpf.Demo.Mvvm`
 
@@ -317,9 +275,8 @@ These folders are present in the repository but are not currently projects in `F
 | New automation behavior | `Fluence.Wpf/Automation/` |
 | New Win32/DWM interop | `Fluence.Wpf/Native/` plus helper wrapper if needed |
 | New gallery category or nav item | `Fluence.Wpf.Demo/DemoNavigationCatalog.cs` |
-| New generated gallery control page | Usually a `Demo*Pages.cs` factory plus sample files under `Fluence.Wpf.Demo/Samples/<Area>/` |
-| New bespoke gallery page | `Fluence.Wpf.Demo/Pages/Gallery<Area>Page.xaml` and `.xaml.cs` |
-| New inline source sample | `Fluence.Wpf.Demo/Samples/<Area>/<Sample>.xaml` and optional `.xaml.cs`; no project-file edit should be needed |
+| New gallery page | `Fluence.Wpf.Demo/Pages/Gallery<Area>Page.xaml` and `.xaml.cs`, then add a route in `MainWindow` |
+| New inline source sample | Add live sample XAML to the page and put the display source in page-local `const string` fields passed to `DemoSampleControl` |
 | New MVVM demo state | `Fluence.Wpf.Demo.Mvvm/ViewModels/` |
 | New MVVM value converter | `Fluence.Wpf.Demo.Mvvm/Converters/` |
 | New control tests | `Fluence.Wpf.Tests/ControlTests.<Area>.cs` or an existing matching partial file |
@@ -332,8 +289,8 @@ These folders are present in the repository but are not currently projects in `F
 `Fluence.Wpf.Demo` is structurally reasonable for a control gallery:
 
 - Its WPF entry points are standard.
-- Its shell is intentionally code-behind heavy because it owns gallery navigation, shell state, theme toggles, compact flyouts, and source display.
-- Its sample files are intentionally `Content`, not compiled `Page` items, because the gallery needs to display the source text.
-- Its `Demo*Pages.cs` factory files are a local convention that keeps example registration centralized.
+- Its shell is intentionally code-behind heavy because it owns gallery navigation, shell state, and theme/accent/backdrop controls.
+- Its gallery pages are concrete WPF user controls, so debugger and visual-tree inspection stay close to the sample being demonstrated.
+- Its source snippets are embedded with the page that owns the live sample; there is no separate generated page or copied sample-file layer.
 
 It would be non-standard only if judged as a business MVVM app. For this repository, that is the wrong comparison. The standard MVVM example is `Fluence.Wpf.Demo.Mvvm`; the main demo is a gallery and visual verification tool.

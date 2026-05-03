@@ -33,14 +33,351 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryMenusPage : UserControl
     {
-        public GalleryMenusPage()
+
+        private const string MenuBarXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Menus.MenuBar""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <StackPanel>
+        <ui:Menu Margin=""0,0,0,12"">
+            <ui:MenuItem Header=""_File"">
+                <ui:MenuItem
+                    Click=""MenuBar_Click""
+                    Header=""_New""
+                    InputGestureText=""Ctrl+N""
+                    Tag=""File - New"" />
+                <ui:MenuItem
+                    Click=""MenuBar_Click""
+                    Header=""_Open...""
+                    InputGestureText=""Ctrl+O""
+                    Tag=""File - Open"" />
+                <ui:MenuItem Header=""Open _Recent"">
+                    <ui:MenuItem
+                        Click=""MenuBar_Click""
+                        Header=""Roadmap.md""
+                        Tag=""File - Recent - Roadmap.md"" />
+                    <ui:MenuItem
+                        Click=""MenuBar_Click""
+                        Header=""LaunchPlan.xlsx""
+                        Tag=""File - Recent - LaunchPlan.xlsx"" />
+                </ui:MenuItem>
+                <Separator />
+                <ui:MenuItem
+                    Click=""MenuBar_Click""
+                    Header=""_Save""
+                    InputGestureText=""Ctrl+S""
+                    Tag=""File - Save"" />
+                <ui:MenuItem Header=""Print"" IsEnabled=""False"" />
+            </ui:MenuItem>
+            <ui:MenuItem Header=""_View"">
+                <ui:MenuItem
+                    Click=""MenuBar_Click""
+                    Header=""Status bar""
+                    IsCheckable=""True""
+                    IsChecked=""True""
+                    Tag=""View - Status bar"" />
+                <ui:MenuItem
+                    Click=""MenuBar_Click""
+                    Header=""Word wrap""
+                    IsCheckable=""True""
+                    Tag=""View - Word wrap"" />
+                <Separator />
+                <ui:MenuItem
+                    Click=""MenuBar_Click""
+                    Header=""Zoom in""
+                    InputGestureText=""Ctrl++""
+                    Tag=""View - Zoom in"" />
+            </ui:MenuItem>
+            <ui:MenuItem Header=""_Help"">
+                <ui:MenuItem
+                    Click=""MenuBar_Click""
+                    Header=""Documentation""
+                    Tag=""Help - Documentation"" />
+                <ui:MenuItem Header=""About"" IsEnabled=""False"" />
+            </ui:MenuItem>
+        </ui:Menu>
+        <TextBlock
+            x:Name=""MenuBarResultLabel""
+            Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+            Text=""Last menu action: None"" />
+    </StackPanel>
+</UserControl>
+";
+
+        private const string MenuBarCSharpSource = @"using System.Windows;
+using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Menus
+{
+    public partial class MenuBar : UserControl
+    {
+        public MenuBar()
+        {
+            InitializeComponent();
+        }
+
+        private void MenuBar_Click(object sender, RoutedEventArgs e)
+        {
+            var element = sender as FrameworkElement;
+            var action = element != null ? element.Tag as string : null;
+            MenuBarResultLabel.Text = string.Format(""Last menu action: {0}"", string.IsNullOrEmpty(action) ? ""None"" : action);
+        }
+    }
+}
+";
+        private const string ContextMenuXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Menus.ContextMenuActions""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf""
+    xmlns:uicore=""clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"">
+    <ui:Card Padding=""16"" Variant=""{x:Static uicore:CardVariant.Subtle}"">
+        <ui:Card.ContextMenu>
+            <ui:ContextMenu>
+                <ui:MenuItem
+                    Click=""ContextMenu_Click""
+                    Header=""Cut""
+                    InputGestureText=""Ctrl+X""
+                    Tag=""Cut"">
+                    <ui:MenuItem.Icon>
+                        <ui:FontIcon Glyph=""&#xE8C6;"" IconFontSize=""16"" />
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
+                <ui:MenuItem
+                    Click=""ContextMenu_Click""
+                    Header=""Copy""
+                    InputGestureText=""Ctrl+C""
+                    Tag=""Copy"">
+                    <ui:MenuItem.Icon>
+                        <ui:FontIcon Glyph=""&#xE8C8;"" IconFontSize=""16"" />
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
+                <ui:MenuItem
+                    Click=""ContextMenu_Click""
+                    Header=""Paste""
+                    InputGestureText=""Ctrl+V""
+                    Tag=""Paste"">
+                    <ui:MenuItem.Icon>
+                        <ui:FontIcon Glyph=""&#xE77F;"" IconFontSize=""16"" />
+                    </ui:MenuItem.Icon>
+                </ui:MenuItem>
+                <Separator />
+                <ui:MenuItem
+                    Click=""ContextMenu_Click""
+                    Header=""Add to favorites""
+                    IsCheckable=""True""
+                    Tag=""Add to favorites"" />
+                <ui:MenuItem Header=""Share"">
+                    <ui:MenuItem Click=""ContextMenu_Click"" Header=""Copy link"" Tag=""Share - Copy link"" />
+                    <ui:MenuItem Click=""ContextMenu_Click"" Header=""Send email"" Tag=""Share - Send email"" />
+                    <ui:MenuItem Header=""Export PDF"" IsEnabled=""False"" />
+                </ui:MenuItem>
+            </ui:ContextMenu>
+        </ui:Card.ContextMenu>
+        <StackPanel>
+            <TextBlock
+                Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                Text=""Right-click this note"" />
+            <TextBlock
+                x:Name=""ContextMenuResultLabel""
+                Margin=""0,8,0,0""
+                Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                Text=""Last action: None"" />
+        </StackPanel>
+    </ui:Card>
+</UserControl>
+";
+
+        private const string ContextMenuCSharpSource = @"using System.Windows;
+using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Menus
+{
+    public partial class ContextMenuActions : UserControl
+    {
+        public ContextMenuActions()
+        {
+            InitializeComponent();
+        }
+
+        private void ContextMenu_Click(object sender, RoutedEventArgs e)
+        {
+            var element = sender as FrameworkElement;
+            var action = element != null ? element.Tag as string : null;
+            ContextMenuResultLabel.Text = string.Format(""Last action: {0}"", string.IsNullOrEmpty(action) ? ""None"" : action);
+        }
+    }
+}
+";
+        private const string ToolTipsXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Menus.ToolTips""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <WrapPanel>
+        <ui:Button Margin=""0,0,8,8"" Content=""Save"">
+            <ui:Button.ToolTip>
+                <ui:ToolTip Content=""Save changes (Ctrl+S)"" />
+            </ui:Button.ToolTip>
+        </ui:Button>
+        <ui:Button Margin=""0,0,8,8"" Content=""Delete"">
+            <ui:Button.ToolTip>
+                <ui:ToolTip Content=""Delete the selected item"" />
+            </ui:Button.ToolTip>
+        </ui:Button>
+        <ui:Button Margin=""0,0,8,8"" Content=""Share"">
+            <ui:Button.ToolTip>
+                <ui:ToolTip>
+                    <StackPanel>
+                        <TextBlock
+                            FontWeight=""SemiBold""
+                            Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                            Text=""Share"" />
+                        <TextBlock
+                            Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                            Text=""Copy a link or send an email."" />
+                    </StackPanel>
+                </ui:ToolTip>
+            </ui:Button.ToolTip>
+        </ui:Button>
+        <ui:Button
+            Margin=""0,0,8,8""
+            Content=""Settings""
+            IsEnabled=""False"">
+            <ui:Button.ToolTip>
+                <ui:ToolTip Content=""Settings are disabled for this item"" />
+            </ui:Button.ToolTip>
+        </ui:Button>
+    </WrapPanel>
+</UserControl>
+";
+
+        private const string ToolTipsCSharpSource = @"using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Menus
+{
+    public partial class ToolTips : UserControl
+    {
+        public ToolTips()
+        {
+            InitializeComponent();
+        }
+    }
+}
+";
+        private const string DropDownAndSplitButtonsXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Menus.DropDownAndSplitButtonMenus""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <StackPanel>
+        <WrapPanel Margin=""0,0,0,12"">
+            <ui:DropDownButton Margin=""0,0,8,8"" Content=""Sort by"">
+                <ui:DropDownButton.Flyout>
+                    <StackPanel MinWidth=""180"" Margin=""4"">
+                        <ui:Button
+                            HorizontalAlignment=""Stretch""
+                            HorizontalContentAlignment=""Left""
+                            Appearance=""Subtle""
+                            Click=""FlyoutAction_Click""
+                            Content=""Name ascending""
+                            Tag=""Sort - Name ascending"" />
+                        <ui:Button
+                            HorizontalAlignment=""Stretch""
+                            HorizontalContentAlignment=""Left""
+                            Appearance=""Subtle""
+                            Click=""FlyoutAction_Click""
+                            Content=""Date modified""
+                            Tag=""Sort - Date modified"" />
+                        <Rectangle
+                            Height=""1""
+                            Margin=""4,2""
+                            Fill=""{DynamicResource DividerStrokeColorDefaultBrush}"" />
+                        <ui:Button
+                            HorizontalAlignment=""Stretch""
+                            HorizontalContentAlignment=""Left""
+                            Appearance=""Subtle""
+                            Click=""FlyoutAction_Click""
+                            Content=""Size""
+                            Tag=""Sort - Size"" />
+                    </StackPanel>
+                </ui:DropDownButton.Flyout>
+            </ui:DropDownButton>
+            <ui:SplitButton
+                Margin=""0,0,8,8""
+                Click=""ExportPrimary_Click""
+                Content=""Export"">
+                <ui:SplitButton.Flyout>
+                    <StackPanel MinWidth=""180"" Margin=""4"">
+                        <ui:Button
+                            HorizontalAlignment=""Stretch""
+                            HorizontalContentAlignment=""Left""
+                            Appearance=""Subtle""
+                            Click=""FlyoutAction_Click""
+                            Content=""Export as CSV""
+                            Tag=""Export - CSV"" />
+                        <ui:Button
+                            HorizontalAlignment=""Stretch""
+                            HorizontalContentAlignment=""Left""
+                            Appearance=""Subtle""
+                            Click=""FlyoutAction_Click""
+                            Content=""Export as JSON""
+                            Tag=""Export - JSON"" />
+                        <ui:Button
+                            HorizontalAlignment=""Stretch""
+                            HorizontalContentAlignment=""Left""
+                            Appearance=""Subtle""
+                            Click=""FlyoutAction_Click""
+                            Content=""Export settings""
+                            Tag=""Export - Settings"" />
+                    </StackPanel>
+                </ui:SplitButton.Flyout>
+            </ui:SplitButton>
+        </WrapPanel>
+        <TextBlock
+            x:Name=""FlyoutResultLabel""
+            Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+            Text=""Last action: None"" />
+    </StackPanel>
+</UserControl>
+";
+
+        private const string DropDownAndSplitButtonsCSharpSource = @"using System.Windows;
+using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Menus
+{
+    public partial class DropDownAndSplitButtonMenus : UserControl
+    {
+        public DropDownAndSplitButtonMenus()
+        {
+            InitializeComponent();
+        }
+
+        private void ExportPrimary_Click(object sender, RoutedEventArgs e)
+        {
+            FlyoutResultLabel.Text = ""Last action: Export - Default"";
+        }
+
+        private void FlyoutAction_Click(object sender, RoutedEventArgs e)
+        {
+            var element = sender as FrameworkElement;
+            var action = element != null ? element.Tag as string : null;
+            FlyoutResultLabel.Text = string.Format(""Last action: {0}"", string.IsNullOrEmpty(action) ? ""None"" : action);
+        }
+    }
+}
+";
+
+public GalleryMenusPage()
         {
             InitializeComponent();
 
-            DemoSourceAction.Replace(MenuBarSourceLink, "Menus/MenuBar.xaml");
-            DemoSourceAction.Replace(ContextMenuSourceLink, "Menus/ContextMenuActions.xaml");
-            DemoSourceAction.Replace(ToolTipsSourceLink, "Menus/ToolTips.xaml");
-            DemoSourceAction.Replace(DropDownAndSplitButtonsSourceLink, "Menus/DropDownAndSplitButtonMenus.xaml");
+            DemoSampleControl.ReplaceSourceLink(MenuBarSourceLink, MenuBarXamlSource, MenuBarCSharpSource);
+            DemoSampleControl.ReplaceSourceLink(ContextMenuSourceLink, ContextMenuXamlSource, ContextMenuCSharpSource);
+            DemoSampleControl.ReplaceSourceLink(ToolTipsSourceLink, ToolTipsXamlSource, ToolTipsCSharpSource);
+            DemoSampleControl.ReplaceSourceLink(DropDownAndSplitButtonsSourceLink, DropDownAndSplitButtonsXamlSource, DropDownAndSplitButtonsCSharpSource);
         }
 
         private void MenuBar_Click(object sender, RoutedEventArgs e)

@@ -52,6 +52,39 @@
                         Margin="0,8,0,12"
                         Style="{StaticResource StateLabelStyle}"
                         Text="Value: 45" />
+                    <Grid Margin="0,0,0,12">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0">
+                            <TextBlock
+                                Margin="0,0,0,6"
+                                Style="{StaticResource StateLabelStyle}"
+                                Text="Paused" />
+                            <ui:ProgressBar
+                                Height="8"
+                                HorizontalAlignment="Stretch"
+                                Maximum="100"
+                                Minimum="0"
+                                ProgressMode="Paused"
+                                Value="62" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2">
+                            <TextBlock
+                                Margin="0,0,0,6"
+                                Style="{StaticResource StateLabelStyle}"
+                                Text="Failure" />
+                            <ui:ProgressBar
+                                Height="8"
+                                HorizontalAlignment="Stretch"
+                                Maximum="100"
+                                Minimum="0"
+                                ProgressMode="Error"
+                                Value="78" />
+                        </StackPanel>
+                    </Grid>
                     <ui:HyperlinkButton
                         x:Name="ProgressBarValueSourceLink"
                         HorizontalAlignment="Right"
@@ -150,6 +183,7 @@
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -169,7 +203,7 @@
                         <ui:ToggleSwitch
                             Grid.Row="1"
                             Grid.Column="0"
-                            Margin="0,10,0,0"
+                            Margin="0,8,0,0"
                             HorizontalAlignment="Center"
                             IsChecked="{Binding IsActive, ElementName=IndeterminateProgressRing, Mode=TwoWay}"
                             OffContent="Off"
@@ -216,23 +250,43 @@
                             Text="Determinate" />
 
                         <ui:ProgressRing
-                            x:Name="DisabledProgressRing"
+                            x:Name="PausedProgressRing"
                             Grid.Row="0"
                             Grid.Column="2"
                             Width="48"
                             Height="48"
                             HorizontalAlignment="Center"
                             IsActive="True"
-                            IsEnabled="False"
-                            IsIndeterminate="True" />
+                            IsIndeterminate="True"
+                            ProgressState="{x:Static uicore:ProgressRingState.Paused}" />
                         <TextBlock
-                            x:Name="DisabledProgressRingLabel"
                             Grid.Row="2"
                             Grid.Column="2"
                             Margin="0,4,0,0"
                             HorizontalAlignment="Center"
                             Style="{StaticResource StateLabelStyle}"
-                            Text="Disabled" />
+                            Text="Paused" />
+
+                        <ui:ProgressRing
+                            x:Name="ErrorProgressRing"
+                            Grid.Row="0"
+                            Grid.Column="3"
+                            Width="48"
+                            Height="48"
+                            HorizontalAlignment="Center"
+                            IsActive="True"
+                            IsIndeterminate="False"
+                            Maximum="100"
+                            Minimum="0"
+                            ProgressState="{x:Static uicore:ProgressRingState.Error}"
+                            Value="70" />
+                        <TextBlock
+                            Grid.Row="2"
+                            Grid.Column="3"
+                            Margin="0,4,0,0"
+                            HorizontalAlignment="Center"
+                            Style="{StaticResource StateLabelStyle}"
+                            Text="Error" />
                     </Grid>
                     <ui:HyperlinkButton
                         x:Name="ProgressRingsSourceLink"

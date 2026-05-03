@@ -3,23 +3,25 @@
 The **Fluence.Wpf.Demo** gallery is the live inventory: `FluenceWindow` chrome with a search box in the title bar, a left `NavigationView` (compact / expanded), and grouped `UserControl` pages under `Fluence.Wpf.Demo/Pages/`:
 
 - Home (clickable hero cards)
-- Data Binding (ObservableCollection, selection modes, data templates)
+- Colors (accent ramp, theme brush swatches)
+- Iconography (FontIcon and virtualized Segoe Fluent Icons catalog)
+- Typography (Fluent type ramp and TextBlock usage)
 - Accessibility (focus order, high contrast, automation, RTL)
 - Buttons
 - Selection (CheckBox, RadioButton, ToggleSwitch, Slider)
 - Inputs (TextBox, PasswordBox, NumberBox, ComboBox)
 - Forms (sign-in, checkout, settings)
-- Data (ListView, ListBox, Expander)
+- Data (Card, ListBox, ListView)
+- Data Binding (ObservableCollection, selection modes, data templates)
 - Trees (TreeView)
+- Menus (Menu, ContextMenu, ToolTip, command buttons)
 - Navigation (NavigationView modes)
 - Tabs (TabControl, TabView)
-- Menus (Menu, ContextMenu, ToolTip, command buttons)
+- Layout (StackPanel, DockPanel, Border, Separator, Expander)
 - Status (InfoBar, InfoBadge, ProgressBar, ProgressRing)
-- Colors (accent ramp, theme brush swatches)
-- Glyphs (FontIcon)
-- Window (backdrop, caption, theme)
+- Windowing (backdrop, caption, theme)
 
-Each non-Home gallery page renders examples inline and exposes a Source link for every example. The linked `.xaml` and `.xaml.cs` sample files are copied to the demo output under `Samples/`.
+Each non-Home gallery page renders examples inline and exposes source through `DemoSampleControl`. Source tabs are backed by page-local `XamlSource` and optional `CSharpSource` strings so examples can be debugged directly with their page code-behind.
 
 **Fluence.Wpf.Demo.Mvvm** is a minimal Task Manager demonstrating `FluenceWindow` + Fluence controls with zero code-behind (CommunityToolkit.Mvvm). See [CLAUDE.md §8](../CLAUDE.md) for architecture notes.
 
@@ -145,6 +147,30 @@ Key members:
 | `TabViewItem.CloseRequested`     | Routed event (`RoutingStrategy.Bubble`)            | Raised by the per-tab close button (`PART_CloseButton`).               |
 
 Consumers remove the tab from the source collection themselves - the control does not auto-remove items. See `Fluence.Wpf.Demo/Pages/GalleryTabsPage.xaml(.cs)` for a reference implementation.
+
+## Feedback
+
+`ProgressBar` supports determinate, indeterminate, step, paused, and error modes through `ProgressMode`. Paused and error modes use the system caution and critical brushes.
+
+```xml
+<ui:ProgressBar Value="62" ProgressMode="Paused" />
+<ui:ProgressBar Value="78" ProgressMode="Error" />
+```
+
+`ProgressRing` supports the same normal/caution/critical visual language through `ProgressState`:
+
+```xml
+<ui:ProgressRing IsActive="True" IsIndeterminate="True" />
+<ui:ProgressRing ProgressState="Paused"
+                 IsActive="True"
+                 IsIndeterminate="True" />
+<ui:ProgressRing ProgressState="Error"
+                 IsActive="True"
+                 IsIndeterminate="False"
+                 Value="70" />
+```
+
+`ProgressRingState` values are `Normal`, `Paused`, and `Error`. `Normal` uses the accent brush, `Paused` uses `SystemFillColorCautionBrush`, and `Error` uses `SystemFillColorCriticalBrush`.
 
 ## Menus & Popups
 

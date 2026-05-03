@@ -34,15 +34,275 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryTabsPage : UserControl
     {
-        private int _nextDocumentNumber = 4;
+
+        private const string TabControlBasicsXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Tabs.TabControlBasics""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+    <TabControl Height=""210"">
+        <TabItem Header=""Overview"">
+            <StackPanel Margin=""20"">
+                <TextBlock
+                    FontSize=""18""
+                    FontWeight=""SemiBold""
+                    Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                    Text=""Overview"" />
+                <TextBlock
+                    Margin=""0,6,0,0""
+                    Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                    Text=""A concise summary of the current workspace.""
+                    TextWrapping=""Wrap"" />
+            </StackPanel>
+        </TabItem>
+        <TabItem Header=""Activity"">
+            <StackPanel Margin=""20"">
+                <TextBlock
+                    FontSize=""18""
+                    FontWeight=""SemiBold""
+                    Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                    Text=""Activity"" />
+                <TextBlock
+                    Margin=""0,6,0,0""
+                    Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                    Text=""Recent changes and follow-up work stay grouped in one panel.""
+                    TextWrapping=""Wrap"" />
+            </StackPanel>
+        </TabItem>
+        <TabItem Header=""Settings"">
+            <StackPanel Margin=""20"">
+                <TextBlock
+                    FontSize=""18""
+                    FontWeight=""SemiBold""
+                    Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                    Text=""Settings"" />
+                <TextBlock
+                    Margin=""0,6,0,0""
+                    Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                    Text=""Preferences and configuration can live beside the main content.""
+                    TextWrapping=""Wrap"" />
+            </StackPanel>
+        </TabItem>
+    </TabControl>
+</UserControl>
+";
+
+        private const string TabControlBasicsCSharpSource = @"using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Tabs
+{
+    public partial class TabControlBasics : UserControl
+    {
+        public TabControlBasics()
+        {
+            InitializeComponent();
+        }
+    }
+}
+";
+        private const string TabControlPlacementXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Tabs.TabControlPlacement""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width=""*"" />
+            <ColumnDefinition Width=""20"" />
+            <ColumnDefinition Width=""*"" />
+        </Grid.ColumnDefinitions>
+        <TabControl Height=""220"" TabStripPlacement=""Left"">
+            <TabItem Header=""Inbox"">
+                <TextBlock
+                    Margin=""20""
+                    Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                    Text=""Left tabs keep vertical categories visible.""
+                    TextWrapping=""Wrap"" />
+            </TabItem>
+            <TabItem Header=""Archive"">
+                <TextBlock
+                    Margin=""20""
+                    Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                    Text=""Archived conversations and completed items.""
+                    TextWrapping=""Wrap"" />
+            </TabItem>
+        </TabControl>
+        <TabControl
+            Grid.Column=""2""
+            Height=""220""
+            TabStripPlacement=""Bottom"">
+            <TabItem Header=""Preview"">
+                <TextBlock
+                    Margin=""20""
+                    Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                    Text=""Bottom tabs leave the top edge for document chrome.""
+                    TextWrapping=""Wrap"" />
+            </TabItem>
+            <TabItem Header=""Details"">
+                <TextBlock
+                    Margin=""20""
+                    Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                    Text=""Details can remain close to the lower action area.""
+                    TextWrapping=""Wrap"" />
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>
+";
+
+        private const string TabControlPlacementCSharpSource = @"using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Tabs
+{
+    public partial class TabControlPlacement : UserControl
+    {
+        public TabControlPlacement()
+        {
+            InitializeComponent();
+        }
+    }
+}
+";
+        private const string TabViewDocumentsXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Tabs.TabViewDocuments""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <StackPanel>
+        <ui:TabView
+            x:Name=""DemoTabView""
+            Height=""260""
+            AddTabButtonClick=""DemoTabView_AddTabButtonClick""
+            CloseButtonOverlayMode=""Auto""
+            TabCloseRequested=""DemoTabView_TabCloseRequested"">
+            <ui:TabViewItem
+                Header=""Document 1""
+                IsSelected=""True"">
+                <ui:TabViewItem.Icon>
+                    <ui:FontIcon Glyph=""&#xE8A5;"" IconFontSize=""16"" />
+                </ui:TabViewItem.Icon>
+                <StackPanel Margin=""20"">
+                    <TextBlock
+                        FontSize=""18""
+                        FontWeight=""SemiBold""
+                        Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                        Text=""Document 1"" />
+                    <TextBlock
+                        Margin=""0,6,0,0""
+                        Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                        Text=""Close document tabs or add another document from the tab row.""
+                        TextWrapping=""Wrap"" />
+                </StackPanel>
+            </ui:TabViewItem>
+            <ui:TabViewItem Header=""Document 2"">
+                <ui:TabViewItem.Icon>
+                    <ui:FontIcon Glyph=""&#xE8A5;"" IconFontSize=""16"" />
+                </ui:TabViewItem.Icon>
+                <StackPanel Margin=""20"">
+                    <TextBlock
+                        FontSize=""18""
+                        FontWeight=""SemiBold""
+                        Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                        Text=""Document 2"" />
+                    <TextBlock
+                        Margin=""0,6,0,0""
+                        Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                        Text=""Each tab hosts independent content.""
+                        TextWrapping=""Wrap"" />
+                </StackPanel>
+            </ui:TabViewItem>
+            <ui:TabViewItem
+                Header=""Pinned""
+                IsClosable=""False"">
+                <ui:TabViewItem.Icon>
+                    <ui:FontIcon Glyph=""&#xE718;"" IconFontSize=""16"" />
+                </ui:TabViewItem.Icon>
+                <StackPanel Margin=""20"">
+                    <TextBlock
+                        FontSize=""18""
+                        FontWeight=""SemiBold""
+                        Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                        Text=""Pinned"" />
+                    <TextBlock
+                        Margin=""0,6,0,0""
+                        Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                        Text=""Set IsClosable to false when a tab should stay available.""
+                        TextWrapping=""Wrap"" />
+                </StackPanel>
+            </ui:TabViewItem>
+        </ui:TabView>
+        <TextBlock
+            x:Name=""DemoTabViewStatus""
+            Margin=""0,12,0,0""
+            Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+            Text=""Tabs: 3"" />
+    </StackPanel>
+</UserControl>
+";
+
+        private const string TabViewDocumentsCSharpSource = @"using System.Windows;
+using System.Windows.Controls;
+using Fluence.Wpf.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Tabs
+{
+    public partial class TabViewDocuments : UserControl
+    {
+        private int _nextDocumentNumber = 3;
+
+        public TabViewDocuments()
+        {
+            InitializeComponent();
+        }
+
+        private void DemoTabView_AddTabButtonClick(object sender, RoutedEventArgs e)
+        {
+            var number = ++_nextDocumentNumber;
+            var tab = new TabViewItem
+            {
+                Header = string.Format(""Document {0}"", number),
+                Icon = new FontIcon { Glyph = ""\uE8A5"", IconFontSize = 16 },
+                Content = new TextBlock
+                {
+                    Margin = new Thickness(20),
+                    Foreground = (System.Windows.Media.Brush)FindResource(""TextFillColorSecondaryBrush""),
+                    Text = string.Format(""Fresh document {0} content."", number),
+                    TextWrapping = TextWrapping.Wrap
+                }
+            };
+
+            DemoTabView.Items.Add(tab);
+            DemoTabView.SelectedItem = tab;
+            UpdateStatus();
+        }
+
+        private void DemoTabView_TabCloseRequested(object sender, RoutedEventArgs e)
+        {
+            var args = e as TabViewTabCloseRequestedEventArgs;
+            if (args == null || args.Tab == null)
+            {
+                return;
+            }
+
+            DemoTabView.Items.Remove(args.Tab);
+            UpdateStatus();
+        }
+
+        private void UpdateStatus()
+        {
+            DemoTabViewStatus.Text = string.Format(""Tabs: {0}"", DemoTabView.Items.Count);
+        }
+    }
+}
+";
+
+private int _nextDocumentNumber = 4;
 
         public GalleryTabsPage()
         {
             InitializeComponent();
 
-            DemoSourceAction.Replace(TabControlBasicsSourceLink, "Tabs/TabControlBasics.xaml");
-            DemoSourceAction.Replace(TabControlPlacementSourceLink, "Tabs/TabControlPlacement.xaml");
-            DemoSourceAction.Replace(TabViewDocumentsSourceLink, "Tabs/TabViewDocuments.xaml");
+            DemoSampleControl.ReplaceSourceLink(TabControlBasicsSourceLink, TabControlBasicsXamlSource, TabControlBasicsCSharpSource);
+            DemoSampleControl.ReplaceSourceLink(TabControlPlacementSourceLink, TabControlPlacementXamlSource, TabControlPlacementCSharpSource);
+            DemoSampleControl.ReplaceSourceLink(TabViewDocumentsSourceLink, TabViewDocumentsXamlSource, TabViewDocumentsCSharpSource);
         }
 
         private void DemoTabView_AddTabButtonClick(object sender, RoutedEventArgs e)

@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -149,6 +150,41 @@ namespace Fluence.Wpf.Tests
                     expected.Color,
                     actual.Color,
                     "SelectionIndicator.Background must be AccentFillColorDefaultBrush per WI-3 C20.");
+                w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void ListView_AnimateRemove_RemovesItemFromBoundObservableCollection()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                var app = EnsureApplication();
+                MergeGenericDictionary(app);
+
+                var items = new ObservableCollection<string> { "One", "Two", "Three" };
+                var lv = new FluenceListView
+                {
+                    Width = 300,
+                    Height = 180,
+                    ItemsSource = items,
+                    ItemAnimationsEnabled = true
+                };
+                var w = new Window { Content = lv, Width = 360, Height = 240 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+                w.UpdateLayout();
+
+                bool completed = false;
+                lv.AnimateRemove("Two", delegate { completed = true; });
+
+                bool removed = WaitUntil(w.Dispatcher, 1000, delegate
+                {
+                    return completed && !items.Contains("Two");
+                });
+
+                Assert.IsTrue(removed, "AnimateRemove should animate then remove the item from the bound ObservableCollection.");
+                Assert.AreEqual(2, items.Count);
                 w.Close();
             });
         }

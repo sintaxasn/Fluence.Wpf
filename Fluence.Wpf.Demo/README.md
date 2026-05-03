@@ -4,11 +4,10 @@ This folder contains the gallery application for visually exercising Fluence.Wpf
 
 ## What Lives Here
 
-- `MainWindow.xaml` / `MainWindow.xaml.cs` - the gallery shell, title-bar search, navigation tree, compact navigation flyout, and theme watcher setup.
-- `Pages/` - gallery pages grouped by control area.
-- `Samples/` - XAML and code-behind snippets copied to output so inline source tabs can display runnable examples.
+- `MainWindow.xaml` / `MainWindow.xaml.cs` - the gallery shell, title-bar search, direct page navigation, and theme watcher setup.
+- `Pages/` - concrete gallery pages grouped by control family or design area. Each page owns its live samples and source snippets.
 - `Resources/` - app icon, banner images, control screenshots, shared demo styles, and icon catalog data.
-- `Demo*Pages.cs` and `DemoNavigationCatalog.cs` - programmatic gallery page factories and navigation metadata.
+- `DemoNavigationCatalog.cs` - flat navigation metadata used by `MainWindow`.
 
 ## Run
 
@@ -22,4 +21,4 @@ Use the gallery to check Light, Dark, High Contrast, accent changes, Mica/Acryli
 
 ## Maintenance Notes
 
-The gallery intentionally owns navigation through `NavigationView` selection and `DemoNavigationCatalog` metadata; it does not maintain a page back stack. Samples under `Samples/**` are content files and are copied to output by the project file, so adding a sample XAML/code-behind pair normally does not require a project-file edit.
+The gallery intentionally owns navigation through `NavigationView` selection and `DemoNavigationCatalog` metadata; it does not maintain a page back stack. `MainWindow` maps each route to a concrete `Pages/Gallery*Page.xaml` control, and `DemoSampleControl` displays page-local `XamlSource` / `CSharpSource` strings instead of reading copied sample files from disk.

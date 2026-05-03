@@ -27,7 +27,6 @@
  */
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -133,19 +132,26 @@ namespace Fluence.Wpf.Demo.Pages
                 typeof(DemoSampleControl),
                 new FrameworkPropertyMetadata(string.Empty, OnHeaderTextChanged));
 
-        public static readonly DependencyProperty SourcePathProperty =
+        public static readonly DependencyProperty XamlSourceProperty =
             DependencyProperty.Register(
-                "SourcePath",
+                "XamlSource",
                 typeof(string),
                 typeof(DemoSampleControl),
-                new FrameworkPropertyMetadata(string.Empty, OnSourcePathChanged));
+                new FrameworkPropertyMetadata(string.Empty, OnSourceChanged));
+
+        public static readonly DependencyProperty CSharpSourceProperty =
+            DependencyProperty.Register(
+                "CSharpSource",
+                typeof(string),
+                typeof(DemoSampleControl),
+                new FrameworkPropertyMetadata(string.Empty, OnSourceChanged));
 
         public static readonly DependencyProperty SampleContentProperty =
             DependencyProperty.Register(
                 "SampleContent",
                 typeof(UIElement),
                 typeof(DemoSampleControl),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(null, OnSampleContentChanged));
 
         private bool _sourceLoaded;
 
@@ -153,6 +159,7 @@ namespace Fluence.Wpf.Demo.Pages
         {
             InitializeComponent();
             UpdateHeaderVisibility();
+            UpdateSampleContentVisibility();
             UpdateSourceVisibility();
         }
 
@@ -168,10 +175,16 @@ namespace Fluence.Wpf.Demo.Pages
             set { SetValue(DescriptionProperty, value); }
         }
 
-        public string SourcePath
+        public string XamlSource
         {
-            get { return (string)GetValue(SourcePathProperty); }
-            set { SetValue(SourcePathProperty, value); }
+            get { return (string)GetValue(XamlSourceProperty); }
+            set { SetValue(XamlSourceProperty, value); }
+        }
+
+        public string CSharpSource
+        {
+            get { return (string)GetValue(CSharpSourceProperty); }
+            set { SetValue(CSharpSourceProperty, value); }
         }
 
         public UIElement SampleContent
@@ -189,12 +202,21 @@ namespace Fluence.Wpf.Demo.Pages
             }
         }
 
-        private static void OnSourcePathChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = d as DemoSampleControl;
             if (control != null)
             {
                 control.ResetSource();
+            }
+        }
+
+        private static void OnSampleContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var control = d as DemoSampleControl;
+            if (control != null)
+            {
+                control.UpdateSampleContentVisibility();
             }
         }
 
@@ -216,10 +238,30 @@ namespace Fluence.Wpf.Demo.Pages
         {
             if (SourceExpander != null)
             {
-                SourceExpander.Visibility = string.IsNullOrEmpty(SourcePath)
+                SourceExpander.Visibility = string.IsNullOrWhiteSpace(XamlSource) && string.IsNullOrWhiteSpace(CSharpSource)
                     ? Visibility.Collapsed
                     : Visibility.Visible;
             }
+        }
+
+        private void UpdateSampleContentVisibility()
+        {
+            if (SampleCard == null || SourceExpander == null)
+            {
+                return;
+            }
+
+            if (SampleContent == null)
+            {
+                SampleCard.Visibility = Visibility.Collapsed;
+                SourceExpander.BorderThickness = new Thickness(1);
+                SourceExpander.CornerRadius = new CornerRadius(8);
+                return;
+            }
+
+            SampleCard.Visibility = Visibility.Visible;
+            SourceExpander.BorderThickness = new Thickness(1, 0, 1, 1);
+            SourceExpander.CornerRadius = new CornerRadius(0, 0, 8, 8);
         }
 
         private void ResetSource()
@@ -240,30 +282,31 @@ namespace Fluence.Wpf.Demo.Pages
 
         private void LoadSourceTabs()
         {
-            if (_sourceLoaded || string.IsNullOrEmpty(SourcePath))
+            if (_sourceLoaded || (string.IsNullOrWhiteSpace(XamlSource) && string.IsNullOrWhiteSpace(CSharpSource)))
             {
                 return;
             }
 
             _sourceLoaded = true;
             SourceTabs.Items.Clear();
-            AddSourceTab("XAML", SourcePath);
-
-            var codeBehindPath = GetCodeBehindPath(SourcePath);
-            if (SampleExists(codeBehindPath))
+            if (!string.IsNullOrWhiteSpace(XamlSource))
             {
-                AddSourceTab("C# Code-behind", codeBehindPath);
+                AddSourceTab("XAML", XamlSource, SourceLanguage.Xaml);
+            }
+
+            if (!string.IsNullOrWhiteSpace(CSharpSource))
+            {
+                AddSourceTab("C# Code-behind", CSharpSource, SourceLanguage.CSharp);
             }
         }
 
-        private void AddSourceTab(string header, string samplePath)
+        private void AddSourceTab(string header, string source, SourceLanguage language)
         {
-            var source = ReadSample(samplePath);
             SourceTabs.Items.Add(new Fluence.Wpf.Controls.TabViewItem
             {
                 Header = header,
                 IsClosable = false,
-                Content = CreateSourcePane(source, GetSourceLanguage(samplePath))
+                Content = CreateSourcePane(source, language)
             });
 
             if (SourceTabs.SelectedIndex < 0)
@@ -565,53 +608,57 @@ namespace Fluence.Wpf.Demo.Pages
                    value == '-';
         }
 
-        private static string ReadSample(string samplePath)
+        public static DemoSampleControl ReplaceSourceLink(FrameworkElement placeholder, string xamlSource, string csharpSource)
         {
-            var path = GetSampleFilePath(samplePath);
-            if (!File.Exists(path))
+#if NET6_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(placeholder);
+#else
+            if (placeholder == null)
             {
-                return "Sample source was not copied to the output directory: " + samplePath;
+                throw new ArgumentNullException(nameof(placeholder));
+            }
+#endif
+
+            var sample = new DemoSampleControl
+            {
+                Name = placeholder.Name,
+                Margin = placeholder.Margin,
+                HorizontalAlignment = HorizontalAlignment.Stretch,
+                VerticalAlignment = placeholder.VerticalAlignment,
+                XamlSource = xamlSource,
+                CSharpSource = csharpSource
+            };
+            CopyAttachedLayout(placeholder, sample);
+
+            var parentPanel = placeholder.Parent as Panel;
+            if (parentPanel != null)
+            {
+                var index = parentPanel.Children.IndexOf(placeholder);
+                if (index >= 0)
+                {
+                    parentPanel.Children.RemoveAt(index);
+                    parentPanel.Children.Insert(index, sample);
+                    return sample;
+                }
             }
 
-            return File.ReadAllText(path);
-        }
-
-        private static bool SampleExists(string samplePath)
-        {
-            return File.Exists(GetSampleFilePath(samplePath));
-        }
-
-        private static string GetSampleFilePath(string samplePath)
-        {
-            var outputDirectory = Path.GetDirectoryName(typeof(DemoSampleControl).Assembly.Location);
-            var localPath = NormalizeSamplePath(samplePath).Replace('/', Path.DirectorySeparatorChar);
-            return Path.Combine(outputDirectory, "Samples", localPath);
-        }
-
-        private static string GetCodeBehindPath(string samplePath)
-        {
-            return NormalizeSamplePath(samplePath) + ".cs";
-        }
-
-        private static SourceLanguage GetSourceLanguage(string samplePath)
-        {
-            var normalized = NormalizeSamplePath(samplePath);
-            if (normalized.EndsWith(".cs", StringComparison.OrdinalIgnoreCase))
+            var parentContent = placeholder.Parent as ContentControl;
+            if (parentContent != null && ReferenceEquals(parentContent.Content, placeholder))
             {
-                return SourceLanguage.CSharp;
+                parentContent.Content = sample;
+                return sample;
             }
 
-            if (normalized.EndsWith(".xaml", StringComparison.OrdinalIgnoreCase))
-            {
-                return SourceLanguage.Xaml;
-            }
-
-            return SourceLanguage.PlainText;
+            throw new InvalidOperationException("Source link placeholder must be hosted by a Panel or ContentControl.");
         }
 
-        private static string NormalizeSamplePath(string samplePath)
+        private static void CopyAttachedLayout(FrameworkElement source, FrameworkElement target)
         {
-            return (samplePath ?? string.Empty).Replace('\\', '/').Trim('/');
+            Grid.SetRow(target, Grid.GetRow(source));
+            Grid.SetColumn(target, Grid.GetColumn(source));
+            Grid.SetRowSpan(target, Grid.GetRowSpan(source));
+            Grid.SetColumnSpan(target, Grid.GetColumnSpan(source));
+            DockPanel.SetDock(target, DockPanel.GetDock(source));
         }
     }
 }

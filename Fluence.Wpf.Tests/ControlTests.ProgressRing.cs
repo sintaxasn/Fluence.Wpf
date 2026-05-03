@@ -30,6 +30,7 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Fluence.Wpf;
 using Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Tests
@@ -354,6 +355,83 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void ProgressRing_PausedState_UsesCautionBrushForBothArcs()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                var app = EnsureApplication();
+                MergeGenericDictionary(app);
+
+                var ring = new ProgressRing
+                {
+                    ProgressState = ProgressRingState.Paused,
+                    IsActive = true,
+                    IsIndeterminate = true,
+                    Width = 64,
+                    Height = 64
+                };
+                var w = new Window { Content = ring, Width = 200, Height = 200 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                var expected = app.TryFindResource("SystemFillColorCautionBrush") as SolidColorBrush;
+                Assert.IsNotNull(expected, "SystemFillColorCautionBrush must resolve.");
+
+                var indeterminateArc = FindVisualChildByName<Path>(ring, "PART_IndeterminateArc");
+                AssertPathStroke(indeterminateArc, expected, "Paused indeterminate arc should use the caution brush.");
+
+                ring.IsIndeterminate = false;
+                ring.Value = 50;
+                DrainDispatcher(w.Dispatcher);
+
+                var determinateArc = FindVisualChildByName<Path>(ring, "PART_DeterminateArc");
+                AssertPathStroke(determinateArc, expected, "Paused determinate arc should use the caution brush.");
+
+                w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void ProgressRing_ErrorState_UsesCriticalBrushThroughThemeCycle()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                var app = EnsureApplication();
+                MergeGenericDictionary(app);
+
+                var ring = new ProgressRing
+                {
+                    ProgressState = ProgressRingState.Error,
+                    IsActive = true,
+                    IsIndeterminate = false,
+                    Width = 64,
+                    Height = 64,
+                    Value = 50
+                };
+                var w = new Window { Content = ring, Width = 200, Height = 200 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                ThemeTestHelpers.ApplyStandardThemeCycle();
+                DrainDispatcher(w.Dispatcher);
+
+                var expected = app.TryFindResource("SystemFillColorCriticalBrush") as SolidColorBrush;
+                Assert.IsNotNull(expected, "SystemFillColorCriticalBrush must resolve.");
+
+                var determinateArc = FindVisualChildByName<Path>(ring, "PART_DeterminateArc");
+                AssertPathStroke(determinateArc, expected, "Error determinate arc should use the critical brush.");
+
+                ring.IsIndeterminate = true;
+                DrainDispatcher(w.Dispatcher);
+
+                var indeterminateArc = FindVisualChildByName<Path>(ring, "PART_IndeterminateArc");
+                AssertPathStroke(indeterminateArc, expected, "Error indeterminate arc should use the critical brush.");
+
+                w.Close();
+            });
+        }
+
+        [TestMethod]
         public void ProgressRing_ThemeCycle_TemplateRemainsApplied()
         {
             WpfTestSta.Invoke(() =>
@@ -374,6 +452,14 @@ namespace Fluence.Wpf.Tests
 
                 w.Close();
             });
+        }
+
+        private static void AssertPathStroke(Path path, SolidColorBrush expected, string message)
+        {
+            Assert.IsNotNull(path, "Expected template path to exist.");
+            var actual = path.Stroke as SolidColorBrush;
+            Assert.IsNotNull(actual, "Path stroke should be a SolidColorBrush.");
+            Assert.AreEqual(expected.Color, actual.Color, message);
         }
     }
 }

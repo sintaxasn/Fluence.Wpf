@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 using System;
+using System.Collections;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -332,7 +333,7 @@ namespace Fluence.Wpf.Controls
         {
             if (!ItemAnimationsEnabled)
             {
-                Items.Remove(item);
+                RemoveItem(item);
                 if (onCompleted != null) onCompleted();
                 return;
             }
@@ -340,7 +341,7 @@ namespace Fluence.Wpf.Controls
             var container = ItemContainerGenerator.ContainerFromItem(item) as UIElement;
             if (container == null)
             {
-                Items.Remove(item);
+                RemoveItem(item);
                 if (onCompleted != null) onCompleted();
                 return;
             }
@@ -359,12 +360,24 @@ namespace Fluence.Wpf.Controls
 
             opacityAnim.Completed += (s, e) =>
             {
-                Items.Remove(item);
+                RemoveItem(item);
                 if (onCompleted != null) onCompleted();
             };
 
             container.BeginAnimation(OpacityProperty, opacityAnim);
             container.RenderTransform.BeginAnimation(TranslateTransform.YProperty, slideAnim);
+        }
+
+        private void RemoveItem(object item)
+        {
+            var list = ItemsSource as IList;
+            if (list != null)
+            {
+                list.Remove(item);
+                return;
+            }
+
+            Items.Remove(item);
         }
     }
 }

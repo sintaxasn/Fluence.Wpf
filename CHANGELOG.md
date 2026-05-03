@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **`ProgressRingState` enum and `ProgressRing.ProgressState`** - `Normal`, `Paused`, and `Error` states color determinate and indeterminate ring arcs with accent, `SystemFillColorCautionBrush`, and `SystemFillColorCriticalBrush` respectively.
 - **Folder-level README documentation** - added short component READMEs for the library, gallery demo, MVVM demo, PowerShell demo, tests, and reserved gallery folder so each `Fluence.*` directory explains its purpose, run/build entry points, and maintenance notes.
 - **`Fluence.Wpf.Demo.PowerShell` folder** - Windows PowerShell 5.1 sample that copies the current `net472` `Fluence.Wpf.dll`, loads `MainWindow.xaml` via `XamlReader`, applies `ApplicationThemeManager` resources, enables `SystemThemeWatcher`, and shows a non-modal `FluenceWindow` with demo controls while logging lifecycle and UI events to the console.
 - **`Fluence.Wpf.Demo.Mvvm` project** - minimal Task Manager application demonstrating `FluenceWindow` with CommunityToolkit.Mvvm (`[ObservableProperty]`, `[RelayCommand(CanExecute)]`, `ObservableCollection` filter-rebuild pattern). Targets `net10.0-windows`. Covers: filter `RadioButton` ↔ `FilterMode` enum via `EnumToBoolConverter`, `ProgressBar` + status footer, delete button via `RelativeSource AncestorType=Window` in `DataTemplate`, `SmoothScrollViewer` wrapping `ItemsControl`. Key MVVM correctness notes: `[NotifyPropertyChangedFor]` removed from `_activeFilter` to prevent stale derived-property reads; `App.xaml` has no manual `Generic.xaml` merge (avoids 6th-slot corruption of `ApplicationThemeManager`). Zero code-behind.
@@ -33,6 +34,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Demo and control polish pass** - fixed title-bar search layout stability, compact `NavigationView` footer visibility, pane-toggle glyph alignment, left-aligned DropDownButton/SplitButton flyout content, focused-only TextBox validation underlines, ComboBox initial focus underline behavior, TreeView parent hover bleed, bound `ListView.AnimateRemove`, ProgressBar/ProgressRing paused/error demos, InfoBar action clipping, and the gallery navigation order.
 - **Default Windows blue accent ramp** - `#0078D4` now uses the Windows accent palette values (`Light2=#4CC2FF`, `Dark1=#0067C0`) instead of the generated fallback ramp, so Dark theme accent fills resolve to the correct lighter blue shade across controls and the demo accent swatch.
 - **NavigationView pane item focus ring clipping** - `PART_PaneItemsScrollViewer` padding changed from `"0,4"` to `"3,4"` on both Left and LeftCompact pane templates. The `DefaultControlFocusVisualStyle` uses `Margin="-3"` to extend 3 px outside item bounds; without horizontal padding the `ScrollViewer` clip rect was chopping the focus ring on both sides.
 - **Slider focus ring invisible** - `FocusVisualStyle="{x:Null}"` replaced with `{DynamicResource DefaultControlFocusVisualStyle}` so keyboard-focused sliders now show the canonical two-ring Fluent focus indicator.
@@ -49,6 +51,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Demo gallery architecture simplified** - `Fluence.Wpf.Demo` now uses a flat `DemoNavigationCatalog`, direct `MainWindow` route-to-page navigation, concrete `Pages/Gallery*Page` controls, and page-local `XamlSource` / `CSharpSource` snippets. Removed generated category/control page shells, `Demo*Pages.cs` factories, copied `Samples/**` source files, and source-link actions. The iconography page now keeps the virtualized catalog outside the sample card, uses fixed row cards, and caches glyph rows.
 - **Known-issue audit refresh** - validated current non-defect follow-ups with source/test evidence, added concrete next-step plans, and recorded the TreeView large-data virtualization tradeoff as a performance follow-up discovered during the WPF audit.
 - **Code maintainability comments** - added targeted documentation around non-obvious WPF resource promotion, dispatcher/hook lifecycle, window hit-testing, demo navigation coordination, and template-part animation paths without changing runtime behavior.
 - **Text rendering policy** - control templates, typography styles, generated icon text, and both demo shells now consistently request on-screen ClearType with fixed hinting (`TextRenderingMode=ClearType`, `TextHintingMode=Fixed`) while retaining `Display` formatting for body/UI text and `Ideal` formatting for large Fluent typography.

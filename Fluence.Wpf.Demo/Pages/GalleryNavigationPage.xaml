@@ -38,7 +38,6 @@
                         BorderThickness="1">
                         <ui:NavigationView
                             x:Name="LeftNavigationDemo"
-                            Header="Workspace"
                             PaneDisplayMode="Left">
                             <ui:NavigationView.PaneHeader>
                                 <TextBlock
@@ -173,7 +172,6 @@
                         BorderThickness="1">
                         <ui:NavigationView
                             x:Name="CompactNavigationDemo"
-                            Header="Compact pane"
                             IsBackButtonVisible="True"
                             IsBackEnabled="False"
                             IsPaneOpen="False"

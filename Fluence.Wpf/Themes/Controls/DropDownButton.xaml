@@ -93,7 +93,9 @@
                                     sufficient for visual separation without the rendering artifact.
                                 -->
                                 <ContentPresenter
+                                    x:Name="FlyoutContentPresenter"
                                     Margin="4"
+                                    HorizontalAlignment="Stretch"
                                     Content="{TemplateBinding Flyout}"
                                     ContentTemplate="{TemplateBinding FlyoutTemplate}" />
                             </Border>

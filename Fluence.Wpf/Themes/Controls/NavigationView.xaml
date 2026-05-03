@@ -344,6 +344,8 @@
                                 Focusable="True"
                                 Template="{StaticResource NavigationViewBackButtonTemplate}">
                                 <controls:FontIcon
+                                    x:Name="PaneToggleGlyph"
+                                    Margin="2,0,0,0"
                                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                     Glyph="&#xE700;"
                                     IconFontSize="20" />
@@ -565,6 +567,8 @@
                                 Focusable="True"
                                 Template="{StaticResource NavigationViewBackButtonTemplate}">
                                 <controls:FontIcon
+                                    x:Name="PaneToggleGlyph"
+                                    Margin="2,0,0,0"
                                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                     Glyph="&#xE700;"
                                     IconFontSize="20" />
@@ -623,7 +627,10 @@
                             </Grid>
                         </controls:SmoothScrollViewer>
 
-                        <Border Grid.Row="2" Padding="8,0,8,8">
+                        <Border
+                            x:Name="PaneFooterHost"
+                            Grid.Row="2"
+                            Padding="8,0,8,8">
                             <ContentPresenter Content="{TemplateBinding PaneFooter}" />
                         </Border>
                     </Grid>
@@ -737,6 +744,9 @@
                         </Storyboard>
                     </BeginStoryboard>
                 </Trigger.ExitActions>
+            </Trigger>
+            <Trigger Property="IsPaneOpen" Value="False">
+                <Setter TargetName="PaneFooterHost" Property="Visibility" Value="Collapsed" />
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>

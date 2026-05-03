@@ -27,10 +27,13 @@
  */
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Fluence.Wpf;
 using FluenceTextBox = Fluence.Wpf.Controls.TextBox;
 using FluencePasswordBox = Fluence.Wpf.Controls.PasswordBox;
+using WpfBorder = System.Windows.Controls.Border;
 using WpfTextBlock = System.Windows.Controls.TextBlock;
 
 namespace Fluence.Wpf.Tests
@@ -132,6 +135,43 @@ namespace Fluence.Wpf.Tests
                     expected.Color,
                     actual.Color,
                     "PlaceholderTextBlock.Foreground must track TextFillColorTertiaryBrush after theme cycle.");
+                w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void TextBox_ValidationLine_IsHiddenUntilFocused()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                var app = EnsureApplication();
+                MergeGenericDictionary(app);
+
+                var tb = new FluenceTextBox
+                {
+                    Width = 240,
+                    ValidationState = ValidationState.Error,
+                    Text = "Invalid value"
+                };
+                var w = new Window { Content = tb, Width = 320, Height = 120 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                var validationLine = FindVisualChildByName<WpfBorder>(tb, "PART_ValidationLine");
+                Assert.IsNotNull(validationLine, "TextBox template must expose PART_ValidationLine.");
+                Assert.AreEqual(0.0, validationLine.Opacity, 0.001, "Validation underline should be hidden before focus.");
+
+                FocusManager.SetFocusedElement(w, tb);
+                Keyboard.Focus(tb);
+                DrainDispatcher(w.Dispatcher);
+
+                Assert.AreEqual(1.0, validationLine.Opacity, 0.001, "Validation underline should appear while focused.");
+                var expected = app.TryFindResource("SystemFillColorCriticalBrush") as SolidColorBrush;
+                Assert.IsNotNull(expected, "SystemFillColorCriticalBrush must resolve.");
+                var actual = validationLine.Background as SolidColorBrush;
+                Assert.IsNotNull(actual, "Validation underline should use a brush background.");
+                Assert.AreEqual(expected.Color, actual.Color, "Error validation underline should use the critical brush.");
+
                 w.Close();
             });
         }

@@ -37,7 +37,366 @@ namespace Fluence.Wpf.Demo.Pages
     /// <summary>Gallery page demonstrating ObservableCollection binding and ListView SelectionMode variants.</summary>
     public partial class GalleryDataBindingPage : UserControl
     {
-        private readonly ObservableCollection<DemoItem> _items = new ObservableCollection<DemoItem>();
+
+        private const string ObservableCollectionListViewXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.DataBinding.ObservableCollectionListView""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height=""Auto"" />
+            <RowDefinition Height=""8"" />
+            <RowDefinition Height=""220"" />
+            <RowDefinition Height=""8"" />
+            <RowDefinition Height=""Auto"" />
+        </Grid.RowDefinitions>
+
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width=""*"" />
+                <ColumnDefinition Width=""8"" />
+                <ColumnDefinition Width=""Auto"" />
+                <ColumnDefinition Width=""4"" />
+                <ColumnDefinition Width=""Auto"" />
+            </Grid.ColumnDefinitions>
+            <ui:TextBox
+                x:Name=""NewItemBox""
+                KeyDown=""NewItemBox_KeyDown""
+                PlaceholderText=""New item name..."" />
+            <ui:Button
+                Grid.Column=""2""
+                Appearance=""Accent""
+                Click=""AddItem_Click""
+                Content=""Add"" />
+            <ui:Button
+                Grid.Column=""4""
+                Click=""RemoveItem_Click""
+                Content=""Remove selected"" />
+        </Grid>
+
+        <ui:ListView
+            x:Name=""BoundListView""
+            Grid.Row=""2""
+            SelectionMode=""Single"">
+            <ui:ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width=""Auto"" />
+                            <ColumnDefinition Width=""12"" />
+                            <ColumnDefinition Width=""*"" />
+                        </Grid.ColumnDefinitions>
+                        <ui:FontIcon
+                            VerticalAlignment=""Center""
+                            Foreground=""{DynamicResource AccentTextFillColorPrimaryBrush}""
+                            Glyph=""&#xE8A5;""
+                            IconFontSize=""16"" />
+                        <StackPanel
+                            Grid.Column=""2""
+                            VerticalAlignment=""Center""
+                            Orientation=""Horizontal"">
+                            <TextBlock
+                                VerticalAlignment=""Center""
+                                Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                                Text=""{Binding Name}"" />
+                            <TextBlock
+                                Margin=""8,0,0,0""
+                                VerticalAlignment=""Center""
+                                FontSize=""12""
+                                Foreground=""{DynamicResource TextFillColorTertiaryBrush}""
+                                Text=""{Binding AddedAt}"" />
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </ui:ListView.ItemTemplate>
+        </ui:ListView>
+
+        <TextBlock
+            x:Name=""ItemCountLabel""
+            Grid.Row=""4""
+            Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+            Text=""0 items"" />
+    </Grid>
+</UserControl>
+";
+
+        private const string ObservableCollectionListViewCSharpSource = @"using System;
+using System.Collections.ObjectModel;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Input;
+
+namespace Fluence.Wpf.Demo.Pages.DataBinding
+{
+    public partial class ObservableCollectionListView : UserControl
+    {
+        private readonly ObservableCollection<DataBindingSampleItem> _items = new ObservableCollection<DataBindingSampleItem>();
+
+        public ObservableCollectionListView()
+        {
+            InitializeComponent();
+
+            BoundListView.ItemsSource = _items;
+            AddDemoItem(""Fluence.Wpf"");
+            AddDemoItem(""WinUI 3 parity controls"");
+            AddDemoItem(""net472 + net10.0-windows"");
+            UpdateCount();
+        }
+
+        private void AddItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (NewItemBox == null)
+            {
+                return;
+            }
+
+            var text = (NewItemBox.Text ?? string.Empty).Trim();
+            if (string.IsNullOrEmpty(text))
+            {
+                return;
+            }
+
+            AddDemoItem(text);
+            NewItemBox.Text = string.Empty;
+            NewItemBox.Focus();
+            UpdateCount();
+        }
+
+        private void NewItemBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                AddItem_Click(sender, e);
+                e.Handled = true;
+            }
+        }
+
+        private void RemoveItem_Click(object sender, RoutedEventArgs e)
+        {
+            var selected = BoundListView.SelectedItem as DataBindingSampleItem;
+            if (selected != null)
+            {
+                BoundListView.AnimateRemove(selected, UpdateCount);
+            }
+        }
+
+        private void AddDemoItem(string name)
+        {
+            _items.Add(new DataBindingSampleItem
+            {
+                Name = name,
+                AddedAt = DateTime.Now.ToString(""HH:mm:ss"")
+            });
+        }
+
+        private void UpdateCount()
+        {
+            ItemCountLabel.Text = string.Format(""{0} item{1}"", _items.Count, _items.Count == 1 ? """" : ""s"");
+        }
+    }
+
+    public sealed class DataBindingSampleItem
+    {
+        public string Name { get; set; }
+
+        public string AddedAt { get; set; }
+    }
+}
+";
+        private const string ListViewSelectionModeXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.DataBinding.ListViewSelectionMode""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <StackPanel>
+        <StackPanel Margin=""0,0,0,12"" Orientation=""Horizontal"">
+            <ui:RadioButton
+                x:Name=""SingleModeRadio""
+                Margin=""0,0,16,0""
+                Checked=""SelectionMode_Changed""
+                Content=""Single""
+                GroupName=""SelectionModeGroup""
+                IsChecked=""True"" />
+            <ui:RadioButton
+                x:Name=""MultipleModeRadio""
+                Margin=""0,0,16,0""
+                Checked=""SelectionMode_Changed""
+                Content=""Multiple""
+                GroupName=""SelectionModeGroup"" />
+            <ui:RadioButton
+                x:Name=""ExtendedModeRadio""
+                Checked=""SelectionMode_Changed""
+                Content=""Extended (Shift+Click)""
+                GroupName=""SelectionModeGroup"" />
+        </StackPanel>
+        <ui:ListView
+            x:Name=""SelectionModeListView""
+            Height=""200""
+            SelectionChanged=""SelectionModeListView_SelectionChanged""
+            SelectionMode=""Single"">
+            <ListViewItem Content=""Alpha"" />
+            <ListViewItem Content=""Bravo"" />
+            <ListViewItem Content=""Charlie"" />
+            <ListViewItem Content=""Delta"" />
+            <ListViewItem Content=""Echo"" />
+            <ListViewItem Content=""Foxtrot"" />
+            <ListViewItem Content=""Golf"" />
+            <ListViewItem Content=""Hotel"" />
+        </ui:ListView>
+        <TextBlock
+            x:Name=""SelectionCountLabel""
+            Margin=""0,8,0,0""
+            Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+            Text=""Selected: none"" />
+    </StackPanel>
+</UserControl>
+";
+
+        private const string ListViewSelectionModeCSharpSource = @"using System;
+using System.Windows;
+using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.DataBinding
+{
+    public partial class ListViewSelectionMode : UserControl
+    {
+        public ListViewSelectionMode()
+        {
+            InitializeComponent();
+        }
+
+        private void SelectionMode_Changed(object sender, RoutedEventArgs e)
+        {
+            if (SelectionModeListView == null)
+            {
+                return;
+            }
+
+            if (MultipleModeRadio != null && MultipleModeRadio.IsChecked == true)
+            {
+                SelectionModeListView.SelectionMode = SelectionMode.Multiple;
+            }
+            else if (ExtendedModeRadio != null && ExtendedModeRadio.IsChecked == true)
+            {
+                SelectionModeListView.SelectionMode = SelectionMode.Extended;
+            }
+            else
+            {
+                SelectionModeListView.SelectionMode = SelectionMode.Single;
+            }
+
+            SelectionModeListView.UnselectAll();
+            UpdateSelectionLabel();
+        }
+
+        private void SelectionModeListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            UpdateSelectionLabel();
+        }
+
+        private void UpdateSelectionLabel()
+        {
+            if (SelectionCountLabel == null || SelectionModeListView == null)
+            {
+                return;
+            }
+
+            var count = SelectionModeListView.SelectedItems.Count;
+            if (count == 0)
+            {
+                SelectionCountLabel.Text = ""Selected: none"";
+                return;
+            }
+
+            SelectionCountLabel.Text = count == 1
+                ? string.Format(""Selected: {0}"", (SelectionModeListView.SelectedItem as ListViewItem)?.Content ?? ""?"")
+                : string.Format(""Selected: {0} items"", count);
+        }
+    }
+}
+";
+        private const string DataTemplateRowXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.DataBinding.DataTemplateRow""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <StackPanel>
+        <ui:ListView
+            x:Name=""DataTemplateListView""
+            Height=""180""
+            SelectionMode=""Single"">
+            <ui:ListView.ItemTemplate>
+                <DataTemplate>
+                    <Grid Margin=""0,2"">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width=""Auto"" />
+                            <ColumnDefinition Width=""12"" />
+                            <ColumnDefinition Width=""*"" />
+                        </Grid.ColumnDefinitions>
+                        <ui:FontIcon
+                            VerticalAlignment=""Center""
+                            Foreground=""{DynamicResource AccentTextFillColorPrimaryBrush}""
+                            Glyph=""&#xE8A5;""
+                            IconFontSize=""16"" />
+                        <StackPanel
+                            Grid.Column=""2""
+                            VerticalAlignment=""Center""
+                            Orientation=""Horizontal"">
+                            <TextBlock
+                                VerticalAlignment=""Center""
+                                Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                                Text=""{Binding Name}"" />
+                            <TextBlock
+                                Margin=""8,0,0,0""
+                                VerticalAlignment=""Center""
+                                FontSize=""12""
+                                Foreground=""{DynamicResource TextFillColorTertiaryBrush}""
+                                Text=""{Binding AddedAt}"" />
+                        </StackPanel>
+                    </Grid>
+                </DataTemplate>
+            </ui:ListView.ItemTemplate>
+        </ui:ListView>
+        <TextBlock
+            Margin=""0,8,0,0""
+            Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+            Text=""Name and AddedAt are simple properties on each bound item."" />
+    </StackPanel>
+</UserControl>
+";
+
+        private const string DataTemplateRowCSharpSource = @"using System;
+using System.Collections.ObjectModel;
+using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.DataBinding
+{
+    public partial class DataTemplateRow : UserControl
+    {
+        public DataTemplateRow()
+        {
+            InitializeComponent();
+
+            DataTemplateListView.ItemsSource = new ObservableCollection<DataBindingTemplateItem>
+            {
+                new DataBindingTemplateItem { Name = ""Release notes"", AddedAt = DateTime.Now.ToString(""HH:mm:ss"") },
+                new DataBindingTemplateItem { Name = ""Design tokens"", AddedAt = DateTime.Now.ToString(""HH:mm:ss"") },
+                new DataBindingTemplateItem { Name = ""Control states"", AddedAt = DateTime.Now.ToString(""HH:mm:ss"") }
+            };
+        }
+    }
+
+    public sealed class DataBindingTemplateItem
+    {
+        public string Name { get; set; }
+
+        public string AddedAt { get; set; }
+    }
+}
+";
+
+private readonly ObservableCollection<DemoItem> _items = new ObservableCollection<DemoItem>();
         private readonly ObservableCollection<DemoItem> _templateItems = new ObservableCollection<DemoItem>();
 
         /// <summary>Initializes a new instance of <see cref="GalleryDataBindingPage"/>.</summary>
@@ -45,9 +404,9 @@ namespace Fluence.Wpf.Demo.Pages
         {
             InitializeComponent();
 
-            DemoSourceAction.Replace(ObservableCollectionListViewSourceLink, "DataBinding/ObservableCollectionListView.xaml");
-            DemoSourceAction.Replace(ListViewSelectionModeSourceLink, "DataBinding/ListViewSelectionMode.xaml");
-            DemoSourceAction.Replace(DataTemplateRowSourceLink, "DataBinding/DataTemplateRow.xaml");
+            DemoSampleControl.ReplaceSourceLink(ObservableCollectionListViewSourceLink, ObservableCollectionListViewXamlSource, ObservableCollectionListViewCSharpSource);
+            DemoSampleControl.ReplaceSourceLink(ListViewSelectionModeSourceLink, ListViewSelectionModeXamlSource, ListViewSelectionModeCSharpSource);
+            DemoSampleControl.ReplaceSourceLink(DataTemplateRowSourceLink, DataTemplateRowXamlSource, DataTemplateRowCSharpSource);
 
             Loaded += OnLoaded;
         }
@@ -106,8 +465,7 @@ namespace Fluence.Wpf.Demo.Pages
             var selected = BoundListView.SelectedItem as DemoItem;
             if (selected != null)
             {
-                _items.Remove(selected);
-                UpdateCount();
+                BoundListView.AnimateRemove(selected, UpdateCount);
             }
         }
 

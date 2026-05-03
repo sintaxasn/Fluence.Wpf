@@ -38,16 +38,582 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryWindowPage : UserControl
     {
-        private bool _isSyncingTheme;
+
+        private const string ThemeAndAccentXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Window.ThemeAndAccent""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width=""*"" />
+            <ColumnDefinition Width=""16"" />
+            <ColumnDefinition Width=""*"" />
+        </Grid.ColumnDefinitions>
+        <StackPanel>
+            <TextBlock
+                Margin=""0,0,0,8""
+                FontWeight=""SemiBold""
+                Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                Text=""Theme"" />
+            <WrapPanel Margin=""0,0,0,8"">
+                <ui:RadioButton
+                    x:Name=""ThemeLight""
+                    Margin=""0,0,12,8""
+                    Checked=""ThemeRadioButton_Checked""
+                    Content=""Light""
+                    GroupName=""ThemeGroup"" />
+                <ui:RadioButton
+                    x:Name=""ThemeDark""
+                    Margin=""0,0,12,8""
+                    Checked=""ThemeRadioButton_Checked""
+                    Content=""Dark""
+                    GroupName=""ThemeGroup"" />
+                <ui:RadioButton
+                    x:Name=""ThemeHighContrast""
+                    Margin=""0,0,12,8""
+                    Checked=""ThemeRadioButton_Checked""
+                    Content=""HighContrast""
+                    GroupName=""ThemeGroup"" />
+                <ui:RadioButton
+                    x:Name=""ThemeAuto""
+                    Margin=""0,0,12,8""
+                    Checked=""ThemeRadioButton_Checked""
+                    Content=""Auto""
+                    GroupName=""ThemeGroup""
+                    IsChecked=""True"" />
+            </WrapPanel>
+            <StackPanel Margin=""0,0,0,8"" Orientation=""Horizontal"">
+                <ui:ToggleSwitch
+                    x:Name=""ThemeWatcherToggle""
+                    Margin=""0,0,10,0""
+                    Checked=""SystemThemeWatcher_Toggled""
+                    IsChecked=""True""
+                    Unchecked=""SystemThemeWatcher_Toggled"" />
+                <TextBlock
+                    x:Name=""SystemThemeLabel""
+                    VerticalAlignment=""Center""
+                    Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                    Text=""Watching: Yes"" />
+            </StackPanel>
+            <TextBlock
+                x:Name=""ThemeStateLabel""
+                Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                Text=""Current: Auto"" />
+        </StackPanel>
+
+        <StackPanel Grid.Column=""2"">
+            <TextBlock
+                Margin=""0,0,0,8""
+                FontWeight=""SemiBold""
+                Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                Text=""Accent color"" />
+            <WrapPanel Margin=""0,0,0,8"">
+                <ui:Button
+                    Margin=""0,0,8,8""
+                    Background=""#E81123""
+                    Click=""AccentSwatch_Click""
+                    Style=""{StaticResource AccentSwatchStyle}""
+                    Tag=""#E81123"" />
+                <ui:Button
+                    Margin=""0,0,8,8""
+                    Background=""#DA3B01""
+                    Click=""AccentSwatch_Click""
+                    Style=""{StaticResource AccentSwatchStyle}""
+                    Tag=""#DA3B01"" />
+                <ui:Button
+                    Margin=""0,0,8,8""
+                    Background=""#0078D4""
+                    Click=""AccentSwatch_Click""
+                    Style=""{StaticResource AccentSwatchStyle}""
+                    Tag=""#0078D4"" />
+                <ui:Button
+                    Margin=""0,0,8,8""
+                    Background=""#8A00C4""
+                    Click=""AccentSwatch_Click""
+                    Style=""{StaticResource AccentSwatchStyle}""
+                    Tag=""#8A00C4"" />
+            </WrapPanel>
+            <ui:Button
+                MinWidth=""80""
+                HorizontalAlignment=""Left""
+                Click=""SystemAccent_Click""
+                Content=""System"" />
+        </StackPanel>
+    </Grid>
+</UserControl>
+";
+
+        private const string ThemeAndAccentCSharpSource = @"using System;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Media;
+using Fluence.Wpf;
+
+namespace Fluence.Wpf.Demo.Pages.Window
+{
+    public partial class ThemeAndAccent : UserControl
+    {
+        public ThemeAndAccent()
+        {
+            InitializeComponent();
+        }
+
+        private void ThemeRadioButton_Checked(object sender, RoutedEventArgs e)
+        {
+            if (!IsLoaded)
+            {
+                return;
+            }
+
+            var rb = sender as RadioButton;
+            if (rb == null)
+            {
+                return;
+            }
+
+            ApplicationTheme theme;
+            if (ReferenceEquals(rb, ThemeLight))
+            {
+                theme = ApplicationTheme.Light;
+            }
+            else if (ReferenceEquals(rb, ThemeDark))
+            {
+                theme = ApplicationTheme.Dark;
+            }
+            else if (ReferenceEquals(rb, ThemeHighContrast))
+            {
+                theme = ApplicationTheme.HighContrast;
+            }
+            else
+            {
+                theme = ApplicationTheme.Auto;
+            }
+
+            var host = System.Windows.Window.GetWindow(this) as Fluence.Wpf.Controls.FluenceWindow;
+            var backdrop = host != null ? host.SystemBackdropType : BackdropType.Mica;
+            ApplicationThemeManager.Apply(theme, backdrop, true);
+            ThemeStateLabel.Text = string.Format(""Current: {0}"", theme);
+        }
+
+        private void SystemThemeWatcher_Toggled(object sender, RoutedEventArgs e)
+        {
+            if (!IsLoaded)
+            {
+                return;
+            }
+
+            var host = System.Windows.Window.GetWindow(this);
+            if (host == null)
+            {
+                return;
+            }
+
+            if (ThemeWatcherToggle.IsChecked == true)
+            {
+                SystemThemeWatcher.Watch(host);
+                SystemThemeLabel.Text = ""Watching: Yes"";
+            }
+            else
+            {
+                SystemThemeWatcher.UnWatch(host);
+                SystemThemeLabel.Text = ""Watching: No"";
+            }
+        }
+
+        private void AccentSwatch_Click(object sender, RoutedEventArgs e)
+        {
+            var button = sender as FrameworkElement;
+            var hex = button != null ? button.Tag as string : null;
+            if (string.IsNullOrEmpty(hex))
+            {
+                return;
+            }
+
+            try
+            {
+                var converted = ColorConverter.ConvertFromString(hex);
+                if (converted != null)
+                {
+                    ApplicationAccentColorManager.ApplyCustomAccent((Color)converted);
+                }
+            }
+            catch (FormatException)
+            {
+            }
+        }
+
+        private void SystemAccent_Click(object sender, RoutedEventArgs e)
+        {
+            ApplicationAccentColorManager.ApplySystemAccent();
+        }
+    }
+}
+";
+        private const string BackdropAndCaptionButtonsXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Window.BackdropAndCaptionButtons""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width=""Auto"" />
+            <ColumnDefinition Width=""32"" />
+            <ColumnDefinition Width=""*"" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel>
+            <TextBlock
+                Margin=""0,0,0,6""
+                Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                Text=""Backdrop"" />
+            <ui:ComboBox
+                x:Name=""BackdropCombo""
+                Width=""220""
+                HorizontalAlignment=""Left""
+                SelectedIndex=""2""
+                SelectionChanged=""BackdropCombo_SelectionChanged"">
+                <ComboBoxItem Content=""Auto"" />
+                <ComboBoxItem Content=""None"" />
+                <ComboBoxItem Content=""Mica"" />
+                <ComboBoxItem Content=""Acrylic"" />
+                <ComboBoxItem Content=""Tabbed"" />
+            </ui:ComboBox>
+        </StackPanel>
+
+        <StackPanel Grid.Column=""2"">
+            <TextBlock
+                Margin=""0,0,0,6""
+                Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                Text=""Caption buttons"" />
+            <Grid Margin=""0,0,0,8"">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width=""Auto"" />
+                    <ColumnDefinition Width=""110"" />
+                    <ColumnDefinition Width=""14"" />
+                    <ColumnDefinition Width=""Auto"" />
+                    <ColumnDefinition Width=""110"" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height=""Auto"" />
+                    <RowDefinition Height=""8"" />
+                    <RowDefinition Height=""Auto"" />
+                </Grid.RowDefinitions>
+                <TextBlock
+                    Margin=""0,0,8,0""
+                    VerticalAlignment=""Center""
+                    Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                    Text=""Minimize"" />
+                <ui:ComboBox
+                    x:Name=""MinimizeVisibilityCombo""
+                    Grid.Column=""1""
+                    Width=""110""
+                    SelectionChanged=""CaptionVisibilityCombo_SelectionChanged"">
+                    <ComboBoxItem Content=""Default"" IsSelected=""True"" />
+                    <ComboBoxItem Content=""Enable"" />
+                    <ComboBoxItem Content=""Disable"" />
+                    <ComboBoxItem Content=""Hidden"" />
+                    <ComboBoxItem Content=""Collapsed"" />
+                </ui:ComboBox>
+                <TextBlock
+                    Grid.Column=""3""
+                    Margin=""0,0,8,0""
+                    VerticalAlignment=""Center""
+                    Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                    Text=""Maximize"" />
+                <ui:ComboBox
+                    x:Name=""MaximizeVisibilityCombo""
+                    Grid.Column=""4""
+                    Width=""110""
+                    SelectionChanged=""CaptionVisibilityCombo_SelectionChanged"">
+                    <ComboBoxItem Content=""Default"" IsSelected=""True"" />
+                    <ComboBoxItem Content=""Enable"" />
+                    <ComboBoxItem Content=""Disable"" />
+                    <ComboBoxItem Content=""Hidden"" />
+                    <ComboBoxItem Content=""Collapsed"" />
+                </ui:ComboBox>
+                <TextBlock
+                    Grid.Row=""2""
+                    Margin=""0,0,8,0""
+                    VerticalAlignment=""Center""
+                    Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                    Text=""Close"" />
+                <ui:ComboBox
+                    x:Name=""CloseVisibilityCombo""
+                    Grid.Row=""2""
+                    Grid.Column=""1""
+                    Width=""110""
+                    SelectionChanged=""CaptionVisibilityCombo_SelectionChanged"">
+                    <ComboBoxItem Content=""Default"" IsSelected=""True"" />
+                    <ComboBoxItem Content=""Enable"" />
+                    <ComboBoxItem Content=""Disable"" />
+                    <ComboBoxItem Content=""Hidden"" />
+                    <ComboBoxItem Content=""Collapsed"" />
+                </ui:ComboBox>
+            </Grid>
+            <WrapPanel>
+                <ui:CheckBox
+                    x:Name=""ShowWindowIconToggle""
+                    Margin=""0,0,14,0""
+                    Checked=""WindowChromeToggle_Changed""
+                    Content=""Show Icon""
+                    IsChecked=""True""
+                    Unchecked=""WindowChromeToggle_Changed"" />
+                <ui:CheckBox
+                    x:Name=""ShowWindowTitleToggle""
+                    Checked=""WindowChromeToggle_Changed""
+                    Content=""Show Title""
+                    IsChecked=""True""
+                    Unchecked=""WindowChromeToggle_Changed"" />
+            </WrapPanel>
+        </StackPanel>
+    </Grid>
+</UserControl>
+";
+
+        private const string BackdropAndCaptionButtonsCSharpSource = @"using System;
+using System.Windows;
+using System.Windows.Controls;
+using Fluence.Wpf;
+using Fluence.Wpf.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Window
+{
+    public partial class BackdropAndCaptionButtons : UserControl
+    {
+        public BackdropAndCaptionButtons()
+        {
+            InitializeComponent();
+        }
+
+        private FluenceWindow HostFluenceWindow
+        {
+            get { return System.Windows.Window.GetWindow(this) as FluenceWindow; }
+        }
+
+        private void BackdropCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!IsLoaded)
+            {
+                return;
+            }
+
+            var window = HostFluenceWindow;
+            if (window == null)
+            {
+                return;
+            }
+
+            BackdropType backdrop;
+            switch (BackdropCombo.SelectedIndex)
+            {
+                case 1:
+                    backdrop = BackdropType.None;
+                    break;
+                case 2:
+                    backdrop = BackdropType.Mica;
+                    break;
+                case 3:
+                    backdrop = BackdropType.Acrylic;
+                    break;
+                case 4:
+                    backdrop = BackdropType.Tabbed;
+                    break;
+                default:
+                    backdrop = BackdropType.Auto;
+                    break;
+            }
+
+            window.SystemBackdropType = backdrop;
+            ApplicationThemeManager.Apply(ApplicationThemeManager.CurrentTheme, backdrop, false);
+        }
+
+        private void CaptionVisibilityCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!IsLoaded)
+            {
+                return;
+            }
+
+            var window = HostFluenceWindow;
+            if (window == null)
+            {
+                return;
+            }
+
+            ApplyCaptionVisibility(MinimizeVisibilityCombo, v => window.IsMinimizeButtonVisible = v, en => window.IsMinimizable = en);
+            ApplyCaptionVisibility(MaximizeVisibilityCombo, v => window.IsMaximizeButtonVisible = v, en => window.IsMaximizable = en);
+            ApplyCaptionVisibility(CloseVisibilityCombo, v => window.IsCloseButtonVisible = v, en => window.IsClosable = en);
+        }
+
+        private void WindowChromeToggle_Changed(object sender, RoutedEventArgs e)
+        {
+            var window = HostFluenceWindow;
+            if (window == null)
+            {
+                return;
+            }
+
+            window.ShowIcon = ShowWindowIconToggle != null && ShowWindowIconToggle.IsChecked == true;
+            window.ShowTitle = ShowWindowTitleToggle != null && ShowWindowTitleToggle.IsChecked == true;
+        }
+
+        private static void ApplyCaptionVisibility(
+            ComboBox combo,
+            Action<Visibility> setVisibility,
+            Action<bool> setEnabled)
+        {
+            var item = combo != null ? combo.SelectedItem as ComboBoxItem : null;
+            var content = item != null ? item.Content as string : null;
+
+            if (string.Equals(content, ""Hidden"", StringComparison.Ordinal))
+            {
+                setVisibility(Visibility.Hidden);
+                setEnabled(false);
+            }
+            else if (string.Equals(content, ""Collapsed"", StringComparison.Ordinal) ||
+                string.Equals(content, ""Hide"", StringComparison.Ordinal))
+            {
+                setVisibility(Visibility.Collapsed);
+                setEnabled(false);
+            }
+            else if (string.Equals(content, ""Disable"", StringComparison.Ordinal))
+            {
+                setVisibility(Visibility.Visible);
+                setEnabled(false);
+            }
+            else
+            {
+                setVisibility(Visibility.Visible);
+                setEnabled(true);
+            }
+        }
+    }
+}
+";
+        private const string TitleBarChromeXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Window.TitleBarChrome""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <StackPanel>
+        <StackPanel Margin=""0,0,0,8"" Orientation=""Horizontal"">
+            <ui:ToggleSwitch
+                x:Name=""ExtendsContentToggle""
+                Margin=""0,0,10,0""
+                Checked=""TitleBarToggle_Changed""
+                IsChecked=""False""
+                Unchecked=""TitleBarToggle_Changed"" />
+            <TextBlock
+                VerticalAlignment=""Center""
+                Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                Text=""Extends into title bar"" />
+        </StackPanel>
+        <StackPanel Margin=""0,0,0,8"" Orientation=""Horizontal"">
+            <ui:ToggleSwitch
+                x:Name=""HasShadowToggle""
+                Margin=""0,0,10,0""
+                Checked=""TitleBarToggle_Changed""
+                IsChecked=""True""
+                Unchecked=""TitleBarToggle_Changed"" />
+            <TextBlock
+                VerticalAlignment=""Center""
+                Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                Text=""Title bar shadow"" />
+        </StackPanel>
+        <StackPanel Margin=""0,0,0,8"" Orientation=""Horizontal"">
+            <TextBlock
+                Width=""60""
+                Margin=""0,0,8,0""
+                VerticalAlignment=""Center""
+                Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                Text=""Height"" />
+            <ui:Slider
+                x:Name=""TitleBarHeightSlider""
+                Width=""180""
+                Maximum=""64""
+                Minimum=""32""
+                ValueChanged=""TitleBarHeightSlider_Changed""
+                Value=""48"" />
+            <TextBlock
+                x:Name=""TitleBarHeightLabel""
+                Margin=""8,0,0,0""
+                VerticalAlignment=""Center""
+                Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                Text=""48"" />
+        </StackPanel>
+    </StackPanel>
+</UserControl>
+";
+
+        private const string TitleBarChromeCSharpSource = @"using System.Windows;
+using System.Windows.Controls;
+using Fluence.Wpf.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Window
+{
+    public partial class TitleBarChrome : UserControl
+    {
+        public TitleBarChrome()
+        {
+            InitializeComponent();
+        }
+
+        private FluenceWindow HostFluenceWindow
+        {
+            get { return System.Windows.Window.GetWindow(this) as FluenceWindow; }
+        }
+
+        private void TitleBarToggle_Changed(object sender, RoutedEventArgs e)
+        {
+            if (!IsLoaded)
+            {
+                return;
+            }
+
+            var window = HostFluenceWindow;
+            if (window == null)
+            {
+                return;
+            }
+
+            if (ExtendsContentToggle != null)
+            {
+                var extends = ExtendsContentToggle.IsChecked == true;
+                window.ExtendsContentIntoTitleBar = extends;
+                window.TitleBarLeftIndent = extends ? 48d : 0d;
+            }
+
+            if (HasShadowToggle != null)
+            {
+                window.HasShadow = HasShadowToggle.IsChecked == true;
+            }
+        }
+
+        private void TitleBarHeightSlider_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            var window = HostFluenceWindow;
+            if (window != null)
+            {
+                window.TitleBarHeight = e.NewValue;
+            }
+
+            TitleBarHeightLabel.Text = ((int)e.NewValue).ToString();
+        }
+    }
+}
+";
+
+private bool _isSyncingTheme;
         private bool _isSyncingBackdrop;
 
         public GalleryWindowPage()
         {
             InitializeComponent();
 
-            DemoSourceAction.Replace(ThemeAndAccentSourceLink, "Window/ThemeAndAccent.xaml");
-            DemoSourceAction.Replace(BackdropAndCaptionButtonsSourceLink, "Window/BackdropAndCaptionButtons.xaml");
-            DemoSourceAction.Replace(TitleBarChromeSourceLink, "Window/TitleBarChrome.xaml");
+            DemoSampleControl.ReplaceSourceLink(ThemeAndAccentSourceLink, ThemeAndAccentXamlSource, ThemeAndAccentCSharpSource);
+            DemoSampleControl.ReplaceSourceLink(BackdropAndCaptionButtonsSourceLink, BackdropAndCaptionButtonsXamlSource, BackdropAndCaptionButtonsCSharpSource);
+            DemoSampleControl.ReplaceSourceLink(TitleBarChromeSourceLink, TitleBarChromeXamlSource, TitleBarChromeCSharpSource);
 
             Loaded += GalleryWindowPage_Loaded;
             Unloaded += GalleryWindowPage_Unloaded;

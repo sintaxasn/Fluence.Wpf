@@ -187,7 +187,7 @@
                                     VerticalAlignment="Center"
                                     RenderOptions.BitmapScalingMode="HighQuality"
                                     Source="{TemplateBinding Icon}"
-                                    Visibility="Collapsed" />
+                                    Visibility="Hidden" />
 
                                 <!--  Title text  -->
                                 <TextBlock
@@ -197,9 +197,7 @@
                                     VerticalAlignment="Center"
                                     controls:TextBlockExtensions.Typography="Caption"
                                     Foreground="{TemplateBinding Foreground}"
-                                    Text="{TemplateBinding Title}"
-                                    Visibility="{TemplateBinding ShowTitle,
-                                                                 Converter={StaticResource BoolToVisibility}}" />
+                                    Text="{TemplateBinding Title}" />
 
                                 <!--  Custom title bar content area  -->
                                 <ContentPresenter
@@ -213,6 +211,7 @@
                                 <StackPanel
                                     x:Name="CaptionButtonPanel"
                                     Grid.Column="4"
+                                    MinWidth="192"
                                     VerticalAlignment="Top"
                                     Orientation="Horizontal"
                                     WindowChrome.IsHitTestVisibleInChrome="True">
@@ -289,6 +288,14 @@
                             </MultiDataTrigger.Conditions>
                             <Setter TargetName="WindowIcon" Property="Visibility" Value="Visible" />
                         </MultiDataTrigger>
+
+                        <Trigger Property="ShowIcon" Value="False">
+                            <Setter TargetName="WindowIcon" Property="Visibility" Value="Hidden" />
+                        </Trigger>
+
+                        <Trigger Property="ShowTitle" Value="False">
+                            <Setter TargetName="TitleText" Property="Visibility" Value="Hidden" />
+                        </Trigger>
 
                         <!--  Inactive window: dim title text  -->
                         <Trigger Property="IsActive" Value="False">

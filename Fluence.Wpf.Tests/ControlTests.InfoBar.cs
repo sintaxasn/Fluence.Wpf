@@ -133,5 +133,38 @@ namespace Fluence.Wpf.Tests
                 w.Close();
             });
         }
+
+        [TestMethod]
+        public void InfoBar_ActionButton_IsNotClippedByRootBorder()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                var app = EnsureApplication();
+                MergeGenericDictionary(app);
+
+                var bar = new InfoBar
+                {
+                    IsOpen = true,
+                    Severity = InfoBarSeverity.Error,
+                    Title = "Error",
+                    Message = "Retry the operation.",
+                    ActionButton = new Button { Content = "Retry" }
+                };
+                var w = new Window { Content = bar, Width = 520, Height = 120 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                var root = FindVisualChildByName<System.Windows.Controls.Border>(bar, "RootBorder");
+                Assert.IsNotNull(root, "RootBorder must exist in InfoBar template.");
+                Assert.IsFalse(root.ClipToBounds,
+                    "RootBorder should not clip action-button focus visuals or shadow rendering.");
+
+                var presenter = FindVisualChildByName<System.Windows.Controls.ContentPresenter>(bar, "ActionPresenter");
+                Assert.IsNotNull(presenter, "ActionPresenter should host the retry action.");
+                Assert.AreEqual(Visibility.Visible, presenter.Visibility);
+
+                w.Close();
+            });
+        }
     }
 }

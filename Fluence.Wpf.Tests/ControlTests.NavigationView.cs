@@ -234,6 +234,92 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void NavigationView_LeftCompact_ClosedPaneHidesFooter()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 420,
+                        Height = 320,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact,
+                        IsPaneOpen = false,
+                        PaneFooter = new System.Windows.Controls.TextBlock { Text = "Footer" }
+                    };
+                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    var footerHost = FindVisualChildByName<System.Windows.Controls.Border>(nav, "PaneFooterHost");
+                    Assert.IsNotNull(footerHost, "LeftCompact template should expose PaneFooterHost.");
+                    Assert.AreEqual(Visibility.Collapsed, footerHost.Visibility,
+                        "LeftCompact footer should be collapsed while the compact pane is closed.");
+
+                    nav.IsPaneOpen = true;
+                    WaitForAnimationAndDrain(window.Dispatcher, 220);
+
+                    Assert.AreEqual(Visibility.Visible, footerHost.Visibility,
+                        "LeftCompact footer should be visible when the pane opens.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NavigationView_LeftPaneToggleGlyph_IsOffsetToAlignWithItemGlyphs()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 420,
+                        Height = 320,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left
+                    };
+                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    var glyph = FindVisualChildByName<FontIcon>(nav, "PaneToggleGlyph");
+                    Assert.IsNotNull(glyph, "Left pane template should expose PaneToggleGlyph.");
+                    Assert.AreEqual(2.0, glyph.Margin.Left, 0.01,
+                        "Pane toggle glyph should be nudged right to align with navigation item glyphs.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
         public void NavigationViewItem_Template_RendersInfoBadge()
         {
             RunOnStaThread(() =>

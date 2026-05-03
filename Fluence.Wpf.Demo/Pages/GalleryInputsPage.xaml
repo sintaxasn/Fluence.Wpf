@@ -212,33 +212,42 @@
                         Minimum="0"
                         TickFrequency="1"
                         Value="4" />
-                    <WrapPanel Margin="0,0,0,12">
-                        <StackPanel Margin="0,0,32,0">
+                    <Grid
+                        MaxWidth="260"
+                        Margin="0,0,0,12"
+                        HorizontalAlignment="Center">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="0" HorizontalAlignment="Center">
                             <TextBlock
                                 Margin="0,0,0,6"
+                                HorizontalAlignment="Center"
                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                 Text="Vertical" />
                             <ui:Slider
-                                Height="140"
+                                Height="210"
                                 Maximum="100"
                                 Minimum="0"
                                 Orientation="Vertical"
                                 Value="40" />
                         </StackPanel>
-                        <StackPanel>
+                        <StackPanel Grid.Column="1" HorizontalAlignment="Center">
                             <TextBlock
                                 Margin="0,0,0,6"
+                                HorizontalAlignment="Center"
                                 Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                 Text="Disabled" />
                             <ui:Slider
-                                Height="140"
+                                Height="210"
                                 IsEnabled="False"
                                 Maximum="100"
                                 Minimum="0"
                                 Orientation="Vertical"
                                 Value="25" />
                         </StackPanel>
-                    </WrapPanel>
+                    </Grid>
                     <ui:HyperlinkButton
                         x:Name="SliderInputSourceLink"
                         HorizontalAlignment="Right"

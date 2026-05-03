@@ -177,6 +177,7 @@
                         Margin="0,0,0,12"
                         HorizontalAlignment="Left"
                         PlaceholderText="Choose an option..."
+                        SelectedIndex="-1"
                         SelectionChanged="SelectionDemoCombo_SelectionChanged">
                         <ComboBoxItem Content="First item" />
                         <ComboBoxItem Content="Second item" />
@@ -186,7 +187,8 @@
                         Width="480"
                         Margin="0,0,0,12"
                         HorizontalAlignment="Left"
-                        PlaceholderText="With icon">
+                        PlaceholderText="With icon"
+                        SelectedIndex="-1">
                         <ui:ComboBox.Icon>
                             <ui:FontIcon Glyph="&#xE721;" IconFontSize="14" />
                         </ui:ComboBox.Icon>

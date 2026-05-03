@@ -34,13 +34,162 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryFormsPage : UserControl
     {
-        public GalleryFormsPage()
+
+        private const string SignInFormXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Forms.SignInForm""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <StackPanel MaxWidth=""480"" HorizontalAlignment=""Left"">
+        <TextBlock Margin=""0,0,0,4"" Text=""Email"" />
+        <ui:TextBox
+            Margin=""0,0,0,12""
+            PlaceholderText=""name@example.com"" />
+        <TextBlock Margin=""0,0,0,4"" Text=""Password"" />
+        <ui:PasswordBox
+            Margin=""0,0,0,12""
+            PlaceholderText=""Password""
+            RevealButtonEnabled=""True"" />
+        <ui:CheckBox
+            Margin=""0,0,0,16""
+            Content=""Remember me"" />
+        <StackPanel Orientation=""Horizontal"">
+            <ui:Button
+                Margin=""0,0,8,0""
+                Appearance=""Accent""
+                Content=""Sign in"" />
+            <ui:Button Content=""Create account"" />
+        </StackPanel>
+    </StackPanel>
+</UserControl>
+";
+
+        private const string SignInFormCSharpSource = @"using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Forms
+{
+    public partial class SignInForm : UserControl
+    {
+        public SignInForm()
+        {
+            InitializeComponent();
+        }
+    }
+}
+";
+        private const string CheckoutFormXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Forms.CheckoutForm""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <StackPanel MaxWidth=""560"" HorizontalAlignment=""Left"">
+        <TextBlock Margin=""0,0,0,4"" Text=""Contact email"" />
+        <ui:TextBox
+            Margin=""0,0,0,12""
+            PlaceholderText=""name@example.com"" />
+        <TextBlock Margin=""0,0,0,4"" Text=""Shipping speed"" />
+        <ui:ComboBox
+            Margin=""0,0,0,12""
+            SelectedIndex=""1"">
+            <ComboBoxItem Content=""Standard"" />
+            <ComboBoxItem Content=""Priority"" />
+            <ComboBoxItem Content=""Overnight"" />
+        </ui:ComboBox>
+        <WrapPanel Margin=""0,0,0,12"">
+            <ui:NumberBox
+                Width=""180""
+                Margin=""0,0,16,12""
+                Header=""Quantity""
+                Maximum=""10""
+                Minimum=""1""
+                SpinButtonPlacementMode=""Compact""
+                Value=""2"" />
+            <ui:TextBox
+                Width=""280""
+                Margin=""0,0,0,12""
+                PlaceholderText=""Optional"" />
+        </WrapPanel>
+        <ui:CheckBox
+            Margin=""0,0,0,16""
+            Content=""This is a gift""
+            Description=""Hide prices on the packing slip."" />
+        <StackPanel Orientation=""Horizontal"">
+            <ui:Button
+                Margin=""0,0,8,0""
+                Appearance=""Accent""
+                Content=""Place order"" />
+            <ui:Button Content=""Save for later"" />
+        </StackPanel>
+    </StackPanel>
+</UserControl>
+";
+
+        private const string CheckoutFormCSharpSource = @"using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Forms
+{
+    public partial class CheckoutForm : UserControl
+    {
+        public CheckoutForm()
+        {
+            InitializeComponent();
+        }
+    }
+}
+";
+        private const string SettingsFormXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Forms.SettingsForm""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <StackPanel MaxWidth=""560"" HorizontalAlignment=""Left"">
+        <TextBlock Margin=""0,0,0,4"" Text=""Display name"" />
+        <ui:TextBox
+            Margin=""0,0,0,12""
+            Text=""Avery Stone"" />
+        <TextBlock Margin=""0,0,0,4"" Text=""Theme"" />
+        <ui:ComboBox
+            Margin=""0,0,0,12""
+            SelectedIndex=""0"">
+            <ComboBoxItem Content=""Use system setting"" />
+            <ComboBoxItem Content=""Light"" />
+            <ComboBoxItem Content=""Dark"" />
+        </ui:ComboBox>
+        <ui:ToggleSwitch
+            Margin=""0,0,0,16""
+            Content=""Email updates""
+            IsChecked=""True""
+            OffContent=""Off""
+            OnContent=""On"" />
+        <ui:Button
+            HorizontalAlignment=""Left""
+            Appearance=""Accent""
+            Content=""Save settings"" />
+    </StackPanel>
+</UserControl>
+";
+
+        private const string SettingsFormCSharpSource = @"using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Forms
+{
+    public partial class SettingsForm : UserControl
+    {
+        public SettingsForm()
+        {
+            InitializeComponent();
+        }
+    }
+}
+";
+
+public GalleryFormsPage()
         {
             InitializeComponent();
 
-            DemoSourceAction.Replace(SignInFormSourceLink, "Forms/SignInForm.xaml");
-            DemoSourceAction.Replace(CheckoutFormSourceLink, "Forms/CheckoutForm.xaml");
-            DemoSourceAction.Replace(SettingsFormSourceLink, "Forms/SettingsForm.xaml");
+            DemoSampleControl.ReplaceSourceLink(SignInFormSourceLink, SignInFormXamlSource, SignInFormCSharpSource);
+            DemoSampleControl.ReplaceSourceLink(CheckoutFormSourceLink, CheckoutFormXamlSource, CheckoutFormCSharpSource);
+            DemoSampleControl.ReplaceSourceLink(SettingsFormSourceLink, SettingsFormXamlSource, SettingsFormCSharpSource);
 
             Loaded += GalleryFormsPage_Loaded;
         }

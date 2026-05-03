@@ -46,7 +46,7 @@
                             invisible - they are behavior-only hit targets. Per-half fills
                             below own the hover / pressed visuals.
                         -->
-                        <Grid Grid.Row="0">
+                        <Grid x:Name="SplitButtonBody" Grid.Row="0">
                             <Grid.Resources>
                                 <Style TargetType="{x:Type Button}">
                                     <Setter Property="Background" Value="Transparent" />
@@ -159,6 +159,7 @@
                             PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
                             PopupAnimation="None">
                             <Border
+                                MinWidth="{Binding ActualWidth, ElementName=SplitButtonBody}"
                                 Margin="0,4,0,0"
                                 Background="{DynamicResource SolidBackgroundFillColorQuarternaryBrush}"
                                 BorderBrush="{DynamicResource SurfaceStrokeColorFlyoutBrush}"
@@ -174,7 +175,9 @@
                                     sufficient for visual separation without the rendering artifact.
                                 -->
                                 <ContentPresenter
+                                    x:Name="FlyoutContentPresenter"
                                     Margin="4"
+                                    HorizontalAlignment="Stretch"
                                     Content="{TemplateBinding Flyout}"
                                     ContentTemplate="{TemplateBinding FlyoutTemplate}" />
                             </Border>

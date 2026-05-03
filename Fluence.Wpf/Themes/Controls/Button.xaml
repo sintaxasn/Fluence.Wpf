@@ -43,7 +43,7 @@
                                 CornerRadius="{TemplateBinding CornerRadius}" />
                             <Grid
                                 Margin="{TemplateBinding Padding}"
-                                HorizontalAlignment="Center"
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                 VerticalAlignment="Center">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />

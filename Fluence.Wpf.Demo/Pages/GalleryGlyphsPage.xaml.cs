@@ -38,7 +38,57 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryGlyphsPage : UserControl
     {
+
+        private const string IconCatalogXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Glyphs.IconCatalog""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width=""56"" />
+            <ColumnDefinition Width=""*"" />
+            <ColumnDefinition Width=""96"" />
+        </Grid.ColumnDefinitions>
+
+        <ui:FontIcon
+            HorizontalAlignment=""Center""
+            VerticalAlignment=""Center""
+            Glyph=""&#xE713;""
+            IconFontSize=""24"" />
+        <TextBlock
+            Grid.Column=""1""
+            VerticalAlignment=""Center""
+            Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+            Text=""Settings"" />
+        <TextBlock
+            Grid.Column=""2""
+            VerticalAlignment=""Center""
+            FontFamily=""Consolas""
+            Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+            Text=""U+E713"" />
+    </Grid>
+</UserControl>
+";
+
+        private const string IconCatalogCSharpSource = @"using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Glyphs
+{
+    public partial class IconCatalog : UserControl
+    {
+        public IconCatalog()
+        {
+            InitializeComponent();
+        }
+    }
+}
+";
+
         private const int IconsPerRow = 4;
+        private static readonly object IconRowsLock = new object();
+        private static List<IconCatalogRow> cachedIconRows;
+        private static int cachedIconCount;
 
         private static readonly Uri KnownIconNamesResourceUri = new Uri(
             "/Fluence.Wpf.Demo;component/Resources/SegoeFluentIcons.tsv",
@@ -48,23 +98,39 @@ namespace Fluence.Wpf.Demo.Pages
         {
             InitializeComponent();
 
-            var icons = LoadIconCatalog();
-            IconCatalogList.ItemsSource = CreateIconRows(icons);
+            var rows = GetIconRows();
+            IconCatalogList.ItemsSource = rows;
             IconCatalogCountText.Text = string.Format(
                 CultureInfo.InvariantCulture,
                 "{0:N0} Segoe Fluent Icons",
-                icons.Count);
+                cachedIconCount);
 
             var sample = new DemoSampleControl
             {
-                Title = "Icon catalog",
-                Description = "Every private-use glyph exposed by the Segoe Fluent Icons font.",
-                SourcePath = "Glyphs/IconCatalog.xaml",
-                SampleContent = IconCatalogList
+                Title = "FontIcon",
+                Description = "FontIcon renders one Segoe Fluent Icons glyph by private-use code point.",
+                XamlSource = IconCatalogXamlSource,
+                CSharpSource = IconCatalogCSharpSource,
+                SampleContent = FontIconSampleContent
             };
             Grid.SetRow(sample, 2);
-            PageRoot.Children.Remove(IconCatalogList);
+            PageRoot.Children.Remove(FontIconSampleContent);
             PageRoot.Children.Add(sample);
+        }
+
+        private static List<IconCatalogRow> GetIconRows()
+        {
+            lock (IconRowsLock)
+            {
+                if (cachedIconRows == null)
+                {
+                    var icons = LoadIconCatalog();
+                    cachedIconCount = icons.Count;
+                    cachedIconRows = CreateIconRows(icons);
+                }
+
+                return cachedIconRows;
+            }
         }
 
         private static List<IconCatalogItem> LoadIconCatalog()

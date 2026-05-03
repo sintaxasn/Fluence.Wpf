@@ -118,6 +118,20 @@ namespace Fluence.Wpf.Demo
 
             firstContainer.ApplyTemplate();
             firstContainer.UpdateLayout();
+
+            var lastIndex = list.Items.Count - 1;
+            list.ScrollIntoView(list.Items[lastIndex]);
+            list.UpdateLayout();
+            DrainDispatcher(list.Dispatcher);
+
+            var lastContainer = list.ItemContainerGenerator.ContainerFromIndex(lastIndex) as FrameworkElement;
+            if (lastContainer == null)
+            {
+                throw new InvalidOperationException("The Iconography page did not realize the final icon row after scrolling.");
+            }
+
+            lastContainer.ApplyTemplate();
+            lastContainer.UpdateLayout();
         }
 
         private static T FindVisualChildByName<T>(DependencyObject root, string name)

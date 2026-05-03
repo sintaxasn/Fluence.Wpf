@@ -77,7 +77,6 @@
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="12" />
                                         <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <ui:FontIcon
                                         Grid.Column="0"
@@ -85,18 +84,22 @@
                                         Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                                         Glyph="&#xE8A5;"
                                         IconFontSize="16" />
-                                    <TextBlock
+                                    <StackPanel
                                         Grid.Column="2"
                                         VerticalAlignment="Center"
-                                        ui:TextBlockExtensions.Typography="Body"
-                                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                        Text="{Binding Name}" />
-                                    <TextBlock
-                                        Grid.Column="3"
-                                        VerticalAlignment="Center"
-                                        ui:TextBlockExtensions.Typography="Caption"
-                                        Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                                        Text="{Binding AddedAt}" />
+                                        Orientation="Horizontal">
+                                        <TextBlock
+                                            VerticalAlignment="Center"
+                                            ui:TextBlockExtensions.Typography="Body"
+                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                            Text="{Binding Name}" />
+                                        <TextBlock
+                                            Margin="8,0,0,0"
+                                            VerticalAlignment="Center"
+                                            ui:TextBlockExtensions.Typography="Caption"
+                                            Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                            Text="{Binding AddedAt}" />
+                                    </StackPanel>
                                 </Grid>
                             </DataTemplate>
                         </ui:ListView.ItemTemplate>
@@ -203,7 +206,6 @@
                                         <ColumnDefinition Width="Auto" />
                                         <ColumnDefinition Width="12" />
                                         <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
                                     <ui:FontIcon
                                         Grid.Column="0"
@@ -211,18 +213,22 @@
                                         Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                                         Glyph="&#xE8A5;"
                                         IconFontSize="16" />
-                                    <TextBlock
+                                    <StackPanel
                                         Grid.Column="2"
                                         VerticalAlignment="Center"
-                                        ui:TextBlockExtensions.Typography="Body"
-                                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                        Text="{Binding Name}" />
-                                    <TextBlock
-                                        Grid.Column="3"
-                                        VerticalAlignment="Center"
-                                        ui:TextBlockExtensions.Typography="Caption"
-                                        Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                                        Text="{Binding AddedAt}" />
+                                        Orientation="Horizontal">
+                                        <TextBlock
+                                            VerticalAlignment="Center"
+                                            ui:TextBlockExtensions.Typography="Body"
+                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                            Text="{Binding Name}" />
+                                        <TextBlock
+                                            Margin="8,0,0,0"
+                                            VerticalAlignment="Center"
+                                            ui:TextBlockExtensions.Typography="Caption"
+                                            Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                                            Text="{Binding AddedAt}" />
+                                    </StackPanel>
                                 </Grid>
                             </DataTemplate>
                         </ui:ListView.ItemTemplate>

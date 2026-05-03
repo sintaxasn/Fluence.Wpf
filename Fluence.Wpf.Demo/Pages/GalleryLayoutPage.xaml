@@ -1,0 +1,83 @@
+﻿<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.GalleryLayoutPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
+    xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
+    d:DesignHeight="900"
+    d:DesignWidth="900"
+    mc:Ignorable="d">
+    <ui:SmoothScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="24" HorizontalAlignment="Stretch">
+            <TextBlock
+                Margin="0,0,0,4"
+                ui:TextBlockExtensions.Typography="Title"
+                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                Text="Layout" />
+            <TextBlock
+                Margin="0,0,0,24"
+                Style="{StaticResource SectionDescriptionStyle}"
+                Text="Layout primitives arrange content, group related surfaces, and separate regions without adding page-specific infrastructure." />
+
+            <ui:Card
+                Margin="0,0,0,16"
+                Padding="16"
+                Variant="{x:Static uicore:CardVariant.Default}">
+                <StackPanel>
+                    <TextBlock
+                        Margin="0,0,0,12"
+                        Style="{StaticResource SectionHeaderStyle}"
+                        Text="StackPanel, Border, Separator, DockPanel, and Expander" />
+
+                    <ui:Border
+                        Margin="0,0,0,12"
+                        Padding="14"
+                        Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}"
+                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8">
+                        <ui:StackPanel Spacing="10">
+                            <TextBlock
+                                Style="{StaticResource BodyStrongTextBlockStyle}"
+                                Text="Settings group" />
+                            <TextBlock
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                Text="StackPanel spacing keeps rows readable while Border frames the group."
+                                TextWrapping="Wrap" />
+                            <ui:Separator />
+                            <DockPanel LastChildFill="True">
+                                <ui:Button
+                                    DockPanel.Dock="Right"
+                                    Appearance="Accent"
+                                    Content="Apply" />
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                    Text="DockPanel keeps the command aligned to the edge." />
+                            </DockPanel>
+                        </ui:StackPanel>
+                    </ui:Border>
+
+                    <ui:Expander
+                        Header="Advanced options"
+                        IsExpanded="True">
+                        <TextBlock
+                            Margin="0,8,0,0"
+                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                            Text="Expander shows secondary settings only when they are useful."
+                            TextWrapping="Wrap" />
+                    </ui:Expander>
+
+                    <ui:HyperlinkButton
+                        x:Name="LayoutSourceLink"
+                        Margin="0,12,0,0"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
+                        Content="Source" />
+                </StackPanel>
+            </ui:Card>
+        </StackPanel>
+    </ui:SmoothScrollViewer>
+</UserControl>

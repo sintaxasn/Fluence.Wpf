@@ -25,63 +25,41 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-using System;
-using System.Collections.Generic;
-using System.Windows;
 using System.Windows.Controls;
 
 namespace Fluence.Wpf.Demo.Pages
 {
-    public sealed class DemoExample
+    public partial class GalleryLayoutPage : UserControl
     {
-        public DemoExample(string title, string description, string sourcePath, Func<UIElement> createContent)
-        {
-            Title = title;
-            Description = description;
-            SourcePath = sourcePath;
-            CreateContent = createContent;
-        }
+        private const string LayoutXamlSource = @"<ui:Border
+    Padding=""14""
+    Background=""{DynamicResource CardBackgroundFillColorSecondaryBrush}""
+    BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
+    BorderThickness=""1""
+    CornerRadius=""8"">
+    <ui:StackPanel Spacing=""10"">
+        <TextBlock Style=""{StaticResource BodyStrongTextBlockStyle}""
+                   Text=""Settings group"" />
+        <ui:Separator />
+        <DockPanel LastChildFill=""True"">
+            <ui:Button DockPanel.Dock=""Right""
+                       Appearance=""Accent""
+                       Content=""Apply"" />
+            <TextBlock VerticalAlignment=""Center""
+                       Text=""DockPanel keeps the command aligned."" />
+        </DockPanel>
+    </ui:StackPanel>
+</ui:Border>
 
-        public string Title { get; private set; }
+<ui:Expander Header=""Advanced options"" IsExpanded=""True"">
+    <TextBlock Text=""Expander shows secondary settings only when useful.""
+               TextWrapping=""Wrap"" />
+</ui:Expander>";
 
-        public string Description { get; private set; }
-
-        public string SourcePath { get; private set; }
-
-        public Func<UIElement> CreateContent { get; private set; }
-    }
-
-    public partial class GalleryControlPage : UserControl
-    {
-        public GalleryControlPage(string title, string description, IEnumerable<DemoExample> examples)
+        public GalleryLayoutPage()
         {
             InitializeComponent();
-
-            ControlPageTitle.Text = title;
-            ControlPageDescription.Text = description;
-
-            foreach (var example in examples)
-            {
-                AddExample(example);
-            }
-        }
-
-        private void AddExample(DemoExample example)
-        {
-            var content = example.CreateContent();
-            var contentElement = content as FrameworkElement;
-            if (contentElement != null)
-            {
-                contentElement.Margin = new Thickness(0);
-            }
-
-            PageStack.Children.Add(new DemoSampleControl
-            {
-                Title = example.Title,
-                Description = example.Description,
-                SourcePath = example.SourcePath,
-                SampleContent = content
-            });
+            DemoSampleControl.ReplaceSourceLink(LayoutSourceLink, LayoutXamlSource, string.Empty);
         }
     }
 }

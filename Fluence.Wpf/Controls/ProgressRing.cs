@@ -186,6 +186,23 @@ namespace Fluence.Wpf.Controls
             set { SetValue(StrokeThicknessProperty, value); }
         }
 
+        /// <summary>Identifies the <see cref="ProgressState"/> dependency property.</summary>
+        public static readonly DependencyProperty ProgressStateProperty =
+            DependencyProperty.Register(
+                nameof(ProgressState),
+                typeof(ProgressRingState),
+                typeof(ProgressRing),
+                new FrameworkPropertyMetadata(ProgressRingState.Normal));
+
+        /// <summary>
+        /// Gets or sets the visual state used to color the progress arc.
+        /// </summary>
+        public ProgressRingState ProgressState
+        {
+            get { return (ProgressRingState)GetValue(ProgressStateProperty); }
+            set { SetValue(ProgressStateProperty, value); }
+        }
+
         // ──────────────────────────────────────────────────────────────────────
         // Read-only template-settings dependency properties
         // (mirror WinUI's ProgressRingTemplateSettings.EllipseDiameter / EllipseOffset)

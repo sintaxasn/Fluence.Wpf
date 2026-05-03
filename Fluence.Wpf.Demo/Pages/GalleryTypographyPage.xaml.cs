@@ -36,7 +36,112 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryTypographyPage : UserControl
     {
-        private const string CopyGlyph = "\uE8C8";
+
+        private const string TypographyTableXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Typography.TypographyTable""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width=""2.2*"" MinWidth=""180"" />
+            <ColumnDefinition Width=""1.2*"" MinWidth=""140"" />
+            <ColumnDefinition Width=""1*"" MinWidth=""120"" />
+            <ColumnDefinition Width=""1.7*"" MinWidth=""180"" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height=""Auto"" />
+            <RowDefinition Height=""Auto"" />
+            <RowDefinition Height=""Auto"" />
+        </Grid.RowDefinitions>
+
+        <TextBlock
+            Margin=""24,0,16,16""
+            Style=""{StaticResource BodyStrongTextBlockStyle}""
+            Text=""Example"" />
+        <TextBlock
+            Grid.Column=""1""
+            Margin=""24,0,16,16""
+            Style=""{StaticResource BodyStrongTextBlockStyle}""
+            Text=""Variable Font"" />
+        <TextBlock
+            Grid.Column=""2""
+            Margin=""24,0,16,16""
+            Style=""{StaticResource BodyStrongTextBlockStyle}""
+            Text=""Size/Line height"" />
+        <TextBlock
+            Grid.Column=""3""
+            Margin=""24,0,16,16""
+            Style=""{StaticResource BodyStrongTextBlockStyle}""
+            Text=""Style"" />
+
+        <TextBlock
+            Grid.Row=""1""
+            Margin=""24,16""
+            Style=""{StaticResource BodyTextBlockStyle}""
+            Text=""Body"" />
+        <TextBlock
+            Grid.Row=""1""
+            Grid.Column=""1""
+            Margin=""24,16""
+            Style=""{StaticResource BodyTextBlockStyle}""
+            Text=""Text, Regular"" />
+        <TextBlock
+            Grid.Row=""1""
+            Grid.Column=""2""
+            Margin=""24,16""
+            Style=""{StaticResource BodyTextBlockStyle}""
+            Text=""14/20 epx"" />
+        <TextBlock
+            Grid.Row=""1""
+            Grid.Column=""3""
+            Margin=""24,16""
+            FontFamily=""Consolas""
+            Style=""{StaticResource BodyTextBlockStyle}""
+            Text=""BodyTextBlockStyle"" />
+
+        <TextBlock
+            Grid.Row=""2""
+            Margin=""24,16""
+            Style=""{StaticResource TitleTextBlockStyle}""
+            Text=""Title"" />
+        <TextBlock
+            Grid.Row=""2""
+            Grid.Column=""1""
+            Margin=""24,16""
+            Style=""{StaticResource BodyTextBlockStyle}""
+            Text=""Display, SemiBold"" />
+        <TextBlock
+            Grid.Row=""2""
+            Grid.Column=""2""
+            Margin=""24,16""
+            Style=""{StaticResource BodyTextBlockStyle}""
+            Text=""28/36 epx"" />
+        <TextBlock
+            Grid.Row=""2""
+            Grid.Column=""3""
+            Margin=""24,16""
+            FontFamily=""Consolas""
+            Style=""{StaticResource BodyTextBlockStyle}""
+            Text=""TitleTextBlockStyle"" />
+    </Grid>
+</UserControl>
+";
+
+        private const string TypographyTableCSharpSource = @"using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Typography
+{
+    public partial class TypographyTable : UserControl
+    {
+        public TypographyTable()
+        {
+            InitializeComponent();
+        }
+    }
+}
+";
+
+private const string CopyGlyph = "\uE8C8";
 
         private static readonly TypographyRow[] Rows =
         {
@@ -161,7 +266,8 @@ namespace Fluence.Wpf.Demo.Pages
                 Margin = new Thickness(0, 12, 0, 0),
                 Title = "Typography scale",
                 Description = "Supported text styles, variable font roles, and line-height guidance.",
-                SourcePath = "Typography/TypographyTable.xaml",
+                XamlSource = TypographyTableXamlSource,
+                CSharpSource = TypographyTableCSharpSource,
                 SampleContent = TypographyTable
             });
         }

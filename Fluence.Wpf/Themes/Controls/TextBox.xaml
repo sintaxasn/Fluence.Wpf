@@ -160,7 +160,8 @@
                                     Margin="0,-1,0,0"
                                     HorizontalAlignment="Stretch"
                                     Background="Transparent"
-                                    CornerRadius="0,0,3,3" />
+                                    CornerRadius="0,0,3,3"
+                                    Opacity="0" />
                             </Grid>
                         </Border>
 
@@ -266,15 +267,30 @@
                             <Setter TargetName="FocusAccentLine" Property="Opacity" Value="0" />
                         </MultiTrigger>
 
-                        <Trigger Property="ValidationState" Value="{x:Static ui:ValidationState.Success}">
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsKeyboardFocused" Value="True" />
+                                <Condition Property="ValidationState" Value="{x:Static ui:ValidationState.Success}" />
+                            </MultiTrigger.Conditions>
                             <Setter TargetName="PART_ValidationLine" Property="Background" Value="{DynamicResource SystemFillColorSuccessBrush}" />
-                        </Trigger>
-                        <Trigger Property="ValidationState" Value="{x:Static ui:ValidationState.Warning}">
+                            <Setter TargetName="PART_ValidationLine" Property="Opacity" Value="1" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsKeyboardFocused" Value="True" />
+                                <Condition Property="ValidationState" Value="{x:Static ui:ValidationState.Warning}" />
+                            </MultiTrigger.Conditions>
                             <Setter TargetName="PART_ValidationLine" Property="Background" Value="{DynamicResource SystemFillColorCautionBrush}" />
-                        </Trigger>
-                        <Trigger Property="ValidationState" Value="{x:Static ui:ValidationState.Error}">
+                            <Setter TargetName="PART_ValidationLine" Property="Opacity" Value="1" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsKeyboardFocused" Value="True" />
+                                <Condition Property="ValidationState" Value="{x:Static ui:ValidationState.Error}" />
+                            </MultiTrigger.Conditions>
                             <Setter TargetName="PART_ValidationLine" Property="Background" Value="{DynamicResource SystemFillColorCriticalBrush}" />
-                        </Trigger>
+                            <Setter TargetName="PART_ValidationLine" Property="Opacity" Value="1" />
+                        </MultiTrigger>
 
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="MainBorder" Property="Background" Value="{DynamicResource ControlFillColorDisabledBrush}" />
