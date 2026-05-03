@@ -55,7 +55,7 @@ namespace Fluence.Wpf.Demo.Pages
                 Content=""Home""
                 IsSelected=""True"">
                 <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph=""&#xE80F;"" IconFontSize=""18"" />
+                    <ui:FontIcon Glyph=""&#xE80F;"" IconFontSize=""20"" />
                 </ui:NavigationViewItem.Icon>
                 <ui:NavigationViewItem.PageContent>
                     <StackPanel Margin=""20"">
@@ -74,7 +74,7 @@ namespace Fluence.Wpf.Demo.Pages
             </ui:NavigationViewItem>
             <ui:NavigationViewItem Content=""Files"">
                 <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph=""&#xE8B7;"" IconFontSize=""18"" />
+                    <ui:FontIcon Glyph=""&#xE8B7;"" IconFontSize=""20"" />
                 </ui:NavigationViewItem.Icon>
                 <ui:NavigationViewItem.PageContent>
                     <TextBlock
@@ -85,7 +85,7 @@ namespace Fluence.Wpf.Demo.Pages
             </ui:NavigationViewItem>
             <ui:NavigationViewItem Content=""Reports"">
                 <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph=""&#xE9D9;"" IconFontSize=""18"" />
+                    <ui:FontIcon Glyph=""&#xE9D9;"" IconFontSize=""20"" />
                 </ui:NavigationViewItem.Icon>
                 <ui:NavigationViewItem.PageContent>
                     <TextBlock
@@ -205,7 +205,7 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
                     Content=""Dashboard""
                     IsSelected=""True"">
                     <ui:NavigationViewItem.Icon>
-                        <ui:FontIcon Glyph=""&#xE80F;"" IconFontSize=""18"" />
+                        <ui:FontIcon Glyph=""&#xE80F;"" IconFontSize=""20"" />
                     </ui:NavigationViewItem.Icon>
                     <ui:NavigationViewItem.PageContent>
                         <StackPanel Margin=""20"">
@@ -224,7 +224,7 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
                 </ui:NavigationViewItem>
                 <ui:NavigationViewItem Content=""Messages"">
                     <ui:NavigationViewItem.Icon>
-                        <ui:FontIcon Glyph=""&#xE8BD;"" IconFontSize=""18"" />
+                        <ui:FontIcon Glyph=""&#xE8BD;"" IconFontSize=""20"" />
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
             </ui:NavigationView>

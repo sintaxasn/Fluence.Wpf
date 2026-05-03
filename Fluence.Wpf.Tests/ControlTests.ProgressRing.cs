@@ -25,9 +25,12 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+using System;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Fluence.Wpf;
@@ -98,6 +101,7 @@ namespace Fluence.Wpf.Tests
                 var w = new Window { Content = ring, Width = 200, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
+                WaitForAnimationAndDrain(w.Dispatcher, 200);
 
                 var arc = FindVisualChildByName<Path>(ring, "PART_IndeterminateArc");
                 Assert.IsNotNull(arc, "ProgressRing template must contain PART_IndeterminateArc.");
@@ -279,6 +283,7 @@ namespace Fluence.Wpf.Tests
                 var w = new Window { Content = ring, Width = 200, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
+                WaitForAnimationAndDrain(w.Dispatcher, 200);
 
                 var indeterminateArc = FindVisualChildByName<Path>(ring, "PART_IndeterminateArc");
                 Assert.IsNotNull(indeterminateArc, "PART_IndeterminateArc must exist.");
@@ -312,6 +317,7 @@ namespace Fluence.Wpf.Tests
                 var w = new Window { Content = ring, Width = 200, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
+                WaitForAnimationAndDrain(w.Dispatcher, 200);
 
                 var indeterminateArc = FindVisualChildByName<Path>(ring, "PART_IndeterminateArc");
                 Assert.IsNotNull(indeterminateArc, "PART_IndeterminateArc must exist.");
@@ -392,6 +398,88 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void ProgressRing_IndeterminateAnimation_UsesAvaloniaKeyframes()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                var start = InvokePrivateAnimationFactory("CreateIndeterminateStartAnimation");
+                var sweep = InvokePrivateAnimationFactory("CreateIndeterminateSweepAnimation");
+
+                Assert.AreEqual(TimeSpan.FromMilliseconds(5000), start.Duration.TimeSpan,
+                    "Indeterminate start animation should use the attached 5 second cadence.");
+                Assert.AreEqual(TimeSpan.FromMilliseconds(5000), sweep.Duration.TimeSpan,
+                    "Indeterminate sweep animation should use the attached 5 second cadence.");
+                Assert.AreEqual(RepeatBehavior.Forever, start.RepeatBehavior);
+                Assert.AreEqual(RepeatBehavior.Forever, sweep.RepeatBehavior);
+
+                AssertKeyFrames(start, new[]
+                {
+                    -720.0, -540.0, -360.0, -180.0, 0.0, 180.0, 360.0, 540.0, 720.0
+                });
+                AssertKeyFrames(sweep, new[]
+                {
+                    0.0, 50.0, 100.0, 50.0, 5.0, 50.0, 100.0, 50.0, 0.0
+                });
+                AssertKeyFramePercents(start, new[]
+                {
+                    0.0, 0.125, 0.25, 0.325, 0.5, 0.625, 0.75, 0.875, 1.0
+                });
+                AssertKeyFramePercents(sweep, new[]
+                {
+                    0.0, 0.125, 0.25, 0.325, 0.5, 0.625, 0.75, 0.875, 1.0
+                });
+            });
+        }
+
+        [TestMethod]
+        public void ProgressRing_PausedState_RendersStaticIndeterminateArc()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                var app = EnsureApplication();
+                MergeGenericDictionary(app);
+
+                var ring = new ProgressRing
+                {
+                    ProgressState = ProgressRingState.Paused,
+                    IsActive = true,
+                    IsIndeterminate = true,
+                    Width = 64,
+                    Height = 64
+                };
+                var w = new Window { Content = ring, Width = 200, Height = 200 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                var indeterminateArc = FindVisualChildByName<Path>(ring, "PART_IndeterminateArc");
+                Assert.IsNotNull(indeterminateArc, "PART_IndeterminateArc must exist.");
+                Assert.AreEqual(Visibility.Visible, indeterminateArc.Visibility,
+                    "Paused indeterminate ProgressRing should remain visible.");
+                Assert.IsNotNull(indeterminateArc.Data,
+                    "Paused indeterminate ProgressRing should render a static arc.");
+
+                var initialBounds = indeterminateArc.Data.Bounds;
+                WaitForAnimationAndDrain(w.Dispatcher, 400);
+                var laterBounds = indeterminateArc.Data.Bounds;
+
+                Assert.AreEqual(initialBounds.X, laterBounds.X, 0.01,
+                    "Paused ProgressRing should not animate the arc position.");
+                Assert.AreEqual(initialBounds.Y, laterBounds.Y, 0.01,
+                    "Paused ProgressRing should not animate the arc position.");
+                Assert.AreEqual(initialBounds.Width, laterBounds.Width, 0.01,
+                    "Paused ProgressRing should not animate the arc shape.");
+                Assert.AreEqual(initialBounds.Height, laterBounds.Height, 0.01,
+                    "Paused ProgressRing should not animate the arc shape.");
+                AssertDependencyPropertyNotAnimated(ring, "IndeterminateStartAngleProperty",
+                    "Paused ProgressRing should not have an active start-angle animation clock.");
+                AssertDependencyPropertyNotAnimated(ring, "IndeterminateSweepAngleProperty",
+                    "Paused ProgressRing should not have an active sweep-angle animation clock.");
+
+                w.Close();
+            });
+        }
+
+        [TestMethod]
         public void ProgressRing_ErrorState_UsesCriticalBrushThroughThemeCycle()
         {
             WpfTestSta.Invoke(() =>
@@ -460,6 +548,48 @@ namespace Fluence.Wpf.Tests
             var actual = path.Stroke as SolidColorBrush;
             Assert.IsNotNull(actual, "Path stroke should be a SolidColorBrush.");
             Assert.AreEqual(expected.Color, actual.Color, message);
+        }
+
+        private static DoubleAnimationUsingKeyFrames InvokePrivateAnimationFactory(string methodName)
+        {
+            var method = typeof(ProgressRing).GetMethod(methodName, BindingFlags.Static | BindingFlags.NonPublic);
+            Assert.IsNotNull(method, "ProgressRing should expose private factory: " + methodName);
+            var animation = method.Invoke(null, null) as DoubleAnimationUsingKeyFrames;
+            Assert.IsNotNull(animation, methodName + " should return keyframe animation.");
+            return animation;
+        }
+
+        private static void AssertDependencyPropertyNotAnimated(ProgressRing ring, string fieldName, string message)
+        {
+            var field = typeof(ProgressRing).GetField(fieldName, BindingFlags.Static | BindingFlags.NonPublic);
+            Assert.IsNotNull(field, "ProgressRing should expose private dependency property field: " + fieldName);
+            var property = field.GetValue(null) as DependencyProperty;
+            Assert.IsNotNull(property, fieldName + " should be a dependency property.");
+
+            var currentValue = (double)ring.GetValue(property);
+            var baseValue = (double)ring.GetAnimationBaseValue(property);
+            Assert.AreEqual(baseValue, currentValue, 0.01, message);
+        }
+
+        private static void AssertKeyFrames(DoubleAnimationUsingKeyFrames animation, double[] expectedValues)
+        {
+            Assert.AreEqual(expectedValues.Length, animation.KeyFrames.Count, "Unexpected keyframe count.");
+            for (int i = 0; i < expectedValues.Length; i++)
+            {
+                Assert.AreEqual(expectedValues[i], animation.KeyFrames[i].Value, 0.01, "Unexpected keyframe value at index " + i);
+                Assert.IsInstanceOfType(animation.KeyFrames[i], typeof(LinearDoubleKeyFrame),
+                    "ProgressRing indeterminate keyframes should be linear.");
+            }
+        }
+
+        private static void AssertKeyFramePercents(DoubleAnimationUsingKeyFrames animation, double[] expectedPercents)
+        {
+            Assert.AreEqual(expectedPercents.Length, animation.KeyFrames.Count, "Unexpected keyframe count.");
+            for (int i = 0; i < expectedPercents.Length; i++)
+            {
+                Assert.AreEqual(KeyTimeType.Percent, animation.KeyFrames[i].KeyTime.Type, "KeyTime should be percent at index " + i);
+                Assert.AreEqual(expectedPercents[i], animation.KeyFrames[i].KeyTime.Percent, 0.001, "Unexpected keyframe percent at index " + i);
+            }
         }
     }
 }

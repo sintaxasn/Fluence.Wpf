@@ -62,12 +62,13 @@ namespace Fluence.Wpf.Controls
     {
         private const string PART_IndeterminateArc = "PART_IndeterminateArc";
         private const string PART_DeterminateArc = "PART_DeterminateArc";
-        private const double IndeterminateStartAngleDefault = -90.0;
-        private const double IndeterminateMinimumSweepAngle = 18.0;
-        private const double IndeterminateMaximumSweepAngle = 300.0;
+        private const double IndeterminateStartAngleDefault = -720.0;
+        private const double IndeterminateMinimumSweepAngle = 0.0;
+        private const double IndeterminatePausedStartAngle = 0.0;
+        private const double IndeterminatePausedSweepAngle = 50.0;
         private const double FullCircleLimit = 359.99;
 
-        private static readonly Duration IndeterminateAnimationDuration = new Duration(TimeSpan.FromMilliseconds(1600));
+        private static readonly Duration IndeterminateAnimationDuration = new Duration(TimeSpan.FromMilliseconds(5000));
         private static readonly Duration DeterminateAnimationDuration = new Duration(TimeSpan.FromMilliseconds(150));
         private static readonly IEasingFunction DeterminateAnimationEasing = new CubicEase { EasingMode = EasingMode.EaseInOut };
 
@@ -192,7 +193,7 @@ namespace Fluence.Wpf.Controls
                 nameof(ProgressState),
                 typeof(ProgressRingState),
                 typeof(ProgressRing),
-                new FrameworkPropertyMetadata(ProgressRingState.Normal));
+                new FrameworkPropertyMetadata(ProgressRingState.Normal, OnProgressStateChanged));
 
         /// <summary>
         /// Gets or sets the visual state used to color the progress arc.
@@ -407,6 +408,20 @@ namespace Fluence.Wpf.Controls
             }
         }
 
+        private static void OnProgressStateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var ring = (ProgressRing)d;
+            ring.UpdateIndeterminateAnimationState();
+            if (ring.IsIndeterminate)
+            {
+                ring.RenderIndeterminateArc();
+            }
+            else
+            {
+                ring.RenderDeterminateArc(ring.AnimatedFraction);
+            }
+        }
+
         private static object CoerceRingValue(DependencyObject d, object baseValue)
         {
             var ring = (ProgressRing)d;
@@ -474,13 +489,24 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateIndeterminateAnimationState()
         {
-            if (IsLoaded && IsActive && IsIndeterminate)
+            if (IsLoaded && IsActive && IsIndeterminate && ProgressState != ProgressRingState.Paused)
             {
                 StartIndeterminateAnimation();
             }
             else
             {
+                bool shouldRenderPausedFrame =
+                    IsLoaded &&
+                    IsActive &&
+                    IsIndeterminate &&
+                    ProgressState == ProgressRingState.Paused;
                 StopIndeterminateAnimation();
+                if (shouldRenderPausedFrame)
+                {
+                    IndeterminateStartAngle = IndeterminatePausedStartAngle;
+                    IndeterminateSweepAngle = IndeterminatePausedSweepAngle;
+                    RenderIndeterminateArc();
+                }
             }
         }
 
@@ -521,15 +547,25 @@ namespace Fluence.Wpf.Controls
             }
         }
 
-        private static DoubleAnimation CreateIndeterminateStartAnimation()
+        private static DoubleAnimationUsingKeyFrames CreateIndeterminateStartAnimation()
         {
-            return new DoubleAnimation
+            var animation = new DoubleAnimationUsingKeyFrames
             {
-                From = IndeterminateStartAngleDefault,
-                To = IndeterminateStartAngleDefault + 720.0,
                 Duration = IndeterminateAnimationDuration,
                 RepeatBehavior = RepeatBehavior.Forever
             };
+
+            AddLinearKeyFrame(animation, -720.0, 0.0);
+            AddLinearKeyFrame(animation, -540.0, 0.125);
+            AddLinearKeyFrame(animation, -360.0, 0.25);
+            AddLinearKeyFrame(animation, -180.0, 0.325);
+            AddLinearKeyFrame(animation, 0.0, 0.5);
+            AddLinearKeyFrame(animation, 180.0, 0.625);
+            AddLinearKeyFrame(animation, 360.0, 0.75);
+            AddLinearKeyFrame(animation, 540.0, 0.875);
+            AddLinearKeyFrame(animation, 720.0, 1.0);
+
+            return animation;
         }
 
         private static DoubleAnimationUsingKeyFrames CreateIndeterminateSweepAnimation()
@@ -540,25 +576,22 @@ namespace Fluence.Wpf.Controls
                 RepeatBehavior = RepeatBehavior.Forever
             };
 
-            animation.KeyFrames.Add(new LinearDoubleKeyFrame(
-                IndeterminateMinimumSweepAngle,
-                KeyTime.FromPercent(0)));
-            animation.KeyFrames.Add(new SplineDoubleKeyFrame(
-                IndeterminateMaximumSweepAngle,
-                KeyTime.FromPercent(0.42),
-                new KeySpline(0.13, 0.21, 0.1, 0.7)));
-            animation.KeyFrames.Add(new LinearDoubleKeyFrame(
-                IndeterminateMaximumSweepAngle,
-                KeyTime.FromPercent(0.55)));
-            animation.KeyFrames.Add(new SplineDoubleKeyFrame(
-                IndeterminateMinimumSweepAngle,
-                KeyTime.FromPercent(0.92),
-                new KeySpline(0.57, 0.17, 0.95, 0.75)));
-            animation.KeyFrames.Add(new LinearDoubleKeyFrame(
-                IndeterminateMinimumSweepAngle,
-                KeyTime.FromPercent(1)));
+            AddLinearKeyFrame(animation, 0.0, 0.0);
+            AddLinearKeyFrame(animation, 50.0, 0.125);
+            AddLinearKeyFrame(animation, 100.0, 0.25);
+            AddLinearKeyFrame(animation, 50.0, 0.325);
+            AddLinearKeyFrame(animation, 5.0, 0.5);
+            AddLinearKeyFrame(animation, 50.0, 0.625);
+            AddLinearKeyFrame(animation, 100.0, 0.75);
+            AddLinearKeyFrame(animation, 50.0, 0.875);
+            AddLinearKeyFrame(animation, 0.0, 1.0);
 
             return animation;
+        }
+
+        private static void AddLinearKeyFrame(DoubleAnimationUsingKeyFrames animation, double value, double percent)
+        {
+            animation.KeyFrames.Add(new LinearDoubleKeyFrame(value, KeyTime.FromPercent(percent)));
         }
 
         private double ComputeFraction()

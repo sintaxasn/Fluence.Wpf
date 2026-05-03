@@ -289,8 +289,9 @@ namespace Fluence.Wpf.Demo.Pages.Status
         <ui:ToggleSwitch
             Grid.Row=""1""
             Grid.Column=""0""
-            Margin=""0,8,0,0""
+            Margin=""0,12,0,0""
             HorizontalAlignment=""Center""
+            VerticalAlignment=""Center""
             IsChecked=""{Binding IsActive, ElementName=IndeterminateProgressRing, Mode=TwoWay}""
             OffContent=""Off""
             OnContent=""On"" />
@@ -320,8 +321,9 @@ namespace Fluence.Wpf.Demo.Pages.Status
             Grid.Row=""1""
             Grid.Column=""1""
             Width=""120""
-            Margin=""0,8,0,0""
+            Margin=""0,12,0,0""
             HorizontalAlignment=""Center""
+            VerticalAlignment=""Center""
             Maximum=""100""
             Minimum=""0""
             ValueChanged=""ProgressRingSlider_ValueChanged""

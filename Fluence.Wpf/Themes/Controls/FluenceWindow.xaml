@@ -126,6 +126,7 @@
 
     <Style TargetType="{x:Type controls:FluenceWindow}">
         <Setter Property="Focusable" Value="False" />
+        <Setter Property="MinWidth" Value="698" />
         <Setter Property="Background" Value="{DynamicResource ApplicationBackgroundBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultSolidBrush}" />

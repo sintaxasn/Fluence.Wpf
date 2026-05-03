@@ -190,7 +190,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void MainWindow_TitleBarSearch_CollapsesWhenContentExtendsIntoTitleBar()
+        public void MainWindow_TitleBarSearch_StaysVisibleWhenContentExtendsIntoTitleBar()
         {
             RunOnSta(delegate
             {
@@ -206,8 +206,153 @@ namespace Fluence.Wpf.Tests
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Assert.AreEqual(Visibility.Collapsed, search.Visibility,
-                        "Search should collapse when content extends into the title bar.");
+                    Assert.AreEqual(Visibility.Visible, search.Visibility,
+                        "Search should stay visible when content extends into the title bar.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void MainWindow_ExtendedTitleBar_UsesHorizontalNavigationChrome()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                MainWindow window = CreateShownMainWindow();
+                try
+                {
+                    NavigationView nav = FindByName<NavigationView>(window, "DemoNav");
+                    Assert.IsNotNull(nav, "DemoNav must exist.");
+
+                    window.ExtendsContentIntoTitleBar = true;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    WpfButton titleBarToggle = FindByName<WpfButton>(window, "TitleBarPaneToggleButton");
+                    Assert.IsNotNull(titleBarToggle, "Extended title bar should expose a pane toggle button.");
+                    Assert.AreEqual(Visibility.Visible, titleBarToggle.Visibility,
+                        "Pane toggle should move into the title bar when content extends into the title bar.");
+
+                    WpfButton titleBarBack = FindByName<WpfButton>(window, "TitleBarBackButton");
+                    Assert.IsNotNull(titleBarBack, "Extended title bar should expose a back button slot.");
+                    Assert.AreEqual(Visibility.Collapsed, titleBarBack.Visibility,
+                        "Back button should collapse in the title bar when no back route is enabled.");
+
+                    nav.ApplyTemplate();
+                    var internalToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as WpfButton;
+                    Assert.IsNotNull(internalToggle, "Internal NavigationView pane toggle should still exist in the template.");
+                    Assert.AreEqual(Visibility.Collapsed, internalToggle.Visibility,
+                        "Internal NavigationView pane toggle should be hidden while title-bar chrome owns it.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void MainWindow_ExtendedTitleBar_FirstGlyphTracksBackAvailability()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                MainWindow window = CreateShownMainWindow();
+                try
+                {
+                    NavigationView nav = FindByName<NavigationView>(window, "DemoNav");
+                    Assert.IsNotNull(nav, "DemoNav must exist.");
+                    nav.IsBackButtonVisible = true;
+                    nav.IsBackEnabled = true;
+
+                    window.ExtendsContentIntoTitleBar = true;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    System.Windows.Controls.StackPanel titleBarButtons = FindByName<System.Windows.Controls.StackPanel>(window, "TitleBarNavigationButtons");
+                    WpfButton titleBarBack = FindByName<WpfButton>(window, "TitleBarBackButton");
+                    WpfButton titleBarToggle = FindByName<WpfButton>(window, "TitleBarPaneToggleButton");
+                    Assert.IsNotNull(titleBarButtons, "Extended title bar should expose the navigation button group.");
+                    Assert.IsNotNull(titleBarBack, "Extended title bar should expose a back button.");
+                    Assert.IsNotNull(titleBarToggle, "Extended title bar should expose a pane toggle button.");
+                    Assert.AreSame(titleBarBack, GetFirstVisiblePanelChild<WpfButton>(titleBarButtons),
+                        "Back must be the first visible title-bar glyph when back navigation is enabled.");
+
+                    nav.IsBackEnabled = false;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.AreSame(titleBarToggle, GetFirstVisiblePanelChild<WpfButton>(titleBarButtons),
+                        "Pane toggle must become the first visible title-bar glyph when back navigation is disabled.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void MainWindow_ExtendedTitleBar_KeepsNavigationItemsBelowTitleBar()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                MainWindow window = CreateShownMainWindow();
+                try
+                {
+                    NavigationView nav = FindByName<NavigationView>(window, "DemoNav");
+                    Assert.IsNotNull(nav, "DemoNav must exist.");
+
+                    window.ExtendsContentIntoTitleBar = true;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    NavigationViewItem firstItem = nav.Items.Count > 0 ? nav.Items[0] as NavigationViewItem : null;
+                    Assert.IsNotNull(firstItem, "DemoNav should contain a first navigation item.");
+                    double itemY = GetVisualY(firstItem, window);
+                    Assert.IsTrue(itemY >= window.TitleBarHeight - 0.5,
+                        "The first navigation item should be below the extended title bar. itemY=" + itemY + ", titleBarHeight=" + window.TitleBarHeight);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void MainWindow_ExtendedTitleBar_HidesTitleTextWhenItOverlapsSearch()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                MainWindow window = CreateShownMainWindow();
+                try
+                {
+                    window.SetUserShowIcon(true, window.Icon);
+                    window.SetUserShowTitle(true, "Fluence.Wpf Control Gallery Extended Title That Should Not Overlap The Search Box");
+                    window.ExtendsContentIntoTitleBar = true;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Image titleIcon = FindByName<Image>(window, "ExtendedTitleIcon");
+                    WpfTextBlock titleText = FindByName<WpfTextBlock>(window, "ExtendedTitleText");
+                    Assert.IsNotNull(titleIcon, "Extended title bar icon should exist.");
+                    Assert.IsNotNull(titleText, "Extended title bar title should exist.");
+                    Assert.AreEqual(Visibility.Visible, titleIcon.Visibility,
+                        "Title icon should remain visible when title text is hidden for search clearance.");
+                    Assert.AreEqual(Visibility.Collapsed, titleText.Visibility,
+                        "Title text should hide when its bounds would overlap the search box.");
                 }
                 finally
                 {
@@ -555,6 +700,26 @@ namespace Fluence.Wpf.Tests
         private static double GetVisualX(FrameworkElement element, Visual ancestor)
         {
             return element.TransformToAncestor(ancestor).Transform(new Point(0, 0)).X;
+        }
+
+        private static double GetVisualY(FrameworkElement element, Visual ancestor)
+        {
+            return element.TransformToAncestor(ancestor).Transform(new Point(0, 0)).Y;
+        }
+
+        private static T GetFirstVisiblePanelChild<T>(Panel panel)
+            where T : FrameworkElement
+        {
+            foreach (UIElement child in panel.Children)
+            {
+                T typed = child as T;
+                if (typed != null && typed.Visibility == Visibility.Visible)
+                {
+                    return typed;
+                }
+            }
+
+            return null;
         }
 
         private static void Drain(Dispatcher dispatcher)

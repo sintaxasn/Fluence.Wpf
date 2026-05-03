@@ -320,6 +320,89 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void NavigationView_LeftChrome_BackPrecedesPaneToggle()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 420,
+                        Height = 320,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left,
+                        IsBackButtonVisible = true,
+                        IsBackEnabled = true
+                    };
+                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    var back = nav.Template.FindName(Fluent.NavigationView.PartBackButton, nav) as System.Windows.Controls.Button;
+                    var paneToggle = nav.Template.FindName(Fluent.NavigationView.PartPaneToggleButton, nav) as System.Windows.Controls.Button;
+                    Assert.IsNotNull(back, "PART_BackButton must exist in Left template.");
+                    Assert.IsNotNull(paneToggle, "PART_PaneToggleButton must exist in Left template.");
+
+                    double backY = back.TransformToAncestor(nav).Transform(new Point(0, 0)).Y;
+                    double paneToggleY = paneToggle.TransformToAncestor(nav).Transform(new Point(0, 0)).Y;
+                    Assert.IsTrue(backY < paneToggleY, "Back button should be the first glyph, before the pane toggle.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NavigationView_LeftMode_DefaultFontIconSizeIs20()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var icon = new Fluent.FontIcon { Glyph = "\uE80F" };
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 420,
+                        Height = 320,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left
+                    };
+                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One", Icon = icon });
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.AreEqual(20.0, icon.IconFontSize, 0.01,
+                        "NavigationView left-mode FontIcon content should default to 20 px.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
         public void NavigationViewItem_Template_RendersInfoBadge()
         {
             RunOnStaThread(() =>
@@ -537,7 +620,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void NavigationView_IsBackEnabled_False_DisablesBackButton()
+        public void NavigationView_IsBackEnabled_False_CollapsesBackButton()
         {
             RunOnStaThread(() =>
             {
@@ -563,7 +646,48 @@ namespace Fluence.Wpf.Tests
                     nav.ApplyTemplate();
                     var back = nav.Template.FindName(Fluent.NavigationView.PartBackButton, nav) as System.Windows.Controls.Button;
                     Assert.IsNotNull(back);
-                    Assert.IsFalse(back.IsEnabled);
+                    Assert.AreEqual(Visibility.Collapsed, back.Visibility,
+                        "Disabled back should collapse and stop reserving a 40px glyph slot.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NavigationView_IsPaneToggleButtonVisible_False_HidesPaneToggle()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 400,
+                        Height = 320,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left,
+                        IsPaneToggleButtonVisible = false
+                    };
+                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Item" });
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    nav.ApplyTemplate();
+                    var paneToggle = nav.Template.FindName(Fluent.NavigationView.PartPaneToggleButton, nav) as System.Windows.Controls.Button;
+                    Assert.IsNotNull(paneToggle);
+                    Assert.AreEqual(Visibility.Collapsed, paneToggle.Visibility);
                 }
                 finally
                 {
@@ -1498,6 +1622,50 @@ namespace Fluence.Wpf.Tests
             });
         }
 
+        [TestMethod]
+        public void NavigationView_Left_HeaderContentUsesAutoHeight()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 800,
+                        Height = 480,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left,
+                        IsPaneOpen = true,
+                        Header = new System.Windows.Controls.Border { Width = 100, Height = 20 }
+                    };
+                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    var presenter = FindVisualChildByName<ContentPresenter>(nav, Fluent.NavigationView.PartContentPresenter);
+                    Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in Left template.");
+
+                    var offset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
+                    Assert.AreEqual(20.0, offset.Y, 1.0,
+                        "Left NavigationView should only reserve the 48px top gap when Header is empty.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
         // WI-1 F1: LeftCompact pane must resize inline and push sibling content. Never overlay.
         //
         // Regression guard: the original LeftCompactPaneTemplate drew the pane as an overlay
@@ -1536,6 +1704,51 @@ namespace Fluence.Wpf.Tests
 
                     AssertContentOffsetEventually(window, nav, presenter, 280.0,
                         "When IsPaneOpen=true in LeftCompact, content must start inline at pane width 280 (not overlap the pane).");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NavigationView_LeftCompact_HeaderContentUsesAutoHeight()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 800,
+                        Height = 480,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact,
+                        IsPaneOpen = true,
+                        Header = new System.Windows.Controls.Border { Width = 100, Height = 20 }
+                    };
+                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    WaitForAnimationAndDrain(window.Dispatcher, 300);
+                    window.UpdateLayout();
+
+                    var presenter = FindVisualChildByName<ContentPresenter>(nav, Fluent.NavigationView.PartContentPresenter);
+                    Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in LeftCompact template.");
+
+                    var offset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
+                    Assert.AreEqual(20.0, offset.Y, 1.0,
+                        "LeftCompact NavigationView should only reserve the 48px top gap when Header is empty.");
                 }
                 finally
                 {

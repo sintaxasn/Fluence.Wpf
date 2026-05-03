@@ -50,7 +50,7 @@
                                 Content="Home"
                                 IsSelected="True">
                                 <ui:NavigationViewItem.Icon>
-                                    <ui:FontIcon Glyph="&#xE80F;" IconFontSize="18" />
+                                    <ui:FontIcon Glyph="&#xE80F;" IconFontSize="20" />
                                 </ui:NavigationViewItem.Icon>
                                 <ui:NavigationViewItem.PageContent>
                                     <StackPanel Margin="20">
@@ -69,7 +69,7 @@
                             </ui:NavigationViewItem>
                             <ui:NavigationViewItem Content="Files">
                                 <ui:NavigationViewItem.Icon>
-                                    <ui:FontIcon Glyph="&#xE8B7;" IconFontSize="18" />
+                                    <ui:FontIcon Glyph="&#xE8B7;" IconFontSize="20" />
                                 </ui:NavigationViewItem.Icon>
                                 <ui:NavigationViewItem.PageContent>
                                     <TextBlock
@@ -80,7 +80,7 @@
                             </ui:NavigationViewItem>
                             <ui:NavigationViewItem Content="Reports">
                                 <ui:NavigationViewItem.Icon>
-                                    <ui:FontIcon Glyph="&#xE9D9;" IconFontSize="18" />
+                                    <ui:FontIcon Glyph="&#xE9D9;" IconFontSize="20" />
                                 </ui:NavigationViewItem.Icon>
                                 <ui:NavigationViewItem.PageContent>
                                     <TextBlock
@@ -188,7 +188,7 @@
                                 Content="Dashboard"
                                 IsSelected="True">
                                 <ui:NavigationViewItem.Icon>
-                                    <ui:FontIcon Glyph="&#xE80F;" IconFontSize="18" />
+                                    <ui:FontIcon Glyph="&#xE80F;" IconFontSize="20" />
                                 </ui:NavigationViewItem.Icon>
                                 <ui:NavigationViewItem.PageContent>
                                     <StackPanel Margin="20">
@@ -207,7 +207,7 @@
                             </ui:NavigationViewItem>
                             <ui:NavigationViewItem Content="Messages">
                                 <ui:NavigationViewItem.Icon>
-                                    <ui:FontIcon Glyph="&#xE8BD;" IconFontSize="18" />
+                                    <ui:FontIcon Glyph="&#xE8BD;" IconFontSize="20" />
                                 </ui:NavigationViewItem.Icon>
                             </ui:NavigationViewItem>
                         </ui:NavigationView>

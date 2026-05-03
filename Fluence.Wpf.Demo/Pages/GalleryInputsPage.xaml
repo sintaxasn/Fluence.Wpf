@@ -213,12 +213,13 @@
                         TickFrequency="1"
                         Value="4" />
                     <Grid
-                        MaxWidth="260"
+                        MaxWidth="292"
                         Margin="0,0,0,12"
                         HorizontalAlignment="Center">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="32" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0" HorizontalAlignment="Center">
                             <TextBlock
@@ -233,7 +234,7 @@
                                 Orientation="Vertical"
                                 Value="40" />
                         </StackPanel>
-                        <StackPanel Grid.Column="1" HorizontalAlignment="Center">
+                        <StackPanel Grid.Column="2" HorizontalAlignment="Center">
                             <TextBlock
                                 Margin="0,0,0,6"
                                 HorizontalAlignment="Center"

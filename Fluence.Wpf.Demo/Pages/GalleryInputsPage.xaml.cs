@@ -241,11 +241,12 @@ namespace Fluence.Wpf.Demo.Pages.Inputs
                 Value=""4"" />
         </ui:StackPanel>
         <Grid
-            MaxWidth=""260""
+            MaxWidth=""292""
             HorizontalAlignment=""Center"">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width=""*"" />
-                <ColumnDefinition Width=""*"" />
+                <ColumnDefinition Width=""Auto"" />
+                <ColumnDefinition Width=""32"" />
+                <ColumnDefinition Width=""Auto"" />
             </Grid.ColumnDefinitions>
             <ui:StackPanel Grid.Column=""0"" Spacing=""10"" HorizontalAlignment=""Center"">
                 <TextBlock HorizontalAlignment=""Center"" Text=""Vertical"" />
@@ -256,7 +257,7 @@ namespace Fluence.Wpf.Demo.Pages.Inputs
                     Orientation=""Vertical""
                     Value=""40"" />
             </ui:StackPanel>
-            <ui:StackPanel Grid.Column=""1"" Spacing=""10"" HorizontalAlignment=""Center"">
+            <ui:StackPanel Grid.Column=""2"" Spacing=""10"" HorizontalAlignment=""Center"">
                 <TextBlock HorizontalAlignment=""Center"" Text=""Disabled"" />
                 <ui:Slider
                     Height=""210""

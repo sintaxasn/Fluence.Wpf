@@ -37,6 +37,9 @@ namespace Fluence.Wpf.Demo
     {
         private const string IconographyPageTitle = "Iconography";
         private const string SmokeTestArgument = "--smoke-test";
+        private static readonly Uri DemoSharedStylesUri = new Uri(
+            "/Fluence.Wpf.Demo;component/Resources/DemoSharedStyles.xaml",
+            UriKind.Relative);
 
         static App()
         {
@@ -60,6 +63,7 @@ namespace Fluence.Wpf.Demo
 
             ApplicationThemeManager.Apply(ApplicationTheme.Auto, BackdropType.Auto, true);
             ApplicationAccentColorManager.ApplySystemAccent();
+            LoadDemoSharedStyles();
 
             var mainWindow = new MainWindow();
             MainWindow = mainWindow;
@@ -90,6 +94,11 @@ namespace Fluence.Wpf.Demo
             ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.Auto, true);
 
             mainWindow.Close();
+        }
+
+        private static void LoadDemoSharedStyles()
+        {
+            Current.Resources.MergedDictionaries.Add(new ResourceDictionary { Source = DemoSharedStylesUri });
         }
 
         private static void RealizeIconographyList(DependencyObject root)

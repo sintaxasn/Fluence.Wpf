@@ -72,7 +72,7 @@ public class FluenceWindow : Window
 | `MarginMaximizedProperty`              | `MarginMaximized`             | `Thickness`       | `new Thickness(0)`           | _(none)_                                  |
 | `ExtendsContentIntoTitleBarProperty`   | `ExtendsContentIntoTitleBar`  | `bool`            | `false`                      | `OnExtendsContentIntoTitleBarChanged`     |
 | `TitleBarProperty`                     | `TitleBar`                    | `UIElement`       | `null`                       | _(none)_                                  |
-| `TitleBarHeightProperty`               | `TitleBarHeight`              | `double`          | `DefaultTitleBarHeight` (48) | `OnTitleBarHeightChanged`                 |
+| `TitleBarHeightProperty`               | `TitleBarHeight`              | `double`          | `DefaultTitleBarHeight` (68) | `OnTitleBarHeightChanged`                 |
 | `ShowIconProperty`                     | `ShowIcon`                    | `bool`            | `true`                       | _(none)_                                  |
 | `ShowTitleProperty`                    | `ShowTitle`                   | `bool`            | `true`                       | _(none)_                                  |
 | `IsMinimizeButtonVisibleProperty`      | `IsMinimizeButtonVisible`     | `Visibility`      | `Visibility.Visible`         | `OnCaptionButtonChromeOverrideChanged`    |

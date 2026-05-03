@@ -56,7 +56,7 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = FluenceWindowTemplateParts.PART_CloseButton, Type = typeof(System.Windows.Controls.Button))]
     public class FluenceWindow : Window
     {
-        private const double DefaultTitleBarHeight = 48d;
+        private const double DefaultTitleBarHeight = 68d;
         private const string PART_MinimizeButton = FluenceWindowTemplateParts.PART_MinimizeButton;
         private const string PART_MaximizeButton = FluenceWindowTemplateParts.PART_MaximizeButton;
         private const string PART_RestoreButton = FluenceWindowTemplateParts.PART_RestoreButton;

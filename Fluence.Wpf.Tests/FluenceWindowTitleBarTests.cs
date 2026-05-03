@@ -198,15 +198,25 @@ namespace Fluence.Wpf.Tests
 
         #endregion
 
-        #region 2. TitleBarHeight default
+        #region 2. FluenceWindow sizing defaults
 
         [TestMethod]
-        public void TitleBarHeight_DefaultIs48()
+        public void TitleBarHeight_DefaultIs68()
         {
             RunWithWindow(w =>
             {
-                Assert.AreEqual(48d, w.TitleBarHeight,
-                    "TitleBarHeight should default to 48.");
+                Assert.AreEqual(68d, w.TitleBarHeight,
+                    "TitleBarHeight should default to 68.");
+            });
+        }
+
+        [TestMethod]
+        public void MinWidth_DefaultIs698()
+        {
+            RunWithWindow(w =>
+            {
+                Assert.AreEqual(698d, w.MinWidth,
+                    "FluenceWindow should default to a 698 px minimum width.");
             });
         }
 

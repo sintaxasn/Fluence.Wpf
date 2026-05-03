@@ -33,6 +33,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Threading;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Demo.Pages;
 
@@ -48,8 +49,13 @@ namespace Fluence.Wpf.Demo
         private bool _userShowTitle;
         private ImageSource _userIcon;
         private string _userTitle;
+        private bool _userNavBackButtonVisible;
+        private bool _userNavPaneToggleButtonVisible;
         private DependencyPropertyDescriptor _extendsDpd;
         private DependencyPropertyDescriptor _paneModeDpd;
+        private DependencyPropertyDescriptor _backEnabledDpd;
+        private DependencyPropertyDescriptor _backVisibleDpd;
+        private DependencyPropertyDescriptor _paneToggleVisibleDpd;
         private object _lastAnimatedPageContent;
 
         public MainWindow()
@@ -64,6 +70,8 @@ namespace Fluence.Wpf.Demo
             _userShowTitle = ShowTitle;
             _userIcon = Icon;
             _userTitle = Title;
+            _userNavBackButtonVisible = DemoNav != null && DemoNav.IsBackButtonVisible;
+            _userNavPaneToggleButtonVisible = DemoNav == null || DemoNav.IsPaneToggleButtonVisible;
 
             if (DemoNav != null)
             {
@@ -85,6 +93,21 @@ namespace Fluence.Wpf.Demo
             if (_paneModeDpd != null && DemoNav != null)
             {
                 _paneModeDpd.RemoveValueChanged(DemoNav, OnTitleBarDependencyChanged);
+            }
+
+            if (_backEnabledDpd != null && DemoNav != null)
+            {
+                _backEnabledDpd.RemoveValueChanged(DemoNav, OnTitleBarDependencyChanged);
+            }
+
+            if (_backVisibleDpd != null && DemoNav != null)
+            {
+                _backVisibleDpd.RemoveValueChanged(DemoNav, OnTitleBarDependencyChanged);
+            }
+
+            if (_paneToggleVisibleDpd != null && DemoNav != null)
+            {
+                _paneToggleVisibleDpd.RemoveValueChanged(DemoNav, OnTitleBarDependencyChanged);
             }
 
             if (DemoNav != null)
@@ -463,20 +486,47 @@ namespace Fluence.Wpf.Demo
                 {
                     _paneModeDpd.AddValueChanged(DemoNav, OnTitleBarDependencyChanged);
                 }
+
+                _backEnabledDpd = DependencyPropertyDescriptor.FromProperty(
+                    NavigationView.IsBackEnabledProperty, typeof(NavigationView));
+                if (_backEnabledDpd != null)
+                {
+                    _backEnabledDpd.AddValueChanged(DemoNav, OnTitleBarDependencyChanged);
+                }
+
+                _backVisibleDpd = DependencyPropertyDescriptor.FromProperty(
+                    NavigationView.IsBackButtonVisibleProperty, typeof(NavigationView));
+                if (_backVisibleDpd != null)
+                {
+                    _backVisibleDpd.AddValueChanged(DemoNav, OnTitleBarDependencyChanged);
+                }
+
+                _paneToggleVisibleDpd = DependencyPropertyDescriptor.FromProperty(
+                    NavigationView.IsPaneToggleButtonVisibleProperty, typeof(NavigationView));
+                if (_paneToggleVisibleDpd != null)
+                {
+                    _paneToggleVisibleDpd.AddValueChanged(DemoNav, OnTitleBarDependencyChanged);
+                }
             }
         }
 
         private void OnTitleBarDependencyChanged(object sender, EventArgs e)
         {
+            if (sender == DemoNav && !ExtendsContentIntoTitleBar)
+            {
+                _userNavBackButtonVisible = DemoNav.IsBackButtonVisible;
+                _userNavPaneToggleButtonVisible = DemoNav.IsPaneToggleButtonVisible;
+            }
+
             ApplyTitleBarContentVisibility();
         }
 
         private void ApplyTitleBarContentVisibility()
         {
-            bool hideForExtendedTitleBar = ExtendsContentIntoTitleBar;
+            bool extendedTitleBar = ExtendsContentIntoTitleBar;
 
-            ShowIcon = !hideForExtendedTitleBar && _userShowIcon;
-            ShowTitle = !hideForExtendedTitleBar && _userShowTitle;
+            ShowIcon = !extendedTitleBar && _userShowIcon;
+            ShowTitle = !extendedTitleBar && _userShowTitle;
             Icon = _userIcon;
             if (_userShowTitle && !string.IsNullOrEmpty(_userTitle))
             {
@@ -485,7 +535,113 @@ namespace Fluence.Wpf.Demo
 
             if (NavSearchBox != null)
             {
-                NavSearchBox.Visibility = hideForExtendedTitleBar ? Visibility.Collapsed : Visibility.Visible;
+                NavSearchBox.Visibility = Visibility.Visible;
+            }
+
+            if (DemoNav != null)
+            {
+                DemoNav.IsBackButtonVisible = !extendedTitleBar && _userNavBackButtonVisible;
+                DemoNav.IsPaneToggleButtonVisible = !extendedTitleBar && _userNavPaneToggleButtonVisible;
+            }
+
+            if (ExtendedTitleBarChrome != null)
+            {
+                ExtendedTitleBarChrome.Visibility = extendedTitleBar ? Visibility.Visible : Visibility.Collapsed;
+            }
+
+            if (TitleBarNavigationButtons != null)
+            {
+                TitleBarNavigationButtons.Visibility = extendedTitleBar ? Visibility.Visible : Visibility.Collapsed;
+            }
+
+            if (TitleBarBackButton != null)
+            {
+                bool showTitleBarBack = extendedTitleBar
+                    && _userNavBackButtonVisible
+                    && DemoNav != null
+                    && DemoNav.IsBackEnabled;
+                TitleBarBackButton.Visibility = showTitleBarBack ? Visibility.Visible : Visibility.Collapsed;
+            }
+
+            if (TitleBarPaneToggleButton != null && DemoNav != null)
+            {
+                bool showTitleBarToggle = extendedTitleBar
+                    && _userNavPaneToggleButtonVisible
+                    && DemoNav.PaneDisplayMode != NavigationViewPaneDisplayMode.Top;
+                TitleBarPaneToggleButton.Visibility = showTitleBarToggle ? Visibility.Visible : Visibility.Collapsed;
+            }
+
+            if (ExtendedTitleIcon != null)
+            {
+                ExtendedTitleIcon.Source = _userIcon;
+                ExtendedTitleIcon.Visibility = extendedTitleBar && _userShowIcon && _userIcon != null
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+            }
+
+            if (ExtendedTitleText != null)
+            {
+                ExtendedTitleText.Text = _userTitle;
+                ExtendedTitleText.Visibility = extendedTitleBar && _userShowTitle && !string.IsNullOrEmpty(_userTitle)
+                    ? Visibility.Visible
+                    : Visibility.Collapsed;
+            }
+
+            ScheduleExtendedTitleOverlapCheck();
+        }
+
+        private void TitleBarLayout_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            ScheduleExtendedTitleOverlapCheck();
+        }
+
+        private void TitleBarPaneToggleButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (DemoNav != null)
+            {
+                DemoNav.IsPaneOpen = !DemoNav.IsPaneOpen;
+            }
+        }
+
+        private void TitleBarBackButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (DemoNav != null && DemoNav.IsBackEnabled)
+            {
+                NavigateTo("home");
+            }
+        }
+
+        private void ScheduleExtendedTitleOverlapCheck()
+        {
+            Dispatcher.BeginInvoke(new Action(UpdateExtendedTitleOverlap), DispatcherPriority.Loaded);
+        }
+
+        private void UpdateExtendedTitleOverlap()
+        {
+            if (!ExtendsContentIntoTitleBar
+                || ExtendedTitleText == null
+                || NavSearchBox == null
+                || ExtendedTitleText.Visibility != Visibility.Visible
+                || NavSearchBox.Visibility != Visibility.Visible
+                || !ExtendedTitleText.IsVisible
+                || !NavSearchBox.IsVisible)
+            {
+                return;
+            }
+
+            try
+            {
+                var titlePoint = ExtendedTitleText.TransformToAncestor(this).Transform(new Point(0, 0));
+                var searchPoint = NavSearchBox.TransformToAncestor(this).Transform(new Point(0, 0));
+                double titleRight = titlePoint.X + ExtendedTitleText.ActualWidth;
+                double searchLeft = searchPoint.X;
+                if (titleRight + 12.0 > searchLeft)
+                {
+                    ExtendedTitleText.Visibility = Visibility.Collapsed;
+                }
+            }
+            catch (InvalidOperationException)
+            {
             }
         }
     }

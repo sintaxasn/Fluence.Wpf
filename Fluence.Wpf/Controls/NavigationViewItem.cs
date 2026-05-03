@@ -55,7 +55,7 @@ namespace Fluence.Wpf.Controls
             "Icon",
             typeof(object),
             typeof(NavigationViewItem),
-            new PropertyMetadata(null));
+            new PropertyMetadata(null, OnIconChanged));
 
         /// <summary>
         /// Identifies the <see cref="InfoBadge"/> dependency property.
@@ -233,6 +233,24 @@ namespace Fluence.Wpf.Controls
 
             Focus();
             e.Handled = true;
+        }
+
+        private static void OnIconChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ApplyDefaultFontIconSize(e.NewValue as FontIcon);
+        }
+
+        private static void ApplyDefaultFontIconSize(FontIcon icon)
+        {
+            if (icon == null)
+            {
+                return;
+            }
+
+            if (icon.ReadLocalValue(FontIcon.IconFontSizeProperty) == DependencyProperty.UnsetValue)
+            {
+                icon.SetCurrentValue(FontIcon.IconFontSizeProperty, 20.0);
+            }
         }
     }
 }

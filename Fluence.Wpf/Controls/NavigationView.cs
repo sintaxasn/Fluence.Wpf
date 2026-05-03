@@ -110,7 +110,14 @@ namespace Fluence.Wpf.Controls
             "IsBackEnabled",
             typeof(bool),
             typeof(NavigationView),
-            new PropertyMetadata(true));
+            new PropertyMetadata(true, OnIsBackEnabledChanged));
+
+        /// <summary>Identifies the <see cref="IsPaneToggleButtonVisible"/> dependency property.</summary>
+        public static readonly DependencyProperty IsPaneToggleButtonVisibleProperty = DependencyProperty.Register(
+            "IsPaneToggleButtonVisible",
+            typeof(bool),
+            typeof(NavigationView),
+            new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsMeasure));
 
         /// <summary>Identifies the <see cref="Header"/> dependency property.</summary>
         public static readonly DependencyProperty HeaderProperty = DependencyProperty.Register(
@@ -242,6 +249,13 @@ namespace Fluence.Wpf.Controls
             set { SetValue(IsBackEnabledProperty, value); }
         }
 
+        /// <summary>Gets or sets whether the pane collapse/expand toggle button is shown in left pane modes.</summary>
+        public bool IsPaneToggleButtonVisible
+        {
+            get { return (bool)GetValue(IsPaneToggleButtonVisibleProperty); }
+            set { SetValue(IsPaneToggleButtonVisibleProperty, value); }
+        }
+
         /// <summary>Gets or sets header content displayed beside the navigation chrome.</summary>
         public object Header
         {
@@ -340,6 +354,7 @@ namespace Fluence.Wpf.Controls
             _indicatorPositioned = false;
             StopAnimation();
             UpdateBackButtonState(false);
+            ScheduleIndicatorPosition(false);
         }
 
         /// <inheritdoc />
@@ -353,7 +368,7 @@ namespace Fluence.Wpf.Controls
 
             base.OnSelectionChanged(e);
             UpdateSelectedContentFromSelection();
-            Dispatcher.BeginInvoke(new Action(() => PositionIndicator(true, previousItem)), DispatcherPriority.Input);
+            Dispatcher.BeginInvoke(new Action(() => PositionIndicator(true, previousItem)), DispatcherPriority.Loaded);
 
             var handler = NavSelectionChanged;
             if (handler != null)
@@ -420,6 +435,8 @@ namespace Fluence.Wpf.Controls
             {
                 navItem.Selected -= OnNavigationViewItemSelected;
                 navItem.Selected += OnNavigationViewItemSelected;
+                navItem.Loaded -= OnNavigationViewItemLoaded;
+                navItem.Loaded += OnNavigationViewItemLoaded;
             }
         }
 
@@ -430,6 +447,7 @@ namespace Fluence.Wpf.Controls
             if (navItem != null)
             {
                 navItem.Selected -= OnNavigationViewItemSelected;
+                navItem.Loaded -= OnNavigationViewItemLoaded;
             }
 
             base.ClearContainerForItemOverride(element, item);
@@ -457,6 +475,11 @@ namespace Fluence.Wpf.Controls
             ((NavigationView)d).UpdateBackButtonState(true);
         }
 
+        private static void OnIsBackEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((NavigationView)d).UpdateBackButtonState(true);
+        }
+
         /// <summary>
         /// Transitions the back button to the correct <c>BackButtonStates</c> VSM state
         /// based on <see cref="IsBackButtonVisible"/>. Called without transitions on
@@ -464,7 +487,7 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         private void UpdateBackButtonState(bool useTransitions)
         {
-            string stateName = IsBackButtonVisible ? "BackButtonVisible" : "BackButtonCollapsed";
+            string stateName = IsBackButtonVisible && IsBackEnabled ? "BackButtonVisible" : "BackButtonCollapsed";
             VisualStateManager.GoToState(this, stateName, useTransitions);
         }
 
@@ -507,6 +530,14 @@ namespace Fluence.Wpf.Controls
             }
         }
 
+        private void OnNavigationViewItemLoaded(object sender, RoutedEventArgs e)
+        {
+            if (SelectedItem != null)
+            {
+                ScheduleIndicatorPosition(false);
+            }
+        }
+
         private static void OnIsPaneOpenChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var nav = (NavigationView)d;
@@ -529,6 +560,7 @@ namespace Fluence.Wpf.Controls
             }
 
             nav._indicatorPositioned = false;
+            nav.ScheduleIndicatorPosition(false);
         }
 
         private static void OnPaneDisplayModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -542,7 +574,12 @@ namespace Fluence.Wpf.Controls
             }
 
             nav._indicatorPositioned = false;
-            nav.Dispatcher.BeginInvoke(new Action(() => nav.PositionIndicator(false)), DispatcherPriority.Loaded);
+            nav.ScheduleIndicatorPosition(false);
+        }
+
+        private void ScheduleIndicatorPosition(bool animate)
+        {
+            Dispatcher.BeginInvoke(new Action(() => PositionIndicator(animate)), DispatcherPriority.Loaded);
         }
 
         /// <summary>

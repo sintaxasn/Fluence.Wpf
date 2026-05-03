@@ -61,6 +61,10 @@ xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
 
 Tab strip and scroll bar styling are provided via merged themes (see `Themes/Generic.xaml`).
 
+## FluenceWindow
+
+`FluenceWindow` provides the Fluent window chrome, caption buttons, backdrop, and title-bar content slot. The default minimum width is 698 px and the default title bar height is 68 px. When `ExtendsContentIntoTitleBar="True"`, app content can render behind the title bar; NavigationView left panes reserve title-bar height before their first item when no explicit header is provided.
+
 ## NavigationView
 
 Three pane display modes are supported out of the box:
@@ -76,7 +80,8 @@ Left and LeftCompact share the same visual contract:
 - Pane toggle (`PART_PaneToggleButton`, glyph `E700`) and back button (`PART_BackButton`, glyph `E72B`) stacked at the top of a 48 px rail, each 40×40 px.
 - Selection indicator (`PART_SelectionIndicator`) is a single `Border` that animates between items - 3 × 16 px vertical in `Left` / `LeftCompact`, 16 × 3 px horizontal in `Top`.
 - Content region is a `Border` with `CornerRadius="8,0,0,0"`, `BorderThickness="1,1,0,0"`, and `BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"`, wrapping `PART_ContentPresenter`.
-- Back button visibility and enabled state are driven by `IsBackButtonVisible` / `IsBackEnabled`. Consumers route the `BackRequested` event to their own history stack.
+- Back button visibility and enabled state are driven by `IsBackButtonVisible` / `IsBackEnabled`. The back button is visible only when both are `true`; a disabled back route collapses the button and does not reserve a glyph slot. Consumers route the `BackRequested` event to their own history stack.
+- Pane toggle visibility is controlled by `IsPaneToggleButtonVisible`. It defaults to `true` for left pane modes and is not shown in top mode.
 
 ## Cards
 
