@@ -487,8 +487,15 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         private void UpdateBackButtonState(bool useTransitions)
         {
-            string stateName = IsBackButtonVisible && IsBackEnabled ? "BackButtonVisible" : "BackButtonCollapsed";
+            bool isVisible = IsBackButtonVisible && IsBackEnabled;
+            string stateName = isVisible ? "BackButtonVisible" : "BackButtonCollapsed";
             VisualStateManager.GoToState(this, stateName, useTransitions);
+
+            if (_backButton != null)
+            {
+                _backButton.BeginAnimation(UIElement.VisibilityProperty, null);
+                _backButton.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
+            }
         }
 
         private void OnBackButtonClick(object sender, RoutedEventArgs e)

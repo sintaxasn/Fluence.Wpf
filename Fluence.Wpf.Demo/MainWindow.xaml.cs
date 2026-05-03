@@ -28,6 +28,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -51,6 +52,7 @@ namespace Fluence.Wpf.Demo
         private string _userTitle;
         private bool _userNavBackButtonVisible;
         private bool _userNavPaneToggleButtonVisible;
+        private bool _lastAppliedExtendedTitleBar;
         private DependencyPropertyDescriptor _extendsDpd;
         private DependencyPropertyDescriptor _paneModeDpd;
         private DependencyPropertyDescriptor _backEnabledDpd;
@@ -540,8 +542,16 @@ namespace Fluence.Wpf.Demo
 
             if (DemoNav != null)
             {
-                DemoNav.IsBackButtonVisible = !extendedTitleBar && _userNavBackButtonVisible;
-                DemoNav.IsPaneToggleButtonVisible = !extendedTitleBar && _userNavPaneToggleButtonVisible;
+                if (extendedTitleBar)
+                {
+                    DemoNav.IsBackButtonVisible = false;
+                    DemoNav.IsPaneToggleButtonVisible = false;
+                }
+                else if (_lastAppliedExtendedTitleBar)
+                {
+                    DemoNav.IsBackButtonVisible = _userNavBackButtonVisible;
+                    DemoNav.IsPaneToggleButtonVisible = _userNavPaneToggleButtonVisible;
+                }
             }
 
             if (ExtendedTitleBarChrome != null)
@@ -588,6 +598,7 @@ namespace Fluence.Wpf.Demo
             }
 
             ScheduleExtendedTitleOverlapCheck();
+            _lastAppliedExtendedTitleBar = extendedTitleBar;
         }
 
         private void TitleBarLayout_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -635,7 +646,7 @@ namespace Fluence.Wpf.Demo
                 var searchPoint = NavSearchBox.TransformToAncestor(this).Transform(new Point(0, 0));
                 double titleRight = titlePoint.X + ExtendedTitleText.ActualWidth;
                 double searchLeft = searchPoint.X;
-                if (titleRight + 12.0 > searchLeft)
+                if (titleRight + 12.0 > searchLeft || IsExtendedTitleTextTruncated())
                 {
                     ExtendedTitleText.Visibility = Visibility.Collapsed;
                 }
@@ -643,6 +654,39 @@ namespace Fluence.Wpf.Demo
             catch (InvalidOperationException)
             {
             }
+        }
+
+        private bool IsExtendedTitleTextTruncated()
+        {
+            if (ExtendedTitleText == null || string.IsNullOrEmpty(ExtendedTitleText.Text))
+            {
+                return false;
+            }
+
+            double pixelsPerDip = 1.0;
+            try
+            {
+                pixelsPerDip = VisualTreeHelper.GetDpi(this).PixelsPerDip;
+            }
+            catch (InvalidOperationException)
+            {
+            }
+
+            var typeface = new Typeface(
+                ExtendedTitleText.FontFamily,
+                ExtendedTitleText.FontStyle,
+                ExtendedTitleText.FontWeight,
+                ExtendedTitleText.FontStretch);
+            var formattedText = new FormattedText(
+                ExtendedTitleText.Text,
+                CultureInfo.CurrentUICulture,
+                ExtendedTitleText.FlowDirection,
+                typeface,
+                ExtendedTitleText.FontSize,
+                Brushes.Black,
+                pixelsPerDip);
+
+            return formattedText.WidthIncludingTrailingWhitespace > ExtendedTitleText.ActualWidth + 1.0;
         }
     }
 }

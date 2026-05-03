@@ -349,9 +349,20 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(back, "PART_BackButton must exist in Left template.");
                     Assert.IsNotNull(paneToggle, "PART_PaneToggleButton must exist in Left template.");
 
-                    double backY = back.TransformToAncestor(nav).Transform(new Point(0, 0)).Y;
-                    double paneToggleY = paneToggle.TransformToAncestor(nav).Transform(new Point(0, 0)).Y;
-                    Assert.IsTrue(backY < paneToggleY, "Back button should be the first glyph, before the pane toggle.");
+                    var chrome = FindVisualChildByName<System.Windows.Controls.StackPanel>(nav, "PaneChrome");
+                    Assert.IsNotNull(chrome, "Left template should expose the pane chrome host.");
+                    Assert.AreEqual(Orientation.Horizontal, chrome.Orientation,
+                        "Left pane chrome should arrange back and pane toggle in a horizontal row.");
+                    Assert.AreEqual(48.0, back.ActualWidth, 0.5,
+                        "Back button should occupy one 48px navigation rail slot.");
+                    Assert.AreEqual(48.0, paneToggle.ActualWidth, 0.5,
+                        "Pane toggle should occupy one 48px navigation rail slot.");
+
+                    Point backPoint = back.TransformToAncestor(nav).Transform(new Point(0, 0));
+                    Point paneTogglePoint = paneToggle.TransformToAncestor(nav).Transform(new Point(0, 0));
+                    Assert.IsTrue(backPoint.X < paneTogglePoint.X, "Back button should be the first glyph, before the pane toggle.");
+                    Assert.AreEqual(backPoint.Y, paneTogglePoint.Y, 0.5,
+                        "Back button and pane toggle should share the same pane chrome row.");
                 }
                 finally
                 {
@@ -645,9 +656,13 @@ namespace Fluence.Wpf.Tests
 
                     nav.ApplyTemplate();
                     var back = nav.Template.FindName(Fluent.NavigationView.PartBackButton, nav) as System.Windows.Controls.Button;
+                    var paneToggle = nav.Template.FindName(Fluent.NavigationView.PartPaneToggleButton, nav) as System.Windows.Controls.Button;
                     Assert.IsNotNull(back);
+                    Assert.IsNotNull(paneToggle);
                     Assert.AreEqual(Visibility.Collapsed, back.Visibility,
-                        "Disabled back should collapse and stop reserving a 40px glyph slot.");
+                        "Disabled back should collapse and stop reserving a 48px glyph slot.");
+                    Assert.AreEqual(0.0, paneToggle.TransformToAncestor(nav).Transform(new Point(0, 0)).X, 0.5,
+                        "Pane toggle should reflow into the first chrome slot when disabled back collapses.");
                 }
                 finally
                 {

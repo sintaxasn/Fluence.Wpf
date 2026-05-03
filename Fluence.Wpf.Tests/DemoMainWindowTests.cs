@@ -237,11 +237,32 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(titleBarToggle, "Extended title bar should expose a pane toggle button.");
                     Assert.AreEqual(Visibility.Visible, titleBarToggle.Visibility,
                         "Pane toggle should move into the title bar when content extends into the title bar.");
+                    Assert.AreEqual(48.0, titleBarToggle.ActualWidth, 0.5,
+                        "Title-bar pane toggle should occupy one 48px navigation rail slot.");
+
+                    FontIcon titleBarGlyph = FindVisualChild<FontIcon>(titleBarToggle);
+                    Assert.IsNotNull(titleBarGlyph, "Title-bar pane toggle should render a FontIcon.");
+                    Assert.AreEqual(20.0, titleBarGlyph.IconFontSize, 0.01,
+                        "Title-bar pane toggle glyph should match left-mode NavigationViewItem glyph size.");
 
                     WpfButton titleBarBack = FindByName<WpfButton>(window, "TitleBarBackButton");
                     Assert.IsNotNull(titleBarBack, "Extended title bar should expose a back button slot.");
                     Assert.AreEqual(Visibility.Collapsed, titleBarBack.Visibility,
                         "Back button should collapse in the title bar when no back route is enabled.");
+
+                    NavigationViewItem firstItem = nav.Items.Count > 0 ? nav.Items[0] as NavigationViewItem : null;
+                    Assert.IsNotNull(firstItem, "DemoNav should contain a first navigation item.");
+                    FontIcon itemGlyph = FindVisualChild<FontIcon>(firstItem);
+                    Assert.IsNotNull(itemGlyph, "First navigation item should render an icon.");
+                    Assert.AreEqual(GetVisualCenterX(itemGlyph, window), GetVisualCenterX(titleBarGlyph, window), 2.5,
+                        "Title-bar pane toggle glyph should align with the NavigationViewItem glyph rail.");
+
+                    Image titleIcon = FindByName<Image>(window, "ExtendedTitleIcon");
+                    Assert.IsNotNull(titleIcon, "Extended title bar icon should exist.");
+                    Assert.AreEqual(Visibility.Visible, titleIcon.Visibility,
+                        "Extended title bar icon should be visible by default.");
+                    Assert.IsTrue(GetVisualX(titleIcon, window) >= GetVisualX(titleBarToggle, window) + titleBarToggle.ActualWidth - 0.5,
+                        "Title identity should start after the title-bar navigation slot.");
 
                     nav.ApplyTemplate();
                     var internalToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as WpfButton;
@@ -281,8 +302,22 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(titleBarButtons, "Extended title bar should expose the navigation button group.");
                     Assert.IsNotNull(titleBarBack, "Extended title bar should expose a back button.");
                     Assert.IsNotNull(titleBarToggle, "Extended title bar should expose a pane toggle button.");
+                    Assert.AreEqual(Visibility.Visible, titleBarBack.Visibility,
+                        "Back should be visible in the title bar when back navigation is enabled.");
+                    Assert.AreEqual(Visibility.Visible, titleBarToggle.Visibility,
+                        "Pane toggle should remain visible after back appears.");
                     Assert.AreSame(titleBarBack, GetFirstVisiblePanelChild<WpfButton>(titleBarButtons),
                         "Back must be the first visible title-bar glyph when back navigation is enabled.");
+                    Assert.IsTrue(GetVisualX(titleBarBack, window) < GetVisualX(titleBarToggle, window),
+                        "Back should occupy the first title-bar navigation slot.");
+                    Assert.AreEqual(GetVisualY(titleBarBack, window), GetVisualY(titleBarToggle, window), 1.0,
+                        "Back and pane toggle should be arranged in the same title-bar row.");
+
+                    Image titleIcon = FindByName<Image>(window, "ExtendedTitleIcon");
+                    Assert.IsNotNull(titleIcon, "Extended title bar icon should exist.");
+                    Assert.AreEqual(Visibility.Visible, titleIcon.Visibility,
+                        "Extended title bar icon should be visible while tracking title identity reflow.");
+                    double titleIconWithBackX = GetVisualX(titleIcon, window);
 
                     nav.IsBackEnabled = false;
                     Drain(window.Dispatcher);
@@ -291,6 +326,8 @@ namespace Fluence.Wpf.Tests
 
                     Assert.AreSame(titleBarToggle, GetFirstVisiblePanelChild<WpfButton>(titleBarButtons),
                         "Pane toggle must become the first visible title-bar glyph when back navigation is disabled.");
+                    Assert.AreEqual(titleIconWithBackX - 48.0, GetVisualX(titleIcon, window), 1.5,
+                        "Title identity should shift left by one rail slot when the back glyph collapses.");
                 }
                 finally
                 {
@@ -321,6 +358,56 @@ namespace Fluence.Wpf.Tests
                     double itemY = GetVisualY(firstItem, window);
                     Assert.IsTrue(itemY >= window.TitleBarHeight - 0.5,
                         "The first navigation item should be below the extended title bar. itemY=" + itemY + ", titleBarHeight=" + window.TitleBarHeight);
+                    Assert.IsTrue(itemY <= window.TitleBarHeight + 14.0,
+                        "The first navigation item should not keep the old extra title-bar spacer. itemY=" + itemY + ", titleBarHeight=" + window.TitleBarHeight);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void MainWindow_NonExtendedTitleBar_UsesPaneChromeAboveNavigationItems()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                MainWindow window = CreateShownMainWindow();
+                try
+                {
+                    NavigationView nav = FindByName<NavigationView>(window, "DemoNav");
+                    Assert.IsNotNull(nav, "DemoNav must exist.");
+                    nav.IsPaneToggleButtonVisible = true;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    nav.ApplyTemplate();
+                    nav.IsBackEnabled = true;
+                    nav.IsBackButtonVisible = true;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    WpfButton internalBack = nav.Template.FindName(NavigationView.PartBackButton, nav) as WpfButton;
+                    WpfButton internalToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as WpfButton;
+                    Assert.IsNotNull(internalBack, "Internal NavigationView back button should exist.");
+                    Assert.IsNotNull(internalToggle, "Internal NavigationView pane toggle should exist.");
+                    Assert.AreEqual(Visibility.Visible, internalBack.Visibility,
+                        "Non-extended mode should use the NavigationView back button.");
+                    Assert.AreEqual(Visibility.Visible, internalToggle.Visibility,
+                        "Non-extended mode should use the NavigationView pane toggle.");
+                    Assert.IsTrue(GetVisualX(internalBack, window) < GetVisualX(internalToggle, window),
+                        "Internal back button should be the first glyph in the pane chrome row.");
+                    Assert.AreEqual(GetVisualY(internalBack, window), GetVisualY(internalToggle, window), 1.0,
+                        "Internal back and pane toggle should be arranged in a horizontal row.");
+
+                    NavigationViewItem firstItem = nav.Items.Count > 0 ? nav.Items[0] as NavigationViewItem : null;
+                    Assert.IsNotNull(firstItem, "DemoNav should contain a first navigation item.");
+                    Assert.IsTrue(GetVisualY(firstItem, window) > GetVisualY(internalBack, window) + internalBack.ActualHeight - 0.5,
+                        "Navigation items should start below the non-extended pane chrome row.");
                 }
                 finally
                 {
@@ -338,6 +425,10 @@ namespace Fluence.Wpf.Tests
                 MainWindow window = CreateShownMainWindow();
                 try
                 {
+                    window.Width = 760;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+
                     window.SetUserShowIcon(true, window.Icon);
                     window.SetUserShowTitle(true, "Fluence.Wpf Control Gallery Extended Title That Should Not Overlap The Search Box");
                     window.ExtendsContentIntoTitleBar = true;
@@ -705,6 +796,11 @@ namespace Fluence.Wpf.Tests
         private static double GetVisualY(FrameworkElement element, Visual ancestor)
         {
             return element.TransformToAncestor(ancestor).Transform(new Point(0, 0)).Y;
+        }
+
+        private static double GetVisualCenterX(FrameworkElement element, Visual ancestor)
+        {
+            return GetVisualX(element, ancestor) + (element.ActualWidth / 2.0);
         }
 
         private static T GetFirstVisiblePanelChild<T>(Panel panel)

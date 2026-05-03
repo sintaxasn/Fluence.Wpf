@@ -16,7 +16,7 @@
     TextOptions.TextFormattingMode="Display"
     TextOptions.TextHintingMode="Fixed"
     TextOptions.TextRenderingMode="ClearType"
-    TitleBarHeight="40"
+    TitleBarHeight="68"
     UseLayoutRounding="True"
     SystemBackdropType="Mica"
     CornerStyle="Round"
@@ -25,11 +25,11 @@
     <ui:FluenceWindow.TitleBar>
         <Grid
             x:Name="TitleBarLayout"
-            Margin="16,0,16,0"
+            Margin="0,0,16,0"
             SizeChanged="TitleBarLayout_SizeChanged">
             <Grid.Resources>
                 <Style x:Key="TitleBarGlyphButtonStyle" TargetType="{x:Type Button}">
-                    <Setter Property="Width" Value="40" />
+                    <Setter Property="Width" Value="48" />
                     <Setter Property="Height" Value="40" />
                     <Setter Property="Padding" Value="0" />
                     <Setter Property="Background" Value="Transparent" />
@@ -42,18 +42,21 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
 
-            <StackPanel
+            <Grid
                 x:Name="ExtendedTitleBarChrome"
                 Grid.Column="0"
-                HorizontalAlignment="Left"
                 VerticalAlignment="Center"
-                Orientation="Horizontal"
                 Visibility="Collapsed">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                </Grid.ColumnDefinitions>
                 <StackPanel
                     x:Name="TitleBarNavigationButtons"
+                    Grid.Column="0"
                     Orientation="Horizontal"
                     Visibility="Collapsed">
                     <Button
@@ -79,14 +82,17 @@
                 </StackPanel>
                 <Image
                     x:Name="ExtendedTitleIcon"
+                    Grid.Column="1"
                     Width="16"
                     Height="16"
-                    Margin="12,0,8,0"
+                    Margin="8,0,8,0"
                     VerticalAlignment="Center"
                     Source="{Binding Icon, RelativeSource={RelativeSource AncestorType=ui:FluenceWindow}}"
                     Visibility="Collapsed" />
                 <TextBlock
                     x:Name="ExtendedTitleText"
+                    Grid.Column="2"
+                    HorizontalAlignment="Left"
                     VerticalAlignment="Center"
                     FontFamily="{DynamicResource FluentFontFamily}"
                     FontSize="13"
@@ -94,7 +100,7 @@
                     Text="{Binding Title, RelativeSource={RelativeSource AncestorType=ui:FluenceWindow}}"
                     TextTrimming="CharacterEllipsis"
                     Visibility="Collapsed" />
-            </StackPanel>
+            </Grid>
 
             <ui:TextBox
                 x:Name="NavSearchBox"
