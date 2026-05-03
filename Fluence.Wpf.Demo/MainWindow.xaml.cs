@@ -198,6 +198,10 @@ namespace Fluence.Wpf.Demo
             }
 
             item.PageContent = CreatePageForRoute(metadata.Route);
+            if (DemoNav != null && ReferenceEquals(DemoNav.SelectedItem, item))
+            {
+                DemoNav.SelectedContent = item.PageContent;
+            }
         }
 
         private static object CreatePageForRoute(string route)

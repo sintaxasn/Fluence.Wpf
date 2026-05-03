@@ -121,6 +121,30 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void MainWindow_InitialSelection_LoadsHomePageContent()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                MainWindow window = CreateShownMainWindow();
+                try
+                {
+                    object content = GetSelectedPageContent(window);
+                    Assert.IsNotNull(content, "Initial home navigation must create page content.");
+                    Assert.AreEqual(typeof(GalleryHomePage), content.GetType(), "The first selected page should be Home.");
+
+                    NavigationView nav = FindByName<NavigationView>(window, "DemoNav");
+                    Assert.IsNotNull(nav, "DemoNav must exist.");
+                    Assert.AreSame(content, nav.SelectedContent, "NavigationView.SelectedContent should be populated for the initial Home page.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
         public void MainWindow_Search_NavigatesToGroupedConcretePage()
         {
             RunOnSta(delegate
