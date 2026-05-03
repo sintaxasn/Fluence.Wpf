@@ -32,6 +32,14 @@ namespace Fluence.Wpf.Helpers
 {
     internal static class HsvColorHelper
     {
+        private static readonly Color WindowsBlueAccent = Color.FromRgb(0x00, 0x78, 0xD4);
+        private static readonly Color WindowsBlueAccentLight1 = Color.FromRgb(0x00, 0x91, 0xF8);
+        private static readonly Color WindowsBlueAccentLight2 = Color.FromRgb(0x4C, 0xC2, 0xFF);
+        private static readonly Color WindowsBlueAccentLight3 = Color.FromRgb(0x99, 0xEB, 0xFF);
+        private static readonly Color WindowsBlueAccentDark1 = Color.FromRgb(0x00, 0x67, 0xC0);
+        private static readonly Color WindowsBlueAccentDark2 = Color.FromRgb(0x00, 0x3E, 0x92);
+        private static readonly Color WindowsBlueAccentDark3 = Color.FromRgb(0x00, 0x1A, 0x68);
+
         public static (double Hue, double Saturation, double Value) RgbToHsv(Color color)
         {
             double r = color.R / 255.0;
@@ -312,6 +320,17 @@ namespace Fluence.Wpf.Helpers
             out Color light1, out Color light2, out Color light3,
             out Color dark1, out Color dark2, out Color dark3)
         {
+            if (IsWindowsBlueAccent(baseColor))
+            {
+                light1 = WindowsBlueAccentLight1;
+                light2 = WindowsBlueAccentLight2;
+                light3 = WindowsBlueAccentLight3;
+                dark1 = WindowsBlueAccentDark1;
+                dark2 = WindowsBlueAccentDark2;
+                dark3 = WindowsBlueAccentDark3;
+                return;
+            }
+
             Color white = Color.FromRgb(0xFF, 0xFF, 0xFF);
             Color black = Color.FromRgb(0x00, 0x00, 0x00);
 
@@ -321,6 +340,13 @@ namespace Fluence.Wpf.Helpers
             dark1 = IncreaseSaturationHls(BlendColors(black, baseColor, 25), 2);
             dark2 = IncreaseSaturationHls(BlendColors(black, baseColor, 50), 2);
             dark3 = IncreaseSaturationHls(BlendColors(black, baseColor, 75), 2);
+        }
+
+        private static bool IsWindowsBlueAccent(Color color)
+        {
+            return color.R == WindowsBlueAccent.R &&
+                color.G == WindowsBlueAccent.G &&
+                color.B == WindowsBlueAccent.B;
         }
     }
 }

@@ -464,7 +464,8 @@ namespace Fluence.Wpf.Demo
             var statusText = new TextBlock
             {
                 Text = contact.Status,
-                VerticalAlignment = VerticalAlignment.Center
+                VerticalAlignment = VerticalAlignment.Center,
+                HorizontalAlignment.Right,
             };
             statusText.SetResourceReference(TextBlock.ForegroundProperty, "TextFillColorSecondaryBrush");
             Grid.SetColumn(statusText, 2);

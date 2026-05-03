@@ -93,6 +93,28 @@ namespace Fluence.Wpf.Tests
             return condition();
         }
 
+        private static void AssertContentOffsetEventually(
+            Window window,
+            FrameworkElement nav,
+            FrameworkElement presenter,
+            double expectedOffset,
+            string message)
+        {
+            WaitUntil(window.Dispatcher, 3000, delegate
+            {
+                window.UpdateLayout();
+                return Math.Abs(GetContentOffsetX(nav, presenter) - expectedOffset) <= 1.0;
+            });
+
+            window.UpdateLayout();
+            Assert.AreEqual(expectedOffset, GetContentOffsetX(nav, presenter), 1.0, message);
+        }
+
+        private static double GetContentOffsetX(FrameworkElement nav, FrameworkElement presenter)
+        {
+            return presenter.TransformToAncestor(nav).Transform(new Point(0, 0)).X;
+        }
+
         private static bool WaitForSelectionIndicatorVerticalDepart(
             Dispatcher dispatcher,
             FrameworkElement indicator,
@@ -1383,8 +1405,7 @@ namespace Fluence.Wpf.Tests
                     var presenter = FindVisualChildByName<ContentPresenter>(nav, Fluent.NavigationView.PartContentPresenter);
                     Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in LeftCompact template.");
 
-                    var offset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
-                    Assert.AreEqual(280.0, offset.X, 1.0,
+                    AssertContentOffsetEventually(window, nav, presenter, 280.0,
                         "When IsPaneOpen=true in LeftCompact, content must start inline at pane width 280 (not overlap the pane).");
                 }
                 finally
@@ -1426,8 +1447,7 @@ namespace Fluence.Wpf.Tests
                     var presenter = FindVisualChildByName<ContentPresenter>(nav, Fluent.NavigationView.PartContentPresenter);
                     Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in LeftCompact template.");
 
-                    var offset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
-                    Assert.AreEqual(48.0, offset.X, 1.0,
+                    AssertContentOffsetEventually(window, nav, presenter, 48.0,
                         "When IsPaneOpen=false in LeftCompact, content must start inline at pane width 48 (compact rail).");
                 }
                 finally
@@ -1471,22 +1491,13 @@ namespace Fluence.Wpf.Tests
                     var presenter = FindVisualChildByName<ContentPresenter>(nav, Fluent.NavigationView.PartContentPresenter);
                     Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in LeftCompact template.");
 
-                    var openOffset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
-                    Assert.AreEqual(280.0, openOffset.X, 1.0, "Open state: content begins at 280.");
+                    AssertContentOffsetEventually(window, nav, presenter, 280.0, "Open state: content begins at 280.");
 
                     nav.IsPaneOpen = false;
-                    WaitForAnimationAndDrain(window.Dispatcher, 300);
-                    window.UpdateLayout();
-
-                    var closedOffset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
-                    Assert.AreEqual(48.0, closedOffset.X, 1.0, "Closed state: content begins at 48 (push, not overlay).");
+                    AssertContentOffsetEventually(window, nav, presenter, 48.0, "Closed state: content begins at 48 (push, not overlay).");
 
                     nav.IsPaneOpen = true;
-                    WaitForAnimationAndDrain(window.Dispatcher, 300);
-                    window.UpdateLayout();
-
-                    var reopenOffset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
-                    Assert.AreEqual(280.0, reopenOffset.X, 1.0, "Reopen state: content returns to 280.");
+                    AssertContentOffsetEventually(window, nav, presenter, 280.0, "Reopen state: content returns to 280.");
                 }
                 finally
                 {

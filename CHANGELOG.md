@@ -33,6 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Default Windows blue accent ramp** - `#0078D4` now uses the Windows accent palette values (`Light2=#4CC2FF`, `Dark1=#0067C0`) instead of the generated fallback ramp, so Dark theme accent fills resolve to the correct lighter blue shade across controls and the demo accent swatch.
 - **NavigationView pane item focus ring clipping** - `PART_PaneItemsScrollViewer` padding changed from `"0,4"` to `"3,4"` on both Left and LeftCompact pane templates. The `DefaultControlFocusVisualStyle` uses `Margin="-3"` to extend 3 px outside item bounds; without horizontal padding the `ScrollViewer` clip rect was chopping the focus ring on both sides.
 - **Slider focus ring invisible** - `FocusVisualStyle="{x:Null}"` replaced with `{DynamicResource DefaultControlFocusVisualStyle}` so keyboard-focused sliders now show the canonical two-ring Fluent focus indicator.
 - **Card focus ring absent + no keyboard activation** - `IsClickable=True` trigger now also sets `Focusable="True"` and `FocusVisualStyle="{DynamicResource DefaultControlFocusVisualStyle}"` (via no-TargetName setters on the control itself). `Card.OnKeyDown` / `OnKeyUp` overrides added so Space/Enter fire the `Click` routed event in `IsClickable` mode.

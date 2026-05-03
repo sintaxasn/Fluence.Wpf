@@ -772,7 +772,8 @@ namespace Fluence.Wpf.Tests
                 {
                     Width = 140,
                     Content = "Accent",
-                    Appearance = ControlAppearance.Accent
+                    Appearance = ControlAppearance.Accent,
+                    IsHitTestVisible = false
                 };
 
                 try
@@ -934,7 +935,8 @@ namespace Fluence.Wpf.Tests
                 {
                     Width = 140,
                     Content = "Accent",
-                    Appearance = ControlAppearance.Accent
+                    Appearance = ControlAppearance.Accent,
+                    IsHitTestVisible = false
                 };
 
                 try
