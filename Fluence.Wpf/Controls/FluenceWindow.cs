@@ -899,6 +899,45 @@ namespace Fluence.Wpf.Controls
 
             _closeButton.Visibility = closeVisibility;
             _closeButton.IsEnabled = closeEnabled;
+
+            UpdateCaptionButtonSlots(minimizeVisibility, maxVis, restVis, closeVisibility);
+        }
+
+        private void UpdateCaptionButtonSlots(
+            Visibility minimizeVisibility,
+            Visibility maximizeVisibility,
+            Visibility restoreVisibility,
+            Visibility closeVisibility)
+        {
+            bool closeOccupiesSlot = closeVisibility != Visibility.Collapsed;
+            bool maximizeOccupiesSlot =
+                maximizeVisibility != Visibility.Collapsed ||
+                restoreVisibility != Visibility.Collapsed;
+            bool minimizeOccupiesSlot = minimizeVisibility != Visibility.Collapsed;
+
+            int nextSlot = 2;
+            Grid.SetColumn(_closeButton, 2);
+            if (closeOccupiesSlot)
+            {
+                nextSlot = 1;
+            }
+
+            int maximizeSlot = maximizeOccupiesSlot ? nextSlot : 1;
+            Grid.SetColumn(_maximizeButton, maximizeSlot);
+            Grid.SetColumn(_restoreButton, maximizeSlot);
+            if (maximizeOccupiesSlot)
+            {
+                nextSlot--;
+            }
+
+            if (minimizeOccupiesSlot)
+            {
+                Grid.SetColumn(_minimizeButton, Math.Max(0, nextSlot));
+            }
+            else
+            {
+                Grid.SetColumn(_minimizeButton, 0);
+            }
         }
 
         private void ApplyMaximizeRestoreVisibilityOverride(Visibility visibility, out Visibility maximizeVisibility, out Visibility restoreVisibility)

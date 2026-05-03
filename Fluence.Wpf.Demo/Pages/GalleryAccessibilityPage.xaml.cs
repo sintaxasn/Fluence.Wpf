@@ -44,10 +44,10 @@ namespace Fluence.Wpf.Demo.Pages
     <StackPanel>
         <Grid x:Name=""KeyboardSupportPrimaryControls"" Margin=""0,0,0,8"">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width=""Auto"" />
-                <ColumnDefinition Width=""Auto"" />
-                <ColumnDefinition Width=""Auto"" />
-                <ColumnDefinition Width=""Auto"" />
+                <ColumnDefinition Width=""*"" />
+                <ColumnDefinition Width=""*"" />
+                <ColumnDefinition Width=""*"" />
+                <ColumnDefinition Width=""*"" />
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height=""Auto"" />
@@ -56,53 +56,57 @@ namespace Fluence.Wpf.Demo.Pages
             <ui:Button
                 Grid.Row=""0""
                 Grid.Column=""0""
-                Margin=""0,0,12,0""
+                Margin=""0,0,12,12""
+                HorizontalAlignment=""Stretch""
                 VerticalAlignment=""Center""
                 AutomationProperties.Name=""First focusable button""
                 Content=""Button 1"" />
             <ui:Button
                 Grid.Row=""0""
                 Grid.Column=""1""
-                Margin=""0,0,12,0""
+                Margin=""0,0,12,12""
+                HorizontalAlignment=""Stretch""
                 VerticalAlignment=""Center""
                 AutomationProperties.Name=""Second focusable button""
                 Content=""Button 2"" />
-            <ui:CheckBox
+            <ui:TextBox
                 Grid.Row=""0""
                 Grid.Column=""2""
-                Margin=""0,0,12,0""
-                VerticalAlignment=""Center""
-                AutomationProperties.Name=""Focusable checkbox""
-                Content=""CheckBox"" />
-            <ui:ToggleSwitch
-                Grid.Row=""0""
-                Grid.Column=""3""
-                Margin=""0,0,12,0""
-                VerticalAlignment=""Center""
-                AutomationProperties.Name=""Focusable toggle"" />
-            <ui:TextBox
-                Grid.Row=""1""
-                Grid.Column=""0""
-                Width=""160""
-                Margin=""0,0,12,0""
+                Margin=""0,0,12,12""
+                HorizontalAlignment=""Stretch""
                 VerticalAlignment=""Center""
                 AutomationProperties.Name=""Focusable text input""
                 PlaceholderText=""TextBox"" />
             <ui:ComboBox
-                Grid.Row=""1""
-                Grid.Column=""1""
-                Width=""140""
-                Margin=""0,0,12,0""
+                Grid.Row=""0""
+                Grid.Column=""3""
+                Margin=""0,0,0,12""
+                HorizontalAlignment=""Stretch""
                 VerticalAlignment=""Center""
                 AutomationProperties.Name=""Focusable combo box"">
                 <ComboBoxItem Content=""Option A"" IsSelected=""True"" />
                 <ComboBoxItem Content=""Option B"" />
             </ui:ComboBox>
+            <ui:CheckBox
+                Grid.Row=""1""
+                Grid.Column=""0""
+                Margin=""0,0,12,0""
+                HorizontalAlignment=""Left""
+                VerticalAlignment=""Center""
+                AutomationProperties.Name=""Focusable checkbox""
+                Content=""CheckBox"" />
+            <ui:ToggleSwitch
+                Grid.Row=""1""
+                Grid.Column=""1""
+                Margin=""0,0,12,0""
+                HorizontalAlignment=""Left""
+                VerticalAlignment=""Center""
+                AutomationProperties.Name=""Focusable toggle"" />
             <ui:Slider
                 Grid.Row=""1""
                 Grid.Column=""2""
-                Width=""140""
                 Margin=""0,0,12,0""
+                HorizontalAlignment=""Stretch""
                 VerticalAlignment=""Center""
                 AutomationProperties.Name=""Focusable slider""
                 Maximum=""100""
@@ -111,7 +115,7 @@ namespace Fluence.Wpf.Demo.Pages
             <ui:HyperlinkButton
                 Grid.Row=""1""
                 Grid.Column=""3""
-                Margin=""0,0,12,0""
+                HorizontalAlignment=""Stretch""
                 VerticalAlignment=""Center""
                 AutomationProperties.Name=""Focusable hyperlink""
                 Content=""HyperlinkButton"" />
@@ -123,25 +127,27 @@ namespace Fluence.Wpf.Demo.Pages
             Text=""The buttons below have an explicit reverse tab order: 3, 2, 1."" />
         <Grid x:Name=""KeyboardSupportExplicitOrderControls"" Margin=""0,0,0,8"">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width=""Auto"" />
-                <ColumnDefinition Width=""Auto"" />
-                <ColumnDefinition Width=""Auto"" />
+                <ColumnDefinition Width=""*"" />
+                <ColumnDefinition Width=""*"" />
+                <ColumnDefinition Width=""*"" />
             </Grid.ColumnDefinitions>
             <ui:Button
                 Grid.Column=""0""
                 Margin=""0,0,12,0""
+                HorizontalAlignment=""Stretch""
                 VerticalAlignment=""Center""
                 Content=""Tab order: 3""
                 TabIndex=""3"" />
             <ui:Button
                 Grid.Column=""1""
                 Margin=""0,0,12,0""
+                HorizontalAlignment=""Stretch""
                 VerticalAlignment=""Center""
                 Content=""Tab order: 2""
                 TabIndex=""2"" />
             <ui:Button
                 Grid.Column=""2""
-                Margin=""0,0,12,0""
+                HorizontalAlignment=""Stretch""
                 VerticalAlignment=""Center""
                 Appearance=""Accent""
                 Content=""Tab order: 1 (first)""

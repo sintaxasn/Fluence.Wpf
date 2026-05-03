@@ -207,7 +207,8 @@
                                 VerticalAlignment="Bottom"
                                 Background="{DynamicResource AccentFillColorDefaultBrush}"
                                 CornerRadius="0,0,4,4"
-                                Opacity="0" />
+                                Opacity="0"
+                                Visibility="Collapsed" />
                         </Grid>
                         <Popup
                             x:Name="PART_Popup"
@@ -265,41 +266,18 @@
                         <!--
                             WI-3 C18: FocusedStates + EditableFocusedStates VSM groups.
                             Authority: WinUI 3 ComboBox_themeresources.xaml.
-                            FocusAccentLine (accent bottom line) tracks keyboard focus, not dropdown state.
+                            Fluence intentionally suppresses the ComboBox focus underline; selected
+                            dropdown items retain their left selection indicator.
                             EditableFocusedStates mirrors FocusedStates for future IsEditable support.
                         -->
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="FocusedStates">
-                                <VisualState x:Name="Focused">
-                                    <Storyboard>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FocusAccentLine" Storyboard.TargetProperty="Opacity">
-                                            <DiscreteDoubleKeyFrame KeyTime="0" Value="1" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="Unfocused">
-                                    <Storyboard>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FocusAccentLine" Storyboard.TargetProperty="Opacity">
-                                            <DiscreteDoubleKeyFrame KeyTime="0" Value="0" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </VisualState>
+                                <VisualState x:Name="Focused" />
+                                <VisualState x:Name="Unfocused" />
                             </VisualStateGroup>
                             <VisualStateGroup x:Name="EditableFocusedStates">
-                                <VisualState x:Name="EditableFocused">
-                                    <Storyboard>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FocusAccentLine" Storyboard.TargetProperty="Opacity">
-                                            <DiscreteDoubleKeyFrame KeyTime="0" Value="1" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </VisualState>
-                                <VisualState x:Name="EditableUnfocused">
-                                    <Storyboard>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FocusAccentLine" Storyboard.TargetProperty="Opacity">
-                                            <DiscreteDoubleKeyFrame KeyTime="0" Value="0" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </VisualState>
+                                <VisualState x:Name="EditableFocused" />
+                                <VisualState x:Name="EditableUnfocused" />
                             </VisualStateGroup>
                         </VisualStateManager.VisualStateGroups>
                     </Grid>
@@ -333,7 +311,7 @@
                         </Trigger>
                         <Trigger Property="IsDropDownOpen" Value="True">
                             <Setter TargetName="MainBorder" Property="Background" Value="{DynamicResource ControlFillColorTertiaryBrush}" />
-                            <!--  FocusAccentLine opacity now controlled by FocusStates VSM group (WI-3 C18).  -->
+                            <!--  Focus underline intentionally suppressed; dropdown items own selection visuals.  -->
                         </Trigger>
                         <Trigger Property="IsDropDownOpenedUpward" Value="True">
                             <Setter TargetName="PART_DropdownBorder" Property="CornerRadius" Value="8,8,0,0" />

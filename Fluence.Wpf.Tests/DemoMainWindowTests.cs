@@ -367,6 +367,74 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void GalleryAccessibilityPage_KeyboardSamplesUseAlignedRows()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                var page = new GalleryAccessibilityPage();
+                Window window = CreateHostWindow(page);
+                try
+                {
+                    Grid primary = FindByName<Grid>(page, "KeyboardSupportPrimaryControls");
+                    Assert.IsNotNull(primary, "Accessibility keyboard sample should use a named alignment grid.");
+                    Assert.AreEqual(4, primary.ColumnDefinitions.Count,
+                        "Primary keyboard sample should have four equal columns.");
+                    Assert.AreEqual(2, primary.RowDefinitions.Count,
+                        "Primary keyboard sample should have two aligned rows.");
+                    Assert.AreEqual(8, primary.Children.Count,
+                        "Primary keyboard sample should contain four controls per row.");
+
+                    AssertGridCell(primary, delegate(UIElement child)
+                    {
+                        var button = child as Fluence.Wpf.Controls.Button;
+                        return button != null && string.Equals(button.Content as string, "Button 1", StringComparison.Ordinal);
+                    }, 0, 0, "Button 1");
+                    AssertGridCell(primary, delegate(UIElement child)
+                    {
+                        var button = child as Fluence.Wpf.Controls.Button;
+                        return button != null && string.Equals(button.Content as string, "Button 2", StringComparison.Ordinal);
+                    }, 0, 1, "Button 2");
+                    AssertGridCell(primary, delegate(UIElement child)
+                    {
+                        return child is Fluence.Wpf.Controls.TextBox;
+                    }, 0, 2, "TextBox");
+                    AssertGridCell(primary, delegate(UIElement child)
+                    {
+                        return child is Fluence.Wpf.Controls.ComboBox;
+                    }, 0, 3, "ComboBox");
+                    AssertGridCell(primary, delegate(UIElement child)
+                    {
+                        return child is Fluence.Wpf.Controls.CheckBox;
+                    }, 1, 0, "CheckBox");
+                    AssertGridCell(primary, delegate(UIElement child)
+                    {
+                        return child is ToggleSwitch;
+                    }, 1, 1, "ToggleSwitch");
+                    AssertGridCell(primary, delegate(UIElement child)
+                    {
+                        return child is Fluence.Wpf.Controls.Slider;
+                    }, 1, 2, "Slider");
+                    AssertGridCell(primary, delegate(UIElement child)
+                    {
+                        return child is HyperlinkButton;
+                    }, 1, 3, "HyperlinkButton");
+
+                    Grid tabOrder = FindByName<Grid>(page, "KeyboardSupportExplicitOrderControls");
+                    Assert.IsNotNull(tabOrder, "Explicit tab order sample should use an alignment grid.");
+                    Assert.AreEqual(3, tabOrder.ColumnDefinitions.Count,
+                        "Explicit tab order buttons should line up in equal columns.");
+                    Assert.AreEqual(3, tabOrder.Children.Count,
+                        "Explicit tab order sample should contain three aligned buttons.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
         public void GalleryGlyphsPage_IconCatalogIsScrollableAndVirtualized()
         {
             RunOnSta(delegate
@@ -492,6 +560,21 @@ namespace Fluence.Wpf.Tests
         private static void Drain(Dispatcher dispatcher)
         {
             dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
+        }
+
+        private static void AssertGridCell(Grid grid, Predicate<UIElement> match, int expectedRow, int expectedColumn, string name)
+        {
+            foreach (UIElement child in grid.Children)
+            {
+                if (match(child))
+                {
+                    Assert.AreEqual(expectedRow, Grid.GetRow(child), name + " should be in the expected row.");
+                    Assert.AreEqual(expectedColumn, Grid.GetColumn(child), name + " should be in the expected column.");
+                    return;
+                }
+            }
+
+            Assert.Fail("Expected control was not found in the grid: " + name);
         }
 
         private static T FindByName<T>(DependencyObject root, string name)

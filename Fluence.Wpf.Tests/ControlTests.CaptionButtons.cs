@@ -110,6 +110,62 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void FluenceWindow_CaptionButtons_ReflowIntoRightAlignedSlots()
+        {
+            RunOnStaThread(delegate
+            {
+                EnsureApplication();
+                MergeGenericDictionary(Application.Current);
+
+                FluenceWindow window = null;
+                try
+                {
+                    window = CreateAndShowOffScreenFluenceWindow();
+
+                    var minimize = GetCaptionButton(window, "PART_MinimizeButton");
+                    var maximize = GetCaptionButton(window, "PART_MaximizeButton");
+                    var restore = GetCaptionButton(window, "PART_RestoreButton");
+                    var close = GetCaptionButton(window, "PART_CloseButton");
+
+                    Assert.AreEqual(0, System.Windows.Controls.Grid.GetColumn(minimize));
+                    Assert.AreEqual(1, System.Windows.Controls.Grid.GetColumn(maximize));
+                    Assert.AreEqual(1, System.Windows.Controls.Grid.GetColumn(restore));
+                    Assert.AreEqual(2, System.Windows.Controls.Grid.GetColumn(close));
+
+                    window.IsCloseButtonVisible = Visibility.Collapsed;
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.AreEqual(1, System.Windows.Controls.Grid.GetColumn(minimize),
+                        "When close is collapsed, minimize should shift right to keep the visible group right-aligned.");
+                    Assert.AreEqual(2, System.Windows.Controls.Grid.GetColumn(maximize),
+                        "When close is collapsed, maximize should shift into the rightmost caption slot.");
+                    Assert.AreEqual(2, System.Windows.Controls.Grid.GetColumn(restore),
+                        "Restore shares maximize's right-aligned slot.");
+
+                    window.IsCloseButtonVisible = Visibility.Visible;
+                    window.IsMinimizeButtonVisible = Visibility.Collapsed;
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.AreEqual(1, System.Windows.Controls.Grid.GetColumn(maximize),
+                        "When minimize is collapsed, maximize should keep its normal slot.");
+                    Assert.AreEqual(1, System.Windows.Controls.Grid.GetColumn(restore),
+                        "Restore should keep maximize's normal slot when minimize is collapsed.");
+                    Assert.AreEqual(2, System.Windows.Controls.Grid.GetColumn(close),
+                        "Close should remain in the rightmost caption slot when minimize is collapsed.");
+                }
+                finally
+                {
+                    if (window != null)
+                    {
+                        window.Close();
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
         public void FluenceWindow_MinimizeCommand_TransitionsToMinimized()
         {
             RunOnStaThread(delegate

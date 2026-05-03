@@ -98,7 +98,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void ComboBox_FocusedState_FocusAccentLineIsVisible()
+        public void ComboBox_FocusedState_DoesNotShowFocusAccentLine()
         {
             WpfTestSta.Invoke(() =>
             {
@@ -117,8 +117,10 @@ namespace Fluence.Wpf.Tests
 
                 var accentLine = FindVisualChildByName<WpfBorder>(cb, "FocusAccentLine");
                 Assert.IsNotNull(accentLine, "FocusAccentLine border must be present in template.");
-                Assert.AreEqual(1.0, accentLine.Opacity, 0.01,
-                    "FocusAccentLine opacity must be 1.0 in Focused state per WI-3 C18.");
+                Assert.AreEqual(Visibility.Collapsed, accentLine.Visibility,
+                    "ComboBox should never show a focus underline; dropdown items own the selection indicator.");
+                Assert.AreEqual(0.0, accentLine.Opacity, 0.01,
+                    "FocusAccentLine opacity must stay 0 in Focused state.");
                 w.Close();
             });
         }
@@ -147,7 +149,9 @@ namespace Fluence.Wpf.Tests
                 var accentLine = FindVisualChildByName<WpfBorder>(cb, "FocusAccentLine");
                 Assert.IsNotNull(accentLine, "FocusAccentLine border must be present in template.");
                 Assert.AreEqual(0.0, accentLine.Opacity, 0.01,
-                    "FocusAccentLine opacity must be 0.0 in Unfocused state per WI-3 C18.");
+                    "FocusAccentLine opacity must be 0.0 in Unfocused state.");
+                Assert.AreEqual(Visibility.Collapsed, accentLine.Visibility,
+                    "ComboBox focus underline should remain collapsed when unfocused.");
                 w.Close();
             });
         }
@@ -169,6 +173,8 @@ namespace Fluence.Wpf.Tests
 
                 var accentLine = FindVisualChildByName<WpfBorder>(cb, "FocusAccentLine");
                 Assert.IsNotNull(accentLine, "FocusAccentLine border must be present in template.");
+                Assert.AreEqual(Visibility.Collapsed, accentLine.Visibility,
+                    "ComboBox should not expose the focused underline visually.");
                 Assert.AreEqual(0.0, accentLine.Opacity, 0.01,
                     "ComboBox should not show the focused underline before it receives focus.");
 
@@ -177,7 +183,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void ComboBox_ThemeCycle_FocusedStatePreservesAccentLine()
+        public void ComboBox_ThemeCycle_FocusedStateKeepsAccentLineHidden()
         {
             WpfTestSta.Invoke(() =>
             {
@@ -203,8 +209,10 @@ namespace Fluence.Wpf.Tests
                 var accentLine = FindVisualChildByName<WpfBorder>(cb, "FocusAccentLine");
                 Assert.IsNotNull(accentLine,
                     "FocusAccentLine must be present after theme cycle.");
-                Assert.AreEqual(1.0, accentLine.Opacity, 0.01,
-                    "FocusAccentLine must be visible in Focused state after theme cycle.");
+                Assert.AreEqual(Visibility.Collapsed, accentLine.Visibility,
+                    "ComboBox focus underline must remain collapsed after theme cycle.");
+                Assert.AreEqual(0.0, accentLine.Opacity, 0.01,
+                    "FocusAccentLine must stay hidden in Focused state after theme cycle.");
                 w.Close();
             });
         }

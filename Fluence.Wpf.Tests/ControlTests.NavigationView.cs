@@ -1455,6 +1455,49 @@ namespace Fluence.Wpf.Tests
             });
         }
 
+        [TestMethod]
+        public void NavigationView_Left_ContentStarts48pxBelowWindowTop()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 800,
+                        Height = 480,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left,
+                        IsPaneOpen = true
+                    };
+                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    var presenter = FindVisualChildByName<ContentPresenter>(nav, Fluent.NavigationView.PartContentPresenter);
+                    Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in Left template.");
+
+                    var offset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
+                    Assert.AreEqual(48.0, offset.Y, 1.0,
+                        "Left NavigationView content should start 48px below the top of the window.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
         // WI-1 F1: LeftCompact pane must resize inline and push sibling content. Never overlay.
         //
         // Regression guard: the original LeftCompactPaneTemplate drew the pane as an overlay

@@ -412,12 +412,13 @@
 
                 <Grid Grid.Column="1">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="48" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <ContentPresenter
                         Grid.Row="0"
-                        Margin="24,16,24,0"
+                        Margin="24,0,24,0"
+                        VerticalAlignment="Center"
                         Content="{TemplateBinding Header}"
                         ContentTemplate="{TemplateBinding HeaderTemplate}">
                         <ContentPresenter.Style>
@@ -638,12 +639,13 @@
 
                 <Grid Grid.Column="1">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="48" />
                         <RowDefinition Height="*" />
                     </Grid.RowDefinitions>
                     <ContentPresenter
                         Grid.Row="0"
-                        Margin="24,16,24,0"
+                        Margin="24,0,24,0"
+                        VerticalAlignment="Center"
                         Content="{TemplateBinding Header}"
                         ContentTemplate="{TemplateBinding HeaderTemplate}">
                         <ContentPresenter.Style>

@@ -1178,7 +1178,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void FluentTabControl_SelectedTabTouchesContentPanel()
+        public void FluentTabControl_SelectedTabUsesFluentCardSurface()
         {
             RunOnStaThread(() =>
             {
@@ -1212,7 +1212,60 @@ namespace Fluence.Wpf.Tests
                     var contentOrigin = contentPanel.TransformToAncestor(window).Transform(new Point(0, 0));
                     var selectedBottom = selectedOrigin.Y + selectedTab.ActualHeight;
 
-                    Assert.IsTrue(selectedBottom >= contentOrigin.Y - 1, "Selected tab should visually join the tab page.");
+                    Assert.IsTrue(contentOrigin.Y - selectedBottom >= 6.0,
+                        "Fluent TabControl should separate selected tabs from the card-like content surface.");
+                    Assert.IsInstanceOfType(contentPanel, typeof(Border),
+                        "ContentPanel should be a Border so the Fluent surface can own background, stroke, and corner radius.");
+
+                    var contentBorder = (Border)contentPanel;
+                    Assert.IsNotNull(contentBorder.Background,
+                        "TabControl content surface should resolve a Fluent card background brush.");
+                    Assert.IsNotNull(contentBorder.BorderBrush,
+                        "TabControl content surface should resolve a Fluent card stroke brush.");
+                }
+                finally
+                {
+                    window.Close();
+                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                }
+            });
+        }
+
+        [TestMethod]
+        public void FluentTabControl_LeftPlacement_SeparatesHeadersAndContent()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var tabControl = new TabControl
+                    {
+                        TabStripPlacement = Dock.Left
+                    };
+                    tabControl.Items.Add(new TabItem { Header = "First", Content = new TextBlock { Text = "A" } });
+                    tabControl.Items.Add(new TabItem { Header = "Second", Content = new TextBlock { Text = "B" } });
+                    window.Content = tabControl;
+                    window.Width = 640;
+                    window.Height = 480;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    var headerPanel = tabControl.Template.FindName("HeaderPanel", tabControl) as FrameworkElement;
+                    var contentPanel = tabControl.Template.FindName("ContentPanel", tabControl) as FrameworkElement;
+
+                    Assert.IsNotNull(headerPanel);
+                    Assert.IsNotNull(contentPanel);
+                    Assert.AreEqual(0, Grid.GetColumn(headerPanel),
+                        "Left TabStripPlacement should place tab headers in the left column.");
+                    Assert.AreEqual(1, Grid.GetColumn(contentPanel),
+                        "Left TabStripPlacement should keep content in the right column.");
+                    Assert.AreEqual(new Thickness(0, 0, 8, 0), headerPanel.Margin,
+                        "Left TabStripPlacement should keep the same 8px Fluent gap used by the default top layout.");
                 }
                 finally
                 {
