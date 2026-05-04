@@ -2176,7 +2176,7 @@ namespace Fluence.Wpf.Tests
                     var nav = window.FindName("DemoNav") as Fluent.NavigationView;
                     Assert.IsNotNull(nav, "Main window should expose DemoNav.");
 
-                    var selectedContent = nav.SelectedContent as DependencyObject;
+                    var selectedContent = nav.Content as DependencyObject;
                     Assert.IsNotNull(selectedContent, "ComboBox page should be selected.");
 
                     var comboBoxes = FindVisualChildren<Fluent.ComboBox>(selectedContent).ToList();
@@ -2692,7 +2692,7 @@ namespace Fluence.Wpf.Tests
             var selectedTag = selected == null ? null : selected.Tag as string;
             var matchesRequest = string.Equals(selectedLabel, itemContent, StringComparison.OrdinalIgnoreCase) ||
                 (selectedTag != null && selectedTag.IndexOf(itemContent, StringComparison.OrdinalIgnoreCase) >= 0);
-            if (selected == null || selected.PageContent == null || !matchesRequest)
+            if (selected == null || nav.Content == null || !matchesRequest)
             {
                 Assert.Fail(string.Format("Navigation item '{0}' should exist.", itemContent));
             }

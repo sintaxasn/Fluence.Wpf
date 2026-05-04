@@ -135,7 +135,7 @@ namespace Fluence.Wpf.Tests
 
                     NavigationView nav = FindByName<NavigationView>(window, "DemoNav");
                     Assert.IsNotNull(nav, "DemoNav must exist.");
-                    Assert.AreSame(content, nav.SelectedContent, "NavigationView.SelectedContent should be populated for the initial Home page.");
+                    Assert.AreSame(content, nav.Content, "NavigationView.Content should be populated for the initial Home page.");
                 }
                 finally
                 {
@@ -233,19 +233,22 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
-                    WpfButton titleBarToggle = FindByName<WpfButton>(window, "TitleBarPaneToggleButton");
+                    TitleBar shellTitleBar = FindByName<TitleBar>(window, "ShellTitleBar");
+                    Assert.IsNotNull(shellTitleBar, "Extended title bar should use the shared TitleBar control.");
+
+                    WpfButton titleBarToggle = FindByName<WpfButton>(shellTitleBar, "PART_PaneToggleButton");
                     Assert.IsNotNull(titleBarToggle, "Extended title bar should expose a pane toggle button.");
                     Assert.AreEqual(Visibility.Visible, titleBarToggle.Visibility,
                         "Pane toggle should move into the title bar when content extends into the title bar.");
                     Assert.AreEqual(48.0, titleBarToggle.ActualWidth, 0.5,
                         "Title-bar pane toggle should occupy one 48px navigation rail slot.");
 
-                    FontIcon titleBarGlyph = FindVisualChild<FontIcon>(titleBarToggle);
-                    Assert.IsNotNull(titleBarGlyph, "Title-bar pane toggle should render a FontIcon.");
-                    Assert.AreEqual(20.0, titleBarGlyph.IconFontSize, 0.01,
+                    WpfTextBlock titleBarGlyph = FindVisualChild<WpfTextBlock>(titleBarToggle);
+                    Assert.IsNotNull(titleBarGlyph, "Title-bar pane toggle should render a Segoe Fluent Icons glyph.");
+                    Assert.AreEqual(20.0, titleBarGlyph.FontSize, 0.01,
                         "Title-bar pane toggle glyph should match left-mode NavigationViewItem glyph size.");
 
-                    WpfButton titleBarBack = FindByName<WpfButton>(window, "TitleBarBackButton");
+                    WpfButton titleBarBack = FindByName<WpfButton>(shellTitleBar, "PART_BackButton");
                     Assert.IsNotNull(titleBarBack, "Extended title bar should expose a back button slot.");
                     Assert.AreEqual(Visibility.Collapsed, titleBarBack.Visibility,
                         "Back button should collapse in the title bar when no back route is enabled.");
@@ -257,8 +260,8 @@ namespace Fluence.Wpf.Tests
                     Assert.AreEqual(GetVisualCenterX(itemGlyph, window), GetVisualCenterX(titleBarGlyph, window), 2.5,
                         "Title-bar pane toggle glyph should align with the NavigationViewItem glyph rail.");
 
-                    Image titleIcon = FindByName<Image>(window, "ExtendedTitleIcon");
-                    Assert.IsNotNull(titleIcon, "Extended title bar icon should exist.");
+                    ContentPresenter titleIcon = FindByName<ContentPresenter>(shellTitleBar, "PART_IconPresenter");
+                    Assert.IsNotNull(titleIcon, "Extended title bar icon presenter should exist.");
                     Assert.AreEqual(Visibility.Visible, titleIcon.Visibility,
                         "Extended title bar icon should be visible by default.");
                     Assert.IsTrue(GetVisualX(titleIcon, window) >= GetVisualX(titleBarToggle, window) + titleBarToggle.ActualWidth - 0.5,
@@ -296,24 +299,22 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
-                    System.Windows.Controls.StackPanel titleBarButtons = FindByName<System.Windows.Controls.StackPanel>(window, "TitleBarNavigationButtons");
-                    WpfButton titleBarBack = FindByName<WpfButton>(window, "TitleBarBackButton");
-                    WpfButton titleBarToggle = FindByName<WpfButton>(window, "TitleBarPaneToggleButton");
-                    Assert.IsNotNull(titleBarButtons, "Extended title bar should expose the navigation button group.");
+                    TitleBar shellTitleBar = FindByName<TitleBar>(window, "ShellTitleBar");
+                    Assert.IsNotNull(shellTitleBar, "Extended title bar should use the shared TitleBar control.");
+                    WpfButton titleBarBack = FindByName<WpfButton>(shellTitleBar, "PART_BackButton");
+                    WpfButton titleBarToggle = FindByName<WpfButton>(shellTitleBar, "PART_PaneToggleButton");
                     Assert.IsNotNull(titleBarBack, "Extended title bar should expose a back button.");
                     Assert.IsNotNull(titleBarToggle, "Extended title bar should expose a pane toggle button.");
                     Assert.AreEqual(Visibility.Visible, titleBarBack.Visibility,
                         "Back should be visible in the title bar when back navigation is enabled.");
                     Assert.AreEqual(Visibility.Visible, titleBarToggle.Visibility,
                         "Pane toggle should remain visible after back appears.");
-                    Assert.AreSame(titleBarBack, GetFirstVisiblePanelChild<WpfButton>(titleBarButtons),
-                        "Back must be the first visible title-bar glyph when back navigation is enabled.");
                     Assert.IsTrue(GetVisualX(titleBarBack, window) < GetVisualX(titleBarToggle, window),
                         "Back should occupy the first title-bar navigation slot.");
                     Assert.AreEqual(GetVisualY(titleBarBack, window), GetVisualY(titleBarToggle, window), 1.0,
                         "Back and pane toggle should be arranged in the same title-bar row.");
 
-                    Image titleIcon = FindByName<Image>(window, "ExtendedTitleIcon");
+                    ContentPresenter titleIcon = FindByName<ContentPresenter>(shellTitleBar, "PART_IconPresenter");
                     Assert.IsNotNull(titleIcon, "Extended title bar icon should exist.");
                     Assert.AreEqual(Visibility.Visible, titleIcon.Visibility,
                         "Extended title bar icon should be visible while tracking title identity reflow.");
@@ -324,8 +325,8 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
-                    Assert.AreSame(titleBarToggle, GetFirstVisiblePanelChild<WpfButton>(titleBarButtons),
-                        "Pane toggle must become the first visible title-bar glyph when back navigation is disabled.");
+                    Assert.AreEqual(Visibility.Collapsed, titleBarBack.Visibility,
+                        "Back must collapse in the title bar when back navigation is disabled.");
                     Assert.AreEqual(titleIconWithBackX - 48.0, GetVisualX(titleIcon, window), 1.5,
                         "Title identity should shift left by one rail slot when the back glyph collapses.");
                 }
@@ -379,6 +380,7 @@ namespace Fluence.Wpf.Tests
                 {
                     NavigationView nav = FindByName<NavigationView>(window, "DemoNav");
                     Assert.IsNotNull(nav, "DemoNav must exist.");
+                    window.ExtendsContentIntoTitleBar = false;
                     nav.IsPaneToggleButtonVisible = true;
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
@@ -436,8 +438,10 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
-                    Image titleIcon = FindByName<Image>(window, "ExtendedTitleIcon");
-                    WpfTextBlock titleText = FindByName<WpfTextBlock>(window, "ExtendedTitleText");
+                    TitleBar shellTitleBar = FindByName<TitleBar>(window, "ShellTitleBar");
+                    Assert.IsNotNull(shellTitleBar, "Extended title bar should use the shared TitleBar control.");
+                    ContentPresenter titleIcon = FindByName<ContentPresenter>(shellTitleBar, "PART_IconPresenter");
+                    WpfTextBlock titleText = FindByName<WpfTextBlock>(shellTitleBar, "PART_TitleText");
                     Assert.IsNotNull(titleIcon, "Extended title bar icon should exist.");
                     Assert.IsNotNull(titleText, "Extended title bar title should exist.");
                     Assert.AreEqual(Visibility.Visible, titleIcon.Visibility,
@@ -783,9 +787,8 @@ namespace Fluence.Wpf.Tests
             NavigationView nav = FindByName<NavigationView>(window, "DemoNav");
             Assert.IsNotNull(nav, "DemoNav must exist.");
 
-            var selected = nav.SelectedItem as NavigationViewItem;
-            Assert.IsNotNull(selected, "A NavigationViewItem should be selected.");
-            return selected.PageContent;
+            Assert.IsNotNull(nav.SelectedItem as NavigationViewItem, "A NavigationViewItem should be selected.");
+            return nav.Content;
         }
 
         private static double GetVisualX(FrameworkElement element, Visual ancestor)

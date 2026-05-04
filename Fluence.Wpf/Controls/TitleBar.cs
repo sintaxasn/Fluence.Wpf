@@ -25,20 +25,47 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using WpfButton = System.Windows.Controls.Button;
 
 namespace Fluence.Wpf.Controls
 {
     /// <summary>
-    /// A Fluent Design title bar control with optional back button, icon, title, and custom content area.
+    /// A Fluent Design shell title bar with navigation buttons, icon, title text, and header/content slots.
     /// </summary>
-    public class TitleBar : Control
+    [TemplatePart(Name = "PART_BackButton", Type = typeof(WpfButton))]
+    [TemplatePart(Name = "PART_PaneToggleButton", Type = typeof(WpfButton))]
+    [TemplatePart(Name = "PART_IconPresenter", Type = typeof(ContentPresenter))]
+    [TemplatePart(Name = "PART_TitleText", Type = typeof(TextBlock))]
+    [TemplatePart(Name = "PART_SubtitleText", Type = typeof(TextBlock))]
+    [TemplatePart(Name = "PART_LeftHeaderPresenter", Type = typeof(ContentPresenter))]
+    [TemplatePart(Name = "PART_ContentPresenter", Type = typeof(ContentPresenter))]
+    [TemplatePart(Name = "PART_RightHeaderPresenter", Type = typeof(ContentPresenter))]
+    public class TitleBar : ContentControl
     {
+        private const string PART_BackButton = "PART_BackButton";
+        private const string PART_PaneToggleButton = "PART_PaneToggleButton";
+        private const string PART_IconPresenter = "PART_IconPresenter";
+        private const string PART_TitleText = "PART_TitleText";
+        private const string PART_SubtitleText = "PART_SubtitleText";
+        private const string PART_LeftHeaderPresenter = "PART_LeftHeaderPresenter";
+        private const string PART_ContentPresenter = "PART_ContentPresenter";
+        private const string PART_RightHeaderPresenter = "PART_RightHeaderPresenter";
+
+        private WpfButton _backButton;
+        private WpfButton _paneToggleButton;
+
         /// <summary>Identifies the <see cref="Title"/> dependency property.</summary>
         public static readonly DependencyProperty TitleProperty =
             DependencyProperty.Register(nameof(Title), typeof(string), typeof(TitleBar),
+                new FrameworkPropertyMetadata(string.Empty));
+
+        /// <summary>Identifies the <see cref="Subtitle"/> dependency property.</summary>
+        public static readonly DependencyProperty SubtitleProperty =
+            DependencyProperty.Register(nameof(Subtitle), typeof(string), typeof(TitleBar),
                 new FrameworkPropertyMetadata(string.Empty));
 
         /// <summary>Identifies the <see cref="Icon"/> dependency property.</summary>
@@ -51,25 +78,50 @@ namespace Fluence.Wpf.Controls
             DependencyProperty.Register(nameof(IsBackButtonVisible), typeof(bool), typeof(TitleBar),
                 new FrameworkPropertyMetadata(false));
 
+        /// <summary>Identifies the <see cref="IsPaneToggleButtonVisible"/> dependency property.</summary>
+        public static readonly DependencyProperty IsPaneToggleButtonVisibleProperty =
+            DependencyProperty.Register(nameof(IsPaneToggleButtonVisible), typeof(bool), typeof(TitleBar),
+                new FrameworkPropertyMetadata(false));
+
         /// <summary>Identifies the <see cref="IsCompact"/> dependency property.</summary>
         public static readonly DependencyProperty IsCompactProperty =
             DependencyProperty.Register(nameof(IsCompact), typeof(bool), typeof(TitleBar),
                 new FrameworkPropertyMetadata(false));
 
+        /// <summary>Identifies the <see cref="LeftHeader"/> dependency property.</summary>
+        public static readonly DependencyProperty LeftHeaderProperty =
+            DependencyProperty.Register(nameof(LeftHeader), typeof(object), typeof(TitleBar),
+                new FrameworkPropertyMetadata(null));
+
+        /// <summary>Identifies the <see cref="RightHeader"/> dependency property.</summary>
+        public static readonly DependencyProperty RightHeaderProperty =
+            DependencyProperty.Register(nameof(RightHeader), typeof(object), typeof(TitleBar),
+                new FrameworkPropertyMetadata(null));
+
         /// <summary>Identifies the <see cref="CustomContent"/> dependency property.</summary>
         public static readonly DependencyProperty CustomContentProperty =
             DependencyProperty.Register(nameof(CustomContent), typeof(object), typeof(TitleBar),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(null, OnCustomContentChanged));
 
         /// <summary>Identifies the <see cref="BackCommand"/> dependency property.</summary>
         public static readonly DependencyProperty BackCommandProperty =
             DependencyProperty.Register(nameof(BackCommand), typeof(ICommand), typeof(TitleBar),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(null, OnBackCommandChanged));
 
         /// <summary>Identifies the <see cref="BackCommandParameter"/> dependency property.</summary>
         public static readonly DependencyProperty BackCommandParameterProperty =
             DependencyProperty.Register(nameof(BackCommandParameter), typeof(object), typeof(TitleBar),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(null, OnBackCommandParameterChanged));
+
+        /// <summary>Identifies the <see cref="PaneToggleCommand"/> dependency property.</summary>
+        public static readonly DependencyProperty PaneToggleCommandProperty =
+            DependencyProperty.Register(nameof(PaneToggleCommand), typeof(ICommand), typeof(TitleBar),
+                new FrameworkPropertyMetadata(null, OnPaneToggleCommandChanged));
+
+        /// <summary>Identifies the <see cref="PaneToggleCommandParameter"/> dependency property.</summary>
+        public static readonly DependencyProperty PaneToggleCommandParameterProperty =
+            DependencyProperty.Register(nameof(PaneToggleCommandParameter), typeof(object), typeof(TitleBar),
+                new FrameworkPropertyMetadata(null, OnPaneToggleCommandParameterChanged));
 
         static TitleBar()
         {
@@ -77,11 +129,24 @@ namespace Fluence.Wpf.Controls
                 new FrameworkPropertyMetadata(typeof(TitleBar)));
         }
 
+        /// <summary>Occurs when the back button is invoked after command execution has been processed.</summary>
+        public event EventHandler BackRequested;
+
+        /// <summary>Occurs when the pane toggle button is invoked after command execution has been processed.</summary>
+        public event EventHandler PaneToggleRequested;
+
         /// <summary>Gets or sets the title text.</summary>
         public string Title
         {
             get { return (string)GetValue(TitleProperty); }
             set { SetValue(TitleProperty, value); }
+        }
+
+        /// <summary>Gets or sets the subtitle text.</summary>
+        public string Subtitle
+        {
+            get { return (string)GetValue(SubtitleProperty); }
+            set { SetValue(SubtitleProperty, value); }
         }
 
         /// <summary>Gets or sets the title bar icon content.</summary>
@@ -98,6 +163,13 @@ namespace Fluence.Wpf.Controls
             set { SetValue(IsBackButtonVisibleProperty, value); }
         }
 
+        /// <summary>Gets or sets whether the pane toggle button is visible.</summary>
+        public bool IsPaneToggleButtonVisible
+        {
+            get { return (bool)GetValue(IsPaneToggleButtonVisibleProperty); }
+            set { SetValue(IsPaneToggleButtonVisibleProperty, value); }
+        }
+
         /// <summary>Gets or sets whether the title bar uses compact height (32px vs 48px).</summary>
         public bool IsCompact
         {
@@ -105,7 +177,21 @@ namespace Fluence.Wpf.Controls
             set { SetValue(IsCompactProperty, value); }
         }
 
-        /// <summary>Gets or sets custom content displayed in the title bar drag region.</summary>
+        /// <summary>Gets or sets content displayed before the icon and title text.</summary>
+        public object LeftHeader
+        {
+            get { return GetValue(LeftHeaderProperty); }
+            set { SetValue(LeftHeaderProperty, value); }
+        }
+
+        /// <summary>Gets or sets content displayed after the central content slot.</summary>
+        public object RightHeader
+        {
+            get { return GetValue(RightHeaderProperty); }
+            set { SetValue(RightHeaderProperty, value); }
+        }
+
+        /// <summary>Gets or sets custom content displayed in the central title bar slot.</summary>
         public object CustomContent
         {
             get { return GetValue(CustomContentProperty); }
@@ -124,6 +210,204 @@ namespace Fluence.Wpf.Controls
         {
             get { return GetValue(BackCommandParameterProperty); }
             set { SetValue(BackCommandParameterProperty, value); }
+        }
+
+        /// <summary>Gets or sets the command invoked when the pane toggle button is clicked.</summary>
+        public ICommand PaneToggleCommand
+        {
+            get { return (ICommand)GetValue(PaneToggleCommandProperty); }
+            set { SetValue(PaneToggleCommandProperty, value); }
+        }
+
+        /// <summary>Gets or sets the parameter for <see cref="PaneToggleCommand"/>.</summary>
+        public object PaneToggleCommandParameter
+        {
+            get { return GetValue(PaneToggleCommandParameterProperty); }
+            set { SetValue(PaneToggleCommandParameterProperty, value); }
+        }
+
+        /// <inheritdoc />
+        public override void OnApplyTemplate()
+        {
+            if (_backButton != null)
+            {
+                _backButton.Click -= OnBackButtonClick;
+            }
+
+            if (_paneToggleButton != null)
+            {
+                _paneToggleButton.Click -= OnPaneToggleButtonClick;
+            }
+
+            base.OnApplyTemplate();
+
+            _backButton = GetTemplateChild(PART_BackButton) as WpfButton;
+            _paneToggleButton = GetTemplateChild(PART_PaneToggleButton) as WpfButton;
+
+            if (_backButton != null)
+            {
+                _backButton.Click += OnBackButtonClick;
+            }
+
+            if (_paneToggleButton != null)
+            {
+                _paneToggleButton.Click += OnPaneToggleButtonClick;
+            }
+
+            UpdateBackButtonCommandState();
+            UpdatePaneToggleButtonCommandState();
+        }
+
+        /// <inheritdoc />
+        protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
+        {
+            base.OnPropertyChanged(e);
+
+            if (e.Property == IsEnabledProperty)
+            {
+                UpdateBackButtonCommandState();
+                UpdatePaneToggleButtonCommandState();
+            }
+        }
+
+        /// <summary>Raises the <see cref="BackRequested"/> event.</summary>
+        /// <param name="e">The event data.</param>
+        protected virtual void OnBackRequested(EventArgs e)
+        {
+            var handler = BackRequested;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        /// <summary>Raises the <see cref="PaneToggleRequested"/> event.</summary>
+        /// <param name="e">The event data.</param>
+        protected virtual void OnPaneToggleRequested(EventArgs e)
+        {
+            var handler = PaneToggleRequested;
+            if (handler != null)
+            {
+                handler(this, e);
+            }
+        }
+
+        private static void OnCustomContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var titleBar = (TitleBar)d;
+            if (titleBar.Content == null || object.Equals(titleBar.Content, e.OldValue))
+            {
+                titleBar.Content = e.NewValue;
+            }
+        }
+
+        private static void OnBackCommandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var titleBar = (TitleBar)d;
+            UnsubscribeCommand(e.OldValue as ICommand, titleBar.OnBackCommandCanExecuteChanged);
+            SubscribeCommand(e.NewValue as ICommand, titleBar.OnBackCommandCanExecuteChanged);
+            titleBar.UpdateBackButtonCommandState();
+        }
+
+        private static void OnBackCommandParameterChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((TitleBar)d).UpdateBackButtonCommandState();
+        }
+
+        private static void OnPaneToggleCommandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var titleBar = (TitleBar)d;
+            UnsubscribeCommand(e.OldValue as ICommand, titleBar.OnPaneToggleCommandCanExecuteChanged);
+            SubscribeCommand(e.NewValue as ICommand, titleBar.OnPaneToggleCommandCanExecuteChanged);
+            titleBar.UpdatePaneToggleButtonCommandState();
+        }
+
+        private static void OnPaneToggleCommandParameterChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((TitleBar)d).UpdatePaneToggleButtonCommandState();
+        }
+
+        private void OnBackCommandCanExecuteChanged(object sender, EventArgs e)
+        {
+            UpdateBackButtonCommandState();
+        }
+
+        private void OnPaneToggleCommandCanExecuteChanged(object sender, EventArgs e)
+        {
+            UpdatePaneToggleButtonCommandState();
+        }
+
+        private void OnBackButtonClick(object sender, RoutedEventArgs e)
+        {
+            if (TryExecuteCommand(BackCommand, BackCommandParameter))
+            {
+                OnBackRequested(EventArgs.Empty);
+            }
+
+            UpdateBackButtonCommandState();
+        }
+
+        private void OnPaneToggleButtonClick(object sender, RoutedEventArgs e)
+        {
+            if (TryExecuteCommand(PaneToggleCommand, PaneToggleCommandParameter))
+            {
+                OnPaneToggleRequested(EventArgs.Empty);
+            }
+
+            UpdatePaneToggleButtonCommandState();
+        }
+
+        private void UpdateBackButtonCommandState()
+        {
+            if (_backButton != null)
+            {
+                _backButton.IsEnabled = IsEnabled && CanExecuteCommand(BackCommand, BackCommandParameter);
+            }
+        }
+
+        private void UpdatePaneToggleButtonCommandState()
+        {
+            if (_paneToggleButton != null)
+            {
+                _paneToggleButton.IsEnabled = IsEnabled && CanExecuteCommand(PaneToggleCommand, PaneToggleCommandParameter);
+            }
+        }
+
+        private static bool TryExecuteCommand(ICommand command, object parameter)
+        {
+            if (command == null)
+            {
+                return true;
+            }
+
+            if (!command.CanExecute(parameter))
+            {
+                return false;
+            }
+
+            command.Execute(parameter);
+            return true;
+        }
+
+        private static bool CanExecuteCommand(ICommand command, object parameter)
+        {
+            return command == null || command.CanExecute(parameter);
+        }
+
+        private static void SubscribeCommand(ICommand command, EventHandler handler)
+        {
+            if (command != null)
+            {
+                command.CanExecuteChanged += handler;
+            }
+        }
+
+        private static void UnsubscribeCommand(ICommand command, EventHandler handler)
+        {
+            if (command != null)
+            {
+                command.CanExecuteChanged -= handler;
+            }
         }
     }
 }

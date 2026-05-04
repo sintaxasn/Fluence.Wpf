@@ -26,7 +26,10 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 using System;
+using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Automation.Peers;
+using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -488,6 +491,77 @@ namespace Fluence.Wpf.Tests
 
                     Assert.AreEqual(1, nav.SelectedIndex);
                     Assert.AreSame(item1, nav.SelectedItem, "SelectedItem should match the chosen NavigationViewItem.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NavigationView_ItemInvoked_FiresBeforeSelectionChanges()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 400,
+                        Height = 320,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left
+                    };
+                    var item0 = new Fluent.NavigationViewItem { Content = "Zero" };
+                    var item1 = new Fluent.NavigationViewItem { Content = "One" };
+                    nav.Items.Add(item0);
+                    nav.Items.Add(item1);
+                    nav.SelectedItem = item0;
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    var calls = new List<string>();
+                    NavigationViewItemInvokedEventArgs invokedArgs = null;
+                    nav.ItemInvoked += delegate(object sender, NavigationViewItemInvokedEventArgs e)
+                    {
+                        invokedArgs = e;
+                        calls.Add("invoked:" + ((Fluent.NavigationViewItem)e.InvokedItemContainer).Content);
+                    };
+                    nav.SelectionChanged += delegate
+                    {
+                        calls.Add("selection:" + ((Fluent.NavigationViewItem)nav.SelectedItem).Content);
+                    };
+
+                    var peer = UIElementAutomationPeer.CreatePeerForElement(item1);
+                    Assert.IsNotNull(peer, "NavigationViewItem should create an automation peer.");
+                    var invokeProvider = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
+                    Assert.IsNotNull(invokeProvider, "NavigationViewItem automation peer must expose Invoke.");
+
+                    invokeProvider.Invoke();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.IsNotNull(invokedArgs, "ItemInvoked should fire when a navigation item is invoked.");
+                    Assert.AreSame(item1, invokedArgs.InvokedItemContainer,
+                        "ItemInvoked should expose the invoked NavigationViewItem container.");
+                    Assert.AreSame(item1, invokedArgs.InvokedItem,
+                        "Inline NavigationViewItem invocation should report the item itself as InvokedItem.");
+                    Assert.IsFalse(invokedArgs.IsSettingsInvoked,
+                        "Regular pane item invocation should not be reported as settings invocation.");
+                    CollectionAssert.AreEqual(new[] { "invoked:One", "selection:One" }, calls,
+                        "ItemInvoked must be raised before SelectionChanged, matching WinUI NavigationView ordering.");
+                    Assert.AreSame(item1, nav.SelectedItem,
+                        "Invoking the item should select it after ItemInvoked has been raised.");
                 }
                 finally
                 {

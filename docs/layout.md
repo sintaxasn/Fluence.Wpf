@@ -110,7 +110,7 @@ Role: reusable WPF control library. It targets `net472` and `net10.0-windows10.0
 | Buttons and commands | `Button.cs`, `HyperlinkButton.cs`, `DropDownButton.cs`, `SplitButton.cs`, `RepeatButton.cs`, `ToggleButton.cs` |
 | Selection and input | `CheckBox.cs`, `RadioButton.cs`, `ToggleSwitch.cs`, `ComboBox.cs`, `TextBox.cs`, `PasswordBox.cs`, `NumberBox.cs`, `Slider.cs`, `RatingControl.cs` |
 | Data and collections | `ListView.cs`, `ListBox.cs`, `ListBoxItem.cs`, `TreeView.cs`, `TreeViewItem.cs` |
-| Navigation and tabs | `NavigationView.cs`, `NavigationViewItem.cs`, `NavigationViewItemHeader.cs`, `NavigationViewItemSeparator.cs`, `NavigationViewBackRequestedEventArgs.cs`, `NavigationViewSelectionChangedEventArgs.cs`, `TabView.cs`, `TabViewItem.cs`, `TabViewTabCloseRequestedEventArgs.cs` |
+| Navigation and tabs | `NavigationView.cs`, `NavigationViewItem.cs`, `NavigationViewItemHeader.cs`, `NavigationViewItemSeparator.cs`, `NavigationViewBackRequestedEventArgs.cs`, `NavigationViewItemInvokedEventArgs.cs`, `TabView.cs`, `TabViewItem.cs`, `TabViewTabCloseRequestedEventArgs.cs` |
 | Status and identity | `InfoBar.cs`, `InfoBarClosingEventArgs.cs`, `InfoBadge.cs`, `ProgressBar.cs`, `ProgressRing.cs`, `PersonPicture.cs` |
 | Layout and surfaces | `Border.cs`, `Card.cs`, `DockPanel.cs`, `Expander.cs`, `Separator.cs`, `SmoothScrollViewer.cs`, `StackPanel.cs` |
 | Menus and text | `ContextMenu.cs`, `Menu.cs`, `MenuItem.cs`, `ToolTip.cs`, `FontIcon.cs`, `TextBlock.cs`, `TextBlockExtensions.cs` |

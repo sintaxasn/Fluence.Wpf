@@ -9,124 +9,53 @@
     Height="900"
     MinWidth="698"
     MinHeight="520"
-    ExtendsContentIntoTitleBar="False"
+    CornerStyle="Round"
+    ExtendsContentIntoTitleBar="True"
     Icon="Resources/AppIcon.png"
     RenderOptions.BitmapScalingMode="HighQuality"
     SnapsToDevicePixels="True"
+    SystemBackdropType="Mica"
     TextOptions.TextFormattingMode="Display"
     TextOptions.TextHintingMode="Fixed"
     TextOptions.TextRenderingMode="ClearType"
     TitleBarHeight="68"
     UseLayoutRounding="True"
-    SystemBackdropType="Mica"
-    CornerStyle="Round"
     >
 
     <ui:FluenceWindow.TitleBar>
-        <Grid
-            x:Name="TitleBarLayout"
+        <ui:TitleBar
+            x:Name="ShellTitleBar"
+            Height="{Binding TitleBarHeight, RelativeSource={RelativeSource AncestorType=ui:FluenceWindow}}"
             Margin="0,0,16,0"
-            SizeChanged="TitleBarLayout_SizeChanged">
-            <Grid.Resources>
-                <Style x:Key="TitleBarGlyphButtonStyle" TargetType="{x:Type Button}">
-                    <Setter Property="Width" Value="48" />
-                    <Setter Property="Height" Value="40" />
-                    <Setter Property="Padding" Value="0" />
-                    <Setter Property="Background" Value="Transparent" />
-                    <Setter Property="BorderThickness" Value="0" />
-                    <Setter Property="Focusable" Value="True" />
-                    <Setter Property="Template" Value="{StaticResource NavigationViewBackButtonTemplate}" />
-                    <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
-                </Style>
-            </Grid.Resources>
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-
-            <Grid
-                x:Name="ExtendedTitleBarChrome"
-                Grid.Column="0"
-                VerticalAlignment="Center"
-                Visibility="Collapsed">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                </Grid.ColumnDefinitions>
-                <StackPanel
-                    x:Name="TitleBarNavigationButtons"
-                    Grid.Column="0"
-                    Orientation="Horizontal"
-                    Visibility="Collapsed">
-                    <Button
-                        x:Name="TitleBarBackButton"
-                        Click="TitleBarBackButton_Click"
-                        Style="{StaticResource TitleBarGlyphButtonStyle}"
-                        Visibility="Collapsed">
-                        <ui:FontIcon
-                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                            Glyph="&#xE72B;"
-                            IconFontSize="20" />
-                    </Button>
-                    <Button
-                        x:Name="TitleBarPaneToggleButton"
-                        Click="TitleBarPaneToggleButton_Click"
-                        Style="{StaticResource TitleBarGlyphButtonStyle}">
-                        <ui:FontIcon
-                            Margin="2,0,0,0"
-                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                            Glyph="&#xE700;"
-                            IconFontSize="20" />
-                    </Button>
-                </StackPanel>
-                <Image
-                    x:Name="ExtendedTitleIcon"
-                    Grid.Column="1"
-                    Width="16"
-                    Height="16"
-                    Margin="8,0,8,0"
-                    VerticalAlignment="Center"
-                    Source="{Binding Icon, RelativeSource={RelativeSource AncestorType=ui:FluenceWindow}}"
-                    Visibility="Collapsed" />
-                <TextBlock
-                    x:Name="ExtendedTitleText"
-                    Grid.Column="2"
-                    HorizontalAlignment="Left"
-                    VerticalAlignment="Center"
-                    FontFamily="{DynamicResource FluentFontFamily}"
-                    FontSize="13"
-                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                    Text="{Binding Title, RelativeSource={RelativeSource AncestorType=ui:FluenceWindow}}"
-                    TextTrimming="CharacterEllipsis"
-                    Visibility="Collapsed" />
-            </Grid>
-
+            BackRequested="ShellTitleBar_BackRequested"
+            PaneToggleRequested="ShellTitleBar_PaneToggleRequested"
+            SizeChanged="TitleBarLayout_SizeChanged"
+            >
             <ui:TextBox
                 x:Name="NavSearchBox"
-                Grid.Column="1"
                 Width="320"
-                MinHeight="32"
+                MinHeight="0"
                 Margin="0,8"
+                HorizontalAlignment="Left"
                 VerticalAlignment="Center"
-                PlaceholderText="Search"
                 LostKeyboardFocus="NavSearchBox_LostKeyboardFocus"
+                PlaceholderText="Search"
                 PreviewKeyDown="NavSearchBox_PreviewKeyDown"
                 Style="{StaticResource TitleBarSearchBoxStyle}"
                 TextChanged="NavSearchBox_TextChanged"
                 WindowChrome.IsHitTestVisibleInChrome="True"
                 />
-        </Grid>
+        </ui:TitleBar>
     </ui:FluenceWindow.TitleBar>
 
     <ui:NavigationView
         x:Name="DemoNav"
         Background="Transparent"
-        IsBackButtonVisible="False"
-        IsBackEnabled="False"
+        IsBackButtonVisible="True"
+        IsBackEnabled="True"
         IsPaneOpen="True"
         IsPaneToggleButtonVisible="True"
-        PaneDisplayMode="Left"
+        PaneDisplayMode="Top"
         SelectedIndex="0"
         />
 </ui:FluenceWindow>

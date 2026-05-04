@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -30,29 +30,39 @@ using System;
 namespace Fluence.Wpf.Controls
 {
     /// <summary>
-    /// Provides data for the <see cref="NavigationView.NavSelectionChanged"/> event.
+    /// Provides data for the <see cref="NavigationView.ItemInvoked"/> event.
     /// </summary>
-    public class NavigationViewSelectionChangedEventArgs : EventArgs
+    public class NavigationViewItemInvokedEventArgs : EventArgs
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="NavigationViewSelectionChangedEventArgs"/> class.
+        /// Initializes a new instance of the <see cref="NavigationViewItemInvokedEventArgs"/> class.
         /// </summary>
-        /// <param name="selectedItem">The newly selected item, if any.</param>
-        /// <param name="isSettingsSelected">Reserved for future use (settings entry).</param>
-        public NavigationViewSelectionChangedEventArgs(object selectedItem, bool isSettingsSelected)
+        /// <param name="invokedItem">The data item that was invoked.</param>
+        /// <param name="invokedItemContainer">The navigation item container that was invoked.</param>
+        /// <param name="isSettingsInvoked">A value indicating whether the settings entry was invoked.</param>
+        public NavigationViewItemInvokedEventArgs(
+            object invokedItem,
+            NavigationViewItem invokedItemContainer,
+            bool isSettingsInvoked)
         {
-            SelectedItem = selectedItem;
-            IsSettingsSelected = isSettingsSelected;
+            InvokedItem = invokedItem;
+            InvokedItemContainer = invokedItemContainer;
+            IsSettingsInvoked = isSettingsInvoked;
         }
 
         /// <summary>
-        /// Gets the selected navigation item (typically a <see cref="NavigationViewItem"/>).
+        /// Gets the data item that was invoked.
         /// </summary>
-        public object SelectedItem { get; private set; }
+        public object InvokedItem { get; private set; }
 
         /// <summary>
-        /// Gets a value indicating whether the settings item is selected; reserved for future use.
+        /// Gets the navigation item container that was invoked.
         /// </summary>
-        public bool IsSettingsSelected { get; private set; }
+        public NavigationViewItem InvokedItemContainer { get; private set; }
+
+        /// <summary>
+        /// Gets a value indicating whether the settings entry was invoked.
+        /// </summary>
+        public bool IsSettingsInvoked { get; private set; }
     }
 }

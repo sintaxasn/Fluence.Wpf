@@ -75,19 +75,6 @@ namespace Fluence.Wpf.Controls
             typeof(NavigationViewItem),
             new FrameworkPropertyMetadata(false));
 
-        /// <summary>
-        /// Identifies the <see cref="PageContent"/> dependency property.
-        /// </summary>
-        /// <remarks>
-        /// When set, the parent <see cref="NavigationView"/> shows this in the main content area while
-        /// <see cref="ContentControl.Content"/> remains the pane label (typically a short string).
-        /// </remarks>
-        public static readonly DependencyProperty PageContentProperty = DependencyProperty.Register(
-            "PageContent",
-            typeof(object),
-            typeof(NavigationViewItem),
-            new PropertyMetadata(null));
-
         static NavigationViewItem()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -123,16 +110,6 @@ namespace Fluence.Wpf.Controls
             set { SetValue(IsChildItemProperty, value); }
         }
 
-        /// <summary>
-        /// Gets or sets content shown in the <see cref="NavigationView"/> frame when this item is selected.
-        /// When null, the frame uses <see cref="ContentControl.Content"/> (e.g. a string label for simple demos).
-        /// </summary>
-        public object PageContent
-        {
-            get { return GetValue(PageContentProperty); }
-            set { SetValue(PageContentProperty, value); }
-        }
-
         /// <summary>Gets whether the item is currently being pressed by a pointer.</summary>
         public bool IsPressed
         {
@@ -147,17 +124,7 @@ namespace Fluence.Wpf.Controls
                 var nav = ItemsControl.ItemsControlFromItemContainer(this) as NavigationView;
                 if (nav != null)
                 {
-                    object data = nav.ItemContainerGenerator.ItemFromContainer(this);
-                    if (data == DependencyProperty.UnsetValue || data == null)
-                    {
-                        data = this;
-                    }
-
-                    if (!object.ReferenceEquals(nav.SelectedItem, data))
-                    {
-                        nav.SelectedItem = data;
-                    }
-
+                    nav.InvokeItem(this);
                     e.Handled = true;
                     return;
                 }
@@ -220,17 +187,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            object data = nav.ItemContainerGenerator.ItemFromContainer(this);
-            if (data == DependencyProperty.UnsetValue || data == null)
-            {
-                data = this;
-            }
-
-            if (!object.ReferenceEquals(nav.SelectedItem, data))
-            {
-                nav.SelectedItem = data;
-            }
-
+            nav.InvokeItem(this);
             Focus();
             e.Handled = true;
         }

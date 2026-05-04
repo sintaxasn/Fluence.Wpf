@@ -38,6 +38,7 @@
                         BorderThickness="1">
                         <ui:NavigationView
                             x:Name="LeftNavigationDemo"
+                            ItemInvoked="NavigationDemo_ItemInvoked"
                             PaneDisplayMode="Left">
                             <ui:NavigationView.PaneHeader>
                                 <TextBlock
@@ -52,42 +53,16 @@
                                 <ui:NavigationViewItem.Icon>
                                     <ui:FontIcon Glyph="&#xE80F;" IconFontSize="20" />
                                 </ui:NavigationViewItem.Icon>
-                                <ui:NavigationViewItem.PageContent>
-                                    <StackPanel Margin="20">
-                                        <TextBlock
-                                            FontSize="18"
-                                            FontWeight="SemiBold"
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Text="Home" />
-                                        <TextBlock
-                                            Margin="0,6,0,0"
-                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                            Text="A persistent left pane keeps destinations available while content changes."
-                                            TextWrapping="Wrap" />
-                                    </StackPanel>
-                                </ui:NavigationViewItem.PageContent>
                             </ui:NavigationViewItem>
                             <ui:NavigationViewItem Content="Files">
                                 <ui:NavigationViewItem.Icon>
                                     <ui:FontIcon Glyph="&#xE8B7;" IconFontSize="20" />
                                 </ui:NavigationViewItem.Icon>
-                                <ui:NavigationViewItem.PageContent>
-                                    <TextBlock
-                                        Margin="20"
-                                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                        Text="Files" />
-                                </ui:NavigationViewItem.PageContent>
                             </ui:NavigationViewItem>
                             <ui:NavigationViewItem Content="Reports">
                                 <ui:NavigationViewItem.Icon>
                                     <ui:FontIcon Glyph="&#xE9D9;" IconFontSize="20" />
                                 </ui:NavigationViewItem.Icon>
-                                <ui:NavigationViewItem.PageContent>
-                                    <TextBlock
-                                        Margin="20"
-                                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                        Text="Reports" />
-                                </ui:NavigationViewItem.PageContent>
                             </ui:NavigationViewItem>
                         </ui:NavigationView>
                     </Border>
@@ -114,6 +89,7 @@
                         <ui:NavigationView
                             x:Name="TopNavigationDemo"
                             Header="Insights"
+                            ItemInvoked="NavigationDemo_ItemInvoked"
                             PaneDisplayMode="Top">
                             <ui:NavigationViewItem
                                 x:Name="TopNavigationOverviewItem"
@@ -122,34 +98,16 @@
                                 <ui:NavigationViewItem.Icon>
                                     <ui:FontIcon Glyph="&#xE9D2;" IconFontSize="16" />
                                 </ui:NavigationViewItem.Icon>
-                                <ui:NavigationViewItem.PageContent>
-                                    <TextBlock
-                                        Margin="20"
-                                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                        Text="Overview dashboard" />
-                                </ui:NavigationViewItem.PageContent>
                             </ui:NavigationViewItem>
                             <ui:NavigationViewItem Content="Activity">
                                 <ui:NavigationViewItem.Icon>
                                     <ui:FontIcon Glyph="&#xE7F4;" IconFontSize="16" />
                                 </ui:NavigationViewItem.Icon>
-                                <ui:NavigationViewItem.PageContent>
-                                    <TextBlock
-                                        Margin="20"
-                                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                        Text="Recent activity" />
-                                </ui:NavigationViewItem.PageContent>
                             </ui:NavigationViewItem>
                             <ui:NavigationViewItem Content="Settings">
                                 <ui:NavigationViewItem.Icon>
                                     <ui:FontIcon Glyph="&#xE713;" IconFontSize="16" />
                                 </ui:NavigationViewItem.Icon>
-                                <ui:NavigationViewItem.PageContent>
-                                    <TextBlock
-                                        Margin="20"
-                                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                        Text="Settings" />
-                                </ui:NavigationViewItem.PageContent>
                             </ui:NavigationViewItem>
                         </ui:NavigationView>
                     </Border>
@@ -175,6 +133,7 @@
                             IsBackButtonVisible="True"
                             IsBackEnabled="False"
                             IsPaneOpen="False"
+                            ItemInvoked="NavigationDemo_ItemInvoked"
                             PaneDisplayMode="LeftCompact"
                             BackRequested="CompactNavigationDemo_BackRequested">
                             <ui:NavigationView.PaneFooter>
@@ -190,20 +149,6 @@
                                 <ui:NavigationViewItem.Icon>
                                     <ui:FontIcon Glyph="&#xE80F;" IconFontSize="20" />
                                 </ui:NavigationViewItem.Icon>
-                                <ui:NavigationViewItem.PageContent>
-                                    <StackPanel Margin="20">
-                                        <TextBlock
-                                            FontSize="18"
-                                            FontWeight="SemiBold"
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Text="Dashboard" />
-                                        <TextBlock
-                                            Margin="0,6,0,0"
-                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                            Text="Toggle back availability below to update the back button state."
-                                            TextWrapping="Wrap" />
-                                    </StackPanel>
-                                </ui:NavigationViewItem.PageContent>
                             </ui:NavigationViewItem>
                             <ui:NavigationViewItem Content="Messages">
                                 <ui:NavigationViewItem.Icon>

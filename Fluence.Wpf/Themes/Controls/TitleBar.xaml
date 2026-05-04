@@ -3,122 +3,203 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
 
+    <Style x:Key="TitleBarGlyphButtonStyle" TargetType="{x:Type Button}">
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
+        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
+        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
+        <Setter Property="Background" Value="{DynamicResource SubtleFillColorTransparentBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Width" Value="48" />
+        <Setter Property="Height" Value="40" />
+        <Setter Property="FontFamily" Value="Segoe Fluent Icons" />
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource DefaultControlFocusVisualStyle}" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border
+                        x:Name="ButtonRoot"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="{DynamicResource ControlCornerRadius}"
+                        SnapsToDevicePixels="True">
+                        <TextBlock
+                            x:Name="Glyph"
+                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                            FontFamily="{TemplateBinding FontFamily}"
+                            FontSize="{TemplateBinding FontSize}"
+                            Foreground="{TemplateBinding Foreground}"
+                            Text="{TemplateBinding Content}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ButtonRoot" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="ButtonRoot" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+                            <Setter TargetName="ButtonRoot" Property="Background" Value="{DynamicResource SubtleFillColorDisabledBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="{x:Type controls:TitleBar}">
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
         <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
         <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
-        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Background" Value="{DynamicResource ControlFillColorTransparentBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="Height" Value="48" />
-        <Setter Property="FontSize" Value="12" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="VerticalAlignment" Value="Top" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:TitleBar}">
-                    <Border
-                        x:Name="RootBorder"
+                    <Grid
+                        x:Name="PART_LayoutRoot"
                         Height="{TemplateBinding Height}"
                         Background="{TemplateBinding Background}"
                         SnapsToDevicePixels="True">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="Auto" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition x:Name="LeftPaddingColumn" Width="2" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition x:Name="LeftHeaderPaddingColumn" Width="14" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="48" />
+                            <ColumnDefinition x:Name="RightPaddingColumn" Width="0" />
+                        </Grid.ColumnDefinitions>
 
-                            <!--  Back Button  -->
-                            <Button
-                                x:Name="BackButton"
-                                Grid.Column="0"
-                                Width="40"
-                                Height="32"
-                                Margin="4,0,0,0"
-                                Padding="0"
-                                VerticalAlignment="Center"
-                                Background="Transparent"
-                                BorderThickness="0"
-                                Command="{TemplateBinding BackCommand}"
-                                CommandParameter="{TemplateBinding BackCommandParameter}"
-                                Cursor="Hand"
-                                ToolTip="Back"
-                                Visibility="Collapsed">
-                                <Button.Template>
-                                    <ControlTemplate TargetType="Button">
-                                        <Border
-                                            x:Name="BtnBorder"
-                                            Background="Transparent"
-                                            CornerRadius="{DynamicResource ControlCornerRadius}">
-                                            <Path
-                                                x:Name="Arrow"
-                                                Width="12"
-                                                Height="12"
-                                                HorizontalAlignment="Center"
-                                                VerticalAlignment="Center"
-                                                Data="M 20 9 L 8.14 9 L 13.07 4.07 L 12 3 L 5 10 L 12 17 L 13.07 15.93 L 8.14 11 L 20 11 Z"
-                                                Fill="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Stretch="Uniform" />
-                                        </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter TargetName="BtnBorder" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
-                                            </Trigger>
-                                            <Trigger Property="IsPressed" Value="True">
-                                                <Setter TargetName="BtnBorder" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
-                                                <Setter TargetName="Arrow" Property="Opacity" Value="0.7" />
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Button.Template>
-                            </Button>
+                        <Button
+                            x:Name="PART_BackButton"
+                            Grid.Column="1"
+                            Content="&#xE72B;"
+                            Style="{StaticResource TitleBarGlyphButtonStyle}"
+                            ToolTip="Back"
+                            Visibility="Collapsed" />
 
-                            <!--  Icon  -->
-                            <ContentPresenter
-                                x:Name="IconPresenter"
-                                Grid.Column="1"
-                                MaxWidth="16"
-                                MaxHeight="16"
-                                Margin="12,0,8,0"
-                                VerticalAlignment="Center"
-                                Content="{TemplateBinding Icon}"
-                                Visibility="Collapsed" />
+                        <Button
+                            x:Name="PART_PaneToggleButton"
+                            Grid.Column="2"
+                            Content="&#xE700;"
+                            Style="{StaticResource TitleBarGlyphButtonStyle}"
+                            ToolTip="Navigation"
+                            Visibility="Collapsed" />
 
-                            <!--  Title  -->
-                            <TextBlock
-                                x:Name="TitleText"
-                                Grid.Column="2"
-                                VerticalAlignment="Center"
-                                FontSize="{TemplateBinding FontSize}"
-                                Foreground="{TemplateBinding Foreground}"
-                                Text="{TemplateBinding Title}"
-                                TextTrimming="CharacterEllipsis" />
+                        <ContentPresenter
+                            x:Name="PART_LeftHeaderPresenter"
+                            Grid.Column="3"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Content="{TemplateBinding LeftHeader}" />
 
-                            <!--  Custom Content  -->
-                            <ContentPresenter
-                                x:Name="CustomContentPresenter"
-                                Grid.Column="3"
-                                Margin="8,0,0,0"
-                                HorizontalAlignment="Stretch"
-                                VerticalAlignment="Center"
-                                Content="{TemplateBinding CustomContent}" />
-                        </Grid>
-                    </Border>
+                        <ContentPresenter
+                            x:Name="PART_IconPresenter"
+                            Grid.Column="5"
+                            MaxWidth="16"
+                            MaxHeight="16"
+                            Margin="0,0,16,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Content="{TemplateBinding Icon}" />
+
+                        <TextBlock
+                            x:Name="PART_TitleText"
+                            Grid.Column="6"
+                            MinWidth="0"
+                            Margin="0,0,8,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Foreground="{TemplateBinding Foreground}"
+                            Style="{DynamicResource CaptionTextBlockStyle}"
+                            Text="{TemplateBinding Title}"
+                            TextTrimming="CharacterEllipsis"
+                            TextWrapping="NoWrap" />
+
+                        <TextBlock
+                            x:Name="PART_SubtitleText"
+                            Grid.Column="7"
+                            MinWidth="0"
+                            Margin="0,0,16,0"
+                            HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                            Style="{DynamicResource CaptionTextBlockStyle}"
+                            Text="{TemplateBinding Subtitle}"
+                            TextTrimming="CharacterEllipsis"
+                            TextWrapping="NoWrap" />
+
+                        <ContentPresenter
+                            x:Name="PART_ContentPresenter"
+                            Grid.Column="8"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Content="{TemplateBinding Content}"
+                            ContentStringFormat="{TemplateBinding ContentStringFormat}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                            ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}" />
+
+                        <ContentPresenter
+                            x:Name="PART_RightHeaderPresenter"
+                            Grid.Column="9"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Content="{TemplateBinding RightHeader}" />
+                    </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsBackButtonVisible" Value="True">
-                            <Setter TargetName="BackButton" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="PART_BackButton" Property="Visibility" Value="Visible" />
+                        </Trigger>
+                        <Trigger Property="IsPaneToggleButtonVisible" Value="True">
+                            <Setter TargetName="PART_PaneToggleButton" Property="Visibility" Value="Visible" />
                         </Trigger>
                         <Trigger Property="Icon" Value="{x:Null}">
-                            <Setter TargetName="IconPresenter" Property="Visibility" Value="Collapsed" />
-                            <Setter TargetName="TitleText" Property="Margin" Value="12,0,0,0" />
+                            <Setter TargetName="PART_IconPresenter" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="Title" Value="{x:Null}">
+                            <Setter TargetName="PART_TitleText" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="Title" Value="">
+                            <Setter TargetName="PART_TitleText" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="Subtitle" Value="{x:Null}">
+                            <Setter TargetName="PART_SubtitleText" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="Subtitle" Value="">
+                            <Setter TargetName="PART_SubtitleText" Property="Visibility" Value="Collapsed" />
+                        </Trigger>
+                        <Trigger Property="LeftHeader" Value="{x:Null}">
+                            <Setter TargetName="PART_LeftHeaderPresenter" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="LeftHeaderPaddingColumn" Property="Width" Value="0" />
+                        </Trigger>
+                        <Trigger Property="RightHeader" Value="{x:Null}">
+                            <Setter TargetName="PART_RightHeaderPresenter" Property="Visibility" Value="Collapsed" />
                         </Trigger>
                         <Trigger Property="IsCompact" Value="True">
                             <Setter Property="Height" Value="32" />
-                            <Setter TargetName="BackButton" Property="Width" Value="32" />
-                            <Setter TargetName="BackButton" Property="Height" Value="24" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

@@ -28,6 +28,9 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
+using NavigationView = Fluence.Wpf.Controls.NavigationView;
+using NavigationViewItem = Fluence.Wpf.Controls.NavigationViewItem;
+using NavigationViewItemInvokedEventArgs = Fluence.Wpf.Controls.NavigationViewItemInvokedEventArgs;
 
 namespace Fluence.Wpf.Demo.Pages
 {
@@ -57,42 +60,16 @@ namespace Fluence.Wpf.Demo.Pages
                 <ui:NavigationViewItem.Icon>
                     <ui:FontIcon Glyph=""&#xE80F;"" IconFontSize=""20"" />
                 </ui:NavigationViewItem.Icon>
-                <ui:NavigationViewItem.PageContent>
-                    <StackPanel Margin=""20"">
-                        <TextBlock
-                            FontSize=""18""
-                            FontWeight=""SemiBold""
-                            Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-                            Text=""Home"" />
-                        <TextBlock
-                            Margin=""0,6,0,0""
-                            Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                            Text=""A persistent left pane keeps destinations available while content changes.""
-                            TextWrapping=""Wrap"" />
-                    </StackPanel>
-                </ui:NavigationViewItem.PageContent>
             </ui:NavigationViewItem>
             <ui:NavigationViewItem Content=""Files"">
                 <ui:NavigationViewItem.Icon>
                     <ui:FontIcon Glyph=""&#xE8B7;"" IconFontSize=""20"" />
                 </ui:NavigationViewItem.Icon>
-                <ui:NavigationViewItem.PageContent>
-                    <TextBlock
-                        Margin=""20""
-                        Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-                        Text=""Files"" />
-                </ui:NavigationViewItem.PageContent>
             </ui:NavigationViewItem>
             <ui:NavigationViewItem Content=""Reports"">
                 <ui:NavigationViewItem.Icon>
                     <ui:FontIcon Glyph=""&#xE9D9;"" IconFontSize=""20"" />
                 </ui:NavigationViewItem.Icon>
-                <ui:NavigationViewItem.PageContent>
-                    <TextBlock
-                        Margin=""20""
-                        Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-                        Text=""Reports"" />
-                </ui:NavigationViewItem.PageContent>
             </ui:NavigationViewItem>
         </ui:NavigationView>
     </Border>
@@ -130,34 +107,16 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
                 <ui:NavigationViewItem.Icon>
                     <ui:FontIcon Glyph=""&#xE9D2;"" IconFontSize=""16"" />
                 </ui:NavigationViewItem.Icon>
-                <ui:NavigationViewItem.PageContent>
-                    <TextBlock
-                        Margin=""20""
-                        Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-                        Text=""Overview dashboard"" />
-                </ui:NavigationViewItem.PageContent>
             </ui:NavigationViewItem>
             <ui:NavigationViewItem Content=""Activity"">
                 <ui:NavigationViewItem.Icon>
                     <ui:FontIcon Glyph=""&#xE7F4;"" IconFontSize=""16"" />
                 </ui:NavigationViewItem.Icon>
-                <ui:NavigationViewItem.PageContent>
-                    <TextBlock
-                        Margin=""20""
-                        Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-                        Text=""Recent activity"" />
-                </ui:NavigationViewItem.PageContent>
             </ui:NavigationViewItem>
             <ui:NavigationViewItem Content=""Settings"">
                 <ui:NavigationViewItem.Icon>
                     <ui:FontIcon Glyph=""&#xE713;"" IconFontSize=""16"" />
                 </ui:NavigationViewItem.Icon>
-                <ui:NavigationViewItem.PageContent>
-                    <TextBlock
-                        Margin=""20""
-                        Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-                        Text=""Settings"" />
-                </ui:NavigationViewItem.PageContent>
             </ui:NavigationViewItem>
         </ui:NavigationView>
     </Border>
@@ -207,20 +166,6 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
                     <ui:NavigationViewItem.Icon>
                         <ui:FontIcon Glyph=""&#xE80F;"" IconFontSize=""20"" />
                     </ui:NavigationViewItem.Icon>
-                    <ui:NavigationViewItem.PageContent>
-                        <StackPanel Margin=""20"">
-                            <TextBlock
-                                FontSize=""18""
-                                FontWeight=""SemiBold""
-                                Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-                                Text=""Dashboard"" />
-                            <TextBlock
-                                Margin=""0,6,0,0""
-                                Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                                Text=""Toggle back availability below to update the back button state.""
-                                TextWrapping=""Wrap"" />
-                        </StackPanel>
-                    </ui:NavigationViewItem.PageContent>
                 </ui:NavigationViewItem>
                 <ui:NavigationViewItem Content=""Messages"">
                     <ui:NavigationViewItem.Icon>
@@ -311,7 +256,78 @@ private int _backRequestCount;
             LeftNavigationDemo.SelectedItem = LeftNavigationHomeItem;
             TopNavigationDemo.SelectedItem = TopNavigationOverviewItem;
             CompactNavigationDemo.SelectedItem = CompactNavigationDashboardItem;
+            SetNavigationDemoContent(LeftNavigationDemo, LeftNavigationHomeItem);
+            SetNavigationDemoContent(TopNavigationDemo, TopNavigationOverviewItem);
+            SetNavigationDemoContent(CompactNavigationDemo, CompactNavigationDashboardItem);
             UpdateBackState();
+        }
+
+        private void NavigationDemo_ItemInvoked(object sender, NavigationViewItemInvokedEventArgs e)
+        {
+            SetNavigationDemoContent(sender as NavigationView, e.InvokedItemContainer);
+        }
+
+        private static void SetNavigationDemoContent(NavigationView nav, NavigationViewItem item)
+        {
+            if (nav == null || item == null)
+            {
+                return;
+            }
+
+            var title = item.Content as string;
+            nav.Content = CreateNavigationDemoContent(title ?? string.Empty);
+        }
+
+        private static FrameworkElement CreateNavigationDemoContent(string title)
+        {
+            switch (title)
+            {
+                case "Home":
+                    return CreateDescribedContent(
+                        "Home",
+                        "A persistent left pane keeps destinations available while content changes.");
+                case "Dashboard":
+                    return CreateDescribedContent(
+                        "Dashboard",
+                        "Toggle back availability below to update the back button state.");
+                case "Overview":
+                    return CreateSimpleContent("Overview dashboard");
+                case "Activity":
+                    return CreateSimpleContent("Recent activity");
+                default:
+                    return CreateSimpleContent(title);
+            }
+        }
+
+        private static StackPanel CreateDescribedContent(string title, string description)
+        {
+            var panel = new StackPanel { Margin = new Thickness(20) };
+            var titleBlock = CreateSimpleContent(title);
+            titleBlock.Margin = new Thickness(0);
+            titleBlock.FontSize = 18;
+            titleBlock.FontWeight = FontWeights.SemiBold;
+            panel.Children.Add(titleBlock);
+
+            var descriptionBlock = new TextBlock
+            {
+                Margin = new Thickness(0, 6, 0, 0),
+                Text = description,
+                TextWrapping = TextWrapping.Wrap
+            };
+            descriptionBlock.SetResourceReference(TextBlock.ForegroundProperty, "TextFillColorSecondaryBrush");
+            panel.Children.Add(descriptionBlock);
+            return panel;
+        }
+
+        private static TextBlock CreateSimpleContent(string text)
+        {
+            var textBlock = new TextBlock
+            {
+                Margin = new Thickness(20),
+                Text = text
+            };
+            textBlock.SetResourceReference(TextBlock.ForegroundProperty, "TextFillColorPrimaryBrush");
+            return textBlock;
         }
 
         private void BackEnabledToggle_Changed(object sender, RoutedEventArgs e)

@@ -1,4 +1,4 @@
-﻿<!--
+<!--
     Copyright 2026 Dan Cunningham
     
     Redistribution and use in source and binary forms, with or without
@@ -29,12 +29,9 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:Fluence.Wpf.Controls"
-    xmlns:conv="clr-namespace:Fluence.Wpf.Converters"
     xmlns:helpers="clr-namespace:Fluence.Wpf.Helpers"
     xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
     >
-
-    <conv:NavigationViewMainContentConverter x:Key="NavigationViewMainContentConverter" />
 
     <!--  NavigationViewItemHeader  -->
     <Style TargetType="{x:Type controls:NavigationViewItemHeader}">
@@ -90,7 +87,7 @@
         <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
         <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Height" Value="1" />
-        <Setter Property="Margin" Value="12,4" />
+        <Setter Property="Margin" Value="12,4,0,4" />
         <Setter Property="IsTabStop" Value="False" />
         <Setter Property="Template">
             <Setter.Value>
@@ -468,14 +465,7 @@
                             ClipToBounds="True"
                             CornerRadius="8,0,0,0"
                             >
-                            <ContentPresenter x:Name="PART_ContentPresenter">
-                                <ContentPresenter.Content>
-                                    <MultiBinding Converter="{StaticResource NavigationViewMainContentConverter}">
-                                        <Binding Path="Content" RelativeSource="{RelativeSource TemplatedParent}" />
-                                        <Binding Path="SelectedContent" RelativeSource="{RelativeSource TemplatedParent}" />
-                                    </MultiBinding>
-                                </ContentPresenter.Content>
-                            </ContentPresenter>
+                            <ContentPresenter x:Name="PART_ContentPresenter" Content="{TemplateBinding Content}" />
                         </Border>
                         <Border
                             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
@@ -731,14 +721,7 @@
                             ClipToBounds="True"
                             CornerRadius="8,0,0,0"
                             >
-                            <ContentPresenter x:Name="PART_ContentPresenter">
-                                <ContentPresenter.Content>
-                                    <MultiBinding Converter="{StaticResource NavigationViewMainContentConverter}">
-                                        <Binding Path="Content" RelativeSource="{RelativeSource TemplatedParent}" />
-                                        <Binding Path="SelectedContent" RelativeSource="{RelativeSource TemplatedParent}" />
-                                    </MultiBinding>
-                                </ContentPresenter.Content>
-                            </ContentPresenter>
+                            <ContentPresenter x:Name="PART_ContentPresenter" Content="{TemplateBinding Content}" />
                         </Border>
                         <Border
                             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
@@ -931,14 +914,7 @@
                     </Grid>
                 </Border>
                 <Border Grid.Row="1" Background="{TemplateBinding ContentBackground}">
-                    <ContentPresenter x:Name="PART_ContentPresenter">
-                        <ContentPresenter.Content>
-                            <MultiBinding Converter="{StaticResource NavigationViewMainContentConverter}">
-                                <Binding Path="Content" RelativeSource="{RelativeSource TemplatedParent}" />
-                                <Binding Path="SelectedContent" RelativeSource="{RelativeSource TemplatedParent}" />
-                            </MultiBinding>
-                        </ContentPresenter.Content>
-                    </ContentPresenter>
+                    <ContentPresenter x:Name="PART_ContentPresenter" Content="{TemplateBinding Content}" />
                 </Border>
             </Grid>
             <!--  WI-3 B15: BackButtonStates VSM group - WinUI NavigationView canonical  -->

@@ -170,13 +170,6 @@ namespace Fluence.Wpf.Controls
             typeof(NavigationView),
             new PropertyMetadata(null));
 
-        /// <summary>Identifies the <see cref="SelectedContent"/> dependency property.</summary>
-        public static readonly DependencyProperty SelectedContentProperty = DependencyProperty.Register(
-            "SelectedContent",
-            typeof(object),
-            typeof(NavigationView),
-            new PropertyMetadata(null));
-
         static NavigationView()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -201,10 +194,9 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Occurs when the selected navigation item changes.
+        /// Occurs when a navigation item is invoked before selection changes.
         /// </summary>
-        /// <remarks>The routed <see cref="Selector.SelectionChanged"/> event also fires.</remarks>
-        public event EventHandler<NavigationViewSelectionChangedEventArgs> NavSelectionChanged;
+        public event EventHandler<NavigationViewItemInvokedEventArgs> ItemInvoked;
 
         /// <summary>
         /// Occurs when the back button is invoked.
@@ -305,13 +297,6 @@ namespace Fluence.Wpf.Controls
             set { SetValue(ContentProperty, value); }
         }
 
-        /// <summary>Gets or sets content bound to the current selection.</summary>
-        public object SelectedContent
-        {
-            get { return GetValue(SelectedContentProperty); }
-            set { SetValue(SelectedContentProperty, value); }
-        }
-
         /// <inheritdoc />
         public override void OnApplyTemplate()
         {
@@ -367,14 +352,7 @@ namespace Fluence.Wpf.Controls
             }
 
             base.OnSelectionChanged(e);
-            UpdateSelectedContentFromSelection();
             Dispatcher.BeginInvoke(new Action(() => PositionIndicator(true, previousItem)), DispatcherPriority.Loaded);
-
-            var handler = NavSelectionChanged;
-            if (handler != null)
-            {
-                handler(this, new NavigationViewSelectionChangedEventArgs(SelectedItem, false));
-            }
         }
 
         /// <inheritdoc />
@@ -470,6 +448,23 @@ namespace Fluence.Wpf.Controls
             return _selectionIndicator;
         }
 
+        internal void InvokeItem(NavigationViewItem item)
+        {
+            if (item == null || !item.IsEnabled)
+            {
+                return;
+            }
+
+            object invokedItem = GetDataFromContainer(item);
+            var handler = ItemInvoked;
+            if (handler != null)
+            {
+                handler(this, new NavigationViewItemInvokedEventArgs(invokedItem, item, false));
+            }
+
+            SelectItemFromContainer(item);
+        }
+
         private static void OnIsBackButtonVisibleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ((NavigationView)d).UpdateBackButtonState(true);
@@ -520,21 +515,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            var fromItem = ItemContainerGenerator.ItemFromContainer(navItem);
-            if (fromItem != DependencyProperty.UnsetValue && fromItem != null)
-            {
-                if (!ReferenceEquals(SelectedItem, fromItem))
-                {
-                    SelectedItem = fromItem;
-                }
-
-                return;
-            }
-
-            if (!ReferenceEquals(SelectedItem, navItem))
-            {
-                SelectedItem = navItem;
-            }
+            SelectItemFromContainer(navItem);
         }
 
         private void OnNavigationViewItemLoaded(object sender, RoutedEventArgs e)
@@ -1034,27 +1015,24 @@ namespace Fluence.Wpf.Controls
             return ItemContainerGenerator.ContainerFromItem(item) as NavigationViewItem;
         }
 
-        private void UpdateSelectedContentFromSelection()
+        internal void SelectItemFromContainer(NavigationViewItem navItem)
         {
-            var nvi = SelectedItem as NavigationViewItem;
-            if (nvi != null)
+            if (navItem == null)
             {
-                SetCurrentValue(SelectedContentProperty, nvi.PageContent ?? nvi.Content);
                 return;
             }
 
-            if (SelectedItem != null)
+            object data = GetDataFromContainer(navItem);
+            if (!ReferenceEquals(SelectedItem, data))
             {
-                var ic = ItemContainerGenerator.ContainerFromItem(SelectedItem);
-                var navFromItem = ic as NavigationViewItem;
-                if (navFromItem != null)
-                {
-                    SetCurrentValue(SelectedContentProperty, navFromItem.PageContent ?? navFromItem.Content);
-                    return;
-                }
+                SelectedItem = data;
             }
+        }
 
-            SetCurrentValue(SelectedContentProperty, null);
+        private object GetDataFromContainer(NavigationViewItem navItem)
+        {
+            object data = ItemContainerGenerator.ItemFromContainer(navItem);
+            return (data != DependencyProperty.UnsetValue && data != null) ? data : navItem;
         }
 
         private static NavigationViewItem FindNavigationViewItem(DependencyObject focused)
