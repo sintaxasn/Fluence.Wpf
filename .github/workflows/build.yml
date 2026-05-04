@@ -8,10 +8,10 @@ on:
 
 jobs:
   build:
+    runs-on: windows-latest
     permissions:
       actions: read
       contents: write
-    runs-on: windows-latest
 
     steps:
       - name: Checkout
