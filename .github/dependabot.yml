@@ -10,7 +10,7 @@ updates:
     schedule:
       interval: "weekly"
   - package-ecosystem: "nuget"
-    directory:
+    directory: "/"
     schedule:
       interval: "weekly"
   - package-ecosystem: "dotnet-sdk"
