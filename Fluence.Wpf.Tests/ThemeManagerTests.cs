@@ -160,5 +160,21 @@ namespace Fluence.Wpf.Tests
             });
         }
 
+        [TestMethod]
+        public void IsSystemInDarkMode_IsInverseOfRegistrySystemLight()
+        {
+            bool registryLight = Fluence.Wpf.Helpers.RegistryHelper.GetSystemUsesLightTheme();
+            bool result = ApplicationThemeManager.IsSystemInDarkMode;
+            Assert.AreEqual(!registryLight, result);
+        }
+
+        [TestMethod]
+        public void IsAppInDarkMode_IsInverseOfRegistryAppsLight()
+        {
+            bool registryLight = Fluence.Wpf.Helpers.RegistryHelper.GetAppsUseLightTheme();
+            bool result = ApplicationThemeManager.IsAppInDarkMode;
+            Assert.AreEqual(!registryLight, result);
+        }
+
     }
 }

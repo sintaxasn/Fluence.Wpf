@@ -326,29 +326,32 @@ WpfTestSta.cs
  Fluence.Wpf.Demo/obj/Debug/net10.0-windows10.0.26100.0/ref/Fluence.Wpf.Demo.dll
  Fluence.Wpf/obj/Debug/net10.0-windows10.0.26100.0/ref/Fluence.Wpf.dll
 <NUGET>/
- microsoft.applicationinsights/2.21.0/lib/netstandard2.0/Microsoft.ApplicationInsights.dll
+ microsoft.applicationinsights/2.23.0/lib/netstandard2.0/Microsoft.ApplicationInsights.dll
  microsoft.codecoverage/17.9.0/lib/netcoreapp3.1/Microsoft.VisualStudio.CodeCoverage.Shim.dll
- microsoft.testing.extensions.telemetry/1.0.2/lib/net8.0/Microsoft.Testing.Extensions.Telemetry.dll
- microsoft.testing.extensions.trxreport.abstractions/1.0.2/lib/net8.0/Microsoft.Testing.Extensions.TrxReport.Abstractions.dll
- microsoft.testing.extensions.vstestbridge/1.0.2/lib/net8.0/Microsoft.Testing.Extensions.VSTestBridge.dll
- microsoft.testing.platform.msbuild/1.0.2/lib/net8.0/
-  Microsoft.Testing.Platform.dll
-  Microsoft.Testing.Platform.MSBuild.dll
+ microsoft.testing.extensions.telemetry/2.2.2/lib/net9.0/Microsoft.Testing.Extensions.Telemetry.dll
+ microsoft.testing.extensions.trxreport.abstractions/2.2.2/lib/net9.0/Microsoft.Testing.Extensions.TrxReport.Abstractions.dll
+ microsoft.testing.extensions.vstestbridge/2.2.2/lib/net9.0/Microsoft.Testing.Extensions.VSTestBridge.dll
+ microsoft.testing.platform.msbuild/2.2.2/lib/net9.0/Microsoft.Testing.Extensions.MSBuild.dll
+ microsoft.testing.platform/2.2.2/lib/net9.0/Microsoft.Testing.Platform.dll
+ microsoft.testplatform.objectmodel/18.3.0/lib/net8.0/
+  Microsoft.TestPlatform.CoreUtilities.dll
+  Microsoft.TestPlatform.PlatformAbstractions.dll
+  Microsoft.VisualStudio.TestPlatform.ObjectModel.dll
  microsoft.testplatform.testhost/17.9.0/lib/netcoreapp3.1/
   Microsoft.TestPlatform.CommunicationUtilities.dll
-  Microsoft.TestPlatform.CoreUtilities.dll
   Microsoft.TestPlatform.CrossPlatEngine.dll
-  Microsoft.TestPlatform.PlatformAbstractions.dll
   Microsoft.TestPlatform.Utilities.dll
   Microsoft.VisualStudio.TestPlatform.Common.dll
-  Microsoft.VisualStudio.TestPlatform.ObjectModel.dll
   testhost.dll
  microsoft.windows.sdk.net.ref/10.0.26100.57/lib/net8.0/
   Microsoft.Windows.SDK.NET.dll
   WinRT.Runtime.dll
- mstest.testframework/3.2.2/
-  build/net8.0/Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll
-  lib/net8.0/Microsoft.VisualStudio.TestPlatform.TestFramework.dll
+ mstest.testadapter/4.2.2/buildTransitive/net9.0/
+  MSTest.TestAdapter.dll
+  MSTestAdapter.PlatformServices.dll
+ mstest.testframework/4.2.2/
+  buildTransitive/net9.0/MSTest.TestFramework.Extensions.dll
+  lib/net9.0/MSTest.TestFramework.dll
  newtonsoft.json/13.0.1/lib/netstandard2.0/Newtonsoft.Json.dll
 
 [analyzerReferences]
@@ -362,12 +365,17 @@ WpfTestSta.cs
 ../../.dotnet/sdk/10.0.203/Sdks/Microsoft.NET.Sdk/analyzers/
  Microsoft.CodeAnalysis.CSharp.NetAnalyzers.dll
  Microsoft.CodeAnalysis.NetAnalyzers.dll
-<NUGET>/microsoft.windows.sdk.net.ref/10.0.26100.57/analyzers/dotnet/cs/WinRT.SourceGenerator.dll
+<NUGET>/
+ microsoft.windows.sdk.net.ref/10.0.26100.57/analyzers/dotnet/cs/WinRT.SourceGenerator.dll
+ mstest.analyzers/4.2.2/analyzers/dotnet/cs/
+  MSTest.Analyzers.CodeFixes.dll
+  MSTest.Analyzers.dll
 
 [analyzerConfigFiles]
 ../
  ../.dotnet/sdk/10.0.203/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_default.globalconfig
  .editorconfig
+<NUGET>/mstest.analyzers/4.2.2/globalconfigs/mstest-default.globalconfig
 obj/Debug/net10.0-windows10.0.26100.0/Fluence.Wpf.Tests.GeneratedMSBuildEditorConfig.editorconfig
 
 ---
@@ -610,30 +618,38 @@ WpfTestSta.cs
  UIAutomationTypes.dll
  WindowsBase.dll
 <NUGET>/
- microsoft.applicationinsights/2.21.0/lib/net46/Microsoft.ApplicationInsights.dll
+ microsoft.applicationinsights/2.23.0/lib/net46/Microsoft.ApplicationInsights.dll
  microsoft.codecoverage/17.9.0/lib/net462/Microsoft.VisualStudio.CodeCoverage.Shim.dll
- microsoft.testing.extensions.telemetry/1.0.2/lib/netstandard2.0/Microsoft.Testing.Extensions.Telemetry.dll
- microsoft.testing.extensions.trxreport.abstractions/1.0.2/lib/netstandard2.0/Microsoft.Testing.Extensions.TrxReport.Abstractions.dll
- microsoft.testing.extensions.vstestbridge/1.0.2/lib/netstandard2.0/Microsoft.Testing.Extensions.VSTestBridge.dll
- microsoft.testing.platform.msbuild/1.0.2/lib/netstandard2.0/
-  Microsoft.Testing.Platform.dll
-  Microsoft.Testing.Platform.MSBuild.dll
- microsoft.testplatform.objectmodel/17.5.0/lib/net462/
+ microsoft.testing.extensions.telemetry/2.2.2/lib/netstandard2.0/Microsoft.Testing.Extensions.Telemetry.dll
+ microsoft.testing.extensions.trxreport.abstractions/2.2.2/lib/netstandard2.0/Microsoft.Testing.Extensions.TrxReport.Abstractions.dll
+ microsoft.testing.extensions.vstestbridge/2.2.2/lib/netstandard2.0/Microsoft.Testing.Extensions.VSTestBridge.dll
+ microsoft.testing.platform.msbuild/2.2.2/lib/netstandard2.0/Microsoft.Testing.Extensions.MSBuild.dll
+ microsoft.testing.platform/2.2.2/lib/netstandard2.0/Microsoft.Testing.Platform.dll
+ microsoft.testplatform.objectmodel/18.3.0/lib/net462/
   Microsoft.TestPlatform.CoreUtilities.dll
   Microsoft.TestPlatform.PlatformAbstractions.dll
   Microsoft.VisualStudio.TestPlatform.ObjectModel.dll
- mstest.testframework/3.2.2/lib/net462/
-  Microsoft.VisualStudio.TestPlatform.TestFramework.dll
-  Microsoft.VisualStudio.TestPlatform.TestFramework.Extensions.dll
- nuget.frameworks/5.11.0/lib/net472/NuGet.Frameworks.dll
+ mstest.testadapter/4.2.2/buildTransitive/net462/
+  MSTest.TestAdapter.dll
+  MSTestAdapter.PlatformServices.dll
+ mstest.testframework/4.2.2/lib/net462/
+  MSTest.TestFramework.dll
+  MSTest.TestFramework.Extensions.dll
  system.buffers/4.5.1/ref/net45/System.Buffers.dll
- system.collections.immutable/1.5.0/lib/netstandard2.0/System.Collections.Immutable.dll
- system.diagnostics.diagnosticsource/5.0.0/lib/net46/System.Diagnostics.DiagnosticSource.dll
- system.memory/4.5.4/lib/net461/System.Memory.dll
+ system.collections.immutable/8.0.0/lib/net462/System.Collections.Immutable.dll
+ system.diagnostics.diagnosticsource/6.0.0/lib/net461/System.Diagnostics.DiagnosticSource.dll
+ system.memory/4.5.5/lib/net461/System.Memory.dll
  system.numerics.vectors/4.5.0/ref/net46/System.Numerics.Vectors.dll
- system.reflection.metadata/1.6.0/lib/netstandard2.0/System.Reflection.Metadata.dll
- system.runtime.compilerservices.unsafe/5.0.0/ref/net461/System.Runtime.CompilerServices.Unsafe.dll
+ system.reflection.metadata/8.0.0/lib/net462/System.Reflection.Metadata.dll
+ system.runtime.compilerservices.unsafe/6.0.0/lib/net461/System.Runtime.CompilerServices.Unsafe.dll
+ system.threading.tasks.extensions/4.5.4/lib/net461/System.Threading.Tasks.Extensions.dll
+
+[analyzerReferences]
+<NUGET>/mstest.analyzers/4.2.2/analyzers/dotnet/cs/
+ MSTest.Analyzers.CodeFixes.dll
+ MSTest.Analyzers.dll
 
 [analyzerConfigFiles]
 ../.editorconfig
+<NUGET>/mstest.analyzers/4.2.2/globalconfigs/mstest-default.globalconfig
 obj/Debug/net472/Fluence.Wpf.Tests.GeneratedMSBuildEditorConfig.editorconfig

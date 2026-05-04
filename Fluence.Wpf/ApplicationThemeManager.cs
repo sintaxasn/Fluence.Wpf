@@ -79,6 +79,24 @@ namespace Fluence.Wpf
             get { return _currentBackdrop; }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether the Windows system (window-chrome) color mode is currently Dark.
+        /// Reflects the live registry value; independent of <see cref="CurrentTheme"/>.
+        /// </summary>
+        public static bool IsSystemInDarkMode
+        {
+            get { return !RegistryHelper.GetSystemUsesLightTheme(); }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether the Windows app color mode is currently Dark.
+        /// Reflects the live registry value; independent of <see cref="CurrentTheme"/>.
+        /// </summary>
+        public static bool IsAppInDarkMode
+        {
+            get { return !RegistryHelper.GetAppsUseLightTheme(); }
+        }
+
         /// <summary>Raised after a theme or accent change has been applied.</summary>
         public static event EventHandler<ThemeChangedEventArgs> Changed;
 
