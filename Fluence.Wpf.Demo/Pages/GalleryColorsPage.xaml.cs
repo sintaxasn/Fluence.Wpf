@@ -31,237 +31,35 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryColorsPage : UserControl
     {
-
         private const string ColorSamplesXamlSource = @"<UserControl
     x:Class=""Fluence.Wpf.Demo.Pages.Colors.ColorSamples""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
-    <StackPanel>
-        <TextBlock
-            Margin=""0,0,0,12""
-            FontSize=""32""
-            Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-            Text=""Text brushes"" />
-        <UniformGrid Margin=""0,0,0,24"" Columns=""4"">
-            <Border
-                MinHeight=""92""
-                Margin=""0,0,4,4""
-                Padding=""12""
-                Background=""{DynamicResource TextFillColorPrimaryBrush}"">
-                <TextBlock
-                    Foreground=""{DynamicResource TextFillColorInverseBrush}""
-                    Text=""TextFillColorPrimaryBrush""
-                    TextWrapping=""Wrap"" />
-            </Border>
-            <Border
-                MinHeight=""92""
-                Margin=""4,0,4,4""
-                Padding=""12""
-                Background=""{DynamicResource TextFillColorSecondaryBrush}"">
-                <TextBlock
-                    Foreground=""{DynamicResource TextFillColorInverseBrush}""
-                    Text=""TextFillColorSecondaryBrush""
-                    TextWrapping=""Wrap"" />
-            </Border>
-            <Border
-                MinHeight=""92""
-                Margin=""4,0,4,4""
-                Padding=""12""
-                Background=""{DynamicResource AccentTextFillColorPrimaryBrush}"">
-                <TextBlock
-                    Foreground=""White""
-                    Text=""AccentTextFillColorPrimaryBrush""
-                    TextWrapping=""Wrap"" />
-            </Border>
-            <Border
-                MinHeight=""92""
-                Margin=""4,0,0,4""
-                Padding=""12""
-                Background=""{DynamicResource AccentFillColorDefaultBrush}"">
-                <TextBlock
-                    Foreground=""{DynamicResource TextOnAccentFillColorPrimaryBrush}""
-                    Text=""TextOnAccentFillColorPrimaryBrush""
-                    TextWrapping=""Wrap"" />
-            </Border>
-        </UniformGrid>
+    <UserControl.Resources>
+        <SolidColorBrush x:Key=""FluenceLogoRedBrush"" Color=""#EF5858"" />
+        <SolidColorBrush x:Key=""FluenceLogoPeachBrush"" Color=""#F19263"" />
+        <SolidColorBrush x:Key=""FluenceLogoGoldBrush"" Color=""#F6D65A"" />
+        <SolidColorBrush x:Key=""FluenceLogoMintBrush"" Color=""#87C29C"" />
+        <SolidColorBrush x:Key=""FluenceLogoSkyBrush"" Color=""#60A9E0"" />
+        <SolidColorBrush x:Key=""FluenceLogoPeriwinkleBrush"" Color=""#839CD8"" />
+        <SolidColorBrush x:Key=""FluenceLogoVioletBrush"" Color=""#8863C8"" />
+    </UserControl.Resources>
 
-        <TextBlock
-            Margin=""0,0,0,12""
-            FontSize=""32""
-            Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-            Text=""Fills and surfaces"" />
-        <UniformGrid Margin=""0,0,0,24"" Columns=""3"">
-            <Border
-                MinHeight=""96""
-                Margin=""0,0,4,4""
-                Padding=""12""
-                Background=""{DynamicResource ControlFillColorDefaultBrush}"">
-                <TextBlock
-                    Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-                    Text=""ControlFillColorDefaultBrush""
-                    TextWrapping=""Wrap"" />
-            </Border>
-            <Border
-                MinHeight=""96""
-                Margin=""4,0,4,4""
-                Padding=""12""
-                Background=""{DynamicResource ControlAltFillColorSecondaryBrush}"">
-                <TextBlock
-                    Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-                    Text=""ControlAltFillColorSecondaryBrush""
-                    TextWrapping=""Wrap"" />
-            </Border>
-            <Border
-                MinHeight=""96""
-                Margin=""4,0,0,4""
-                Padding=""12""
-                Background=""{DynamicResource ControlSolidFillColorDefaultBrush}"">
-                <TextBlock
-                    Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-                    Text=""ControlSolidFillColorDefaultBrush""
-                    TextWrapping=""Wrap"" />
-            </Border>
-            <Border
-                MinHeight=""96""
-                Margin=""0,4,4,0""
-                Padding=""12""
-                Background=""{DynamicResource CardBackgroundFillColorDefaultBrush}"">
-                <TextBlock
-                    Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-                    Text=""CardBackgroundFillColorDefaultBrush""
-                    TextWrapping=""Wrap"" />
-            </Border>
-            <Border
-                MinHeight=""96""
-                Margin=""4,4,4,0""
-                Padding=""12""
-                Background=""{DynamicResource LayerFillColorDefaultBrush}"">
-                <TextBlock
-                    Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-                    Text=""LayerFillColorDefaultBrush""
-                    TextWrapping=""Wrap"" />
-            </Border>
-            <Border
-                MinHeight=""96""
-                Margin=""4,4,0,0""
-                Padding=""12""
-                Background=""{DynamicResource SolidBackgroundFillColorBaseBrush}"">
-                <TextBlock
-                    Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-                    Text=""SolidBackgroundFillColorBaseBrush""
-                    TextWrapping=""Wrap"" />
-            </Border>
-        </UniformGrid>
+    <ItemsControl>
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <WrapPanel />
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
 
-        <TextBlock
-            Margin=""0,0,0,12""
-            FontSize=""32""
-            Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-            Text=""Strokes"" />
-        <UniformGrid Margin=""0,0,0,24"" Columns=""3"">
-            <Border
-                MinHeight=""96""
-                Margin=""0,0,4,0""
-                Padding=""12""
-                BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
-                BorderThickness=""3"">
-                <TextBlock
-                    Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-                    Text=""CardStrokeColorDefaultBrush""
-                    TextWrapping=""Wrap"" />
-            </Border>
-            <Border
-                MinHeight=""96""
-                Margin=""4,0,4,0""
-                Padding=""12""
-                BorderBrush=""{DynamicResource ControlStrokeColorDefaultBrush}""
-                BorderThickness=""3"">
-                <TextBlock
-                    Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-                    Text=""ControlStrokeColorDefaultBrush""
-                    TextWrapping=""Wrap"" />
-            </Border>
-            <Border
-                MinHeight=""96""
-                Margin=""4,0,0,0""
-                Padding=""12""
-                BorderBrush=""{DynamicResource FocusStrokeColorOuterBrush}""
-                BorderThickness=""3"">
-                <TextBlock
-                    Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-                    Text=""FocusStrokeColorOuterBrush""
-                    TextWrapping=""Wrap"" />
-            </Border>
-        </UniformGrid>
-
-        <TextBlock
-            Margin=""0,0,0,12""
-            FontSize=""32""
-            Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-            Text=""System colors"" />
-        <UniformGrid Columns=""3"">
-            <Border
-                MinHeight=""96""
-                Margin=""0,0,4,4""
-                Padding=""12""
-                Background=""{DynamicResource SystemFillColorSuccessBrush}"">
-                <TextBlock
-                    Foreground=""White""
-                    Text=""SystemFillColorSuccessBrush""
-                    TextWrapping=""Wrap"" />
-            </Border>
-            <Border
-                MinHeight=""96""
-                Margin=""4,0,4,4""
-                Padding=""12""
-                Background=""{DynamicResource SystemFillColorCautionBrush}"">
-                <TextBlock
-                    Foreground=""White""
-                    Text=""SystemFillColorCautionBrush""
-                    TextWrapping=""Wrap"" />
-            </Border>
-            <Border
-                MinHeight=""96""
-                Margin=""4,0,0,4""
-                Padding=""12""
-                Background=""{DynamicResource SystemFillColorCriticalBrush}"">
-                <TextBlock
-                    Foreground=""White""
-                    Text=""SystemFillColorCriticalBrush""
-                    TextWrapping=""Wrap"" />
-            </Border>
-            <Border
-                MinHeight=""96""
-                Margin=""0,4,4,0""
-                Padding=""12""
-                Background=""{DynamicResource {x:Static SystemColors.WindowBrushKey}}"">
-                <TextBlock
-                    Foreground=""{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}""
-                    Text=""SystemColors.WindowBrushKey""
-                    TextWrapping=""Wrap"" />
-            </Border>
-            <Border
-                MinHeight=""96""
-                Margin=""4,4,4,0""
-                Padding=""12""
-                Background=""{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"">
-                <TextBlock
-                    Foreground=""{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}""
-                    Text=""SystemColors.HighlightBrushKey""
-                    TextWrapping=""Wrap"" />
-            </Border>
-            <Border
-                MinHeight=""96""
-                Margin=""4,4,0,0""
-                Padding=""12""
-                Background=""{DynamicResource {x:Static SystemColors.ControlBrushKey}}"">
-                <TextBlock
-                    Foreground=""{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}""
-                    Text=""SystemColors.ControlBrushKey""
-                    TextWrapping=""Wrap"" />
-            </Border>
-        </UniformGrid>
-    </StackPanel>
+        <Border Width=""148"" Height=""148"" Margin=""0,0,8,8"" Background=""{StaticResource FluenceLogoRedBrush}"" />
+        <Border Width=""148"" Height=""148"" Margin=""0,0,8,8"" Background=""{StaticResource FluenceLogoPeachBrush}"" />
+        <Border Width=""148"" Height=""148"" Margin=""0,0,8,8"" Background=""{StaticResource FluenceLogoGoldBrush}"" />
+        <Border Width=""148"" Height=""148"" Margin=""0,0,8,8"" Background=""{StaticResource FluenceLogoMintBrush}"" />
+        <Border Width=""148"" Height=""148"" Margin=""0,0,8,8"" Background=""{StaticResource FluenceLogoSkyBrush}"" />
+        <Border Width=""148"" Height=""148"" Margin=""0,0,8,8"" Background=""{StaticResource FluenceLogoPeriwinkleBrush}"" />
+        <Border Width=""148"" Height=""148"" Margin=""0,0,8,8"" Background=""{StaticResource FluenceLogoVioletBrush}"" />
+    </ItemsControl>
 </UserControl>
 ";
 
@@ -306,7 +104,7 @@ namespace Fluence.Wpf.Demo.Pages.Colors
 }
 ";
 
-public GalleryColorsPage()
+        public GalleryColorsPage()
         {
             InitializeComponent();
 
@@ -320,8 +118,8 @@ public GalleryColorsPage()
             parent.Children.Remove(ColorSamplesContent);
             parent.Children.Insert(index, new DemoSampleControl
             {
-                Title = "Color resources",
-                Description = "Theme brushes and accent resources available to Fluence controls.",
+                Title = "Logo palette",
+                Description = "Seven swatches sampled from the Fluence.Wpf logo palette.",
                 XamlSource = ColorSamplesXamlSource,
                 CSharpSource = ColorSamplesCSharpSource,
                 SampleContent = ColorSamplesContent

@@ -34,25 +34,24 @@
                     <ui:ProgressBar
                         x:Name="StandardProgressBar"
                         Height="8"
-                        Margin="0,0,0,12"
+                        Margin="6,12,6,12"
                         HorizontalAlignment="Stretch"
                         Maximum="100"
                         Minimum="0"
-                        Value="45" />
+                        Value="50" />
                     <ui:Slider
                         x:Name="ProgressSlider"
-                        IsSnapToTickEnabled="False"
                         Maximum="100"
                         Minimum="0"
-                        TickFrequency="5"
                         ValueChanged="ProgressSlider_ValueChanged"
-                        Value="45" />
+                        Value="50" />
                     <TextBlock
                         x:Name="SliderValueLabel"
-                        Margin="0,8,0,12"
+                        HorizontalAlignment="Center"
+                        Margin="0,8,0,24"
                         Style="{StaticResource StateLabelStyle}"
-                        Text="Value: 45" />
-                    <Grid Margin="0,0,0,12">
+                        Text="Value: 50" />
+                    <Grid Margin="0,12,0,12">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="16" />
@@ -60,29 +59,31 @@
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
                             <TextBlock
-                                Margin="0,0,0,6"
+                                Margin="6,0,6,6"
                                 Style="{StaticResource StateLabelStyle}"
                                 Text="Paused" />
                             <ui:ProgressBar
                                 Height="8"
+                                Margin="6,0,6,6"                                
                                 HorizontalAlignment="Stretch"
                                 Maximum="100"
                                 Minimum="0"
                                 ProgressMode="Paused"
-                                Value="62" />
+                                Value="80" />
                         </StackPanel>
                         <StackPanel Grid.Column="2">
                             <TextBlock
-                                Margin="0,0,0,6"
+                                Margin="6,0,6,6"                                
                                 Style="{StaticResource StateLabelStyle}"
                                 Text="Failure" />
                             <ui:ProgressBar
                                 Height="8"
+                                Margin="6,0,6,12"                                
                                 HorizontalAlignment="Stretch"
                                 Maximum="100"
                                 Minimum="0"
                                 ProgressMode="Error"
-                                Value="78" />
+                                Value="80" />
                         </StackPanel>
                     </Grid>
                     <ui:HyperlinkButton
@@ -96,20 +97,20 @@
             <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="Indeterminate ProgressBar" />
             <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Use indeterminate mode when work is active but no reliable percentage is available." />
             <ui:Card
-                Margin="0,0,0,16"
+                Margin="0,12,0,16"
                 Padding="16"
                 Variant="{x:Static uicore:CardVariant.Default}">
                 <StackPanel>
                     <ui:ProgressBar
                         x:Name="IndeterminateProgressBar"
                         Height="8"
-                        Margin="0,0,0,12"
+                        Margin="6,12,6,12"
                         HorizontalAlignment="Stretch"
                         ProgressMode="Indeterminate" />
                     <StackPanel Orientation="Horizontal">
                         <ui:ToggleSwitch
                             x:Name="IndeterminateToggle"
-                            Margin="0,0,12,0"
+                            Margin="6,12,12,12"
                             Checked="IndeterminateToggle_Toggled"
                             IsChecked="True"
                             Unchecked="IndeterminateToggle_Toggled" />
@@ -130,35 +131,36 @@
             <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="Step Progress" />
             <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Use step progress for ordered tasks where users understand the current milestone." />
             <ui:Card
-                Margin="0,0,0,16"
+                Margin="0,12,0,12"
                 Padding="16"
                 Variant="{x:Static uicore:CardVariant.Default}">
                 <StackPanel>
                     <ui:ProgressBar
                         x:Name="StepProgressBar"
                         Height="8"
-                        Margin="0,0,0,12"
+                        Margin="6,12,6,12"
                         HorizontalAlignment="Stretch"
                         CurrentStep="1"
                         ProgressMode="StepProgress"
-                        Steps="5" />
+                        Steps="10" />
                     <StackPanel Orientation="Horizontal">
                         <ui:Button
-                            Margin="0,0,12,0"
+                            Margin="6,12,12,6"
                             Click="ProgressStep_Click"
                             Content="Back"
                             Tag="Back" />
                         <ui:Button
-                            Margin="0,0,16,0"
+                            Margin="6,12,16,6"
                             Appearance="Accent"
                             Click="ProgressStep_Click"
                             Content="Next"
                             Tag="Next" />
                         <TextBlock
                             x:Name="StepLabel"
+                            Margin="6,12,0,6"
                             VerticalAlignment="Center"
                             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                            Text="Step 1 of 5" />
+                            Text="Step 1 of 10" />
                     </StackPanel>
                     <ui:HyperlinkButton
                         x:Name="ProgressBarStepsSourceLink"
@@ -177,7 +179,7 @@
                 Variant="{x:Static uicore:CardVariant.Default}">
                 <StackPanel>
                     <Grid
-                        Margin="0,0,0,12"
+                        Margin="0,12,0,12"
                         HorizontalAlignment="Stretch">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
@@ -203,7 +205,7 @@
                         <ui:ToggleSwitch
                             Grid.Row="1"
                             Grid.Column="0"
-                            Margin="0,12,0,0"
+                            Margin="0,24,0,0"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             IsChecked="{Binding IsActive, ElementName=IndeterminateProgressRing, Mode=TwoWay}"
@@ -215,6 +217,7 @@
                             Grid.Column="0"
                             Margin="0,4,0,0"
                             HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
                             Style="{StaticResource StateLabelStyle}"
                             Text="Indeterminate" />
 
@@ -235,7 +238,7 @@
                             Grid.Row="1"
                             Grid.Column="1"
                             Width="120"
-                            Margin="0,12,0,0"
+                            Margin="0,24,0,0"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             Maximum="100"
@@ -248,6 +251,7 @@
                             Grid.Column="1"
                             Margin="0,4,0,0"
                             HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
                             Style="{StaticResource StateLabelStyle}"
                             Text="Determinate" />
 
@@ -258,8 +262,11 @@
                             Width="48"
                             Height="48"
                             HorizontalAlignment="Center"
+                            Maximum="100"
+                            Minimum="0"
                             IsActive="True"
-                            IsIndeterminate="True"
+                            IsIndeterminate="False"
+                            Value="80"
                             ProgressState="{x:Static uicore:ProgressRingState.Paused}" />
                         <TextBlock
                             Grid.Row="2"
@@ -281,7 +288,7 @@
                             Maximum="100"
                             Minimum="0"
                             ProgressState="{x:Static uicore:ProgressRingState.Error}"
-                            Value="70" />
+                            Value="80" />
                         <TextBlock
                             Grid.Row="2"
                             Grid.Column="3"

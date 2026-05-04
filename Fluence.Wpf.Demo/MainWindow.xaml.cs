@@ -28,7 +28,6 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -56,6 +55,7 @@ namespace Fluence.Wpf.Demo
         private bool _userNavPaneToggleButtonVisible;
         private bool _lastAppliedExtendedTitleBar;
         private bool _isApplyingTitleBarChrome;
+        private bool _isUpdatingExtendedTitleOverlap;
         private Image _titleBarIconView;
         private DependencyPropertyDescriptor _extendsDpd;
         private DependencyPropertyDescriptor _paneModeDpd;
@@ -656,32 +656,67 @@ namespace Fluence.Wpf.Demo
 
         private void UpdateExtendedTitleOverlap()
         {
-            System.Windows.Controls.TextBlock titleText = GetTitleBarTemplatePart<System.Windows.Controls.TextBlock>("PART_TitleText");
-            if (!ExtendsContentIntoTitleBar
-                || ShellTitleBar == null
-                || titleText == null
-                || NavSearchBox == null
-                || titleText.Visibility != Visibility.Visible
-                || NavSearchBox.Visibility != Visibility.Visible
-                || !titleText.IsVisible
-                || !NavSearchBox.IsVisible)
+            if (_isUpdatingExtendedTitleOverlap)
             {
                 return;
             }
 
+            _isUpdatingExtendedTitleOverlap = true;
             try
             {
+                if (!ExtendsContentIntoTitleBar || ShellTitleBar == null)
+                {
+                    return;
+                }
+
+                string desiredTitle = _userShowTitle ? (_userTitle ?? string.Empty) : string.Empty;
+                if (string.IsNullOrEmpty(desiredTitle))
+                {
+                    ShellTitleBar.Title = string.Empty;
+                    return;
+                }
+
+                if (!string.Equals(ShellTitleBar.Title, desiredTitle, StringComparison.Ordinal))
+                {
+                    ShellTitleBar.Title = desiredTitle;
+                    ShellTitleBar.ApplyTemplate();
+                    ShellTitleBar.UpdateLayout();
+                    if (NavSearchBox != null)
+                    {
+                        NavSearchBox.UpdateLayout();
+                    }
+                }
+
+                System.Windows.Controls.TextBlock titleText = GetTitleBarTemplatePart<System.Windows.Controls.TextBlock>("PART_TitleText");
+                if (titleText == null
+                    || NavSearchBox == null
+                    || titleText.Visibility != Visibility.Visible
+                    || NavSearchBox.Visibility != Visibility.Visible
+                    || !titleText.IsVisible
+                    || !NavSearchBox.IsVisible)
+                {
+                    return;
+                }
+
                 var titlePoint = titleText.TransformToAncestor(this).Transform(new Point(0, 0));
                 var searchPoint = NavSearchBox.TransformToAncestor(this).Transform(new Point(0, 0));
                 double titleRight = titlePoint.X + titleText.ActualWidth;
                 double searchLeft = searchPoint.X;
-                if (titleRight + 12.0 > searchLeft || IsExtendedTitleTextTruncated(titleText))
+                if (titleRight + 12.0 > searchLeft)
                 {
                     ShellTitleBar.Title = string.Empty;
+                }
+                else
+                {
+                    ShellTitleBar.Title = desiredTitle;
                 }
             }
             catch (InvalidOperationException)
             {
+            }
+            finally
+            {
+                _isUpdatingExtendedTitleOverlap = false;
             }
         }
 
@@ -697,37 +732,5 @@ namespace Fluence.Wpf.Demo
             return ShellTitleBar.Template == null ? null : ShellTitleBar.Template.FindName(partName, ShellTitleBar) as T;
         }
 
-        private bool IsExtendedTitleTextTruncated(System.Windows.Controls.TextBlock titleText)
-        {
-            if (titleText == null || string.IsNullOrEmpty(titleText.Text))
-            {
-                return false;
-            }
-
-            double pixelsPerDip = 1.0;
-            try
-            {
-                pixelsPerDip = VisualTreeHelper.GetDpi(this).PixelsPerDip;
-            }
-            catch (InvalidOperationException)
-            {
-            }
-
-            var typeface = new Typeface(
-                titleText.FontFamily,
-                titleText.FontStyle,
-                titleText.FontWeight,
-                titleText.FontStretch);
-            var formattedText = new FormattedText(
-                titleText.Text,
-                CultureInfo.CurrentUICulture,
-                titleText.FlowDirection,
-                typeface,
-                titleText.FontSize,
-                Brushes.Black,
-                pixelsPerDip);
-
-            return formattedText.WidthIncludingTrailingWhitespace > titleText.ActualWidth + 1.0;
-        }
     }
 }

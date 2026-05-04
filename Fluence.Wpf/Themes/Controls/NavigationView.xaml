@@ -1,4 +1,4 @@
-<!--
+﻿<!--
     Copyright 2026 Dan Cunningham
     
     Redistribution and use in source and binary forms, with or without
@@ -155,7 +155,7 @@
                     </ControlTemplate.Resources>
                     <Border
                         x:Name="OuterBorder"
-                        Margin="4,2"
+                        Margin="4,2,4,2"
                         Background="{TemplateBinding Background}"
                         CornerRadius="{DynamicResource ControlCornerRadius}"
                         SnapsToDevicePixels="True"
@@ -345,7 +345,7 @@
                             <Button
                                 x:Name="PART_BackButton"
                                 Width="48"
-                                Height="40"
+                                Height="48"
                                 Margin="0"
                                 Padding="0"
                                 HorizontalAlignment="Center"
@@ -361,7 +361,7 @@
                                 <controls:FontIcon
                                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                     Glyph="&#xE72B;"
-                                    IconFontSize="20"
+                                    IconFontSize="16"
                                     />
                             </Button>
                             <Button
@@ -384,7 +384,7 @@
                                     Margin="2,0,0,0"
                                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                     Glyph="&#xE700;"
-                                    IconFontSize="20"
+                                    IconFontSize="16"
                                     />
                             </Button>
                         </StackPanel>
@@ -498,17 +498,17 @@
         </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="Header" Value="{x:Null}">
-                <Setter TargetName="HeaderRow" Property="Height" Value="48" />
+                <Setter TargetName="HeaderRow" Property="Height" Value="42" />
             </Trigger>
             <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
                     <Condition Binding="{Binding Header, RelativeSource={RelativeSource TemplatedParent}}" Value="{x:Null}" />
                     <Condition Binding="{Binding ExtendsContentIntoTitleBar, RelativeSource={RelativeSource AncestorType=controls:FluenceWindow}}" Value="True" />
                 </MultiDataTrigger.Conditions>
-                <Setter TargetName="HeaderRow" Property="Height" Value="68" />
+                <Setter TargetName="HeaderRow" Property="Height" Value="48" />
             </MultiDataTrigger>
             <DataTrigger Binding="{Binding ExtendsContentIntoTitleBar, RelativeSource={RelativeSource AncestorType=controls:FluenceWindow}}" Value="True">
-                <Setter TargetName="PaneChrome" Property="Height" Value="68" />
+                <Setter TargetName="PaneChrome" Property="Height" Value="48" />
             </DataTrigger>
             <MultiTrigger>
                 <MultiTrigger.Conditions>
@@ -589,7 +589,7 @@
                             x:Name="PaneChrome"
                             Grid.Row="0"
                             MinWidth="48"
-                            Height="48"
+                            Height="42"
                             Margin="0"
                             HorizontalAlignment="Left"
                             Orientation="Horizontal"
@@ -613,7 +613,7 @@
                                 <controls:FontIcon
                                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                     Glyph="&#xE72B;"
-                                    IconFontSize="20"
+                                    IconFontSize="16"
                                     />
                             </Button>
                             <Button
@@ -636,7 +636,7 @@
                                     Margin="2,0,0,0"
                                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                     Glyph="&#xE700;"
-                                    IconFontSize="20"
+                                    IconFontSize="16"
                                     />
                             </Button>
                         </StackPanel>
@@ -754,17 +754,17 @@
         </Border>
         <ControlTemplate.Triggers>
             <Trigger Property="Header" Value="{x:Null}">
-                <Setter TargetName="HeaderRow" Property="Height" Value="48" />
+                <Setter TargetName="HeaderRow" Property="Height" Value="42" />
             </Trigger>
             <MultiDataTrigger>
                 <MultiDataTrigger.Conditions>
                     <Condition Binding="{Binding Header, RelativeSource={RelativeSource TemplatedParent}}" Value="{x:Null}" />
                     <Condition Binding="{Binding ExtendsContentIntoTitleBar, RelativeSource={RelativeSource AncestorType=controls:FluenceWindow}}" Value="True" />
                 </MultiDataTrigger.Conditions>
-                <Setter TargetName="HeaderRow" Property="Height" Value="68" />
+                <Setter TargetName="HeaderRow" Property="Height" Value="42" />
             </MultiDataTrigger>
             <DataTrigger Binding="{Binding ExtendsContentIntoTitleBar, RelativeSource={RelativeSource AncestorType=controls:FluenceWindow}}" Value="True">
-                <Setter TargetName="PaneChrome" Property="Height" Value="68" />
+                <Setter TargetName="PaneChrome" Property="Height" Value="42" />
             </DataTrigger>
             <MultiTrigger>
                 <MultiTrigger.Conditions>

@@ -36,7 +36,7 @@ namespace Fluence.Wpf.Tests
 {
     /// <summary>
     /// WI-2 hardening tests for FluenceWindow: backdrop swap, full HC theme cycle,
-    /// close-button DynamicResource fix (Finding B), and TitleBarLeftIndent DP.
+    /// close-button DynamicResource fix (Finding B).
     /// </summary>
     [TestClass]
     public class FluenceWindowHardenTests
@@ -90,48 +90,7 @@ namespace Fluence.Wpf.Tests
         }
 
         // ---------------------------------------------------------------------------
-        // 1. TitleBarLeftIndent DP — baseline assertion for snapshot delta
-        // ---------------------------------------------------------------------------
-
-        [TestMethod]
-        public void TitleBarLeftIndent_DefaultIsZero()
-        {
-            RunOnStaThread(() =>
-            {
-                var app = EnsureApp();
-                ResetAndApply(ApplicationTheme.Light, app);
-                var w = new FluenceWindow();
-                try
-                {
-                    Assert.AreEqual(0d, w.TitleBarLeftIndent,
-                        "TitleBarLeftIndent must default to 0.0 (snapshot baseline).");
-                }
-                finally { w.Close(); }
-            });
-        }
-
-        [TestMethod]
-        public void TitleBarLeftIndent_RoundTrip()
-        {
-            RunOnStaThread(() =>
-            {
-                var app = EnsureApp();
-                ResetAndApply(ApplicationTheme.Light, app);
-                var w = new FluenceWindow();
-                try
-                {
-                    w.TitleBarLeftIndent = 48d;
-                    Assert.AreEqual(48d, w.TitleBarLeftIndent,
-                        "TitleBarLeftIndent DP round-trip must preserve assigned value.");
-                    w.TitleBarLeftIndent = 0d;
-                    Assert.AreEqual(0d, w.TitleBarLeftIndent);
-                }
-                finally { w.Close(); }
-            });
-        }
-
-        // ---------------------------------------------------------------------------
-        // 2. SystemBackdropType DP defaults and round-trip
+        // 1. SystemBackdropType DP defaults and round-trip
         // ---------------------------------------------------------------------------
 
         [TestMethod]
@@ -174,7 +133,7 @@ namespace Fluence.Wpf.Tests
         }
 
         // ---------------------------------------------------------------------------
-        // 3. Full theme cycle Light → Dark → HighContrast → Light; key brushes resolve
+        // 2. Full theme cycle Light → Dark → HighContrast → Light; key brushes resolve
         // ---------------------------------------------------------------------------
 
         [TestMethod]

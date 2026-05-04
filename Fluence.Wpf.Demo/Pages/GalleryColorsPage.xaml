@@ -5,10 +5,21 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
-    xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
     d:DesignHeight="800"
     d:DesignWidth="900"
     mc:Ignorable="d">
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="FluenceLogoRedBrush" Color="#EF5858" />
+        <SolidColorBrush x:Key="FluenceLogoPeachBrush" Color="#F19263" />
+        <SolidColorBrush x:Key="FluenceLogoGoldBrush" Color="#F6D65A" />
+        <SolidColorBrush x:Key="FluenceLogoMintBrush" Color="#87C29C" />
+        <SolidColorBrush x:Key="FluenceLogoSkyBrush" Color="#60A9E0" />
+        <SolidColorBrush x:Key="FluenceLogoPeriwinkleBrush" Color="#839CD8" />
+        <SolidColorBrush x:Key="FluenceLogoVioletBrush" Color="#8863C8" />
+        <SolidColorBrush x:Key="FluenceLogoDarkTextBrush" Color="#1F1F1F" />
+        <SolidColorBrush x:Key="FluenceLogoLightTextBrush" Color="#FFFFFF" />
+    </UserControl.Resources>
+
     <ui:SmoothScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="24" HorizontalAlignment="Stretch">
             <Grid Margin="0,0,0,16">
@@ -17,1338 +28,174 @@
                     Text="Color" />
             </Grid>
 
-            <TabControl
-                x:Name="ColorSamplesContent"
-                Style="{DynamicResource TabControlStyle}">
+            <StackPanel x:Name="ColorSamplesContent">
+                <TextBlock
+                    Margin="0,0,0,12"
+                    Style="{StaticResource SwatchSectionDescStyle}"
+                    Text="Seven swatches sampled from the Fluence.Wpf logo palette." />
 
-                <!--  ═══ TEXT TAB ═══  -->
-                <TabItem Header="Text" Style="{DynamicResource TabItemStyle}">
-                    <StackPanel Margin="16">
-                        <!--  Text  -->
-                        <TextBlock Style="{StaticResource SwatchSectionHeaderStyle}" Text="Text" />
-                        <TextBlock Style="{StaticResource SwatchSectionDescStyle}" Text="For UI labels and static text" />
-                        <Border
-                            Margin="0,0,0,24"
-                            Padding="16"
-                            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                            CornerRadius="8">
-                            <StackPanel>
-                                <TextBlock
-                                    Margin="0,0,0,16"
-                                    HorizontalAlignment="Center"
-                                    FontSize="48"
-                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                    Text="Aa"
-                                    TextOptions.TextFormattingMode="Ideal"
-                                    TextOptions.TextRenderingMode="ClearType"
-                                    TextOptions.TextHintingMode="Fixed" />
-                                <UniformGrid Columns="4" Rows="1">
-                                    <Border
-                                        Margin="0,0,2,0"
-                                        Background="{DynamicResource TextFillColorPrimaryBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
-                                                Style="{StaticResource SwatchNameStyle}"
-                                                Text="Text / Primary" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
-                                                Style="{StaticResource SwatchUsageStyle}"
-                                                Text="Rest or hover" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
-                                                Style="{StaticResource SwatchKeyStyle}"
-                                                Text="TextFillColorPrimaryBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                    <Border
-                                        Margin="2,0,2,0"
-                                        Background="{DynamicResource TextFillColorSecondaryBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
-                                                Style="{StaticResource SwatchNameStyle}"
-                                                Text="Text / Secondary" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
-                                                Style="{StaticResource SwatchUsageStyle}"
-                                                Text="Rest or hover" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
-                                                Style="{StaticResource SwatchKeyStyle}"
-                                                Text="TextFillColorSecondaryBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                    <Border
-                                        Margin="2,0,2,0"
-                                        Background="{DynamicResource TextFillColorTertiaryBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock Style="{StaticResource SwatchNameStyle}" Text="Text / Tertiary" />
-                                            <TextBlock Style="{StaticResource SwatchUsageStyle}" Text="Pressed only" />
-                                            <TextBlock Style="{StaticResource SwatchKeyStyle}" Text="TextFillColorTertiaryBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                    <Border
-                                        Margin="2,0,0,0"
-                                        Background="{DynamicResource TextFillColorDisabledBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock Style="{StaticResource SwatchNameStyle}" Text="Text / Disabled" />
-                                            <TextBlock Style="{StaticResource SwatchUsageStyle}" Text="Disabled only" />
-                                            <TextBlock Style="{StaticResource SwatchKeyStyle}" Text="TextFillColorDisabledBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                </UniformGrid>
-                            </StackPanel>
-                        </Border>
+                <ItemsControl>
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <WrapPanel />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
 
-                        <!--  Accent Text  -->
-                        <TextBlock Style="{StaticResource SwatchSectionHeaderStyle}" Text="Accent Text" />
-                        <TextBlock Style="{StaticResource SwatchSectionDescStyle}" Text="Recommended for links" />
-                        <Border
-                            Margin="0,0,0,24"
-                            Padding="16"
-                            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                            CornerRadius="8">
-                            <StackPanel>
-                                <TextBlock
-                                    Margin="0,0,0,16"
-                                    HorizontalAlignment="Center"
-                                    FontSize="48"
-                                    Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
-                                    Text="Aa" />
-                                <UniformGrid Columns="4" Rows="1">
-                                    <Border
-                                        Margin="0,0,2,0"
-                                        Background="{DynamicResource AccentTextFillColorPrimaryBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock
-                                                Foreground="White"
-                                                Style="{StaticResource SwatchNameStyle}"
-                                                Text="Accent Text / Primary" />
-                                            <TextBlock
-                                                Foreground="White"
-                                                Style="{StaticResource SwatchUsageStyle}"
-                                                Text="Rest or hover" />
-                                            <TextBlock
-                                                Foreground="White"
-                                                Style="{StaticResource SwatchKeyStyle}"
-                                                Text="AccentTextFillColorPrimaryBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                    <Border
-                                        Margin="2,0,2,0"
-                                        Background="{DynamicResource AccentTextFillColorSecondaryBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock
-                                                Foreground="White"
-                                                Style="{StaticResource SwatchNameStyle}"
-                                                Text="Accent Text / Secondary" />
-                                            <TextBlock
-                                                Foreground="White"
-                                                Style="{StaticResource SwatchUsageStyle}"
-                                                Text="Rest or hover" />
-                                            <TextBlock
-                                                Foreground="White"
-                                                Style="{StaticResource SwatchKeyStyle}"
-                                                Text="AccentTextFillColorSecondaryBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                    <Border
-                                        Margin="2,0,2,0"
-                                        Background="{DynamicResource AccentTextFillColorTertiaryBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock
-                                                Foreground="White"
-                                                Style="{StaticResource SwatchNameStyle}"
-                                                Text="Accent Text / Tertiary" />
-                                            <TextBlock
-                                                Foreground="White"
-                                                Style="{StaticResource SwatchUsageStyle}"
-                                                Text="Pressed only" />
-                                            <TextBlock
-                                                Foreground="White"
-                                                Style="{StaticResource SwatchKeyStyle}"
-                                                Text="AccentTextFillColorTertiaryBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                    <Border
-                                        Margin="2,0,0,0"
-                                        Background="{DynamicResource AccentTextFillColorDisabledBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock Style="{StaticResource SwatchNameStyle}" Text="Accent Text / Disabled" />
-                                            <TextBlock Style="{StaticResource SwatchUsageStyle}" Text="Disabled only" />
-                                            <TextBlock Style="{StaticResource SwatchKeyStyle}" Text="AccentTextFillColorDisabledBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                </UniformGrid>
-                            </StackPanel>
-                        </Border>
+                    <Border
+                        Width="148"
+                        Height="148"
+                        Margin="0,0,8,8"
+                        Background="{StaticResource FluenceLogoRedBrush}"
+                        Style="{StaticResource ColorSwatchCellStyle}">
+                        <StackPanel>
+                            <TextBlock
+                                Foreground="{StaticResource FluenceLogoLightTextBrush}"
+                                Style="{StaticResource SwatchNameStyle}"
+                                Text="Logo / Red" />
+                            <TextBlock
+                                Foreground="{StaticResource FluenceLogoLightTextBrush}"
+                                Style="{StaticResource SwatchUsageStyle}"
+                                Text="#EF5858" />
+                            <TextBlock
+                                Foreground="{StaticResource FluenceLogoLightTextBrush}"
+                                Style="{StaticResource SwatchKeyStyle}"
+                                Text="FluenceLogoRedBrush" />
+                        </StackPanel>
+                    </Border>
 
-                        <!--  Text On Accent  -->
-                        <TextBlock Style="{StaticResource SwatchSectionHeaderStyle}" Text="Text On Accent" />
-                        <TextBlock Style="{StaticResource SwatchSectionDescStyle}" Text="Used for text on accent colored controls or fills" />
-                        <Border
-                            Margin="0,0,0,16"
-                            Padding="16"
-                            Background="{DynamicResource AccentFillColorDefaultBrush}"
-                            CornerRadius="8">
-                            <StackPanel>
-                                <TextBlock
-                                    Margin="0,0,0,16"
-                                    HorizontalAlignment="Center"
-                                    FontSize="48"
-                                    Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
-                                    Text="Aa" />
-                                <UniformGrid Columns="2" Rows="2">
-                                    <Border
-                                        Margin="0,0,2,2"
-                                        Background="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock
-                                                Foreground="{DynamicResource AccentFillColorDefaultBrush}"
-                                                Style="{StaticResource SwatchNameStyle}"
-                                                Text="Text on Accent / Primary" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource AccentFillColorDefaultBrush}"
-                                                Style="{StaticResource SwatchUsageStyle}"
-                                                Text="Rest or hover" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource AccentFillColorDefaultBrush}"
-                                                Style="{StaticResource SwatchKeyStyle}"
-                                                Text="TextOnAccentFillColorPrimaryBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                    <Border
-                                        Margin="2,0,0,2"
-                                        Background="{DynamicResource TextOnAccentFillColorSecondaryBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock Style="{StaticResource SwatchNameStyle}" Text="Text on Accent / Secondary" />
-                                            <TextBlock Style="{StaticResource SwatchUsageStyle}" Text="Pressed only" />
-                                            <TextBlock Style="{StaticResource SwatchKeyStyle}" Text="TextOnAccentFillColorSecondaryBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                    <Border
-                                        Margin="0,2,2,0"
-                                        Background="{DynamicResource TextOnAccentFillColorDisabledBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock Style="{StaticResource SwatchNameStyle}" Text="Text on Accent / Disabled" />
-                                            <TextBlock Style="{StaticResource SwatchUsageStyle}" Text="Disabled only" />
-                                            <TextBlock Style="{StaticResource SwatchKeyStyle}" Text="TextOnAccentFillColorDisabledBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                    <Border
-                                        Margin="2,2,0,0"
-                                        Background="{DynamicResource TextOnAccentFillColorSelectedTextBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock Style="{StaticResource SwatchNameStyle}" Text="Text on Accent / Selected Text" />
-                                            <TextBlock Style="{StaticResource SwatchUsageStyle}" Text="Highlighted text" />
-                                            <TextBlock Style="{StaticResource SwatchKeyStyle}" Text="TextOnAccentFillColorSelectedTextBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                </UniformGrid>
-                            </StackPanel>
-                        </Border>
-                    </StackPanel>
-                </TabItem>
+                    <Border
+                        Width="148"
+                        Height="148"
+                        Margin="0,0,8,8"
+                        Background="{StaticResource FluenceLogoPeachBrush}"
+                        Style="{StaticResource ColorSwatchCellStyle}">
+                        <StackPanel>
+                            <TextBlock
+                                Foreground="{StaticResource FluenceLogoDarkTextBrush}"
+                                Style="{StaticResource SwatchNameStyle}"
+                                Text="Logo / Peach" />
+                            <TextBlock
+                                Foreground="{StaticResource FluenceLogoDarkTextBrush}"
+                                Style="{StaticResource SwatchUsageStyle}"
+                                Text="#F19263" />
+                            <TextBlock
+                                Foreground="{StaticResource FluenceLogoDarkTextBrush}"
+                                Style="{StaticResource SwatchKeyStyle}"
+                                Text="FluenceLogoPeachBrush" />
+                        </StackPanel>
+                    </Border>
 
-                <!--  ═══ FILL TAB ═══  -->
-                <TabItem Header="Fill" Style="{DynamicResource TabItemStyle}">
-                    <StackPanel Margin="16">
-                        <TextBlock Style="{StaticResource SwatchSectionHeaderStyle}" Text="Control Fill" />
-                        <TextBlock Style="{StaticResource SwatchSectionDescStyle}" Text="Fill used for standard controls" />
-                        <Border
-                            Margin="0,0,0,24"
-                            Padding="16"
-                            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                            CornerRadius="8">
-                            <StackPanel>
-                                <UniformGrid Columns="4" Rows="2">
-                                    <Border
-                                        Margin="0,0,2,2"
-                                        Background="{DynamicResource ControlFillColorDefaultBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchNameStyle}"
-                                                Text="Control / Default" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchUsageStyle}"
-                                                Text="Rest" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchKeyStyle}"
-                                                Text="ControlFillColorDefaultBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                    <Border
-                                        Margin="2,0,2,2"
-                                        Background="{DynamicResource ControlFillColorSecondaryBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchNameStyle}"
-                                                Text="Control / Secondary" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchUsageStyle}"
-                                                Text="Hover" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchKeyStyle}"
-                                                Text="ControlFillColorSecondaryBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                    <Border
-                                        Margin="2,0,2,2"
-                                        Background="{DynamicResource ControlFillColorTertiaryBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchNameStyle}"
-                                                Text="Control / Tertiary" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchUsageStyle}"
-                                                Text="Pressed" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchKeyStyle}"
-                                                Text="ControlFillColorTertiaryBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                    <Border
-                                        Margin="2,0,0,2"
-                                        Background="{DynamicResource ControlFillColorQuarternaryBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchNameStyle}"
-                                                Text="Control / Quarternary" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchUsageStyle}"
-                                                Text="Pill Button" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchKeyStyle}"
-                                                Text="ControlFillColorQuarternaryBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                    <Border
-                                        Margin="0,2,2,0"
-                                        Background="{DynamicResource ControlFillColorDisabledBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchNameStyle}"
-                                                Text="Control / Disabled" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchUsageStyle}"
-                                                Text="Disabled" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchKeyStyle}"
-                                                Text="ControlFillColorDisabledBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                    <Border
-                                        Margin="2,2,2,0"
-                                        Background="{DynamicResource ControlFillColorTransparentBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchNameStyle}"
-                                                Text="Control / Transparent" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchUsageStyle}"
-                                                Text="Rest" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchKeyStyle}"
-                                                Text="ControlFillColorTransparentBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                    <Border
-                                        Margin="2,2,0,0"
-                                        Background="{DynamicResource ControlFillColorInputActiveBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchNameStyle}"
-                                                Text="Control / Input Active" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchUsageStyle}"
-                                                Text="Active text fields" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchKeyStyle}"
-                                                Text="ControlFillColorInputActiveBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                </UniformGrid>
-                            </StackPanel>
-                        </Border>
+                    <Border
+                        Width="148"
+                        Height="148"
+                        Margin="0,0,8,8"
+                        Background="{StaticResource FluenceLogoGoldBrush}"
+                        Style="{StaticResource ColorSwatchCellStyle}">
+                        <StackPanel>
+                            <TextBlock
+                                Foreground="{StaticResource FluenceLogoDarkTextBrush}"
+                                Style="{StaticResource SwatchNameStyle}"
+                                Text="Logo / Gold" />
+                            <TextBlock
+                                Foreground="{StaticResource FluenceLogoDarkTextBrush}"
+                                Style="{StaticResource SwatchUsageStyle}"
+                                Text="#F6D65A" />
+                            <TextBlock
+                                Foreground="{StaticResource FluenceLogoDarkTextBrush}"
+                                Style="{StaticResource SwatchKeyStyle}"
+                                Text="FluenceLogoGoldBrush" />
+                        </StackPanel>
+                    </Border>
 
-                        <TextBlock Style="{StaticResource SwatchSectionHeaderStyle}" Text="Control Alt Fill" />
-                        <TextBlock Style="{StaticResource SwatchSectionDescStyle}" Text="Fill used for the off states of toggle controls" />
-                        <Border
-                            Margin="0,0,0,24"
-                            Padding="16"
-                            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                            CornerRadius="8">
-                            <UniformGrid Columns="4">
-                                <Border
-                                    Margin="0,0,2,0"
-                                    Background="{DynamicResource ControlAltFillColorTransparentBrush}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchNameStyle}"
-                                            Text="Control Alt / Transparent" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchKeyStyle}"
-                                            Text="ControlAltFillColorTransparentBrush" />
-                                    </StackPanel>
-                                </Border>
-                                <Border
-                                    Margin="2,0,2,0"
-                                    Background="{DynamicResource ControlAltFillColorSecondaryBrush}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchNameStyle}"
-                                            Text="Control Alt / Secondary" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchUsageStyle}"
-                                            Text="Rest" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchKeyStyle}"
-                                            Text="ControlAltFillColorSecondaryBrush" />
-                                    </StackPanel>
-                                </Border>
-                                <Border
-                                    Margin="2,0,2,0"
-                                    Background="{DynamicResource ControlAltFillColorTertiaryBrush}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchNameStyle}"
-                                            Text="Control Alt / Tertiary" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchUsageStyle}"
-                                            Text="Hover" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchKeyStyle}"
-                                            Text="ControlAltFillColorTertiaryBrush" />
-                                    </StackPanel>
-                                </Border>
-                                <Border
-                                    Margin="2,0,0,0"
-                                    Background="{DynamicResource ControlAltFillColorDisabledBrush}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchNameStyle}"
-                                            Text="Control Alt / Disabled" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchUsageStyle}"
-                                            Text="Disabled" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchKeyStyle}"
-                                            Text="ControlAltFillColorDisabledBrush" />
-                                    </StackPanel>
-                                </Border>
-                            </UniformGrid>
-                        </Border>
+                    <Border
+                        Width="148"
+                        Height="148"
+                        Margin="0,0,8,8"
+                        Background="{StaticResource FluenceLogoMintBrush}"
+                        Style="{StaticResource ColorSwatchCellStyle}">
+                        <StackPanel>
+                            <TextBlock
+                                Foreground="{StaticResource FluenceLogoDarkTextBrush}"
+                                Style="{StaticResource SwatchNameStyle}"
+                                Text="Logo / Mint" />
+                            <TextBlock
+                                Foreground="{StaticResource FluenceLogoDarkTextBrush}"
+                                Style="{StaticResource SwatchUsageStyle}"
+                                Text="#87C29C" />
+                            <TextBlock
+                                Foreground="{StaticResource FluenceLogoDarkTextBrush}"
+                                Style="{StaticResource SwatchKeyStyle}"
+                                Text="FluenceLogoMintBrush" />
+                        </StackPanel>
+                    </Border>
 
-                        <TextBlock Style="{StaticResource SwatchSectionHeaderStyle}" Text="Neutral Solid" />
-                        <TextBlock Style="{StaticResource SwatchSectionDescStyle}" Text="Fills used for Slider thumb control to cover the track beneath it" />
-                        <Border
-                            Margin="0,0,0,16"
-                            Padding="16"
-                            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                            CornerRadius="8">
-                            <UniformGrid Columns="2">
-                                <Border
-                                    Margin="0,0,2,0"
-                                    Background="{DynamicResource ControlSolidFillColorDefaultBrush}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchNameStyle}"
-                                            Text="Control Solid / Default" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchUsageStyle}"
-                                            Text="Rest" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchKeyStyle}"
-                                            Text="ControlSolidFillColorDefaultBrush" />
-                                    </StackPanel>
-                                </Border>
-                                <Border
-                                    Margin="2,0,0,0"
-                                    Background="{DynamicResource ControlStrongFillColorDefaultBrush}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorInverseBrush}"
-                                            Style="{StaticResource SwatchNameStyle}"
-                                            Text="Control Strong / Default" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorInverseBrush}"
-                                            Style="{StaticResource SwatchUsageStyle}"
-                                            Text="Rest" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorInverseBrush}"
-                                            Style="{StaticResource SwatchKeyStyle}"
-                                            Text="ControlStrongFillColorDefaultBrush" />
-                                    </StackPanel>
-                                </Border>
-                            </UniformGrid>
-                        </Border>
-                    </StackPanel>
-                </TabItem>
+                    <Border
+                        Width="148"
+                        Height="148"
+                        Margin="0,0,8,8"
+                        Background="{StaticResource FluenceLogoSkyBrush}"
+                        Style="{StaticResource ColorSwatchCellStyle}">
+                        <StackPanel>
+                            <TextBlock
+                                Foreground="{StaticResource FluenceLogoDarkTextBrush}"
+                                Style="{StaticResource SwatchNameStyle}"
+                                Text="Logo / Sky" />
+                            <TextBlock
+                                Foreground="{StaticResource FluenceLogoDarkTextBrush}"
+                                Style="{StaticResource SwatchUsageStyle}"
+                                Text="#60A9E0" />
+                            <TextBlock
+                                Foreground="{StaticResource FluenceLogoDarkTextBrush}"
+                                Style="{StaticResource SwatchKeyStyle}"
+                                Text="FluenceLogoSkyBrush" />
+                        </StackPanel>
+                    </Border>
 
-                <!--  ═══ STROKE TAB ═══  -->
-                <TabItem Header="Stroke" Style="{DynamicResource TabItemStyle}">
-                    <StackPanel Margin="16">
-                        <TextBlock Style="{StaticResource SwatchSectionHeaderStyle}" Text="Card Stroke" />
-                        <TextBlock Style="{StaticResource SwatchSectionDescStyle}" Text="Used for card and layer colors" />
-                        <Border
-                            Margin="0,0,0,24"
-                            Padding="16"
-                            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                            CornerRadius="8">
-                            <UniformGrid Columns="2">
-                                <Border
-                                    Margin="0,0,2,0"
-                                    Background="{DynamicResource CardStrokeColorDefaultBrush}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock Style="{StaticResource SwatchNameStyle}" Text="Card Stroke / Default" />
-                                        <TextBlock Style="{StaticResource SwatchKeyStyle}" Text="CardStrokeColorDefaultBrush" />
-                                    </StackPanel>
-                                </Border>
-                                <Border
-                                    Margin="2,0,0,0"
-                                    Background="{DynamicResource CardStrokeColorDefaultSolidBrush}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock Style="{StaticResource SwatchNameStyle}" Text="Card Stroke / Default Solid" />
-                                        <TextBlock Style="{StaticResource SwatchKeyStyle}" Text="CardStrokeColorDefaultSolidBrush" />
-                                    </StackPanel>
-                                </Border>
-                            </UniformGrid>
-                        </Border>
+                    <Border
+                        Width="148"
+                        Height="148"
+                        Margin="0,0,8,8"
+                        Background="{StaticResource FluenceLogoPeriwinkleBrush}"
+                        Style="{StaticResource ColorSwatchCellStyle}">
+                        <StackPanel>
+                            <TextBlock
+                                Foreground="{StaticResource FluenceLogoDarkTextBrush}"
+                                Style="{StaticResource SwatchNameStyle}"
+                                Text="Logo / Periwinkle" />
+                            <TextBlock
+                                Foreground="{StaticResource FluenceLogoDarkTextBrush}"
+                                Style="{StaticResource SwatchUsageStyle}"
+                                Text="#839CD8" />
+                            <TextBlock
+                                Foreground="{StaticResource FluenceLogoDarkTextBrush}"
+                                Style="{StaticResource SwatchKeyStyle}"
+                                Text="FluenceLogoPeriwinkleBrush" />
+                        </StackPanel>
+                    </Border>
 
-                        <TextBlock Style="{StaticResource SwatchSectionHeaderStyle}" Text="Control Elevation (gradient strokes)" />
-                        <TextBlock Style="{StaticResource SwatchSectionDescStyle}" Text="Used for standard control strokes and stroke states" />
-                        <Border
-                            Margin="0,0,0,24"
-                            Padding="16"
-                            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                            CornerRadius="8">
-                            <UniformGrid Columns="3">
-                                <Border
-                                    Margin="0,0,2,0"
-                                    BorderBrush="{DynamicResource ControlElevationBorderBrush}"
-                                    BorderThickness="2"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchNameStyle}"
-                                            Text="Control / Border" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchUsageStyle}"
-                                            Text="Rest" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchKeyStyle}"
-                                            Text="ControlElevationBorderBrush" />
-                                    </StackPanel>
-                                </Border>
-                                <Border
-                                    Margin="2,0,2,0"
-                                    BorderBrush="{DynamicResource TextControlElevationBorderBrush}"
-                                    BorderThickness="2"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchNameStyle}"
-                                            Text="Text Control / Border" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchUsageStyle}"
-                                            Text="Rest" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchKeyStyle}"
-                                            Text="TextControlElevationBorderBrush" />
-                                    </StackPanel>
-                                </Border>
-                                <Border
-                                    Margin="2,0,0,0"
-                                    BorderBrush="{DynamicResource AccentControlElevationBorderBrush}"
-                                    BorderThickness="2"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchNameStyle}"
-                                            Text="Accent Control / Border" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchUsageStyle}"
-                                            Text="Rest" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchKeyStyle}"
-                                            Text="AccentControlElevationBorderBrush" />
-                                    </StackPanel>
-                                </Border>
-                            </UniformGrid>
-                        </Border>
-
-                        <TextBlock Style="{StaticResource SwatchSectionHeaderStyle}" Text="Control Stroke" />
-                        <TextBlock Style="{StaticResource SwatchSectionDescStyle}" Text="Used for gradient stops in elevation borders, and for control states" />
-                        <Border
-                            Margin="0,0,0,24"
-                            Padding="16"
-                            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                            CornerRadius="8">
-                            <UniformGrid Columns="4">
-                                <Border
-                                    Margin="0,0,2,2"
-                                    Background="{DynamicResource ControlStrokeColorDefaultBrush}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock Style="{StaticResource SwatchNameStyle}" Text="Control Stroke / Default" />
-                                        <TextBlock Style="{StaticResource SwatchKeyStyle}" Text="ControlStrokeColorDefaultBrush" />
-                                    </StackPanel>
-                                </Border>
-                                <Border
-                                    Margin="2,0,2,2"
-                                    Background="{DynamicResource ControlStrokeColorSecondaryBrush}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock Style="{StaticResource SwatchNameStyle}" Text="Control Stroke / Secondary" />
-                                        <TextBlock Style="{StaticResource SwatchKeyStyle}" Text="ControlStrokeColorSecondaryBrush" />
-                                    </StackPanel>
-                                </Border>
-                                <Border
-                                    Margin="2,0,2,2"
-                                    Background="{DynamicResource ControlStrokeColorOnAccentDefaultBrush}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock Style="{StaticResource SwatchNameStyle}" Text="On Accent Default" />
-                                        <TextBlock Style="{StaticResource SwatchKeyStyle}" Text="ControlStrokeColorOnAccentDefaultBrush" />
-                                    </StackPanel>
-                                </Border>
-                                <Border
-                                    Margin="2,0,0,2"
-                                    Background="{DynamicResource ControlStrokeColorOnAccentSecondaryBrush}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock Style="{StaticResource SwatchNameStyle}" Text="On Accent Secondary" />
-                                        <TextBlock Style="{StaticResource SwatchKeyStyle}" Text="ControlStrokeColorOnAccentSecondaryBrush" />
-                                    </StackPanel>
-                                </Border>
-                            </UniformGrid>
-                        </Border>
-
-                        <TextBlock Style="{StaticResource SwatchSectionHeaderStyle}" Text="Focus Stroke" />
-                        <Border
-                            Margin="0,0,0,16"
-                            Padding="16"
-                            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                            CornerRadius="8">
-                            <UniformGrid Columns="2">
-                                <Border
-                                    Margin="0,0,2,0"
-                                    Background="{DynamicResource FocusStrokeColorOuterBrush}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorInverseBrush}"
-                                            Style="{StaticResource SwatchNameStyle}"
-                                            Text="Focus / Outer" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorInverseBrush}"
-                                            Style="{StaticResource SwatchKeyStyle}"
-                                            Text="FocusStrokeColorOuterBrush" />
-                                    </StackPanel>
-                                </Border>
-                                <Border
-                                    Margin="2,0,0,0"
-                                    Background="{DynamicResource FocusStrokeColorInnerBrush}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock Style="{StaticResource SwatchNameStyle}" Text="Focus / Inner" />
-                                        <TextBlock Style="{StaticResource SwatchKeyStyle}" Text="FocusStrokeColorInnerBrush" />
-                                    </StackPanel>
-                                </Border>
-                            </UniformGrid>
-                        </Border>
-                    </StackPanel>
-                </TabItem>
-
-                <!--  ═══ BACKGROUND TAB ═══  -->
-                <TabItem Header="Background" Style="{DynamicResource TabItemStyle}">
-                    <StackPanel Margin="16">
-                        <TextBlock Style="{StaticResource SwatchSectionHeaderStyle}" Text="Card Background" />
-                        <TextBlock Style="{StaticResource SwatchSectionDescStyle}" Text="Used to create cards - content blocks that live on page and layer backgrounds" />
-                        <Border
-                            Margin="0,0,0,24"
-                            Padding="16"
-                            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                            CornerRadius="8">
-                            <UniformGrid Columns="3">
-                                <Border
-                                    Margin="0,0,2,0"
-                                    Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchNameStyle}"
-                                            Text="Card Background / Default" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchKeyStyle}"
-                                            Text="CardBackgroundFillColorDefaultBrush" />
-                                    </StackPanel>
-                                </Border>
-                                <Border
-                                    Margin="2,0,2,0"
-                                    Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchNameStyle}"
-                                            Text="Card Background / Secondary" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchKeyStyle}"
-                                            Text="CardBackgroundFillColorSecondaryBrush" />
-                                    </StackPanel>
-                                </Border>
-                                <Border
-                                    Margin="2,0,0,0"
-                                    Background="{DynamicResource CardBackgroundTertiaryBrush}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchNameStyle}"
-                                            Text="Card Background / Tertiary" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchKeyStyle}"
-                                            Text="CardBackgroundTertiaryBrush" />
-                                    </StackPanel>
-                                </Border>
-                            </UniformGrid>
-                        </Border>
-
-                        <TextBlock Style="{StaticResource SwatchSectionHeaderStyle}" Text="Smoke Background" />
-                        <TextBlock Style="{StaticResource SwatchSectionDescStyle}" Text="Used over windows and desktop to block them out as inaccessible" />
-                        <Border
-                            Margin="0,0,0,24"
-                            Padding="16"
-                            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                            CornerRadius="8">
-                            <Border Background="{DynamicResource SmokeFillColorDefaultBrush}" Style="{StaticResource ColorSwatchCellStyle}">
-                                <StackPanel>
-                                    <TextBlock
-                                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                        Style="{StaticResource SwatchNameStyle}"
-                                        Text="Smoke / Default" />
-                                    <TextBlock
-                                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                        Style="{StaticResource SwatchUsageStyle}"
-                                        Text="Dims the background behind dialogs" />
-                                    <TextBlock
-                                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                        Style="{StaticResource SwatchKeyStyle}"
-                                        Text="SmokeFillColorDefaultBrush" />
-                                </StackPanel>
-                            </Border>
-                        </Border>
-
-                        <TextBlock Style="{StaticResource SwatchSectionHeaderStyle}" Text="Layer" />
-                        <TextBlock Style="{StaticResource SwatchSectionDescStyle}" Text="Used on background colors of any material to create layering" />
-                        <Border
-                            Margin="0,0,0,24"
-                            Padding="16"
-                            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                            CornerRadius="8">
-                            <UniformGrid Columns="2">
-                                <Border
-                                    Margin="0,0,2,0"
-                                    Background="{DynamicResource LayerFillColorDefaultBrush}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchNameStyle}"
-                                            Text="Layer / Default" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchKeyStyle}"
-                                            Text="LayerFillColorDefaultBrush" />
-                                    </StackPanel>
-                                </Border>
-                                <Border
-                                    Margin="2,0,0,0"
-                                    Background="{DynamicResource LayerFillColorAltBrush}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchNameStyle}"
-                                            Text="Layer / Alt" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchKeyStyle}"
-                                            Text="LayerFillColorAltBrush" />
-                                    </StackPanel>
-                                </Border>
-                            </UniformGrid>
-                        </Border>
-
-                        <TextBlock Style="{StaticResource SwatchSectionHeaderStyle}" Text="Solid Background" />
-                        <Border
-                            Margin="0,0,0,16"
-                            Padding="16"
-                            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                            CornerRadius="8">
-                            <UniformGrid Columns="4">
-                                <Border
-                                    Margin="0,0,2,0"
-                                    Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchNameStyle}"
-                                            Text="Solid / Base" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchKeyStyle}"
-                                            Text="SolidBackgroundFillColorBaseBrush" />
-                                    </StackPanel>
-                                </Border>
-                                <Border
-                                    Margin="2,0,2,0"
-                                    Background="{DynamicResource SolidBackgroundFillColorSecondaryBrush}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchNameStyle}"
-                                            Text="Solid / Secondary" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchKeyStyle}"
-                                            Text="SolidBackgroundFillColorSecondaryBrush" />
-                                    </StackPanel>
-                                </Border>
-                                <Border
-                                    Margin="2,0,2,0"
-                                    Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchNameStyle}"
-                                            Text="Solid / Tertiary" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchKeyStyle}"
-                                            Text="SolidBackgroundFillColorTertiaryBrush" />
-                                    </StackPanel>
-                                </Border>
-                                <Border
-                                    Margin="2,0,0,0"
-                                    Background="{DynamicResource SolidBackgroundFillColorQuarternaryBrush}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchNameStyle}"
-                                            Text="Solid / Quarternary" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                            Style="{StaticResource SwatchKeyStyle}"
-                                            Text="SolidBackgroundFillColorQuarternaryBrush" />
-                                    </StackPanel>
-                                </Border>
-                            </UniformGrid>
-                        </Border>
-                    </StackPanel>
-                </TabItem>
-
-                <!--  ═══ SIGNAL TAB ═══  -->
-                <TabItem Header="Signal" Style="{DynamicResource TabItemStyle}">
-                    <StackPanel Margin="16">
-                        <TextBlock Style="{StaticResource SwatchSectionHeaderStyle}" Text="System" />
-                        <TextBlock Style="{StaticResource SwatchSectionDescStyle}" Text="Used for accent fills on controls" />
-                        <Border
-                            Margin="0,0,0,24"
-                            Padding="16"
-                            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                            CornerRadius="8">
-                            <StackPanel>
-                                <UniformGrid Margin="0,0,0,4" Columns="3">
-                                    <Border
-                                        Margin="0,0,2,0"
-                                        Background="{DynamicResource SystemFillColorSuccessBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock
-                                                Foreground="White"
-                                                Style="{StaticResource SwatchNameStyle}"
-                                                Text="System / Success" />
-                                            <TextBlock
-                                                Foreground="White"
-                                                Style="{StaticResource SwatchUsageStyle}"
-                                                Text="Badge" />
-                                            <TextBlock
-                                                Foreground="White"
-                                                Style="{StaticResource SwatchKeyStyle}"
-                                                Text="SystemFillColorSuccessBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                    <Border
-                                        Margin="2,0,2,0"
-                                        Background="{DynamicResource SystemFillColorCautionBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock
-                                                Foreground="Black"
-                                                Style="{StaticResource SwatchNameStyle}"
-                                                Text="System / Caution" />
-                                            <TextBlock
-                                                Foreground="Black"
-                                                Style="{StaticResource SwatchUsageStyle}"
-                                                Text="Badge" />
-                                            <TextBlock
-                                                Foreground="Black"
-                                                Style="{StaticResource SwatchKeyStyle}"
-                                                Text="SystemFillColorCautionBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                    <Border
-                                        Margin="2,0,0,0"
-                                        Background="{DynamicResource SystemFillColorCriticalBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock
-                                                Foreground="White"
-                                                Style="{StaticResource SwatchNameStyle}"
-                                                Text="System / Critical" />
-                                            <TextBlock
-                                                Foreground="White"
-                                                Style="{StaticResource SwatchUsageStyle}"
-                                                Text="Badge" />
-                                            <TextBlock
-                                                Foreground="White"
-                                                Style="{StaticResource SwatchKeyStyle}"
-                                                Text="SystemFillColorCriticalBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                </UniformGrid>
-                                <UniformGrid Margin="0,4,0,4" Columns="3">
-                                    <Border
-                                        Margin="0,0,2,0"
-                                        Background="{DynamicResource SystemFillColorSuccessBackgroundBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchNameStyle}"
-                                                Text="System / Success Background" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchUsageStyle}"
-                                                Text="Infobar Background" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchKeyStyle}"
-                                                Text="SystemFillColorSuccessBackgroundBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                    <Border
-                                        Margin="2,0,2,0"
-                                        Background="{DynamicResource SystemFillColorCautionBackgroundBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchNameStyle}"
-                                                Text="System / Caution Background" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchUsageStyle}"
-                                                Text="Infobar Background" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchKeyStyle}"
-                                                Text="SystemFillColorCautionBackgroundBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                    <Border
-                                        Margin="2,0,0,0"
-                                        Background="{DynamicResource SystemFillColorCriticalBackgroundBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchNameStyle}"
-                                                Text="System / Critical Background" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchUsageStyle}"
-                                                Text="Infobar Background" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchKeyStyle}"
-                                                Text="SystemFillColorCriticalBackgroundBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                </UniformGrid>
-                                <UniformGrid Margin="0,4,0,4" Columns="3">
-                                    <Border
-                                        Margin="0,0,2,0"
-                                        Background="{DynamicResource SystemFillColorAttentionBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock
-                                                Foreground="Black"
-                                                Style="{StaticResource SwatchNameStyle}"
-                                                Text="System / Attention" />
-                                            <TextBlock
-                                                Foreground="Black"
-                                                Style="{StaticResource SwatchUsageStyle}"
-                                                Text="Badge" />
-                                            <TextBlock
-                                                Foreground="Black"
-                                                Style="{StaticResource SwatchKeyStyle}"
-                                                Text="SystemFillColorAttentionBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                    <Border
-                                        Margin="2,0,2,0"
-                                        Background="{DynamicResource SystemFillColorNeutralBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchNameStyle}"
-                                                Text="System / Neutral" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchUsageStyle}"
-                                                Text="Badge" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchKeyStyle}"
-                                                Text="SystemFillColorNeutralBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                    <Border
-                                        Margin="2,0,0,0"
-                                        Background="{DynamicResource SystemFillColorSolidNeutralBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchNameStyle}"
-                                                Text="System / Solid Neutral" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchUsageStyle}"
-                                                Text="Neutral badges over content" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchKeyStyle}"
-                                                Text="SystemFillColorSolidNeutralBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                </UniformGrid>
-                                <UniformGrid Margin="0,4,0,0" Columns="3">
-                                    <Border
-                                        Margin="0,0,2,0"
-                                        Background="{DynamicResource SystemFillColorAttentionBackgroundBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchNameStyle}"
-                                                Text="System / Attention Background" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchUsageStyle}"
-                                                Text="Infobar Background" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchKeyStyle}"
-                                                Text="SystemFillColorAttentionBackgroundBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                    <Border
-                                        Margin="2,0,2,0"
-                                        Background="{DynamicResource SystemFillColorNeutralBackgroundBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchNameStyle}"
-                                                Text="System / Neutral Background" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchUsageStyle}"
-                                                Text="Infobar Background" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchKeyStyle}"
-                                                Text="SystemFillColorNeutralBackgroundBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                    <Border
-                                        Margin="2,0,0,0"
-                                        Background="{DynamicResource SystemFillColorSolidNeutralBackgroundBrush}"
-                                        Style="{StaticResource ColorSwatchCellStyle}">
-                                        <StackPanel>
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchNameStyle}"
-                                                Text="System / Solid Neutral Background" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchUsageStyle}"
-                                                Text="Neutral badges over content" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Style="{StaticResource SwatchKeyStyle}"
-                                                Text="SystemFillColorSolidNeutralBackgroundBrush" />
-                                        </StackPanel>
-                                    </Border>
-                                </UniformGrid>
-                            </StackPanel>
-                        </Border>
-                    </StackPanel>
-                </TabItem>
-
-                <!--  ═══ HIGH CONTRAST TAB ═══  -->
-                <TabItem Header="High Contrast" Style="{DynamicResource TabItemStyle}">
-                    <StackPanel Margin="16">
-                        <TextBlock Style="{StaticResource SwatchSectionDescStyle}" Text="Below are the default high contrast themes shown. The brush names are the same, and the OS will choose the right colors based on the selected theme." />
-                        <Border
-                            Margin="0,0,0,16"
-                            Padding="16"
-                            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                            CornerRadius="8">
-                            <UniformGrid Columns="4" Rows="2">
-                                <Border
-                                    Margin="0,0,2,2"
-                                    Background="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock
-                                            Foreground="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
-                                            Style="{StaticResource SwatchNameStyle}"
-                                            Text="Window Text Color" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
-                                            Style="{StaticResource SwatchUsageStyle}"
-                                            Text="Foreground / Text color" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
-                                            Style="{StaticResource SwatchKeyStyle}"
-                                            Text="SystemColorWindowTextColor" />
-                                    </StackPanel>
-                                </Border>
-                                <Border
-                                    Margin="2,0,2,2"
-                                    Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock
-                                            Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"
-                                            Style="{StaticResource SwatchNameStyle}"
-                                            Text="Highlight Color" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"
-                                            Style="{StaticResource SwatchUsageStyle}"
-                                            Text="Accent / selection" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"
-                                            Style="{StaticResource SwatchKeyStyle}"
-                                            Text="SystemColorHighlightColor" />
-                                    </StackPanel>
-                                </Border>
-                                <Border
-                                    Margin="2,0,2,2"
-                                    Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock
-                                            Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
-                                            Style="{StaticResource SwatchNameStyle}"
-                                            Text="Button Face Color" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
-                                            Style="{StaticResource SwatchUsageStyle}"
-                                            Text="Button background" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
-                                            Style="{StaticResource SwatchKeyStyle}"
-                                            Text="SystemColorButtonFaceColor" />
-                                    </StackPanel>
-                                </Border>
-                                <Border
-                                    Margin="2,0,0,2"
-                                    Background="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock
-                                            Foreground="White"
-                                            Style="{StaticResource SwatchNameStyle}"
-                                            Text="Hotlight Color" />
-                                        <TextBlock
-                                            Foreground="White"
-                                            Style="{StaticResource SwatchUsageStyle}"
-                                            Text="Hyperlink text" />
-                                        <TextBlock
-                                            Foreground="White"
-                                            Style="{StaticResource SwatchKeyStyle}"
-                                            Text="SystemColorHotlightColor" />
-                                    </StackPanel>
-                                </Border>
-                                <Border
-                                    Margin="0,2,2,0"
-                                    Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock
-                                            Foreground="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"
-                                            Style="{StaticResource SwatchNameStyle}"
-                                            Text="Window Color" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"
-                                            Style="{StaticResource SwatchUsageStyle}"
-                                            Text="Background" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"
-                                            Style="{StaticResource SwatchKeyStyle}"
-                                            Text="SystemColorWindowColor" />
-                                    </StackPanel>
-                                </Border>
-                                <Border
-                                    Margin="2,2,2,0"
-                                    Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock
-                                            Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"
-                                            Style="{StaticResource SwatchNameStyle}"
-                                            Text="Highlight Color" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"
-                                            Style="{StaticResource SwatchUsageStyle}"
-                                            Text="Accent or selection" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource {x:Static SystemColors.HighlightTextBrushKey}}"
-                                            Style="{StaticResource SwatchKeyStyle}"
-                                            Text="SystemColorHighlightColor" />
-                                    </StackPanel>
-                                </Border>
-                                <Border
-                                    Margin="2,2,2,0"
-                                    Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock
-                                            Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
-                                            Style="{StaticResource SwatchNameStyle}"
-                                            Text="Button Face Color" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
-                                            Style="{StaticResource SwatchUsageStyle}"
-                                            Text="Buttons" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
-                                            Style="{StaticResource SwatchKeyStyle}"
-                                            Text="SystemColorButtonFaceColor" />
-                                    </StackPanel>
-                                </Border>
-                                <Border
-                                    Margin="2,2,0,0"
-                                    Background="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
-                                    Style="{StaticResource ColorSwatchCellStyle}">
-                                    <StackPanel>
-                                        <TextBlock
-                                            Foreground="White"
-                                            Style="{StaticResource SwatchNameStyle}"
-                                            Text="Gray Text Color / Disabled" />
-                                        <TextBlock
-                                            Foreground="White"
-                                            Style="{StaticResource SwatchUsageStyle}"
-                                            Text="Disabled text" />
-                                        <TextBlock
-                                            Foreground="White"
-                                            Style="{StaticResource SwatchKeyStyle}"
-                                            Text="SystemColorGrayTextColor" />
-                                    </StackPanel>
-                                </Border>
-                            </UniformGrid>
-                        </Border>
-                    </StackPanel>
-                </TabItem>
-
-            </TabControl>
+                    <Border
+                        Width="148"
+                        Height="148"
+                        Margin="0,0,8,8"
+                        Background="{StaticResource FluenceLogoVioletBrush}"
+                        Style="{StaticResource ColorSwatchCellStyle}">
+                        <StackPanel>
+                            <TextBlock
+                                Foreground="{StaticResource FluenceLogoLightTextBrush}"
+                                Style="{StaticResource SwatchNameStyle}"
+                                Text="Logo / Violet" />
+                            <TextBlock
+                                Foreground="{StaticResource FluenceLogoLightTextBrush}"
+                                Style="{StaticResource SwatchUsageStyle}"
+                                Text="#8863C8" />
+                            <TextBlock
+                                Foreground="{StaticResource FluenceLogoLightTextBrush}"
+                                Style="{StaticResource SwatchKeyStyle}"
+                                Text="FluenceLogoVioletBrush" />
+                        </StackPanel>
+                    </Border>
+                </ItemsControl>
+            </StackPanel>
         </StackPanel>
     </ui:SmoothScrollViewer>
 </UserControl>

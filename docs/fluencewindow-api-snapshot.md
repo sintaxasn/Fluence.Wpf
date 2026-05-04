@@ -62,8 +62,8 @@ public class FluenceWindow : Window
 
 ### Public dependency properties (canonical registered contract)
 
-> Updated 2026-04-21: added `TitleBarLeftIndentProperty` (added in commit `da98e9e`/subsequent; not present at original snapshot time).
 > Updated 2026-05-01: `IsMoveable` and the three `Is*ButtonVisible` visibility properties are canonical. Old names remain as obsolete aliases.
+> Updated 2026-05-03: `TitleBarLeftIndent` was removed; shell title spacing is owned by `TitleBar` and consumer layout.
 
 | DP field                               | CLR wrapper                   | Type              | Default                      | Metadata callback                         |
 |----------------------------------------|-------------------------------|-------------------|------------------------------|-------------------------------------------|
@@ -83,7 +83,6 @@ public class FluenceWindow : Window
 | `IsClosableProperty`                   | `IsClosable`                  | `bool`            | `true`                       | `OnCaptionButtonChromeOverrideChanged`    |
 | `IsMoveableProperty`                   | `IsMoveable`                  | `bool`            | `true`                       | _(none)_                                  |
 | `HasShadowProperty`                    | `HasShadow`                   | `bool`            | `true`                       | `OnHasShadowChanged`                      |
-| `TitleBarLeftIndentProperty`           | `TitleBarLeftIndent`          | `double`          | `0.0`                        | _(none)_                                  |
 
 All registered via `DependencyProperty.Register`; none read-only; none
 attached.

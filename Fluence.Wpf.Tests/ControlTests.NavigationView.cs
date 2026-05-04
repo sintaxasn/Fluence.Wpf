@@ -1669,7 +1669,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void NavigationView_Left_ContentStarts48pxBelowWindowTop()
+        public void NavigationView_Left_ContentStarts42pxBelowWindowTop()
         {
             RunOnStaThread(() =>
             {
@@ -1697,8 +1697,8 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in Left template.");
 
                     var offset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
-                    Assert.AreEqual(48.0, offset.Y, 1.0,
-                        "Left NavigationView content should start 48px below the top of the window.");
+                    Assert.AreEqual(42.0, offset.Y, 1.0,
+                        "Left NavigationView content should start 42px below the top of the window.");
                 }
                 finally
                 {
@@ -1742,7 +1742,7 @@ namespace Fluence.Wpf.Tests
 
                     var offset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
                     Assert.AreEqual(20.0, offset.Y, 1.0,
-                        "Left NavigationView should only reserve the 48px top gap when Header is empty.");
+                        "Left NavigationView should only reserve the 42px top gap when Header is empty.");
                 }
                 finally
                 {
@@ -1837,7 +1837,7 @@ namespace Fluence.Wpf.Tests
 
                     var offset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
                     Assert.AreEqual(20.0, offset.Y, 1.0,
-                        "LeftCompact NavigationView should only reserve the 48px top gap when Header is empty.");
+                        "LeftCompact NavigationView should only reserve the 42px top gap when Header is empty.");
                 }
                 finally
                 {

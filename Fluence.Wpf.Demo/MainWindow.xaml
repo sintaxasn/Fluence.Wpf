@@ -18,7 +18,7 @@
     TextOptions.TextFormattingMode="Display"
     TextOptions.TextHintingMode="Fixed"
     TextOptions.TextRenderingMode="ClearType"
-    TitleBarHeight="68"
+    TitleBarHeight="48"
     UseLayoutRounding="True"
     >
 
@@ -35,8 +35,8 @@
                 x:Name="NavSearchBox"
                 Width="320"
                 MinHeight="0"
-                Margin="0,8"
-                HorizontalAlignment="Left"
+                Margin="0,8,0,8"
+                HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 LostKeyboardFocus="NavSearchBox_LostKeyboardFocus"
                 PlaceholderText="Search"
@@ -52,10 +52,10 @@
         x:Name="DemoNav"
         Background="Transparent"
         IsBackButtonVisible="True"
-        IsBackEnabled="True"
+        IsBackEnabled="False"
         IsPaneOpen="True"
         IsPaneToggleButtonVisible="True"
-        PaneDisplayMode="Top"
+        PaneDisplayMode="Left"
         SelectedIndex="0"
         />
 </ui:FluenceWindow>

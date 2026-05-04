@@ -992,7 +992,19 @@ namespace Fluence.Wpf.Tests
                         .Where(b => b.Tag is string hex && hex.Length > 0 && hex[0] == '#')
                         .ToList();
 
-                    Assert.IsTrue(accentSwatchButtons.Count >= 8, "Window page should expose at least 8 accent swatch buttons.");
+                    var expectedSwatches = new List<string>
+                    {
+                        "#EF5858",
+                        "#F19263",
+                        "#F6D65A",
+                        "#87C29C",
+                        "#60A9E0",
+                        "#839CD8",
+                        "#8863C8"
+                    };
+
+                    CollectionAssert.AreEqual(expectedSwatches, accentSwatchButtons.Select(b => (string)b.Tag).ToList(),
+                        "Window page should expose the seven logo accent swatches.");
                     foreach (var swatch in accentSwatchButtons)
                     {
                         Assert.IsInstanceOfType(swatch, typeof(Fluent.Button));
@@ -2624,7 +2636,12 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(indeterminateArc, "PART_IndeterminateArc should exist in the indeterminate template.");
                     Assert.AreEqual(Visibility.Visible, indeterminateArc.Visibility,
                         "PART_IndeterminateArc should be Visible when IsActive=True and IsIndeterminate=True.");
-                    Assert.IsNotNull(indeterminateArc.Data,
+
+                    bool arcDataReady = WaitUntil(window.Dispatcher, 1000, delegate
+                    {
+                        return indeterminateArc.Data != null;
+                    });
+                    Assert.IsTrue(arcDataReady,
                         "PART_IndeterminateArc should have non-null Data for the caterpillar geometry.");
 
                     var dotHost = ring.Template.FindName("DotHost", ring) as FrameworkElement;

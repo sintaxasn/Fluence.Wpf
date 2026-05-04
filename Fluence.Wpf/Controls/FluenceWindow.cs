@@ -274,16 +274,6 @@ namespace Fluence.Wpf.Controls
                 typeof(FluenceWindow),
                 new PropertyMetadata(true, OnHasShadowChanged));
 
-        /// <summary>
-        /// Identifies the <see cref="TitleBarLeftIndent"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty TitleBarLeftIndentProperty =
-            DependencyProperty.Register(
-                nameof(TitleBarLeftIndent),
-                typeof(double),
-                typeof(FluenceWindow),
-                new PropertyMetadata(0.0));
-
         #endregion
 
         #region Properties
@@ -475,19 +465,6 @@ namespace Fluence.Wpf.Controls
         {
             get { return (bool)GetValue(HasShadowProperty); }
             set { SetValue(HasShadowProperty, value); }
-        }
-
-        /// <summary>
-        /// Gets or sets the left inset (device-independent pixels) applied to the title bar icon
-        /// and title text.  Set this to the navigation pane width when
-        /// <see cref="ExtendsContentIntoTitleBar"/> is <c>true</c> and a left-side navigation pane
-        /// occupies the leftmost portion of the window (e.g. 48 for a compact left pane).
-        /// The default value is 0.
-        /// </summary>
-        public double TitleBarLeftIndent
-        {
-            get { return (double)GetValue(TitleBarLeftIndentProperty); }
-            set { SetValue(TitleBarLeftIndentProperty, value); }
         }
 
         #endregion

@@ -217,6 +217,34 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void MainWindow_TitleBarSearch_IsCenteredInTitleBar()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                MainWindow window = CreateShownMainWindow();
+                try
+                {
+                    window.ExtendsContentIntoTitleBar = true;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    TitleBar shellTitleBar = FindByName<TitleBar>(window, "ShellTitleBar");
+                    Fluence.Wpf.Controls.TextBox search = FindByName<Fluence.Wpf.Controls.TextBox>(window, "NavSearchBox");
+                    Assert.IsNotNull(shellTitleBar, "Extended title bar should use the shared TitleBar control.");
+                    Assert.IsNotNull(search, "Demo search box must be present.");
+                    Assert.AreEqual(GetVisualCenterX(shellTitleBar, window), GetVisualCenterX(search, window), 1.0,
+                        "Search should stay centered in the title bar surface.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
         public void MainWindow_ExtendedTitleBar_UsesHorizontalNavigationChrome()
         {
             RunOnSta(delegate
@@ -354,6 +382,9 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
+                    Assert.AreEqual(42.0, window.TitleBarHeight, 0.01,
+                        "The demo shell should use a compact 42px title bar.");
+
                     NavigationViewItem firstItem = nav.Items.Count > 0 ? nav.Items[0] as NavigationViewItem : null;
                     Assert.IsNotNull(firstItem, "DemoNav should contain a first navigation item.");
                     double itemY = GetVisualY(firstItem, window);
@@ -448,6 +479,56 @@ namespace Fluence.Wpf.Tests
                         "Title icon should remain visible when title text is hidden for search clearance.");
                     Assert.AreEqual(Visibility.Collapsed, titleText.Visibility,
                         "Title text should hide when its bounds would overlap the search box.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void MainWindow_ExtendedTitleBar_RestoresTitleTextWhenSearchHasRoom()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                MainWindow window = CreateShownMainWindow();
+                try
+                {
+                    window.Width = 760;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    window.SetUserShowIcon(true, window.Icon);
+                    window.SetUserShowTitle(true, "Fluence.Wpf Control Gallery Extended Title That Should Not Overlap The Search Box");
+                    window.ExtendsContentIntoTitleBar = true;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    TitleBar shellTitleBar = FindByName<TitleBar>(window, "ShellTitleBar");
+                    Assert.IsNotNull(shellTitleBar, "Extended title bar should use the shared TitleBar control.");
+                    WpfTextBlock titleText = FindByName<WpfTextBlock>(shellTitleBar, "PART_TitleText");
+                    Assert.IsNotNull(titleText, "Extended title bar title should exist.");
+                    Assert.AreEqual(Visibility.Collapsed, titleText.Visibility,
+                        "Setup should hide title text while the search collision exists.");
+
+                    window.Width = 1200;
+                    window.SetUserShowTitle(true, "Fluence.Wpf");
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    titleText = FindByName<WpfTextBlock>(shellTitleBar, "PART_TitleText");
+                    Fluence.Wpf.Controls.TextBox search = FindByName<Fluence.Wpf.Controls.TextBox>(window, "NavSearchBox");
+                    Assert.IsNotNull(search, "Demo search box must be present.");
+                    Assert.AreEqual(Visibility.Visible, titleText.Visibility,
+                        "Title text should return when it can fit without touching the search box.");
+                    Assert.AreEqual("Fluence.Wpf", titleText.Text,
+                        "The visible title should use the current user title.");
+                    Assert.IsTrue(GetVisualX(titleText, window) + titleText.ActualWidth + 12.0 <= GetVisualX(search, window),
+                        "Visible title text should keep the search clearance gap.");
                 }
                 finally
                 {

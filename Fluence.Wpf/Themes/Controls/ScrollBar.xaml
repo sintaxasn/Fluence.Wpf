@@ -73,14 +73,14 @@
     <ControlTemplate x:Key="VerticalScrollBarTemplate" TargetType="{x:Type ScrollBar}">
         <Grid
             x:Name="Root"
-            Width="6"
+            Width="3"
             Background="Transparent"
             SnapsToDevicePixels="True">
             <Border
                 x:Name="TrackBackground"
                 Margin="0"
                 Background="{DynamicResource SubtleFillColorSecondaryBrush}"
-                CornerRadius="3"
+                CornerRadius="1.5"
                 Opacity="0" />
             <Track
                 x:Name="PART_Track"
@@ -237,14 +237,14 @@
     <ControlTemplate x:Key="HorizontalScrollBarTemplate" TargetType="{x:Type ScrollBar}">
         <Grid
             x:Name="Root"
-            Height="6"
+            Height="3"
             Background="Transparent"
             SnapsToDevicePixels="True">
             <Border
                 x:Name="TrackBackground"
                 Margin="0"
                 Background="{DynamicResource SubtleFillColorSecondaryBrush}"
-                CornerRadius="3"
+                CornerRadius="1.5"
                 Opacity="0" />
             <Track
                 x:Name="PART_Track"

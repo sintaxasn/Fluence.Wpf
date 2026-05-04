@@ -168,28 +168,16 @@
                                 Background="Transparent"
                                 >
                                 <Grid.ColumnDefinitions>
-                                    <!--  Col 0: left indent spacer — set TitleBarLeftIndent to the nav pane  -->
-                                    <!--  width when ExtendsContentIntoTitleBar=True (e.g. 48 for compact pane)  -->
-                                    <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="Auto" />
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
                                 </Grid.ColumnDefinitions>
 
-                                <!--  Left indent spacer: sized by TitleBarLeftIndent DP (default 0)  -->
-                                <Border
-                                    x:Name="TitleBarIndent"
-                                    Grid.Column="0"
-                                    Width="{TemplateBinding TitleBarLeftIndent}"
-                                    Background="Transparent"
-                                    IsHitTestVisible="False"
-                                    />
-
                                 <!--  Icon  -->
                                 <Image
                                     x:Name="WindowIcon"
-                                    Grid.Column="1"
+                                    Grid.Column="0"
                                     Width="20"
                                     Height="20"
                                     Margin="16,0,0,0"
@@ -202,7 +190,7 @@
                                 <!--  Title text  -->
                                 <TextBlock
                                     x:Name="TitleText"
-                                    Grid.Column="2"
+                                    Grid.Column="1"
                                     Margin="8,0,0,0"
                                     VerticalAlignment="Center"
                                     controls:TextBlockExtensions.Typography="Caption"
@@ -213,7 +201,7 @@
                                 <!--  Custom title bar content area  -->
                                 <ContentPresenter
                                     x:Name="TitleBarContent"
-                                    Grid.Column="3"
+                                    Grid.Column="2"
                                     Margin="0,0,0,0"
                                     VerticalAlignment="Center"
                                     Content="{TemplateBinding TitleBar}"
@@ -222,7 +210,7 @@
                                 <!--  Caption buttons  -->
                                 <Grid
                                     x:Name="CaptionButtonPanel"
-                                    Grid.Column="4"
+                                    Grid.Column="3"
                                     Width="158"
                                     HorizontalAlignment="Right"
                                     VerticalAlignment="Top"

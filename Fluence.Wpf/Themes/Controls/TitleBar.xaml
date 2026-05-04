@@ -14,10 +14,10 @@
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="Margin" Value="0" />
-        <Setter Property="Width" Value="48" />
-        <Setter Property="Height" Value="40" />
+        <Setter Property="Width" Value="42" />
+        <Setter Property="Height" Value="36" />
         <Setter Property="FontFamily" Value="Segoe Fluent Icons" />
-        <Setter Property="FontSize" Value="20" />
+        <Setter Property="FontSize" Value="16" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="VerticalAlignment" Value="Center" />
@@ -97,6 +97,7 @@
                             x:Name="PART_BackButton"
                             Grid.Column="1"
                             Content="&#xE72B;"
+                            Margin="4,0,0,0"
                             Style="{StaticResource TitleBarGlyphButtonStyle}"
                             ToolTip="Back"
                             Visibility="Collapsed" />
@@ -105,6 +106,7 @@
                             x:Name="PART_PaneToggleButton"
                             Grid.Column="2"
                             Content="&#xE700;"
+                            Margin="4,0,0,0"
                             Style="{StaticResource TitleBarGlyphButtonStyle}"
                             ToolTip="Navigation"
                             Visibility="Collapsed" />
@@ -119,9 +121,9 @@
                         <ContentPresenter
                             x:Name="PART_IconPresenter"
                             Grid.Column="5"
-                            MaxWidth="16"
-                            MaxHeight="16"
-                            Margin="0,0,16,0"
+                            MaxWidth="20"
+                            MaxHeight="20"
+                            Margin="4,0,20,0"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
                             Content="{TemplateBinding Icon}" />
@@ -154,8 +156,10 @@
 
                         <ContentPresenter
                             x:Name="PART_ContentPresenter"
-                            Grid.Column="8"
-                            HorizontalAlignment="Right"
+                            Grid.Column="0"
+                            Grid.ColumnSpan="11"
+                            Panel.ZIndex="1"
+                            HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             Content="{TemplateBinding Content}"
                             ContentStringFormat="{TemplateBinding ContentStringFormat}"

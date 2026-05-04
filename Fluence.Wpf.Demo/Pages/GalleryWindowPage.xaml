@@ -101,64 +101,46 @@
                             <WrapPanel Margin="0,0,0,8">
                                 <ui:Button
                                     Margin="0,0,8,8"
-                                    Background="#E81123"
+                                    Background="#EF5858"
                                     Click="AccentSwatch_Click"
                                     Style="{StaticResource AccentSwatchStyle}"
-                                    Tag="#E81123" />
+                                    Tag="#EF5858" />
                                 <ui:Button
                                     Margin="0,0,8,8"
-                                    Background="#DA3B01"
+                                    Background="#F19263"
                                     Click="AccentSwatch_Click"
                                     Style="{StaticResource AccentSwatchStyle}"
-                                    Tag="#DA3B01" />
+                                    Tag="#F19263" />
                                 <ui:Button
                                     Margin="0,0,8,8"
-                                    Background="#FF8C00"
+                                    Background="#F6D65A"
                                     Click="AccentSwatch_Click"
                                     Style="{StaticResource AccentSwatchStyle}"
-                                    Tag="#FF8C00" />
+                                    Tag="#F6D65A" />
                                 <ui:Button
                                     Margin="0,0,8,8"
-                                    Background="#FFB900"
+                                    Background="#87C29C"
                                     Click="AccentSwatch_Click"
                                     Style="{StaticResource AccentSwatchStyle}"
-                                    Tag="#FFB900" />
+                                    Tag="#87C29C" />
                                 <ui:Button
                                     Margin="0,0,8,8"
-                                    Background="#47B800"
+                                    Background="#60A9E0"
                                     Click="AccentSwatch_Click"
                                     Style="{StaticResource AccentSwatchStyle}"
-                                    Tag="#47B800" />
+                                    Tag="#60A9E0" />
                                 <ui:Button
                                     Margin="0,0,8,8"
-                                    Background="#00B7C3"
+                                    Background="#839CD8"
                                     Click="AccentSwatch_Click"
                                     Style="{StaticResource AccentSwatchStyle}"
-                                    Tag="#00B7C3" />
+                                    Tag="#839CD8" />
                                 <ui:Button
                                     Margin="0,0,8,8"
-                                    Background="#0078D4"
+                                    Background="#8863C8"
                                     Click="AccentSwatch_Click"
                                     Style="{StaticResource AccentSwatchStyle}"
-                                    Tag="#0078D4" />
-                                <ui:Button
-                                    Margin="0,0,8,8"
-                                    Background="#4F56A3"
-                                    Click="AccentSwatch_Click"
-                                    Style="{StaticResource AccentSwatchStyle}"
-                                    Tag="#4F56A3" />
-                                <ui:Button
-                                    Margin="0,0,8,8"
-                                    Background="#8A00C4"
-                                    Click="AccentSwatch_Click"
-                                    Style="{StaticResource AccentSwatchStyle}"
-                                    Tag="#8A00C4" />
-                                <ui:Button
-                                    Margin="0,0,8,8"
-                                    Background="#E3008C"
-                                    Click="AccentSwatch_Click"
-                                    Style="{StaticResource AccentSwatchStyle}"
-                                    Tag="#E3008C" />
+                                    Tag="#8863C8" />
                             </WrapPanel>
                             <StackPanel Orientation="Horizontal">
                                 <ui:Button

@@ -111,28 +111,46 @@ namespace Fluence.Wpf.Demo.Pages
             <WrapPanel Margin=""0,0,0,8"">
                 <ui:Button
                     Margin=""0,0,8,8""
-                    Background=""#E81123""
+                    Background=""#EF5858""
                     Click=""AccentSwatch_Click""
                     Style=""{StaticResource AccentSwatchStyle}""
-                    Tag=""#E81123"" />
+                    Tag=""#EF5858"" />
                 <ui:Button
                     Margin=""0,0,8,8""
-                    Background=""#DA3B01""
+                    Background=""#F19263""
                     Click=""AccentSwatch_Click""
                     Style=""{StaticResource AccentSwatchStyle}""
-                    Tag=""#DA3B01"" />
+                    Tag=""#F19263"" />
                 <ui:Button
                     Margin=""0,0,8,8""
-                    Background=""#0078D4""
+                    Background=""#F6D65A""
                     Click=""AccentSwatch_Click""
                     Style=""{StaticResource AccentSwatchStyle}""
-                    Tag=""#0078D4"" />
+                    Tag=""#F6D65A"" />
                 <ui:Button
                     Margin=""0,0,8,8""
-                    Background=""#8A00C4""
+                    Background=""#87C29C""
                     Click=""AccentSwatch_Click""
                     Style=""{StaticResource AccentSwatchStyle}""
-                    Tag=""#8A00C4"" />
+                    Tag=""#87C29C"" />
+                <ui:Button
+                    Margin=""0,0,8,8""
+                    Background=""#60A9E0""
+                    Click=""AccentSwatch_Click""
+                    Style=""{StaticResource AccentSwatchStyle}""
+                    Tag=""#60A9E0"" />
+                <ui:Button
+                    Margin=""0,0,8,8""
+                    Background=""#839CD8""
+                    Click=""AccentSwatch_Click""
+                    Style=""{StaticResource AccentSwatchStyle}""
+                    Tag=""#839CD8"" />
+                <ui:Button
+                    Margin=""0,0,8,8""
+                    Background=""#8863C8""
+                    Click=""AccentSwatch_Click""
+                    Style=""{StaticResource AccentSwatchStyle}""
+                    Tag=""#8863C8"" />
             </WrapPanel>
             <ui:Button
                 MinWidth=""80""
@@ -581,7 +599,6 @@ namespace Fluence.Wpf.Demo.Pages.Window
             {
                 var extends = ExtendsContentToggle.IsChecked == true;
                 window.ExtendsContentIntoTitleBar = extends;
-                window.TitleBarLeftIndent = extends ? 48d : 0d;
             }
 
             if (HasShadowToggle != null)
@@ -893,10 +910,6 @@ private bool _isSyncingTheme;
             {
                 bool extends = ExtendsContentToggle.IsChecked == true;
                 fw.ExtendsContentIntoTitleBar = extends;
-                // When extending into the title bar and a Left / LeftCompact navigation
-                // pane is present, push the icon + title past the compact rail so they do
-                // not overlap the pane. 48 matches the compact rail width.
-                fw.TitleBarLeftIndent = extends ? 48d : 0d;
             }
 
             if (HasShadowToggle != null)

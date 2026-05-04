@@ -50,11 +50,12 @@
             Grid.Row="1"
             Margin="0"
             BorderThickness="1,0,1,1"
-            CornerRadius="0,0,8,8"
+            CornerRadius="4"
             Expanded="SourceExpander_Expanded"
             Header="Source">
             <fluence:TabView
                 x:Name="SourceTabs"
+                Margin="8,16,8,8"
                 IsAddTabButtonVisible="False" />
         </fluence:Expander>
     </Grid>
