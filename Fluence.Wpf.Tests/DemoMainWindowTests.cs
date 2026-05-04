@@ -35,6 +35,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Fluence.Wpf.Controls;
@@ -146,7 +147,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void GalleryHomePage_BrandBannerSwitchesWithTheme()
+        public void GalleryHomePage_BrandBannerImageSwitchesWithTheme()
         {
             RunOnSta(delegate
             {
@@ -155,10 +156,10 @@ namespace Fluence.Wpf.Tests
                 Window window = CreateHostWindow(page);
                 try
                 {
-                    ContentControl host = FindByName<ContentControl>(page, "BrandBannerHost");
-                    Assert.IsNotNull(host, "Home page should expose the brand banner host.");
-                    Assert.IsInstanceOfType(host.Content, typeof(Viewbox), "The light banner XAML should load as WPF content.");
-                    Assert.AreEqual("/Fluence.Wpf.Demo;component/Resources/fluence-wpf-banner-light.xaml", host.Tag as string,
+                    Image image = FindByName<Image>(page, "BrandBannerImage");
+                    Assert.IsNotNull(image, "Home page should expose the brand banner image.");
+                    Assert.IsInstanceOfType(image.Source, typeof(BitmapImage), "The light banner PNG should load as an image source.");
+                    Assert.AreEqual("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/fluence-wpf-banner-light.png", image.Tag as string,
                         "Light theme should use the light banner graphic.");
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, true);
@@ -166,8 +167,8 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
-                    Assert.IsInstanceOfType(host.Content, typeof(Viewbox), "The dark banner XAML should load as WPF content.");
-                    Assert.AreEqual("/Fluence.Wpf.Demo;component/Resources/fluence-wpf-banner-dark.xaml", host.Tag as string,
+                    Assert.IsInstanceOfType(image.Source, typeof(BitmapImage), "The dark banner PNG should load as an image source.");
+                    Assert.AreEqual("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/fluence-wpf-banner-dark.png", image.Tag as string,
                         "Dark theme should use the dark banner graphic.");
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
@@ -175,7 +176,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
-                    Assert.AreEqual("/Fluence.Wpf.Demo;component/Resources/fluence-wpf-banner-light.xaml", host.Tag as string,
+                    Assert.AreEqual("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/fluence-wpf-banner-light.png", image.Tag as string,
                         "Returning to light theme should restore the light banner graphic.");
                 }
                 finally
@@ -183,6 +184,17 @@ namespace Fluence.Wpf.Tests
                     window.Close();
                 }
             });
+        }
+
+        [TestMethod]
+        public void GalleryHomePage_UsesPngBannerResourcesAndGitHubLink()
+        {
+            string project = ReadRepositoryFile("Fluence.Wpf.Demo", "Fluence.Wpf.Demo.csproj");
+            StringAssert.Contains(project, "<Resource Include=\"Resources\\fluence-wpf-banner-*.png\" />");
+            StringAssert.Contains(project, "<Page Remove=\"Resources\\fluence-wpf-banner-*.xaml\" />");
+
+            string homePage = ReadRepositoryFile("Fluence.Wpf.Demo", "Pages", "GalleryHomePage.xaml");
+            StringAssert.Contains(homePage, "https://github.com/sintaxasn/fluence.wpf");
         }
 
         [TestMethod]
@@ -277,7 +289,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void MainWindow_TitleBarSearch_IsCenteredInTitleBar()
+        public void MainWindow_TitleBarSearch_IsCenteredInWindow()
         {
             RunOnSta(delegate
             {
@@ -294,8 +306,8 @@ namespace Fluence.Wpf.Tests
                     Fluence.Wpf.Controls.TextBox search = FindByName<Fluence.Wpf.Controls.TextBox>(window, "NavSearchBox");
                     Assert.IsNotNull(shellTitleBar, "Extended title bar should use the shared TitleBar control.");
                     Assert.IsNotNull(search, "Demo search box must be present.");
-                    Assert.AreEqual(GetVisualCenterX(shellTitleBar, window), GetVisualCenterX(search, window), 1.0,
-                        "Search should stay centered in the title bar surface.");
+                    Assert.AreEqual(window.ActualWidth / 2.0, GetVisualCenterX(search, window), 1.0,
+                        "Search should stay horizontally centered in the window.");
                 }
                 finally
                 {
@@ -328,13 +340,13 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(titleBarToggle, "Extended title bar should expose a pane toggle button.");
                     Assert.AreEqual(Visibility.Visible, titleBarToggle.Visibility,
                         "Pane toggle should move into the title bar when content extends into the title bar.");
-                    Assert.AreEqual(48.0, titleBarToggle.ActualWidth, 0.5,
-                        "Title-bar pane toggle should occupy one 48px navigation rail slot.");
+                    Assert.AreEqual(42.0, titleBarToggle.ActualWidth, 0.5,
+                        "Title-bar pane toggle should match the compact title-bar glyph slot.");
 
                     WpfTextBlock titleBarGlyph = FindVisualChild<WpfTextBlock>(titleBarToggle);
                     Assert.IsNotNull(titleBarGlyph, "Title-bar pane toggle should render a Segoe Fluent Icons glyph.");
-                    Assert.AreEqual(20.0, titleBarGlyph.FontSize, 0.01,
-                        "Title-bar pane toggle glyph should match left-mode NavigationViewItem glyph size.");
+                    Assert.AreEqual(16.0, titleBarGlyph.FontSize, 0.01,
+                        "Title-bar pane toggle glyph should match the compact title-bar glyph style.");
 
                     WpfButton titleBarBack = FindByName<WpfButton>(shellTitleBar, "PART_BackButton");
                     Assert.IsNotNull(titleBarBack, "Extended title bar should expose a back button slot.");

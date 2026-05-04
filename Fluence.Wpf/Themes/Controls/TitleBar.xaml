@@ -121,8 +121,8 @@
                         <ContentPresenter
                             x:Name="PART_IconPresenter"
                             Grid.Column="5"
-                            MaxWidth="20"
-                            MaxHeight="20"
+                            MaxWidth="24"
+                            MaxHeight="24"
                             Margin="4,0,20,0"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"

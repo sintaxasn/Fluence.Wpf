@@ -10,23 +10,33 @@
     d:DesignWidth="900"
     mc:Ignorable="d">
     <ui:SmoothScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="28,20,28,32" HorizontalAlignment="Stretch">
+        <StackPanel Margin="28,0,28,0" HorizontalAlignment="Stretch">
             <!--  Hero brand graphic  -->
             <StackPanel Margin="0,8,0,28" HorizontalAlignment="Center">
-                <ContentControl
-                    x:Name="BrandBannerHost"
+                <Image
+                    x:Name="BrandBannerImage"
                     Height="224"
                     MaxWidth="760"
                     HorizontalAlignment="Stretch"
-                    HorizontalContentAlignment="Center"
-                    VerticalContentAlignment="Center"
+                    RenderOptions.BitmapScalingMode="HighQuality"
                     SnapsToDevicePixels="True" />
                 <TextBlock
                     HorizontalAlignment="Center"
-                    Margin="0,12,0,0"
+                    Margin="0,0,0,0"
                     ui:TextBlockExtensions.Typography="Subtitle"
                     Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                     Text="Windows 11 Fluent Design controls for WPF" />
+                <TextBlock
+                    HorizontalAlignment="Center"
+                    Margin="0,8,0,0"
+                    ui:TextBlockExtensions.Typography="Body"
+                    Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}">
+                    <Hyperlink
+                        NavigateUri="https://github.com/sintaxasn/fluence.wpf"
+                        RequestNavigate="GitHubLink_RequestNavigate">
+                        <Run Text="https://github.com/sintaxasn/fluence.wpf" />
+                    </Hyperlink>
+                </TextBlock>
         </StackPanel>
 
             <!--  Action cards  -->
@@ -89,63 +99,6 @@
                     </StackPanel>
                 </ui:Card>
 
-                <ui:Card
-                    Margin="0,0,10,0"
-                    Padding="20"
-                    Click="Card_Click"
-                    IsClickable="True"
-                    Tag="buttons"
-                    Variant="{x:Static uicore:CardVariant.Default}">
-                    <StackPanel>
-                        <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
-                            <ui:FontIcon
-                                Margin="0,0,12,0"
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
-                                Glyph="&#xE8E5;"
-                                IconFontSize="24" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                ui:TextBlockExtensions.Typography="Subtitle"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Text="Controls" />
-                        </StackPanel>
-                        <TextBlock
-                            ui:TextBlockExtensions.Typography="Body"
-                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                            Text="40+ controls — inputs, menus, tooltips, trees, navigation, feedback, data views, and tabs — all DynamicResource-driven."
-                            TextWrapping="Wrap" />
-                    </StackPanel>
-                </ui:Card>
-
-                <ui:Card
-                    Margin="10,0,0,0"
-                    Padding="20"
-                    Click="Card_Click"
-                    IsClickable="True"
-                    Tag="colors"
-                    Variant="{x:Static uicore:CardVariant.Default}">
-                    <StackPanel>
-                        <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
-                            <ui:FontIcon
-                                Margin="0,0,12,0"
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
-                                Glyph="&#xE2B1;"
-                                IconFontSize="24" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                ui:TextBlockExtensions.Typography="Subtitle"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Text="Fidelity" />
-                        </StackPanel>
-                        <TextBlock
-                            ui:TextBlockExtensions.Typography="Body"
-                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                            Text="Canonical WinUI 3 easing (0.8,0,0,1 KeySpline), 83–167 ms durations, and WinUI themeresource key naming throughout."
-                            TextWrapping="Wrap" />
-                    </StackPanel>
-                </ui:Card>
             </UniformGrid>
 
             <!--  Featured controls  -->

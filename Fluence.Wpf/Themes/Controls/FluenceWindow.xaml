@@ -126,7 +126,6 @@
 
     <Style TargetType="{x:Type controls:FluenceWindow}">
         <Setter Property="Focusable" Value="False" />
-        <Setter Property="MinWidth" Value="698" />
         <Setter Property="Background" Value="{DynamicResource ApplicationBackgroundBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultSolidBrush}" />
@@ -204,6 +203,7 @@
                                     Grid.Column="2"
                                     Margin="0,0,0,0"
                                     VerticalAlignment="Center"
+                                    Panel.ZIndex="1"
                                     Content="{TemplateBinding TitleBar}"
                                     />
 
@@ -214,6 +214,7 @@
                                     Width="158"
                                     HorizontalAlignment="Right"
                                     VerticalAlignment="Top"
+                                    Panel.ZIndex="2"
                                     WindowChrome.IsHitTestVisibleInChrome="True"
                                     >
                                     <Grid.ColumnDefinitions>
@@ -333,6 +334,8 @@
                             <Setter TargetName="ContentArea" Property="Grid.RowSpan" Value="2" />
                             <Setter TargetName="WindowIcon" Property="Visibility" Value="Collapsed" />
                             <Setter TargetName="TitleText" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="TitleBarContent" Property="Grid.Column" Value="0" />
+                            <Setter TargetName="TitleBarContent" Property="Grid.ColumnSpan" Value="4" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

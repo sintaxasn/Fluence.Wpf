@@ -26,9 +26,12 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 using System;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using Fluence.Wpf;
 using Fluence.Wpf.Controls;
 
@@ -37,10 +40,10 @@ namespace Fluence.Wpf.Demo.Pages
     public partial class GalleryHomePage : UserControl
     {
         private static readonly Uri LightBannerUri =
-            new Uri("/Fluence.Wpf.Demo;component/Resources/fluence-wpf-banner-light.xaml", UriKind.Relative);
+            new Uri("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/fluence-wpf-banner-light.png", UriKind.Absolute);
 
         private static readonly Uri DarkBannerUri =
-            new Uri("/Fluence.Wpf.Demo;component/Resources/fluence-wpf-banner-dark.xaml", UriKind.Relative);
+            new Uri("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/fluence-wpf-banner-dark.png", UriKind.Absolute);
 
         private Uri _currentBannerUri;
 
@@ -88,8 +91,8 @@ namespace Fluence.Wpf.Demo.Pages
                 return;
             }
 
-            BrandBannerHost.Content = Application.LoadComponent(bannerUri);
-            BrandBannerHost.Tag = bannerUri.OriginalString;
+            BrandBannerImage.Source = new BitmapImage(bannerUri);
+            BrandBannerImage.Tag = bannerUri.OriginalString;
             _currentBannerUri = bannerUri;
         }
 
@@ -130,6 +133,12 @@ namespace Fluence.Wpf.Demo.Pages
             {
                 host.NavigateTo(tag);
             }
+        }
+
+        private void GitHubLink_RequestNavigate(object sender, RequestNavigateEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+            e.Handled = true;
         }
     }
 }
