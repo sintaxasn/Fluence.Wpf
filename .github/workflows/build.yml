@@ -8,9 +8,9 @@ on:
 
 jobs:
   build:
-   permissions:
-     actions: read
-     contents: write
+    permissions:
+      actions: read
+      contents: write
     runs-on: windows-latest
 
     steps:
