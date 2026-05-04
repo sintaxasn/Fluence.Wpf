@@ -81,6 +81,40 @@ namespace Fluence.Wpf.Tests
             });
         }
 
+        [TestMethod]
+        public void Button_ExplicitToolTip_IsNotClearedByTruncationFallback()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+                var toolTip = new Fluent.ToolTip { Content = "Save changes" };
+                var button = new Fluent.Button
+                {
+                    Width = 160,
+                    Content = "Save",
+                    ToolTip = toolTip
+                };
+
+                try
+                {
+                    window.Content = button;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.AreSame(toolTip, button.ToolTip,
+                        "Button truncation fallback must not clear an explicit tooltip supplied by the consumer.");
+                }
+                finally
+                {
+                    window.Close();
+                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                }
+            });
+        }
+
         private static void AssertDisabledAccentButtonUsesDarkTokens(Application application)
         {
             var window = new Window();

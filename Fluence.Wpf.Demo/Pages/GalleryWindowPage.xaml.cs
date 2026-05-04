@@ -48,7 +48,7 @@ namespace Fluence.Wpf.Demo.Pages
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width=""*"" />
             <ColumnDefinition Width=""16"" />
-            <ColumnDefinition Width=""*"" />
+            <ColumnDefinition Width=""Auto"" />
         </Grid.ColumnDefinitions>
         <StackPanel>
             <TextBlock
@@ -100,6 +100,22 @@ namespace Fluence.Wpf.Demo.Pages
                 x:Name=""ThemeStateLabel""
                 Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
                 Text=""Current: Auto"" />
+            <TextBlock
+                Margin=""0,16,0,6""
+                Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                Text=""Backdrop"" />
+            <ui:ComboBox
+                x:Name=""BackdropCombo""
+                Width=""220""
+                HorizontalAlignment=""Left""
+                SelectedIndex=""2""
+                SelectionChanged=""BackdropCombo_SelectionChanged"">
+                <ComboBoxItem Content=""Auto"" />
+                <ComboBoxItem Content=""None"" />
+                <ComboBoxItem Content=""Mica"" />
+                <ComboBoxItem Content=""Acrylic"" />
+                <ComboBoxItem Content=""Tabbed"" />
+            </ui:ComboBox>
         </StackPanel>
 
         <StackPanel Grid.Column=""2"">
@@ -108,50 +124,54 @@ namespace Fluence.Wpf.Demo.Pages
                 FontWeight=""SemiBold""
                 Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
                 Text=""Accent color"" />
-            <WrapPanel Margin=""0,0,0,8"">
+            <UniformGrid
+                x:Name=""AccentSwatchRow""
+                Columns=""7""
+                Margin=""0,0,0,8""
+                Rows=""1"">
                 <ui:Button
-                    Margin=""0,0,8,8""
-                    Background=""#EF5858""
+                    Margin=""0,0,8,0""
+                    Background=""#C62828""
                     Click=""AccentSwatch_Click""
                     Style=""{StaticResource AccentSwatchStyle}""
-                    Tag=""#EF5858"" />
+                    Tag=""#C62828"" />
                 <ui:Button
-                    Margin=""0,0,8,8""
-                    Background=""#F19263""
+                    Margin=""0,0,8,0""
+                    Background=""#A13D00""
                     Click=""AccentSwatch_Click""
                     Style=""{StaticResource AccentSwatchStyle}""
-                    Tag=""#F19263"" />
+                    Tag=""#A13D00"" />
                 <ui:Button
-                    Margin=""0,0,8,8""
-                    Background=""#F6D65A""
+                    Margin=""0,0,8,0""
+                    Background=""#765A00""
                     Click=""AccentSwatch_Click""
                     Style=""{StaticResource AccentSwatchStyle}""
-                    Tag=""#F6D65A"" />
+                    Tag=""#765A00"" />
                 <ui:Button
-                    Margin=""0,0,8,8""
-                    Background=""#87C29C""
+                    Margin=""0,0,8,0""
+                    Background=""#0B6A0B""
                     Click=""AccentSwatch_Click""
                     Style=""{StaticResource AccentSwatchStyle}""
-                    Tag=""#87C29C"" />
+                    Tag=""#0B6A0B"" />
                 <ui:Button
-                    Margin=""0,0,8,8""
-                    Background=""#60A9E0""
+                    Margin=""0,0,8,0""
+                    Background=""#0078D4""
                     Click=""AccentSwatch_Click""
                     Style=""{StaticResource AccentSwatchStyle}""
-                    Tag=""#60A9E0"" />
+                    Tag=""#0078D4"" />
                 <ui:Button
-                    Margin=""0,0,8,8""
-                    Background=""#839CD8""
+                    Margin=""0,0,8,0""
+                    Background=""#3F2B96""
                     Click=""AccentSwatch_Click""
                     Style=""{StaticResource AccentSwatchStyle}""
-                    Tag=""#839CD8"" />
+                    Tag=""#3F2B96"" />
                 <ui:Button
-                    Margin=""0,0,8,8""
-                    Background=""#8863C8""
+                    Margin=""0,0,0,0""
+                    Background=""#6A1B9A""
                     Click=""AccentSwatch_Click""
                     Style=""{StaticResource AccentSwatchStyle}""
-                    Tag=""#8863C8"" />
-            </WrapPanel>
+                    Tag=""#6A1B9A"" />
+            </UniformGrid>
             <ui:Button
                 MinWidth=""80""
                 HorizontalAlignment=""Left""
@@ -214,6 +234,43 @@ namespace Fluence.Wpf.Demo.Pages.Window
             ThemeStateLabel.Text = string.Format(""Current: {0}"", theme);
         }
 
+        private void BackdropCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (!IsLoaded)
+            {
+                return;
+            }
+
+            var window = System.Windows.Window.GetWindow(this) as Fluence.Wpf.Controls.FluenceWindow;
+            if (window == null)
+            {
+                return;
+            }
+
+            BackdropType backdrop;
+            switch (BackdropCombo.SelectedIndex)
+            {
+                case 1:
+                    backdrop = BackdropType.None;
+                    break;
+                case 2:
+                    backdrop = BackdropType.Mica;
+                    break;
+                case 3:
+                    backdrop = BackdropType.Acrylic;
+                    break;
+                case 4:
+                    backdrop = BackdropType.Tabbed;
+                    break;
+                default:
+                    backdrop = BackdropType.Auto;
+                    break;
+            }
+
+            window.SystemBackdropType = backdrop;
+            ApplicationThemeManager.Apply(ApplicationThemeManager.CurrentTheme, backdrop, false);
+        }
+
         private void SystemThemeWatcher_Toggled(object sender, RoutedEventArgs e)
         {
             if (!IsLoaded)
@@ -268,138 +325,107 @@ namespace Fluence.Wpf.Demo.Pages.Window
     }
 }
 ";
-        private const string BackdropAndCaptionButtonsXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Window.BackdropAndCaptionButtons""
+        private const string CaptionButtonsXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Window.CaptionButtons""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
-    <Grid>
+    <StackPanel>
+        <TextBlock
+            Margin=""0,0,0,6""
+            Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+            Text=""Caption buttons"" />
+        <Grid Margin=""0,0,0,12"">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width=""Auto"" />
-            <ColumnDefinition Width=""32"" />
-            <ColumnDefinition Width=""*"" />
+            <ColumnDefinition Width=""110"" />
+            <ColumnDefinition Width=""18"" />
+            <ColumnDefinition Width=""Auto"" />
+            <ColumnDefinition Width=""110"" />
+            <ColumnDefinition Width=""18"" />
+            <ColumnDefinition Width=""Auto"" />
+            <ColumnDefinition Width=""110"" />
         </Grid.ColumnDefinitions>
-
-        <StackPanel>
-            <TextBlock
-                Margin=""0,0,0,6""
-                Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                Text=""Backdrop"" />
-            <ui:ComboBox
-                x:Name=""BackdropCombo""
-                Width=""220""
-                HorizontalAlignment=""Left""
-                SelectedIndex=""2""
-                SelectionChanged=""BackdropCombo_SelectionChanged"">
-                <ComboBoxItem Content=""Auto"" />
-                <ComboBoxItem Content=""None"" />
-                <ComboBoxItem Content=""Mica"" />
-                <ComboBoxItem Content=""Acrylic"" />
-                <ComboBoxItem Content=""Tabbed"" />
-            </ui:ComboBox>
-        </StackPanel>
-
-        <StackPanel Grid.Column=""2"">
-            <TextBlock
-                Margin=""0,0,0,6""
-                Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                Text=""Caption buttons"" />
-            <Grid Margin=""0,0,0,8"">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width=""Auto"" />
-                    <ColumnDefinition Width=""110"" />
-                    <ColumnDefinition Width=""14"" />
-                    <ColumnDefinition Width=""Auto"" />
-                    <ColumnDefinition Width=""110"" />
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height=""Auto"" />
-                    <RowDefinition Height=""8"" />
-                    <RowDefinition Height=""Auto"" />
-                </Grid.RowDefinitions>
-                <TextBlock
-                    Margin=""0,0,8,0""
-                    VerticalAlignment=""Center""
-                    Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                    Text=""Minimize"" />
-                <ui:ComboBox
-                    x:Name=""MinimizeVisibilityCombo""
-                    Grid.Column=""1""
-                    Width=""110""
-                    SelectionChanged=""CaptionVisibilityCombo_SelectionChanged"">
-                    <ComboBoxItem Content=""Default"" IsSelected=""True"" />
-                    <ComboBoxItem Content=""Enable"" />
-                    <ComboBoxItem Content=""Disable"" />
-                    <ComboBoxItem Content=""Hidden"" />
-                    <ComboBoxItem Content=""Collapsed"" />
-                </ui:ComboBox>
-                <TextBlock
-                    Grid.Column=""3""
-                    Margin=""0,0,8,0""
-                    VerticalAlignment=""Center""
-                    Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                    Text=""Maximize"" />
-                <ui:ComboBox
-                    x:Name=""MaximizeVisibilityCombo""
-                    Grid.Column=""4""
-                    Width=""110""
-                    SelectionChanged=""CaptionVisibilityCombo_SelectionChanged"">
-                    <ComboBoxItem Content=""Default"" IsSelected=""True"" />
-                    <ComboBoxItem Content=""Enable"" />
-                    <ComboBoxItem Content=""Disable"" />
-                    <ComboBoxItem Content=""Hidden"" />
-                    <ComboBoxItem Content=""Collapsed"" />
-                </ui:ComboBox>
-                <TextBlock
-                    Grid.Row=""2""
-                    Margin=""0,0,8,0""
-                    VerticalAlignment=""Center""
-                    Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                    Text=""Close"" />
-                <ui:ComboBox
-                    x:Name=""CloseVisibilityCombo""
-                    Grid.Row=""2""
-                    Grid.Column=""1""
-                    Width=""110""
-                    SelectionChanged=""CaptionVisibilityCombo_SelectionChanged"">
-                    <ComboBoxItem Content=""Default"" IsSelected=""True"" />
-                    <ComboBoxItem Content=""Enable"" />
-                    <ComboBoxItem Content=""Disable"" />
-                    <ComboBoxItem Content=""Hidden"" />
-                    <ComboBoxItem Content=""Collapsed"" />
-                </ui:ComboBox>
-            </Grid>
-            <WrapPanel>
-                <ui:CheckBox
-                    x:Name=""ShowWindowIconToggle""
-                    Margin=""0,0,14,0""
-                    Checked=""WindowChromeToggle_Changed""
-                    Content=""Show Icon""
-                    IsChecked=""True""
-                    Unchecked=""WindowChromeToggle_Changed"" />
-                <ui:CheckBox
-                    x:Name=""ShowWindowTitleToggle""
-                    Checked=""WindowChromeToggle_Changed""
-                    Content=""Show Title""
-                    IsChecked=""True""
-                    Unchecked=""WindowChromeToggle_Changed"" />
-            </WrapPanel>
-        </StackPanel>
+        <TextBlock
+            Margin=""0,0,8,0""
+            VerticalAlignment=""Center""
+            Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+            Text=""Minimize"" />
+        <ui:ComboBox
+            x:Name=""MinimizeVisibilityCombo""
+            Grid.Column=""1""
+            Width=""110""
+            SelectionChanged=""CaptionVisibilityCombo_SelectionChanged"">
+            <ComboBoxItem Content=""Default"" IsSelected=""True"" />
+            <ComboBoxItem Content=""Enable"" />
+            <ComboBoxItem Content=""Disable"" />
+            <ComboBoxItem Content=""Hidden"" />
+            <ComboBoxItem Content=""Collapsed"" />
+        </ui:ComboBox>
+        <TextBlock
+            Grid.Column=""3""
+            Margin=""0,0,8,0""
+            VerticalAlignment=""Center""
+            Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+            Text=""Maximize"" />
+        <ui:ComboBox
+            x:Name=""MaximizeVisibilityCombo""
+            Grid.Column=""4""
+            Width=""110""
+            SelectionChanged=""CaptionVisibilityCombo_SelectionChanged"">
+            <ComboBoxItem Content=""Default"" IsSelected=""True"" />
+            <ComboBoxItem Content=""Enable"" />
+            <ComboBoxItem Content=""Disable"" />
+            <ComboBoxItem Content=""Hidden"" />
+            <ComboBoxItem Content=""Collapsed"" />
+        </ui:ComboBox>
+        <TextBlock
+            Grid.Column=""6""
+            Margin=""0,0,8,0""
+            VerticalAlignment=""Center""
+            Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+            Text=""Close"" />
+        <ui:ComboBox
+            x:Name=""CloseVisibilityCombo""
+            Grid.Column=""7""
+            Width=""110""
+            SelectionChanged=""CaptionVisibilityCombo_SelectionChanged"">
+            <ComboBoxItem Content=""Default"" IsSelected=""True"" />
+            <ComboBoxItem Content=""Enable"" />
+            <ComboBoxItem Content=""Disable"" />
+            <ComboBoxItem Content=""Hidden"" />
+            <ComboBoxItem Content=""Collapsed"" />
+        </ui:ComboBox>
     </Grid>
+    <StackPanel Orientation=""Horizontal"">
+        <ui:CheckBox
+            x:Name=""ShowWindowIconToggle""
+            Margin=""0,0,14,0""
+            Checked=""WindowChromeToggle_Changed""
+            Content=""Show Icon""
+            IsChecked=""True""
+            Unchecked=""WindowChromeToggle_Changed"" />
+        <ui:CheckBox
+            x:Name=""ShowWindowTitleToggle""
+            Checked=""WindowChromeToggle_Changed""
+            Content=""Show Title""
+            IsChecked=""True""
+            Unchecked=""WindowChromeToggle_Changed"" />
+    </StackPanel>
+    </StackPanel>
 </UserControl>
 ";
 
-        private const string BackdropAndCaptionButtonsCSharpSource = @"using System;
+        private const string CaptionButtonsCSharpSource = @"using System;
 using System.Windows;
 using System.Windows.Controls;
-using Fluence.Wpf;
 using Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Demo.Pages.Window
 {
-    public partial class BackdropAndCaptionButtons : UserControl
+    public partial class CaptionButtons : UserControl
     {
-        public BackdropAndCaptionButtons()
+        public CaptionButtons()
         {
             InitializeComponent();
         }
@@ -407,43 +433,6 @@ namespace Fluence.Wpf.Demo.Pages.Window
         private FluenceWindow HostFluenceWindow
         {
             get { return System.Windows.Window.GetWindow(this) as FluenceWindow; }
-        }
-
-        private void BackdropCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (!IsLoaded)
-            {
-                return;
-            }
-
-            var window = HostFluenceWindow;
-            if (window == null)
-            {
-                return;
-            }
-
-            BackdropType backdrop;
-            switch (BackdropCombo.SelectedIndex)
-            {
-                case 1:
-                    backdrop = BackdropType.None;
-                    break;
-                case 2:
-                    backdrop = BackdropType.Mica;
-                    break;
-                case 3:
-                    backdrop = BackdropType.Acrylic;
-                    break;
-                case 4:
-                    backdrop = BackdropType.Tabbed;
-                    break;
-                default:
-                    backdrop = BackdropType.Auto;
-                    break;
-            }
-
-            window.SystemBackdropType = backdrop;
-            ApplicationThemeManager.Apply(ApplicationThemeManager.CurrentTheme, backdrop, false);
         }
 
         private void CaptionVisibilityCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -509,119 +498,7 @@ namespace Fluence.Wpf.Demo.Pages.Window
     }
 }
 ";
-        private const string TitleBarChromeXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Window.TitleBarChrome""
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
-    <StackPanel>
-        <StackPanel Margin=""0,0,0,8"" Orientation=""Horizontal"">
-            <ui:ToggleSwitch
-                x:Name=""ExtendsContentToggle""
-                Margin=""0,0,10,0""
-                Checked=""TitleBarToggle_Changed""
-                IsChecked=""False""
-                Unchecked=""TitleBarToggle_Changed"" />
-            <TextBlock
-                VerticalAlignment=""Center""
-                Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                Text=""Extends into title bar"" />
-        </StackPanel>
-        <StackPanel Margin=""0,0,0,8"" Orientation=""Horizontal"">
-            <ui:ToggleSwitch
-                x:Name=""HasShadowToggle""
-                Margin=""0,0,10,0""
-                Checked=""TitleBarToggle_Changed""
-                IsChecked=""True""
-                Unchecked=""TitleBarToggle_Changed"" />
-            <TextBlock
-                VerticalAlignment=""Center""
-                Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                Text=""Title bar shadow"" />
-        </StackPanel>
-        <StackPanel Margin=""0,0,0,8"" Orientation=""Horizontal"">
-            <TextBlock
-                Width=""60""
-                Margin=""0,0,8,0""
-                VerticalAlignment=""Center""
-                Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                Text=""Height"" />
-            <ui:Slider
-                x:Name=""TitleBarHeightSlider""
-                Width=""180""
-                Maximum=""64""
-                Minimum=""32""
-                ValueChanged=""TitleBarHeightSlider_Changed""
-                Value=""48"" />
-            <TextBlock
-                x:Name=""TitleBarHeightLabel""
-                Margin=""8,0,0,0""
-                VerticalAlignment=""Center""
-                Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                Text=""48"" />
-        </StackPanel>
-    </StackPanel>
-</UserControl>
-";
-
-        private const string TitleBarChromeCSharpSource = @"using System.Windows;
-using System.Windows.Controls;
-using Fluence.Wpf.Controls;
-
-namespace Fluence.Wpf.Demo.Pages.Window
-{
-    public partial class TitleBarChrome : UserControl
-    {
-        public TitleBarChrome()
-        {
-            InitializeComponent();
-        }
-
-        private FluenceWindow HostFluenceWindow
-        {
-            get { return System.Windows.Window.GetWindow(this) as FluenceWindow; }
-        }
-
-        private void TitleBarToggle_Changed(object sender, RoutedEventArgs e)
-        {
-            if (!IsLoaded)
-            {
-                return;
-            }
-
-            var window = HostFluenceWindow;
-            if (window == null)
-            {
-                return;
-            }
-
-            if (ExtendsContentToggle != null)
-            {
-                var extends = ExtendsContentToggle.IsChecked == true;
-                window.ExtendsContentIntoTitleBar = extends;
-            }
-
-            if (HasShadowToggle != null)
-            {
-                window.HasShadow = HasShadowToggle.IsChecked == true;
-            }
-        }
-
-        private void TitleBarHeightSlider_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            var window = HostFluenceWindow;
-            if (window != null)
-            {
-                window.TitleBarHeight = e.NewValue;
-            }
-
-            TitleBarHeightLabel.Text = ((int)e.NewValue).ToString();
-        }
-    }
-}
-";
-
-private bool _isSyncingTheme;
+        private bool _isSyncingTheme;
         private bool _isSyncingBackdrop;
 
         public GalleryWindowPage()
@@ -629,8 +506,7 @@ private bool _isSyncingTheme;
             InitializeComponent();
 
             DemoSampleControl.ReplaceSourceLink(ThemeAndAccentSourceLink, ThemeAndAccentXamlSource, ThemeAndAccentCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(BackdropAndCaptionButtonsSourceLink, BackdropAndCaptionButtonsXamlSource, BackdropAndCaptionButtonsCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(TitleBarChromeSourceLink, TitleBarChromeXamlSource, TitleBarChromeCSharpSource);
+            DemoSampleControl.ReplaceSourceLink(CaptionButtonsSourceLink, CaptionButtonsXamlSource, CaptionButtonsCSharpSource);
 
             Loaded += GalleryWindowPage_Loaded;
             Unloaded += GalleryWindowPage_Unloaded;
@@ -648,7 +524,6 @@ private bool _isSyncingTheme;
             SyncThemeRadioButtons();
             SyncBackdropComboFromWindow();
             WindowChromeToggle_Changed(null, null);
-            TitleBarToggle_Changed(null, null);
             CaptionVisibilityCombo_SelectionChanged(null, null);
         }
 
@@ -879,7 +754,7 @@ private bool _isSyncingTheme;
             {
                 bool show = ShowWindowIconToggle.IsChecked == true;
                 ImageSource icon = show
-                    ? new BitmapImage(new Uri("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/AppIcon.png"))
+                    ? new BitmapImage(new Uri("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/fluence-wpf-appicon-256.ico"))
                     : null;
                 if (main != null)
                 {
@@ -890,50 +765,6 @@ private bool _isSyncingTheme;
                     fw.ShowIcon = show;
                     fw.Icon = icon;
                 }
-            }
-        }
-
-        private void TitleBarToggle_Changed(object sender, RoutedEventArgs e)
-        {
-            if (!IsLoaded)
-            {
-                return;
-            }
-
-            var fw = HostFluenceWindow;
-            if (fw == null)
-            {
-                return;
-            }
-
-            if (ExtendsContentToggle != null)
-            {
-                bool extends = ExtendsContentToggle.IsChecked == true;
-                fw.ExtendsContentIntoTitleBar = extends;
-            }
-
-            if (HasShadowToggle != null)
-            {
-                fw.HasShadow = HasShadowToggle.IsChecked == true;
-            }
-        }
-
-        private void TitleBarHeightSlider_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (!IsLoaded)
-            {
-                return;
-            }
-
-            var fw = HostFluenceWindow;
-            if (fw != null)
-            {
-                fw.TitleBarHeight = e.NewValue;
-            }
-
-            if (TitleBarHeightLabel != null)
-            {
-                TitleBarHeightLabel.Text = ((int)e.NewValue).ToString(CultureInfo.CurrentCulture);
             }
         }
 

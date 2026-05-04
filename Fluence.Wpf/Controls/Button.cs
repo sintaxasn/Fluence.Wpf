@@ -40,6 +40,7 @@ namespace Fluence.Wpf.Controls
     public class Button : System.Windows.Controls.Button
     {
         private ContentPresenter _mainContentPresenter;
+        private bool _hasAutomaticToolTip;
 
         static Button()
         {
@@ -157,10 +158,15 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateTruncationToolTip()
         {
+            if (!_hasAutomaticToolTip && ReadLocalValue(ToolTipProperty) != DependencyProperty.UnsetValue)
+            {
+                return;
+            }
+
             var text = Content as string;
             if (string.IsNullOrEmpty(text))
             {
-                ToolTip = null;
+                ClearAutomaticToolTip();
                 return;
             }
 
@@ -172,7 +178,7 @@ namespace Fluence.Wpf.Controls
             var textBlock = FindVisualChild<System.Windows.Controls.TextBlock>(_mainContentPresenter);
             if (textBlock == null)
             {
-                ToolTip = null;
+                ClearAutomaticToolTip();
                 return;
             }
 
@@ -199,12 +205,29 @@ namespace Fluence.Wpf.Controls
             var textWidth = formattedText.WidthIncludingTrailingWhitespace;
             if (textBlock.ActualWidth > 0 && textWidth > textBlock.ActualWidth + 0.5)
             {
-                ToolTip = text;
+                SetAutomaticToolTip(text);
             }
             else
             {
-                ToolTip = null;
+                ClearAutomaticToolTip();
             }
+        }
+
+        private void SetAutomaticToolTip(string text)
+        {
+            _hasAutomaticToolTip = true;
+            SetValue(ToolTipProperty, text);
+        }
+
+        private void ClearAutomaticToolTip()
+        {
+            if (!_hasAutomaticToolTip)
+            {
+                return;
+            }
+
+            _hasAutomaticToolTip = false;
+            ClearValue(ToolTipProperty);
         }
 
         private static T FindVisualChild<T>(DependencyObject parent) where T : DependencyObject

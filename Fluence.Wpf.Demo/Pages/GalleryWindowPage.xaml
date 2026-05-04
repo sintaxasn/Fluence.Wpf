@@ -19,16 +19,16 @@
             <TextBlock
                 Margin="0,0,0,24"
                 Style="{StaticResource SectionDescriptionStyle}"
-                Text="These examples configure the demo FluenceWindow at runtime: theme, accent color, backdrop material, caption buttons, title visibility, and title bar chrome." />
+                Text="These examples configure the demo FluenceWindow at runtime: theme, accent color, backdrop material, caption buttons, and title visibility." />
 
             <TextBlock
                 Margin="0,0,0,4"
                 Style="{StaticResource SectionHeaderStyle}"
-                Text="Theme and accent" />
+                Text="Theme, backdrop, and accent" />
             <TextBlock
                 Margin="0,0,0,8"
                 Style="{StaticResource SectionDescriptionStyle}"
-                Text="Switch application theme, opt in to system theme watching, or apply a custom accent swatch." />
+                Text="Switch application theme, opt in to system theme watching, choose the backdrop, or apply a custom accent swatch." />
             <ui:Card
                 Margin="0,0,0,16"
                 Padding="16"
@@ -38,7 +38,7 @@
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="16" />
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0">
                             <TextBlock
@@ -90,6 +90,22 @@
                                 x:Name="ThemeStateLabel"
                                 Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                 Text="Current: Auto" />
+                            <TextBlock
+                                Margin="0,16,0,6"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                Text="Backdrop" />
+                            <ui:ComboBox
+                                x:Name="BackdropCombo"
+                                Width="220"
+                                HorizontalAlignment="Left"
+                                SelectedIndex="2"
+                                SelectionChanged="BackdropCombo_SelectionChanged">
+                                <ComboBoxItem Content="Auto" />
+                                <ComboBoxItem Content="None" />
+                                <ComboBoxItem Content="Mica" />
+                                <ComboBoxItem Content="Acrylic" />
+                                <ComboBoxItem Content="Tabbed" />
+                            </ui:ComboBox>
                         </StackPanel>
 
                         <StackPanel Grid.Column="2">
@@ -98,50 +114,54 @@
                                 FontWeight="SemiBold"
                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                 Text="Accent color" />
-                            <WrapPanel Margin="0,0,0,8">
+                            <UniformGrid
+                                x:Name="AccentSwatchRow"
+                                Columns="7"
+                                Margin="0,0,0,8"
+                                Rows="1">
                                 <ui:Button
-                                    Margin="0,0,8,8"
-                                    Background="#EF5858"
+                                    Margin="0,0,8,0"
+                                    Background="#C62828"
                                     Click="AccentSwatch_Click"
                                     Style="{StaticResource AccentSwatchStyle}"
-                                    Tag="#EF5858" />
+                                    Tag="#C62828" />
                                 <ui:Button
-                                    Margin="0,0,8,8"
-                                    Background="#F19263"
+                                    Margin="0,0,8,0"
+                                    Background="#A13D00"
                                     Click="AccentSwatch_Click"
                                     Style="{StaticResource AccentSwatchStyle}"
-                                    Tag="#F19263" />
+                                    Tag="#A13D00" />
                                 <ui:Button
-                                    Margin="0,0,8,8"
-                                    Background="#F6D65A"
+                                    Margin="0,0,8,0"
+                                    Background="#765A00"
                                     Click="AccentSwatch_Click"
                                     Style="{StaticResource AccentSwatchStyle}"
-                                    Tag="#F6D65A" />
+                                    Tag="#765A00" />
                                 <ui:Button
-                                    Margin="0,0,8,8"
-                                    Background="#87C29C"
+                                    Margin="0,0,8,0"
+                                    Background="#0B6A0B"
                                     Click="AccentSwatch_Click"
                                     Style="{StaticResource AccentSwatchStyle}"
-                                    Tag="#87C29C" />
+                                    Tag="#0B6A0B" />
                                 <ui:Button
-                                    Margin="0,0,8,8"
-                                    Background="#60A9E0"
+                                    Margin="0,0,8,0"
+                                    Background="#0078D4"
                                     Click="AccentSwatch_Click"
                                     Style="{StaticResource AccentSwatchStyle}"
-                                    Tag="#60A9E0" />
+                                    Tag="#0078D4" />
                                 <ui:Button
-                                    Margin="0,0,8,8"
-                                    Background="#839CD8"
+                                    Margin="0,0,8,0"
+                                    Background="#3F2B96"
                                     Click="AccentSwatch_Click"
                                     Style="{StaticResource AccentSwatchStyle}"
-                                    Tag="#839CD8" />
+                                    Tag="#3F2B96" />
                                 <ui:Button
-                                    Margin="0,0,8,8"
-                                    Background="#8863C8"
+                                    Margin="0,0,0,0"
+                                    Background="#6A1B9A"
                                     Click="AccentSwatch_Click"
                                     Style="{StaticResource AccentSwatchStyle}"
-                                    Tag="#8863C8" />
-                            </WrapPanel>
+                                    Tag="#6A1B9A" />
+                            </UniformGrid>
                             <StackPanel Orientation="Horizontal">
                                 <ui:Button
                                     MinWidth="80"
@@ -172,205 +192,101 @@
             <TextBlock
                 Margin="0,0,0,4"
                 Style="{StaticResource SectionHeaderStyle}"
-                Text="Backdrop and caption buttons" />
+                Text="Caption buttons" />
             <TextBlock
                 Margin="0,0,0,8"
                 Style="{StaticResource SectionDescriptionStyle}"
-                Text="Choose the active backdrop material and set individual caption button availability." />
+                Text="Set individual caption button availability and title identity visibility." />
             <ui:Card
                 Margin="0,0,0,16"
                 Padding="16"
                 Variant="{x:Static uicore:CardVariant.Default}">
                 <StackPanel>
-                    <Grid>
+                    <TextBlock
+                        Margin="0,0,0,6"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Text="Caption buttons" />
+                    <Grid Margin="0,0,0,12">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
-                            <ColumnDefinition Width="32" />
-                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="110" />
+                            <ColumnDefinition Width="18" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="110" />
+                            <ColumnDefinition Width="18" />
+                            <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="110" />
                         </Grid.ColumnDefinitions>
-
-                        <StackPanel Grid.Column="0">
-                            <TextBlock
-                                Margin="0,0,0,6"
-                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                Text="Backdrop" />
-                            <ui:ComboBox
-                                x:Name="BackdropCombo"
-                                Width="220"
-                                HorizontalAlignment="Left"
-                                SelectedIndex="2"
-                                SelectionChanged="BackdropCombo_SelectionChanged">
-                                <ComboBoxItem Content="Auto" />
-                                <ComboBoxItem Content="None" />
-                                <ComboBoxItem Content="Mica" />
-                                <ComboBoxItem Content="Acrylic" />
-                                <ComboBoxItem Content="Tabbed" />
-                            </ui:ComboBox>
-                        </StackPanel>
-
-                        <StackPanel Grid.Column="2">
-                            <TextBlock
-                                Margin="0,0,0,6"
-                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                Text="Caption buttons" />
-                            <Grid Margin="0,0,0,8">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="110" />
-                                    <ColumnDefinition Width="14" />
-                                    <ColumnDefinition Width="Auto" />
-                                    <ColumnDefinition Width="110" />
-                                </Grid.ColumnDefinitions>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="Auto" />
-                                    <RowDefinition Height="8" />
-                                    <RowDefinition Height="Auto" />
-                                </Grid.RowDefinitions>
-                                <TextBlock
-                                    Grid.Row="0"
-                                    Grid.Column="0"
-                                    Margin="0,0,8,0"
-                                    VerticalAlignment="Center"
-                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                    Text="Minimize" />
-                                <ui:ComboBox
-                                    x:Name="MinimizeVisibilityCombo"
-                                    Grid.Row="0"
-                                    Grid.Column="1"
-                                    Width="110"
-                                    SelectionChanged="CaptionVisibilityCombo_SelectionChanged">
-                                    <ComboBoxItem Content="Default" IsSelected="True" />
-                                    <ComboBoxItem Content="Enable" />
-                                    <ComboBoxItem Content="Disable" />
-                                    <ComboBoxItem Content="Hidden" />
-                                    <ComboBoxItem Content="Collapsed" />
-                                </ui:ComboBox>
-                                <TextBlock
-                                    Grid.Row="0"
-                                    Grid.Column="3"
-                                    Margin="0,0,8,0"
-                                    VerticalAlignment="Center"
-                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                    Text="Maximize" />
-                                <ui:ComboBox
-                                    x:Name="MaximizeVisibilityCombo"
-                                    Grid.Row="0"
-                                    Grid.Column="4"
-                                    Width="110"
-                                    SelectionChanged="CaptionVisibilityCombo_SelectionChanged">
-                                    <ComboBoxItem Content="Default" IsSelected="True" />
-                                    <ComboBoxItem Content="Enable" />
-                                    <ComboBoxItem Content="Disable" />
-                                    <ComboBoxItem Content="Hidden" />
-                                    <ComboBoxItem Content="Collapsed" />
-                                </ui:ComboBox>
-                                <TextBlock
-                                    Grid.Row="2"
-                                    Grid.Column="0"
-                                    Margin="0,0,8,0"
-                                    VerticalAlignment="Center"
-                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                    Text="Close" />
-                                <ui:ComboBox
-                                    x:Name="CloseVisibilityCombo"
-                                    Grid.Row="2"
-                                    Grid.Column="1"
-                                    Width="110"
-                                    SelectionChanged="CaptionVisibilityCombo_SelectionChanged">
-                                    <ComboBoxItem Content="Default" IsSelected="True" />
-                                    <ComboBoxItem Content="Enable" />
-                                    <ComboBoxItem Content="Disable" />
-                                    <ComboBoxItem Content="Hidden" />
-                                    <ComboBoxItem Content="Collapsed" />
-                                </ui:ComboBox>
-                            </Grid>
-                            <WrapPanel>
-                                <ui:CheckBox
-                                    x:Name="ShowWindowIconToggle"
-                                    Margin="0,0,14,0"
-                                    Checked="WindowChromeToggle_Changed"
-                                    Content="Show Icon"
-                                    IsChecked="True"
-                                    Unchecked="WindowChromeToggle_Changed" />
-                                <ui:CheckBox
-                                    x:Name="ShowWindowTitleToggle"
-                                    Checked="WindowChromeToggle_Changed"
-                                    Content="Show Title"
-                                    IsChecked="True"
-                                    Unchecked="WindowChromeToggle_Changed" />
-                            </WrapPanel>
-                        </StackPanel>
-                    </Grid>
-                    <ui:HyperlinkButton
-                        x:Name="BackdropAndCaptionButtonsSourceLink"
-                        Margin="0,12,0,0"
-                        HorizontalAlignment="Right"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}"
-                        Content="Source" />
-                </StackPanel>
-            </ui:Card>
-
-            <TextBlock
-                Margin="0,0,0,4"
-                Style="{StaticResource SectionHeaderStyle}"
-                Text="Title bar chrome" />
-            <TextBlock
-                Margin="0,0,0,8"
-                Style="{StaticResource SectionDescriptionStyle}"
-                Text="Extend content into the title bar, toggle the title bar shadow, and adjust title bar height." />
-            <ui:Card
-                Margin="0,0,0,8"
-                Padding="16"
-                Variant="{x:Static uicore:CardVariant.Default}">
-                <StackPanel>
-                    <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
-                        <ui:ToggleSwitch
-                            x:Name="ExtendsContentToggle"
-                            Margin="0,0,10,0"
-                            Checked="TitleBarToggle_Changed"
-                            IsChecked="False"
-                            Unchecked="TitleBarToggle_Changed" />
                         <TextBlock
-                            VerticalAlignment="Center"
-                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                            Text="Extends into title bar" />
-                    </StackPanel>
-                    <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
-                        <ui:ToggleSwitch
-                            x:Name="HasShadowToggle"
-                            Margin="0,0,10,0"
-                            Checked="TitleBarToggle_Changed"
-                            IsChecked="True"
-                            Unchecked="TitleBarToggle_Changed" />
-                        <TextBlock
-                            VerticalAlignment="Center"
-                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                            Text="Title bar shadow" />
-                    </StackPanel>
-                    <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
-                        <TextBlock
-                            Width="60"
+                            Grid.Column="0"
                             Margin="0,0,8,0"
                             VerticalAlignment="Center"
                             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                            Text="Height" />
-                        <ui:Slider
-                            x:Name="TitleBarHeightSlider"
-                            Width="180"
-                            Maximum="64"
-                            Minimum="32"
-                            ValueChanged="TitleBarHeightSlider_Changed"
-                            Value="48" />
+                            Text="Minimize" />
+                        <ui:ComboBox
+                            x:Name="MinimizeVisibilityCombo"
+                            Grid.Column="1"
+                            Width="110"
+                            SelectionChanged="CaptionVisibilityCombo_SelectionChanged">
+                            <ComboBoxItem Content="Default" IsSelected="True" />
+                            <ComboBoxItem Content="Enable" />
+                            <ComboBoxItem Content="Disable" />
+                            <ComboBoxItem Content="Hidden" />
+                            <ComboBoxItem Content="Collapsed" />
+                        </ui:ComboBox>
                         <TextBlock
-                            x:Name="TitleBarHeightLabel"
-                            Margin="8,0,0,0"
+                            Grid.Column="3"
+                            Margin="0,0,8,0"
                             VerticalAlignment="Center"
                             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                            Text="48" />
+                            Text="Maximize" />
+                        <ui:ComboBox
+                            x:Name="MaximizeVisibilityCombo"
+                            Grid.Column="4"
+                            Width="110"
+                            SelectionChanged="CaptionVisibilityCombo_SelectionChanged">
+                            <ComboBoxItem Content="Default" IsSelected="True" />
+                            <ComboBoxItem Content="Enable" />
+                            <ComboBoxItem Content="Disable" />
+                            <ComboBoxItem Content="Hidden" />
+                            <ComboBoxItem Content="Collapsed" />
+                        </ui:ComboBox>
+                        <TextBlock
+                            Grid.Column="6"
+                            Margin="0,0,8,0"
+                            VerticalAlignment="Center"
+                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                            Text="Close" />
+                        <ui:ComboBox
+                            x:Name="CloseVisibilityCombo"
+                            Grid.Column="7"
+                            Width="110"
+                            SelectionChanged="CaptionVisibilityCombo_SelectionChanged">
+                            <ComboBoxItem Content="Default" IsSelected="True" />
+                            <ComboBoxItem Content="Enable" />
+                            <ComboBoxItem Content="Disable" />
+                            <ComboBoxItem Content="Hidden" />
+                            <ComboBoxItem Content="Collapsed" />
+                        </ui:ComboBox>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal">
+                        <ui:CheckBox
+                            x:Name="ShowWindowIconToggle"
+                            Margin="0,0,14,0"
+                            Checked="WindowChromeToggle_Changed"
+                            Content="Show Icon"
+                            IsChecked="True"
+                            Unchecked="WindowChromeToggle_Changed" />
+                        <ui:CheckBox
+                            x:Name="ShowWindowTitleToggle"
+                            Checked="WindowChromeToggle_Changed"
+                            Content="Show Title"
+                            IsChecked="True"
+                            Unchecked="WindowChromeToggle_Changed" />
                     </StackPanel>
                     <ui:HyperlinkButton
-                        x:Name="TitleBarChromeSourceLink"
-                        Margin="0,4,0,0"
+                        x:Name="CaptionButtonsSourceLink"
+                        Margin="0,12,0,0"
                         HorizontalAlignment="Right"
                         Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />

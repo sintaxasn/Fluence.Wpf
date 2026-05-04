@@ -14,7 +14,7 @@
     MinHeight="400"
     d:DataContext="{d:DesignInstance vm:MainViewModel}"
     ExtendsContentIntoTitleBar="False"
-    Icon="Resources/AppIcon.png"
+    Icon="Resources/fluence-wpf-appicon-256.ico"
     SnapsToDevicePixels="True"
     TextOptions.TextFormattingMode="Display"
     TextOptions.TextRenderingMode="ClearType"

@@ -11,33 +11,19 @@
     mc:Ignorable="d">
     <ui:SmoothScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="28,20,28,32" HorizontalAlignment="Stretch">
-            <!--  Hero: diamond logo mark + brand text + stats row  -->
+            <!--  Hero brand graphic  -->
             <StackPanel Margin="0,8,0,28" HorizontalAlignment="Center">
-                <ui:StackPanel Spacing ="20" VerticalAlignment="Center" Orientation="Horizontal">
-                    <Image
-                    Width="88"
-                    Height="88"
-                    HorizontalAlignment="Center"
-                    RenderOptions.BitmapScalingMode="HighQuality"
-                    SnapsToDevicePixels="True"
-                    Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/AppIcon.png"
-                    Stretch="Uniform" />
-                    <TextBlock
-                    HorizontalAlignment="Center"
-                    ui:TextBlockExtensions.Typography="Display"
-                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                    Text="Fluence"
-                    TextOptions.TextFormattingMode="Ideal" />
-                    <TextBlock
-                    HorizontalAlignment="Center"
-                    ui:TextBlockExtensions.Typography="Display"
-                    Foreground="#81cfff"
-                    Text=".Wpf"
-                    TextOptions.TextFormattingMode="Ideal" />
-                </ui:StackPanel>
+                <ContentControl
+                    x:Name="BrandBannerHost"
+                    Height="224"
+                    MaxWidth="760"
+                    HorizontalAlignment="Stretch"
+                    HorizontalContentAlignment="Center"
+                    VerticalContentAlignment="Center"
+                    SnapsToDevicePixels="True" />
                 <TextBlock
-                    
                     HorizontalAlignment="Center"
+                    Margin="0,12,0,0"
                     ui:TextBlockExtensions.Typography="Subtitle"
                     Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                     Text="Windows 11 Fluent Design controls for WPF" />

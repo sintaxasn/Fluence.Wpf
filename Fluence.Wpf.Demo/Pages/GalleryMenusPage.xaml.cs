@@ -244,7 +244,8 @@ namespace Fluence.Wpf.Demo.Pages.Menus
         <ui:Button
             Margin=""0,0,8,8""
             Content=""Settings""
-            IsEnabled=""False"">
+            IsEnabled=""False""
+            ToolTipService.ShowOnDisabled=""True"">
             <ui:Button.ToolTip>
                 <ui:ToolTip Content=""Settings are disabled for this item"" />
             </ui:Button.ToolTip>

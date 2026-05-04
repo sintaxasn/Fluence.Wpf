@@ -11,14 +11,14 @@
     MinHeight="520"
     CornerStyle="Round"
     ExtendsContentIntoTitleBar="True"
-    Icon="Resources/AppIcon.png"
+    Icon="Resources/fluence-wpf-appicon-256.ico"
     RenderOptions.BitmapScalingMode="HighQuality"
     SnapsToDevicePixels="True"
     SystemBackdropType="Mica"
     TextOptions.TextFormattingMode="Display"
     TextOptions.TextHintingMode="Fixed"
     TextOptions.TextRenderingMode="ClearType"
-    TitleBarHeight="48"
+    TitleBarHeight="42"
     UseLayoutRounding="True"
     >
 

@@ -11,6 +11,7 @@
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
+    <ApplicationIcon>Resources\fluence-wpf-appicon-256.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -22,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Resources\AppIcon.png" />
+    <Resource Include="Resources\fluence-wpf-appicon-256.ico" />
   </ItemGroup>
 
 </Project>

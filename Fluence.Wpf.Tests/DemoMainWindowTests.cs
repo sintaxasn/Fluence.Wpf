@@ -27,6 +27,7 @@
  */
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Windows;
@@ -142,6 +143,65 @@ namespace Fluence.Wpf.Tests
                     window.Close();
                 }
             });
+        }
+
+        [TestMethod]
+        public void GalleryHomePage_BrandBannerSwitchesWithTheme()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                GalleryHomePage page = new GalleryHomePage();
+                Window window = CreateHostWindow(page);
+                try
+                {
+                    ContentControl host = FindByName<ContentControl>(page, "BrandBannerHost");
+                    Assert.IsNotNull(host, "Home page should expose the brand banner host.");
+                    Assert.IsInstanceOfType(host.Content, typeof(Viewbox), "The light banner XAML should load as WPF content.");
+                    Assert.AreEqual("/Fluence.Wpf.Demo;component/Resources/fluence-wpf-banner-light.xaml", host.Tag as string,
+                        "Light theme should use the light banner graphic.");
+
+                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, true);
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.IsInstanceOfType(host.Content, typeof(Viewbox), "The dark banner XAML should load as WPF content.");
+                    Assert.AreEqual("/Fluence.Wpf.Demo;component/Resources/fluence-wpf-banner-dark.xaml", host.Tag as string,
+                        "Dark theme should use the dark banner graphic.");
+
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.AreEqual("/Fluence.Wpf.Demo;component/Resources/fluence-wpf-banner-light.xaml", host.Tag as string,
+                        "Returning to light theme should restore the light banner graphic.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void DemoProjects_UseSharedFluenceIcoIcon()
+        {
+            const string iconPath = @"Resources\fluence-wpf-appicon-256.ico";
+
+            AssertProjectUsesIcon("Fluence.Wpf.Demo", "Fluence.Wpf.Demo.csproj", iconPath);
+            AssertProjectUsesIcon("Fluence.Wpf.Demo.Mvvm", "Fluence.Wpf.Demo.Mvvm.csproj", iconPath);
+
+            StringAssert.Contains(ReadRepositoryFile("Fluence.Wpf.Demo", "MainWindow.xaml"),
+                "Icon=\"Resources/fluence-wpf-appicon-256.ico\"");
+            StringAssert.Contains(ReadRepositoryFile("Fluence.Wpf.Demo.Mvvm", "MainWindow.xaml"),
+                "Icon=\"Resources/fluence-wpf-appicon-256.ico\"");
+
+            Assert.IsTrue(File.Exists(GetRepositoryFilePath("Fluence.Wpf.Demo", "Resources", "fluence-wpf-appicon-256.ico")),
+                "The gallery demo icon should exist.");
+            Assert.IsTrue(File.Exists(GetRepositoryFilePath("Fluence.Wpf.Demo.Mvvm", "Resources", "fluence-wpf-appicon-256.ico")),
+                "The MVVM demo icon should exist.");
         }
 
         [TestMethod]
@@ -688,6 +748,118 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void GalleryWindowPage_UsesCompactThemeAndCaptionLayout()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                var page = new GalleryWindowPage();
+                Window window = CreateHostWindow(page);
+                try
+                {
+                    var backdrop = FindByName<System.Windows.Controls.ComboBox>(page, "BackdropCombo");
+                    var accentRow = FindByName<UniformGrid>(page, "AccentSwatchRow");
+                    var minimize = FindByName<System.Windows.Controls.ComboBox>(page, "MinimizeVisibilityCombo");
+                    var maximize = FindByName<System.Windows.Controls.ComboBox>(page, "MaximizeVisibilityCombo");
+                    var close = FindByName<System.Windows.Controls.ComboBox>(page, "CloseVisibilityCombo");
+                    var showIcon = FindByName<FrameworkElement>(page, "ShowWindowIconToggle");
+                    var showTitle = FindByName<FrameworkElement>(page, "ShowWindowTitleToggle");
+
+                    Assert.IsNotNull(backdrop, "Backdrop picker should live in the theme card.");
+                    Assert.IsNotNull(accentRow, "Accent swatches should use a named single-row host.");
+                    Assert.IsNotNull(minimize, "Minimize caption picker should exist.");
+                    Assert.IsNotNull(maximize, "Maximize caption picker should exist.");
+                    Assert.IsNotNull(close, "Close caption picker should exist.");
+                    Assert.IsNotNull(showIcon, "Show Icon toggle should exist.");
+                    Assert.IsNotNull(showTitle, "Show Title toggle should exist.");
+                    Assert.AreEqual(7, accentRow.Children.Count, "The Window page accent picker should expose seven WCAG-safe rainbow swatches.");
+                    Assert.AreEqual(GetVisualY(accentRow.Children[0] as FrameworkElement, window), GetVisualY(accentRow.Children[6] as FrameworkElement, window), 1.0,
+                        "All accent swatches should fit on one row.");
+                    Assert.AreEqual(GetVisualY(minimize, window), GetVisualY(maximize, window), 1.0,
+                        "Minimize and Maximize caption controls should be on the same row.");
+                    Assert.AreEqual(GetVisualY(minimize, window), GetVisualY(close, window), 1.0,
+                        "Close should be on the same row as the other caption controls.");
+                    Assert.AreEqual(GetVisualY(showIcon, window), GetVisualY(showTitle, window), 1.0,
+                        "Show Icon and Show Title should share their own row.");
+                    Assert.IsTrue(GetVisualY(showIcon, window) > GetVisualY(minimize, window),
+                        "Show Icon and Show Title should be arranged below the caption-button row.");
+                    Assert.IsNull(FindByName<FrameworkElement>(page, "TitleBarChromeSourceLink"),
+                        "The TitleBar Chrome section should be removed from the Window page.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void GalleryWindowPage_RainbowAccentSwatches_PreserveWcagTextContrast()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                var page = new GalleryWindowPage();
+                Window window = CreateHostWindow(page);
+                try
+                {
+                    var accentRow = FindByName<UniformGrid>(page, "AccentSwatchRow");
+                    Assert.IsNotNull(accentRow, "Accent swatches should use a named single-row host.");
+
+                    string[] expected =
+                    {
+                        "#C62828",
+                        "#A13D00",
+                        "#765A00",
+                        "#0B6A0B",
+                        "#0078D4",
+                        "#3F2B96",
+                        "#6A1B9A"
+                    };
+
+                    Assert.AreEqual(expected.Length, accentRow.Children.Count,
+                        "The Window page accent picker should expose the seven rainbow swatches.");
+
+                    for (int i = 0; i < expected.Length; i++)
+                    {
+                        var swatch = accentRow.Children[i] as FrameworkElement;
+                        Assert.IsNotNull(swatch, "Each accent swatch should be a FrameworkElement.");
+                        Assert.AreEqual(expected[i], swatch.Tag as string,
+                            "The Window page swatches should stay in rainbow order.");
+                    }
+
+                    foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark })
+                    {
+                        ApplicationThemeManager.Apply(theme, BackdropType.None, true);
+                        foreach (string hex in expected)
+                        {
+                            var converted = ColorConverter.ConvertFromString(hex);
+                            Assert.IsInstanceOfType(converted, typeof(Color), "Swatch Tag should be a valid color: " + hex);
+                            ApplicationAccentColorManager.ApplyCustomAccent((Color)converted);
+
+                            Color background = GetColorResource("AccentFillColorDefault");
+                            Color foreground = GetColorResource("TextOnAccentFillColorPrimary");
+                            double contrast = ContrastRatio(background, foreground);
+                            Assert.IsTrue(contrast >= 4.5,
+                                string.Format("Swatch {0} in {1} theme should keep TextOnAccentFillColorPrimary WCAG contrast. Background={2}, Foreground={3}, Contrast={4:F2}",
+                                    hex,
+                                    theme,
+                                    ToHex(background),
+                                    ToHex(foreground),
+                                    contrast));
+                        }
+                    }
+                }
+                finally
+                {
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
+                    ApplicationAccentColorManager.ApplyApplicationAccent();
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
         public void GalleryAccessibilityPage_KeyboardSamplesUseAlignedRows()
         {
             RunOnSta(delegate
@@ -826,6 +998,29 @@ namespace Fluence.Wpf.Tests
             application.Resources.MergedDictionaries.Add(demoShared);
         }
 
+        private static void AssertProjectUsesIcon(string projectDirectory, string projectFile, string iconPath)
+        {
+            string project = ReadRepositoryFile(projectDirectory, projectFile);
+            StringAssert.Contains(project, "<ApplicationIcon>" + iconPath + "</ApplicationIcon>");
+            StringAssert.Contains(project, "<Resource Include=\"" + iconPath + "\" />");
+        }
+
+        private static string GetRepositoryFilePath(params string[] relativeSegments)
+        {
+            string root = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\.."));
+            string[] pathParts = new string[relativeSegments.Length + 1];
+            pathParts[0] = root;
+            Array.Copy(relativeSegments, 0, pathParts, 1, relativeSegments.Length);
+            return Path.Combine(pathParts);
+        }
+
+        private static string ReadRepositoryFile(params string[] relativeSegments)
+        {
+            string path = GetRepositoryFilePath(relativeSegments);
+            Assert.IsTrue(File.Exists(path), "Repository file must be readable at: " + path);
+            return File.ReadAllText(path);
+        }
+
         private static MainWindow CreateShownMainWindow()
         {
             var window = new MainWindow
@@ -885,6 +1080,53 @@ namespace Fluence.Wpf.Tests
         private static double GetVisualCenterX(FrameworkElement element, Visual ancestor)
         {
             return GetVisualX(element, ancestor) + (element.ActualWidth / 2.0);
+        }
+
+        private static Color GetColorResource(string key)
+        {
+            object value = Application.Current.TryFindResource(key);
+            if (value is Color)
+            {
+                return (Color)value;
+            }
+
+            var brush = value as SolidColorBrush;
+            if (brush != null)
+            {
+                return brush.Color;
+            }
+
+            Assert.Fail("Expected Color or SolidColorBrush resource: " + key);
+            return Colors.Transparent;
+        }
+
+        private static double ContrastRatio(Color first, Color second)
+        {
+            double firstLuminance = RelativeLuminance(first);
+            double secondLuminance = RelativeLuminance(second);
+            double lighter = Math.Max(firstLuminance, secondLuminance);
+            double darker = Math.Min(firstLuminance, secondLuminance);
+            return (lighter + 0.05) / (darker + 0.05);
+        }
+
+        private static double RelativeLuminance(Color color)
+        {
+            return (0.2126 * LinearizedColorChannel(color.R)) +
+                (0.7152 * LinearizedColorChannel(color.G)) +
+                (0.0722 * LinearizedColorChannel(color.B));
+        }
+
+        private static double LinearizedColorChannel(byte channel)
+        {
+            double value = channel / 255.0;
+            return value <= 0.03928
+                ? value / 12.92
+                : Math.Pow((value + 0.055) / 1.055, 2.4);
+        }
+
+        private static string ToHex(Color color)
+        {
+            return string.Format("#{0:X2}{1:X2}{2:X2}", color.R, color.G, color.B);
         }
 
         private static T GetFirstVisiblePanelChild<T>(Panel panel)
