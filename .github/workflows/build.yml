@@ -40,6 +40,8 @@ jobs:
       - name: Test
         run: dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Release --no-build --verbosity normal
 
+      - name: Upload library artifacts
+        uses: actions/upload-artifact@v7
       - name: Generate SBOM (.NET 10.x)
       - uses: anchore/sbom-action@v0
         with:
@@ -73,7 +75,7 @@ jobs:
           retention-days: 30
 
       - name: Upload demo application
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: fluence-wpf-demo
           path: Fluence.Wpf.Demo/bin/Release/net472/
@@ -86,7 +88,7 @@ jobs:
       #   run: dotnet pack Fluence.Wpf/Fluence.Wpf.csproj -c Release --no-build -o nupkg/
       #
       # - name: Upload NuGet package
-      #   uses: actions/upload-artifact@v4
+      #   uses: actions/upload-artifact@v7
       #   with:
       #     name: fluence-wpf-nupkg
       #     path: nupkg/*.nupkg
