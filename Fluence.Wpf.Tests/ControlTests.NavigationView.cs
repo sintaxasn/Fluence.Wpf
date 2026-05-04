@@ -1893,6 +1893,65 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void NavigationView_LeftCompact_BackEnabledClosedPane_KeepsPaneToggleVisible()
+        {
+            RunOnStaThread(() =>
+            {
+                var application = EnsureApplication();
+                var genericDictionary = MergeGenericDictionary(application);
+                var window = new Window();
+
+                try
+                {
+                    var nav = new Fluent.NavigationView
+                    {
+                        Width = 800,
+                        Height = 480,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact,
+                        IsPaneOpen = true,
+                        IsBackButtonVisible = true,
+                        IsBackEnabled = true,
+                        IsPaneToggleButtonVisible = true
+                    };
+                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    nav.IsPaneOpen = false;
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    var back = nav.Template.FindName(Fluent.NavigationView.PartBackButton, nav) as System.Windows.Controls.Button;
+                    var paneToggle = nav.Template.FindName(Fluent.NavigationView.PartPaneToggleButton, nav) as System.Windows.Controls.Button;
+                    var presenter = FindVisualChildByName<ContentPresenter>(nav, Fluent.NavigationView.PartContentPresenter);
+                    Assert.IsNotNull(back, "PART_BackButton must exist in LeftCompact template.");
+                    Assert.IsNotNull(paneToggle, "PART_PaneToggleButton must exist in LeftCompact template.");
+                    Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in LeftCompact template.");
+                    Assert.AreEqual(Visibility.Visible, back.Visibility,
+                        "Back should remain visible while enabled in compact chrome.");
+                    Assert.AreEqual(Visibility.Visible, paneToggle.Visibility,
+                        "Pane toggle should remain visible to the right of the enabled back button after collapse.");
+                    Assert.AreEqual(48.0, paneToggle.TransformToAncestor(nav).Transform(new Point(0, 0)).X, 1.0,
+                        "Pane toggle should occupy the second compact chrome slot.");
+                    AssertContentOffsetEventually(window, nav, presenter, 96.0,
+                        "Closed LeftCompact pane should reserve both 48px chrome slots when back and pane toggle are visible.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary != null)
+                    {
+                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
         public void NavigationView_LeftCompact_PaneToggle_ResizesPushingContent()
         {
             RunOnStaThread(() =>

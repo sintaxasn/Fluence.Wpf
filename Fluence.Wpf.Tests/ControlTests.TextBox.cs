@@ -175,5 +175,35 @@ namespace Fluence.Wpf.Tests
                 w.Close();
             });
         }
+
+        [TestMethod]
+        public void TextBox_HelperAndValidationText_UsesTwoPixelTopMargin()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                var app = EnsureApplication();
+                MergeGenericDictionary(app);
+
+                var tb = new FluenceTextBox
+                {
+                    Width = 240,
+                    HelperText = "Helper text",
+                    Text = "Value"
+                };
+                var w = new Window { Content = tb, Width = 320, Height = 120 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                var helper = FindVisualChildByName<WpfTextBlock>(tb, "PART_HelperText");
+                Assert.IsNotNull(helper, "TextBox template must expose PART_HelperText.");
+
+                var helperRow = VisualTreeHelper.GetParent(helper) as StackPanel;
+                Assert.IsNotNull(helperRow, "Helper text should be hosted in the validation/helper row.");
+                Assert.AreEqual(new Thickness(12, 2, 12, 0), helperRow.Margin,
+                    "Helper and validation text should sit 2px below the input chrome.");
+
+                w.Close();
+            });
+        }
     }
 }

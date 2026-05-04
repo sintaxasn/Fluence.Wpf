@@ -179,7 +179,7 @@
 
                         <StackPanel
                             Grid.Row="1"
-                            Margin="12,4,12,0"
+                            Margin="12,2,12,0"
                             Orientation="Horizontal">
                             <TextBlock
                                 x:Name="PART_ValidationIcon"

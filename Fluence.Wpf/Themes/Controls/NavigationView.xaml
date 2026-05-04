@@ -538,6 +538,7 @@
                                 Storyboard.TargetProperty="Width"
                                 To="280"
                                 Duration="0:0:0.167"
+                                FillBehavior="Stop"
                                 >
                                 <helpers:GridLengthAnimation.EasingFunction>
                                     <CubicEase EasingMode="EaseOut" />
@@ -554,6 +555,7 @@
                                 Storyboard.TargetProperty="Width"
                                 To="48"
                                 Duration="0:0:0.167"
+                                FillBehavior="Stop"
                                 >
                                 <helpers:GridLengthAnimation.EasingFunction>
                                     <CubicEase EasingMode="EaseIn" />
@@ -563,6 +565,14 @@
                     </BeginStoryboard>
                 </Trigger.ExitActions>
             </Trigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsPaneOpen" Value="False" />
+                    <Condition Property="IsBackButtonVisible" Value="True" />
+                    <Condition Property="IsBackEnabled" Value="True" />
+                </MultiTrigger.Conditions>
+                <Setter TargetName="PaneColumn" Property="Width" Value="96" />
+            </MultiTrigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
 
@@ -794,6 +804,7 @@
                                 Storyboard.TargetProperty="Width"
                                 To="280"
                                 Duration="0:0:0.167"
+                                FillBehavior="Stop"
                                 >
                                 <helpers:GridLengthAnimation.EasingFunction>
                                     <CubicEase EasingMode="EaseOut" />
@@ -810,6 +821,7 @@
                                 Storyboard.TargetProperty="Width"
                                 To="48"
                                 Duration="0:0:0.167"
+                                FillBehavior="Stop"
                                 >
                                 <helpers:GridLengthAnimation.EasingFunction>
                                     <CubicEase EasingMode="EaseIn" />
@@ -822,6 +834,14 @@
             <Trigger Property="IsPaneOpen" Value="False">
                 <Setter TargetName="PaneFooterHost" Property="Visibility" Value="Collapsed" />
             </Trigger>
+            <MultiTrigger>
+                <MultiTrigger.Conditions>
+                    <Condition Property="IsPaneOpen" Value="False" />
+                    <Condition Property="IsBackButtonVisible" Value="True" />
+                    <Condition Property="IsBackEnabled" Value="True" />
+                </MultiTrigger.Conditions>
+                <Setter TargetName="PaneColumn" Property="Width" Value="96" />
+            </MultiTrigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
 

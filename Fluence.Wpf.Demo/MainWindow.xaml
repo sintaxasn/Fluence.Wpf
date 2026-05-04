@@ -34,7 +34,7 @@
                 x:Name="NavSearchBox"
                 Width="400"
                 HorizontalAlignment="Center"
-                Margin="0,2,0,2"
+                Margin="0,4,0,0"
                 VerticalAlignment="Center"
                 LostKeyboardFocus="NavSearchBox_LostKeyboardFocus"
                 PlaceholderText="Search"

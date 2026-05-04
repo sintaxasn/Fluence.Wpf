@@ -622,8 +622,8 @@ namespace Fluence.Wpf.Demo
             {
                 _titleBarIconView = new Image
                 {
-                    Width = 16,
-                    Height = 16,
+                    Width = 20,
+                    Height = 20,
                     VerticalAlignment = VerticalAlignment.Center
                 };
                 RenderOptions.SetBitmapScalingMode(_titleBarIconView, BitmapScalingMode.HighQuality);

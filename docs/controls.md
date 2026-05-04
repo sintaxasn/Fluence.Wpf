@@ -80,6 +80,7 @@ Three pane display modes are supported out of the box:
 Left and LeftCompact share the same visual contract:
 
 - Pane toggle (`PART_PaneToggleButton`, glyph `E700`) and back button (`PART_BackButton`, glyph `E72B`) appear in WinUI order at the top of a 48 px rail, each 48×40 px.
+- When a closed compact-left pane shows both an enabled back button and pane toggle, the pane reserves two 48 px chrome slots so the pane toggle remains visible to the right of back.
 - Selection indicator (`PART_SelectionIndicator`) is a single `Border` that animates between items - 3 × 16 px vertical in `Left` / `LeftCompact`, 16 × 3 px horizontal in `Top`.
 - Content region is a `Border` with `CornerRadius="8,0,0,0"`, `BorderThickness="1,1,0,0"`, and `BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"`, wrapping `PART_ContentPresenter`.
 - Back button visibility and enabled state are driven by `IsBackButtonVisible` / `IsBackEnabled`. The back button is visible only when both are `true`; a disabled back route collapses the button and does not reserve a glyph slot. Consumers route the `BackRequested` event to their own history stack.

@@ -308,6 +308,8 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(search, "Demo search box must be present.");
                     Assert.AreEqual(window.ActualWidth / 2.0, GetVisualCenterX(search, window), 1.0,
                         "Search should stay horizontally centered in the window.");
+                    Assert.AreEqual(GetVisualCenterY(shellTitleBar, window) + 2.0, GetVisualCenterY(search, window), 1.0,
+                        "Search should sit 2px below the title-bar vertical center.");
                 }
                 finally
                 {
@@ -364,6 +366,12 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(titleIcon, "Extended title bar icon presenter should exist.");
                     Assert.AreEqual(Visibility.Visible, titleIcon.Visibility,
                         "Extended title bar icon should be visible by default.");
+                    Image titleIconImage = FindVisualChild<Image>(titleIcon);
+                    Assert.IsNotNull(titleIconImage, "Extended title bar icon should render an Image.");
+                    Assert.AreEqual(20.0, titleIconImage.ActualWidth, 0.5,
+                        "Extended title bar icon should match the larger navigation glyph size.");
+                    Assert.AreEqual(20.0, titleIconImage.ActualHeight, 0.5,
+                        "Extended title bar icon should match the larger navigation glyph size.");
                     Assert.IsTrue(GetVisualX(titleIcon, window) >= GetVisualX(titleBarToggle, window) + titleBarToggle.ActualWidth - 0.5,
                         "Title identity should start after the title-bar navigation slot.");
 
@@ -680,6 +688,70 @@ namespace Fluence.Wpf.Tests
                     Assert.AreEqual(2, tabs.Items.Count, "XAML plus C# source should create two tabs.");
                     AssertSourceTab(tabs, "XAML", sample.XamlSource);
                     AssertSourceTab(tabs, "C# Code-behind", sample.CSharpSource);
+
+                    Card sampleCard = FindByName<Card>(sample, "SampleCard");
+                    Assert.IsNotNull(sampleCard, "Sample host should expose the sample card.");
+                    Assert.AreEqual(new CornerRadius(8, 8, 0, 0), sampleCard.CornerRadius,
+                        "Sample card should square off its bottom corners so source attaches.");
+                    Assert.AreEqual(new CornerRadius(0, 0, 8, 8), expander.CornerRadius,
+                        "Source expander should square off its top corners so it joins the card.");
+                    Assert.AreEqual(new Thickness(1, 0, 1, 1), expander.BorderThickness,
+                        "Source expander should share the card seam without a duplicate top stroke.");
+                    Assert.AreEqual(GetVisualY(sampleCard, window) + sampleCard.ActualHeight, GetVisualY(expander, window), 0.5,
+                        "Source expander should be attached directly below the sample card.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void DemoSampleControl_ReplaceSourceLink_ReplacesOwningCard()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                var host = new System.Windows.Controls.StackPanel();
+                var cardContent = new System.Windows.Controls.StackPanel();
+                cardContent.Children.Add(new WpfTextBlock { Text = "Visible sample" });
+                var sourceLink = new WpfButton
+                {
+                    Name = "InlineSourceLink",
+                    HorizontalAlignment = HorizontalAlignment.Right,
+                    Content = "Source"
+                };
+                cardContent.Children.Add(sourceLink);
+                var card = new Card
+                {
+                    Margin = new Thickness(0, 0, 0, 16),
+                    Padding = new Thickness(16),
+                    Content = cardContent
+                };
+                host.Children.Add(card);
+
+                DemoSampleControl sample = DemoSampleControl.ReplaceSourceLink(
+                    sourceLink,
+                    "<ui:Button Content=\"Save\" />",
+                    string.Empty);
+
+                Window window = CreateHostWindow(host);
+                try
+                {
+                    Assert.AreSame(sample, host.Children[0],
+                        "Replacing a source link inside a card should replace the owning card, not nest a sample host inside it.");
+                    Assert.AreSame(cardContent, sample.SampleContent,
+                        "The original card body should become the sample content.");
+                    Assert.IsFalse(cardContent.Children.Contains(sourceLink),
+                        "The old source-link button should be removed from the sample body.");
+
+                    FluenceExpander expander = FindByName<FluenceExpander>(sample, "SourceExpander");
+                    Card sampleCard = FindByName<Card>(sample, "SampleCard");
+                    Assert.IsNotNull(expander);
+                    Assert.IsNotNull(sampleCard);
+                    Assert.AreEqual(GetVisualY(sampleCard, window) + sampleCard.ActualHeight, GetVisualY(expander, window), 0.5,
+                        "Source expander should be attached directly below the replaced card body.");
                 }
                 finally
                 {
@@ -1073,6 +1145,11 @@ namespace Fluence.Wpf.Tests
         private static double GetVisualCenterX(FrameworkElement element, Visual ancestor)
         {
             return GetVisualX(element, ancestor) + (element.ActualWidth / 2.0);
+        }
+
+        private static double GetVisualCenterY(FrameworkElement element, Visual ancestor)
+        {
+            return GetVisualY(element, ancestor) + (element.ActualHeight / 2.0);
         }
 
         private static T GetFirstVisiblePanelChild<T>(Panel panel)

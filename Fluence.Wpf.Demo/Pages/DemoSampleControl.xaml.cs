@@ -31,6 +31,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
+using FluenceCard = Fluence.Wpf.Controls.Card;
 
 namespace Fluence.Wpf.Demo.Pages
 {
@@ -622,12 +623,43 @@ namespace Fluence.Wpf.Demo.Pages
             var sample = new DemoSampleControl
             {
                 Name = placeholder.Name,
-                Margin = placeholder.Margin,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 VerticalAlignment = placeholder.VerticalAlignment,
                 XamlSource = xamlSource,
                 CSharpSource = csharpSource
             };
+
+            var hostCard = FindAncestorCard(placeholder);
+            if (hostCard != null && hostCard.Content is UIElement sampleContent)
+            {
+                sample.Margin = hostCard.Margin;
+                sample.VerticalAlignment = hostCard.VerticalAlignment;
+                CopyAttachedLayout(hostCard, sample);
+                RemovePlaceholderFromParent(placeholder);
+                hostCard.Content = null;
+                sample.SampleContent = sampleContent;
+
+                var hostPanel = hostCard.Parent as Panel;
+                if (hostPanel != null)
+                {
+                    var index = hostPanel.Children.IndexOf(hostCard);
+                    if (index >= 0)
+                    {
+                        hostPanel.Children.RemoveAt(index);
+                        hostPanel.Children.Insert(index, sample);
+                        return sample;
+                    }
+                }
+
+                var hostContent = hostCard.Parent as ContentControl;
+                if (hostContent != null && ReferenceEquals(hostContent.Content, hostCard))
+                {
+                    hostContent.Content = sample;
+                    return sample;
+                }
+            }
+
+            sample.Margin = placeholder.Margin;
             CopyAttachedLayout(placeholder, sample);
 
             var parentPanel = placeholder.Parent as Panel;
@@ -650,6 +682,55 @@ namespace Fluence.Wpf.Demo.Pages
             }
 
             throw new InvalidOperationException("Source link placeholder must be hosted by a Panel or ContentControl.");
+        }
+
+        private static FluenceCard FindAncestorCard(FrameworkElement element)
+        {
+            DependencyObject current = element;
+            while (current != null)
+            {
+                var card = current as FluenceCard;
+                if (card != null)
+                {
+                    return card;
+                }
+
+                current = GetParentObject(current);
+            }
+
+            return null;
+        }
+
+        private static DependencyObject GetParentObject(DependencyObject current)
+        {
+            if (current == null)
+            {
+                return null;
+            }
+
+            var parent = VisualTreeHelper.GetParent(current);
+            if (parent != null)
+            {
+                return parent;
+            }
+
+            return LogicalTreeHelper.GetParent(current);
+        }
+
+        private static void RemovePlaceholderFromParent(FrameworkElement placeholder)
+        {
+            var parentPanel = placeholder.Parent as Panel;
+            if (parentPanel != null)
+            {
+                parentPanel.Children.Remove(placeholder);
+                return;
+            }
+
+            var parentContent = placeholder.Parent as ContentControl;
+            if (parentContent != null && ReferenceEquals(parentContent.Content, placeholder))
+            {
+                parentContent.Content = null;
+            }
         }
 
         private static void CopyAttachedLayout(FrameworkElement source, FrameworkElement target)
