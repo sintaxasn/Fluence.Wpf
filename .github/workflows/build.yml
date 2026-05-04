@@ -8,19 +8,25 @@ on:
 
 jobs:
   build:
+   permissions:
+     actions: read
+     contents: write
     runs-on: windows-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Setup .NET
-        uses: actions/setup-dotnet@v4
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '8.0.x'
 
       - name: Restore
         run: dotnet restore Fluence.Wpf.sln
+
+      - name: Cache
+        uses: actions/cache@v5.0.5
 
       - name: Build library (Release)
         run: dotnet build Fluence.Wpf/Fluence.Wpf.csproj -c Release --no-restore -v minimal
@@ -36,8 +42,32 @@ jobs:
 
       - name: Upload library artifacts
         uses: actions/upload-artifact@v7
+      - name: Generate SBOM (.NET 10.x)
+      - uses: anchore/sbom-action@v0
         with:
-          name: fluence-wpf-release
+          path: Fluence.Wpf/bin/Release/net10.0-windows10.0.26100.0/
+
+      - name: Generate SBOM (.NET Framework 4.7.2)
+      - uses: anchore/sbom-action@v0
+        with:
+          path: Fluence.Wpf/bin/Release/net472/
+
+      - name: Upload library artifacts (.NET 10.x)
+        uses: actions/upload-artifact@v4
+        with:
+          name: fluence-wpf-release-dotnet10
+          path: |
+            Fluence.Wpf/bin/Release/net10.0-windows10.0.26100.0/Fluence.Wpf.dll
+            Fluence.Wpf/bin/Release/net10.0-windows10.0.26100.0//Fluence.Wpf.pdb
+            Fluence.Wpf/bin/Release/net10.0-windows10.0.26100.0/Fluence.Wpf.xml
+            Fluence.Wpf/bin/Release/net10.0-windows10.0.26100.0/Microsoft.Windows.SDK.NET.dll
+            Fluence.Wpf/bin/Release/net10.0-windows10.0.26100.0/WinRT.Runtime.dll
+          retention-days: 30
+
+      - name: Upload library artifacts (.NET Framework 4.7.2)
+        uses: actions/upload-artifact@v4
+        with:
+          name: fluence-wpf-release-dotnet472
           path: |
             Fluence.Wpf/bin/Release/net472/Fluence.Wpf.dll
             Fluence.Wpf/bin/Release/net472/Fluence.Wpf.pdb
