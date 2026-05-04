@@ -947,16 +947,32 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     var restFill = button.Template.FindName("RestFill", button) as Border;
+                    var outerBorder = button.Template.FindName("OuterBorder", button) as Border;
                     var accentDefaultBrush = application.Resources["AccentFillColorDefaultBrush"] as SolidColorBrush;
+                    var accentBorderBrush = application.Resources["AccentControlElevationBorderBrush"] as LinearGradientBrush;
                     var accentSecondaryBrush = application.Resources["AccentFillColorSecondaryBrush"] as SolidColorBrush;
                     var accentTertiaryBrush = application.Resources["AccentFillColorTertiaryBrush"] as SolidColorBrush;
+                    var fluentFontFamily = application.Resources["FluentFontFamily"] as FontFamily;
+                    var contentText = FindVisualChildren<TextBlock>(button)
+                        .FirstOrDefault(tb => string.Equals(tb.Text, "Accent", StringComparison.Ordinal));
 
                     Assert.IsNotNull(restFill);
+                    Assert.IsNotNull(outerBorder);
                     Assert.IsNotNull(accentDefaultBrush);
+                    Assert.IsNotNull(accentBorderBrush);
                     Assert.IsNotNull(accentSecondaryBrush);
                     Assert.IsNotNull(accentTertiaryBrush);
+                    Assert.IsNotNull(fluentFontFamily);
                     Assert.IsInstanceOfType(restFill.Background, typeof(SolidColorBrush));
+                    Assert.IsInstanceOfType(outerBorder.BorderBrush, typeof(LinearGradientBrush));
                     Assert.AreEqual(accentDefaultBrush.Color, ((SolidColorBrush)restFill.Background).Color);
+                    Assert.AreEqual(accentBorderBrush.GradientStops.Count, ((LinearGradientBrush)outerBorder.BorderBrush).GradientStops.Count);
+                    Assert.IsNull(outerBorder.Effect, "Accent buttons should use the WinUI elevation border, not a drop shadow.");
+                    Assert.AreEqual(fluentFontFamily.Source, button.FontFamily.Source,
+                        "Accent buttons should inherit the canonical Fluent font.");
+                    Assert.IsNotNull(contentText, "String button content should materialize as visible text.");
+                    Assert.AreEqual(fluentFontFamily.Source, contentText.FontFamily.Source,
+                        "Button content should render with the same Fluent font as the control.");
                     Assert.AreNotEqual(accentDefaultBrush.Color, accentSecondaryBrush.Color, "Accent pointer-over brush should differ from the default accent brush.");
                     Assert.AreNotEqual(accentDefaultBrush.Color, accentTertiaryBrush.Color, "Accent pressed brush should differ from the default accent brush.");
                     Assert.IsTrue(accentSecondaryBrush.Color.A < accentDefaultBrush.Color.A, "Accent pointer-over brush should be visually distinct from default.");
@@ -994,13 +1010,13 @@ namespace Fluence.Wpf.Tests
 
                     var expectedSwatches = new List<string>
                     {
-                        "#EF5858",
-                        "#F19263",
-                        "#F6D65A",
-                        "#87C29C",
-                        "#60A9E0",
-                        "#839CD8",
-                        "#8863C8"
+                        "#E80000",
+                        "#F58809",
+                        "#F5E70C",
+                        "#2BDE11",
+                        "#09C4DE",
+                        "#AA04DE",
+                        "#FF00E8"
                     };
 
                     CollectionAssert.AreEqual(expectedSwatches, accentSwatchButtons.Select(b => (string)b.Tag).ToList(),

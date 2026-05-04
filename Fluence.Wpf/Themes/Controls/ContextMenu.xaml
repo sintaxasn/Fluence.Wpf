@@ -117,7 +117,10 @@
                                 Grid.Column="2"
                                 VerticalAlignment="Center"
                                 ContentSource="Header"
-                                RecognizesAccessKey="True" />
+                                RecognizesAccessKey="True"
+                                TextElement.FontFamily="{TemplateBinding FontFamily}"
+                                TextElement.FontSize="{TemplateBinding FontSize}"
+                                TextElement.Foreground="{TemplateBinding Foreground}" />
 
                             <!--  Keyboard shortcut text  -->
                             <TextBlock
@@ -125,6 +128,7 @@
                                 Grid.Column="3"
                                 Margin="16,0,4,0"
                                 VerticalAlignment="Center"
+                                FontFamily="{TemplateBinding FontFamily}"
                                 FontSize="12"
                                 Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                 Text="{TemplateBinding InputGestureText}" />

@@ -9,6 +9,7 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
         <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Padding" Value="16,9" />
         <Setter Property="Margin" Value="0,0,2,0" />
@@ -47,7 +48,10 @@
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             ContentSource="Header"
-                            RecognizesAccessKey="True" />
+                            RecognizesAccessKey="True"
+                            TextElement.FontFamily="{TemplateBinding FontFamily}"
+                            TextElement.FontSize="{TemplateBinding FontSize}"
+                            TextElement.Foreground="{TemplateBinding Foreground}" />
                         <Border
                             x:Name="SelectionIndicator"
                             Height="3"
@@ -132,6 +136,8 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Padding" Value="0" />
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="FontSize" Value="14" />
         <Setter Property="ItemContainerStyle" Value="{StaticResource TabItemStyle}" />
         <Setter Property="Template">
             <Setter.Value>

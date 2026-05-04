@@ -33,6 +33,8 @@
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="FontSize" Value="14" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Template">
             <Setter.Value>
@@ -46,7 +48,10 @@
                             <ContentPresenter
                                 Margin="{TemplateBinding Padding}"
                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                TextElement.FontFamily="{TemplateBinding FontFamily}"
+                                TextElement.FontSize="{TemplateBinding FontSize}"
+                                TextElement.Foreground="{TemplateBinding Foreground}" />
                             <Border
                                 x:Name="SelectionIndicator"
                                 Width="3.5"
@@ -127,6 +132,7 @@
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Padding" Value="10,5,6,6" />
         <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="MinHeight" Value="32" />
         <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
@@ -174,11 +180,14 @@
                                                 ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
                                                 IsHitTestVisible="False"
                                                 SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                                TextElement.FontFamily="{TemplateBinding FontFamily}"
+                                                TextElement.FontSize="{TemplateBinding FontSize}"
                                                 TextElement.Foreground="{TemplateBinding Foreground}" />
                                             <TextBlock
                                                 x:Name="PlaceholderTextBlock"
                                                 HorizontalAlignment="Left"
                                                 VerticalAlignment="Center"
+                                                FontFamily="{TemplateBinding FontFamily}"
                                                 FontSize="{TemplateBinding FontSize}"
                                                 Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                                 Text="{TemplateBinding PlaceholderText}"

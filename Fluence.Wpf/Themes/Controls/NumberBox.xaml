@@ -65,6 +65,7 @@
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Padding" Value="10,5,6,6" />
         <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="MinHeight" Value="32" />
         <Setter Property="MinWidth" Value="100" />
         <Setter Property="HorizontalAlignment" Value="Left" />
@@ -85,6 +86,8 @@
                             Grid.Row="0"
                             Margin="0,0,0,8"
                             Content="{TemplateBinding Header}"
+                            TextBlock.FontFamily="{TemplateBinding FontFamily}"
+                            TextBlock.FontSize="{TemplateBinding FontSize}"
                             TextBlock.Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
 
                         <Border
@@ -116,6 +119,7 @@
                                         Background="Transparent"
                                         BorderThickness="0"
                                         CaretBrush="{DynamicResource TextFillColorPrimaryBrush}"
+                                        FontFamily="{TemplateBinding FontFamily}"
                                         FontSize="{TemplateBinding FontSize}"
                                         Foreground="{TemplateBinding Foreground}"
                                         SelectionBrush="{DynamicResource AccentFillColorDefaultBrush}"

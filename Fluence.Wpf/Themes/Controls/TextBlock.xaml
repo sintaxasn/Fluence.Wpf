@@ -11,6 +11,7 @@
         <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="VerticalContentAlignment" Value="Top" />
         <Setter Property="Focusable" Value="False" />
@@ -19,6 +20,8 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:TextBlock}">
                     <TextBlock x:Name="PART_TextBlock"
+                               FontFamily="{TemplateBinding FontFamily}"
+                               FontSize="{TemplateBinding FontSize}"
                                Foreground="{TemplateBinding Foreground}"
                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"

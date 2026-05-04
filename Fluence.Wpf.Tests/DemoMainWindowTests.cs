@@ -427,7 +427,7 @@ namespace Fluence.Wpf.Tests
 
                     Assert.AreEqual(Visibility.Collapsed, titleBarBack.Visibility,
                         "Back must collapse in the title bar when back navigation is disabled.");
-                    Assert.AreEqual(titleIconWithBackX - 48.0, GetVisualX(titleIcon, window), 1.5,
+                    Assert.AreEqual(titleIconWithBackX - 46.0, GetVisualX(titleIcon, window), 1.5,
                         "Title identity should shift left by one rail slot when the back glyph collapses.");
                 }
                 finally
@@ -784,7 +784,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(close, "Close caption picker should exist.");
                     Assert.IsNotNull(showIcon, "Show Icon toggle should exist.");
                     Assert.IsNotNull(showTitle, "Show Title toggle should exist.");
-                    Assert.AreEqual(7, accentRow.Children.Count, "The Window page accent picker should expose seven WCAG-safe rainbow swatches.");
+                    Assert.AreEqual(7, accentRow.Children.Count, "The Window page accent picker should expose seven logo accent swatches.");
                     Assert.AreEqual(GetVisualY(accentRow.Children[0] as FrameworkElement, window), GetVisualY(accentRow.Children[6] as FrameworkElement, window), 1.0,
                         "All accent swatches should fit on one row.");
                     Assert.AreEqual(GetVisualY(minimize, window), GetVisualY(maximize, window), 1.0,
@@ -806,7 +806,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void GalleryWindowPage_RainbowAccentSwatches_PreserveWcagTextContrast()
+        public void GalleryWindowPage_RainbowAccentSwatches_PreserveLogoColors()
         {
             RunOnSta(delegate
             {
@@ -820,13 +820,13 @@ namespace Fluence.Wpf.Tests
 
                     string[] expected =
                     {
-                        "#C62828",
-                        "#A13D00",
-                        "#765A00",
-                        "#0B6A0B",
-                        "#0078D4",
-                        "#3F2B96",
-                        "#6A1B9A"
+                        "#E80000",
+                        "#F58809",
+                        "#F5E70C",
+                        "#2BDE11",
+                        "#09C4DE",
+                        "#AA04DE",
+                        "#FF00E8"
                     };
 
                     Assert.AreEqual(expected.Length, accentRow.Children.Count,
@@ -838,28 +838,9 @@ namespace Fluence.Wpf.Tests
                         Assert.IsNotNull(swatch, "Each accent swatch should be a FrameworkElement.");
                         Assert.AreEqual(expected[i], swatch.Tag as string,
                             "The Window page swatches should stay in rainbow order.");
-                    }
 
-                    foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark })
-                    {
-                        ApplicationThemeManager.Apply(theme, BackdropType.None, true);
-                        foreach (string hex in expected)
-                        {
-                            var converted = ColorConverter.ConvertFromString(hex);
-                            Assert.IsInstanceOfType(converted, typeof(Color), "Swatch Tag should be a valid color: " + hex);
-                            ApplicationAccentColorManager.ApplyCustomAccent((Color)converted);
-
-                            Color background = GetColorResource("AccentFillColorDefault");
-                            Color foreground = GetColorResource("TextOnAccentFillColorPrimary");
-                            double contrast = ContrastRatio(background, foreground);
-                            Assert.IsTrue(contrast >= 4.5,
-                                string.Format("Swatch {0} in {1} theme should keep TextOnAccentFillColorPrimary WCAG contrast. Background={2}, Foreground={3}, Contrast={4:F2}",
-                                    hex,
-                                    theme,
-                                    ToHex(background),
-                                    ToHex(foreground),
-                                    contrast));
-                        }
+                        var converted = ColorConverter.ConvertFromString(expected[i]);
+                        Assert.IsInstanceOfType(converted, typeof(Color), "Swatch Tag should be a valid color: " + expected[i]);
                     }
                 }
                 finally
@@ -1092,53 +1073,6 @@ namespace Fluence.Wpf.Tests
         private static double GetVisualCenterX(FrameworkElement element, Visual ancestor)
         {
             return GetVisualX(element, ancestor) + (element.ActualWidth / 2.0);
-        }
-
-        private static Color GetColorResource(string key)
-        {
-            object value = Application.Current.TryFindResource(key);
-            if (value is Color)
-            {
-                return (Color)value;
-            }
-
-            var brush = value as SolidColorBrush;
-            if (brush != null)
-            {
-                return brush.Color;
-            }
-
-            Assert.Fail("Expected Color or SolidColorBrush resource: " + key);
-            return Colors.Transparent;
-        }
-
-        private static double ContrastRatio(Color first, Color second)
-        {
-            double firstLuminance = RelativeLuminance(first);
-            double secondLuminance = RelativeLuminance(second);
-            double lighter = Math.Max(firstLuminance, secondLuminance);
-            double darker = Math.Min(firstLuminance, secondLuminance);
-            return (lighter + 0.05) / (darker + 0.05);
-        }
-
-        private static double RelativeLuminance(Color color)
-        {
-            return (0.2126 * LinearizedColorChannel(color.R)) +
-                (0.7152 * LinearizedColorChannel(color.G)) +
-                (0.0722 * LinearizedColorChannel(color.B));
-        }
-
-        private static double LinearizedColorChannel(byte channel)
-        {
-            double value = channel / 255.0;
-            return value <= 0.03928
-                ? value / 12.92
-                : Math.Pow((value + 0.055) / 1.055, 2.4);
-        }
-
-        private static string ToHex(Color color)
-        {
-            return string.Format("#{0:X2}{1:X2}{2:X2}", color.R, color.G, color.B);
         }
 
         private static T GetFirstVisiblePanelChild<T>(Panel panel)

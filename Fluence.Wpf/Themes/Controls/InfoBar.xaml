@@ -39,6 +39,7 @@
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Padding" Value="12,10" />
         <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="VerticalAlignment" Value="Top" />
         <Setter Property="Focusable" Value="False" />
@@ -107,6 +108,7 @@
                                     VerticalAlignment="Center">
                                     <TextBlock
                                         x:Name="TitleTextBlock"
+                                        FontFamily="{TemplateBinding FontFamily}"
                                         FontSize="{TemplateBinding FontSize}"
                                         FontWeight="SemiBold"
                                         Foreground="{TemplateBinding Foreground}"
@@ -116,6 +118,7 @@
                                     <TextBlock
                                         x:Name="MessageTextBlock"
                                         Margin="0,2,0,0"
+                                        FontFamily="{TemplateBinding FontFamily}"
                                         FontSize="{TemplateBinding FontSize}"
                                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                         Text="{TemplateBinding Message}"

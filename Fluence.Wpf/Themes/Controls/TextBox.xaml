@@ -19,6 +19,7 @@
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Padding" Value="10,5,6,6" />
         <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="MinHeight" Value="32" />
         <Setter Property="CaretBrush" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="SelectionBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
@@ -77,6 +78,7 @@
                                             x:Name="PlaceholderTextBlock"
                                             Margin="13,0,0,0"
                                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                            FontFamily="{TemplateBinding FontFamily}"
                                             FontSize="{TemplateBinding FontSize}"
                                             Foreground="{DynamicResource TextFillColorTertiaryBrush}"
                                             IsHitTestVisible="False"
@@ -88,6 +90,7 @@
                                             Margin="0,0,12,6"
                                             HorizontalAlignment="Right"
                                             VerticalAlignment="Bottom"
+                                            FontFamily="{TemplateBinding FontFamily}"
                                             FontSize="12"
                                             Foreground="{DynamicResource TextFillColorTertiaryBrush}"
                                             IsHitTestVisible="False"
@@ -187,6 +190,7 @@
                                 Visibility="Collapsed" />
                             <TextBlock
                                 x:Name="PART_HelperText"
+                                FontFamily="{TemplateBinding FontFamily}"
                                 FontSize="12"
                                 Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                 TextWrapping="Wrap" />

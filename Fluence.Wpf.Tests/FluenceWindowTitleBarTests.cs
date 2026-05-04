@@ -211,12 +211,12 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void MinWidth_DefaultIs698()
+        public void MinWidth_DefaultRemainsUnset()
         {
             RunWithWindow(w =>
             {
-                Assert.AreEqual(698d, w.MinWidth,
-                    "FluenceWindow should default to a 698 px minimum width.");
+                Assert.AreEqual(0d, w.MinWidth,
+                    "FluenceWindow should leave MinWidth unset by default.");
             });
         }
 

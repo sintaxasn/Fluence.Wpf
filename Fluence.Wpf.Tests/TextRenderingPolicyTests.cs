@@ -32,9 +32,40 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Fluence.Wpf.Controls;
+using FluentButton = Fluence.Wpf.Controls.Button;
+using FluentCard = Fluence.Wpf.Controls.Card;
+using FluentCheckBox = Fluence.Wpf.Controls.CheckBox;
+using FluentComboBox = Fluence.Wpf.Controls.ComboBox;
 using FluentContextMenu = Fluence.Wpf.Controls.ContextMenu;
+using FluentDropDownButton = Fluence.Wpf.Controls.DropDownButton;
+using FluentExpander = Fluence.Wpf.Controls.Expander;
+using FluentHyperlinkButton = Fluence.Wpf.Controls.HyperlinkButton;
+using FluentInfoBadge = Fluence.Wpf.Controls.InfoBadge;
+using FluentInfoBar = Fluence.Wpf.Controls.InfoBar;
+using FluentListBox = Fluence.Wpf.Controls.ListBox;
+using FluentListBoxItem = Fluence.Wpf.Controls.ListBoxItem;
+using FluentListView = Fluence.Wpf.Controls.ListView;
+using FluentMenu = Fluence.Wpf.Controls.Menu;
 using FluentMenuItem = Fluence.Wpf.Controls.MenuItem;
+using FluentNavigationView = Fluence.Wpf.Controls.NavigationView;
+using FluentNavigationViewItem = Fluence.Wpf.Controls.NavigationViewItem;
+using FluentNavigationViewItemHeader = Fluence.Wpf.Controls.NavigationViewItemHeader;
+using FluentNumberBox = Fluence.Wpf.Controls.NumberBox;
+using FluentPasswordBox = Fluence.Wpf.Controls.PasswordBox;
+using FluentRadioButton = Fluence.Wpf.Controls.RadioButton;
+using FluentRepeatButton = Fluence.Wpf.Controls.RepeatButton;
+using FluentSplitButton = Fluence.Wpf.Controls.SplitButton;
+using FluentTabView = Fluence.Wpf.Controls.TabView;
+using FluentTabViewItem = Fluence.Wpf.Controls.TabViewItem;
+using FluentTextBlock = Fluence.Wpf.Controls.TextBlock;
+using FluentTextBox = Fluence.Wpf.Controls.TextBox;
+using FluentTitleBar = Fluence.Wpf.Controls.TitleBar;
+using FluentToggleButton = Fluence.Wpf.Controls.ToggleButton;
+using FluentToggleSwitch = Fluence.Wpf.Controls.ToggleSwitch;
 using FluentToolTip = Fluence.Wpf.Controls.ToolTip;
+using FluentTreeView = Fluence.Wpf.Controls.TreeView;
+using FluentTreeViewItem = Fluence.Wpf.Controls.TreeViewItem;
+using FluentWindow = Fluence.Wpf.Controls.FluenceWindow;
 using WpfTextBlock = System.Windows.Controls.TextBlock;
 
 namespace Fluence.Wpf.Tests
@@ -53,11 +84,104 @@ namespace Fluence.Wpf.Tests
                 application.Resources.Clear();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
 
+                AssertStyleTextRenderingPolicy(application, typeof(FluentButton), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentHyperlinkButton), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentDropDownButton), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentSplitButton), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentRepeatButton), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentToggleButton), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentCheckBox), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentRadioButton), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentToggleSwitch), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentComboBox), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentNumberBox), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentTextBox), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentPasswordBox), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentTextBlock), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentCard), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentExpander), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentInfoBar), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentInfoBadge), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentListBox), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentListBoxItem), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentListView), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentNavigationView), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentNavigationViewItem), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentNavigationViewItemHeader), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentTabView), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentTabViewItem), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentTitleBar), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentTreeView), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentTreeViewItem), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentWindow), TextFormattingMode.Display);
+                AssertStyleTextRenderingPolicy(application, typeof(FluentMenu), TextFormattingMode.Display);
                 AssertStyleTextRenderingPolicy(application, typeof(FluentContextMenu), TextFormattingMode.Display);
                 AssertStyleTextRenderingPolicy(application, typeof(FluentMenuItem), TextFormattingMode.Display);
                 AssertStyleTextRenderingPolicy(application, typeof(FluentToolTip), TextFormattingMode.Display);
                 AssertStyleTextRenderingPolicy(application, typeof(RatingControl), TextFormattingMode.Display);
                 AssertStyleTextRenderingPolicy(application, typeof(PersonPicture), TextFormattingMode.Display);
+
+                AssertKeyedStyleTextRenderingPolicy(application, "ComboBoxItemStyle", TextFormattingMode.Display);
+                AssertKeyedStyleTextRenderingPolicy(application, "ListViewGroupItemStyle", TextFormattingMode.Display);
+                AssertKeyedStyleTextRenderingPolicy(application, "ListViewItemStyle", TextFormattingMode.Display);
+                AssertKeyedStyleTextRenderingPolicy(application, "TabControlStyle", TextFormattingMode.Display);
+                AssertKeyedStyleTextRenderingPolicy(application, "TabItemStyle", TextFormattingMode.Display);
+            });
+        }
+
+        [TestMethod]
+        public void TextBearingControlStyles_UseFluentFontFamily()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                var application = WpfTestSta.EnsureApplication();
+                ApplicationThemeManager.ResetForTesting();
+                ApplicationAccentColorManager.ResetForTesting();
+                application.Resources.Clear();
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
+
+                AssertStyleFontFamilyPolicy(application, typeof(FluentButton));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentHyperlinkButton));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentDropDownButton));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentSplitButton));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentRepeatButton));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentToggleButton));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentCheckBox));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentRadioButton));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentToggleSwitch));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentComboBox));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentNumberBox));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentTextBox));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentPasswordBox));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentTextBlock));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentCard));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentExpander));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentInfoBar));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentInfoBadge));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentListBox));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentListBoxItem));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentListView));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentNavigationView));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentNavigationViewItem));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentNavigationViewItemHeader));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentTabView));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentTabViewItem));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentTitleBar));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentTreeView));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentTreeViewItem));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentWindow));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentMenu));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentContextMenu));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentMenuItem));
+                AssertStyleFontFamilyPolicy(application, typeof(FluentToolTip));
+                AssertStyleFontFamilyPolicy(application, typeof(RatingControl));
+                AssertStyleFontFamilyPolicy(application, typeof(PersonPicture));
+
+                AssertKeyedStyleFontFamilyPolicy(application, "ComboBoxItemStyle");
+                AssertKeyedStyleFontFamilyPolicy(application, "ListViewGroupItemStyle");
+                AssertKeyedStyleFontFamilyPolicy(application, "ListViewItemStyle");
+                AssertKeyedStyleFontFamilyPolicy(application, "TabControlStyle");
+                AssertKeyedStyleFontFamilyPolicy(application, "TabItemStyle");
             });
         }
 
@@ -151,9 +275,32 @@ namespace Fluence.Wpf.Tests
         {
             var style = application.TryFindResource(targetType) as Style;
             Assert.IsNotNull(style, "Style should resolve for " + targetType.Name + ".");
-            AssertStyleSetter(style, TextOptions.TextFormattingModeProperty, expectedFormattingMode, targetType.Name);
-            AssertStyleSetter(style, TextOptions.TextRenderingModeProperty, TextRenderingMode.ClearType, targetType.Name);
-            AssertStyleSetter(style, TextOptions.TextHintingModeProperty, TextHintingMode.Fixed, targetType.Name);
+            AssertStyleSetterOrBasedOn(style, TextOptions.TextFormattingModeProperty, expectedFormattingMode, targetType.Name);
+            AssertStyleSetterOrBasedOn(style, TextOptions.TextRenderingModeProperty, TextRenderingMode.ClearType, targetType.Name);
+            AssertStyleSetterOrBasedOn(style, TextOptions.TextHintingModeProperty, TextHintingMode.Fixed, targetType.Name);
+        }
+
+        private static void AssertKeyedStyleTextRenderingPolicy(Application application, string styleKey, TextFormattingMode expectedFormattingMode)
+        {
+            var style = application.TryFindResource(styleKey) as Style;
+            Assert.IsNotNull(style, styleKey + " should resolve.");
+            AssertStyleSetterOrBasedOn(style, TextOptions.TextFormattingModeProperty, expectedFormattingMode, styleKey);
+            AssertStyleSetterOrBasedOn(style, TextOptions.TextRenderingModeProperty, TextRenderingMode.ClearType, styleKey);
+            AssertStyleSetterOrBasedOn(style, TextOptions.TextHintingModeProperty, TextHintingMode.Fixed, styleKey);
+        }
+
+        private static void AssertStyleFontFamilyPolicy(Application application, Type targetType)
+        {
+            var style = application.TryFindResource(targetType) as Style;
+            Assert.IsNotNull(style, "Style should resolve for " + targetType.Name + ".");
+            AssertStyleFluentFontFamilySetterOrBasedOn(style, targetType.Name);
+        }
+
+        private static void AssertKeyedStyleFontFamilyPolicy(Application application, string styleKey)
+        {
+            var style = application.TryFindResource(styleKey) as Style;
+            Assert.IsNotNull(style, styleKey + " should resolve.");
+            AssertStyleFluentFontFamilySetterOrBasedOn(style, styleKey);
         }
 
         private static void AssertTextBlockStyleRenderingPolicy(Application application, string styleKey, TextFormattingMode expectedFormattingMode)
@@ -179,6 +326,41 @@ namespace Fluence.Wpf.Tests
             }
 
             Assert.Fail(description + " should set " + property.Name + ".");
+        }
+
+        private static void AssertStyleFluentFontFamilySetterOrBasedOn(Style style, string description)
+        {
+            var current = style;
+            while (current != null)
+            {
+                foreach (var setterBase in current.Setters)
+                {
+                    var setter = setterBase as Setter;
+                    if (setter != null && setter.Property == Control.FontFamilyProperty)
+                    {
+                        Assert.IsTrue(IsFluentFontFamilySetterValue(setter.Value),
+                            description + " should set FontFamily from FluentFontFamily.");
+                        return;
+                    }
+                }
+
+                current = current.BasedOn;
+            }
+
+            Assert.Fail(description + " should set FontFamily from FluentFontFamily (searched full BasedOn chain).");
+        }
+
+        private static bool IsFluentFontFamilySetterValue(object value)
+        {
+            var dynamicResource = value as DynamicResourceExtension;
+            if (dynamicResource != null)
+            {
+                return Equals(dynamicResource.ResourceKey, "FluentFontFamily");
+            }
+
+            var fontFamily = value as FontFamily;
+            return fontFamily != null &&
+                fontFamily.Source.IndexOf("Segoe UI Variable", StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
         /// <summary>

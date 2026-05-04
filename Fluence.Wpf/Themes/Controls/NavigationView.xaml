@@ -42,6 +42,7 @@
         <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Padding" Value="12,8,12,4" />
         <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
         <Setter Property="IsTabStop" Value="False" />
@@ -54,6 +55,9 @@
                             VerticalAlignment="Center"
                             Content="{TemplateBinding Content}"
                             ContentTemplate="{TemplateBinding ContentTemplate}"
+                            TextElement.FontFamily="{TemplateBinding FontFamily}"
+                            TextElement.FontSize="{TemplateBinding FontSize}"
+                            TextElement.Foreground="{TemplateBinding Foreground}"
                             />
                     </Border>
                 </ControlTemplate>
@@ -144,11 +148,12 @@
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:NavigationViewItem}">
                     <ControlTemplate.Resources>
-                        <Style TargetType="TextBlock">
+                        <Style BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="TextBlock">
                             <Setter Property="TextTrimming" Value="CharacterEllipsis" />
                             <Setter Property="TextWrapping" Value="NoWrap" />
                         </Style>
@@ -184,6 +189,9 @@
                                 ContentTemplate="{TemplateBinding ContentTemplate}"
                                 ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
                                 RecognizesAccessKey="True"
+                                TextElement.FontFamily="{TemplateBinding FontFamily}"
+                                TextElement.FontSize="{TemplateBinding FontSize}"
+                                TextElement.Foreground="{TemplateBinding Foreground}"
                                 />
                             <ContentPresenter
                                 x:Name="InfoBadgePresenter"
@@ -345,7 +353,7 @@
                             <Button
                                 x:Name="PART_BackButton"
                                 Width="48"
-                                Height="48"
+                                Height="40"
                                 Margin="0"
                                 Padding="0"
                                 HorizontalAlignment="Center"
@@ -957,6 +965,7 @@
         <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="ContentBackground" Value="{DynamicResource NavigationViewContentBackgroundBrush}" />
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="Focusable" Value="False" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />

@@ -1,4 +1,4 @@
-﻿{
+{
   "enabledPlugins": {
     "microsoft-docs@claude-plugins-official": true,
     "wpf-dev-pack@dotnet-claude-plugins": true
@@ -10,7 +10,10 @@
       "mcp__HandMirrorMcp__*",
       "Skill(microsoft-docs:*)",
       "Skill(wpf-dev-pack:*)",
-      "Agent(winui-parity-reviewer)"
+      "Agent(winui-parity-reviewer)",
+      "Agent(wpf-dev-pack:*)",
+      "Agent(wpf-code-reviewer)",
+      "Agent(wpf-performance-optimizer)"
     ]
   },
   "hooks": {

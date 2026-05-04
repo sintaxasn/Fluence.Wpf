@@ -10,6 +10,7 @@
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Padding" Value="11,5,8,6" />
         <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="MinHeight" Value="32" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -55,7 +56,10 @@
                                         ContentStringFormat="{TemplateBinding ContentStringFormat}"
                                         ContentTemplate="{TemplateBinding ContentTemplate}"
                                         ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
-                                        RecognizesAccessKey="True" />
+                                        RecognizesAccessKey="True"
+                                        TextElement.FontFamily="{TemplateBinding FontFamily}"
+                                        TextElement.FontSize="{TemplateBinding FontSize}"
+                                        TextElement.Foreground="{TemplateBinding Foreground}" />
                                     <controls:FontIcon
                                         x:Name="Chevron"
                                         Grid.Column="1"

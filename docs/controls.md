@@ -63,7 +63,7 @@ Tab strip and scroll bar styling are provided via merged themes (see `Themes/Gen
 
 ## FluenceWindow
 
-`FluenceWindow` provides the Fluent window chrome, caption buttons, backdrop, and title-bar content slot. The default minimum width is 698 px and the default title bar height is 68 px. When `ExtendsContentIntoTitleBar="True"`, app content can render behind the title bar; NavigationView left panes reserve title-bar height before their first item when no explicit header is provided.
+`FluenceWindow` provides the Fluent window chrome, caption buttons, backdrop, and title-bar content slot. `MinWidth` is caller-controlled and remains unset by default; the default title bar height is 68 px. When `ExtendsContentIntoTitleBar="True"`, app content can render behind the title bar; NavigationView left panes reserve title-bar height before their first item when no explicit header is provided.
 
 `TitleBar` is the reusable shell title-bar control used by the gallery. It provides back and pane-toggle buttons (`BackRequested`, `PaneToggleRequested`, and matching command properties), icon/title/subtitle presentation, and left/right/content slots. Interactive template buttons opt into `WindowChrome.IsHitTestVisibleInChrome`; app-specific content such as search boxes should do the same.
 

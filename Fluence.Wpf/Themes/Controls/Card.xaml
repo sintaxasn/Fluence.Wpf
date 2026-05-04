@@ -7,6 +7,7 @@
     <Style TargetType="{x:Type controls:Card}">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="Padding" Value="16" />
         <Setter Property="Focusable" Value="False" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
@@ -77,14 +78,18 @@
                                                 Grid.Column="1"
                                                 VerticalAlignment="Center"
                                                 Content="{TemplateBinding Header}"
-                                                ContentTemplate="{TemplateBinding HeaderTemplate}" />
+                                                ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                                TextElement.FontFamily="{TemplateBinding FontFamily}"
+                                                TextElement.Foreground="{TemplateBinding Foreground}" />
                                         </Grid>
                                         <ContentPresenter
                                             x:Name="ContentPresenter"
                                             Grid.Row="1"
                                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                            ContentSource="Content" />
+                                            ContentSource="Content"
+                                            TextElement.FontFamily="{TemplateBinding FontFamily}"
+                                            TextElement.Foreground="{TemplateBinding Foreground}" />
                                         <ContentPresenter
                                             x:Name="FooterPresenter"
                                             Grid.Row="2"
