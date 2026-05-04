@@ -5,13 +5,9 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
-
 jobs:
   build:
     runs-on: windows-latest
-    # permissions:
-    # actions: read
-    # contents: write
 
     steps:
       - name: Checkout
@@ -42,13 +38,14 @@ jobs:
 
       - name: Upload library artifacts
         uses: actions/upload-artifact@v7
+
       - name: Generate SBOM (.NET 10.x)
-      - uses: anchore/sbom-action@v0
+        uses: anchore/sbom-action@v0
         with:
           path: Fluence.Wpf/bin/Release/net10.0-windows10.0.26100.0/
 
       - name: Generate SBOM (.NET Framework 4.7.2)
-      - uses: anchore/sbom-action@v0
+        uses: anchore/sbom-action@v0
         with:
           path: Fluence.Wpf/bin/Release/net472/
 
