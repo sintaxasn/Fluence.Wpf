@@ -1,4 +1,4 @@
-﻿name: Build & Test
+name: Build & Test
 
 on:
   push:
@@ -35,7 +35,7 @@ jobs:
         run: dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Release --no-build --verbosity normal
 
       - name: Upload library artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: fluence-wpf-release
           path: |
@@ -45,7 +45,7 @@ jobs:
           retention-days: 30
 
       - name: Upload demo application
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: fluence-wpf-demo
           path: Fluence.Wpf.Demo/bin/Release/net472/
@@ -58,7 +58,7 @@ jobs:
       #   run: dotnet pack Fluence.Wpf/Fluence.Wpf.csproj -c Release --no-build -o nupkg/
       #
       # - name: Upload NuGet package
-      #   uses: actions/upload-artifact@v4
+      #   uses: actions/upload-artifact@v7
       #   with:
       #     name: fluence-wpf-nupkg
       #     path: nupkg/*.nupkg
