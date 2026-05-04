@@ -21,8 +21,8 @@ jobs:
       - name: Restore
         run: dotnet restore Fluence.Wpf.sln
 
-      - name: Cache
-        uses: actions/cache@v5.0.5
+      # - name: Cache
+      #  uses: actions/cache@v5.0.5
 
       - name: Build library (Release)
         run: dotnet build Fluence.Wpf/Fluence.Wpf.csproj -c Release --no-restore -v minimal
