@@ -21,9 +21,13 @@ jobs:
       - name: Restore
         run: dotnet restore Fluence.Wpf.sln
 
-      # - name: Cache
-      #  uses: actions/cache@v5.0.5
-
+      - uses: actions/cache@v5
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/packages.lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+      
       - name: Build library (Release)
         run: dotnet build Fluence.Wpf/Fluence.Wpf.csproj -c Release --no-restore -v minimal
 
@@ -39,15 +43,15 @@ jobs:
       - name: Upload library artifacts
         uses: actions/upload-artifact@v7
 
-      - name: Generate SBOM (.NET 10.x)
-        uses: anchore/sbom-action@v0
-        with:
-          path: Fluence.Wpf/bin/Release/net10.0-windows10.0.26100.0/
+      # - name: Generate SBOM (.NET 10.x)
+      #   uses: anchore/sbom-action@v0
+      #   with:
+      #     path: Fluence.Wpf/bin/Release/net10.0-windows10.0.26100.0/
 
-      - name: Generate SBOM (.NET Framework 4.7.2)
-        uses: anchore/sbom-action@v0
-        with:
-          path: Fluence.Wpf/bin/Release/net472/
+      # - name: Generate SBOM (.NET Framework 4.7.2)
+      #   uses: anchore/sbom-action@v0
+      #   with:
+      #     path: Fluence.Wpf/bin/Release/net472/
 
       - name: Upload library artifacts (.NET 10.x)
         uses: actions/upload-artifact@v4
