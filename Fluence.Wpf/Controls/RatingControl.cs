@@ -278,7 +278,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
             // Clicking the already-set star clears the rating (WinUI 3 IsClearEnabled behaviour).
-            double newValue = ((int)Math.Round(Value) == index) ? 0.0 : (double)index;
+            double newValue = ((int)Math.Round(Value) == index) ? 0.0 : index;
             SetCurrentValue(ValueProperty, newValue);
         }
 

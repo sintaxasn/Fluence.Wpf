@@ -232,7 +232,7 @@ namespace Fluence.Wpf.Controls
                     false,
                     fallbackBackgroundColor,
                     NativeConstants.DWMWA_COLOR_DEFAULT,
-                    capabilities.SupportsSystemBackdropType ? (int?)NativeConstants.DWMSBT_NONE : null,
+                    capabilities.SupportsSystemBackdropType ? NativeConstants.DWMSBT_NONE : null,
                     false,
                     isDark);
             }

@@ -455,7 +455,7 @@ namespace Fluence.Wpf.Controls
             }
 
             double clamped = box.ClampValue(v);
-            return double.IsNaN(clamped) ? baseValue : (object)clamped;
+            return double.IsNaN(clamped) ? baseValue : clamped;
         }
 
         private static void OnValuePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -480,7 +480,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            if (box._partTextBox != null && !string.Equals(box._partTextBox.Text, box.Text as string, StringComparison.Ordinal))
+            if (box._partTextBox != null && !string.Equals(box._partTextBox.Text, box.Text, StringComparison.Ordinal))
             {
                 box._partTextBox.Text = box.Text != null ? box.Text : string.Empty;
             }
