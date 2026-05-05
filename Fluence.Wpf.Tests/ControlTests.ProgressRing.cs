@@ -405,10 +405,10 @@ namespace Fluence.Wpf.Tests
                 var start = InvokePrivateAnimationFactory("CreateIndeterminateStartAnimation");
                 var sweep = InvokePrivateAnimationFactory("CreateIndeterminateSweepAnimation");
 
-                Assert.AreEqual(TimeSpan.FromMilliseconds(5000), start.Duration.TimeSpan,
-                    "Indeterminate start animation should use the attached 5 second cadence.");
-                Assert.AreEqual(TimeSpan.FromMilliseconds(5000), sweep.Duration.TimeSpan,
-                    "Indeterminate sweep animation should use the attached 5 second cadence.");
+                Assert.AreEqual(TimeSpan.FromMilliseconds(4000), start.Duration.TimeSpan,
+                    "Indeterminate start animation should use the configured 4 second cadence.");
+                Assert.AreEqual(TimeSpan.FromMilliseconds(4000), sweep.Duration.TimeSpan,
+                    "Indeterminate sweep animation should use the configured 4 second cadence.");
                 Assert.AreEqual(RepeatBehavior.Forever, start.RepeatBehavior);
                 Assert.AreEqual(RepeatBehavior.Forever, sweep.RepeatBehavior);
 
