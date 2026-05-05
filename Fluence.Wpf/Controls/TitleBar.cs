@@ -48,13 +48,6 @@ namespace Fluence.Wpf.Controls
     {
         private const string PART_BackButton = "PART_BackButton";
         private const string PART_PaneToggleButton = "PART_PaneToggleButton";
-        private const string PART_IconPresenter = "PART_IconPresenter";
-        private const string PART_TitleText = "PART_TitleText";
-        private const string PART_SubtitleText = "PART_SubtitleText";
-        private const string PART_LeftHeaderPresenter = "PART_LeftHeaderPresenter";
-        private const string PART_ContentPresenter = "PART_ContentPresenter";
-        private const string PART_RightHeaderPresenter = "PART_RightHeaderPresenter";
-
         private WpfButton _backButton;
         private WpfButton _paneToggleButton;
 

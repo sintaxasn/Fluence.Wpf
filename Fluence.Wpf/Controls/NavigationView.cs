@@ -67,8 +67,6 @@ namespace Fluence.Wpf.Controls
         public const string PartSelectionIndicator = "PART_SelectionIndicator";
 
         private const double NavigationItemOuterHorizontalMargin = 4.0;
-        private const double NavigationItemIconColumnWidth = 40.0;
-        private const double NavigationItemGapColumnWidth = 12.0;
         private const double NavigationItemChildIndicatorOffset = 44.0;
 
         private System.Windows.Controls.Button _backButton;

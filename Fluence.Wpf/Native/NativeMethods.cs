@@ -65,8 +65,6 @@ namespace Fluence.Wpf.Native
         private const int SW_RESTORE = 9;
         private const int SW_MINIMIZE = 6;
         private const int SW_MAXIMIZE = 3;
-        private const int SW_SHOWMINIMIZED = 2;
-        private const int SW_SHOWNOACTIVATE = 4;
 
         #endregion
 

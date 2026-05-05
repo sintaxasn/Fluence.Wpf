@@ -544,11 +544,5 @@ namespace Fluence.Wpf.Controls
 
             return value;
         }
-
-        private static bool AreClose(double a, double b)
-        {
-            const double eps = 1e-9;
-            return Math.Abs(a - b) < eps;
-        }
     }
 }

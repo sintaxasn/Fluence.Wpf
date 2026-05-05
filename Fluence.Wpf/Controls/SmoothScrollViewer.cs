@@ -72,12 +72,6 @@ namespace Fluence.Wpf.Controls
                 typeof(SmoothScrollViewer),
                 new PropertyMetadata(0.0, OnCurrentVerticalOffsetChanged));
 
-        private double CurrentVerticalOffset
-        {
-            get => (double)GetValue(CurrentVerticalOffsetProperty);
-            set => SetValue(CurrentVerticalOffsetProperty, value);
-        }
-
         private static void OnCurrentVerticalOffsetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ((SmoothScrollViewer)d).ScrollToVerticalOffset((double)e.NewValue);
@@ -89,12 +83,6 @@ namespace Fluence.Wpf.Controls
                 typeof(double),
                 typeof(SmoothScrollViewer),
                 new PropertyMetadata(0.0, OnCurrentHorizontalOffsetChanged));
-
-        private double CurrentHorizontalOffset
-        {
-            get => (double)GetValue(CurrentHorizontalOffsetProperty);
-            set => SetValue(CurrentHorizontalOffsetProperty, value);
-        }
 
         private static void OnCurrentHorizontalOffsetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
