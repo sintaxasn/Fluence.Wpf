@@ -76,6 +76,14 @@ namespace Fluence.Wpf.Controls
         private Path _indeterminateArcPath;
         private bool _isIndeterminateAnimationRunning;
 
+        // Reusable geometry objects — mutated in place each render to avoid per-frame allocation.
+        private ArcSegment _indeterminateArcSegment;
+        private PathFigure _indeterminateFigure;
+        private PathGeometry _indeterminateGeometry;
+        private ArcSegment _determinateArcSegment;
+        private PathFigure _determinateFigure;
+        private PathGeometry _determinateGeometry;
+
         static ProgressRing()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -327,6 +335,19 @@ namespace Fluence.Wpf.Controls
 
             _indeterminateArcPath = GetTemplateChild(PART_IndeterminateArc) as Path;
             _arcPath = GetTemplateChild(PART_DeterminateArc) as Path;
+
+            // Recreate geometry objects so mutations target the current template's path elements.
+            _indeterminateArcSegment = new ArcSegment { SweepDirection = SweepDirection.Clockwise };
+            _indeterminateFigure = new PathFigure { IsClosed = false };
+            _indeterminateFigure.Segments.Add(_indeterminateArcSegment);
+            _indeterminateGeometry = new PathGeometry();
+            _indeterminateGeometry.Figures.Add(_indeterminateFigure);
+
+            _determinateArcSegment = new ArcSegment { SweepDirection = SweepDirection.Clockwise };
+            _determinateFigure = new PathFigure { IsClosed = false };
+            _determinateFigure.Segments.Add(_determinateArcSegment);
+            _determinateGeometry = new PathGeometry();
+            _determinateGeometry.Figures.Add(_determinateFigure);
 
             UpdateTemplateSettings();
 
@@ -687,7 +708,12 @@ namespace Fluence.Wpf.Controls
                 {
                     // Defer determinate first render until the initial layout pass provides a size.
                     EventHandler handler = null;
-                    handler = delegate { LayoutUpdated -= handler; RenderDeterminateArc(deferredFraction); };
+                    handler = delegate
+                    {
+                        LayoutUpdated -= handler;
+                        if (!IsActive || IsIndeterminate) return;
+                        RenderDeterminateArc(deferredFraction);
+                    };
                     LayoutUpdated += handler;
                 }
 
@@ -703,23 +729,34 @@ namespace Fluence.Wpf.Controls
 
             var startPoint = GetArcPoint(center, radius, startAngle);
             var endPoint = GetArcPoint(center, radius, startAngle + angle);
-            var figure = new PathFigure
-            {
-                StartPoint = startPoint,
-                IsClosed = false
-            };
 
-            figure.Segments.Add(new ArcSegment
-            {
-                Point = endPoint,
-                Size = new Size(radius, radius),
-                IsLargeArc = angle > 180,
-                SweepDirection = SweepDirection.Clockwise
-            });
+            // Select the pre-allocated geometry set for this path and mutate in place.
+            PathFigure figure;
+            ArcSegment segment;
+            PathGeometry geometry;
 
-            var geometry = new PathGeometry();
-            geometry.Figures.Add(figure);
-            path.Data = geometry;
+            if (ReferenceEquals(path, _indeterminateArcPath))
+            {
+                figure = _indeterminateFigure;
+                segment = _indeterminateArcSegment;
+                geometry = _indeterminateGeometry;
+            }
+            else
+            {
+                figure = _determinateFigure;
+                segment = _determinateArcSegment;
+                geometry = _determinateGeometry;
+            }
+
+            figure.StartPoint = startPoint;
+            segment.Point = endPoint;
+            segment.Size = new Size(radius, radius);
+            segment.IsLargeArc = angle > 180;
+
+            if (!ReferenceEquals(path.Data, geometry))
+            {
+                path.Data = geometry;
+            }
         }
 
         private bool TryGetArcMetrics(out double center, out double radius, out bool isLayoutSizeUnavailable)
