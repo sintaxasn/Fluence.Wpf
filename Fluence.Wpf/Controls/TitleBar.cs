@@ -262,22 +262,14 @@ namespace Fluence.Wpf.Controls
         /// <param name="e">The event data.</param>
         protected virtual void OnBackRequested(EventArgs e)
         {
-            EventHandler handler = BackRequested;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
+            BackRequested?.Invoke(this, e);
         }
 
         /// <summary>Raises the <see cref="PaneToggleRequested"/> event.</summary>
         /// <param name="e">The event data.</param>
         protected virtual void OnPaneToggleRequested(EventArgs e)
         {
-            EventHandler handler = PaneToggleRequested;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
+            PaneToggleRequested?.Invoke(this, e);
         }
 
         private static void OnCustomContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

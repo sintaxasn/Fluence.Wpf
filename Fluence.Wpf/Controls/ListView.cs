@@ -334,10 +334,7 @@ namespace Fluence.Wpf.Controls
             if (!ItemAnimationsEnabled)
             {
                 RemoveItem(item);
-                if (onCompleted != null)
-                {
-                    onCompleted();
-                }
+                onCompleted?.Invoke();
 
                 return;
             }
@@ -345,10 +342,7 @@ namespace Fluence.Wpf.Controls
             if (ItemContainerGenerator.ContainerFromItem(item) is not UIElement container)
             {
                 RemoveItem(item);
-                if (onCompleted != null)
-                {
-                    onCompleted();
-                }
+                onCompleted?.Invoke();
 
                 return;
             }
@@ -370,10 +364,7 @@ namespace Fluence.Wpf.Controls
             opacityAnim.Completed += (s, e) =>
             {
                 RemoveItem(item);
-                if (onCompleted != null)
-                {
-                    onCompleted();
-                }
+                onCompleted?.Invoke();
             };
 
             container.BeginAnimation(OpacityProperty, opacityAnim);

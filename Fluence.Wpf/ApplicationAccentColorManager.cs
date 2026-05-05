@@ -470,11 +470,7 @@ namespace Fluence.Wpf
 
         private static void OnAccentColorChanged()
         {
-            EventHandler<EventArgs> handler = AccentColorChanged;
-            if (handler != null)
-            {
-                handler(null, EventArgs.Empty);
-            }
+            AccentColorChanged?.Invoke(null, EventArgs.Empty);
         }
 
         internal static void ResetForTesting()

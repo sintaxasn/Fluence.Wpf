@@ -349,11 +349,7 @@ namespace Fluence.Wpf.Controls
         /// <param name="newValue">The new value.</param>
         protected virtual void OnValueChanged(double oldValue, double newValue)
         {
-            EventHandler<NumberBoxValueChangedEventArgs> handler = ValueChanged;
-            if (handler != null)
-            {
-                handler(this, new NumberBoxValueChangedEventArgs(oldValue, newValue));
-            }
+            ValueChanged?.Invoke(this, new NumberBoxValueChangedEventArgs(oldValue, newValue));
         }
 
         /// <summary>

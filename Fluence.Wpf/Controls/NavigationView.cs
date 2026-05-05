@@ -440,11 +440,7 @@ namespace Fluence.Wpf.Controls
             }
 
             object invokedItem = GetDataFromContainer(item);
-            EventHandler<NavigationViewItemInvokedEventArgs> handler = ItemInvoked;
-            if (handler != null)
-            {
-                handler(this, new NavigationViewItemInvokedEventArgs(invokedItem, item, false));
-            }
+            ItemInvoked?.Invoke(this, new NavigationViewItemInvokedEventArgs(invokedItem, item, false));
 
             SelectItemFromContainer(item);
         }
@@ -479,11 +475,7 @@ namespace Fluence.Wpf.Controls
 
         private void OnBackButtonClick(object sender, RoutedEventArgs e)
         {
-            EventHandler<NavigationViewBackRequestedEventArgs> handler = BackRequested;
-            if (handler != null)
-            {
-                handler(this, new NavigationViewBackRequestedEventArgs());
-            }
+            BackRequested?.Invoke(this, new NavigationViewBackRequestedEventArgs());
         }
 
         private void OnPaneToggleButtonClick(object sender, RoutedEventArgs e)
@@ -515,19 +507,11 @@ namespace Fluence.Wpf.Controls
             bool nowOpen = (bool)e.NewValue;
             if (nowOpen)
             {
-                EventHandler opening = nav.PaneOpening;
-                if (opening != null)
-                {
-                    opening(nav, EventArgs.Empty);
-                }
+                nav.PaneOpening?.Invoke(nav, EventArgs.Empty);
             }
             else
             {
-                EventHandler closed = nav.PaneClosed;
-                if (closed != null)
-                {
-                    closed(nav, EventArgs.Empty);
-                }
+                nav.PaneClosed?.Invoke(nav, EventArgs.Empty);
             }
 
             nav._indicatorPositioned = false;
