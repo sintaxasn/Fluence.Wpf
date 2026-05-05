@@ -246,7 +246,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            if (e.Key == Key.Enter || e.Key == Key.Space)
+            if (e.Key is Key.Enter or Key.Space)
             {
                 IsPressed = true;
                 e.Handled = true;
@@ -262,7 +262,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            if (e.Key == Key.Enter || e.Key == Key.Space)
+            if (e.Key is Key.Enter or Key.Space)
             {
                 bool wasPressed = IsPressed;
                 IsPressed = false;

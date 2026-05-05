@@ -190,10 +190,10 @@ namespace Fluence.Wpf
 
         private static IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
-            if (msg == NativeConstants.WM_SETTINGCHANGE ||
-                msg == NativeConstants.WM_DWMCOLORIZATIONCOLORCHANGED ||
-                msg == NativeConstants.WM_THEMECHANGED ||
-                msg == NativeConstants.WM_SYSCOLORCHANGE)
+            if (msg is NativeConstants.WM_SETTINGCHANGE or
+                NativeConstants.WM_DWMCOLORIZATIONCOLORCHANGED or
+                NativeConstants.WM_THEMECHANGED or
+                NativeConstants.WM_SYSCOLORCHANGE)
             {
                 long currentTick = DateTime.UtcNow.Ticks;
                 if (currentTick - _lastUpdateTick > DebounceIntervalTicks)

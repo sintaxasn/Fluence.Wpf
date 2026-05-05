@@ -58,7 +58,7 @@ namespace Fluence.Wpf.Controls
             out bool restoreEnabled)
         {
             GetMaximizeRestoreLayout(resizeMode, windowState, out maximizeVisibility, out restoreVisibility);
-            if (resizeMode == ResizeMode.NoResize || resizeMode == ResizeMode.CanMinimize)
+            if (resizeMode is ResizeMode.NoResize or ResizeMode.CanMinimize)
             {
                 maximizeEnabled = false;
                 restoreEnabled = false;

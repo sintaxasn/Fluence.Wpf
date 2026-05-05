@@ -198,7 +198,7 @@ namespace Fluence.Wpf.Controls
                     : BackdropType.None;
             }
 
-            if (requestedBackdrop == BackdropType.Acrylic || requestedBackdrop == BackdropType.Tabbed)
+            if (requestedBackdrop is BackdropType.Acrylic or BackdropType.Tabbed)
             {
                 if (capabilities.SupportsSystemBackdropType)
                 {

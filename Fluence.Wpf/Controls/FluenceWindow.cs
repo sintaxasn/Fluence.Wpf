@@ -932,8 +932,8 @@ namespace Fluence.Wpf.Controls
         private bool IsCaptionChromeOverrideExplicit(DependencyProperty dp)
         {
             ValueSource source = DependencyPropertyHelper.GetValueSource(this, dp);
-            return source.BaseValueSource != BaseValueSource.Default &&
-                   source.BaseValueSource != BaseValueSource.Inherited;
+            return source.BaseValueSource is not BaseValueSource.Default and
+                   not BaseValueSource.Inherited;
         }
 
         private void ApplyCornerPreference()
@@ -1068,7 +1068,7 @@ namespace Fluence.Wpf.Controls
                 if (wParam.ToInt32() == NativeConstants.HTMAXBUTTON)
                 {
                     ClearSnapHover();
-                    if (ResizeMode == ResizeMode.CanResize || ResizeMode == ResizeMode.CanResizeWithGrip)
+                    if (ResizeMode is ResizeMode.CanResize or ResizeMode.CanResizeWithGrip)
                     {
                         if (WindowState == WindowState.Maximized)
                         {
@@ -1234,8 +1234,8 @@ namespace Fluence.Wpf.Controls
         private void OnCanResizeWindow(object sender, CanExecuteRoutedEventArgs e)
         {
             bool allowedByResizeMode =
-                ResizeMode == ResizeMode.CanResize ||
-                ResizeMode == ResizeMode.CanResizeWithGrip;
+                ResizeMode is ResizeMode.CanResize or
+                ResizeMode.CanResizeWithGrip;
             bool allowedByExplicitDp =
                 IsCaptionChromeOverrideExplicit(IsMaximizeButtonVisibleProperty) &&
                 IsMaximizeButtonVisible == Visibility.Visible;

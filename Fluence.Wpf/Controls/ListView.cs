@@ -347,7 +347,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            if (container.RenderTransform == null || !(container.RenderTransform is TranslateTransform))
+            if (container.RenderTransform is not TranslateTransform)
             {
                 container.RenderTransform = new TranslateTransform();
             }

@@ -380,8 +380,8 @@ namespace Fluence.Wpf.Controls
         protected override bool IsItemItsOwnContainerOverride(object item)
         {
             return item is NavigationViewItem
-                || item is NavigationViewItemHeader
-                || item is NavigationViewItemSeparator;
+                or NavigationViewItemHeader
+                or NavigationViewItemSeparator;
         }
 
         /// <inheritdoc />
