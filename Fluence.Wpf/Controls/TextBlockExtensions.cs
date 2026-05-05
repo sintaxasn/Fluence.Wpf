@@ -98,28 +98,18 @@ namespace Fluence.Wpf.Controls
 
         private static string GetTypographyStyleKey(FluentTypography typography)
         {
-            switch (typography)
+            return typography switch
             {
-                case FluentTypography.Caption:
-                    return CaptionTextBlockStyleKey;
-                case FluentTypography.Body:
-                    return BodyTextBlockStyleKey;
-                case FluentTypography.BodyStrong:
-                    return BodyStrongTextBlockStyleKey;
-                case FluentTypography.BodyLarge:
-                    return BodyLargeTextBlockStyleKey;
-                case FluentTypography.Subtitle:
-                    return SubtitleTextBlockStyleKey;
-                case FluentTypography.Title:
-                    return TitleTextBlockStyleKey;
-                case FluentTypography.TitleLarge:
-                    return TitleLargeTextBlockStyleKey;
-                case FluentTypography.Display:
-                    return DisplayTextBlockStyleKey;
-                case FluentTypography.None:
-                default:
-                    return null;
-            }
+                FluentTypography.Caption => CaptionTextBlockStyleKey,
+                FluentTypography.Body => BodyTextBlockStyleKey,
+                FluentTypography.BodyStrong => BodyStrongTextBlockStyleKey,
+                FluentTypography.BodyLarge => BodyLargeTextBlockStyleKey,
+                FluentTypography.Subtitle => SubtitleTextBlockStyleKey,
+                FluentTypography.Title => TitleTextBlockStyleKey,
+                FluentTypography.TitleLarge => TitleLargeTextBlockStyleKey,
+                FluentTypography.Display => DisplayTextBlockStyleKey,
+                _ => null,
+            };
         }
 
         #endregion

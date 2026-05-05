@@ -266,23 +266,13 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         private void UpdateSeverityState(bool useTransitions)
         {
-            string stateName;
-            switch (Severity)
+            string stateName = Severity switch
             {
-                case InfoBarSeverity.Success:
-                    stateName = "Success";
-                    break;
-                case InfoBarSeverity.Warning:
-                    stateName = "Warning";
-                    break;
-                case InfoBarSeverity.Error:
-                    stateName = "Error";
-                    break;
-                default:
-                    stateName = "Informational";
-                    break;
-            }
-
+                InfoBarSeverity.Success => "Success",
+                InfoBarSeverity.Warning => "Warning",
+                InfoBarSeverity.Error => "Error",
+                _ => "Informational",
+            };
             VisualStateManager.GoToState(this, stateName, useTransitions);
         }
 

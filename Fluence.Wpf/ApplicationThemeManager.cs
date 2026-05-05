@@ -295,21 +295,12 @@ namespace Fluence.Wpf
 
         private static Uri GetThemeColorUri(ApplicationTheme resolvedTheme)
         {
-            string themeName;
-
-            switch (resolvedTheme)
+            string themeName = resolvedTheme switch
             {
-                case ApplicationTheme.Dark:
-                    themeName = "Dark";
-                    break;
-                case ApplicationTheme.HighContrast:
-                    themeName = "HighContrast";
-                    break;
-                default:
-                    themeName = "Light";
-                    break;
-            }
-
+                ApplicationTheme.Dark => "Dark",
+                ApplicationTheme.HighContrast => "HighContrast",
+                _ => "Light",
+            };
             return new Uri(PackBase + "Themes/Colors/Theme." + themeName + ".xaml", UriKind.Absolute);
         }
 

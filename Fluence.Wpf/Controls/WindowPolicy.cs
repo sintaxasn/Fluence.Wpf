@@ -263,32 +263,23 @@ namespace Fluence.Wpf.Controls
 
         public static int GetCornerPreference(CornerPreference preference)
         {
-            switch (preference)
+            return preference switch
             {
-                case CornerPreference.DoNotRound:
-                    return NativeConstants.DWMWCP_DONOTROUND;
-                case CornerPreference.RoundSmall:
-                    return NativeConstants.DWMWCP_ROUNDSMALL;
-                case CornerPreference.Default:
-                case CornerPreference.Round:
-                    return NativeConstants.DWMWCP_ROUND;
-                default:
-                    return NativeConstants.DWMWCP_ROUND;
-            }
+                CornerPreference.DoNotRound => NativeConstants.DWMWCP_DONOTROUND,
+                CornerPreference.RoundSmall => NativeConstants.DWMWCP_ROUNDSMALL,
+                CornerPreference.Default or CornerPreference.Round => NativeConstants.DWMWCP_ROUND,
+                _ => NativeConstants.DWMWCP_ROUND,
+            };
         }
 
         private static int MapSystemBackdropType(BackdropType backdropType)
         {
-            switch (backdropType)
+            return backdropType switch
             {
-                case BackdropType.Acrylic:
-                    return NativeConstants.DWMSBT_TRANSIENTWINDOW;
-                case BackdropType.Tabbed:
-                    return NativeConstants.DWMSBT_TABBEDWINDOW;
-                case BackdropType.Mica:
-                default:
-                    return NativeConstants.DWMSBT_MAINWINDOW;
-            }
+                BackdropType.Acrylic => NativeConstants.DWMSBT_TRANSIENTWINDOW,
+                BackdropType.Tabbed => NativeConstants.DWMSBT_TABBEDWINDOW,
+                _ => NativeConstants.DWMSBT_MAINWINDOW,
+            };
         }
     }
 }
