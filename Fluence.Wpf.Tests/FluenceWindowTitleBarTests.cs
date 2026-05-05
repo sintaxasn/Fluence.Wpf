@@ -170,6 +170,14 @@ namespace Fluence.Wpf.Tests
             return result;
         }
 
+        private static void AssertNativeConstantValue(string fieldName, object expectedValue)
+        {
+            var field = typeof(NativeConstants).GetField(fieldName, BindingFlags.Static | BindingFlags.Public);
+            Assert.IsNotNull(field, "NativeConstants." + fieldName + " must exist.");
+            Assert.AreEqual(expectedValue, field.GetRawConstantValue(),
+                "NativeConstants." + fieldName + " must match the Win32 value.");
+        }
+
         private static IntPtr MakeLParamScreen(double screenX, double screenY)
         {
             int x = (int)screenX;
@@ -724,12 +732,6 @@ namespace Fluence.Wpf.Tests
                 InvokeWndProc(w, NativeConstants.WM_SYSCOMMAND, new IntPtr(NativeConstants.SC_MOVE), IntPtr.Zero, out handled);
                 Assert.IsFalse(handled, "IsMoveable=true must leave SC_MOVE available.");
             });
-        }
-
-        [TestMethod]
-        public void NativeConstants_DefinesWmNcLButtonUp()
-        {
-            Assert.AreEqual(0x00A2, NativeConstants.WM_NCLBUTTONUP);
         }
 
         #endregion
@@ -1407,15 +1409,11 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void NativeConstants_WmGetMinMaxInfo_HasCorrectValue()
+        public void NativeConstants_DefineRequiredWin32Values()
         {
-            Assert.AreEqual(0x0024, NativeConstants.WM_GETMINMAXINFO);
-        }
-
-        [TestMethod]
-        public void NativeConstants_MonitorDefaultToNearest_HasCorrectValue()
-        {
-            Assert.AreEqual(2u, NativeConstants.MONITOR_DEFAULTTONEAREST);
+            AssertNativeConstantValue("WM_NCLBUTTONUP", 0x00A2);
+            AssertNativeConstantValue("WM_GETMINMAXINFO", 0x0024);
+            AssertNativeConstantValue("MONITOR_DEFAULTTONEAREST", 2u);
         }
 
         #endregion

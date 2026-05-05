@@ -1190,6 +1190,16 @@ namespace Fluence.Wpf.Tests
         private static T FindByName<T>(DependencyObject root, string name)
             where T : FrameworkElement
         {
+            FrameworkElement element = root as FrameworkElement;
+            if (element != null)
+            {
+                T named = element.FindName(name) as T;
+                if (named != null)
+                {
+                    return named;
+                }
+            }
+
             foreach (T item in FindAllVisualChildren<T>(root))
             {
                 if (string.Equals(item.Name, name, StringComparison.Ordinal))
@@ -1204,10 +1214,27 @@ namespace Fluence.Wpf.Tests
         private static IEnumerable<T> FindAllVisualChildren<T>(DependencyObject root)
             where T : DependencyObject
         {
+            var visited = new HashSet<DependencyObject>();
+            foreach (T result in FindAllVisualChildren<T>(root, visited))
+            {
+                yield return result;
+            }
+        }
+
+        private static IEnumerable<T> FindAllVisualChildren<T>(DependencyObject root, HashSet<DependencyObject> visited)
+            where T : DependencyObject
+        {
             if (root == null)
             {
                 yield break;
             }
+
+            if (visited.Contains(root))
+            {
+                yield break;
+            }
+
+            visited.Add(root);
 
             T current = root as T;
             if (current != null)
@@ -1228,7 +1255,7 @@ namespace Fluence.Wpf.Tests
             for (int i = 0; i < visualCount; i++)
             {
                 DependencyObject child = VisualTreeHelper.GetChild(root, i);
-                foreach (T result in FindAllVisualChildren<T>(child))
+                foreach (T result in FindAllVisualChildren<T>(child, visited))
                 {
                     yield return result;
                 }
@@ -1242,7 +1269,7 @@ namespace Fluence.Wpf.Tests
                     continue;
                 }
 
-                foreach (T result in FindAllVisualChildren<T>(logical))
+                foreach (T result in FindAllVisualChildren<T>(logical, visited))
                 {
                     yield return result;
                 }
