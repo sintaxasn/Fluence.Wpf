@@ -32,7 +32,6 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using Fluence.Wpf.Automation;
-using Fluence.Wpf;
 
 namespace Fluence.Wpf.Controls
 {

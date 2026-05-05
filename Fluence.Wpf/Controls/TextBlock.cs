@@ -27,7 +27,6 @@
  */
 using System.Windows;
 using System.Windows.Controls;
-using Fluence.Wpf;
 
 namespace Fluence.Wpf.Controls
 {

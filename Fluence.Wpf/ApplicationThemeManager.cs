@@ -27,7 +27,6 @@
  */
 using System;
 using System.Windows;
-using System.Windows.Media;
 using Fluence.Wpf.Helpers;
 
 namespace Fluence.Wpf
