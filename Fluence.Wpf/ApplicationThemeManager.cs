@@ -67,34 +67,22 @@ namespace Fluence.Wpf
         private static System.Collections.Generic.List<object> _promotedHighContrastBrushKeys;
 
         /// <summary>Gets the currently requested theme (may be <see cref="ApplicationTheme.Auto"/>).</summary>
-        public static ApplicationTheme CurrentTheme
-        {
-            get { return _currentTheme; }
-        }
+        public static ApplicationTheme CurrentTheme => _currentTheme;
 
         /// <summary>Gets the currently requested backdrop type.</summary>
-        public static BackdropType CurrentBackdrop
-        {
-            get { return _currentBackdrop; }
-        }
+        public static BackdropType CurrentBackdrop => _currentBackdrop;
 
         /// <summary>
         /// Gets a value indicating whether the Windows system (window-chrome) color mode is currently Dark.
         /// Reflects the live registry value; independent of <see cref="CurrentTheme"/>.
         /// </summary>
-        public static bool IsSystemInDarkMode
-        {
-            get { return !RegistryHelper.GetSystemUsesLightTheme(); }
-        }
+        public static bool IsSystemInDarkMode => !RegistryHelper.GetSystemUsesLightTheme();
 
         /// <summary>
         /// Gets a value indicating whether the Windows app color mode is currently Dark.
         /// Reflects the live registry value; independent of <see cref="CurrentTheme"/>.
         /// </summary>
-        public static bool IsAppInDarkMode
-        {
-            get { return !RegistryHelper.GetAppsUseLightTheme(); }
-        }
+        public static bool IsAppInDarkMode => !RegistryHelper.GetAppsUseLightTheme();
 
         /// <summary>Raised after a theme or accent change has been applied.</summary>
         public static event EventHandler<ThemeChangedEventArgs> Changed;

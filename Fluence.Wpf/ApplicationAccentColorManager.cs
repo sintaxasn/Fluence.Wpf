@@ -83,108 +83,66 @@ namespace Fluence.Wpf
         /// <summary>
         /// Gets the current base system accent color (ARGB). Default is a Windows blue until <see cref="ApplySystemAccent"/> runs.
         /// </summary>
-        public static Color SystemAccentColor
-        {
-            get { return _systemAccentColor; }
-        }
+        public static Color SystemAccentColor => _systemAccentColor;
 
         /// <summary>
         /// Gets the lightest tint on the generated accent ramp. Default matches <see cref="SystemAccentColor"/> until the ramp is loaded.
         /// </summary>
-        public static Color SystemAccentColorLight1
-        {
-            get { return _systemAccentColorLight1; }
-        }
+        public static Color SystemAccentColorLight1 => _systemAccentColorLight1;
 
         /// <summary>
         /// Gets the second lightest tint on the generated accent ramp.
         /// </summary>
-        public static Color SystemAccentColorLight2
-        {
-            get { return _systemAccentColorLight2; }
-        }
+        public static Color SystemAccentColorLight2 => _systemAccentColorLight2;
 
         /// <summary>
         /// Gets the lightest tint on the generated accent ramp.
         /// </summary>
-        public static Color SystemAccentColorLight3
-        {
-            get { return _systemAccentColorLight3; }
-        }
+        public static Color SystemAccentColorLight3 => _systemAccentColorLight3;
 
         /// <summary>
         /// Gets the first dark shade on the generated accent ramp.
         /// </summary>
-        public static Color SystemAccentColorDark1
-        {
-            get { return _systemAccentColorDark1; }
-        }
+        public static Color SystemAccentColorDark1 => _systemAccentColorDark1;
 
         /// <summary>
         /// Gets the second dark shade on the generated accent ramp.
         /// </summary>
-        public static Color SystemAccentColorDark2
-        {
-            get { return _systemAccentColorDark2; }
-        }
+        public static Color SystemAccentColorDark2 => _systemAccentColorDark2;
 
         /// <summary>
         /// Gets the darkest shade on the generated accent ramp.
         /// </summary>
-        public static Color SystemAccentColorDark3
-        {
-            get { return _systemAccentColorDark3; }
-        }
+        public static Color SystemAccentColorDark3 => _systemAccentColorDark3;
 
         /// <summary>
         /// Gets the primary accent color used for emphasis surfaces.
         /// </summary>
-        public static Color SystemAccentColorPrimary
-        {
-            get { return _systemAccentColorPrimary; }
-        }
+        public static Color SystemAccentColorPrimary => _systemAccentColorPrimary;
 
         /// <summary>
         /// Gets the secondary accent color used for layered emphasis.
         /// </summary>
-        public static Color SystemAccentColorSecondary
-        {
-            get { return _systemAccentColorSecondary; }
-        }
+        public static Color SystemAccentColorSecondary => _systemAccentColorSecondary;
 
         /// <summary>
         /// Gets the tertiary accent color used for subtle accent fills.
         /// </summary>
-        public static Color SystemAccentColorTertiary
-        {
-            get { return _systemAccentColorTertiary; }
-        }
+        public static Color SystemAccentColorTertiary => _systemAccentColorTertiary;
 
         /// <summary>
         /// Gets a value indicating whether Windows is configured to show accent color on title bars and window borders.
         /// </summary>
-        public static bool IsAccentColorOnTitleBarsEnabled
-        {
-            get { return RegistryHelper.GetColorPrevalence(); }
-        }
+        public static bool IsAccentColorOnTitleBarsEnabled => RegistryHelper.GetColorPrevalence();
 
         /// <summary>Gets the active titlebar color (from DWM AccentColor or default gray).</summary>
-        public static Color TitleBarActiveColor
-        {
-            get { return _titleBarActiveColor; }
-        }
+        public static Color TitleBarActiveColor => _titleBarActiveColor;
 
         /// <summary>Gets the inactive titlebar color (from DWM AccentColorInactive or default gray).</summary>
-        public static Color TitleBarInactiveColor
-        {
-            get { return _titleBarInactiveColor; }
-        }
+        public static Color TitleBarInactiveColor => _titleBarInactiveColor;
 
         /// <summary>Gets the window border color (titlebar active on Win11, blended on Win10).</summary>
-        public static Color WindowBorderColor
-        {
-            get { return _windowBorderColor; }
-        }
+        public static Color WindowBorderColor => _windowBorderColor;
 
         /// <summary>
         /// Loads the current Windows accent palette from the registry or DWM and updates application resources.

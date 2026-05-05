@@ -42,10 +42,7 @@ namespace Fluence.Wpf.Automation
         /// <summary>Initializes a new instance.</summary>
         public SplitButtonAutomationPeer(SplitButton owner) : base(owner) { }
 
-        private SplitButton SplitButton
-        {
-            get { return (SplitButton)Owner; }
-        }
+        private SplitButton SplitButton => (SplitButton)Owner;
 
         /// <inheritdoc />
         protected override string GetClassNameCore()
@@ -105,15 +102,9 @@ namespace Fluence.Wpf.Automation
             }
         }
 
-        ExpandCollapseState IExpandCollapseProvider.ExpandCollapseState
-        {
-            get
-            {
-                return SplitButton.IsFlyoutOpen
+        ExpandCollapseState IExpandCollapseProvider.ExpandCollapseState => SplitButton.IsFlyoutOpen
                     ? ExpandCollapseState.Expanded
                     : ExpandCollapseState.Collapsed;
-            }
-        }
 
         void IExpandCollapseProvider.Expand()
         {

@@ -110,10 +110,7 @@ namespace Fluence.Wpf.Helpers
         /// Gets the <see cref="Type"/> of value produced by this animation
         /// (<see cref="GridLength"/>).
         /// </summary>
-        public override Type TargetPropertyType
-        {
-            get { return typeof(GridLength); }
-        }
+        public override Type TargetPropertyType => typeof(GridLength);
 
         /// <summary>
         /// Creates a new, frozen clone of this animation.

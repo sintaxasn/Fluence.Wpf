@@ -12,10 +12,7 @@ namespace Fluence.Wpf.Automation
         /// <summary>Initializes a new instance.</summary>
         public NumberBoxAutomationPeer(NumberBox owner) : base(owner) { }
 
-        private NumberBox NumberBox
-        {
-            get { return (NumberBox)Owner; }
-        }
+        private NumberBox NumberBox => (NumberBox)Owner;
 
         /// <inheritdoc />
         protected override string GetClassNameCore()
@@ -40,35 +37,17 @@ namespace Fluence.Wpf.Automation
             return base.GetPattern(patternInterface);
         }
 
-        double IRangeValueProvider.Value
-        {
-            get { return NumberBox.Value; }
-        }
+        double IRangeValueProvider.Value => NumberBox.Value;
 
-        double IRangeValueProvider.Minimum
-        {
-            get { return NumberBox.Minimum; }
-        }
+        double IRangeValueProvider.Minimum => NumberBox.Minimum;
 
-        double IRangeValueProvider.Maximum
-        {
-            get { return NumberBox.Maximum; }
-        }
+        double IRangeValueProvider.Maximum => NumberBox.Maximum;
 
-        double IRangeValueProvider.SmallChange
-        {
-            get { return NumberBox.SmallChange; }
-        }
+        double IRangeValueProvider.SmallChange => NumberBox.SmallChange;
 
-        double IRangeValueProvider.LargeChange
-        {
-            get { return NumberBox.SmallChange; }
-        }
+        double IRangeValueProvider.LargeChange => NumberBox.SmallChange;
 
-        bool IRangeValueProvider.IsReadOnly
-        {
-            get { return !NumberBox.IsEnabled; }
-        }
+        bool IRangeValueProvider.IsReadOnly => !NumberBox.IsEnabled;
 
         void IRangeValueProvider.SetValue(double value)
         {

@@ -12,10 +12,7 @@ namespace Fluence.Wpf.Automation
         /// <summary>Initializes a new instance.</summary>
         public NavigationViewAutomationPeer(NavigationView owner) : base(owner) { }
 
-        private NavigationView NavigationView
-        {
-            get { return (NavigationView)Owner; }
-        }
+        private NavigationView NavigationView => (NavigationView)Owner;
 
         /// <inheritdoc />
         protected override string GetClassNameCore()
@@ -40,15 +37,9 @@ namespace Fluence.Wpf.Automation
             return base.GetPattern(patternInterface);
         }
 
-        bool ISelectionProvider.CanSelectMultiple
-        {
-            get { return false; }
-        }
+        bool ISelectionProvider.CanSelectMultiple => false;
 
-        bool ISelectionProvider.IsSelectionRequired
-        {
-            get { return false; }
-        }
+        bool ISelectionProvider.IsSelectionRequired => false;
 
         IRawElementProviderSimple[] ISelectionProvider.GetSelection()
         {

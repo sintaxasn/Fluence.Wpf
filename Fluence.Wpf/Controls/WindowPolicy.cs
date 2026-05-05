@@ -59,18 +59,12 @@ namespace Fluence.Wpf.Controls
 
         public bool SupportsBorderColor { get; private set; }
 
-        public static WindowCapabilities Current
-        {
-            get
-            {
-                return new WindowCapabilities(
+        public static WindowCapabilities Current => new WindowCapabilities(
                     OsVersionHelper.SupportsSystemBackdropType,
                     OsVersionHelper.SupportsMicaEffect,
                     OsVersionHelper.SupportsRoundedCorners,
                     OsVersionHelper.SupportsCaptionColor,
                     OsVersionHelper.SupportsBorderColor);
-            }
-        }
     }
 
     internal sealed class BackdropPlan

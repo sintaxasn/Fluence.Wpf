@@ -111,10 +111,7 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>Gets whether the item is currently being pressed by a pointer.</summary>
-        public bool IsPressed
-        {
-            get { return (bool)GetValue(IsPressedProperty); }
-        }
+        public bool IsPressed => (bool)GetValue(IsPressedProperty);
 
         /// <inheritdoc />
         protected override void OnKeyDown(KeyEventArgs e)

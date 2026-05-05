@@ -12,10 +12,7 @@ namespace Fluence.Wpf.Automation
         /// <summary>Initializes a new instance.</summary>
         public ProgressRingAutomationPeer(ProgressRing owner) : base(owner) { }
 
-        private ProgressRing ProgressRing
-        {
-            get { return (ProgressRing)Owner; }
-        }
+        private ProgressRing ProgressRing => (ProgressRing)Owner;
 
         /// <inheritdoc />
         protected override string GetClassNameCore()
@@ -40,35 +37,17 @@ namespace Fluence.Wpf.Automation
             return base.GetPattern(patternInterface);
         }
 
-        double IRangeValueProvider.Value
-        {
-            get { return ProgressRing.Value; }
-        }
+        double IRangeValueProvider.Value => ProgressRing.Value;
 
-        double IRangeValueProvider.Minimum
-        {
-            get { return ProgressRing.Minimum; }
-        }
+        double IRangeValueProvider.Minimum => ProgressRing.Minimum;
 
-        double IRangeValueProvider.Maximum
-        {
-            get { return ProgressRing.Maximum; }
-        }
+        double IRangeValueProvider.Maximum => ProgressRing.Maximum;
 
-        double IRangeValueProvider.SmallChange
-        {
-            get { return 1; }
-        }
+        double IRangeValueProvider.SmallChange => 1;
 
-        double IRangeValueProvider.LargeChange
-        {
-            get { return 10; }
-        }
+        double IRangeValueProvider.LargeChange => 10;
 
-        bool IRangeValueProvider.IsReadOnly
-        {
-            get { return true; }
-        }
+        bool IRangeValueProvider.IsReadOnly => true;
 
         void IRangeValueProvider.SetValue(double value)
         {

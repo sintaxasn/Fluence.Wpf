@@ -40,10 +40,7 @@ namespace Fluence.Wpf.Automation
         /// <summary>Initializes a new instance.</summary>
         public NavigationViewItemAutomationPeer(NavigationViewItem owner) : base(owner) { }
 
-        private NavigationViewItem NavigationViewItem
-        {
-            get { return (NavigationViewItem)Owner; }
-        }
+        private NavigationViewItem NavigationViewItem => (NavigationViewItem)Owner;
 
         /// <inheritdoc />
         protected override string GetClassNameCore()
@@ -68,10 +65,7 @@ namespace Fluence.Wpf.Automation
             return base.GetPattern(patternInterface);
         }
 
-        bool ISelectionItemProvider.IsSelected
-        {
-            get { return NavigationViewItem.IsSelected; }
-        }
+        bool ISelectionItemProvider.IsSelected => NavigationViewItem.IsSelected;
 
         IRawElementProviderSimple ISelectionItemProvider.SelectionContainer
         {

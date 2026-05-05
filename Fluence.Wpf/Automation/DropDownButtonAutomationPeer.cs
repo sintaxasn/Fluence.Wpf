@@ -13,10 +13,7 @@ namespace Fluence.Wpf.Automation
         /// <summary>Initializes a new instance.</summary>
         public DropDownButtonAutomationPeer(DropDownButton owner) : base(owner) { }
 
-        private DropDownButton DropDownButton
-        {
-            get { return (DropDownButton)Owner; }
-        }
+        private DropDownButton DropDownButton => (DropDownButton)Owner;
 
         /// <inheritdoc />
         protected override string GetClassNameCore()
@@ -41,15 +38,9 @@ namespace Fluence.Wpf.Automation
             return base.GetPattern(patternInterface);
         }
 
-        ExpandCollapseState IExpandCollapseProvider.ExpandCollapseState
-        {
-            get
-            {
-                return DropDownButton.IsChecked == true
+        ExpandCollapseState IExpandCollapseProvider.ExpandCollapseState => DropDownButton.IsChecked == true
                     ? ExpandCollapseState.Expanded
                     : ExpandCollapseState.Collapsed;
-            }
-        }
 
         void IExpandCollapseProvider.Expand()
         {

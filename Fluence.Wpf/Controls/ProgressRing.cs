@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -232,10 +232,7 @@ namespace Fluence.Wpf.Controls
         /// The default Fluence template now uses an arc, but this value is retained for custom
         /// templates and compatibility.
         /// </summary>
-        public double EllipseDiameter
-        {
-            get { return (double)GetValue(EllipseDiameterProperty); }
-        }
+        public double EllipseDiameter => (double)GetValue(EllipseDiameterProperty);
 
         private static readonly DependencyPropertyKey EllipseOffsetPropertyKey =
             DependencyProperty.RegisterReadOnly(
@@ -252,10 +249,7 @@ namespace Fluence.Wpf.Controls
         /// the orbit radius. The default Fluence template now uses an arc, but this value is retained
         /// for custom templates and compatibility.
         /// </summary>
-        public Thickness EllipseOffset
-        {
-            get { return (Thickness)GetValue(EllipseOffsetProperty); }
-        }
+        public Thickness EllipseOffset => (Thickness)GetValue(EllipseOffsetProperty);
 
         // ──────────────────────────────────────────────────────────────────────
         // Determinate animated-fraction (private DP drives the arc geometry)

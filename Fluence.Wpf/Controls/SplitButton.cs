@@ -274,10 +274,7 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Gets a value indicating whether the secondary-half flyout popup is currently open.
         /// </summary>
-        public bool IsFlyoutOpen
-        {
-            get { return (bool)GetValue(IsFlyoutOpenProperty); }
-        }
+        public bool IsFlyoutOpen => (bool)GetValue(IsFlyoutOpenProperty);
 
         #endregion
 

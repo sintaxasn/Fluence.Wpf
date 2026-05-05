@@ -13,10 +13,7 @@ namespace Fluence.Wpf.Automation
         /// <summary>Initializes a new instance.</summary>
         public ToggleSwitchAutomationPeer(ToggleSwitch owner) : base(owner) { }
 
-        private ToggleSwitch ToggleSwitch
-        {
-            get { return (ToggleSwitch)Owner; }
-        }
+        private ToggleSwitch ToggleSwitch => (ToggleSwitch)Owner;
 
         /// <inheritdoc />
         protected override string GetClassNameCore()
