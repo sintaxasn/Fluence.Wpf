@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -68,8 +68,8 @@ namespace Fluence.Wpf.Controls
         private const double IndeterminatePausedSweepAngle = 50.0;
         private const double FullCircleLimit = 359.99;
 
-        private static readonly Duration IndeterminateAnimationDuration = new Duration(TimeSpan.FromMilliseconds(5000));
-        private static readonly Duration DeterminateAnimationDuration = new Duration(TimeSpan.FromMilliseconds(150));
+        private static readonly Duration IndeterminateAnimationDuration = new Duration(TimeSpan.FromMilliseconds(4000));
+        private static readonly Duration DeterminateAnimationDuration = new Duration(TimeSpan.FromMilliseconds(200));
         private static readonly IEasingFunction DeterminateAnimationEasing = new CubicEase { EasingMode = EasingMode.EaseInOut };
 
         private Path _arcPath;
