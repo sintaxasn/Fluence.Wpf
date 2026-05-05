@@ -306,7 +306,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            TabViewTabCloseRequestedEventArgs forwarded = new TabViewTabCloseRequestedEventArgs(TabCloseRequestedEvent, this, inner.Tab, inner.Item);
+            TabViewTabCloseRequestedEventArgs forwarded = new(TabCloseRequestedEvent, this, inner.Tab, inner.Item);
             RaiseEvent(forwarded);
             // Consumers should handle one aggregate close request from TabView rather
             // than both the child TabViewItem event and the forwarded parent event.

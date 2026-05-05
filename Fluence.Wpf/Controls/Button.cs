@@ -190,7 +190,7 @@ namespace Fluence.Wpf.Controls
             {
             }
 
-            FormattedText formattedText = new FormattedText(
+            FormattedText formattedText = new(
                 text,
                 CultureInfo.CurrentCulture,
                 FlowDirection.LeftToRight,

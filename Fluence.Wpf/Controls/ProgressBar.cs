@@ -388,7 +388,7 @@ namespace Fluence.Wpf.Controls
         {
             target.X = from;
 
-            DoubleAnimation animation = new DoubleAnimation
+            DoubleAnimation animation = new()
             {
                 From = from,
                 To = to,
@@ -467,7 +467,7 @@ namespace Fluence.Wpf.Controls
             _fill.BeginAnimation(WidthProperty, null);
             _fill.Width = targetWidth;
 
-            DoubleAnimation animation = new DoubleAnimation
+            DoubleAnimation animation = new()
             {
                 From = fromWidth,
                 To = targetWidth,

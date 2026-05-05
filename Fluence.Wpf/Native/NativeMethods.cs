@@ -196,7 +196,7 @@ namespace Fluence.Wpf.Native
 
         public static bool ExtendFrameIntoClientArea(IntPtr hwnd)
         {
-            MARGINS margins = new MARGINS { cxLeftWidth = -1, cxRightWidth = -1, cyTopHeight = -1, cyBottomHeight = -1 };
+            MARGINS margins = new() { cxLeftWidth = -1, cxRightWidth = -1, cyTopHeight = -1, cyBottomHeight = -1 };
             int result = DwmExtendFrameIntoClientArea(hwnd, ref margins);
             return result == 0;
         }
@@ -272,7 +272,7 @@ namespace Fluence.Wpf.Native
 
         public static Version GetRealOsVersion()
         {
-            OSVERSIONINFOEX versionInfo = new OSVERSIONINFOEX
+            OSVERSIONINFOEX versionInfo = new()
             {
                 OSVersionInfoSize = Marshal.SizeOf<OSVERSIONINFOEX>(),
                 CSDVersion = string.Empty

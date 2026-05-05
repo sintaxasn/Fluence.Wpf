@@ -103,7 +103,7 @@ namespace Fluence.Wpf.Controls
 
         private double _targetVerticalOffset;
         private double _targetHorizontalOffset;
-        private static readonly CubicEase SharedEase = new CubicEase { EasingMode = EasingMode.EaseOut };
+        private static readonly CubicEase SharedEase = new() { EasingMode = EasingMode.EaseOut };
 
         static SmoothScrollViewer()
         {
@@ -174,7 +174,7 @@ namespace Fluence.Wpf.Controls
 
         private void AnimateTo(DependencyProperty property, double to)
         {
-            DoubleAnimation animation = new DoubleAnimation
+            DoubleAnimation animation = new()
             {
                 To = to,
                 Duration = ScrollDuration,

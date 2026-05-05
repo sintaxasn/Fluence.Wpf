@@ -44,8 +44,8 @@ namespace Fluence.Wpf
     /// </remarks>
     public static class SystemThemeWatcher
     {
-        private static readonly List<WatchedWindow> _watchedWindows = new List<WatchedWindow>();
-        private static readonly object _lock = new object();
+        private static readonly List<WatchedWindow> _watchedWindows = new();
+        private static readonly object _lock = new();
         private static long _lastUpdateTick;
         private const long DebounceIntervalTicks = 1000000;
 
@@ -72,7 +72,7 @@ namespace Fluence.Wpf
                     return;
                 }
 
-                WatchedWindow watched = new WatchedWindow(window);
+                WatchedWindow watched = new(window);
                 _watchedWindows.Add(watched);
 
                 if (window.IsLoaded)
@@ -145,7 +145,7 @@ namespace Fluence.Wpf
                 return;
             }
 
-            WindowInteropHelper helper = new WindowInteropHelper(watched.Window);
+            WindowInteropHelper helper = new(watched.Window);
             IntPtr handle = helper.Handle;
 
             if (handle == IntPtr.Zero)

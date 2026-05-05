@@ -484,7 +484,7 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public FluenceWindow()
         {
-            ResourceDictionary resourceDictionary = new ResourceDictionary
+            ResourceDictionary resourceDictionary = new()
             {
                 Source = new Uri("pack://application:,,,/Fluence.Wpf;component/Themes/Controls/FluenceWindow.xaml", UriKind.Absolute)
             };
@@ -1001,7 +1001,7 @@ namespace Fluence.Wpf.Controls
                 IntPtr monitor = NativeMethods.MonitorFromWindow(hwnd, NativeConstants.MONITOR_DEFAULTTONEAREST);
                 if (monitor != IntPtr.Zero)
                 {
-                    MONITORINFO monitorInfo = new MONITORINFO { cbSize = Marshal.SizeOf<MONITORINFO>() };
+                    MONITORINFO monitorInfo = new() { cbSize = Marshal.SizeOf<MONITORINFO>() };
                     if (NativeMethods.GetMonitorInfo(monitor, ref monitorInfo))
                     {
                         RECT rcWork = monitorInfo.rcWork;
@@ -1184,7 +1184,7 @@ namespace Fluence.Wpf.Controls
             {
                 Point topLeft = element.TranslatePoint(new Point(0, 0), this);
                 Size size = element.RenderSize;
-                Rect rect = new Rect(topLeft, size);
+                Rect rect = new(topLeft, size);
                 return rect.Contains(windowPoint);
             }
             catch

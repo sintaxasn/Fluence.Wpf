@@ -39,8 +39,8 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     public class ListView : System.Windows.Controls.ListView
     {
-        private static readonly Duration InsertDuration = new Duration(TimeSpan.FromMilliseconds(250));
-        private static readonly Duration RemoveDuration = new Duration(TimeSpan.FromMilliseconds(200));
+        private static readonly Duration InsertDuration = new(TimeSpan.FromMilliseconds(250));
+        private static readonly Duration RemoveDuration = new(TimeSpan.FromMilliseconds(200));
 
         static ListView()
         {
@@ -313,11 +313,11 @@ namespace Fluence.Wpf.Controls
             container.Opacity = 0;
             container.RenderTransform = new TranslateTransform(0, 12);
 
-            DoubleAnimation opacityAnim = new DoubleAnimation(0, 1, InsertDuration)
+            DoubleAnimation opacityAnim = new(0, 1, InsertDuration)
             {
                 EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
             };
-            DoubleAnimation slideAnim = new DoubleAnimation(12, 0, InsertDuration)
+            DoubleAnimation slideAnim = new(12, 0, InsertDuration)
             {
                 EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
             };
@@ -358,11 +358,11 @@ namespace Fluence.Wpf.Controls
                 container.RenderTransform = new TranslateTransform();
             }
 
-            DoubleAnimation opacityAnim = new DoubleAnimation(container.Opacity, 0, RemoveDuration)
+            DoubleAnimation opacityAnim = new(container.Opacity, 0, RemoveDuration)
             {
                 EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
             };
-            DoubleAnimation slideAnim = new DoubleAnimation(0, -12, RemoveDuration)
+            DoubleAnimation slideAnim = new(0, -12, RemoveDuration)
             {
                 EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
             };

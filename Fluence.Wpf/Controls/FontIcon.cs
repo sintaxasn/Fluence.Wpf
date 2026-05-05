@@ -254,7 +254,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            DoubleAnimation animation = new DoubleAnimation
+            DoubleAnimation animation = new()
             {
                 From = 0,
                 To = 360,

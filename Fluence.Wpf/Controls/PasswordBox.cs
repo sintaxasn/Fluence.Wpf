@@ -49,10 +49,10 @@ namespace Fluence.Wpf.Controls
         private const string SymbolPasswordPattern = "[^a-zA-Z0-9]";
 
 #if !NET7_0_OR_GREATER
-        private static readonly Regex LowercasePasswordRegexFallback = new Regex(LowercasePasswordPattern, RegexOptions.CultureInvariant);
-        private static readonly Regex UppercasePasswordRegexFallback = new Regex(UppercasePasswordPattern, RegexOptions.CultureInvariant);
-        private static readonly Regex DigitPasswordRegexFallback = new Regex(DigitPasswordPattern, RegexOptions.CultureInvariant);
-        private static readonly Regex SymbolPasswordRegexFallback = new Regex(SymbolPasswordPattern, RegexOptions.CultureInvariant);
+        private static readonly Regex LowercasePasswordRegexFallback = new(LowercasePasswordPattern, RegexOptions.CultureInvariant);
+        private static readonly Regex UppercasePasswordRegexFallback = new(UppercasePasswordPattern, RegexOptions.CultureInvariant);
+        private static readonly Regex DigitPasswordRegexFallback = new(DigitPasswordPattern, RegexOptions.CultureInvariant);
+        private static readonly Regex SymbolPasswordRegexFallback = new(SymbolPasswordPattern, RegexOptions.CultureInvariant);
 #endif
 
         private System.Windows.Controls.PasswordBox _passwordBox;

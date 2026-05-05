@@ -150,7 +150,7 @@ namespace Fluence.Wpf.Controls
                 return finalSize;
             }
 
-            Rect remaining = new Rect(0, 0, finalSize.Width, finalSize.Height);
+            Rect remaining = new(0, 0, finalSize.Width, finalSize.Height);
             bool lastFill = LastChildFill;
             int lastIndex = lastFill ? count - 1 : count;
 

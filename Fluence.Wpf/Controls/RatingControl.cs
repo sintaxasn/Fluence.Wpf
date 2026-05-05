@@ -226,7 +226,7 @@ namespace Fluence.Wpf.Controls
             int count = Math.Max(1, MaxRating);
             for (int i = 1; i <= count; i++)
             {
-                WpfTextBlock star = new WpfTextBlock
+                WpfTextBlock star = new()
                 {
                     FontFamily = new FontFamily("Segoe Fluent Icons"),
                     FontSize = 20.0,

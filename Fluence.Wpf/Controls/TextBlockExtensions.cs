@@ -247,12 +247,12 @@ namespace Fluence.Wpf.Controls
 
             parent.Children.RemoveAt(index);
 
-            Grid grid = new Grid();
+            Grid grid = new();
             textBlock.Opacity = 0;
             textBlock.IsHitTestVisible = false;
             grid.Children.Add(textBlock);
 
-            System.Windows.Controls.TextBox overlay = new System.Windows.Controls.TextBox
+            System.Windows.Controls.TextBox overlay = new()
             {
                 Background = Brushes.Transparent,
                 BorderThickness = new Thickness(0),

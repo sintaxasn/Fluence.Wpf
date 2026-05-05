@@ -59,7 +59,7 @@ namespace Fluence.Wpf.Controls
 
         public bool SupportsBorderColor { get; private set; }
 
-        public static WindowCapabilities Current => new WindowCapabilities(
+        public static WindowCapabilities Current => new(
                     OsVersionHelper.SupportsSystemBackdropType,
                     OsVersionHelper.SupportsMicaEffect,
                     OsVersionHelper.SupportsRoundedCorners,

@@ -723,22 +723,22 @@ namespace Fluence.Wpf.Controls
             Point arriveStartPosition = CalculateArriveStartPosition(toPosition, targetItem, topMode, direction);
             double departAxis = topMode ? departPosition.X : departPosition.Y;
             double arriveStartAxis = topMode ? arriveStartPosition.X : arriveStartPosition.Y;
-            Duration departDuration = new Duration(TimeSpan.FromMilliseconds(90));
-            Duration arriveDuration = new Duration(TimeSpan.FromMilliseconds(140));
-            CubicEase departEase = new CubicEase { EasingMode = EasingMode.EaseIn };
-            CubicEase arriveEase = new CubicEase { EasingMode = EasingMode.EaseOut };
+            Duration departDuration = new(TimeSpan.FromMilliseconds(90));
+            Duration arriveDuration = new(TimeSpan.FromMilliseconds(140));
+            CubicEase departEase = new() { EasingMode = EasingMode.EaseIn };
+            CubicEase arriveEase = new() { EasingMode = EasingMode.EaseOut };
 
-            DoubleAnimation departAxisAnimation = new DoubleAnimation(fromAxis, departAxis, departDuration)
+            DoubleAnimation departAxisAnimation = new(fromAxis, departAxis, departDuration)
             {
                 EasingFunction = departEase,
                 FillBehavior = FillBehavior.Stop
             };
-            DoubleAnimation departOpacityAnimation = new DoubleAnimation(1.0, 0.0, departDuration)
+            DoubleAnimation departOpacityAnimation = new(1.0, 0.0, departDuration)
             {
                 EasingFunction = departEase,
                 FillBehavior = FillBehavior.Stop
             };
-            DoubleAnimation departScaleAnimation = new DoubleAnimation(1.0, 0.72, departDuration)
+            DoubleAnimation departScaleAnimation = new(1.0, 0.72, departDuration)
             {
                 EasingFunction = departEase,
                 FillBehavior = FillBehavior.Stop
@@ -772,17 +772,17 @@ namespace Fluence.Wpf.Controls
 
                 _selectionIndicator.Opacity = 0.0;
 
-                DoubleAnimation arriveAxisAnimation = new DoubleAnimation(arriveStartAxis, toAxis, arriveDuration)
+                DoubleAnimation arriveAxisAnimation = new(arriveStartAxis, toAxis, arriveDuration)
                 {
                     EasingFunction = arriveEase,
                     FillBehavior = FillBehavior.Stop
                 };
-                DoubleAnimation arriveOpacityAnimation = new DoubleAnimation(0.0, 1.0, arriveDuration)
+                DoubleAnimation arriveOpacityAnimation = new(0.0, 1.0, arriveDuration)
                 {
                     EasingFunction = arriveEase,
                     FillBehavior = FillBehavior.Stop
                 };
-                DoubleAnimation arriveScaleAnimation = new DoubleAnimation(0.72, 1.0, arriveDuration)
+                DoubleAnimation arriveScaleAnimation = new(0.72, 1.0, arriveDuration)
                 {
                     EasingFunction = arriveEase,
                     FillBehavior = FillBehavior.Stop
@@ -976,7 +976,7 @@ namespace Fluence.Wpf.Controls
 
             if (needsReplacement)
             {
-                TransformGroup newGroup = new TransformGroup();
+                TransformGroup newGroup = new();
                 newGroup.Children.Add(new ScaleTransform(1.0, 1.0));
                 newGroup.Children.Add(new TranslateTransform(0, 0));
                 _selectionIndicator.RenderTransform = newGroup;
