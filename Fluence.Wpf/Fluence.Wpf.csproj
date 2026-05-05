@@ -2,8 +2,7 @@
 
   <PropertyGroup>
     <TargetFrameworks>net472;net10.0-windows10.0.26100.0</TargetFrameworks>
-    <LangVersion Condition="'$(TargetFramework)' == 'net472'">7.3</LangVersion>
-    <LangVersion Condition="$(TargetFramework.StartsWith('net10'))">latest</LangVersion>
+    <LangVersion>latest</LangVersion>
     <UseWPF>true</UseWPF>
     <RootNamespace>Fluence.Wpf</RootNamespace>
     <AssemblyName>Fluence.Wpf</AssemblyName>
