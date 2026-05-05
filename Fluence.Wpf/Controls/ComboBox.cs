@@ -97,8 +97,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string PlaceholderText
         {
-            get { return (string)GetValue(PlaceholderTextProperty); }
-            set { SetValue(PlaceholderTextProperty, value); }
+            get => (string)GetValue(PlaceholderTextProperty);
+            set => SetValue(PlaceholderTextProperty, value);
         }
 
         /// <summary>
@@ -106,8 +106,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object SelectedContent
         {
-            get { return GetValue(SelectedContentProperty); }
-            private set { SetValue(SelectedContentPropertyKey, value); }
+            get => GetValue(SelectedContentProperty);
+            private set => SetValue(SelectedContentPropertyKey, value);
         }
 
         /// <summary>
@@ -115,8 +115,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string SelectedText
         {
-            get { return (string)GetValue(SelectedTextProperty); }
-            private set { SetValue(SelectedTextPropertyKey, value); }
+            get => (string)GetValue(SelectedTextProperty);
+            private set => SetValue(SelectedTextPropertyKey, value);
         }
 
         /// <summary>
@@ -134,8 +134,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public CornerRadius CornerRadius
         {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(CornerRadiusProperty);
+            set => SetValue(CornerRadiusProperty, value);
         }
 
         /// <summary>
@@ -153,8 +153,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object Icon
         {
-            get { return GetValue(IconProperty); }
-            set { SetValue(IconProperty, value); }
+            get => GetValue(IconProperty);
+            set => SetValue(IconProperty, value);
         }
 
         /// <summary>
@@ -172,8 +172,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public CornerRadius DropdownCornerRadius
         {
-            get { return (CornerRadius)GetValue(DropdownCornerRadiusProperty); }
-            set { SetValue(DropdownCornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(DropdownCornerRadiusProperty);
+            set => SetValue(DropdownCornerRadiusProperty, value);
         }
 
         private static readonly DependencyPropertyKey IsDropDownOpenedUpwardPropertyKey =
@@ -194,8 +194,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool IsDropDownOpenedUpward
         {
-            get { return (bool)GetValue(IsDropDownOpenedUpwardProperty); }
-            private set { SetValue(IsDropDownOpenedUpwardPropertyKey, value); }
+            get => (bool)GetValue(IsDropDownOpenedUpwardProperty);
+            private set => SetValue(IsDropDownOpenedUpwardPropertyKey, value);
         }
 
         private Popup _popup;

@@ -65,8 +65,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string Glyph
         {
-            get { return (string)GetValue(GlyphProperty); }
-            set { SetValue(GlyphProperty, value); }
+            get => (string)GetValue(GlyphProperty);
+            set => SetValue(GlyphProperty, value);
         }
 
         /// <summary>
@@ -84,8 +84,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public FontFamily IconFontFamily
         {
-            get { return (FontFamily)GetValue(IconFontFamilyProperty); }
-            set { SetValue(IconFontFamilyProperty, value); }
+            get => (FontFamily)GetValue(IconFontFamilyProperty);
+            set => SetValue(IconFontFamilyProperty, value);
         }
 
         /// <summary>
@@ -103,8 +103,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public double IconFontSize
         {
-            get { return (double)GetValue(IconFontSizeProperty); }
-            set { SetValue(IconFontSizeProperty, value); }
+            get => (double)GetValue(IconFontSizeProperty);
+            set => SetValue(IconFontSizeProperty, value);
         }
 
         /// <summary>
@@ -122,8 +122,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public double Rotation
         {
-            get { return (double)GetValue(RotationProperty); }
-            set { SetValue(RotationProperty, value); }
+            get => (double)GetValue(RotationProperty);
+            set => SetValue(RotationProperty, value);
         }
 
         private static void OnRotationChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -152,8 +152,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool MirroredWhenRightToLeft
         {
-            get { return (bool)GetValue(MirroredWhenRightToLeftProperty); }
-            set { SetValue(MirroredWhenRightToLeftProperty, value); }
+            get => (bool)GetValue(MirroredWhenRightToLeftProperty);
+            set => SetValue(MirroredWhenRightToLeftProperty, value);
         }
 
         private static void OnMirroredWhenRightToLeftChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -176,8 +176,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool EnableTransitions
         {
-            get { return (bool)GetValue(EnableTransitionsProperty); }
-            set { SetValue(EnableTransitionsProperty, value); }
+            get => (bool)GetValue(EnableTransitionsProperty);
+            set => SetValue(EnableTransitionsProperty, value);
         }
 
         /// <summary>
@@ -195,8 +195,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool IsSpinning
         {
-            get { return (bool)GetValue(IsSpinningProperty); }
-            set { SetValue(IsSpinningProperty, value); }
+            get => (bool)GetValue(IsSpinningProperty);
+            set => SetValue(IsSpinningProperty, value);
         }
 
         private static void OnIsSpinningChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

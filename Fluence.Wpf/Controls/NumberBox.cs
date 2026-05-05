@@ -224,8 +224,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public double Value
         {
-            get { return (double)GetValue(ValueProperty); }
-            set { SetValue(ValueProperty, value); }
+            get => (double)GetValue(ValueProperty);
+            set => SetValue(ValueProperty, value);
         }
 
         /// <summary>
@@ -233,8 +233,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public double Minimum
         {
-            get { return (double)GetValue(MinimumProperty); }
-            set { SetValue(MinimumProperty, value); }
+            get => (double)GetValue(MinimumProperty);
+            set => SetValue(MinimumProperty, value);
         }
 
         /// <summary>
@@ -242,8 +242,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public double Maximum
         {
-            get { return (double)GetValue(MaximumProperty); }
-            set { SetValue(MaximumProperty, value); }
+            get => (double)GetValue(MaximumProperty);
+            set => SetValue(MaximumProperty, value);
         }
 
         /// <summary>
@@ -251,8 +251,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public double SmallChange
         {
-            get { return (double)GetValue(SmallChangeProperty); }
-            set { SetValue(SmallChangeProperty, value); }
+            get => (double)GetValue(SmallChangeProperty);
+            set => SetValue(SmallChangeProperty, value);
         }
 
         /// <summary>
@@ -260,8 +260,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public double LargeChange
         {
-            get { return (double)GetValue(LargeChangeProperty); }
-            set { SetValue(LargeChangeProperty, value); }
+            get => (double)GetValue(LargeChangeProperty);
+            set => SetValue(LargeChangeProperty, value);
         }
 
         /// <summary>
@@ -269,8 +269,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object Header
         {
-            get { return GetValue(HeaderProperty); }
-            set { SetValue(HeaderProperty, value); }
+            get => GetValue(HeaderProperty);
+            set => SetValue(HeaderProperty, value);
         }
 
         /// <summary>
@@ -278,8 +278,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public SpinButtonPlacementMode SpinButtonPlacementMode
         {
-            get { return (SpinButtonPlacementMode)GetValue(SpinButtonPlacementModeProperty); }
-            set { SetValue(SpinButtonPlacementModeProperty, value); }
+            get => (SpinButtonPlacementMode)GetValue(SpinButtonPlacementModeProperty);
+            set => SetValue(SpinButtonPlacementModeProperty, value);
         }
 
         /// <summary>
@@ -287,8 +287,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool AcceptsExpression
         {
-            get { return (bool)GetValue(AcceptsExpressionProperty); }
-            set { SetValue(AcceptsExpressionProperty, value); }
+            get => (bool)GetValue(AcceptsExpressionProperty);
+            set => SetValue(AcceptsExpressionProperty, value);
         }
 
         /// <summary>
@@ -296,8 +296,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string PlaceholderText
         {
-            get { return (string)GetValue(PlaceholderTextProperty); }
-            set { SetValue(PlaceholderTextProperty, value); }
+            get => (string)GetValue(PlaceholderTextProperty);
+            set => SetValue(PlaceholderTextProperty, value);
         }
 
         /// <summary>
@@ -305,8 +305,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string Description
         {
-            get { return (string)GetValue(DescriptionProperty); }
-            set { SetValue(DescriptionProperty, value); }
+            get => (string)GetValue(DescriptionProperty);
+            set => SetValue(DescriptionProperty, value);
         }
 
         /// <summary>
@@ -314,8 +314,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string Text
         {
-            get { return (string)GetValue(TextProperty); }
-            set { SetValue(TextProperty, value); }
+            get => (string)GetValue(TextProperty);
+            set => SetValue(TextProperty, value);
         }
 
         /// <summary>

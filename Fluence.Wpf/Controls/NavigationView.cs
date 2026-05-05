@@ -214,85 +214,85 @@ namespace Fluence.Wpf.Controls
         /// <summary>Gets or sets whether the pane is shown on the left or across the top.</summary>
         public NavigationViewPaneDisplayMode PaneDisplayMode
         {
-            get { return (NavigationViewPaneDisplayMode)GetValue(PaneDisplayModeProperty); }
-            set { SetValue(PaneDisplayModeProperty, value); }
+            get => (NavigationViewPaneDisplayMode)GetValue(PaneDisplayModeProperty);
+            set => SetValue(PaneDisplayModeProperty, value);
         }
 
         /// <summary>Gets or sets whether keyboard focus on an item selects it immediately.</summary>
         public bool SelectionFollowsFocus
         {
-            get { return (bool)GetValue(SelectionFollowsFocusProperty); }
-            set { SetValue(SelectionFollowsFocusProperty, value); }
+            get => (bool)GetValue(SelectionFollowsFocusProperty);
+            set => SetValue(SelectionFollowsFocusProperty, value);
         }
 
         /// <summary>Gets or sets whether the back button is shown.</summary>
         public bool IsBackButtonVisible
         {
-            get { return (bool)GetValue(IsBackButtonVisibleProperty); }
-            set { SetValue(IsBackButtonVisibleProperty, value); }
+            get => (bool)GetValue(IsBackButtonVisibleProperty);
+            set => SetValue(IsBackButtonVisibleProperty, value);
         }
 
         /// <summary>Gets or sets whether the back button can be invoked.</summary>
         public bool IsBackEnabled
         {
-            get { return (bool)GetValue(IsBackEnabledProperty); }
-            set { SetValue(IsBackEnabledProperty, value); }
+            get => (bool)GetValue(IsBackEnabledProperty);
+            set => SetValue(IsBackEnabledProperty, value);
         }
 
         /// <summary>Gets or sets whether the pane collapse/expand toggle button is shown in left pane modes.</summary>
         public bool IsPaneToggleButtonVisible
         {
-            get { return (bool)GetValue(IsPaneToggleButtonVisibleProperty); }
-            set { SetValue(IsPaneToggleButtonVisibleProperty, value); }
+            get => (bool)GetValue(IsPaneToggleButtonVisibleProperty);
+            set => SetValue(IsPaneToggleButtonVisibleProperty, value);
         }
 
         /// <summary>Gets or sets header content displayed beside the navigation chrome.</summary>
         public object Header
         {
-            get { return GetValue(HeaderProperty); }
-            set { SetValue(HeaderProperty, value); }
+            get => GetValue(HeaderProperty);
+            set => SetValue(HeaderProperty, value);
         }
 
         /// <summary>Gets or sets the DataTemplate used to display the <see cref="Header"/>.</summary>
         public DataTemplate HeaderTemplate
         {
-            get { return (DataTemplate)GetValue(HeaderTemplateProperty); }
-            set { SetValue(HeaderTemplateProperty, value); }
+            get => (DataTemplate)GetValue(HeaderTemplateProperty);
+            set => SetValue(HeaderTemplateProperty, value);
         }
 
         /// <summary>Gets or sets content at the start of the pane chrome (title area).</summary>
         public object PaneHeader
         {
-            get { return GetValue(PaneHeaderProperty); }
-            set { SetValue(PaneHeaderProperty, value); }
+            get => GetValue(PaneHeaderProperty);
+            set => SetValue(PaneHeaderProperty, value);
         }
 
         /// <summary>Gets or sets content at the end of the pane (footer).</summary>
         public object PaneFooter
         {
-            get { return GetValue(PaneFooterProperty); }
-            set { SetValue(PaneFooterProperty, value); }
+            get => GetValue(PaneFooterProperty);
+            set => SetValue(PaneFooterProperty, value);
         }
 
         /// <summary>Gets or sets the background brush for the content area.</summary>
         public Brush ContentBackground
         {
-            get { return (Brush)GetValue(ContentBackgroundProperty); }
-            set { SetValue(ContentBackgroundProperty, value); }
+            get => (Brush)GetValue(ContentBackgroundProperty);
+            set => SetValue(ContentBackgroundProperty, value);
         }
 
         /// <summary>Gets or sets whether the left pane is expanded.</summary>
         public bool IsPaneOpen
         {
-            get { return (bool)GetValue(IsPaneOpenProperty); }
-            set { SetValue(IsPaneOpenProperty, value); }
+            get => (bool)GetValue(IsPaneOpenProperty);
+            set => SetValue(IsPaneOpenProperty, value);
         }
 
         /// <summary>Gets or sets the content hosted in the main area.</summary>
         public object Content
         {
-            get { return GetValue(ContentProperty); }
-            set { SetValue(ContentProperty, value); }
+            get => GetValue(ContentProperty);
+            set => SetValue(ContentProperty, value);
         }
 
         /// <inheritdoc />

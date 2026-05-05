@@ -87,8 +87,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object Icon
         {
-            get { return GetValue(IconProperty); }
-            set { SetValue(IconProperty, value); }
+            get => GetValue(IconProperty);
+            set => SetValue(IconProperty, value);
         }
 
         /// <summary>
@@ -96,8 +96,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object InfoBadge
         {
-            get { return GetValue(InfoBadgeProperty); }
-            set { SetValue(InfoBadgeProperty, value); }
+            get => GetValue(InfoBadgeProperty);
+            set => SetValue(InfoBadgeProperty, value);
         }
 
         /// <summary>
@@ -106,8 +106,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool IsChildItem
         {
-            get { return (bool)GetValue(IsChildItemProperty); }
-            set { SetValue(IsChildItemProperty, value); }
+            get => (bool)GetValue(IsChildItemProperty);
+            set => SetValue(IsChildItemProperty, value);
         }
 
         /// <summary>Gets whether the item is currently being pressed by a pointer.</summary>

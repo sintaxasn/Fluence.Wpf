@@ -58,8 +58,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public CardVariant Variant
         {
-            get { return (CardVariant)GetValue(VariantProperty); }
-            set { SetValue(VariantProperty, value); }
+            get => (CardVariant)GetValue(VariantProperty);
+            set => SetValue(VariantProperty, value);
         }
 
         /// <summary>
@@ -77,8 +77,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public CornerRadius CornerRadius
         {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(CornerRadiusProperty);
+            set => SetValue(CornerRadiusProperty, value);
         }
 
         /// <summary>
@@ -96,8 +96,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object Icon
         {
-            get { return GetValue(IconProperty); }
-            set { SetValue(IconProperty, value); }
+            get => GetValue(IconProperty);
+            set => SetValue(IconProperty, value);
         }
 
         /// <summary>
@@ -115,8 +115,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object Header
         {
-            get { return GetValue(HeaderProperty); }
-            set { SetValue(HeaderProperty, value); }
+            get => GetValue(HeaderProperty);
+            set => SetValue(HeaderProperty, value);
         }
 
         /// <summary>
@@ -134,8 +134,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public DataTemplate HeaderTemplate
         {
-            get { return (DataTemplate)GetValue(HeaderTemplateProperty); }
-            set { SetValue(HeaderTemplateProperty, value); }
+            get => (DataTemplate)GetValue(HeaderTemplateProperty);
+            set => SetValue(HeaderTemplateProperty, value);
         }
 
         /// <summary>
@@ -153,8 +153,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object Footer
         {
-            get { return GetValue(FooterProperty); }
-            set { SetValue(FooterProperty, value); }
+            get => GetValue(FooterProperty);
+            set => SetValue(FooterProperty, value);
         }
 
         /// <summary>
@@ -172,8 +172,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public DataTemplate FooterTemplate
         {
-            get { return (DataTemplate)GetValue(FooterTemplateProperty); }
-            set { SetValue(FooterTemplateProperty, value); }
+            get => (DataTemplate)GetValue(FooterTemplateProperty);
+            set => SetValue(FooterTemplateProperty, value);
         }
 
         /// <summary>
@@ -191,8 +191,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool IsClickable
         {
-            get { return (bool)GetValue(IsClickableProperty); }
-            set { SetValue(IsClickableProperty, value); }
+            get => (bool)GetValue(IsClickableProperty);
+            set => SetValue(IsClickableProperty, value);
         }
 
         private static readonly DependencyPropertyKey IsPressedPropertyKey =
@@ -213,8 +213,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool IsPressed
         {
-            get { return (bool)GetValue(IsPressedProperty); }
-            private set { SetValue(IsPressedPropertyKey, value); }
+            get => (bool)GetValue(IsPressedProperty);
+            private set => SetValue(IsPressedPropertyKey, value);
         }
 
         /// <summary>
@@ -233,8 +233,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public event RoutedEventHandler Click
         {
-            add { AddHandler(ClickEvent, value); }
-            remove { RemoveHandler(ClickEvent, value); }
+            add => AddHandler(ClickEvent, value);
+            remove => RemoveHandler(ClickEvent, value);
         }
 
         /// <inheritdoc />

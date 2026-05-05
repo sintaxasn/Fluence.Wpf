@@ -64,8 +64,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool ItemAnimationsEnabled
         {
-            get { return (bool)GetValue(ItemAnimationsEnabledProperty); }
-            set { SetValue(ItemAnimationsEnabledProperty, value); }
+            get => (bool)GetValue(ItemAnimationsEnabledProperty);
+            set => SetValue(ItemAnimationsEnabledProperty, value);
         }
 
         /// <summary>
@@ -83,8 +83,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool HoverHighlightEnabled
         {
-            get { return (bool)GetValue(HoverHighlightEnabledProperty); }
-            set { SetValue(HoverHighlightEnabledProperty, value); }
+            get => (bool)GetValue(HoverHighlightEnabledProperty);
+            set => SetValue(HoverHighlightEnabledProperty, value);
         }
 
         /// <summary>
@@ -102,8 +102,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public ListViewState ViewState
         {
-            get { return (ListViewState)GetValue(ViewStateProperty); }
-            set { SetValue(ViewStateProperty, value); }
+            get => (ListViewState)GetValue(ViewStateProperty);
+            set => SetValue(ViewStateProperty, value);
         }
 
         /// <summary>
@@ -121,8 +121,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public CornerRadius CornerRadius
         {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(CornerRadiusProperty);
+            set => SetValue(CornerRadiusProperty, value);
         }
 
         /// <summary>
@@ -140,8 +140,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object EmptyContent
         {
-            get { return GetValue(EmptyContentProperty); }
-            set { SetValue(EmptyContentProperty, value); }
+            get => GetValue(EmptyContentProperty);
+            set => SetValue(EmptyContentProperty, value);
         }
 
         /// <summary>
@@ -187,8 +187,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool IsItemSelectable
         {
-            get { return (bool)GetValue(IsItemSelectableProperty); }
-            set { SetValue(IsItemSelectableProperty, value); }
+            get => (bool)GetValue(IsItemSelectableProperty);
+            set => SetValue(IsItemSelectableProperty, value);
         }
 
         private bool _suppressSelectionChange;

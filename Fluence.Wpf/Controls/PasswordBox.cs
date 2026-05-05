@@ -97,8 +97,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string Password
         {
-            get { return (string)GetValue(PasswordProperty); }
-            set { SetValue(PasswordProperty, value); }
+            get => (string)GetValue(PasswordProperty);
+            set => SetValue(PasswordProperty, value);
         }
 
         private static void OnPasswordChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -145,8 +145,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public char PasswordChar
         {
-            get { return (char)GetValue(PasswordCharProperty); }
-            set { SetValue(PasswordCharProperty, value); }
+            get => (char)GetValue(PasswordCharProperty);
+            set => SetValue(PasswordCharProperty, value);
         }
 
         /// <summary>
@@ -164,8 +164,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool RevealButtonEnabled
         {
-            get { return (bool)GetValue(RevealButtonEnabledProperty); }
-            set { SetValue(RevealButtonEnabledProperty, value); }
+            get => (bool)GetValue(RevealButtonEnabledProperty);
+            set => SetValue(RevealButtonEnabledProperty, value);
         }
 
         private static readonly DependencyPropertyKey IsPasswordRevealedPropertyKey =
@@ -186,8 +186,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool IsPasswordRevealed
         {
-            get { return (bool)GetValue(IsPasswordRevealedProperty); }
-            private set { SetValue(IsPasswordRevealedPropertyKey, value); }
+            get => (bool)GetValue(IsPasswordRevealedProperty);
+            private set => SetValue(IsPasswordRevealedPropertyKey, value);
         }
 
         /// <summary>
@@ -205,8 +205,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string PlaceholderText
         {
-            get { return (string)GetValue(PlaceholderTextProperty); }
-            set { SetValue(PlaceholderTextProperty, value); }
+            get => (string)GetValue(PlaceholderTextProperty);
+            set => SetValue(PlaceholderTextProperty, value);
         }
 
         /// <summary>
@@ -224,8 +224,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public int MaxLength
         {
-            get { return (int)GetValue(MaxLengthProperty); }
-            set { SetValue(MaxLengthProperty, value); }
+            get => (int)GetValue(MaxLengthProperty);
+            set => SetValue(MaxLengthProperty, value);
         }
 
         /// <summary>
@@ -243,8 +243,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public CornerRadius CornerRadius
         {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(CornerRadiusProperty);
+            set => SetValue(CornerRadiusProperty, value);
         }
 
         /// <summary>
@@ -262,8 +262,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool ShowCapsLockIndicator
         {
-            get { return (bool)GetValue(ShowCapsLockIndicatorProperty); }
-            set { SetValue(ShowCapsLockIndicatorProperty, value); }
+            get => (bool)GetValue(ShowCapsLockIndicatorProperty);
+            set => SetValue(ShowCapsLockIndicatorProperty, value);
         }
 
         /// <summary>
@@ -281,8 +281,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool ShowPasswordStrength
         {
-            get { return (bool)GetValue(ShowPasswordStrengthProperty); }
-            set { SetValue(ShowPasswordStrengthProperty, value); }
+            get => (bool)GetValue(ShowPasswordStrengthProperty);
+            set => SetValue(ShowPasswordStrengthProperty, value);
         }
 
         /// <summary>
@@ -300,8 +300,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public int PasswordStrength
         {
-            get { return (int)GetValue(PasswordStrengthProperty); }
-            set { SetValue(PasswordStrengthProperty, value); }
+            get => (int)GetValue(PasswordStrengthProperty);
+            set => SetValue(PasswordStrengthProperty, value);
         }
 
         private static void OnChromePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

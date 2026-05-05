@@ -283,8 +283,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public BackdropType SystemBackdropType
         {
-            get { return (BackdropType)GetValue(SystemBackdropTypeProperty); }
-            set { SetValue(SystemBackdropTypeProperty, value); }
+            get => (BackdropType)GetValue(SystemBackdropTypeProperty);
+            set => SetValue(SystemBackdropTypeProperty, value);
         }
 
         /// <summary>
@@ -292,8 +292,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public CornerPreference CornerStyle
         {
-            get { return (CornerPreference)GetValue(CornerStyleProperty); }
-            set { SetValue(CornerStyleProperty, value); }
+            get => (CornerPreference)GetValue(CornerStyleProperty);
+            set => SetValue(CornerStyleProperty, value);
         }
 
         /// <summary>
@@ -301,8 +301,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public Thickness MarginMaximized
         {
-            get { return (Thickness)GetValue(MarginMaximizedProperty); }
-            set { SetValue(MarginMaximizedProperty, value); }
+            get => (Thickness)GetValue(MarginMaximizedProperty);
+            set => SetValue(MarginMaximizedProperty, value);
         }
 
         /// <summary>
@@ -311,8 +311,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool ExtendsContentIntoTitleBar
         {
-            get { return (bool)GetValue(ExtendsContentIntoTitleBarProperty); }
-            set { SetValue(ExtendsContentIntoTitleBarProperty, value); }
+            get => (bool)GetValue(ExtendsContentIntoTitleBarProperty);
+            set => SetValue(ExtendsContentIntoTitleBarProperty, value);
         }
 
         /// <summary>
@@ -321,8 +321,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public UIElement TitleBar
         {
-            get { return (UIElement)GetValue(TitleBarProperty); }
-            set { SetValue(TitleBarProperty, value); }
+            get => (UIElement)GetValue(TitleBarProperty);
+            set => SetValue(TitleBarProperty, value);
         }
 
         /// <summary>
@@ -330,8 +330,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public double TitleBarHeight
         {
-            get { return (double)GetValue(TitleBarHeightProperty); }
-            set { SetValue(TitleBarHeightProperty, value); }
+            get => (double)GetValue(TitleBarHeightProperty);
+            set => SetValue(TitleBarHeightProperty, value);
         }
 
         /// <summary>
@@ -339,8 +339,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool ShowIcon
         {
-            get { return (bool)GetValue(ShowIconProperty); }
-            set { SetValue(ShowIconProperty, value); }
+            get => (bool)GetValue(ShowIconProperty);
+            set => SetValue(ShowIconProperty, value);
         }
 
         /// <summary>
@@ -348,8 +348,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool ShowTitle
         {
-            get { return (bool)GetValue(ShowTitleProperty); }
-            set { SetValue(ShowTitleProperty, value); }
+            get => (bool)GetValue(ShowTitleProperty);
+            set => SetValue(ShowTitleProperty, value);
         }
 
         /// <summary>
@@ -357,8 +357,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public Visibility IsMinimizeButtonVisible
         {
-            get { return (Visibility)GetValue(IsMinimizeButtonVisibleProperty); }
-            set { SetValue(IsMinimizeButtonVisibleProperty, value); }
+            get => (Visibility)GetValue(IsMinimizeButtonVisibleProperty);
+            set => SetValue(IsMinimizeButtonVisibleProperty, value);
         }
 
         /// <summary>
@@ -366,8 +366,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public Visibility IsMaximizeButtonVisible
         {
-            get { return (Visibility)GetValue(IsMaximizeButtonVisibleProperty); }
-            set { SetValue(IsMaximizeButtonVisibleProperty, value); }
+            get => (Visibility)GetValue(IsMaximizeButtonVisibleProperty);
+            set => SetValue(IsMaximizeButtonVisibleProperty, value);
         }
 
         /// <summary>
@@ -375,8 +375,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public Visibility IsCloseButtonVisible
         {
-            get { return (Visibility)GetValue(IsCloseButtonVisibleProperty); }
-            set { SetValue(IsCloseButtonVisibleProperty, value); }
+            get => (Visibility)GetValue(IsCloseButtonVisibleProperty);
+            set => SetValue(IsCloseButtonVisibleProperty, value);
         }
 
         /// <summary>
@@ -385,8 +385,8 @@ namespace Fluence.Wpf.Controls
         [Obsolete("Use IsMinimizeButtonVisible instead.")]
         public Visibility MinimizeButtonVisibility
         {
-            get { return IsMinimizeButtonVisible; }
-            set { IsMinimizeButtonVisible = value; }
+            get => IsMinimizeButtonVisible;
+            set => IsMinimizeButtonVisible = value;
         }
 
         /// <summary>
@@ -395,8 +395,8 @@ namespace Fluence.Wpf.Controls
         [Obsolete("Use IsMaximizeButtonVisible instead.")]
         public Visibility MaximizeButtonVisibility
         {
-            get { return IsMaximizeButtonVisible; }
-            set { IsMaximizeButtonVisible = value; }
+            get => IsMaximizeButtonVisible;
+            set => IsMaximizeButtonVisible = value;
         }
 
         /// <summary>
@@ -405,8 +405,8 @@ namespace Fluence.Wpf.Controls
         [Obsolete("Use IsCloseButtonVisible instead.")]
         public Visibility CloseButtonVisibility
         {
-            get { return IsCloseButtonVisible; }
-            set { IsCloseButtonVisible = value; }
+            get => IsCloseButtonVisible;
+            set => IsCloseButtonVisible = value;
         }
 
         /// <summary>
@@ -415,8 +415,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool IsMinimizable
         {
-            get { return (bool)GetValue(IsMinimizableProperty); }
-            set { SetValue(IsMinimizableProperty, value); }
+            get => (bool)GetValue(IsMinimizableProperty);
+            set => SetValue(IsMinimizableProperty, value);
         }
 
         /// <summary>
@@ -425,8 +425,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool IsMaximizable
         {
-            get { return (bool)GetValue(IsMaximizableProperty); }
-            set { SetValue(IsMaximizableProperty, value); }
+            get => (bool)GetValue(IsMaximizableProperty);
+            set => SetValue(IsMaximizableProperty, value);
         }
 
         /// <summary>
@@ -435,8 +435,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool IsClosable
         {
-            get { return (bool)GetValue(IsClosableProperty); }
-            set { SetValue(IsClosableProperty, value); }
+            get => (bool)GetValue(IsClosableProperty);
+            set => SetValue(IsClosableProperty, value);
         }
 
         /// <summary>
@@ -444,8 +444,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool IsMoveable
         {
-            get { return (bool)GetValue(IsMoveableProperty); }
-            set { SetValue(IsMoveableProperty, value); }
+            get => (bool)GetValue(IsMoveableProperty);
+            set => SetValue(IsMoveableProperty, value);
         }
 
         /// <summary>
@@ -454,8 +454,8 @@ namespace Fluence.Wpf.Controls
         [Obsolete("Use IsMoveable instead.")]
         public bool CanMove
         {
-            get { return IsMoveable; }
-            set { IsMoveable = value; }
+            get => IsMoveable;
+            set => IsMoveable = value;
         }
 
         /// <summary>
@@ -463,8 +463,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool HasShadow
         {
-            get { return (bool)GetValue(HasShadowProperty); }
-            set { SetValue(HasShadowProperty, value); }
+            get => (bool)GetValue(HasShadowProperty);
+            set => SetValue(HasShadowProperty, value);
         }
 
         #endregion

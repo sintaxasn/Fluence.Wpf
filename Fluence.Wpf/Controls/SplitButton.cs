@@ -77,8 +77,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public event RoutedEventHandler Click
         {
-            add { AddHandler(ClickEvent, value); }
-            remove { RemoveHandler(ClickEvent, value); }
+            add => AddHandler(ClickEvent, value);
+            remove => RemoveHandler(ClickEvent, value);
         }
 
         #endregion
@@ -100,8 +100,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public ICommand Command
         {
-            get { return (ICommand)GetValue(CommandProperty); }
-            set { SetValue(CommandProperty, value); }
+            get => (ICommand)GetValue(CommandProperty);
+            set => SetValue(CommandProperty, value);
         }
 
         /// <summary>
@@ -119,8 +119,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object CommandParameter
         {
-            get { return GetValue(CommandParameterProperty); }
-            set { SetValue(CommandParameterProperty, value); }
+            get => GetValue(CommandParameterProperty);
+            set => SetValue(CommandParameterProperty, value);
         }
 
         /// <summary>
@@ -138,8 +138,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public IInputElement CommandTarget
         {
-            get { return (IInputElement)GetValue(CommandTargetProperty); }
-            set { SetValue(CommandTargetProperty, value); }
+            get => (IInputElement)GetValue(CommandTargetProperty);
+            set => SetValue(CommandTargetProperty, value);
         }
 
         #endregion
@@ -161,8 +161,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object Flyout
         {
-            get { return GetValue(FlyoutProperty); }
-            set { SetValue(FlyoutProperty, value); }
+            get => GetValue(FlyoutProperty);
+            set => SetValue(FlyoutProperty, value);
         }
 
         /// <summary>
@@ -180,8 +180,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public DataTemplate FlyoutTemplate
         {
-            get { return (DataTemplate)GetValue(FlyoutTemplateProperty); }
-            set { SetValue(FlyoutTemplateProperty, value); }
+            get => (DataTemplate)GetValue(FlyoutTemplateProperty);
+            set => SetValue(FlyoutTemplateProperty, value);
         }
 
         /// <summary>
@@ -199,8 +199,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public CornerRadius DropdownCornerRadius
         {
-            get { return (CornerRadius)GetValue(DropdownCornerRadiusProperty); }
-            set { SetValue(DropdownCornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(DropdownCornerRadiusProperty);
+            set => SetValue(DropdownCornerRadiusProperty, value);
         }
 
         #endregion
@@ -224,8 +224,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public CornerRadius CornerRadius
         {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(CornerRadiusProperty);
+            set => SetValue(CornerRadiusProperty, value);
         }
 
         #endregion
@@ -250,8 +250,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public ControlAppearance Appearance
         {
-            get { return (ControlAppearance)GetValue(AppearanceProperty); }
-            set { SetValue(AppearanceProperty, value); }
+            get => (ControlAppearance)GetValue(AppearanceProperty);
+            set => SetValue(AppearanceProperty, value);
         }
 
         #endregion

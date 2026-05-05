@@ -61,8 +61,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public Duration ScrollDuration
         {
-            get { return (Duration)GetValue(ScrollDurationProperty); }
-            set { SetValue(ScrollDurationProperty, value); }
+            get => (Duration)GetValue(ScrollDurationProperty);
+            set => SetValue(ScrollDurationProperty, value);
         }
 
         private static readonly DependencyProperty CurrentVerticalOffsetProperty =
@@ -74,8 +74,8 @@ namespace Fluence.Wpf.Controls
 
         private double CurrentVerticalOffset
         {
-            get { return (double)GetValue(CurrentVerticalOffsetProperty); }
-            set { SetValue(CurrentVerticalOffsetProperty, value); }
+            get => (double)GetValue(CurrentVerticalOffsetProperty);
+            set => SetValue(CurrentVerticalOffsetProperty, value);
         }
 
         private static void OnCurrentVerticalOffsetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -92,8 +92,8 @@ namespace Fluence.Wpf.Controls
 
         private double CurrentHorizontalOffset
         {
-            get { return (double)GetValue(CurrentHorizontalOffsetProperty); }
-            set { SetValue(CurrentHorizontalOffsetProperty, value); }
+            get => (double)GetValue(CurrentHorizontalOffsetProperty);
+            set => SetValue(CurrentHorizontalOffsetProperty, value);
         }
 
         private static void OnCurrentHorizontalOffsetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

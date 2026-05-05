@@ -141,8 +141,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool IsAddTabButtonVisible
         {
-            get { return (bool)GetValue(IsAddTabButtonVisibleProperty); }
-            set { SetValue(IsAddTabButtonVisibleProperty, value); }
+            get => (bool)GetValue(IsAddTabButtonVisibleProperty);
+            set => SetValue(IsAddTabButtonVisibleProperty, value);
         }
 
         /// <summary>
@@ -150,8 +150,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public TabViewWidthMode TabWidthMode
         {
-            get { return (TabViewWidthMode)GetValue(TabWidthModeProperty); }
-            set { SetValue(TabWidthModeProperty, value); }
+            get => (TabViewWidthMode)GetValue(TabWidthModeProperty);
+            set => SetValue(TabWidthModeProperty, value);
         }
 
         /// <summary>
@@ -159,8 +159,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public TabViewCloseButtonOverlayMode CloseButtonOverlayMode
         {
-            get { return (TabViewCloseButtonOverlayMode)GetValue(CloseButtonOverlayModeProperty); }
-            set { SetValue(CloseButtonOverlayModeProperty, value); }
+            get => (TabViewCloseButtonOverlayMode)GetValue(CloseButtonOverlayModeProperty);
+            set => SetValue(CloseButtonOverlayModeProperty, value);
         }
 
         /// <summary>
@@ -169,8 +169,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public event RoutedEventHandler AddTabButtonClick
         {
-            add { AddHandler(AddTabButtonClickEvent, value); }
-            remove { RemoveHandler(AddTabButtonClickEvent, value); }
+            add => AddHandler(AddTabButtonClickEvent, value);
+            remove => RemoveHandler(AddTabButtonClickEvent, value);
         }
 
         /// <summary>
@@ -179,8 +179,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public event RoutedEventHandler TabCloseRequested
         {
-            add { AddHandler(TabCloseRequestedEvent, value); }
-            remove { RemoveHandler(TabCloseRequestedEvent, value); }
+            add => AddHandler(TabCloseRequestedEvent, value);
+            remove => RemoveHandler(TabCloseRequestedEvent, value);
         }
 
         /// <inheritdoc />

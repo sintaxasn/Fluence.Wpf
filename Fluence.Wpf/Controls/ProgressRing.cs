@@ -115,8 +115,8 @@ namespace Fluence.Wpf.Controls
         /// <summary>Gets or sets whether the progress ring is active and visible.</summary>
         public bool IsActive
         {
-            get { return (bool)GetValue(IsActiveProperty); }
-            set { SetValue(IsActiveProperty, value); }
+            get => (bool)GetValue(IsActiveProperty);
+            set => SetValue(IsActiveProperty, value);
         }
 
         /// <summary>Identifies the <see cref="IsIndeterminate"/> dependency property.</summary>
@@ -130,8 +130,8 @@ namespace Fluence.Wpf.Controls
         /// <summary>Gets or sets whether the ring operates in indeterminate (spinning) mode.</summary>
         public bool IsIndeterminate
         {
-            get { return (bool)GetValue(IsIndeterminateProperty); }
-            set { SetValue(IsIndeterminateProperty, value); }
+            get => (bool)GetValue(IsIndeterminateProperty);
+            set => SetValue(IsIndeterminateProperty, value);
         }
 
         /// <summary>Identifies the <see cref="Value"/> dependency property.</summary>
@@ -145,8 +145,8 @@ namespace Fluence.Wpf.Controls
         /// <summary>Gets or sets the current progress value in determinate mode.</summary>
         public double Value
         {
-            get { return (double)GetValue(ValueProperty); }
-            set { SetValue(ValueProperty, value); }
+            get => (double)GetValue(ValueProperty);
+            set => SetValue(ValueProperty, value);
         }
 
         /// <summary>Identifies the <see cref="Minimum"/> dependency property.</summary>
@@ -160,8 +160,8 @@ namespace Fluence.Wpf.Controls
         /// <summary>Gets or sets the minimum value.</summary>
         public double Minimum
         {
-            get { return (double)GetValue(MinimumProperty); }
-            set { SetValue(MinimumProperty, value); }
+            get => (double)GetValue(MinimumProperty);
+            set => SetValue(MinimumProperty, value);
         }
 
         /// <summary>Identifies the <see cref="Maximum"/> dependency property.</summary>
@@ -175,8 +175,8 @@ namespace Fluence.Wpf.Controls
         /// <summary>Gets or sets the maximum value.</summary>
         public double Maximum
         {
-            get { return (double)GetValue(MaximumProperty); }
-            set { SetValue(MaximumProperty, value); }
+            get => (double)GetValue(MaximumProperty);
+            set => SetValue(MaximumProperty, value);
         }
 
         /// <summary>Identifies the <see cref="StrokeThickness"/> dependency property.</summary>
@@ -191,8 +191,8 @@ namespace Fluence.Wpf.Controls
         /// <remarks>Applies to both determinate and indeterminate arc visuals in the default template.</remarks>
         public double StrokeThickness
         {
-            get { return (double)GetValue(StrokeThicknessProperty); }
-            set { SetValue(StrokeThicknessProperty, value); }
+            get => (double)GetValue(StrokeThicknessProperty);
+            set => SetValue(StrokeThicknessProperty, value);
         }
 
         /// <summary>Identifies the <see cref="ProgressState"/> dependency property.</summary>
@@ -208,8 +208,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public ProgressRingState ProgressState
         {
-            get { return (ProgressRingState)GetValue(ProgressStateProperty); }
-            set { SetValue(ProgressStateProperty, value); }
+            get => (ProgressRingState)GetValue(ProgressStateProperty);
+            set => SetValue(ProgressStateProperty, value);
         }
 
         // ──────────────────────────────────────────────────────────────────────
@@ -264,8 +264,8 @@ namespace Fluence.Wpf.Controls
 
         private double AnimatedFraction
         {
-            get { return (double)GetValue(AnimatedFractionProperty); }
-            set { SetValue(AnimatedFractionProperty, value); }
+            get => (double)GetValue(AnimatedFractionProperty);
+            set => SetValue(AnimatedFractionProperty, value);
         }
 
         private static void OnAnimatedFractionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -286,8 +286,8 @@ namespace Fluence.Wpf.Controls
 
         private double IndeterminateStartAngle
         {
-            get { return (double)GetValue(IndeterminateStartAngleProperty); }
-            set { SetValue(IndeterminateStartAngleProperty, value); }
+            get => (double)GetValue(IndeterminateStartAngleProperty);
+            set => SetValue(IndeterminateStartAngleProperty, value);
         }
 
         private static readonly DependencyProperty IndeterminateSweepAngleProperty =
@@ -299,8 +299,8 @@ namespace Fluence.Wpf.Controls
 
         private double IndeterminateSweepAngle
         {
-            get { return (double)GetValue(IndeterminateSweepAngleProperty); }
-            set { SetValue(IndeterminateSweepAngleProperty, value); }
+            get => (double)GetValue(IndeterminateSweepAngleProperty);
+            set => SetValue(IndeterminateSweepAngleProperty, value);
         }
 
         private static void OnIndeterminateGeometryChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

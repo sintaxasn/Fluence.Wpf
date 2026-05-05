@@ -63,8 +63,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object OnContent
         {
-            get { return GetValue(OnContentProperty); }
-            set { SetValue(OnContentProperty, value); }
+            get => GetValue(OnContentProperty);
+            set => SetValue(OnContentProperty, value);
         }
 
         /// <summary>
@@ -82,8 +82,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object OffContent
         {
-            get { return GetValue(OffContentProperty); }
-            set { SetValue(OffContentProperty, value); }
+            get => GetValue(OffContentProperty);
+            set => SetValue(OffContentProperty, value);
         }
 
         /// <summary>
@@ -101,8 +101,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public DataTemplate OnContentTemplate
         {
-            get { return (DataTemplate)GetValue(OnContentTemplateProperty); }
-            set { SetValue(OnContentTemplateProperty, value); }
+            get => (DataTemplate)GetValue(OnContentTemplateProperty);
+            set => SetValue(OnContentTemplateProperty, value);
         }
 
         /// <summary>
@@ -120,8 +120,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public DataTemplate OffContentTemplate
         {
-            get { return (DataTemplate)GetValue(OffContentTemplateProperty); }
-            set { SetValue(OffContentTemplateProperty, value); }
+            get => (DataTemplate)GetValue(OffContentTemplateProperty);
+            set => SetValue(OffContentTemplateProperty, value);
         }
 
         /// <summary>
@@ -139,8 +139,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object HeaderContent
         {
-            get { return GetValue(HeaderContentProperty); }
-            set { SetValue(HeaderContentProperty, value); }
+            get => GetValue(HeaderContentProperty);
+            set => SetValue(HeaderContentProperty, value);
         }
     }
 }

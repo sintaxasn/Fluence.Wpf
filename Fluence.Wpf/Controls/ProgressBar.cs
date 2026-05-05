@@ -79,8 +79,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public CornerRadius CornerRadius
         {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(CornerRadiusProperty);
+            set => SetValue(CornerRadiusProperty, value);
         }
 
         /// <summary>
@@ -98,8 +98,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public ProgressBarMode ProgressMode
         {
-            get { return (ProgressBarMode)GetValue(ProgressModeProperty); }
-            set { SetValue(ProgressModeProperty, value); }
+            get => (ProgressBarMode)GetValue(ProgressModeProperty);
+            set => SetValue(ProgressModeProperty, value);
         }
 
         /// <summary>
@@ -117,8 +117,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public int Steps
         {
-            get { return (int)GetValue(StepsProperty); }
-            set { SetValue(StepsProperty, value); }
+            get => (int)GetValue(StepsProperty);
+            set => SetValue(StepsProperty, value);
         }
 
         /// <summary>
@@ -136,8 +136,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public int CurrentStep
         {
-            get { return (int)GetValue(CurrentStepProperty); }
-            set { SetValue(CurrentStepProperty, value); }
+            get => (int)GetValue(CurrentStepProperty);
+            set => SetValue(CurrentStepProperty, value);
         }
 
         /// <summary>
@@ -155,8 +155,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool ShowStepMarkers
         {
-            get { return (bool)GetValue(ShowStepMarkersProperty); }
-            set { SetValue(ShowStepMarkersProperty, value); }
+            get => (bool)GetValue(ShowStepMarkersProperty);
+            set => SetValue(ShowStepMarkersProperty, value);
         }
 
         /// <summary>
@@ -174,8 +174,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public double TrackHeight
         {
-            get { return (double)GetValue(TrackHeightProperty); }
-            set { SetValue(TrackHeightProperty, value); }
+            get => (double)GetValue(TrackHeightProperty);
+            set => SetValue(TrackHeightProperty, value);
         }
 
         /// <summary>

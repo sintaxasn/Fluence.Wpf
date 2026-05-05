@@ -48,8 +48,8 @@ namespace Fluence.Wpf.Controls
         /// <summary>Gets or sets the corner radius of the ListBox border.</summary>
         public CornerRadius CornerRadius
         {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(CornerRadiusProperty);
+            set => SetValue(CornerRadiusProperty, value);
         }
 
         /// <inheritdoc/>

@@ -73,8 +73,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string PlaceholderText
         {
-            get { return (string)GetValue(PlaceholderTextProperty); }
-            set { SetValue(PlaceholderTextProperty, value); }
+            get => (string)GetValue(PlaceholderTextProperty);
+            set => SetValue(PlaceholderTextProperty, value);
         }
 
         /// <summary>
@@ -92,8 +92,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool PlaceholderEnabled
         {
-            get { return (bool)GetValue(PlaceholderEnabledProperty); }
-            set { SetValue(PlaceholderEnabledProperty, value); }
+            get => (bool)GetValue(PlaceholderEnabledProperty);
+            set => SetValue(PlaceholderEnabledProperty, value);
         }
 
         /// <summary>
@@ -111,8 +111,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object Icon
         {
-            get { return GetValue(IconProperty); }
-            set { SetValue(IconProperty, value); }
+            get => GetValue(IconProperty);
+            set => SetValue(IconProperty, value);
         }
 
         /// <summary>
@@ -130,8 +130,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public ElementPlacement IconPlacement
         {
-            get { return (ElementPlacement)GetValue(IconPlacementProperty); }
-            set { SetValue(IconPlacementProperty, value); }
+            get => (ElementPlacement)GetValue(IconPlacementProperty);
+            set => SetValue(IconPlacementProperty, value);
         }
 
         /// <summary>
@@ -149,8 +149,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool ClearButtonEnabled
         {
-            get { return (bool)GetValue(ClearButtonEnabledProperty); }
-            set { SetValue(ClearButtonEnabledProperty, value); }
+            get => (bool)GetValue(ClearButtonEnabledProperty);
+            set => SetValue(ClearButtonEnabledProperty, value);
         }
 
         /// <summary>
@@ -168,8 +168,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public CornerRadius CornerRadius
         {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(CornerRadiusProperty);
+            set => SetValue(CornerRadiusProperty, value);
         }
 
         /// <summary>
@@ -187,8 +187,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string HelperText
         {
-            get { return (string)GetValue(HelperTextProperty); }
-            set { SetValue(HelperTextProperty, value); }
+            get => (string)GetValue(HelperTextProperty);
+            set => SetValue(HelperTextProperty, value);
         }
 
         /// <summary>
@@ -206,8 +206,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string ValidationMessage
         {
-            get { return (string)GetValue(ValidationMessageProperty); }
-            set { SetValue(ValidationMessageProperty, value); }
+            get => (string)GetValue(ValidationMessageProperty);
+            set => SetValue(ValidationMessageProperty, value);
         }
 
         /// <summary>
@@ -225,8 +225,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public ValidationState ValidationState
         {
-            get { return (ValidationState)GetValue(ValidationStateProperty); }
-            set { SetValue(ValidationStateProperty, value); }
+            get => (ValidationState)GetValue(ValidationStateProperty);
+            set => SetValue(ValidationStateProperty, value);
         }
 
         /// <summary>

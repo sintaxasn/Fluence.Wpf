@@ -84,8 +84,8 @@ namespace Fluence.Wpf.Controls
         /// <summary>Gets or sets the current rating value (0 to <see cref="MaxRating"/>).</summary>
         public double Value
         {
-            get { return (double)GetValue(ValueProperty); }
-            set { SetValue(ValueProperty, value); }
+            get => (double)GetValue(ValueProperty);
+            set => SetValue(ValueProperty, value);
         }
 
         private static void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -117,8 +117,8 @@ namespace Fluence.Wpf.Controls
         /// <summary>Gets or sets the maximum number of stars displayed. Default is 5.</summary>
         public int MaxRating
         {
-            get { return (int)GetValue(MaxRatingProperty); }
-            set { SetValue(MaxRatingProperty, value); }
+            get => (int)GetValue(MaxRatingProperty);
+            set => SetValue(MaxRatingProperty, value);
         }
 
         private static void OnMaxRatingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -147,8 +147,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool IsReadOnly
         {
-            get { return (bool)GetValue(IsReadOnlyProperty); }
-            set { SetValue(IsReadOnlyProperty, value); }
+            get => (bool)GetValue(IsReadOnlyProperty);
+            set => SetValue(IsReadOnlyProperty, value);
         }
 
         private static void OnIsReadOnlyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -171,8 +171,8 @@ namespace Fluence.Wpf.Controls
         /// <summary>Gets or sets the optional caption text shown after the stars.</summary>
         public string Caption
         {
-            get { return (string)GetValue(CaptionProperty); }
-            set { SetValue(CaptionProperty, value); }
+            get => (string)GetValue(CaptionProperty);
+            set => SetValue(CaptionProperty, value);
         }
 
         private static void OnCaptionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

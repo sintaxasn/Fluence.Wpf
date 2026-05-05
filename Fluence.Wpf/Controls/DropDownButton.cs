@@ -64,8 +64,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object Flyout
         {
-            get { return GetValue(FlyoutProperty); }
-            set { SetValue(FlyoutProperty, value); }
+            get => GetValue(FlyoutProperty);
+            set => SetValue(FlyoutProperty, value);
         }
 
         /// <summary>
@@ -83,8 +83,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public DataTemplate FlyoutTemplate
         {
-            get { return (DataTemplate)GetValue(FlyoutTemplateProperty); }
-            set { SetValue(FlyoutTemplateProperty, value); }
+            get => (DataTemplate)GetValue(FlyoutTemplateProperty);
+            set => SetValue(FlyoutTemplateProperty, value);
         }
 
         /// <summary>
@@ -106,8 +106,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public new CornerRadius CornerRadius
         {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(CornerRadiusProperty);
+            set => SetValue(CornerRadiusProperty, value);
         }
 
         /// <summary>
@@ -125,8 +125,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public CornerRadius DropdownCornerRadius
         {
-            get { return (CornerRadius)GetValue(DropdownCornerRadiusProperty); }
-            set { SetValue(DropdownCornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(DropdownCornerRadiusProperty);
+            set => SetValue(DropdownCornerRadiusProperty, value);
         }
 
         /// <inheritdoc />

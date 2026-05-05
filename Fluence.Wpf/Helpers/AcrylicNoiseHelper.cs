@@ -53,7 +53,7 @@ namespace Fluence.Wpf.Helpers
             for (int i = 0; i < pixels.Length; i += 4)
             {
                 byte gray = (byte)rng.Next(0, 256);
-                pixels[i]     = gray; // B
+                pixels[i] = gray; // B
                 pixels[i + 1] = gray; // G
                 pixels[i + 2] = gray; // R
                 pixels[i + 3] = 12;   // A  (~5 % opacity per pixel)
@@ -65,10 +65,10 @@ namespace Fluence.Wpf.Helpers
 
             ImageBrush brush = new ImageBrush(bitmap)
             {
-                TileMode    = TileMode.Tile,
-                Viewport    = new Rect(0, 0, size, size),
+                TileMode = TileMode.Tile,
+                Viewport = new Rect(0, 0, size, size),
                 ViewportUnits = BrushMappingMode.Absolute,
-                Stretch     = Stretch.None
+                Stretch = Stretch.None
             };
             brush.Freeze();
 

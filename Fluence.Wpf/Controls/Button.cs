@@ -63,8 +63,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public ControlAppearance Appearance
         {
-            get { return (ControlAppearance)GetValue(AppearanceProperty); }
-            set { SetValue(AppearanceProperty, value); }
+            get => (ControlAppearance)GetValue(AppearanceProperty);
+            set => SetValue(AppearanceProperty, value);
         }
 
         /// <summary>
@@ -82,8 +82,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public CornerRadius CornerRadius
         {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(CornerRadiusProperty);
+            set => SetValue(CornerRadiusProperty, value);
         }
 
         /// <summary>
@@ -101,8 +101,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object Icon
         {
-            get { return GetValue(IconProperty); }
-            set { SetValue(IconProperty, value); }
+            get => GetValue(IconProperty);
+            set => SetValue(IconProperty, value);
         }
 
         /// <summary>
@@ -120,8 +120,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public ElementPlacement IconPlacement
         {
-            get { return (ElementPlacement)GetValue(IconPlacementProperty); }
-            set { SetValue(IconPlacementProperty, value); }
+            get => (ElementPlacement)GetValue(IconPlacementProperty);
+            set => SetValue(IconPlacementProperty, value);
         }
 
         /// <inheritdoc />

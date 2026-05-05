@@ -84,8 +84,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool IsClosable
         {
-            get { return (bool)GetValue(IsClosableProperty); }
-            set { SetValue(IsClosableProperty, value); }
+            get => (bool)GetValue(IsClosableProperty);
+            set => SetValue(IsClosableProperty, value);
         }
 
         /// <summary>
@@ -94,8 +94,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object Icon
         {
-            get { return GetValue(IconProperty); }
-            set { SetValue(IconProperty, value); }
+            get => GetValue(IconProperty);
+            set => SetValue(IconProperty, value);
         }
 
         /// <summary>
@@ -104,8 +104,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public event System.Windows.RoutedEventHandler CloseRequested
         {
-            add { AddHandler(CloseRequestedEvent, value); }
-            remove { RemoveHandler(CloseRequestedEvent, value); }
+            add => AddHandler(CloseRequestedEvent, value);
+            remove => RemoveHandler(CloseRequestedEvent, value);
         }
 
         /// <inheritdoc />

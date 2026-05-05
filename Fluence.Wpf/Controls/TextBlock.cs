@@ -104,8 +104,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string Text
         {
-            get { return (string)GetValue(TextProperty); }
-            set { SetValue(TextProperty, value); }
+            get => (string)GetValue(TextProperty);
+            set => SetValue(TextProperty, value);
         }
 
         /// <summary>
@@ -113,8 +113,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public FluentTypography Typography
         {
-            get { return (FluentTypography)GetValue(TypographyProperty); }
-            set { SetValue(TypographyProperty, value); }
+            get => (FluentTypography)GetValue(TypographyProperty);
+            set => SetValue(TypographyProperty, value);
         }
 
         /// <summary>
@@ -122,8 +122,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public System.Windows.TextWrapping TextWrapping
         {
-            get { return (System.Windows.TextWrapping)GetValue(TextWrappingProperty); }
-            set { SetValue(TextWrappingProperty, value); }
+            get => (System.Windows.TextWrapping)GetValue(TextWrappingProperty);
+            set => SetValue(TextWrappingProperty, value);
         }
 
         /// <summary>
@@ -131,8 +131,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public System.Windows.TextTrimming TextTrimming
         {
-            get { return (System.Windows.TextTrimming)GetValue(TextTrimmingProperty); }
-            set { SetValue(TextTrimmingProperty, value); }
+            get => (System.Windows.TextTrimming)GetValue(TextTrimmingProperty);
+            set => SetValue(TextTrimmingProperty, value);
         }
 
         /// <inheritdoc />

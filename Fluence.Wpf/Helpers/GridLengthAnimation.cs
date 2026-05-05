@@ -84,8 +84,8 @@ namespace Fluence.Wpf.Helpers
         /// </summary>
         public GridLength From
         {
-            get { return (GridLength)GetValue(FromProperty); }
-            set { SetValue(FromProperty, value); }
+            get => (GridLength)GetValue(FromProperty);
+            set => SetValue(FromProperty, value);
         }
 
         /// <summary>
@@ -93,8 +93,8 @@ namespace Fluence.Wpf.Helpers
         /// </summary>
         public GridLength To
         {
-            get { return (GridLength)GetValue(ToProperty); }
-            set { SetValue(ToProperty, value); }
+            get => (GridLength)GetValue(ToProperty);
+            set => SetValue(ToProperty, value);
         }
 
         /// <summary>
@@ -102,8 +102,8 @@ namespace Fluence.Wpf.Helpers
         /// </summary>
         public IEasingFunction EasingFunction
         {
-            get { return (IEasingFunction)GetValue(EasingFunctionProperty); }
-            set { SetValue(EasingFunctionProperty, value); }
+            get => (IEasingFunction)GetValue(EasingFunctionProperty);
+            set => SetValue(EasingFunctionProperty, value);
         }
 
         /// <summary>

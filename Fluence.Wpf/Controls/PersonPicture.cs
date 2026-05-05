@@ -109,8 +109,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string DisplayName
         {
-            get { return (string)GetValue(DisplayNameProperty); }
-            set { SetValue(DisplayNameProperty, value); }
+            get => (string)GetValue(DisplayNameProperty);
+            set => SetValue(DisplayNameProperty, value);
         }
 
         private static void OnDisplayNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -136,8 +136,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string Initials
         {
-            get { return (string)GetValue(InitialsProperty); }
-            set { SetValue(InitialsProperty, value); }
+            get => (string)GetValue(InitialsProperty);
+            set => SetValue(InitialsProperty, value);
         }
 
         private static void OnInitialsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -160,8 +160,8 @@ namespace Fluence.Wpf.Controls
         /// <summary>Gets or sets the profile photo image source.</summary>
         public ImageSource ProfilePicture
         {
-            get { return (ImageSource)GetValue(ProfilePictureProperty); }
-            set { SetValue(ProfilePictureProperty, value); }
+            get => (ImageSource)GetValue(ProfilePictureProperty);
+            set => SetValue(ProfilePictureProperty, value);
         }
 
         private static void OnProfilePictureChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -187,8 +187,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool IsGroup
         {
-            get { return (bool)GetValue(IsGroupProperty); }
-            set { SetValue(IsGroupProperty, value); }
+            get => (bool)GetValue(IsGroupProperty);
+            set => SetValue(IsGroupProperty, value);
         }
 
         private static void OnIsGroupChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -214,8 +214,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public int BadgeNumber
         {
-            get { return (int)GetValue(BadgeNumberProperty); }
-            set { SetValue(BadgeNumberProperty, value); }
+            get => (int)GetValue(BadgeNumberProperty);
+            set => SetValue(BadgeNumberProperty, value);
         }
 
         // -----------------------------------------------------------------------
@@ -237,8 +237,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string BadgeGlyph
         {
-            get { return (string)GetValue(BadgeGlyphProperty); }
-            set { SetValue(BadgeGlyphProperty, value); }
+            get => (string)GetValue(BadgeGlyphProperty);
+            set => SetValue(BadgeGlyphProperty, value);
         }
 
         private static void OnBadgeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

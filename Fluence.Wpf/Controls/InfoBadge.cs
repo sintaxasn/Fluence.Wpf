@@ -61,8 +61,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public int Value
         {
-            get { return (int)GetValue(ValueProperty); }
-            set { SetValue(ValueProperty, value); }
+            get => (int)GetValue(ValueProperty);
+            set => SetValue(ValueProperty, value);
         }
 
         /// <summary>Identifies the <see cref="BadgeStyle"/> dependency property.</summary>
@@ -78,8 +78,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public InfoBadgeStyle BadgeStyle
         {
-            get { return (InfoBadgeStyle)GetValue(BadgeStyleProperty); }
-            set { SetValue(BadgeStyleProperty, value); }
+            get => (InfoBadgeStyle)GetValue(BadgeStyleProperty);
+            set => SetValue(BadgeStyleProperty, value);
         }
 
         /// <summary>Identifies the <see cref="IconSource"/> dependency property.</summary>
@@ -95,8 +95,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object IconSource
         {
-            get { return GetValue(IconSourceProperty); }
-            set { SetValue(IconSourceProperty, value); }
+            get => GetValue(IconSourceProperty);
+            set => SetValue(IconSourceProperty, value);
         }
 
         /// <inheritdoc />

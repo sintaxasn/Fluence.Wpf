@@ -138,92 +138,92 @@ namespace Fluence.Wpf.Controls
         /// <summary>Gets or sets the title text.</summary>
         public string Title
         {
-            get { return (string)GetValue(TitleProperty); }
-            set { SetValue(TitleProperty, value); }
+            get => (string)GetValue(TitleProperty);
+            set => SetValue(TitleProperty, value);
         }
 
         /// <summary>Gets or sets the subtitle text.</summary>
         public string Subtitle
         {
-            get { return (string)GetValue(SubtitleProperty); }
-            set { SetValue(SubtitleProperty, value); }
+            get => (string)GetValue(SubtitleProperty);
+            set => SetValue(SubtitleProperty, value);
         }
 
         /// <summary>Gets or sets the title bar icon content.</summary>
         public object Icon
         {
-            get { return GetValue(IconProperty); }
-            set { SetValue(IconProperty, value); }
+            get => GetValue(IconProperty);
+            set => SetValue(IconProperty, value);
         }
 
         /// <summary>Gets or sets whether the back button is visible.</summary>
         public bool IsBackButtonVisible
         {
-            get { return (bool)GetValue(IsBackButtonVisibleProperty); }
-            set { SetValue(IsBackButtonVisibleProperty, value); }
+            get => (bool)GetValue(IsBackButtonVisibleProperty);
+            set => SetValue(IsBackButtonVisibleProperty, value);
         }
 
         /// <summary>Gets or sets whether the pane toggle button is visible.</summary>
         public bool IsPaneToggleButtonVisible
         {
-            get { return (bool)GetValue(IsPaneToggleButtonVisibleProperty); }
-            set { SetValue(IsPaneToggleButtonVisibleProperty, value); }
+            get => (bool)GetValue(IsPaneToggleButtonVisibleProperty);
+            set => SetValue(IsPaneToggleButtonVisibleProperty, value);
         }
 
         /// <summary>Gets or sets whether the title bar uses compact height (32px vs 48px).</summary>
         public bool IsCompact
         {
-            get { return (bool)GetValue(IsCompactProperty); }
-            set { SetValue(IsCompactProperty, value); }
+            get => (bool)GetValue(IsCompactProperty);
+            set => SetValue(IsCompactProperty, value);
         }
 
         /// <summary>Gets or sets content displayed before the icon and title text.</summary>
         public object LeftHeader
         {
-            get { return GetValue(LeftHeaderProperty); }
-            set { SetValue(LeftHeaderProperty, value); }
+            get => GetValue(LeftHeaderProperty);
+            set => SetValue(LeftHeaderProperty, value);
         }
 
         /// <summary>Gets or sets content displayed after the central content slot.</summary>
         public object RightHeader
         {
-            get { return GetValue(RightHeaderProperty); }
-            set { SetValue(RightHeaderProperty, value); }
+            get => GetValue(RightHeaderProperty);
+            set => SetValue(RightHeaderProperty, value);
         }
 
         /// <summary>Gets or sets custom content displayed in the central title bar slot.</summary>
         public object CustomContent
         {
-            get { return GetValue(CustomContentProperty); }
-            set { SetValue(CustomContentProperty, value); }
+            get => GetValue(CustomContentProperty);
+            set => SetValue(CustomContentProperty, value);
         }
 
         /// <summary>Gets or sets the command invoked when the back button is clicked.</summary>
         public ICommand BackCommand
         {
-            get { return (ICommand)GetValue(BackCommandProperty); }
-            set { SetValue(BackCommandProperty, value); }
+            get => (ICommand)GetValue(BackCommandProperty);
+            set => SetValue(BackCommandProperty, value);
         }
 
         /// <summary>Gets or sets the parameter for <see cref="BackCommand"/>.</summary>
         public object BackCommandParameter
         {
-            get { return GetValue(BackCommandParameterProperty); }
-            set { SetValue(BackCommandParameterProperty, value); }
+            get => GetValue(BackCommandParameterProperty);
+            set => SetValue(BackCommandParameterProperty, value);
         }
 
         /// <summary>Gets or sets the command invoked when the pane toggle button is clicked.</summary>
         public ICommand PaneToggleCommand
         {
-            get { return (ICommand)GetValue(PaneToggleCommandProperty); }
-            set { SetValue(PaneToggleCommandProperty, value); }
+            get => (ICommand)GetValue(PaneToggleCommandProperty);
+            set => SetValue(PaneToggleCommandProperty, value);
         }
 
         /// <summary>Gets or sets the parameter for <see cref="PaneToggleCommand"/>.</summary>
         public object PaneToggleCommandParameter
         {
-            get { return GetValue(PaneToggleCommandParameterProperty); }
-            set { SetValue(PaneToggleCommandParameterProperty, value); }
+            get => GetValue(PaneToggleCommandParameterProperty);
+            set => SetValue(PaneToggleCommandParameterProperty, value);
         }
 
         /// <inheritdoc />

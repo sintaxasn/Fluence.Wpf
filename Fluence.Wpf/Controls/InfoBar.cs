@@ -69,8 +69,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string Title
         {
-            get { return (string)GetValue(TitleProperty); }
-            set { SetValue(TitleProperty, value); }
+            get => (string)GetValue(TitleProperty);
+            set => SetValue(TitleProperty, value);
         }
 
         /// <summary>
@@ -88,8 +88,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string Message
         {
-            get { return (string)GetValue(MessageProperty); }
-            set { SetValue(MessageProperty, value); }
+            get => (string)GetValue(MessageProperty);
+            set => SetValue(MessageProperty, value);
         }
 
         /// <summary>
@@ -107,8 +107,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public InfoBarSeverity Severity
         {
-            get { return (InfoBarSeverity)GetValue(SeverityProperty); }
-            set { SetValue(SeverityProperty, value); }
+            get => (InfoBarSeverity)GetValue(SeverityProperty);
+            set => SetValue(SeverityProperty, value);
         }
 
         /// <summary>
@@ -126,8 +126,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool IsOpen
         {
-            get { return (bool)GetValue(IsOpenProperty); }
-            set { SetValue(IsOpenProperty, value); }
+            get => (bool)GetValue(IsOpenProperty);
+            set => SetValue(IsOpenProperty, value);
         }
 
         /// <summary>
@@ -145,8 +145,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool IsClosable
         {
-            get { return (bool)GetValue(IsClosableProperty); }
-            set { SetValue(IsClosableProperty, value); }
+            get => (bool)GetValue(IsClosableProperty);
+            set => SetValue(IsClosableProperty, value);
         }
 
         /// <summary>
@@ -164,8 +164,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool IsIconVisible
         {
-            get { return (bool)GetValue(IsIconVisibleProperty); }
-            set { SetValue(IsIconVisibleProperty, value); }
+            get => (bool)GetValue(IsIconVisibleProperty);
+            set => SetValue(IsIconVisibleProperty, value);
         }
 
         /// <summary>
@@ -183,8 +183,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object Icon
         {
-            get { return GetValue(IconProperty); }
-            set { SetValue(IconProperty, value); }
+            get => GetValue(IconProperty);
+            set => SetValue(IconProperty, value);
         }
 
         /// <summary>
@@ -202,8 +202,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object ActionButton
         {
-            get { return GetValue(ActionButtonProperty); }
-            set { SetValue(ActionButtonProperty, value); }
+            get => GetValue(ActionButtonProperty);
+            set => SetValue(ActionButtonProperty, value);
         }
 
         /// <summary>
@@ -221,8 +221,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public CornerRadius CornerRadius
         {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(CornerRadiusProperty);
+            set => SetValue(CornerRadiusProperty, value);
         }
 
         /// <summary>

@@ -51,8 +51,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public double Spacing
         {
-            get { return (double)GetValue(SpacingProperty); }
-            set { SetValue(SpacingProperty, value); }
+            get => (double)GetValue(SpacingProperty);
+            set => SetValue(SpacingProperty, value);
         }
 
         /// <summary>
@@ -70,8 +70,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool LastChildFill
         {
-            get { return (bool)GetValue(LastChildFillProperty); }
-            set { SetValue(LastChildFillProperty, value); }
+            get => (bool)GetValue(LastChildFillProperty);
+            set => SetValue(LastChildFillProperty, value);
         }
 
         /// <inheritdoc />

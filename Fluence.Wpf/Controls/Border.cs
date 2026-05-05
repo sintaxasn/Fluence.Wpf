@@ -49,8 +49,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public BorderVariant Variant
         {
-            get { return (BorderVariant)GetValue(VariantProperty); }
-            set { SetValue(VariantProperty, value); }
+            get => (BorderVariant)GetValue(VariantProperty);
+            set => SetValue(VariantProperty, value);
         }
 
         private static void OnVariantChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

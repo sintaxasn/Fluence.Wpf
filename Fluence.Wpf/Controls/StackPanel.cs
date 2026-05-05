@@ -51,8 +51,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public double Spacing
         {
-            get { return (double)GetValue(SpacingProperty); }
-            set { SetValue(SpacingProperty, value); }
+            get => (double)GetValue(SpacingProperty);
+            set => SetValue(SpacingProperty, value);
         }
 
         /// <inheritdoc />
