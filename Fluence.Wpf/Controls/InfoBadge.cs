@@ -125,7 +125,9 @@ namespace Fluence.Wpf.Controls
         {
             InfoBadge badge = (InfoBadge)d;
             if (badge.IconSource != null)
+            {
                 return;
+            }
 
             int val = (int)e.NewValue;
             badge.Content = val >= 0 ? val.ToString(CultureInfo.CurrentCulture) : null;
@@ -136,11 +138,17 @@ namespace Fluence.Wpf.Controls
         {
             string state;
             if (IconSource != null)
+            {
                 state = "Icon";
+            }
             else if (Value >= 0)
+            {
                 state = "Value";
+            }
             else
+            {
                 state = "Dot";
+            }
 
             VisualStateManager.GoToState(this, state, useTransitions);
         }

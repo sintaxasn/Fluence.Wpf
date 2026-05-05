@@ -43,7 +43,9 @@ namespace Fluence.Wpf.Helpers
         public static ImageBrush GetNoiseBrush()
         {
             if (_cachedBrush != null)
+            {
                 return _cachedBrush;
+            }
 
             const int size = 128;
             const int stride = size * 4;

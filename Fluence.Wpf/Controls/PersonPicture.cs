@@ -285,7 +285,10 @@ namespace Fluence.Wpf.Controls
             {
                 // Photo state: fill the image ellipse
                 if (_imageEllipse != null)
+                {
                     _imageEllipse.Fill = new ImageBrush(ProfilePicture) { Stretch = Stretch.UniformToFill };
+                }
+
                 VisualStateManager.GoToState(this, StatePhoto, useTransitions);
                 return;
             }
@@ -316,7 +319,9 @@ namespace Fluence.Wpf.Controls
         {
             bool hasBadge = !string.IsNullOrEmpty(BadgeGlyph) || BadgeNumber > 0;
             if (_badgeGrid != null)
+            {
                 _badgeGrid.Visibility = hasBadge ? Visibility.Visible : Visibility.Collapsed;
+            }
 
             if (_badgeText != null)
             {
@@ -345,13 +350,23 @@ namespace Fluence.Wpf.Controls
         {
             // Explicit initials take precedence.
             if (!string.IsNullOrEmpty(Initials))
+            {
                 return Initials.Length > 2 ? Initials.Substring(0, 2).ToUpperInvariant() : Initials.ToUpperInvariant();
+            }
 
             // Derive from DisplayName: take first character of up to two words.
             string name = DisplayName ?? string.Empty;
             string[] parts = name.Trim().Split(InitialsSeparators, StringSplitOptions.RemoveEmptyEntries);
-            if (parts.Length == 0) return string.Empty;
-            if (parts.Length == 1) return parts[0][0].ToString().ToUpperInvariant();
+            if (parts.Length == 0)
+            {
+                return string.Empty;
+            }
+
+            if (parts.Length == 1)
+            {
+                return parts[0][0].ToString().ToUpperInvariant();
+            }
+
             return (parts[0][0].ToString() + parts[parts.Length - 1][0].ToString()).ToUpperInvariant();
         }
     }

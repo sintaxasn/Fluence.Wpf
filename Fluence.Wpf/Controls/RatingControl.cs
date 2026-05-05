@@ -97,8 +97,16 @@ namespace Fluence.Wpf.Controls
         {
             RatingControl ctrl = (RatingControl)d;
             double v = (double)baseValue;
-            if (v < 0.0) return 0.0;
-            if (v > ctrl.MaxRating) return (double)ctrl.MaxRating;
+            if (v < 0.0)
+            {
+                return 0.0;
+            }
+
+            if (v > ctrl.MaxRating)
+            {
+                return (double)ctrl.MaxRating;
+            }
+
             return v;
         }
 
@@ -207,7 +215,11 @@ namespace Fluence.Wpf.Controls
 
         private void BuildAndRefreshStars()
         {
-            if (_starsPanel == null) return;
+            if (_starsPanel == null)
+            {
+                return;
+            }
+
             _hoverIndex = -1;
             _starsPanel.Children.Clear();
 
@@ -227,7 +239,9 @@ namespace Fluence.Wpf.Controls
                 TextOptions.SetTextHintingMode(star, TextHintingMode.Fixed);
 
                 if (i < count)
+                {
                     star.Margin = new Thickness(0, 0, 4, 0);
+                }
 
                 int capturedIndex = i;
                 star.MouseEnter += (s, e) => OnStarMouseEnter(capturedIndex);
@@ -242,7 +256,11 @@ namespace Fluence.Wpf.Controls
 
         private void OnStarMouseEnter(int index)
         {
-            if (IsReadOnly || !IsEnabled) return;
+            if (IsReadOnly || !IsEnabled)
+            {
+                return;
+            }
+
             _hoverIndex = index;
             RefreshStars();
         }
@@ -255,7 +273,10 @@ namespace Fluence.Wpf.Controls
 
         private void OnStarClick(int index)
         {
-            if (IsReadOnly || !IsEnabled) return;
+            if (IsReadOnly || !IsEnabled)
+            {
+                return;
+            }
             // Clicking the already-set star clears the rating (WinUI 3 IsClearEnabled behaviour).
             double newValue = ((int)Math.Round(Value) == index) ? 0.0 : (double)index;
             SetCurrentValue(ValueProperty, newValue);
@@ -263,22 +284,35 @@ namespace Fluence.Wpf.Controls
 
         private void RefreshStars()
         {
-            if (_starsPanel == null) return;
+            if (_starsPanel == null)
+            {
+                return;
+            }
+
             int displayCount = _hoverIndex > 0 ? _hoverIndex : (int)Math.Round(Value);
 
             for (int i = 0; i < _starsPanel.Children.Count; i++)
             {
-                if (_starsPanel.Children[i] is not WpfTextBlock star) continue;
+                if (_starsPanel.Children[i] is not WpfTextBlock star)
+                {
+                    continue;
+                }
 
                 bool filled = (i + 1) <= displayCount;
                 star.Text = filled ? "\uE735" : "\uE734"; // StarFilled / StarEmpty
 
                 if (!IsEnabled)
+                {
                     star.SetResourceReference(WpfTextBlock.ForegroundProperty, "TextFillColorDisabledBrush");
+                }
                 else if (filled)
+                {
                     star.SetResourceReference(WpfTextBlock.ForegroundProperty, "AccentFillColorDefaultBrush");
+                }
                 else
+                {
                     star.SetResourceReference(WpfTextBlock.ForegroundProperty, "TextFillColorSecondaryBrush");
+                }
 
                 star.Cursor = (IsReadOnly || !IsEnabled) ? null : Cursors.Hand;
             }
@@ -286,7 +320,11 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateCaption()
         {
-            if (_captionText == null) return;
+            if (_captionText == null)
+            {
+                return;
+            }
+
             string text = Caption ?? string.Empty;
             _captionText.Text = text;
             _captionText.Visibility = string.IsNullOrEmpty(text) ? Visibility.Collapsed : Visibility.Visible;

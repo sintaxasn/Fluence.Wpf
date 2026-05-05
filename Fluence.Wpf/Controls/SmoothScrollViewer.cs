@@ -125,7 +125,10 @@ namespace Fluence.Wpf.Controls
                 _targetHorizontalOffset = Clamp(_targetHorizontalOffset, 0, scrollable);
                 double newTarget = Clamp(_targetHorizontalOffset - delta, 0, scrollable);
                 if (newTarget == _targetHorizontalOffset)
+                {
                     return;
+                }
+
                 _targetHorizontalOffset = newTarget;
                 AnimateTo(CurrentHorizontalOffsetProperty, _targetHorizontalOffset);
             }
@@ -135,7 +138,10 @@ namespace Fluence.Wpf.Controls
                 _targetVerticalOffset = Clamp(_targetVerticalOffset, 0, scrollable);
                 double newTarget = Clamp(_targetVerticalOffset - delta, 0, scrollable);
                 if (newTarget == _targetVerticalOffset)
+                {
                     return;
+                }
+
                 _targetVerticalOffset = newTarget;
                 AnimateTo(CurrentVerticalOffsetProperty, _targetVerticalOffset);
             }
@@ -180,8 +186,16 @@ namespace Fluence.Wpf.Controls
 
         private static double Clamp(double value, double min, double max)
         {
-            if (value < min) return min;
-            if (value > max) return max;
+            if (value < min)
+            {
+                return min;
+            }
+
+            if (value > max)
+            {
+                return max;
+            }
+
             return value;
         }
     }

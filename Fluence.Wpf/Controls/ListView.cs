@@ -301,10 +301,14 @@ namespace Fluence.Wpf.Controls
             }
 
             if (!ItemAnimationsEnabled || !IsLoaded)
+            {
                 return;
+            }
 
             if (element is not UIElement container)
+            {
                 return;
+            }
 
             container.Opacity = 0;
             container.RenderTransform = new TranslateTransform(0, 12);
@@ -330,19 +334,29 @@ namespace Fluence.Wpf.Controls
             if (!ItemAnimationsEnabled)
             {
                 RemoveItem(item);
-                if (onCompleted != null) onCompleted();
+                if (onCompleted != null)
+                {
+                    onCompleted();
+                }
+
                 return;
             }
 
             if (ItemContainerGenerator.ContainerFromItem(item) is not UIElement container)
             {
                 RemoveItem(item);
-                if (onCompleted != null) onCompleted();
+                if (onCompleted != null)
+                {
+                    onCompleted();
+                }
+
                 return;
             }
 
             if (container.RenderTransform == null || !(container.RenderTransform is TranslateTransform))
+            {
                 container.RenderTransform = new TranslateTransform();
+            }
 
             DoubleAnimation opacityAnim = new DoubleAnimation(container.Opacity, 0, RemoveDuration)
             {
@@ -356,7 +370,10 @@ namespace Fluence.Wpf.Controls
             opacityAnim.Completed += (s, e) =>
             {
                 RemoveItem(item);
-                if (onCompleted != null) onCompleted();
+                if (onCompleted != null)
+                {
+                    onCompleted();
+                }
             };
 
             container.BeginAnimation(OpacityProperty, opacityAnim);

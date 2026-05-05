@@ -443,8 +443,16 @@ namespace Fluence.Wpf.Controls
             double v = (double)baseValue;
             double min = ring.Minimum;
             double max = ring.Maximum;
-            if (v < min) return min;
-            if (v > max) return max;
+            if (v < min)
+            {
+                return min;
+            }
+
+            if (v > max)
+            {
+                return max;
+            }
+
             return baseValue;
         }
 
@@ -705,7 +713,11 @@ namespace Fluence.Wpf.Controls
                     handler = delegate
                     {
                         LayoutUpdated -= handler;
-                        if (!IsActive || IsIndeterminate) return;
+                        if (!IsActive || IsIndeterminate)
+                        {
+                            return;
+                        }
+
                         RenderDeterminateArc(deferredFraction);
                     };
                     LayoutUpdated += handler;

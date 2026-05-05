@@ -326,7 +326,9 @@ namespace Fluence.Wpf
         private static void EnsureAcrylicNoiseBrush()
         {
             if (Application.Current == null)
+            {
                 return;
+            }
 
             const string key = "AcrylicNoiseBrush";
             if (Application.Current.Resources[key] == null)
