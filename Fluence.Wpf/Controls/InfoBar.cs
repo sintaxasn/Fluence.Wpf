@@ -303,7 +303,7 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         protected virtual void OnCloseButtonClick()
         {
-            var args = new InfoBarClosingEventArgs();
+            InfoBarClosingEventArgs args = new InfoBarClosingEventArgs();
             Closing?.Invoke(this, args);
 
             if (args.Cancel)

@@ -127,7 +127,7 @@ namespace Fluence.Wpf.Helpers
 
         public static Color GetLightVariant(Color baseColor, int level)
         {
-            var (hue, saturation, value) = RgbToHsv(baseColor);
+            (double hue, double saturation, double value) = RgbToHsv(baseColor);
 
             double saturationReduction;
             double valueIncrease;
@@ -160,7 +160,7 @@ namespace Fluence.Wpf.Helpers
 
         public static Color GetDarkVariant(Color baseColor, int level)
         {
-            var (hue, saturation, value) = RgbToHsv(baseColor);
+            (double hue, double saturation, double value) = RgbToHsv(baseColor);
 
             double saturationIncrease;
             double valueDecrease;
@@ -193,14 +193,14 @@ namespace Fluence.Wpf.Helpers
 
         public static Color Lighten(Color color, double amount)
         {
-            var (hue, saturation, value) = RgbToHsv(color);
+            (double hue, double saturation, double value) = RgbToHsv(color);
             double newValue = Math.Min(value + amount, 1);
             return HsvToRgb(hue, saturation, newValue);
         }
 
         public static Color Darken(Color color, double amount)
         {
-            var (hue, saturation, value) = RgbToHsv(color);
+            (double hue, double saturation, double value) = RgbToHsv(color);
             double newValue = Math.Max(value - amount, 0);
             return HsvToRgb(hue, saturation, newValue);
         }

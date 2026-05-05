@@ -128,7 +128,7 @@ namespace Fluence.Wpf.Controls
 
         private void OnCloseButtonClick(object sender, RoutedEventArgs e)
         {
-            var data = DataContext ?? this;
+            object data = DataContext ?? this;
             RaiseEvent(new TabViewTabCloseRequestedEventArgs(CloseRequestedEvent, this, this, data));
         }
     }

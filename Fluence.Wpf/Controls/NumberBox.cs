@@ -447,7 +447,7 @@ namespace Fluence.Wpf.Controls
 
         private static object CoerceValueCallback(DependencyObject d, object baseValue)
         {
-            var box = (NumberBox)d;
+            NumberBox box = (NumberBox)d;
             double v = (double)baseValue;
             if (double.IsNaN(v))
             {
@@ -461,7 +461,7 @@ namespace Fluence.Wpf.Controls
         private static void OnValuePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             // Value is already clamped by CoerceValueCallback; OldValue/NewValue are both committed values.
-            var box = (NumberBox)d;
+            NumberBox box = (NumberBox)d;
             box.OnValueChanged((double)e.OldValue, (double)e.NewValue);
             box.UpdateTextFromValue();
         }
@@ -474,7 +474,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnTextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var box = (NumberBox)d;
+            NumberBox box = (NumberBox)d;
             if (box._suppressTextSync)
             {
                 return;

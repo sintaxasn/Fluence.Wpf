@@ -134,7 +134,7 @@ namespace Fluence.Wpf.Controls
         {
             base.OnClick();
 
-            var uri = NavigateUri;
+            Uri uri = NavigateUri;
             if (uri != null)
             {
                 Process.Start(uri.AbsoluteUri);

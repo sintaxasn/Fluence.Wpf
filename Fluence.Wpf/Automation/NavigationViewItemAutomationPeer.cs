@@ -71,20 +71,20 @@ namespace Fluence.Wpf.Automation
         {
             get
             {
-                var nav = ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) as NavigationView;
+                NavigationView? nav = ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) as NavigationView;
                 if (nav == null)
                 {
                     return null;
                 }
 
-                var peer = CreatePeerForElement(nav);
+                AutomationPeer peer = CreatePeerForElement(nav);
                 return peer != null ? ProviderFromPeer(peer) : null;
             }
         }
 
         void ISelectionItemProvider.Select()
         {
-            var nav = ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) as NavigationView;
+            NavigationView? nav = ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) as NavigationView;
             if (nav != null)
             {
                 nav.SelectItemFromContainer(NavigationViewItem);
@@ -102,7 +102,7 @@ namespace Fluence.Wpf.Automation
 
         void IInvokeProvider.Invoke()
         {
-            var nav = ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) as NavigationView;
+            NavigationView? nav = ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) as NavigationView;
             if (nav != null)
             {
                 nav.InvokeItem(NavigationViewItem);

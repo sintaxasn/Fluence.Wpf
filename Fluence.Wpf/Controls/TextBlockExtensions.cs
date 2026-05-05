@@ -76,19 +76,19 @@ namespace Fluence.Wpf.Controls
 
         private static void OnTypographyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var textBlock = d as System.Windows.Controls.TextBlock;
+            System.Windows.Controls.TextBlock? textBlock = d as System.Windows.Controls.TextBlock;
             if (textBlock == null)
             {
                 return;
             }
 
-            var typography = (FluentTypography)e.NewValue;
+            FluentTypography typography = (FluentTypography)e.NewValue;
             ApplyTypography(textBlock, typography);
         }
 
         private static void ApplyTypography(System.Windows.Controls.TextBlock textBlock, FluentTypography typography)
         {
-            var styleKey = GetTypographyStyleKey(typography);
+            string styleKey = GetTypographyStyleKey(typography);
             if (styleKey == null)
             {
                 return;
@@ -159,7 +159,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnTextTrimmingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var textBlock = d as System.Windows.Controls.TextBlock;
+            System.Windows.Controls.TextBlock? textBlock = d as System.Windows.Controls.TextBlock;
             if (textBlock == null)
             {
                 return;
@@ -204,7 +204,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnIsTextSelectionEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var textBlock = d as System.Windows.Controls.TextBlock;
+            System.Windows.Controls.TextBlock? textBlock = d as System.Windows.Controls.TextBlock;
             if (textBlock == null)
             {
                 return;
@@ -225,7 +225,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnTextBlockLoadedForSelection(object sender, RoutedEventArgs e)
         {
-            var textBlock = (System.Windows.Controls.TextBlock)sender;
+            System.Windows.Controls.TextBlock textBlock = (System.Windows.Controls.TextBlock)sender;
             textBlock.Loaded -= OnTextBlockLoadedForSelection;
             ApplySelectionOverlay(textBlock);
         }
@@ -237,13 +237,13 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            var parent = VisualTreeHelper.GetParent(textBlock) as Panel;
+            Panel? parent = VisualTreeHelper.GetParent(textBlock) as Panel;
             if (parent == null)
             {
                 return;
             }
 
-            var index = parent.Children.IndexOf(textBlock);
+            int index = parent.Children.IndexOf(textBlock);
             if (index < 0)
             {
                 return;
@@ -251,12 +251,12 @@ namespace Fluence.Wpf.Controls
 
             parent.Children.RemoveAt(index);
 
-            var grid = new Grid();
+            Grid grid = new Grid();
             textBlock.Opacity = 0;
             textBlock.IsHitTestVisible = false;
             grid.Children.Add(textBlock);
 
-            var overlay = new System.Windows.Controls.TextBox
+            System.Windows.Controls.TextBox overlay = new System.Windows.Controls.TextBox
             {
                 Background = Brushes.Transparent,
                 BorderThickness = new Thickness(0),

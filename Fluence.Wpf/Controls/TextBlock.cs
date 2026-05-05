@@ -145,25 +145,25 @@ namespace Fluence.Wpf.Controls
 
         private static void OnTextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = (TextBlock)d;
+            TextBlock control = (TextBlock)d;
             control.SyncPartTextBlock();
         }
 
         private static void OnTypographyPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = (TextBlock)d;
+            TextBlock control = (TextBlock)d;
             control.SyncPartTextBlock();
         }
 
         private static void OnTextWrappingPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = (TextBlock)d;
+            TextBlock control = (TextBlock)d;
             control.SyncPartTextBlock();
         }
 
         private static void OnTextTrimmingPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = (TextBlock)d;
+            TextBlock control = (TextBlock)d;
             control.SyncPartTextBlock();
         }
 

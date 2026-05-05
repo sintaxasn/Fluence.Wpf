@@ -398,7 +398,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnIsIndeterminateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var ring = (ProgressRing)d;
+            ProgressRing ring = (ProgressRing)d;
             if ((bool)e.NewValue)
             {
                 // Switching to indeterminate: stop any in-flight value tween (otherwise its
@@ -425,7 +425,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnProgressStateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var ring = (ProgressRing)d;
+            ProgressRing ring = (ProgressRing)d;
             ring.UpdateIndeterminateAnimationState();
             if (ring.IsIndeterminate)
             {
@@ -439,7 +439,7 @@ namespace Fluence.Wpf.Controls
 
         private static object CoerceRingValue(DependencyObject d, object baseValue)
         {
-            var ring = (ProgressRing)d;
+            ProgressRing ring = (ProgressRing)d;
             double v = (double)baseValue;
             double min = ring.Minimum;
             double max = ring.Maximum;
@@ -457,7 +457,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnRangePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var ring = (ProgressRing)d;
+            ProgressRing ring = (ProgressRing)d;
             if (ring.IsIndeterminate)
             {
                 return;
@@ -474,7 +474,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            var animation = new DoubleAnimation
+            DoubleAnimation animation = new DoubleAnimation
             {
                 From = ring.AnimatedFraction,
                 To = targetFraction,
@@ -491,7 +491,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnStrokeThicknessChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var ring = (ProgressRing)d;
+            ProgressRing ring = (ProgressRing)d;
             if (ring.IsIndeterminate)
             {
                 ring.RenderIndeterminateArc();
@@ -564,7 +564,7 @@ namespace Fluence.Wpf.Controls
 
         private static DoubleAnimationUsingKeyFrames CreateIndeterminateStartAnimation()
         {
-            var animation = new DoubleAnimationUsingKeyFrames
+            DoubleAnimationUsingKeyFrames animation = new DoubleAnimationUsingKeyFrames
             {
                 Duration = IndeterminateAnimationDuration,
                 RepeatBehavior = RepeatBehavior.Forever
@@ -585,7 +585,7 @@ namespace Fluence.Wpf.Controls
 
         private static DoubleAnimationUsingKeyFrames CreateIndeterminateSweepAnimation()
         {
-            var animation = new DoubleAnimationUsingKeyFrames
+            DoubleAnimationUsingKeyFrames animation = new DoubleAnimationUsingKeyFrames
             {
                 Duration = IndeterminateAnimationDuration,
                 RepeatBehavior = RepeatBehavior.Forever
@@ -721,8 +721,8 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            var startPoint = GetArcPoint(center, radius, startAngle);
-            var endPoint = GetArcPoint(center, radius, startAngle + angle);
+            Point startPoint = GetArcPoint(center, radius, startAngle);
+            Point endPoint = GetArcPoint(center, radius, startAngle + angle);
 
             // Select the pre-allocated geometry set for this path and mutate in place.
             PathFigure figure;

@@ -72,7 +72,7 @@ namespace Fluence.Wpf
                     return;
                 }
 
-                var watched = new WatchedWindow(window);
+                WatchedWindow watched = new WatchedWindow(window);
                 _watchedWindows.Add(watched);
 
                 if (window.IsLoaded)
@@ -106,7 +106,7 @@ namespace Fluence.Wpf
 
             lock (_lock)
             {
-                var watched = FindWatchedWindow(window);
+                WatchedWindow watched = FindWatchedWindow(window);
                 if (watched == null)
                 {
                     return;
@@ -121,7 +121,7 @@ namespace Fluence.Wpf
 
         private static void OnWindowSourceInitialized(object sender, EventArgs e)
         {
-            var window = sender as Window;
+            Window? window = sender as Window;
             if (window == null)
             {
                 return;
@@ -131,7 +131,7 @@ namespace Fluence.Wpf
 
             lock (_lock)
             {
-                var watched = FindWatchedWindow(window);
+                WatchedWindow watched = FindWatchedWindow(window);
                 if (watched != null)
                 {
                     AttachHook(watched);
@@ -146,15 +146,15 @@ namespace Fluence.Wpf
                 return;
             }
 
-            var helper = new WindowInteropHelper(watched.Window);
-            var handle = helper.Handle;
+            WindowInteropHelper helper = new WindowInteropHelper(watched.Window);
+            IntPtr handle = helper.Handle;
 
             if (handle == IntPtr.Zero)
             {
                 return;
             }
 
-            var source = HwndSource.FromHwnd(handle);
+            HwndSource source = HwndSource.FromHwnd(handle);
             if (source == null)
             {
                 return;
@@ -196,7 +196,7 @@ namespace Fluence.Wpf
                 msg == NativeConstants.WM_THEMECHANGED ||
                 msg == NativeConstants.WM_SYSCOLORCHANGE)
             {
-                var currentTick = DateTime.UtcNow.Ticks;
+                long currentTick = DateTime.UtcNow.Ticks;
                 if (currentTick - _lastUpdateTick > DebounceIntervalTicks)
                 {
                     _lastUpdateTick = currentTick;

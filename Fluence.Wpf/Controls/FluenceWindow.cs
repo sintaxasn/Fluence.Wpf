@@ -484,7 +484,7 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public FluenceWindow()
         {
-            var resourceDictionary = new ResourceDictionary
+            ResourceDictionary resourceDictionary = new ResourceDictionary
             {
                 Source = new Uri("pack://application:,,,/Fluence.Wpf;component/Themes/Controls/FluenceWindow.xaml", UriKind.Absolute)
             };
@@ -615,7 +615,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnCaptionButtonChromeOverrideChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var window = d as FluenceWindow;
+            FluenceWindow? window = d as FluenceWindow;
             if (window != null)
             {
                 window.UpdateCaptionButtons();
@@ -625,7 +625,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnExtendsContentIntoTitleBarChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var window = d as FluenceWindow;
+            FluenceWindow? window = d as FluenceWindow;
             if (window != null)
             {
                 window.UpdateWindowChrome();
@@ -634,7 +634,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnTitleBarHeightChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var window = d as FluenceWindow;
+            FluenceWindow? window = d as FluenceWindow;
             if (window != null)
             {
                 window.UpdateWindowChrome();
@@ -643,7 +643,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnHasShadowChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var window = d as FluenceWindow;
+            FluenceWindow? window = d as FluenceWindow;
             if (window != null)
             {
                 window.UpdateWindowChrome();
@@ -696,7 +696,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnSystemBackdropTypeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var window = d as FluenceWindow;
+            FluenceWindow? window = d as FluenceWindow;
             if (window != null)
             {
                 window.ApplyBackdrop();
@@ -705,7 +705,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnCornerStyleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var window = d as FluenceWindow;
+            FluenceWindow? window = d as FluenceWindow;
             if (window != null)
             {
                 window.ApplyCornerPreference();
@@ -751,8 +751,8 @@ namespace Fluence.Wpf.Controls
 
         private void ApplyBackdrop()
         {
-            var capabilities = WindowCapabilities.Current;
-            var plan = WindowPolicy.BuildBackdropPlan(
+            WindowCapabilities capabilities = WindowCapabilities.Current;
+            BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
                 SystemBackdropType,
                 ApplicationThemeManager.GetResolvedTheme(),
                 capabilities,
@@ -787,8 +787,8 @@ namespace Fluence.Wpf.Controls
 
         private void ApplyFrame()
         {
-            var capabilities = WindowCapabilities.Current;
-            var plan = WindowPolicy.BuildFramePlan(
+            WindowCapabilities capabilities = WindowCapabilities.Current;
+            FramePlan plan = WindowPolicy.BuildFramePlan(
                 WindowState,
                 IsActive,
                 ApplicationAccentColorManager.IsAccentColorOnTitleBarsEnabled,
@@ -815,8 +815,8 @@ namespace Fluence.Wpf.Controls
 
             CaptionButtonChrome.GetMinimizeChrome(
                 ResizeMode,
-                out var minimizeVisibility,
-                out var minimizeEnabled);
+                out Visibility minimizeVisibility,
+                out bool minimizeEnabled);
             // When the user has explicitly set IsMinimizeButtonVisible (e.g. to re-enable the
             // button under ResizeMode=NoResize), that value wins over the ResizeMode-derived
             // baseline. Otherwise we keep the chrome defaults.
@@ -837,10 +837,10 @@ namespace Fluence.Wpf.Controls
             CaptionButtonChrome.GetMaximizeRestoreChrome(
                 ResizeMode,
                 WindowState,
-                out var maxVis,
-                out var restVis,
-                out var maxEn,
-                out var restEn);
+                out Visibility maxVis,
+                out Visibility restVis,
+                out bool maxEn,
+                out bool restEn);
             if (IsCaptionChromeOverrideExplicit(IsMaximizeButtonVisibleProperty))
             {
                 ApplyMaximizeRestoreVisibilityOverride(IsMaximizeButtonVisible, out maxVis, out restVis);
@@ -861,8 +861,8 @@ namespace Fluence.Wpf.Controls
             _restoreButton.IsEnabled = restEn;
 
             CaptionButtonChrome.GetCloseChrome(
-                out var closeVisibility,
-                out var closeEnabled);
+                out Visibility closeVisibility,
+                out bool closeEnabled);
             if (IsCaptionChromeOverrideExplicit(IsCloseButtonVisibleProperty))
             {
                 closeVisibility = IsCloseButtonVisible;
@@ -943,7 +943,7 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         private bool IsCaptionChromeOverrideExplicit(DependencyProperty dp)
         {
-            var source = DependencyPropertyHelper.GetValueSource(this, dp);
+            ValueSource source = DependencyPropertyHelper.GetValueSource(this, dp);
             return source.BaseValueSource != BaseValueSource.Default &&
                    source.BaseValueSource != BaseValueSource.Inherited;
         }
@@ -955,7 +955,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            var capabilities = WindowCapabilities.Current;
+            WindowCapabilities capabilities = WindowCapabilities.Current;
             if (!capabilities.SupportsRoundedCorners)
             {
                 return;
@@ -975,10 +975,10 @@ namespace Fluence.Wpf.Controls
                 // WindowChrome routes the whole title bar through WM_NCHITTEST. We return
                 // HTCAPTION for drag regions, HTMAXBUTTON for Windows 11 snap-layout hover,
                 // and 0 for WPF-controlled buttons or interactive custom title-bar content.
-                var result = HitTestTitleBar(lParam);
+                int result = HitTestTitleBar(lParam);
                 if (result == NativeConstants.HTMAXBUTTON)
                 {
-                    var btn = WindowState == WindowState.Maximized ? _restoreButton : _maximizeButton;
+                    System.Windows.Controls.Button btn = WindowState == WindowState.Maximized ? _restoreButton : _maximizeButton;
                     SetSnapHover(btn);
                 }
                 else
@@ -1004,16 +1004,16 @@ namespace Fluence.Wpf.Controls
             }
             else if (msg == NativeConstants.WM_GETMINMAXINFO)
             {
-                var monitor = NativeMethods.MonitorFromWindow(hwnd, NativeConstants.MONITOR_DEFAULTTONEAREST);
+                IntPtr monitor = NativeMethods.MonitorFromWindow(hwnd, NativeConstants.MONITOR_DEFAULTTONEAREST);
                 if (monitor != IntPtr.Zero)
                 {
-                    var monitorInfo = new MONITORINFO { cbSize = Marshal.SizeOf<MONITORINFO>() };
+                    MONITORINFO monitorInfo = new MONITORINFO { cbSize = Marshal.SizeOf<MONITORINFO>() };
                     if (NativeMethods.GetMonitorInfo(monitor, ref monitorInfo))
                     {
-                        var rcWork = monitorInfo.rcWork;
-                        var rcMonitor = monitorInfo.rcMonitor;
+                        RECT rcWork = monitorInfo.rcWork;
+                        RECT rcMonitor = monitorInfo.rcMonitor;
 
-                        var mmi = Marshal.PtrToStructure<MINMAXINFO>(lParam);
+                        MINMAXINFO mmi = Marshal.PtrToStructure<MINMAXINFO>(lParam);
                         mmi.ptMaxPosition.X = rcWork.Left - rcMonitor.Left;
                         mmi.ptMaxPosition.Y = rcWork.Top - rcMonitor.Top;
                         mmi.ptMaxSize.X = rcWork.Width;
@@ -1022,7 +1022,7 @@ namespace Fluence.Wpf.Controls
                         double dpiX = 1.0, dpiY = 1.0;
                         if (_hwndSource != null && _hwndSource.CompositionTarget != null)
                         {
-                            var transform = _hwndSource.CompositionTarget.TransformToDevice;
+                            Matrix transform = _hwndSource.CompositionTarget.TransformToDevice;
                             dpiX = transform.M11;
                             dpiY = transform.M22;
                         }
@@ -1112,7 +1112,7 @@ namespace Fluence.Wpf.Controls
             int x = (short)(lParam.ToInt64() & 0xFFFF);
             int y = (short)((lParam.ToInt64() >> 16) & 0xFFFF);
 
-            var point = PointFromScreen(new Point(x, y));
+            Point point = PointFromScreen(new Point(x, y));
 
             if (point.Y < 0 || point.Y > TitleBarHeight)
             {
@@ -1188,9 +1188,9 @@ namespace Fluence.Wpf.Controls
 
             try
             {
-                var topLeft = element.TranslatePoint(new Point(0, 0), this);
-                var size = element.RenderSize;
-                var rect = new Rect(topLeft, size);
+                Point topLeft = element.TranslatePoint(new Point(0, 0), this);
+                Size size = element.RenderSize;
+                Rect rect = new Rect(topLeft, size);
                 return rect.Contains(windowPoint);
             }
             catch
@@ -1208,10 +1208,10 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         private bool IsOverInteractiveContent(Point windowPoint)
         {
-            var hit = InputHitTest(windowPoint) as DependencyObject;
+            DependencyObject? hit = InputHitTest(windowPoint) as DependencyObject;
             while (hit != null)
             {
-                var element = hit as IInputElement;
+                IInputElement? element = hit as IInputElement;
                 if (element != null && WindowChrome.GetIsHitTestVisibleInChrome(element))
                 {
                     return true;
@@ -1227,7 +1227,7 @@ namespace Fluence.Wpf.Controls
 
         private static Color GetFallbackBackgroundColor()
         {
-            var resolvedTheme = ApplicationThemeManager.GetResolvedTheme();
+            ApplicationTheme resolvedTheme = ApplicationThemeManager.GetResolvedTheme();
 
             if (resolvedTheme == ApplicationTheme.Dark)
             {

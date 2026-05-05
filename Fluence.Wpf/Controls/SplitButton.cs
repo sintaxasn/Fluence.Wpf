@@ -322,16 +322,16 @@ namespace Fluence.Wpf.Controls
             // Primary half: raise Click and invoke Command.
             RaiseEvent(new RoutedEventArgs(ClickEvent, this));
 
-            var command = Command;
+            ICommand command = Command;
             if (command == null)
             {
                 return;
             }
 
-            var parameter = CommandParameter;
-            var target = CommandTarget;
+            object parameter = CommandParameter;
+            IInputElement target = CommandTarget;
 
-            var routedCommand = command as RoutedCommand;
+            RoutedCommand? routedCommand = command as RoutedCommand;
             if (routedCommand != null)
             {
                 if (routedCommand.CanExecute(parameter, target))

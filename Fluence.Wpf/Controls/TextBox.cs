@@ -249,7 +249,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnChromePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var box = (TextBox)d;
+            TextBox box = (TextBox)d;
             box.UpdateHelperText();
         }
 
@@ -287,7 +287,7 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateCharacterCounter()
         {
-            var counter = GetTemplateChild(PART_CharacterCounter) as System.Windows.Controls.TextBlock;
+            System.Windows.Controls.TextBlock? counter = GetTemplateChild(PART_CharacterCounter) as System.Windows.Controls.TextBlock;
             if (counter == null)
             {
                 return;
@@ -305,8 +305,8 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateHelperText()
         {
-            var helper = GetTemplateChild(PART_HelperText) as System.Windows.Controls.TextBlock;
-            var icon = GetTemplateChild(PART_ValidationIcon) as System.Windows.Controls.TextBlock;
+            System.Windows.Controls.TextBlock? helper = GetTemplateChild(PART_HelperText) as System.Windows.Controls.TextBlock;
+            System.Windows.Controls.TextBlock? icon = GetTemplateChild(PART_ValidationIcon) as System.Windows.Controls.TextBlock;
             if (helper == null)
             {
                 return;
@@ -314,7 +314,7 @@ namespace Fluence.Wpf.Controls
 
             if (ValidationState != ValidationState.None)
             {
-                var message = !string.IsNullOrEmpty(ValidationMessage) ? ValidationMessage : HelperText;
+                string message = !string.IsNullOrEmpty(ValidationMessage) ? ValidationMessage : HelperText;
                 helper.Text = message;
                 helper.Visibility = string.IsNullOrEmpty(message) ? Visibility.Collapsed : Visibility.Visible;
                 if (icon != null)

@@ -168,7 +168,7 @@ namespace Fluence.Wpf.Controls
 
         private void AnimateTo(DependencyProperty property, double to)
         {
-            var animation = new DoubleAnimation
+            DoubleAnimation animation = new DoubleAnimation
             {
                 To = to,
                 Duration = ScrollDuration,

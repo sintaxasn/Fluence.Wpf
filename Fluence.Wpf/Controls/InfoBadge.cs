@@ -108,7 +108,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnIconSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var badge = (InfoBadge)d;
+            InfoBadge badge = (InfoBadge)d;
             if (e.NewValue != null)
             {
                 badge.Content = e.NewValue;
@@ -123,7 +123,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var badge = (InfoBadge)d;
+            InfoBadge badge = (InfoBadge)d;
             if (badge.IconSource != null)
                 return;
 

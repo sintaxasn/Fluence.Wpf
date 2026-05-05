@@ -362,13 +362,13 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            var navItem = FindNavigationViewItem(e.NewFocus as DependencyObject);
+            NavigationViewItem navItem = FindNavigationViewItem(e.NewFocus as DependencyObject);
             if (navItem == null)
             {
                 return;
             }
 
-            var fromContainer = ItemContainerGenerator.ItemFromContainer(navItem);
+            object fromContainer = ItemContainerGenerator.ItemFromContainer(navItem);
             if (fromContainer != DependencyProperty.UnsetValue && fromContainer != null)
             {
                 if (!object.ReferenceEquals(SelectedItem, fromContainer))
@@ -406,7 +406,7 @@ namespace Fluence.Wpf.Controls
         protected override void PrepareContainerForItemOverride(DependencyObject element, object item)
         {
             base.PrepareContainerForItemOverride(element, item);
-            var navItem = element as NavigationViewItem;
+            NavigationViewItem? navItem = element as NavigationViewItem;
             if (navItem != null)
             {
                 navItem.Selected -= OnNavigationViewItemSelected;
@@ -419,7 +419,7 @@ namespace Fluence.Wpf.Controls
         /// <inheritdoc />
         protected override void ClearContainerForItemOverride(DependencyObject element, object item)
         {
-            var navItem = element as NavigationViewItem;
+            NavigationViewItem? navItem = element as NavigationViewItem;
             if (navItem != null)
             {
                 navItem.Selected -= OnNavigationViewItemSelected;
@@ -454,7 +454,7 @@ namespace Fluence.Wpf.Controls
             }
 
             object invokedItem = GetDataFromContainer(item);
-            var handler = ItemInvoked;
+            EventHandler<NavigationViewItemInvokedEventArgs> handler = ItemInvoked;
             if (handler != null)
             {
                 handler(this, new NavigationViewItemInvokedEventArgs(invokedItem, item, false));
@@ -493,7 +493,7 @@ namespace Fluence.Wpf.Controls
 
         private void OnBackButtonClick(object sender, RoutedEventArgs e)
         {
-            var handler = BackRequested;
+            EventHandler<NavigationViewBackRequestedEventArgs> handler = BackRequested;
             if (handler != null)
             {
                 handler(this, new NavigationViewBackRequestedEventArgs());
@@ -507,7 +507,7 @@ namespace Fluence.Wpf.Controls
 
         private void OnNavigationViewItemSelected(object sender, RoutedEventArgs e)
         {
-            var navItem = sender as NavigationViewItem;
+            NavigationViewItem? navItem = sender as NavigationViewItem;
             if (navItem == null)
             {
                 return;
@@ -526,11 +526,11 @@ namespace Fluence.Wpf.Controls
 
         private static void OnIsPaneOpenChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var nav = (NavigationView)d;
-            var nowOpen = (bool)e.NewValue;
+            NavigationView nav = (NavigationView)d;
+            bool nowOpen = (bool)e.NewValue;
             if (nowOpen)
             {
-                var opening = nav.PaneOpening;
+                EventHandler opening = nav.PaneOpening;
                 if (opening != null)
                 {
                     opening(nav, EventArgs.Empty);
@@ -538,7 +538,7 @@ namespace Fluence.Wpf.Controls
             }
             else
             {
-                var closed = nav.PaneClosed;
+                EventHandler closed = nav.PaneClosed;
                 if (closed != null)
                 {
                     closed(nav, EventArgs.Empty);
@@ -551,8 +551,8 @@ namespace Fluence.Wpf.Controls
 
         private static void OnPaneDisplayModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var nav = (NavigationView)d;
-            var newMode = (NavigationViewPaneDisplayMode)e.NewValue;
+            NavigationView nav = (NavigationView)d;
+            NavigationViewPaneDisplayMode newMode = (NavigationViewPaneDisplayMode)e.NewValue;
 
             if (newMode == NavigationViewPaneDisplayMode.LeftCompact)
             {
@@ -596,7 +596,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            var nvi = ResolveNavigationViewItem(SelectedItem);
+            NavigationViewItem nvi = ResolveNavigationViewItem(SelectedItem);
             if (nvi == null || !nvi.IsVisible || nvi.ActualHeight == 0)
             {
                 HideIndicator();
@@ -623,15 +623,15 @@ namespace Fluence.Wpf.Controls
         {
             try
             {
-                var transform = item.TransformToAncestor(_indicatorHost);
-                var itemPos = transform.Transform(new Point(0, 0));
+                GeneralTransform transform = item.TransformToAncestor(_indicatorHost);
+                Point itemPos = transform.Transform(new Point(0, 0));
 
                 if (topMode)
                 {
                     return new Point(itemPos.X + (item.ActualWidth - _selectionIndicator.Width) / 2.0, 0.0);
                 }
 
-                var x = itemPos.X + NavigationItemOuterHorizontalMargin;
+                double x = itemPos.X + NavigationItemOuterHorizontalMargin;
                 if (ShouldIndentSelectionIndicator(item, topMode))
                 {
                     x += NavigationItemChildIndicatorOffset;
@@ -664,10 +664,10 @@ namespace Fluence.Wpf.Controls
 
         private Point GetCurrentIndicatorPosition()
         {
-            var group = _selectionIndicator.RenderTransform as TransformGroup;
+            TransformGroup? group = _selectionIndicator.RenderTransform as TransformGroup;
             if (group != null && group.Children.Count >= 2)
             {
-                var translate = group.Children[1] as TranslateTransform;
+                TranslateTransform? translate = group.Children[1] as TranslateTransform;
                 if (translate != null)
                 {
                     return new Point(translate.X, translate.Y);
@@ -685,9 +685,9 @@ namespace Fluence.Wpf.Controls
             StopAnimation();
             EnsureMutableTransform();
 
-            var group = (TransformGroup)_selectionIndicator.RenderTransform;
-            var scale = (ScaleTransform)group.Children[0];
-            var translate = (TranslateTransform)group.Children[1];
+            TransformGroup group = (TransformGroup)_selectionIndicator.RenderTransform;
+            ScaleTransform scale = (ScaleTransform)group.Children[0];
+            TranslateTransform translate = (TranslateTransform)group.Children[1];
 
             scale.ScaleX = 1.0;
             scale.ScaleY = 1.0;
@@ -708,15 +708,15 @@ namespace Fluence.Wpf.Controls
             StopAnimation();
             EnsureMutableTransform();
 
-            var group = (TransformGroup)_selectionIndicator.RenderTransform;
-            var scale = (ScaleTransform)group.Children[0];
-            var translate = (TranslateTransform)group.Children[1];
-            var animationId = _indicatorAnimationGeneration;
-            var axisProperty = topMode ? TranslateTransform.XProperty : TranslateTransform.YProperty;
-            var scaleProperty = topMode ? ScaleTransform.ScaleXProperty : ScaleTransform.ScaleYProperty;
-            var fromAxis = topMode ? fromPosition.X : fromPosition.Y;
-            var toAxis = topMode ? toPosition.X : toPosition.Y;
-            var direction = toAxis < fromAxis ? -1.0 : 1.0;
+            TransformGroup group = (TransformGroup)_selectionIndicator.RenderTransform;
+            ScaleTransform scale = (ScaleTransform)group.Children[0];
+            TranslateTransform translate = (TranslateTransform)group.Children[1];
+            int animationId = _indicatorAnimationGeneration;
+            DependencyProperty axisProperty = topMode ? TranslateTransform.XProperty : TranslateTransform.YProperty;
+            DependencyProperty scaleProperty = topMode ? ScaleTransform.ScaleXProperty : ScaleTransform.ScaleYProperty;
+            double fromAxis = topMode ? fromPosition.X : fromPosition.Y;
+            double toAxis = topMode ? toPosition.X : toPosition.Y;
+            double direction = toAxis < fromAxis ? -1.0 : 1.0;
 
             scale.ScaleX = 1.0;
             scale.ScaleY = 1.0;
@@ -724,26 +724,26 @@ namespace Fluence.Wpf.Controls
             translate.Y = fromPosition.Y;
             _selectionIndicator.Opacity = 1.0;
 
-            var departPosition = CalculateDepartPosition(fromPosition, previousItem, topMode, direction);
-            var arriveStartPosition = CalculateArriveStartPosition(toPosition, targetItem, topMode, direction);
-            var departAxis = topMode ? departPosition.X : departPosition.Y;
-            var arriveStartAxis = topMode ? arriveStartPosition.X : arriveStartPosition.Y;
-            var departDuration = new Duration(TimeSpan.FromMilliseconds(90));
-            var arriveDuration = new Duration(TimeSpan.FromMilliseconds(140));
-            var departEase = new CubicEase { EasingMode = EasingMode.EaseIn };
-            var arriveEase = new CubicEase { EasingMode = EasingMode.EaseOut };
+            Point departPosition = CalculateDepartPosition(fromPosition, previousItem, topMode, direction);
+            Point arriveStartPosition = CalculateArriveStartPosition(toPosition, targetItem, topMode, direction);
+            double departAxis = topMode ? departPosition.X : departPosition.Y;
+            double arriveStartAxis = topMode ? arriveStartPosition.X : arriveStartPosition.Y;
+            Duration departDuration = new Duration(TimeSpan.FromMilliseconds(90));
+            Duration arriveDuration = new Duration(TimeSpan.FromMilliseconds(140));
+            CubicEase departEase = new CubicEase { EasingMode = EasingMode.EaseIn };
+            CubicEase arriveEase = new CubicEase { EasingMode = EasingMode.EaseOut };
 
-            var departAxisAnimation = new DoubleAnimation(fromAxis, departAxis, departDuration)
+            DoubleAnimation departAxisAnimation = new DoubleAnimation(fromAxis, departAxis, departDuration)
             {
                 EasingFunction = departEase,
                 FillBehavior = FillBehavior.Stop
             };
-            var departOpacityAnimation = new DoubleAnimation(1.0, 0.0, departDuration)
+            DoubleAnimation departOpacityAnimation = new DoubleAnimation(1.0, 0.0, departDuration)
             {
                 EasingFunction = departEase,
                 FillBehavior = FillBehavior.Stop
             };
-            var departScaleAnimation = new DoubleAnimation(1.0, 0.72, departDuration)
+            DoubleAnimation departScaleAnimation = new DoubleAnimation(1.0, 0.72, departDuration)
             {
                 EasingFunction = departEase,
                 FillBehavior = FillBehavior.Stop
@@ -777,17 +777,17 @@ namespace Fluence.Wpf.Controls
 
                 _selectionIndicator.Opacity = 0.0;
 
-                var arriveAxisAnimation = new DoubleAnimation(arriveStartAxis, toAxis, arriveDuration)
+                DoubleAnimation arriveAxisAnimation = new DoubleAnimation(arriveStartAxis, toAxis, arriveDuration)
                 {
                     EasingFunction = arriveEase,
                     FillBehavior = FillBehavior.Stop
                 };
-                var arriveOpacityAnimation = new DoubleAnimation(0.0, 1.0, arriveDuration)
+                DoubleAnimation arriveOpacityAnimation = new DoubleAnimation(0.0, 1.0, arriveDuration)
                 {
                     EasingFunction = arriveEase,
                     FillBehavior = FillBehavior.Stop
                 };
-                var arriveScaleAnimation = new DoubleAnimation(0.72, 1.0, arriveDuration)
+                DoubleAnimation arriveScaleAnimation = new DoubleAnimation(0.72, 1.0, arriveDuration)
                 {
                     EasingFunction = arriveEase,
                     FillBehavior = FillBehavior.Stop
@@ -829,7 +829,7 @@ namespace Fluence.Wpf.Controls
             bool topMode,
             double direction)
         {
-            var length = GetIndicatorLength(topMode);
+            double length = GetIndicatorLength(topMode);
             if (topMode)
             {
                 double x = fromPosition.X + (direction * length);
@@ -837,8 +837,8 @@ namespace Fluence.Wpf.Controls
                 {
                     try
                     {
-                        var transform = previousItem.TransformToAncestor(_indicatorHost);
-                        var itemPos = transform.Transform(new Point(0, 0));
+                        GeneralTransform transform = previousItem.TransformToAncestor(_indicatorHost);
+                        Point itemPos = transform.Transform(new Point(0, 0));
                         x = direction > 0 ? itemPos.X + previousItem.ActualWidth : itemPos.X - length;
                     }
                     catch
@@ -854,8 +854,8 @@ namespace Fluence.Wpf.Controls
             {
                 try
                 {
-                    var transform = previousItem.TransformToAncestor(_indicatorHost);
-                    var itemPos = transform.Transform(new Point(0, 0));
+                    GeneralTransform transform = previousItem.TransformToAncestor(_indicatorHost);
+                    Point itemPos = transform.Transform(new Point(0, 0));
                     y = direction > 0 ? itemPos.Y + previousItem.ActualHeight : itemPos.Y - length;
                 }
                 catch
@@ -872,7 +872,7 @@ namespace Fluence.Wpf.Controls
             bool topMode,
             double direction)
         {
-            var length = GetIndicatorLength(topMode);
+            double length = GetIndicatorLength(topMode);
             if (topMode)
             {
                 double x = toPosition.X - (direction * length);
@@ -880,8 +880,8 @@ namespace Fluence.Wpf.Controls
                 {
                     try
                     {
-                        var transform = targetItem.TransformToAncestor(_indicatorHost);
-                        var itemPos = transform.Transform(new Point(0, 0));
+                        GeneralTransform transform = targetItem.TransformToAncestor(_indicatorHost);
+                        Point itemPos = transform.Transform(new Point(0, 0));
                         x = direction > 0 ? itemPos.X - length : itemPos.X + targetItem.ActualWidth;
                     }
                     catch
@@ -897,8 +897,8 @@ namespace Fluence.Wpf.Controls
             {
                 try
                 {
-                    var transform = targetItem.TransformToAncestor(_indicatorHost);
-                    var itemPos = transform.Transform(new Point(0, 0));
+                    GeneralTransform transform = targetItem.TransformToAncestor(_indicatorHost);
+                    Point itemPos = transform.Transform(new Point(0, 0));
                     y = direction > 0 ? itemPos.Y - length : itemPos.Y + targetItem.ActualHeight;
                 }
                 catch
@@ -911,13 +911,13 @@ namespace Fluence.Wpf.Controls
 
         private double GetIndicatorLength(bool topMode)
         {
-            var actual = topMode ? _selectionIndicator.ActualWidth : _selectionIndicator.ActualHeight;
+            double actual = topMode ? _selectionIndicator.ActualWidth : _selectionIndicator.ActualHeight;
             if (actual > 0)
             {
                 return actual;
             }
 
-            var explicitLength = topMode ? _selectionIndicator.Width : _selectionIndicator.Height;
+            double explicitLength = topMode ? _selectionIndicator.Width : _selectionIndicator.Height;
             return explicitLength > 0 ? explicitLength : 16.0;
         }
 
@@ -941,11 +941,11 @@ namespace Fluence.Wpf.Controls
             }
 
             _selectionIndicator.BeginAnimation(UIElement.OpacityProperty, null);
-            var group = _selectionIndicator.RenderTransform as TransformGroup;
+            TransformGroup? group = _selectionIndicator.RenderTransform as TransformGroup;
             if (group != null && group.Children.Count >= 2)
             {
-                var scale = group.Children[0] as ScaleTransform;
-                var translate = group.Children[1] as TranslateTransform;
+                ScaleTransform? scale = group.Children[0] as ScaleTransform;
+                TranslateTransform? translate = group.Children[1] as TranslateTransform;
                 if (scale != null && !scale.IsFrozen)
                 {
                     scale.BeginAnimation(ScaleTransform.ScaleXProperty, null);
@@ -972,29 +972,29 @@ namespace Fluence.Wpf.Controls
 
             _selectionIndicator.BeginAnimation(UIElement.OpacityProperty, null);
 
-            var group = _selectionIndicator.RenderTransform as TransformGroup;
+            TransformGroup? group = _selectionIndicator.RenderTransform as TransformGroup;
             bool needsReplacement = group == null
                 || group.IsFrozen
                 || group.Children.Count < 2;
 
             if (!needsReplacement)
             {
-                var s = group.Children[0] as ScaleTransform;
-                var t = group.Children[1] as TranslateTransform;
+                ScaleTransform? s = group.Children[0] as ScaleTransform;
+                TranslateTransform? t = group.Children[1] as TranslateTransform;
                 needsReplacement = s == null || t == null || s.IsFrozen || t.IsFrozen;
             }
 
             if (needsReplacement)
             {
-                var newGroup = new TransformGroup();
+                TransformGroup newGroup = new TransformGroup();
                 newGroup.Children.Add(new ScaleTransform(1.0, 1.0));
                 newGroup.Children.Add(new TranslateTransform(0, 0));
                 _selectionIndicator.RenderTransform = newGroup;
                 return;
             }
 
-            var scale = (ScaleTransform)group.Children[0];
-            var translate = (TranslateTransform)group.Children[1];
+            ScaleTransform scale = (ScaleTransform)group.Children[0];
+            TranslateTransform translate = (TranslateTransform)group.Children[1];
 
             scale.BeginAnimation(ScaleTransform.ScaleXProperty, null);
             scale.BeginAnimation(ScaleTransform.ScaleYProperty, null);
@@ -1004,7 +1004,7 @@ namespace Fluence.Wpf.Controls
 
         private NavigationViewItem ResolveNavigationViewItem(object item)
         {
-            var nvi = item as NavigationViewItem;
+            NavigationViewItem? nvi = item as NavigationViewItem;
             if (nvi != null)
             {
                 return nvi;
@@ -1035,10 +1035,10 @@ namespace Fluence.Wpf.Controls
 
         private static NavigationViewItem FindNavigationViewItem(DependencyObject focused)
         {
-            var current = focused;
+            DependencyObject current = focused;
             while (current != null)
             {
-                var asItem = current as NavigationViewItem;
+                NavigationViewItem? asItem = current as NavigationViewItem;
                 if (asItem != null)
                 {
                     return asItem;

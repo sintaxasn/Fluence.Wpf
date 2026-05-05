@@ -282,14 +282,14 @@ namespace Fluence.Wpf.Controls
 
             try
             {
-                var source = PresentationSource.FromVisual(this);
+                PresentationSource source = PresentationSource.FromVisual(this);
                 if (source == null || source.CompositionTarget == null)
                 {
                     return;
                 }
 
-                var bottomEdge = PointToScreen(new Point(0, ActualHeight));
-                var topEdge = PointToScreen(new Point(0, 0));
+                Point bottomEdge = PointToScreen(new Point(0, ActualHeight));
+                Point topEdge = PointToScreen(new Point(0, 0));
 
                 double dpiY = source.CompositionTarget.TransformToDevice.M22;
                 double maxHeightPx = (MaxDropDownHeight > 0 ? MaxDropDownHeight : 480) * dpiY;
@@ -316,7 +316,7 @@ namespace Fluence.Wpf.Controls
 
         private bool IsSelectedIndexExplicitlySet()
         {
-            var source = DependencyPropertyHelper.GetValueSource(
+            ValueSource source = DependencyPropertyHelper.GetValueSource(
                 this, Selector.SelectedIndexProperty);
             return source.BaseValueSource != BaseValueSource.Default;
         }
@@ -344,8 +344,8 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateSelectedContent()
         {
-            var item = SelectedItem;
-            var comboBoxItem = item as ComboBoxItem;
+            object item = SelectedItem;
+            ComboBoxItem? comboBoxItem = item as ComboBoxItem;
             if (comboBoxItem != null)
             {
                 SelectedContent = comboBoxItem.Content;

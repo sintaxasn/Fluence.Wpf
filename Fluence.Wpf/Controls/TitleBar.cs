@@ -274,7 +274,7 @@ namespace Fluence.Wpf.Controls
         /// <param name="e">The event data.</param>
         protected virtual void OnBackRequested(EventArgs e)
         {
-            var handler = BackRequested;
+            EventHandler handler = BackRequested;
             if (handler != null)
             {
                 handler(this, e);
@@ -285,7 +285,7 @@ namespace Fluence.Wpf.Controls
         /// <param name="e">The event data.</param>
         protected virtual void OnPaneToggleRequested(EventArgs e)
         {
-            var handler = PaneToggleRequested;
+            EventHandler handler = PaneToggleRequested;
             if (handler != null)
             {
                 handler(this, e);
@@ -294,7 +294,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnCustomContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var titleBar = (TitleBar)d;
+            TitleBar titleBar = (TitleBar)d;
             if (titleBar.Content == null || object.Equals(titleBar.Content, e.OldValue))
             {
                 titleBar.Content = e.NewValue;
@@ -303,7 +303,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnBackCommandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var titleBar = (TitleBar)d;
+            TitleBar titleBar = (TitleBar)d;
             UnsubscribeCommand(e.OldValue as ICommand, titleBar.OnBackCommandCanExecuteChanged);
             SubscribeCommand(e.NewValue as ICommand, titleBar.OnBackCommandCanExecuteChanged);
             titleBar.UpdateBackButtonCommandState();
@@ -316,7 +316,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnPaneToggleCommandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var titleBar = (TitleBar)d;
+            TitleBar titleBar = (TitleBar)d;
             UnsubscribeCommand(e.OldValue as ICommand, titleBar.OnPaneToggleCommandCanExecuteChanged);
             SubscribeCommand(e.NewValue as ICommand, titleBar.OnPaneToggleCommandCanExecuteChanged);
             titleBar.UpdatePaneToggleButtonCommandState();

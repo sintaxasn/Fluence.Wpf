@@ -47,8 +47,8 @@ namespace Fluence.Wpf.Helpers
 
             const int size = 128;
             const int stride = size * 4;
-            var pixels = new byte[size * stride];
-            var rng = new Random(42);
+            byte[] pixels = new byte[size * stride];
+            Random rng = new Random(42);
 
             for (int i = 0; i < pixels.Length; i += 4)
             {
@@ -59,11 +59,11 @@ namespace Fluence.Wpf.Helpers
                 pixels[i + 3] = 12;   // A  (~5 % opacity per pixel)
             }
 
-            var bitmap = BitmapSource.Create(
+            BitmapSource bitmap = BitmapSource.Create(
                 size, size, 96, 96, PixelFormats.Bgra32, null, pixels, stride);
             bitmap.Freeze();
 
-            var brush = new ImageBrush(bitmap)
+            ImageBrush brush = new ImageBrush(bitmap)
             {
                 TileMode    = TileMode.Tile,
                 Viewport    = new Rect(0, 0, size, size),

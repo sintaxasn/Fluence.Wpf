@@ -29,6 +29,7 @@ using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
+using System.Windows.Input;
 using Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Automation
@@ -75,8 +76,8 @@ namespace Fluence.Wpf.Automation
         void IInvokeProvider.Invoke()
         {
             // Route Invoke to the primary half by raising SplitButton.Click and executing Command.
-            var button = SplitButton;
-            var command = button.Command;
+            SplitButton button = SplitButton;
+            ICommand command = button.Command;
 
             button.RaiseEvent(new RoutedEventArgs(SplitButton.ClickEvent, button));
 
@@ -85,10 +86,10 @@ namespace Fluence.Wpf.Automation
                 return;
             }
 
-            var parameter = button.CommandParameter;
-            var target = button.CommandTarget;
+            object parameter = button.CommandParameter;
+            IInputElement target = button.CommandTarget;
 
-            var routedCommand = command as System.Windows.Input.RoutedCommand;
+            RoutedCommand? routedCommand = command as System.Windows.Input.RoutedCommand;
             if (routedCommand != null)
             {
                 if (routedCommand.CanExecute(parameter, target))
@@ -112,8 +113,8 @@ namespace Fluence.Wpf.Automation
             // part of the template. Automation clients opening a SplitButton without a
             // visual tree see no-op behavior; with a template applied, the overridden
             // PropertyChanged wiring flips the popup via the secondary button.
-            var owner = SplitButton;
-            var toggle = owner.Template == null ? null
+            SplitButton owner = SplitButton;
+            System.Windows.Controls.Primitives.ToggleButton? toggle = owner.Template == null ? null
                 : owner.Template.FindName("PART_SecondaryButton", owner) as System.Windows.Controls.Primitives.ToggleButton;
             if (toggle != null)
             {
@@ -123,8 +124,8 @@ namespace Fluence.Wpf.Automation
 
         void IExpandCollapseProvider.Collapse()
         {
-            var owner = SplitButton;
-            var toggle = owner.Template == null ? null
+            SplitButton owner = SplitButton;
+            System.Windows.Controls.Primitives.ToggleButton? toggle = owner.Template == null ? null
                 : owner.Template.FindName("PART_SecondaryButton", owner) as System.Windows.Controls.Primitives.ToggleButton;
             if (toggle != null)
             {

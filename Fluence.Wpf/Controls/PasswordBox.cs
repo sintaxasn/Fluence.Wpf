@@ -103,7 +103,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnPasswordChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = (PasswordBox)d;
+            PasswordBox control = (PasswordBox)d;
             if (control._isUpdatingPassword)
             {
                 return;
@@ -306,7 +306,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnChromePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var box = (PasswordBox)d;
+            PasswordBox box = (PasswordBox)d;
             box.UpdateCapsLockIndicator();
             box.UpdateStrengthMeter();
         }
@@ -483,7 +483,7 @@ namespace Fluence.Wpf.Controls
 
         private void UpdatePasswordStrengthFromPassword()
         {
-            var pwd = Password ?? string.Empty;
+            string pwd = Password ?? string.Empty;
             PasswordStrength = ComputePasswordStrength(pwd);
         }
 
@@ -575,14 +575,14 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateCapsLockIndicator()
         {
-            var el = GetTemplateChild("PART_CapsLockIndicator") as UIElement;
+            UIElement? el = GetTemplateChild("PART_CapsLockIndicator") as UIElement;
             if (el == null)
             {
                 return;
             }
 
-            var capsOn = Keyboard.IsKeyToggled(Key.CapsLock);
-            var show = ShowCapsLockIndicator && IsKeyboardFocusWithin && capsOn;
+            bool capsOn = Keyboard.IsKeyToggled(Key.CapsLock);
+            bool show = ShowCapsLockIndicator && IsKeyboardFocusWithin && capsOn;
             el.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
         }
 
@@ -602,9 +602,9 @@ namespace Fluence.Wpf.Controls
                 brushKey = "SystemFillColorSuccessBrush";
             }
 
-            for (var i = 0; i < 4; i++)
+            for (int i = 0; i < 4; i++)
             {
-                var segment = GetTemplateChild("PART_StrengthSegment" + i) as System.Windows.Controls.Border;
+                System.Windows.Controls.Border? segment = GetTemplateChild("PART_StrengthSegment" + i) as System.Windows.Controls.Border;
                 if (segment == null)
                 {
                     continue;
@@ -617,12 +617,12 @@ namespace Fluence.Wpf.Controls
                 }
 
                 segment.Visibility = Visibility.Visible;
-                var active = PasswordStrength > i;
+                bool active = PasswordStrength > i;
                 segment.Opacity = active ? 1.0 : 0.25;
                 segment.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, brushKey);
             }
 
-            var container = GetTemplateChild("PART_StrengthMeter") as UIElement;
+            UIElement? container = GetTemplateChild("PART_StrengthMeter") as UIElement;
             if (container != null)
             {
                 container.Visibility = ShowPasswordStrength ? Visibility.Visible : Visibility.Collapsed;

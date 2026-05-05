@@ -95,7 +95,7 @@ namespace Fluence.Wpf.Controls
 
         private static object CoerceValue(DependencyObject d, object baseValue)
         {
-            var ctrl = (RatingControl)d;
+            RatingControl ctrl = (RatingControl)d;
             double v = (double)baseValue;
             if (v < 0.0) return 0.0;
             if (v > ctrl.MaxRating) return (double)ctrl.MaxRating;
@@ -123,7 +123,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnMaxRatingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var ctrl = (RatingControl)d;
+            RatingControl ctrl = (RatingControl)d;
             // Re-coerce Value in case it now exceeds the new MaxRating.
             ctrl.CoerceValue(ValueProperty);
             ctrl.BuildAndRefreshStars();
@@ -214,7 +214,7 @@ namespace Fluence.Wpf.Controls
             int count = Math.Max(1, MaxRating);
             for (int i = 1; i <= count; i++)
             {
-                var star = new WpfTextBlock
+                WpfTextBlock star = new WpfTextBlock
                 {
                     FontFamily = new FontFamily("Segoe Fluent Icons"),
                     FontSize = 20.0,
@@ -268,7 +268,7 @@ namespace Fluence.Wpf.Controls
 
             for (int i = 0; i < _starsPanel.Children.Count; i++)
             {
-                var star = _starsPanel.Children[i] as WpfTextBlock;
+                WpfTextBlock? star = _starsPanel.Children[i] as WpfTextBlock;
                 if (star == null) continue;
 
                 bool filled = (i + 1) <= displayCount;

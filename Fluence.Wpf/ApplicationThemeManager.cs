@@ -26,7 +26,9 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 using System;
+using System.Collections.ObjectModel;
 using System.Windows;
+using System.Windows.Media;
 using Fluence.Wpf.Helpers;
 
 namespace Fluence.Wpf
@@ -103,7 +105,7 @@ namespace Fluence.Wpf
 
             try
             {
-                var resolvedTheme = ResolveTheme(theme);
+                ApplicationTheme resolvedTheme = ResolveTheme(theme);
                 _currentTheme = theme;
                 _currentBackdrop = backdrop;
 
@@ -166,13 +168,13 @@ namespace Fluence.Wpf
                 return;
             }
 
-            var dictionaries = Application.Current.Resources.MergedDictionaries;
+            Collection<ResourceDictionary> dictionaries = Application.Current.Resources.MergedDictionaries;
 
-            var themeDict = LoadDictionary(GetThemeColorUri(resolvedTheme));
-            var accentDict = LoadDictionary(PackBase + "Themes/Accent/Accent.xaml");
-            var brushesDict = LoadDictionary(PackBase + "Themes/Brushes/Brushes.xaml");
-            var typographyDict = LoadDictionary(PackBase + "Themes/Typography/Typography.xaml");
-            var genericDict = LoadDictionary(PackBase + "Themes/Generic.xaml");
+            ResourceDictionary themeDict = LoadDictionary(GetThemeColorUri(resolvedTheme));
+            ResourceDictionary accentDict = LoadDictionary(PackBase + "Themes/Accent/Accent.xaml");
+            ResourceDictionary brushesDict = LoadDictionary(PackBase + "Themes/Brushes/Brushes.xaml");
+            ResourceDictionary typographyDict = LoadDictionary(PackBase + "Themes/Typography/Typography.xaml");
+            ResourceDictionary genericDict = LoadDictionary(PackBase + "Themes/Generic.xaml");
 
             // Insert into fixed slots instead of appending. Tests assert this shape because
             // theme swaps depend on replacing slot 0 while preserving accent, brushes,
@@ -196,7 +198,7 @@ namespace Fluence.Wpf
                 return;
             }
 
-            var dictionaries = Application.Current.Resources.MergedDictionaries;
+            Collection<ResourceDictionary> dictionaries = Application.Current.Resources.MergedDictionaries;
 
             if (SlotTheme < dictionaries.Count)
             {
@@ -231,11 +233,11 @@ namespace Fluence.Wpf
                 return;
             }
 
-            var freshBrushes = LoadDictionary(PackBase + "Themes/Brushes/Brushes.xaml");
+            ResourceDictionary freshBrushes = LoadDictionary(PackBase + "Themes/Brushes/Brushes.xaml");
             dictionaries[SlotBrushes] = freshBrushes;
 
-            var resources = Application.Current.Resources;
-            foreach (var key in freshBrushes.Keys)
+            ResourceDictionary resources = Application.Current.Resources;
+            foreach (object? key in freshBrushes.Keys)
             {
                 resources[key] = freshBrushes[key];
             }
@@ -256,14 +258,14 @@ namespace Fluence.Wpf
                 return;
             }
 
-            var resources = Application.Current.Resources;
-            var themeDict = resources.MergedDictionaries[SlotTheme];
+            ResourceDictionary resources = Application.Current.Resources;
+            ResourceDictionary themeDict = resources.MergedDictionaries[SlotTheme];
 
             if (resolvedTheme == ApplicationTheme.HighContrast)
             {
                 _promotedHighContrastBrushKeys = new System.Collections.Generic.List<object>();
 
-                foreach (var key in themeDict.Keys)
+                foreach (object? key in themeDict.Keys)
                 {
                     resources[key] = themeDict[key];
 
@@ -278,14 +280,14 @@ namespace Fluence.Wpf
             {
                 if (_promotedHighContrastBrushKeys != null)
                 {
-                    foreach (var key in _promotedHighContrastBrushKeys)
+                    foreach (object key in _promotedHighContrastBrushKeys)
                     {
                         resources.Remove(key);
                     }
                     _promotedHighContrastBrushKeys = null;
                 }
 
-                foreach (var key in themeDict.Keys)
+                foreach (object? key in themeDict.Keys)
                 {
                     resources[key] = themeDict[key];
                 }
@@ -336,10 +338,10 @@ namespace Fluence.Wpf
 
         private static void OnChanged(ApplicationTheme resolvedTheme)
         {
-            var handler = Changed;
+            EventHandler<ThemeChangedEventArgs> handler = Changed;
             if (handler != null)
             {
-                var accent = ApplicationAccentColorManager.SystemAccentColor;
+                Color accent = ApplicationAccentColorManager.SystemAccentColor;
                 handler(null, new ThemeChangedEventArgs(resolvedTheme, accent));
             }
         }

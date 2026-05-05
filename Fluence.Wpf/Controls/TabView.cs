@@ -301,13 +301,13 @@ namespace Fluence.Wpf.Controls
 
         private void OnChildCloseRequested(object sender, RoutedEventArgs e)
         {
-            var inner = e as TabViewTabCloseRequestedEventArgs;
+            TabViewTabCloseRequestedEventArgs? inner = e as TabViewTabCloseRequestedEventArgs;
             if (inner == null)
             {
                 return;
             }
 
-            var forwarded = new TabViewTabCloseRequestedEventArgs(TabCloseRequestedEvent, this, inner.Tab, inner.Item);
+            TabViewTabCloseRequestedEventArgs forwarded = new TabViewTabCloseRequestedEventArgs(TabCloseRequestedEvent, this, inner.Tab, inner.Item);
             RaiseEvent(forwarded);
             // Consumers should handle one aggregate close request from TabView rather
             // than both the child TabViewItem event and the forwarded parent event.

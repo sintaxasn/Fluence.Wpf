@@ -188,21 +188,21 @@ namespace Fluence.Wpf.Controls
 
         private static void OnLayoutPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var bar = (ProgressBar)d;
+            ProgressBar bar = (ProgressBar)d;
             bar.UpdateFillWidth(false);
             bar.RefreshIndeterminateLayout();
         }
 
         private static void OnAnimatedLayoutPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var bar = (ProgressBar)d;
+            ProgressBar bar = (ProgressBar)d;
             bar.UpdateFillWidth();
             bar.RefreshIndeterminateLayout();
         }
 
         private static void OnProgressModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var bar = (ProgressBar)d;
+            ProgressBar bar = (ProgressBar)d;
             bar.ApplyProgressMode();
         }
 
@@ -334,7 +334,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            var trackWidth = _track.ActualWidth;
+            double trackWidth = _track.ActualWidth;
             if (trackWidth <= 0 || double.IsNaN(trackWidth))
             {
                 return;
@@ -388,7 +388,7 @@ namespace Fluence.Wpf.Controls
         {
             target.X = from;
 
-            var animation = new DoubleAnimation
+            DoubleAnimation animation = new DoubleAnimation
             {
                 From = from,
                 To = to,
@@ -423,7 +423,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            var trackWidth = _track.ActualWidth;
+            double trackWidth = _track.ActualWidth;
             if (trackWidth <= 0 || double.IsNaN(trackWidth))
             {
                 return;
@@ -432,13 +432,13 @@ namespace Fluence.Wpf.Controls
             double ratio;
             if (ProgressMode == ProgressBarMode.StepProgress && Steps > 0)
             {
-                var step = Math.Max(0, Math.Min(CurrentStep, Steps));
+                int step = Math.Max(0, Math.Min(CurrentStep, Steps));
                 ratio = step / (double)Steps;
             }
             else
             {
-                var min = Minimum;
-                var max = Maximum;
+                double min = Minimum;
+                double max = Maximum;
                 if (Math.Abs(max - min) < double.Epsilon)
                 {
                     ratio = 0;
@@ -450,7 +450,7 @@ namespace Fluence.Wpf.Controls
                 }
             }
 
-            var targetWidth = trackWidth * ratio;
+            double targetWidth = trackWidth * ratio;
             if (!animate)
             {
                 _fill.BeginAnimation(WidthProperty, null);
@@ -458,7 +458,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            var fromWidth = _fill.ActualWidth;
+            double fromWidth = _fill.ActualWidth;
             if (double.IsNaN(fromWidth) || fromWidth <= 0)
             {
                 fromWidth = _fill.Width;
@@ -467,7 +467,7 @@ namespace Fluence.Wpf.Controls
             _fill.BeginAnimation(WidthProperty, null);
             _fill.Width = targetWidth;
 
-            var animation = new DoubleAnimation
+            DoubleAnimation animation = new DoubleAnimation
             {
                 From = fromWidth,
                 To = targetWidth,

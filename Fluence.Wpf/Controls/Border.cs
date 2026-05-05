@@ -55,7 +55,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnVariantChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var border = (Border)d;
+            Border border = (Border)d;
             border.ApplyVariant();
         }
 

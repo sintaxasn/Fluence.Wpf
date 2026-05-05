@@ -152,7 +152,7 @@ namespace Fluence.Wpf.Controls
             WindowCapabilities capabilities,
             Color accentColor)
         {
-            var templateBorderThickness = windowState == WindowState.Maximized
+            Thickness templateBorderThickness = windowState == WindowState.Maximized
                 ? new Thickness(0)
                 : new Thickness(2);
             string templateBorderBrushResourceKey;
@@ -164,7 +164,7 @@ namespace Fluence.Wpf.Controls
             {
                 templateBorderBrushResourceKey = "CardStrokeColorDefaultSolidBrush";
             }
-            var dwmBorderColor = NativeConstants.DWMWA_COLOR_DEFAULT;
+            int dwmBorderColor = NativeConstants.DWMWA_COLOR_DEFAULT;
 
             if (capabilities.SupportsBorderColor && isActive && isAccentBorderEnabled)
             {
@@ -222,8 +222,8 @@ namespace Fluence.Wpf.Controls
             WindowCapabilities capabilities,
             Color fallbackBackgroundColor)
         {
-            var effectiveBackdrop = ResolveEffectiveBackdrop(requestedBackdrop, capabilities);
-            var isDark = resolvedTheme == ApplicationTheme.Dark;
+            BackdropType effectiveBackdrop = ResolveEffectiveBackdrop(requestedBackdrop, capabilities);
+            bool isDark = resolvedTheme == ApplicationTheme.Dark;
 
             if (effectiveBackdrop == BackdropType.None)
             {

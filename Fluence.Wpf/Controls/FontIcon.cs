@@ -128,8 +128,8 @@ namespace Fluence.Wpf.Controls
 
         private static void OnRotationChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var icon = (FontIcon)d;
-            var rotate = icon.GetTemplateChild(PART_Rotate) as RotateTransform;
+            FontIcon icon = (FontIcon)d;
+            RotateTransform? rotate = icon.GetTemplateChild(PART_Rotate) as RotateTransform;
             if (rotate != null)
             {
                 rotate.Angle = (double)e.NewValue;
@@ -201,7 +201,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnIsSpinningChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var icon = (FontIcon)d;
+            FontIcon icon = (FontIcon)d;
             icon.ApplySpinState();
         }
 
@@ -210,7 +210,7 @@ namespace Fluence.Wpf.Controls
         {
             base.OnApplyTemplate();
 
-            var rotate = GetTemplateChild(PART_Rotate) as RotateTransform;
+            RotateTransform? rotate = GetTemplateChild(PART_Rotate) as RotateTransform;
             if (rotate != null)
             {
                 rotate.Angle = Rotation;
@@ -233,7 +233,7 @@ namespace Fluence.Wpf.Controls
 
         private void ApplyMirrorState()
         {
-            var mirror = GetTemplateChild(PART_Mirror) as ScaleTransform;
+            ScaleTransform? mirror = GetTemplateChild(PART_Mirror) as ScaleTransform;
             if (mirror == null)
             {
                 return;
@@ -244,7 +244,7 @@ namespace Fluence.Wpf.Controls
 
         private void ApplySpinState()
         {
-            var rotate = GetTemplateChild(PART_Rotate) as RotateTransform;
+            RotateTransform? rotate = GetTemplateChild(PART_Rotate) as RotateTransform;
             if (rotate == null)
             {
                 return;
@@ -258,7 +258,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            var animation = new DoubleAnimation
+            DoubleAnimation animation = new DoubleAnimation
             {
                 From = 0,
                 To = 360,

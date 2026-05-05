@@ -26,7 +26,7 @@ namespace Fluence.Wpf.Automation
         /// <inheritdoc />
         protected override string GetNameCore()
         {
-            var infoBar = (InfoBar)Owner;
+            InfoBar infoBar = (InfoBar)Owner;
             string title = infoBar.Title;
             if (!string.IsNullOrEmpty(title))
             {

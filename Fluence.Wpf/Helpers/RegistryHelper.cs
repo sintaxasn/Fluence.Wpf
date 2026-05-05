@@ -38,9 +38,9 @@ namespace Fluence.Wpf.Helpers
         {
             try
             {
-                using (var key = Registry.CurrentUser.OpenSubKey(NativeConstants.PersonalizeRegistryPath))
+                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(NativeConstants.PersonalizeRegistryPath))
                 {
-                    var value = key?.GetValue(NativeConstants.AppsUseLightTheme);
+                    object? value = key?.GetValue(NativeConstants.AppsUseLightTheme);
                     if (value is int intValue)
                     {
                         return intValue != 0;
@@ -58,9 +58,9 @@ namespace Fluence.Wpf.Helpers
         {
             try
             {
-                using (var key = Registry.CurrentUser.OpenSubKey(NativeConstants.PersonalizeRegistryPath))
+                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(NativeConstants.PersonalizeRegistryPath))
                 {
-                    var value = key?.GetValue(NativeConstants.SystemUsesLightTheme);
+                    object? value = key?.GetValue(NativeConstants.SystemUsesLightTheme);
                     if (value is int intValue)
                     {
                         return intValue != 0;
@@ -78,9 +78,9 @@ namespace Fluence.Wpf.Helpers
         {
             try
             {
-                using (var key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath))
+                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath))
                 {
-                    var value = key?.GetValue(NativeConstants.ColorPrevalence);
+                    object? value = key?.GetValue(NativeConstants.ColorPrevalence);
                     if (value is int intValue)
                     {
                         return intValue != 0;
@@ -100,9 +100,9 @@ namespace Fluence.Wpf.Helpers
 
             try
             {
-                using (var key = Registry.CurrentUser.OpenSubKey(NativeConstants.AccentRegistryPath))
+                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(NativeConstants.AccentRegistryPath))
                 {
-                    var value = key?.GetValue(NativeConstants.AccentPalette);
+                    object? value = key?.GetValue(NativeConstants.AccentPalette);
                     if (value is byte[] bytes && bytes.Length >= 32)
                     {
                         palette = new Color[8];
@@ -130,9 +130,9 @@ namespace Fluence.Wpf.Helpers
         {
             try
             {
-                using (var key = Registry.CurrentUser.OpenSubKey(NativeConstants.AccentRegistryPath))
+                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(NativeConstants.AccentRegistryPath))
                 {
-                    var value = key?.GetValue(NativeConstants.AccentColor);
+                    object? value = key?.GetValue(NativeConstants.AccentColor);
                     if (value is int intValue)
                     {
                         uint color = unchecked((uint)intValue);
@@ -164,9 +164,9 @@ namespace Fluence.Wpf.Helpers
             color = default;
             try
             {
-                using (var key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath))
+                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath))
                 {
-                    var value = key?.GetValue(NativeConstants.AccentColor);
+                    object? value = key?.GetValue(NativeConstants.AccentColor);
                     if (value is int intValue)
                     {
                         uint raw = unchecked((uint)intValue);
@@ -194,9 +194,9 @@ namespace Fluence.Wpf.Helpers
             color = default;
             try
             {
-                using (var key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath))
+                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath))
                 {
-                    var value = key?.GetValue(NativeConstants.AccentColorInactive);
+                    object? value = key?.GetValue(NativeConstants.AccentColorInactive);
                     if (value is int intValue)
                     {
                         uint raw = unchecked((uint)intValue);
@@ -225,15 +225,15 @@ namespace Fluence.Wpf.Helpers
             balance = 0;
             try
             {
-                using (var key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath))
+                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath))
                 {
                     if (key == null)
                     {
                         return false;
                     }
 
-                    var colorVal = key.GetValue(NativeConstants.ColorizationColor);
-                    var balanceVal = key.GetValue(NativeConstants.ColorizationColorBalance);
+                    object colorVal = key.GetValue(NativeConstants.ColorizationColor);
+                    object balanceVal = key.GetValue(NativeConstants.ColorizationColorBalance);
 
                     if (colorVal is int colorInt && balanceVal is int balanceInt)
                     {

@@ -162,7 +162,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            var text = Content as string;
+            string? text = Content as string;
             if (string.IsNullOrEmpty(text))
             {
                 ClearAutomaticToolTip();
@@ -174,14 +174,14 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            var textBlock = FindVisualChild<System.Windows.Controls.TextBlock>(_mainContentPresenter);
+            System.Windows.Controls.TextBlock textBlock = FindVisualChild<System.Windows.Controls.TextBlock>(_mainContentPresenter);
             if (textBlock == null)
             {
                 ClearAutomaticToolTip();
                 return;
             }
 
-            var pixelsPerDip = 1.0;
+            double pixelsPerDip = 1.0;
             try
             {
                 pixelsPerDip = VisualTreeHelper.GetDpi(this).PixelsPerDip;
@@ -190,7 +190,7 @@ namespace Fluence.Wpf.Controls
             {
             }
 
-            var formattedText = new FormattedText(
+            FormattedText formattedText = new FormattedText(
                 text,
                 CultureInfo.CurrentCulture,
                 FlowDirection.LeftToRight,
@@ -201,7 +201,7 @@ namespace Fluence.Wpf.Controls
                 TextFormattingMode.Display,
                 pixelsPerDip);
 
-            var textWidth = formattedText.WidthIncludingTrailingWhitespace;
+            double textWidth = formattedText.WidthIncludingTrailingWhitespace;
             if (textBlock.ActualWidth > 0 && textWidth > textBlock.ActualWidth + 0.5)
             {
                 SetAutomaticToolTip(text);
@@ -236,16 +236,16 @@ namespace Fluence.Wpf.Controls
                 return null;
             }
 
-            var childCount = VisualTreeHelper.GetChildrenCount(parent);
-            for (var i = 0; i < childCount; i++)
+            int childCount = VisualTreeHelper.GetChildrenCount(parent);
+            for (int i = 0; i < childCount; i++)
             {
-                var child = VisualTreeHelper.GetChild(parent, i);
+                DependencyObject child = VisualTreeHelper.GetChild(parent, i);
                 if (child is T match)
                 {
                     return match;
                 }
 
-                var descendant = FindVisualChild<T>(child);
+                T descendant = FindVisualChild<T>(child);
                 if (descendant != null)
                 {
                     return descendant;

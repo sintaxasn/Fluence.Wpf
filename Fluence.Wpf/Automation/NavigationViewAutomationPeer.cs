@@ -43,19 +43,19 @@ namespace Fluence.Wpf.Automation
 
         IRawElementProviderSimple[] ISelectionProvider.GetSelection()
         {
-            var selected = NavigationView.SelectedItem;
+            object selected = NavigationView.SelectedItem;
             if (selected == null)
             {
                 return System.Array.Empty<IRawElementProviderSimple>();
             }
 
-            var container = NavigationView.ItemContainerGenerator.ContainerFromItem(selected) as NavigationViewItem;
+            NavigationViewItem? container = NavigationView.ItemContainerGenerator.ContainerFromItem(selected) as NavigationViewItem;
             if (container == null)
             {
                 return System.Array.Empty<IRawElementProviderSimple>();
             }
 
-            var peer = CreatePeerForElement(container);
+            AutomationPeer peer = CreatePeerForElement(container);
             if (peer == null)
             {
                 return System.Array.Empty<IRawElementProviderSimple>();

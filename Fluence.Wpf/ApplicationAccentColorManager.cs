@@ -172,7 +172,7 @@ namespace Fluence.Wpf
                 GenerateAccentRamp(accent);
             }
 
-            var resolvedTheme = ApplicationThemeManager.GetResolvedTheme();
+            ApplicationTheme resolvedTheme = ApplicationThemeManager.GetResolvedTheme();
             UpdateThemeAdaptiveColors(resolvedTheme);
             UpdateResources();
         }
@@ -195,7 +195,7 @@ namespace Fluence.Wpf
             _systemAccentColor = color;
             GenerateAccentRamp(color);
 
-            var resolvedTheme = ApplicationThemeManager.GetResolvedTheme();
+            ApplicationTheme resolvedTheme = ApplicationThemeManager.GetResolvedTheme();
             UpdateThemeAdaptiveColors(resolvedTheme);
             UpdateResources();
         }
@@ -226,7 +226,7 @@ namespace Fluence.Wpf
                 return;
             }
 
-            var resources = Application.Current.Resources;
+            ResourceDictionary resources = Application.Current.Resources;
             UpdateDisabledAccentFill(resources, resolvedTheme);
             UpdateAccentTextBrushes(resources);
             UpdateTextOnAccentColors(resolvedTheme);
@@ -255,7 +255,7 @@ namespace Fluence.Wpf
                 return;
             }
 
-            var resources = Application.Current.Resources;
+            ResourceDictionary resources = Application.Current.Resources;
 
             bool useWhite = HsvColorHelper.ShouldUseWhiteText(_systemAccentColorPrimary);
 
@@ -295,7 +295,7 @@ namespace Fluence.Wpf
             }
             else
             {
-                var resolvedTheme = ApplicationThemeManager.GetResolvedTheme();
+                ApplicationTheme resolvedTheme = ApplicationThemeManager.GetResolvedTheme();
                 UpdateThemeAdaptiveColors(resolvedTheme);
                 UpdateResources();
             }
@@ -340,7 +340,7 @@ namespace Fluence.Wpf
                 return;
             }
 
-            var resources = Application.Current.Resources;
+            ResourceDictionary resources = Application.Current.Resources;
 
             resources["SystemAccentColor"] = _systemAccentColor;
             resources["SystemAccentColorLight1"] = _systemAccentColorLight1;
@@ -374,7 +374,7 @@ namespace Fluence.Wpf
             resources["AccentFillColorSecondaryBrush"] = new SolidColorBrush(HsvColorHelper.WithAlpha(_systemAccentColorPrimary, 0xE6));
             resources["AccentFillColorTertiaryBrush"] = new SolidColorBrush(HsvColorHelper.WithAlpha(_systemAccentColorPrimary, 0xCC));
 
-            var resolvedTheme = ApplicationThemeManager.GetResolvedTheme();
+            ApplicationTheme resolvedTheme = ApplicationThemeManager.GetResolvedTheme();
             UpdateDisabledAccentFill(resources, resolvedTheme);
 
             UpdateAccentTextBrushes(resources);
@@ -390,7 +390,7 @@ namespace Fluence.Wpf
                 return;
             }
 
-            var disabledAccentFill = resolvedTheme == ApplicationTheme.Dark
+            Color disabledAccentFill = resolvedTheme == ApplicationTheme.Dark
                 ? Color.FromArgb(0x28, 0xFF, 0xFF, 0xFF)
                 : Color.FromArgb(0x37, 0x00, 0x00, 0x00);
 
@@ -470,7 +470,7 @@ namespace Fluence.Wpf
 
         private static void OnAccentColorChanged()
         {
-            var handler = AccentColorChanged;
+            EventHandler<EventArgs> handler = AccentColorChanged;
             if (handler != null)
             {
                 handler(null, EventArgs.Empty);

@@ -203,7 +203,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnIsItemSelectableChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var listView = (ListView)d;
+            ListView listView = (ListView)d;
             if (!(bool)e.NewValue)
             {
                 listView._suppressSelectionChange = true;
@@ -224,9 +224,9 @@ namespace Fluence.Wpf.Controls
         {
             // Only realized containers exist when virtualization is active. Future
             // containers receive the same mirrored value in PrepareContainerForItemOverride.
-            foreach (var item in Items)
+            foreach (object? item in Items)
             {
-                var container = ItemContainerGenerator.ContainerFromItem(item) as DependencyObject;
+                DependencyObject container = ItemContainerGenerator.ContainerFromItem(item) as DependencyObject;
                 if (container != null)
                 {
                     SetParentIsItemSelectable(container, IsItemSelectable);
@@ -271,7 +271,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            var style = TryFindResource("ListViewGroupItemStyle") as Style;
+            Style? style = TryFindResource("ListViewGroupItemStyle") as Style;
             if (style != null)
             {
                 GroupStyle.Add(new GroupStyle { ContainerStyle = style });
@@ -297,7 +297,7 @@ namespace Fluence.Wpf.Controls
 
             SetParentIsItemSelectable(element, IsItemSelectable);
 
-            var ui = element as UIElement;
+            UIElement? ui = element as UIElement;
             if (ui != null)
             {
                 ui.Focusable = IsItemSelectable;
@@ -306,18 +306,18 @@ namespace Fluence.Wpf.Controls
             if (!ItemAnimationsEnabled || !IsLoaded)
                 return;
 
-            var container = element as UIElement;
+            UIElement? container = element as UIElement;
             if (container == null)
                 return;
 
             container.Opacity = 0;
             container.RenderTransform = new TranslateTransform(0, 12);
 
-            var opacityAnim = new DoubleAnimation(0, 1, InsertDuration)
+            DoubleAnimation opacityAnim = new DoubleAnimation(0, 1, InsertDuration)
             {
                 EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
             };
-            var slideAnim = new DoubleAnimation(12, 0, InsertDuration)
+            DoubleAnimation slideAnim = new DoubleAnimation(12, 0, InsertDuration)
             {
                 EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
             };
@@ -338,7 +338,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            var container = ItemContainerGenerator.ContainerFromItem(item) as UIElement;
+            UIElement? container = ItemContainerGenerator.ContainerFromItem(item) as UIElement;
             if (container == null)
             {
                 RemoveItem(item);
@@ -349,11 +349,11 @@ namespace Fluence.Wpf.Controls
             if (container.RenderTransform == null || !(container.RenderTransform is TranslateTransform))
                 container.RenderTransform = new TranslateTransform();
 
-            var opacityAnim = new DoubleAnimation(container.Opacity, 0, RemoveDuration)
+            DoubleAnimation opacityAnim = new DoubleAnimation(container.Opacity, 0, RemoveDuration)
             {
                 EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
             };
-            var slideAnim = new DoubleAnimation(0, -12, RemoveDuration)
+            DoubleAnimation slideAnim = new DoubleAnimation(0, -12, RemoveDuration)
             {
                 EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
             };
@@ -370,7 +370,7 @@ namespace Fluence.Wpf.Controls
 
         private void RemoveItem(object item)
         {
-            var list = ItemsSource as IList;
+            IList? list = ItemsSource as IList;
             if (list != null)
             {
                 list.Remove(item);
