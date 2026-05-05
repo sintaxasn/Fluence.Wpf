@@ -133,7 +133,7 @@ namespace Fluence.Wpf.Controls
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             SetValue(IsPressedPropertyKey, true);
-            Mouse.Capture(this, CaptureMode.SubTree);
+            _ = Mouse.Capture(this, CaptureMode.SubTree);
             base.OnMouseLeftButtonDown(e);
         }
 
@@ -141,7 +141,7 @@ namespace Fluence.Wpf.Controls
         protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
         {
             SetValue(IsPressedPropertyKey, false);
-            Mouse.Capture(null);
+            _ = Mouse.Capture(null);
             base.OnMouseLeftButtonUp(e);
         }
 
@@ -183,7 +183,7 @@ namespace Fluence.Wpf.Controls
             }
 
             nav.InvokeItem(this);
-            Focus();
+            _ = Focus();
             e.Handled = true;
         }
 

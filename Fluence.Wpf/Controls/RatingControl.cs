@@ -248,7 +248,7 @@ namespace Fluence.Wpf.Controls
                 star.MouseLeave += (s, e) => OnStarMouseLeave();
                 star.MouseLeftButtonDown += (s, e) => OnStarClick(capturedIndex);
 
-                _starsPanel.Children.Add(star);
+                _ = _starsPanel.Children.Add(star);
             }
 
             RefreshStars();

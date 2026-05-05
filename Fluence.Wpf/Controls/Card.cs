@@ -285,7 +285,7 @@ namespace Fluence.Wpf.Controls
             }
 
             IsPressed = true;
-            CaptureMouse();
+            _ = CaptureMouse();
         }
 
         /// <inheritdoc />

@@ -273,7 +273,7 @@ namespace Fluence.Wpf.Controls
             {
                 _fill.Visibility = Visibility.Collapsed;
                 _indeterminateBar.Visibility = Visibility.Visible;
-                _indeterminateBar2?.Visibility = Visibility.Visible;
+                _ = (_indeterminateBar2?.Visibility = Visibility.Visible);
                 RefreshIndeterminateLayout();
             }
             else
@@ -281,14 +281,14 @@ namespace Fluence.Wpf.Controls
                 StopIndeterminate();
                 _fill.Visibility = Visibility.Visible;
                 _indeterminateBar.Visibility = Visibility.Collapsed;
-                _indeterminateBar2?.Visibility = Visibility.Collapsed;
+                _ = (_indeterminateBar2?.Visibility = Visibility.Collapsed);
 
                 ApplyFillBrushForMode();
 
                 // PART_Track can report 0 width during template application. Queue one
                 // layout-priority update so determinate fills render correctly after the
                 // first measure/arrange pass.
-                Dispatcher.BeginInvoke(
+                _ = Dispatcher.BeginInvoke(
                     new Action(() => UpdateFillWidth(false)),
                     System.Windows.Threading.DispatcherPriority.Loaded);
             }
@@ -329,7 +329,7 @@ namespace Fluence.Wpf.Controls
             }
 
             _indeterminateBar.Width = trackWidth * 0.4;
-            _indeterminateBar2?.Width = trackWidth * 0.55;
+            _ = (_indeterminateBar2?.Width = trackWidth * 0.55);
 
             StartIndeterminate(trackWidth);
         }

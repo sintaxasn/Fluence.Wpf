@@ -273,7 +273,7 @@ namespace Fluence.Wpf.Controls
                 InfoBarSeverity.Error => "Error",
                 _ => "Informational",
             };
-            VisualStateManager.GoToState(this, stateName, useTransitions);
+            _ = VisualStateManager.GoToState(this, stateName, useTransitions);
         }
 
         private void OnCloseButtonClick(object sender, RoutedEventArgs e)

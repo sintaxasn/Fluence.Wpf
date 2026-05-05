@@ -115,7 +115,7 @@ namespace Fluence.Wpf.Automation
             SplitButton owner = SplitButton;
             System.Windows.Controls.Primitives.ToggleButton? toggle = owner.Template == null ? null
                 : owner.Template.FindName("PART_SecondaryButton", owner) as System.Windows.Controls.Primitives.ToggleButton;
-            toggle?.IsChecked = true;
+            _ = (toggle?.IsChecked = true);
         }
 
         void IExpandCollapseProvider.Collapse()
@@ -123,7 +123,7 @@ namespace Fluence.Wpf.Automation
             SplitButton owner = SplitButton;
             System.Windows.Controls.Primitives.ToggleButton? toggle = owner.Template == null ? null
                 : owner.Template.FindName("PART_SecondaryButton", owner) as System.Windows.Controls.Primitives.ToggleButton;
-            toggle?.IsChecked = false;
+            _ = (toggle?.IsChecked = false);
         }
     }
 }

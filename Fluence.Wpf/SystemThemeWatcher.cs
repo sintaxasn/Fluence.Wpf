@@ -213,7 +213,7 @@ namespace Fluence.Wpf
                 return;
             }
 
-            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            _ = Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
                 // Settings messages arrive on the HWND hook path. Re-enter through the
                 // Dispatcher so ResourceDictionary mutation stays on the WPF UI thread.

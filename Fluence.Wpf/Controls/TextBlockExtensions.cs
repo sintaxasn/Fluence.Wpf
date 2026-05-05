@@ -240,7 +240,7 @@ namespace Fluence.Wpf.Controls
             Grid grid = new();
             textBlock.Opacity = 0;
             textBlock.IsHitTestVisible = false;
-            grid.Children.Add(textBlock);
+            _ = grid.Children.Add(textBlock);
 
             System.Windows.Controls.TextBox overlay = new()
             {
@@ -265,14 +265,14 @@ namespace Fluence.Wpf.Controls
             TextOptions.SetTextRenderingMode(overlay, TextOptions.GetTextRenderingMode(textBlock));
             TextOptions.SetTextHintingMode(overlay, TextOptions.GetTextHintingMode(textBlock));
 
-            overlay.SetBinding(System.Windows.Controls.TextBox.TextProperty, new Binding
+            _ = overlay.SetBinding(System.Windows.Controls.TextBox.TextProperty, new Binding
             {
                 Path = new PropertyPath(System.Windows.Controls.TextBlock.TextProperty),
                 Source = textBlock,
                 Mode = BindingMode.OneWay
             });
 
-            grid.Children.Add(overlay);
+            _ = grid.Children.Add(overlay);
             parent.Children.Insert(index, grid);
         }
 

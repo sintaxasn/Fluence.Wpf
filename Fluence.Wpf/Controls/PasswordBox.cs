@@ -112,8 +112,8 @@ namespace Fluence.Wpf.Controls
             control._isUpdatingPassword = true;
             try
             {
-                control._passwordBox?.Password = (string)e.NewValue ?? string.Empty;
-                control._revealTextBox?.Text = (string)e.NewValue ?? string.Empty;
+                _ = (control._passwordBox?.Password = (string)e.NewValue ?? string.Empty);
+                _ = (control._revealTextBox?.Text = (string)e.NewValue ?? string.Empty);
             }
             finally
             {
@@ -400,7 +400,7 @@ namespace Fluence.Wpf.Controls
 
         private void OnInnerKeyboardFocusChanged(object sender, KeyboardFocusChangedEventArgs e)
         {
-            Dispatcher.BeginInvoke(
+            _ = Dispatcher.BeginInvoke(
                 new Action(
                     () =>
                     {
@@ -421,7 +421,7 @@ namespace Fluence.Wpf.Controls
         {
             if (e.Key == Key.CapsLock)
             {
-                Dispatcher.BeginInvoke(new Action(UpdateCapsLockIndicator), DispatcherPriority.Input);
+                _ = Dispatcher.BeginInvoke(new Action(UpdateCapsLockIndicator), DispatcherPriority.Input);
             }
         }
 
@@ -436,7 +436,7 @@ namespace Fluence.Wpf.Controls
             try
             {
                 Password = _passwordBox.Password;
-                _revealTextBox?.Text = _passwordBox.Password;
+                _ = (_revealTextBox?.Text = _passwordBox.Password);
 
                 UpdatePasswordStrengthFromPassword();
                 UpdateStrengthMeter();
@@ -458,7 +458,7 @@ namespace Fluence.Wpf.Controls
             try
             {
                 Password = _revealTextBox.Text;
-                _passwordBox?.Password = _revealTextBox.Text;
+                _ = (_passwordBox?.Password = _revealTextBox.Text);
 
                 UpdatePasswordStrengthFromPassword();
                 UpdateStrengthMeter();

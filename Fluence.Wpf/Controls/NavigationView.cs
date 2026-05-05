@@ -338,7 +338,7 @@ namespace Fluence.Wpf.Controls
             }
 
             base.OnSelectionChanged(e);
-            Dispatcher.BeginInvoke(new Action(() => PositionIndicator(true, previousItem)), DispatcherPriority.Loaded);
+            _ = Dispatcher.BeginInvoke(new Action(() => PositionIndicator(true, previousItem)), DispatcherPriority.Loaded);
         }
 
         /// <inheritdoc />
@@ -464,7 +464,7 @@ namespace Fluence.Wpf.Controls
         {
             bool isVisible = IsBackButtonVisible && IsBackEnabled;
             string stateName = isVisible ? "BackButtonVisible" : "BackButtonCollapsed";
-            VisualStateManager.GoToState(this, stateName, useTransitions);
+            _ = VisualStateManager.GoToState(this, stateName, useTransitions);
 
             if (_backButton != null)
             {
@@ -534,7 +534,7 @@ namespace Fluence.Wpf.Controls
 
         private void ScheduleIndicatorPosition(bool animate)
         {
-            Dispatcher.BeginInvoke(new Action(() => PositionIndicator(animate)), DispatcherPriority.Loaded);
+            _ = Dispatcher.BeginInvoke(new Action(() => PositionIndicator(animate)), DispatcherPriority.Loaded);
         }
 
         /// <summary>
@@ -891,7 +891,7 @@ namespace Fluence.Wpf.Controls
         private void HideIndicator()
         {
             StopAnimation();
-            _selectionIndicator?.Opacity = 0;
+            _ = (_selectionIndicator?.Opacity = 0);
 
             _indicatorPositioned = false;
         }

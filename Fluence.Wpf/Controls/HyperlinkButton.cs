@@ -137,7 +137,7 @@ namespace Fluence.Wpf.Controls
             Uri uri = NavigateUri;
             if (uri != null)
             {
-                Process.Start(uri.AbsoluteUri);
+                _ = Process.Start(uri.AbsoluteUri);
             }
         }
     }

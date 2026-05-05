@@ -490,10 +490,10 @@ namespace Fluence.Wpf.Controls
             };
             Style = resourceDictionary[typeof(FluenceWindow)] as Style;
 
-            CommandBindings.Add(new CommandBinding(SystemCommands.CloseWindowCommand, OnCloseWindow));
-            CommandBindings.Add(new CommandBinding(SystemCommands.MaximizeWindowCommand, OnMaximizeWindow, OnCanResizeWindow));
-            CommandBindings.Add(new CommandBinding(SystemCommands.MinimizeWindowCommand, OnMinimizeWindow, OnCanMinimizeWindow));
-            CommandBindings.Add(new CommandBinding(SystemCommands.RestoreWindowCommand, OnRestoreWindow, OnCanResizeWindow));
+            _ = CommandBindings.Add(new CommandBinding(SystemCommands.CloseWindowCommand, OnCloseWindow));
+            _ = CommandBindings.Add(new CommandBinding(SystemCommands.MaximizeWindowCommand, OnMaximizeWindow, OnCanResizeWindow));
+            _ = CommandBindings.Add(new CommandBinding(SystemCommands.MinimizeWindowCommand, OnMinimizeWindow, OnCanMinimizeWindow));
+            _ = CommandBindings.Add(new CommandBinding(SystemCommands.RestoreWindowCommand, OnRestoreWindow, OnCanResizeWindow));
 
             _windowChrome = WindowPolicy.CreateWindowChrome(TitleBarHeight);
             WindowChrome.SetWindowChrome(this, _windowChrome);
@@ -661,7 +661,7 @@ namespace Fluence.Wpf.Controls
         {
             if (!Dispatcher.CheckAccess())
             {
-                Dispatcher.BeginInvoke(new Action(() =>
+                _ = Dispatcher.BeginInvoke(new Action(() =>
                 {
                     ApplyBackdrop();
                     ApplyFrame();
@@ -677,7 +677,7 @@ namespace Fluence.Wpf.Controls
         {
             if (!Dispatcher.CheckAccess())
             {
-                Dispatcher.BeginInvoke(new Action(ApplyFrame));
+                _ = Dispatcher.BeginInvoke(new Action(ApplyFrame));
                 return;
             }
 
@@ -755,21 +755,21 @@ namespace Fluence.Wpf.Controls
 
             if (capabilities.SupportsCaptionColor)
             {
-                NativeMethods.SetCaptionColor(_handle, plan.CaptionColor);
+                _ = NativeMethods.SetCaptionColor(_handle, plan.CaptionColor);
             }
 
-            NativeMethods.SetImmersiveDarkMode(_handle, plan.UseImmersiveDarkMode);
+            _ = NativeMethods.SetImmersiveDarkMode(_handle, plan.UseImmersiveDarkMode);
 
             if (capabilities.SupportsSystemBackdropType)
             {
-                NativeMethods.SetSystemBackdropType(
+                _ = NativeMethods.SetSystemBackdropType(
                     _handle,
                     plan.SystemBackdropType ?? NativeConstants.DWMSBT_AUTO);
             }
 
             if (capabilities.SupportsMicaEffect)
             {
-                NativeMethods.SetMicaEffect(_handle, plan.UseLegacyMicaEffect);
+                _ = NativeMethods.SetMicaEffect(_handle, plan.UseLegacyMicaEffect);
             }
         }
 
@@ -787,7 +787,7 @@ namespace Fluence.Wpf.Controls
 
             if (_handle != IntPtr.Zero && capabilities.SupportsBorderColor)
             {
-                NativeMethods.SetBorderColor(_handle, plan.DwmBorderColor);
+                _ = NativeMethods.SetBorderColor(_handle, plan.DwmBorderColor);
             }
         }
 
@@ -949,7 +949,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            NativeMethods.SetWindowCornerPreference(_handle, WindowPolicy.GetCornerPreference(CornerStyle));
+            _ = NativeMethods.SetWindowCornerPreference(_handle, WindowPolicy.GetCornerPreference(CornerStyle));
         }
 
         #endregion
@@ -1282,7 +1282,7 @@ namespace Fluence.Wpf.Controls
             WindowState = WindowState.Maximized;
             if (_handle != IntPtr.Zero)
             {
-                NativeMethods.MaximizeWindowNative(_handle);
+                _ = NativeMethods.MaximizeWindowNative(_handle);
             }
         }
 
@@ -1291,7 +1291,7 @@ namespace Fluence.Wpf.Controls
             WindowState = WindowState.Minimized;
             if (_handle != IntPtr.Zero)
             {
-                NativeMethods.MinimizeWindowNative(_handle);
+                _ = NativeMethods.MinimizeWindowNative(_handle);
             }
         }
 
@@ -1300,7 +1300,7 @@ namespace Fluence.Wpf.Controls
             WindowState = WindowState.Normal;
             if (_handle != IntPtr.Zero)
             {
-                NativeMethods.RestoreWindowNative(_handle);
+                _ = NativeMethods.RestoreWindowNative(_handle);
             }
         }
 

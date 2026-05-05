@@ -276,7 +276,7 @@ namespace Fluence.Wpf.Controls
         private void OnClearButtonClick(object sender, RoutedEventArgs e)
         {
             Clear();
-            Focus();
+            _ = Focus();
         }
 
         private void UpdateCharacterCounter()
@@ -348,7 +348,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            icon?.Visibility = Visibility.Collapsed;
+            _ = (icon?.Visibility = Visibility.Collapsed);
 
             helper.Text = HelperText;
             helper.Visibility = string.IsNullOrEmpty(HelperText) ? Visibility.Collapsed : Visibility.Visible;

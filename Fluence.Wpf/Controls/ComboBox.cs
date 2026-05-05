@@ -211,7 +211,7 @@ namespace Fluence.Wpf.Controls
 
             if (SelectedIndex == -1 && Items.Count > 0 && !IsSelectedIndexExplicitlySet())
             {
-                Dispatcher.BeginInvoke(new Action(() =>
+                _ = Dispatcher.BeginInvoke(new Action(() =>
                 {
                     TryAutoSelectFirstItem();
                 }), DispatcherPriority.Loaded);
@@ -230,7 +230,7 @@ namespace Fluence.Wpf.Controls
         {
             base.OnDropDownClosed(e);
             IsDropDownOpenedUpward = false;
-            _popup?.Placement = PlacementMode.Bottom;
+            _ = (_popup?.Placement = PlacementMode.Bottom);
         }
 
         /// <inheritdoc />
@@ -264,7 +264,7 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateFocusState(bool useTransitions)
         {
-            VisualStateManager.GoToState(
+            _ = VisualStateManager.GoToState(
                 this,
                 IsKeyboardFocusWithin ? "Focused" : "Unfocused",
                 useTransitions);
@@ -304,7 +304,7 @@ namespace Fluence.Wpf.Controls
             catch
             {
                 IsDropDownOpenedUpward = false;
-                _popup?.Placement = PlacementMode.Bottom;
+                _ = (_popup?.Placement = PlacementMode.Bottom);
             }
         }
 

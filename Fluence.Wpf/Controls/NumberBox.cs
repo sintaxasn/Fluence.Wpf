@@ -380,7 +380,7 @@ namespace Fluence.Wpf.Controls
             base.OnGotKeyboardFocus(e);
             if (_partTextBox != null && !_partTextBox.IsKeyboardFocusWithin)
             {
-                _partTextBox.Focus();
+                _ = _partTextBox.Focus();
             }
         }
 
@@ -390,7 +390,7 @@ namespace Fluence.Wpf.Controls
             base.OnPreviewMouseLeftButtonDown(e);
             if (_partTextBox != null && !_partTextBox.IsKeyboardFocusWithin)
             {
-                _partTextBox.Focus();
+                _ = _partTextBox.Focus();
             }
         }
 
@@ -471,18 +471,18 @@ namespace Fluence.Wpf.Controls
         {
             if (e.Key == Key.Enter)
             {
-                TryParseText();
+                _ = TryParseText();
                 e.Handled = true;
             }
             else if (e.Key == Key.Up)
             {
-                TryParseText();
+                _ = TryParseText();
                 OnUpClick();
                 e.Handled = true;
             }
             else if (e.Key == Key.Down)
             {
-                TryParseText();
+                _ = TryParseText();
                 OnDownClick();
                 e.Handled = true;
             }
@@ -490,7 +490,7 @@ namespace Fluence.Wpf.Controls
 
         private void OnPartTextBoxLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
-            TryParseText();
+            _ = TryParseText();
         }
 
         private void OnPartUpButtonClick(object sender, RoutedEventArgs e)

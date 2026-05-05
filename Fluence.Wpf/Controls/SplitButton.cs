@@ -343,14 +343,14 @@ namespace Fluence.Wpf.Controls
 
         private void OnSecondaryButtonChecked(object sender, RoutedEventArgs e)
         {
-            _popup?.IsOpen = true;
+            _ = (_popup?.IsOpen = true);
 
             SetValue(IsFlyoutOpenPropertyKey, true);
         }
 
         private void OnSecondaryButtonUnchecked(object sender, RoutedEventArgs e)
         {
-            _popup?.IsOpen = false;
+            _ = (_popup?.IsOpen = false);
 
             SetValue(IsFlyoutOpenPropertyKey, false);
         }

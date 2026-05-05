@@ -150,7 +150,7 @@ namespace Fluence.Wpf.Controls
                 state = "Dot";
             }
 
-            VisualStateManager.GoToState(this, state, useTransitions);
+            _ = VisualStateManager.GoToState(this, state, useTransitions);
         }
     }
 }

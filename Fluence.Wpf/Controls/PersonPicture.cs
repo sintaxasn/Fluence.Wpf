@@ -277,16 +277,16 @@ namespace Fluence.Wpf.Controls
                     _initialsText.Text = GlyphPeople;
                     _initialsText.SetResourceReference(WpfTextBlock.FontFamilyProperty, "FluentFontFamily");
                 }
-                VisualStateManager.GoToState(this, StateGroup, useTransitions);
+                _ = VisualStateManager.GoToState(this, StateGroup, useTransitions);
                 return;
             }
 
             if (ProfilePicture != null)
             {
                 // Photo state: fill the image ellipse
-                _imageEllipse?.Fill = new ImageBrush(ProfilePicture) { Stretch = Stretch.UniformToFill };
+                _ = (_imageEllipse?.Fill = new ImageBrush(ProfilePicture) { Stretch = Stretch.UniformToFill });
 
-                VisualStateManager.GoToState(this, StatePhoto, useTransitions);
+                _ = VisualStateManager.GoToState(this, StatePhoto, useTransitions);
                 return;
             }
 
@@ -299,7 +299,7 @@ namespace Fluence.Wpf.Controls
                     _initialsText.Text = initials;
                     _initialsText.SetResourceReference(WpfTextBlock.FontFamilyProperty, "FluentFontFamily");
                 }
-                VisualStateManager.GoToState(this, StateInitials, useTransitions);
+                _ = VisualStateManager.GoToState(this, StateInitials, useTransitions);
                 return;
             }
 
@@ -309,13 +309,13 @@ namespace Fluence.Wpf.Controls
                 _initialsText.Text = GlyphContact;
                 _initialsText.FontFamily = new FontFamily("Segoe Fluent Icons");
             }
-            VisualStateManager.GoToState(this, StateNoPhotoOrInitials, useTransitions);
+            _ = VisualStateManager.GoToState(this, StateNoPhotoOrInitials, useTransitions);
         }
 
         private void UpdateBadge()
         {
             bool hasBadge = !string.IsNullOrEmpty(BadgeGlyph) || BadgeNumber > 0;
-            _badgeGrid?.Visibility = hasBadge ? Visibility.Visible : Visibility.Collapsed;
+            _ = (_badgeGrid?.Visibility = hasBadge ? Visibility.Visible : Visibility.Collapsed);
 
             if (_badgeText != null)
             {
@@ -337,7 +337,7 @@ namespace Fluence.Wpf.Controls
                 }
             }
 
-            VisualStateManager.GoToState(this, hasBadge ? StateBadgeWithoutImageSource : StateNoBadge, true);
+            _ = VisualStateManager.GoToState(this, hasBadge ? StateBadgeWithoutImageSource : StateNoBadge, true);
         }
 
         private string GetInitials()
