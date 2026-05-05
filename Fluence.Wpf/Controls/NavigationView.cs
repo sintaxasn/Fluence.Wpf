@@ -406,8 +406,7 @@ namespace Fluence.Wpf.Controls
         protected override void PrepareContainerForItemOverride(DependencyObject element, object item)
         {
             base.PrepareContainerForItemOverride(element, item);
-            NavigationViewItem? navItem = element as NavigationViewItem;
-            if (navItem != null)
+            if (element is NavigationViewItem navItem)
             {
                 navItem.Selected -= OnNavigationViewItemSelected;
                 navItem.Selected += OnNavigationViewItemSelected;
@@ -419,8 +418,7 @@ namespace Fluence.Wpf.Controls
         /// <inheritdoc />
         protected override void ClearContainerForItemOverride(DependencyObject element, object item)
         {
-            NavigationViewItem? navItem = element as NavigationViewItem;
-            if (navItem != null)
+            if (element is NavigationViewItem navItem)
             {
                 navItem.Selected -= OnNavigationViewItemSelected;
                 navItem.Loaded -= OnNavigationViewItemLoaded;
@@ -507,8 +505,7 @@ namespace Fluence.Wpf.Controls
 
         private void OnNavigationViewItemSelected(object sender, RoutedEventArgs e)
         {
-            NavigationViewItem? navItem = sender as NavigationViewItem;
-            if (navItem == null)
+            if (sender is not NavigationViewItem navItem)
             {
                 return;
             }
@@ -664,11 +661,9 @@ namespace Fluence.Wpf.Controls
 
         private Point GetCurrentIndicatorPosition()
         {
-            TransformGroup? group = _selectionIndicator.RenderTransform as TransformGroup;
-            if (group != null && group.Children.Count >= 2)
+            if (_selectionIndicator.RenderTransform is TransformGroup group && group.Children.Count >= 2)
             {
-                TranslateTransform? translate = group.Children[1] as TranslateTransform;
-                if (translate != null)
+                if (group.Children[1] is TranslateTransform translate)
                 {
                     return new Point(translate.X, translate.Y);
                 }
@@ -941,18 +936,15 @@ namespace Fluence.Wpf.Controls
             }
 
             _selectionIndicator.BeginAnimation(UIElement.OpacityProperty, null);
-            TransformGroup? group = _selectionIndicator.RenderTransform as TransformGroup;
-            if (group != null && group.Children.Count >= 2)
+            if (_selectionIndicator.RenderTransform is TransformGroup group && group.Children.Count >= 2)
             {
-                ScaleTransform? scale = group.Children[0] as ScaleTransform;
-                TranslateTransform? translate = group.Children[1] as TranslateTransform;
-                if (scale != null && !scale.IsFrozen)
+                if (group.Children[0] is ScaleTransform scale && !scale.IsFrozen)
                 {
                     scale.BeginAnimation(ScaleTransform.ScaleXProperty, null);
                     scale.BeginAnimation(ScaleTransform.ScaleYProperty, null);
                 }
 
-                if (translate != null && !translate.IsFrozen)
+                if (group.Children[1] is TranslateTransform translate && !translate.IsFrozen)
                 {
                     translate.BeginAnimation(TranslateTransform.XProperty, null);
                     translate.BeginAnimation(TranslateTransform.YProperty, null);
@@ -979,9 +971,7 @@ namespace Fluence.Wpf.Controls
 
             if (!needsReplacement)
             {
-                ScaleTransform? s = group.Children[0] as ScaleTransform;
-                TranslateTransform? t = group.Children[1] as TranslateTransform;
-                needsReplacement = s == null || t == null || s.IsFrozen || t.IsFrozen;
+                needsReplacement = group.Children[0] is not ScaleTransform s || group.Children[1] is not TranslateTransform t || s.IsFrozen || t.IsFrozen;
             }
 
             if (needsReplacement)
@@ -1004,8 +994,7 @@ namespace Fluence.Wpf.Controls
 
         private NavigationViewItem ResolveNavigationViewItem(object item)
         {
-            NavigationViewItem? nvi = item as NavigationViewItem;
-            if (nvi != null)
+            if (item is NavigationViewItem nvi)
             {
                 return nvi;
             }
@@ -1038,8 +1027,7 @@ namespace Fluence.Wpf.Controls
             DependencyObject current = focused;
             while (current != null)
             {
-                NavigationViewItem? asItem = current as NavigationViewItem;
-                if (asItem != null)
+                if (current is NavigationViewItem asItem)
                 {
                     return asItem;
                 }

@@ -49,8 +49,7 @@ namespace Fluence.Wpf.Automation
                 return System.Array.Empty<IRawElementProviderSimple>();
             }
 
-            NavigationViewItem? container = NavigationView.ItemContainerGenerator.ContainerFromItem(selected) as NavigationViewItem;
-            if (container == null)
+            if (NavigationView.ItemContainerGenerator.ContainerFromItem(selected) is not NavigationViewItem container)
             {
                 return System.Array.Empty<IRawElementProviderSimple>();
             }

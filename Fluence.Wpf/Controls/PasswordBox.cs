@@ -575,8 +575,7 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateCapsLockIndicator()
         {
-            UIElement? el = GetTemplateChild("PART_CapsLockIndicator") as UIElement;
-            if (el == null)
+            if (GetTemplateChild("PART_CapsLockIndicator") is not UIElement el)
             {
                 return;
             }
@@ -604,8 +603,7 @@ namespace Fluence.Wpf.Controls
 
             for (int i = 0; i < 4; i++)
             {
-                System.Windows.Controls.Border? segment = GetTemplateChild("PART_StrengthSegment" + i) as System.Windows.Controls.Border;
-                if (segment == null)
+                if (GetTemplateChild("PART_StrengthSegment" + i) is not System.Windows.Controls.Border segment)
                 {
                     continue;
                 }
@@ -622,8 +620,7 @@ namespace Fluence.Wpf.Controls
                 segment.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, brushKey);
             }
 
-            UIElement? container = GetTemplateChild("PART_StrengthMeter") as UIElement;
-            if (container != null)
+            if (GetTemplateChild("PART_StrengthMeter") is UIElement container)
             {
                 container.Visibility = ShowPasswordStrength ? Visibility.Visible : Visibility.Collapsed;
             }

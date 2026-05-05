@@ -89,8 +89,7 @@ namespace Fluence.Wpf.Automation
             object parameter = button.CommandParameter;
             IInputElement target = button.CommandTarget;
 
-            RoutedCommand? routedCommand = command as System.Windows.Input.RoutedCommand;
-            if (routedCommand != null)
+            if (command is System.Windows.Input.RoutedCommand routedCommand)
             {
                 if (routedCommand.CanExecute(parameter, target))
                 {

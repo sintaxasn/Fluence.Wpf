@@ -76,8 +76,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnTypographyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            System.Windows.Controls.TextBlock? textBlock = d as System.Windows.Controls.TextBlock;
-            if (textBlock == null)
+            if (d is not System.Windows.Controls.TextBlock textBlock)
             {
                 return;
             }
@@ -159,8 +158,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnTextTrimmingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            System.Windows.Controls.TextBlock? textBlock = d as System.Windows.Controls.TextBlock;
-            if (textBlock == null)
+            if (d is not System.Windows.Controls.TextBlock textBlock)
             {
                 return;
             }
@@ -204,8 +202,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnIsTextSelectionEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            System.Windows.Controls.TextBlock? textBlock = d as System.Windows.Controls.TextBlock;
-            if (textBlock == null)
+            if (d is not System.Windows.Controls.TextBlock textBlock)
             {
                 return;
             }
@@ -237,8 +234,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            Panel? parent = VisualTreeHelper.GetParent(textBlock) as Panel;
-            if (parent == null)
+            if (VisualTreeHelper.GetParent(textBlock) is not Panel parent)
             {
                 return;
             }

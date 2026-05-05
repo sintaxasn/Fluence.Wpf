@@ -287,8 +287,7 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateCharacterCounter()
         {
-            System.Windows.Controls.TextBlock? counter = GetTemplateChild(PART_CharacterCounter) as System.Windows.Controls.TextBlock;
-            if (counter == null)
+            if (GetTemplateChild(PART_CharacterCounter) is not System.Windows.Controls.TextBlock counter)
             {
                 return;
             }
@@ -305,9 +304,8 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateHelperText()
         {
-            System.Windows.Controls.TextBlock? helper = GetTemplateChild(PART_HelperText) as System.Windows.Controls.TextBlock;
             System.Windows.Controls.TextBlock? icon = GetTemplateChild(PART_ValidationIcon) as System.Windows.Controls.TextBlock;
-            if (helper == null)
+            if (GetTemplateChild(PART_HelperText) is not System.Windows.Controls.TextBlock helper)
             {
                 return;
             }

@@ -268,8 +268,7 @@ namespace Fluence.Wpf.Controls
 
             for (int i = 0; i < _starsPanel.Children.Count; i++)
             {
-                WpfTextBlock? star = _starsPanel.Children[i] as WpfTextBlock;
-                if (star == null) continue;
+                if (_starsPanel.Children[i] is not WpfTextBlock star) continue;
 
                 bool filled = (i + 1) <= displayCount;
                 star.Text = filled ? "\uE735" : "\uE734"; // StarFilled / StarEmpty

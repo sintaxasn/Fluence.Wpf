@@ -345,8 +345,7 @@ namespace Fluence.Wpf.Controls
         private void UpdateSelectedContent()
         {
             object item = SelectedItem;
-            ComboBoxItem? comboBoxItem = item as ComboBoxItem;
-            if (comboBoxItem != null)
+            if (item is ComboBoxItem comboBoxItem)
             {
                 SelectedContent = comboBoxItem.Content;
                 SelectedText = comboBoxItem.Content != null ? comboBoxItem.Content.ToString() : string.Empty;

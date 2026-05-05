@@ -121,8 +121,7 @@ namespace Fluence.Wpf
 
         private static void OnWindowSourceInitialized(object sender, EventArgs e)
         {
-            Window? window = sender as Window;
-            if (window == null)
+            if (sender is not Window window)
             {
                 return;
             }

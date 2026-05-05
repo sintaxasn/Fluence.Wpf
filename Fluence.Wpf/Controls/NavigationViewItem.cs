@@ -118,8 +118,7 @@ namespace Fluence.Wpf.Controls
         {
             if ((e.Key == Key.Enter || e.Key == Key.Space) && IsEnabled)
             {
-                NavigationView? nav = ItemsControl.ItemsControlFromItemContainer(this) as NavigationView;
-                if (nav != null)
+                if (ItemsControl.ItemsControlFromItemContainer(this) is NavigationView nav)
                 {
                     nav.InvokeItem(this);
                     e.Handled = true;
@@ -177,8 +176,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            NavigationView? nav = ItemsControl.ItemsControlFromItemContainer(this) as NavigationView;
-            if (nav == null)
+            if (ItemsControl.ItemsControlFromItemContainer(this) is not NavigationView nav)
             {
                 base.OnPreviewMouseLeftButtonDown(e);
                 return;

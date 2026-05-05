@@ -615,8 +615,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnCaptionButtonChromeOverrideChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            FluenceWindow? window = d as FluenceWindow;
-            if (window != null)
+            if (d is FluenceWindow window)
             {
                 window.UpdateCaptionButtons();
                 CommandManager.InvalidateRequerySuggested();
@@ -625,8 +624,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnExtendsContentIntoTitleBarChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            FluenceWindow? window = d as FluenceWindow;
-            if (window != null)
+            if (d is FluenceWindow window)
             {
                 window.UpdateWindowChrome();
             }
@@ -634,8 +632,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnTitleBarHeightChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            FluenceWindow? window = d as FluenceWindow;
-            if (window != null)
+            if (d is FluenceWindow window)
             {
                 window.UpdateWindowChrome();
             }
@@ -643,8 +640,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnHasShadowChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            FluenceWindow? window = d as FluenceWindow;
-            if (window != null)
+            if (d is FluenceWindow window)
             {
                 window.UpdateWindowChrome();
             }
@@ -696,8 +692,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnSystemBackdropTypeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            FluenceWindow? window = d as FluenceWindow;
-            if (window != null)
+            if (d is FluenceWindow window)
             {
                 window.ApplyBackdrop();
             }
@@ -705,8 +700,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnCornerStyleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            FluenceWindow? window = d as FluenceWindow;
-            if (window != null)
+            if (d is FluenceWindow window)
             {
                 window.ApplyCornerPreference();
             }
@@ -1211,8 +1205,7 @@ namespace Fluence.Wpf.Controls
             DependencyObject? hit = InputHitTest(windowPoint) as DependencyObject;
             while (hit != null)
             {
-                IInputElement? element = hit as IInputElement;
-                if (element != null && WindowChrome.GetIsHitTestVisibleInChrome(element))
+                if (hit is IInputElement element && WindowChrome.GetIsHitTestVisibleInChrome(element))
                 {
                     return true;
                 }

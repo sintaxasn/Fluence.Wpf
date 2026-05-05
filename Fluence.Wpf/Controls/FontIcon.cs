@@ -129,8 +129,7 @@ namespace Fluence.Wpf.Controls
         private static void OnRotationChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             FontIcon icon = (FontIcon)d;
-            RotateTransform? rotate = icon.GetTemplateChild(PART_Rotate) as RotateTransform;
-            if (rotate != null)
+            if (icon.GetTemplateChild(PART_Rotate) is RotateTransform rotate)
             {
                 rotate.Angle = (double)e.NewValue;
             }
@@ -210,8 +209,7 @@ namespace Fluence.Wpf.Controls
         {
             base.OnApplyTemplate();
 
-            RotateTransform? rotate = GetTemplateChild(PART_Rotate) as RotateTransform;
-            if (rotate != null)
+            if (GetTemplateChild(PART_Rotate) is RotateTransform rotate)
             {
                 rotate.Angle = Rotation;
             }
@@ -233,8 +231,7 @@ namespace Fluence.Wpf.Controls
 
         private void ApplyMirrorState()
         {
-            ScaleTransform? mirror = GetTemplateChild(PART_Mirror) as ScaleTransform;
-            if (mirror == null)
+            if (GetTemplateChild(PART_Mirror) is not ScaleTransform mirror)
             {
                 return;
             }
@@ -244,8 +241,7 @@ namespace Fluence.Wpf.Controls
 
         private void ApplySpinState()
         {
-            RotateTransform? rotate = GetTemplateChild(PART_Rotate) as RotateTransform;
-            if (rotate == null)
+            if (GetTemplateChild(PART_Rotate) is not RotateTransform rotate)
             {
                 return;
             }

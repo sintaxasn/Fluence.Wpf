@@ -331,8 +331,7 @@ namespace Fluence.Wpf.Controls
             object parameter = CommandParameter;
             IInputElement target = CommandTarget;
 
-            RoutedCommand? routedCommand = command as RoutedCommand;
-            if (routedCommand != null)
+            if (command is RoutedCommand routedCommand)
             {
                 if (routedCommand.CanExecute(parameter, target))
                 {

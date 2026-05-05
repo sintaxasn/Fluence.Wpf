@@ -301,8 +301,7 @@ namespace Fluence.Wpf.Controls
 
         private void OnChildCloseRequested(object sender, RoutedEventArgs e)
         {
-            TabViewTabCloseRequestedEventArgs? inner = e as TabViewTabCloseRequestedEventArgs;
-            if (inner == null)
+            if (e is not TabViewTabCloseRequestedEventArgs inner)
             {
                 return;
             }

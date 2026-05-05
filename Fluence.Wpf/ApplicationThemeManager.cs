@@ -269,8 +269,7 @@ namespace Fluence.Wpf
                 {
                     resources[key] = themeDict[key];
 
-                    string keyStr = key as string;
-                    if (keyStr != null && keyStr.EndsWith("Brush"))
+                    if (key is string keyStr && keyStr.EndsWith("Brush"))
                     {
                         _promotedHighContrastBrushKeys.Add(key);
                     }

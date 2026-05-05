@@ -226,8 +226,7 @@ namespace Fluence.Wpf.Controls
             // containers receive the same mirrored value in PrepareContainerForItemOverride.
             foreach (object? item in Items)
             {
-                DependencyObject container = ItemContainerGenerator.ContainerFromItem(item) as DependencyObject;
-                if (container != null)
+                if (ItemContainerGenerator.ContainerFromItem(item) is DependencyObject container)
                 {
                     SetParentIsItemSelectable(container, IsItemSelectable);
                     if (container is UIElement ui)
@@ -271,8 +270,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            Style? style = TryFindResource("ListViewGroupItemStyle") as Style;
-            if (style != null)
+            if (TryFindResource("ListViewGroupItemStyle") is Style style)
             {
                 GroupStyle.Add(new GroupStyle { ContainerStyle = style });
             }
@@ -297,8 +295,7 @@ namespace Fluence.Wpf.Controls
 
             SetParentIsItemSelectable(element, IsItemSelectable);
 
-            UIElement? ui = element as UIElement;
-            if (ui != null)
+            if (element is UIElement ui)
             {
                 ui.Focusable = IsItemSelectable;
             }
@@ -306,8 +303,7 @@ namespace Fluence.Wpf.Controls
             if (!ItemAnimationsEnabled || !IsLoaded)
                 return;
 
-            UIElement? container = element as UIElement;
-            if (container == null)
+            if (element is not UIElement container)
                 return;
 
             container.Opacity = 0;
@@ -338,8 +334,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            UIElement? container = ItemContainerGenerator.ContainerFromItem(item) as UIElement;
-            if (container == null)
+            if (ItemContainerGenerator.ContainerFromItem(item) is not UIElement container)
             {
                 RemoveItem(item);
                 if (onCompleted != null) onCompleted();
@@ -370,8 +365,7 @@ namespace Fluence.Wpf.Controls
 
         private void RemoveItem(object item)
         {
-            IList? list = ItemsSource as IList;
-            if (list != null)
+            if (ItemsSource is IList list)
             {
                 list.Remove(item);
                 return;

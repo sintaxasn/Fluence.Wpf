@@ -71,8 +71,7 @@ namespace Fluence.Wpf.Automation
         {
             get
             {
-                NavigationView? nav = ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) as NavigationView;
-                if (nav == null)
+                if (ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) is not NavigationView nav)
                 {
                     return null;
                 }
@@ -84,8 +83,7 @@ namespace Fluence.Wpf.Automation
 
         void ISelectionItemProvider.Select()
         {
-            NavigationView? nav = ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) as NavigationView;
-            if (nav != null)
+            if (ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) is NavigationView nav)
             {
                 nav.SelectItemFromContainer(NavigationViewItem);
             }
@@ -102,8 +100,7 @@ namespace Fluence.Wpf.Automation
 
         void IInvokeProvider.Invoke()
         {
-            NavigationView? nav = ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) as NavigationView;
-            if (nav != null)
+            if (ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) is NavigationView nav)
             {
                 nav.InvokeItem(NavigationViewItem);
             }
