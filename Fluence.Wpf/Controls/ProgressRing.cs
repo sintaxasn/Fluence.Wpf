@@ -694,10 +694,7 @@ namespace Fluence.Wpf.Controls
 
         private void RenderArc(Path path, double startAngle, double sweepAngle, bool deferForLayout, double deferredFraction)
         {
-            double center;
-            double radius;
-            bool isLayoutSizeUnavailable;
-            if (!TryGetArcMetrics(out center, out radius, out isLayoutSizeUnavailable))
+            if (!TryGetArcMetrics(out double center, out double radius, out bool isLayoutSizeUnavailable))
             {
                 path.Data = null;
                 if (deferForLayout && isLayoutSizeUnavailable)

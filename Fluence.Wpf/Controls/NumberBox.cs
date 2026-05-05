@@ -327,13 +327,12 @@ namespace Fluence.Wpf.Controls
             string s = Text;
             s ??= string.Empty;
 
-            double parsed;
             if (AcceptsExpression)
             {
                 s = s.Trim();
             }
 
-            if (!double.TryParse(s, NumberStyles.Any, CultureInfo.CurrentCulture, out parsed))
+            if (!double.TryParse(s, NumberStyles.Any, CultureInfo.CurrentCulture, out double parsed))
             {
                 return false;
             }

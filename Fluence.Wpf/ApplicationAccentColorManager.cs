@@ -152,9 +152,8 @@ namespace Fluence.Wpf
             _useSystemAccent = true;
 
             Color accent;
-            Color[] palette;
 
-            if (RegistryHelper.TryGetAccentPalette(out palette))
+            if (RegistryHelper.TryGetAccentPalette(out Color[] palette))
             {
                 accent = palette[3];
                 _systemAccentColorLight3 = palette[0];
@@ -317,8 +316,7 @@ namespace Fluence.Wpf
         {
             try
             {
-                DWMCOLORIZATIONPARAMS parameters;
-                NativeMethods.DwmGetColorizationParameters(out parameters);
+                NativeMethods.DwmGetColorizationParameters(out DWMCOLORIZATIONPARAMS parameters);
 
                 uint color = parameters.clrColor;
                 byte r = (byte)((color >> 16) & 0xFF);
@@ -405,8 +403,7 @@ namespace Fluence.Wpf
 
             if (colorPrevalence)
             {
-                Color dwmAccent;
-                if (RegistryHelper.TryGetDwmAccentColor(out dwmAccent))
+                if (RegistryHelper.TryGetDwmAccentColor(out Color dwmAccent))
                 {
                     _titleBarActiveColor = dwmAccent;
                 }
@@ -415,8 +412,7 @@ namespace Fluence.Wpf
                     _titleBarActiveColor = _systemAccentColor;
                 }
 
-                Color inactive;
-                if (RegistryHelper.TryGetDwmAccentColorInactive(out inactive))
+                if (RegistryHelper.TryGetDwmAccentColorInactive(out Color inactive))
                 {
                     _titleBarInactiveColor = inactive;
                 }
@@ -444,9 +440,7 @@ namespace Fluence.Wpf
             }
             else
             {
-                Color colorizationColor;
-                int balance;
-                if (RegistryHelper.TryGetColorizationBalance(out colorizationColor, out balance))
+                if (RegistryHelper.TryGetColorizationBalance(out Color colorizationColor, out int balance))
                 {
                     _windowBorderColor = HsvColorHelper.BlendColors(
                         colorizationColor,
