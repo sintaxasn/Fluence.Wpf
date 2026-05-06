@@ -565,6 +565,10 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         private Point CalculateIndicatorPosition(NavigationViewItem item, bool topMode)
         {
+            if (_selectionIndicator is null)
+            {
+                throw new InvalidOperationException("Selection indicator template part is missing.");
+            }
             try
             {
                 GeneralTransform transform = item.TransformToAncestor(_indicatorHost);
@@ -612,6 +616,10 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         private void SnapIndicator(Point targetPosition)
         {
+            if (_selectionIndicator is null)
+            {
+                throw new InvalidOperationException("Selection indicator template part is missing.");
+            }
             StopAnimation();
             EnsureMutableTransform();
 
@@ -635,6 +643,10 @@ namespace Fluence.Wpf.Controls
             NavigationViewItem? previousItem,
             NavigationViewItem targetItem)
         {
+            if (_selectionIndicator is null)
+            {
+                throw new InvalidOperationException("Selection indicator template part is missing.");
+            }
             StopAnimation();
             EnsureMutableTransform();
 
@@ -845,6 +857,10 @@ namespace Fluence.Wpf.Controls
 
         private double GetIndicatorLength(bool topMode)
         {
+            if (_selectionIndicator is null)
+            {
+                throw new InvalidOperationException("Selection indicator template part is missing.");
+            }
             double actual = topMode ? _selectionIndicator.ActualWidth : _selectionIndicator.ActualHeight;
             if (actual > 0)
             {
