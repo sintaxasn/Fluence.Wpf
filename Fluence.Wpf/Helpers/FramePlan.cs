@@ -25,22 +25,17 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-namespace Fluence.Wpf
+
+using System.Windows;
+
+namespace Fluence.Wpf.Helpers
 {
-    /// <summary>
-    /// Display mode for <see cref="Fluence.Wpf.Controls.ProgressBar"/>.
-    /// </summary>
-    public enum ProgressBarMode
+    internal sealed class FramePlan(Thickness templateBorderThickness, string templateBorderBrushResourceKey, int dwmBorderColor)
     {
-        /// <summary>Determinate progress between minimum and maximum.</summary>
-        Standard,
-        /// <summary>Indeterminate animation when value is unknown.</summary>
-        Indeterminate,
-        /// <summary>Segmented step progress display.</summary>
-        StepProgress,
-        /// <summary>Error state with critical-severity fill color.</summary>
-        Error,
-        /// <summary>Paused state with caution-severity fill color.</summary>
-        Paused
+        internal Thickness TemplateBorderThickness { get; private set; } = templateBorderThickness;
+
+        internal string TemplateBorderBrushResourceKey { get; private set; } = templateBorderBrushResourceKey;
+
+        internal int DwmBorderColor { get; private set; } = dwmBorderColor;
     }
 }

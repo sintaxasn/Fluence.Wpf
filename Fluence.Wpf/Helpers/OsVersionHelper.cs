@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using Fluence.Wpf.Native;
 
@@ -32,47 +33,43 @@ namespace Fluence.Wpf.Helpers
 {
     internal static class OsVersionHelper
     {
-        private static readonly Version _osVersion;
-        private static readonly int _osBuild;
-
         static OsVersionHelper()
         {
             try
             {
-                _osVersion = NativeMethods.GetRealOsVersion();
+                OsVersion = NativeMethods.GetRealOsVersion();
             }
-            catch
+            catch (InvalidOperationException)
             {
-                _osVersion = Environment.OSVersion.Version;
+                OsVersion = Environment.OSVersion.Version;
             }
-
-            _osBuild = _osVersion.Build;
+            OsBuild = OsVersion.Build;
         }
 
-        public static Version OsVersion => _osVersion;
+        internal static Version OsVersion { get; }
 
-        public static int OsBuild => _osBuild;
+        internal static int OsBuild { get; }
 
-        public static bool IsWindows10 => _osBuild >= 10240;
+        internal static bool IsWindows10 => OsBuild >= 10240;
 
-        public static bool IsWindows10_1809 => _osBuild >= 17763;
+        internal static bool IsWindows10_1809 => OsBuild >= 17763;
 
-        public static bool IsWindows11 => _osBuild >= 22000;
+        internal static bool IsWindows11 => OsBuild >= 22000;
 
-        public static bool IsWindows11_22H2 => _osBuild >= 22621;
+        internal static bool IsWindows11_22H2 => OsBuild >= 22621;
 
-        public static bool IsWindows11_23H2 => _osBuild >= 22631;
+        internal static bool IsWindows11_23H2 => OsBuild >= 22631;
 
-        public static bool SupportsBackdrop => IsWindows11;
+        internal static bool SupportsBackdrop => IsWindows11;
 
-        public static bool SupportsSystemBackdropType => IsWindows11_22H2;
+        internal static bool SupportsSystemBackdropType => IsWindows11_22H2;
 
-        public static bool SupportsMicaEffect => IsWindows11 && !IsWindows11_22H2;
+        internal static bool SupportsMicaEffect => IsWindows11 && !IsWindows11_22H2;
 
-        public static bool SupportsRoundedCorners => IsWindows11;
+        internal static bool SupportsRoundedCorners => IsWindows11;
 
-        public static bool SupportsCaptionColor => IsWindows11;
+        internal static bool SupportsCaptionColor => IsWindows11;
 
-        public static bool SupportsBorderColor => IsWindows11;
+        internal static bool SupportsBorderColor => IsWindows11;
     }
 }

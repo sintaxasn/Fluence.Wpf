@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
@@ -41,6 +42,12 @@ namespace Fluence.Wpf.Controls
     [TemplateVisualState(GroupName = "DisplayKindStates", Name = "Value")]
     public class InfoBadge : ContentControl
     {
+        /// <summary>
+        /// Initializes static members of the InfoBadge class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the InfoBadge control uses its custom style by
+        /// default. It is called automatically by the .NET runtime before any static members are accessed or any
+        /// instances are created.</remarks>
         static InfoBadge()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -48,7 +55,9 @@ namespace Fluence.Wpf.Controls
                 new FrameworkPropertyMetadata(typeof(InfoBadge)));
         }
 
-        /// <summary>Identifies the <see cref="Value"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="Value"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty ValueProperty =
             DependencyProperty.Register(
                 nameof(Value),
@@ -61,11 +70,13 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public int Value
         {
-            get { return (int)GetValue(ValueProperty); }
-            set { SetValue(ValueProperty, value); }
+            get => (int)GetValue(ValueProperty);
+            set => SetValue(ValueProperty, value);
         }
 
-        /// <summary>Identifies the <see cref="BadgeStyle"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="BadgeStyle"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty BadgeStyleProperty =
             DependencyProperty.Register(
                 nameof(BadgeStyle),
@@ -78,11 +89,13 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public InfoBadgeStyle BadgeStyle
         {
-            get { return (InfoBadgeStyle)GetValue(BadgeStyleProperty); }
-            set { SetValue(BadgeStyleProperty, value); }
+            get => (InfoBadgeStyle)GetValue(BadgeStyleProperty);
+            set => SetValue(BadgeStyleProperty, value);
         }
 
-        /// <summary>Identifies the <see cref="IconSource"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="IconSource"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty IconSourceProperty =
             DependencyProperty.Register(
                 nameof(IconSource),
@@ -95,8 +108,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object IconSource
         {
-            get { return GetValue(IconSourceProperty); }
-            set { SetValue(IconSourceProperty, value); }
+            get => GetValue(IconSourceProperty);
+            set => SetValue(IconSourceProperty, value);
         }
 
         /// <inheritdoc />
@@ -108,41 +121,27 @@ namespace Fluence.Wpf.Controls
 
         private static void OnIconSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var badge = (InfoBadge)d;
-            if (e.NewValue != null)
-            {
-                badge.Content = e.NewValue;
-            }
-            else
-            {
-                badge.Content = badge.Value >= 0 ? badge.Value.ToString(CultureInfo.CurrentCulture) : null;
-            }
-
+            InfoBadge badge = (InfoBadge)d;
+            badge.Content = e.NewValue ?? (badge.Value >= 0 ? badge.Value.ToString(CultureInfo.CurrentCulture) : null);
             badge.UpdateDisplayKindState();
         }
 
         private static void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var badge = (InfoBadge)d;
-            if (badge.IconSource != null)
-                return;
+            InfoBadge badge = (InfoBadge)d;
+            if (badge.IconSource is null)
+            {
+                int val = (int)e.NewValue;
+                badge.Content = val >= 0 ? val.ToString(CultureInfo.CurrentCulture) : null;
+                badge.UpdateDisplayKindState();
+            }
 
-            int val = (int)e.NewValue;
-            badge.Content = val >= 0 ? val.ToString(CultureInfo.CurrentCulture) : null;
-            badge.UpdateDisplayKindState();
         }
 
         private void UpdateDisplayKindState(bool useTransitions = true)
         {
-            string state;
-            if (IconSource != null)
-                state = "Icon";
-            else if (Value >= 0)
-                state = "Value";
-            else
-                state = "Dot";
-
-            VisualStateManager.GoToState(this, state, useTransitions);
+            string state = IconSource != null ? "Icon" : Value >= 0 ? "Value" : "Dot";
+            _ = VisualStateManager.GoToState(this, state, useTransitions);
         }
     }
 }

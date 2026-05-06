@@ -25,8 +25,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
-using System.Windows.Controls;
 
 namespace Fluence.Wpf.Controls
 {
@@ -37,6 +37,12 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     public class Menu : System.Windows.Controls.Menu
     {
+        /// <summary>
+        /// Initializes static members of the Menu class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the Menu control uses its custom style by
+        /// default. It is called automatically before any static members are accessed or any instances are
+        /// created.</remarks>
         static Menu()
         {
             DefaultStyleKeyProperty.OverrideMetadata(

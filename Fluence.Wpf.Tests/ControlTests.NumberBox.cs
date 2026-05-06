@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
@@ -42,13 +43,13 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var numberBox = new Fluent.NumberBox
+                    Fluent.NumberBox numberBox = new()
                     {
                         Value = 5,
                         SmallChange = 1,
@@ -62,15 +63,15 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    numberBox.ApplyTemplate();
-                    var upButton = numberBox.Template.FindName("PART_UpButton", numberBox) as RepeatButton;
+                    _ = numberBox.ApplyTemplate();
+                    RepeatButton? upButton = numberBox.Template.FindName("PART_UpButton", numberBox) as RepeatButton;
                     Assert.IsNotNull(upButton, "NumberBox template must expose PART_UpButton.");
 
                     // Use the UI Automation peer's IInvokeProvider.Invoke, which calls the
                     // button's protected OnClick() and raises ClickEvent through the proper
                     // channel - equivalent to what a user click does.
-                    var peer = UIElementAutomationPeer.CreatePeerForElement(upButton);
-                    var invoke = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
+                    AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(upButton);
+                    IInvokeProvider invoke = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
                     invoke.Invoke();
                     DrainDispatcher(window.Dispatcher);
 
@@ -84,7 +85,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -95,13 +96,13 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var numberBox = new Fluent.NumberBox
+                    Fluent.NumberBox numberBox = new()
                     {
                         Value = 5,
                         SmallChange = 1,
@@ -115,12 +116,12 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    numberBox.ApplyTemplate();
-                    var downButton = numberBox.Template.FindName("PART_DownButton", numberBox) as RepeatButton;
+                    _ = numberBox.ApplyTemplate();
+                    RepeatButton? downButton = numberBox.Template.FindName("PART_DownButton", numberBox) as RepeatButton;
                     Assert.IsNotNull(downButton, "NumberBox template must expose PART_DownButton.");
 
-                    var peer = UIElementAutomationPeer.CreatePeerForElement(downButton);
-                    var invoke = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
+                    AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(downButton);
+                    IInvokeProvider invoke = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
                     invoke.Invoke();
                     DrainDispatcher(window.Dispatcher);
 
@@ -134,7 +135,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -149,13 +150,13 @@ namespace Fluence.Wpf.Tests
             // (~250 ms on most systems), which users perceive as "the button is broken."
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var numberBox = new Fluent.NumberBox
+                    Fluent.NumberBox numberBox = new()
                     {
                         Value = 0,
                         SpinButtonPlacementMode = SpinButtonPlacementMode.Inline,
@@ -168,9 +169,9 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    numberBox.ApplyTemplate();
-                    var upButton = numberBox.Template.FindName("PART_UpButton", numberBox) as RepeatButton;
-                    var downButton = numberBox.Template.FindName("PART_DownButton", numberBox) as RepeatButton;
+                    _ = numberBox.ApplyTemplate();
+                    RepeatButton? upButton = numberBox.Template.FindName("PART_UpButton", numberBox) as RepeatButton;
+                    RepeatButton? downButton = numberBox.Template.FindName("PART_DownButton", numberBox) as RepeatButton;
                     Assert.IsNotNull(upButton);
                     Assert.IsNotNull(downButton);
 
@@ -184,7 +185,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -198,13 +199,13 @@ namespace Fluence.Wpf.Tests
             // flush against the right border of the control.
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var numberBox = new Fluent.NumberBox
+                    Fluent.NumberBox numberBox = new()
                     {
                         SpinButtonPlacementMode = SpinButtonPlacementMode.Inline,
                         Width = 160
@@ -216,9 +217,9 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    numberBox.ApplyTemplate();
+                    _ = numberBox.ApplyTemplate();
 
-                    var spinPanel = numberBox.Template.FindName("SpinPanel", numberBox) as StackPanel;
+                    StackPanel? spinPanel = numberBox.Template.FindName("SpinPanel", numberBox) as StackPanel;
                     Assert.IsNotNull(spinPanel, "NumberBox template must expose SpinPanel.");
                     Assert.AreEqual(0.0, spinPanel.Margin.Left,
                         "SpinPanel.Margin.Left must be 0.");
@@ -233,7 +234,9 @@ namespace Fluence.Wpf.Tests
                 {
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    {
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
                 }
             });
         }
@@ -243,13 +246,12 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var numberBox = new Fluent.NumberBox
+                Fluent.NumberBox numberBox = new()
                 {
                     Minimum = 0,
-                    Maximum = 5
+                    Maximum = 5,
+                    Value = double.PositiveInfinity
                 };
-
-                numberBox.Value = double.PositiveInfinity;
 
                 Assert.AreEqual(5.0, numberBox.Value,
                     "Direct Value assignment must use the same maximum clamp as spin-button changes.");
@@ -261,13 +263,12 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var numberBox = new Fluent.NumberBox
+                Fluent.NumberBox numberBox = new()
                 {
                     Minimum = 10,
-                    Maximum = 0
+                    Maximum = 0,
+                    Value = 12
                 };
-
-                numberBox.Value = 12;
 
                 Assert.AreEqual(10.0, numberBox.Value,
                     "Direct Value assignment must normalize reversed Minimum/Maximum before clamping.");
@@ -279,13 +280,13 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var numberBox = new Fluent.NumberBox
+                    Fluent.NumberBox numberBox = new()
                     {
                         Minimum = 0,
                         Maximum = 5,
@@ -301,12 +302,12 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    numberBox.ApplyTemplate();
-                    var upButton = numberBox.Template.FindName("PART_UpButton", numberBox) as RepeatButton;
+                    _ = numberBox.ApplyTemplate();
+                    RepeatButton? upButton = numberBox.Template.FindName("PART_UpButton", numberBox) as RepeatButton;
                     Assert.IsNotNull(upButton);
 
-                    var peer = UIElementAutomationPeer.CreatePeerForElement(upButton);
-                    var invoke = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
+                    AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(upButton);
+                    IInvokeProvider invoke = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
                     invoke.Invoke();
                     DrainDispatcher(window.Dispatcher);
 
@@ -318,7 +319,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });

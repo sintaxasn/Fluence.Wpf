@@ -25,11 +25,14 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf;
 using Fluence.Wpf.Controls;
+using System.Collections.Generic;
+using System.Collections;
+using System.Windows.Shapes;
 
 namespace Fluence.Wpf.Tests
 {
@@ -47,24 +50,23 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var badge = new InfoBadge();
-                var w = new Window { Content = badge, Width = 60, Height = 60 };
+                InfoBadge badge = new();
+                Window w = new() { Content = badge, Width = 60, Height = 60 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
                 // Verify the VSM group is present in the template.
-                var groups = VisualStateManager.GetVisualStateGroups(
+                IList groups = VisualStateManager.GetVisualStateGroups(
                     FindVisualChild<Grid>(badge));
                 bool found = false;
                 if (groups != null)
                 {
-                    foreach (var g in groups)
+                    foreach (object? g in groups)
                     {
-                        var vsg = g as VisualStateGroup;
-                        if (vsg != null && vsg.Name == "DisplayKindStates")
+                        if (g is VisualStateGroup vsg && vsg.Name == "DisplayKindStates")
                         { found = true; break; }
                     }
                 }
@@ -78,18 +80,18 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
                 // Default: Value=-1, no IconSource → Dot state.
-                var badge = new InfoBadge();
-                var w = new Window { Content = badge, Width = 60, Height = 60 };
+                InfoBadge badge = new();
+                Window w = new() { Content = badge, Width = 60, Height = 60 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
                 // DotIndicator should be visible; BadgeBorder should be collapsed.
-                var dot = FindVisualChildByName<System.Windows.Shapes.Ellipse>(badge, "DotIndicator");
-                var border = FindVisualChildByName<System.Windows.Controls.Border>(badge, "BadgeBorder");
+                Ellipse? dot = FindVisualChildByName<Ellipse>(badge, "DotIndicator");
+                System.Windows.Controls.Border? border = FindVisualChildByName<System.Windows.Controls.Border>(badge, "BadgeBorder");
                 Assert.IsNotNull(dot, "DotIndicator element must exist.");
                 Assert.IsNotNull(border, "BadgeBorder element must exist.");
                 Assert.AreEqual(Visibility.Visible, dot.Visibility, "DotIndicator must be Visible in Dot state.");
@@ -103,18 +105,18 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var badge = new InfoBadge { Value = 5 };
-                var w = new Window { Content = badge, Width = 60, Height = 60 };
+                InfoBadge badge = new() { Value = 5 };
+                Window w = new() { Content = badge, Width = 60, Height = 60 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var dot = FindVisualChildByName<System.Windows.Shapes.Ellipse>(badge, "DotIndicator");
-                var border = FindVisualChildByName<System.Windows.Controls.Border>(badge, "BadgeBorder");
-                Assert.AreEqual(Visibility.Collapsed, dot.Visibility, "DotIndicator must be Collapsed when Value >= 0.");
-                Assert.AreEqual(Visibility.Visible, border.Visibility, "BadgeBorder must be Visible when Value >= 0.");
+                Ellipse? dot = FindVisualChildByName<Ellipse>(badge, "DotIndicator");
+                System.Windows.Controls.Border? border = FindVisualChildByName<System.Windows.Controls.Border>(badge, "BadgeBorder");
+                Assert.AreEqual(Visibility.Collapsed, dot?.Visibility, "DotIndicator must be Collapsed when Value >= 0.");
+                Assert.AreEqual(Visibility.Visible, border?.Visibility, "BadgeBorder must be Visible when Value >= 0.");
                 w.Close();
             });
         }
@@ -124,31 +126,32 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var badge = new InfoBadge();
-                var w = new Window { Content = badge, Width = 60, Height = 60 };
+                InfoBadge badge = new();
+                Window w = new() { Content = badge, Width = 60, Height = 60 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var groups = VisualStateManager.GetVisualStateGroups(FindVisualChild<Grid>(badge));
-                VisualStateGroup dkg = null;
+                IList groups = VisualStateManager.GetVisualStateGroups(FindVisualChild<Grid>(badge));
+                VisualStateGroup? dkg = null;
                 if (groups != null)
                 {
-                    foreach (var g in groups)
+                    foreach (object? g in groups)
                     {
-                        var vsg = g as VisualStateGroup;
-                        if (vsg != null && vsg.Name == "DisplayKindStates") { dkg = vsg; break; }
+                        if (g is VisualStateGroup vsg && vsg.Name == "DisplayKindStates") { dkg = vsg; break; }
                     }
                 }
                 Assert.IsNotNull(dkg, "DisplayKindStates group must exist.");
 
-                var stateNames = new System.Collections.Generic.HashSet<string>();
-                foreach (var s in dkg.States)
+                HashSet<string> stateNames = [];
+                foreach (object? s in dkg.States)
                 {
-                    var vs = s as VisualState;
-                    if (vs != null) stateNames.Add(vs.Name);
+                    if (s is VisualState vs)
+                    {
+                        _ = stateNames.Add(vs.Name);
+                    }
                 }
                 Assert.IsTrue(stateNames.Contains("Dot"), "DisplayKindStates must include 'Dot'.");
                 Assert.IsTrue(stateNames.Contains("Icon"), "DisplayKindStates must include 'Icon'.");

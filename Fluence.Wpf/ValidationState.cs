@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 namespace Fluence.Wpf
 {
     /// <summary>
@@ -32,13 +33,24 @@ namespace Fluence.Wpf
     /// </summary>
     public enum ValidationState
     {
-        /// <summary>No validation state applied.</summary>
+        /// <summary>
+        /// No validation state applied.
+        /// </summary>
         None,
-        /// <summary>Input is valid.</summary>
+
+        /// <summary>
+        /// Input is valid.
+        /// </summary>
         Success,
-        /// <summary>Non-blocking validation warning.</summary>
+
+        /// <summary>
+        /// Non-blocking validation warning.
+        /// </summary>
         Warning,
-        /// <summary>Blocking validation error.</summary>
-        Error
+
+        /// <summary>
+        /// Blocking validation error.
+        /// </summary>
+        Error,
     }
 }

@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Text.RegularExpressions;
 using System.Windows;
@@ -41,27 +42,21 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = "PART_RevealTextBox", Type = typeof(System.Windows.Controls.TextBox))]
     [TemplatePart(Name = "PART_RevealButton", Type = typeof(System.Windows.Controls.Button))]
     [TemplatePart(Name = "PART_CapsLockIndicator", Type = typeof(FrameworkElement))]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2333:Redundant modifiers should not be used", Justification = "This needs to be partial for XAML.")]
     public partial class PasswordBox : Control
     {
-        private const string LowercasePasswordPattern = "[a-z]";
-        private const string UppercasePasswordPattern = "[A-Z]";
-        private const string DigitPasswordPattern = "[0-9]";
-        private const string SymbolPasswordPattern = "[^a-zA-Z0-9]";
+        // Precompiled regexes for password strength evaluation.
+        private static readonly Regex LowercasePasswordRegex = new("[a-z]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        private static readonly Regex UppercasePasswordRegex = new("[A-Z]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        private static readonly Regex DigitPasswordRegex = new("[0-9]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
+        private static readonly Regex SymbolPasswordRegex = new("[^a-zA-Z0-9]", RegexOptions.CultureInvariant | RegexOptions.Compiled);
 
-#if !NET7_0_OR_GREATER
-        private static readonly Regex LowercasePasswordRegexFallback = new Regex(LowercasePasswordPattern, RegexOptions.CultureInvariant);
-        private static readonly Regex UppercasePasswordRegexFallback = new Regex(UppercasePasswordPattern, RegexOptions.CultureInvariant);
-        private static readonly Regex DigitPasswordRegexFallback = new Regex(DigitPasswordPattern, RegexOptions.CultureInvariant);
-        private static readonly Regex SymbolPasswordRegexFallback = new Regex(SymbolPasswordPattern, RegexOptions.CultureInvariant);
-#endif
-
-        private System.Windows.Controls.PasswordBox _passwordBox;
-        private System.Windows.Controls.TextBox _revealTextBox;
-        private System.Windows.Controls.Button _revealButton;
-        private bool _isUpdatingPassword;
-        private DispatcherTimer _capsPollTimer;
-        private readonly EventHandler _capsPollTick;
-
+        /// <summary>
+        /// Initializes static members of the PasswordBox class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the PasswordBox control uses its custom style by
+        /// default. It is called automatically by the .NET runtime before any instances of PasswordBox are created or
+        /// any static members are referenced.</remarks>
         static PasswordBox()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -75,11 +70,6 @@ namespace Fluence.Wpf.Controls
         public PasswordBox()
         {
             _capsPollTick = OnCapsPollTick;
-        }
-
-        private void OnCapsPollTick(object sender, EventArgs e)
-        {
-            UpdateCapsLockIndicator();
         }
 
         /// <summary>
@@ -97,37 +87,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string Password
         {
-            get { return (string)GetValue(PasswordProperty); }
-            set { SetValue(PasswordProperty, value); }
-        }
-
-        private static void OnPasswordChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var control = (PasswordBox)d;
-            if (control._isUpdatingPassword)
-            {
-                return;
-            }
-
-            control._isUpdatingPassword = true;
-            try
-            {
-                if (control._passwordBox != null)
-                {
-                    control._passwordBox.Password = (string)e.NewValue ?? string.Empty;
-                }
-                if (control._revealTextBox != null)
-                {
-                    control._revealTextBox.Text = (string)e.NewValue ?? string.Empty;
-                }
-            }
-            finally
-            {
-                control._isUpdatingPassword = false;
-            }
-
-            control.UpdatePasswordStrengthFromPassword();
-            control.UpdateStrengthMeter();
+            get => (string)GetValue(PasswordProperty);
+            set => SetValue(PasswordProperty, value);
         }
 
         /// <summary>
@@ -145,8 +106,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public char PasswordChar
         {
-            get { return (char)GetValue(PasswordCharProperty); }
-            set { SetValue(PasswordCharProperty, value); }
+            get => (char)GetValue(PasswordCharProperty);
+            set => SetValue(PasswordCharProperty, value);
         }
 
         /// <summary>
@@ -164,8 +125,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool RevealButtonEnabled
         {
-            get { return (bool)GetValue(RevealButtonEnabledProperty); }
-            set { SetValue(RevealButtonEnabledProperty, value); }
+            get => (bool)GetValue(RevealButtonEnabledProperty);
+            set => SetValue(RevealButtonEnabledProperty, value);
         }
 
         private static readonly DependencyPropertyKey IsPasswordRevealedPropertyKey =
@@ -186,8 +147,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool IsPasswordRevealed
         {
-            get { return (bool)GetValue(IsPasswordRevealedProperty); }
-            private set { SetValue(IsPasswordRevealedPropertyKey, value); }
+            get => (bool)GetValue(IsPasswordRevealedProperty);
+            private set => SetValue(IsPasswordRevealedPropertyKey, value);
         }
 
         /// <summary>
@@ -205,8 +166,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string PlaceholderText
         {
-            get { return (string)GetValue(PlaceholderTextProperty); }
-            set { SetValue(PlaceholderTextProperty, value); }
+            get => (string)GetValue(PlaceholderTextProperty);
+            set => SetValue(PlaceholderTextProperty, value);
         }
 
         /// <summary>
@@ -224,8 +185,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public int MaxLength
         {
-            get { return (int)GetValue(MaxLengthProperty); }
-            set { SetValue(MaxLengthProperty, value); }
+            get => (int)GetValue(MaxLengthProperty);
+            set => SetValue(MaxLengthProperty, value);
         }
 
         /// <summary>
@@ -243,8 +204,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public CornerRadius CornerRadius
         {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(CornerRadiusProperty);
+            set => SetValue(CornerRadiusProperty, value);
         }
 
         /// <summary>
@@ -262,8 +223,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool ShowCapsLockIndicator
         {
-            get { return (bool)GetValue(ShowCapsLockIndicatorProperty); }
-            set { SetValue(ShowCapsLockIndicatorProperty, value); }
+            get => (bool)GetValue(ShowCapsLockIndicatorProperty);
+            set => SetValue(ShowCapsLockIndicatorProperty, value);
         }
 
         /// <summary>
@@ -281,8 +242,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool ShowPasswordStrength
         {
-            get { return (bool)GetValue(ShowPasswordStrengthProperty); }
-            set { SetValue(ShowPasswordStrengthProperty, value); }
+            get => (bool)GetValue(ShowPasswordStrengthProperty);
+            set => SetValue(ShowPasswordStrengthProperty, value);
         }
 
         /// <summary>
@@ -300,13 +261,28 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public int PasswordStrength
         {
-            get { return (int)GetValue(PasswordStrengthProperty); }
-            set { SetValue(PasswordStrengthProperty, value); }
+            get => (int)GetValue(PasswordStrengthProperty);
+            set => SetValue(PasswordStrengthProperty, value);
+        }
+
+        /// <summary>
+        /// Selects all text in the password field.
+        /// </summary>
+        public void SelectAll()
+        {
+            if (IsPasswordRevealed && _revealTextBox != null)
+            {
+                _revealTextBox.SelectAll();
+            }
+            else
+            {
+                _passwordBox?.SelectAll();
+            }
         }
 
         private static void OnChromePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var box = (PasswordBox)d;
+            PasswordBox box = (PasswordBox)d;
             box.UpdateCapsLockIndicator();
             box.UpdateStrengthMeter();
         }
@@ -315,7 +291,6 @@ namespace Fluence.Wpf.Controls
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-
             if (_passwordBox != null)
             {
                 _passwordBox.PasswordChanged -= OnPasswordBoxPasswordChanged;
@@ -323,7 +298,6 @@ namespace Fluence.Wpf.Controls
                 _passwordBox.LostKeyboardFocus -= OnInnerKeyboardFocusChanged;
                 _passwordBox.PreviewKeyDown -= OnInnerPreviewKeyDown;
             }
-
             if (_revealTextBox != null)
             {
                 _revealTextBox.TextChanged -= OnRevealTextBoxTextChanged;
@@ -337,13 +311,11 @@ namespace Fluence.Wpf.Controls
                 _revealButton.PreviewMouseLeftButtonUp -= OnRevealButtonUp;
                 _revealButton.MouseLeave -= OnRevealButtonLeave;
             }
-
             StopCapsPoll();
 
             _passwordBox = GetTemplateChild("PART_PasswordBox") as System.Windows.Controls.PasswordBox;
             _revealTextBox = GetTemplateChild("PART_RevealTextBox") as System.Windows.Controls.TextBox;
             _revealButton = GetTemplateChild("PART_RevealButton") as System.Windows.Controls.Button;
-
             if (_passwordBox != null)
             {
                 _passwordBox.PasswordChanged += OnPasswordBoxPasswordChanged;
@@ -360,24 +332,47 @@ namespace Fluence.Wpf.Controls
                 _revealButton.PreviewMouseLeftButtonUp += OnRevealButtonUp;
                 _revealButton.MouseLeave += OnRevealButtonLeave;
             }
-
             if (_passwordBox != null)
             {
                 _passwordBox.GotKeyboardFocus += OnInnerKeyboardFocusChanged;
                 _passwordBox.LostKeyboardFocus += OnInnerKeyboardFocusChanged;
                 _passwordBox.PreviewKeyDown += OnInnerPreviewKeyDown;
             }
-
             if (_revealTextBox != null)
             {
                 _revealTextBox.GotKeyboardFocus += OnInnerKeyboardFocusChanged;
                 _revealTextBox.LostKeyboardFocus += OnInnerKeyboardFocusChanged;
                 _revealTextBox.PreviewKeyDown += OnInnerPreviewKeyDown;
             }
-
             UpdatePasswordStrengthFromPassword();
             UpdateCapsLockIndicator();
             UpdateStrengthMeter();
+        }
+
+        private void OnCapsPollTick(object? sender, EventArgs e)
+        {
+            UpdateCapsLockIndicator();
+        }
+
+        private static void OnPasswordChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            PasswordBox control = (PasswordBox)d;
+            if (control._isUpdatingPassword)
+            {
+                return;
+            }
+            control._isUpdatingPassword = true;
+            try
+            {
+                _ = (control._passwordBox?.Password = (string)e.NewValue ?? string.Empty);
+                _ = (control._revealTextBox?.Text = (string?)e.NewValue ?? string.Empty);
+            }
+            finally
+            {
+                control._isUpdatingPassword = false;
+            }
+            control.UpdatePasswordStrengthFromPassword();
+            control.UpdateStrengthMeter();
         }
 
         private void StartCapsPoll()
@@ -386,7 +381,6 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
             _capsPollTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(300) };
             _capsPollTimer.Tick += _capsPollTick;
             _capsPollTimer.Start();
@@ -398,7 +392,6 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
             _capsPollTimer.Tick -= _capsPollTick;
             _capsPollTimer.Stop();
             _capsPollTimer = null;
@@ -406,28 +399,25 @@ namespace Fluence.Wpf.Controls
 
         private void OnInnerKeyboardFocusChanged(object sender, KeyboardFocusChangedEventArgs e)
         {
-            Dispatcher.BeginInvoke(
-                new Action(
-                    () =>
-                    {
-                        UpdateCapsLockIndicator();
-                        if (IsKeyboardFocusWithin)
-                        {
-                            StartCapsPoll();
-                        }
-                        else
-                        {
-                            StopCapsPoll();
-                        }
-                    }),
-                DispatcherPriority.Input);
+            _ = Dispatcher.BeginInvoke(() =>
+            {
+                UpdateCapsLockIndicator();
+                if (IsKeyboardFocusWithin)
+                {
+                    StartCapsPoll();
+                }
+                else
+                {
+                    StopCapsPoll();
+                }
+            }, DispatcherPriority.Input);
         }
 
         private void OnInnerPreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.CapsLock)
             {
-                Dispatcher.BeginInvoke(new Action(UpdateCapsLockIndicator), DispatcherPriority.Input);
+                _ = Dispatcher.BeginInvoke(new Action(UpdateCapsLockIndicator), DispatcherPriority.Input);
             }
         }
 
@@ -437,15 +427,11 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
             _isUpdatingPassword = true;
             try
             {
-                Password = _passwordBox.Password;
-                if (_revealTextBox != null)
-                {
-                    _revealTextBox.Text = _passwordBox.Password;
-                }
+                Password = _passwordBox?.Password ?? string.Empty;
+                _ = (_revealTextBox?.Text = _passwordBox?.Password ?? string.Empty);
 
                 UpdatePasswordStrengthFromPassword();
                 UpdateStrengthMeter();
@@ -462,15 +448,11 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
             _isUpdatingPassword = true;
             try
             {
-                Password = _revealTextBox.Text;
-                if (_passwordBox != null)
-                {
-                    _passwordBox.Password = _revealTextBox.Text;
-                }
+                Password = _revealTextBox?.Text ?? string.Empty;
+                _ = (_passwordBox?.Password = _revealTextBox?.Text ?? string.Empty);
 
                 UpdatePasswordStrengthFromPassword();
                 UpdateStrengthMeter();
@@ -483,13 +465,13 @@ namespace Fluence.Wpf.Controls
 
         private void UpdatePasswordStrengthFromPassword()
         {
-            var pwd = Password ?? string.Empty;
+            string pwd = Password ?? string.Empty;
             PasswordStrength = ComputePasswordStrength(pwd);
         }
 
         private static int ComputePasswordStrength(string password)
         {
-            if (string.IsNullOrEmpty(password))
+            if (password.Length == 0)
             {
                 return 0;
             }
@@ -499,164 +481,131 @@ namespace Fluence.Wpf.Controls
             {
                 score++;
             }
-
             if (password.Length >= 10)
             {
                 score++;
             }
-
             if (HasLowercasePasswordCharacter(password) && HasUppercasePasswordCharacter(password))
             {
                 score++;
             }
-
             if (HasDigitPasswordCharacter(password))
             {
                 score++;
             }
-
             if (HasSymbolPasswordCharacter(password))
             {
                 score++;
             }
-
             return Math.Min(4, score);
         }
 
         private static bool HasLowercasePasswordCharacter(string password)
         {
-#if NET7_0_OR_GREATER
-            return LowercasePasswordRegex().IsMatch(password);
-#else
-            return LowercasePasswordRegexFallback.IsMatch(password);
-#endif
+            return LowercasePasswordRegex.IsMatch(password);
         }
 
         private static bool HasUppercasePasswordCharacter(string password)
         {
-#if NET7_0_OR_GREATER
-            return UppercasePasswordRegex().IsMatch(password);
-#else
-            return UppercasePasswordRegexFallback.IsMatch(password);
-#endif
+            return UppercasePasswordRegex.IsMatch(password);
         }
 
         private static bool HasDigitPasswordCharacter(string password)
         {
-#if NET7_0_OR_GREATER
-            return DigitPasswordRegex().IsMatch(password);
-#else
-            return DigitPasswordRegexFallback.IsMatch(password);
-#endif
+            return DigitPasswordRegex.IsMatch(password);
         }
 
         private static bool HasSymbolPasswordCharacter(string password)
         {
-#if NET7_0_OR_GREATER
-            return SymbolPasswordRegex().IsMatch(password);
-#else
-            return SymbolPasswordRegexFallback.IsMatch(password);
-#endif
+            return SymbolPasswordRegex.IsMatch(password);
         }
-
-#if NET7_0_OR_GREATER
-        [GeneratedRegex(LowercasePasswordPattern, RegexOptions.CultureInvariant)]
-        private static partial Regex LowercasePasswordRegex();
-
-        [GeneratedRegex(UppercasePasswordPattern, RegexOptions.CultureInvariant)]
-        private static partial Regex UppercasePasswordRegex();
-
-        [GeneratedRegex(DigitPasswordPattern, RegexOptions.CultureInvariant)]
-        private static partial Regex DigitPasswordRegex();
-
-        [GeneratedRegex(SymbolPasswordPattern, RegexOptions.CultureInvariant)]
-        private static partial Regex SymbolPasswordRegex();
-#endif
 
         private void UpdateCapsLockIndicator()
         {
-            var el = GetTemplateChild("PART_CapsLockIndicator") as UIElement;
-            if (el == null)
+            if (GetTemplateChild("PART_CapsLockIndicator") is not UIElement el)
             {
                 return;
             }
-
-            var capsOn = Keyboard.IsKeyToggled(Key.CapsLock);
-            var show = ShowCapsLockIndicator && IsKeyboardFocusWithin && capsOn;
+            bool capsOn = Keyboard.IsKeyToggled(Key.CapsLock);
+            bool show = ShowCapsLockIndicator && IsKeyboardFocusWithin && capsOn;
             el.Visibility = show ? Visibility.Visible : Visibility.Collapsed;
         }
 
         private void UpdateStrengthMeter()
         {
-            string brushKey;
-            if (PasswordStrength <= 1)
-            {
-                brushKey = "SystemFillColorCriticalBrush";
-            }
-            else if (PasswordStrength == 2)
-            {
-                brushKey = "SystemFillColorCautionBrush";
-            }
-            else
-            {
-                brushKey = "SystemFillColorSuccessBrush";
-            }
+            string brushKey = PasswordStrength <= 1
+                ? "SystemFillColorCriticalBrush"
+                : PasswordStrength == 2
+                ? "SystemFillColorCautionBrush"
+                : "SystemFillColorSuccessBrush";
 
-            for (var i = 0; i < 4; i++)
+            for (int i = 0; i < 4; i++)
             {
-                var segment = GetTemplateChild("PART_StrengthSegment" + i) as System.Windows.Controls.Border;
-                if (segment == null)
+                if (GetTemplateChild("PART_StrengthSegment" + i) is not System.Windows.Controls.Border segment)
                 {
                     continue;
                 }
-
                 if (!ShowPasswordStrength)
                 {
                     segment.Visibility = Visibility.Collapsed;
                     continue;
                 }
-
                 segment.Visibility = Visibility.Visible;
-                var active = PasswordStrength > i;
+                bool active = PasswordStrength > i;
                 segment.Opacity = active ? 1.0 : 0.25;
                 segment.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, brushKey);
             }
-
-            var container = GetTemplateChild("PART_StrengthMeter") as UIElement;
-            if (container != null)
+            if (GetTemplateChild("PART_StrengthMeter") is UIElement container)
             {
                 container.Visibility = ShowPasswordStrength ? Visibility.Visible : Visibility.Collapsed;
             }
         }
 
-        private void OnRevealButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void OnRevealButtonDown(object sender, MouseButtonEventArgs e)
         {
             IsPasswordRevealed = true;
         }
 
-        private void OnRevealButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void OnRevealButtonUp(object sender, MouseButtonEventArgs e)
         {
             IsPasswordRevealed = false;
         }
 
-        private void OnRevealButtonLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        private void OnRevealButtonLeave(object sender, MouseEventArgs e)
         {
             IsPasswordRevealed = false;
         }
 
         /// <summary>
-        /// Selects all text in the password field.
+        /// Represents a reference to the underlying PasswordBox control used for secure password input.
         /// </summary>
-        public void SelectAll()
-        {
-            if (IsPasswordRevealed && _revealTextBox != null)
-            {
-                _revealTextBox.SelectAll();
-            }
-            else if (_passwordBox != null)
-            {
-                _passwordBox.SelectAll();
-            }
-        }
+        /// <remarks>This field is intended for internal use to interact with the PasswordBox control in
+        /// the user interface. It may be null if the control has not been initialized.</remarks>
+        private System.Windows.Controls.PasswordBox? _passwordBox;
+
+        /// <summary>
+        /// Represents the underlying TextBox control used for revealing text input.
+        /// </summary>
+        private System.Windows.Controls.TextBox? _revealTextBox;
+
+        /// <summary>
+        /// Represents the button control used to reveal additional content or information.
+        /// </summary>
+        private System.Windows.Controls.Button? _revealButton;
+
+        /// <summary>
+        /// Indicates whether the password is currently being updated programmatically to prevent recursive updates.
+        /// </summary>
+        private bool _isUpdatingPassword;
+
+        /// <summary>
+        /// Represents the timer used to periodically poll the Caps Lock state.
+        /// </summary>
+        private DispatcherTimer? _capsPollTimer;
+
+        /// <summary>
+        /// Represents the event handler invoked on each polling tick for the Caps Lock state.
+        /// </summary>
+        private readonly EventHandler _capsPollTick;
     }
 }

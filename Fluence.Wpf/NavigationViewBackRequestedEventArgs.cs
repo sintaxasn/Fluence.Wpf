@@ -25,21 +25,14 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+using System;
+using Fluence.Wpf.Controls;
+
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// Specifies the placement of an element relative to content.
+    /// Provides data for the <see cref="NavigationView.BackRequested"/> event.
     /// </summary>
-    public enum ElementPlacement
-    {
-        /// <summary>
-        /// Element is placed to the left of the content.
-        /// </summary>
-        Left = 0,
-
-        /// <summary>
-        /// Element is placed to the right of the content.
-        /// </summary>
-        Right = 1
-    }
+    public class NavigationViewBackRequestedEventArgs : EventArgs;
 }

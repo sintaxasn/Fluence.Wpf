@@ -25,27 +25,30 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 using System.Windows.Automation.Peers;
 using Fluence.Wpf.Automation;
 
 namespace Fluence.Wpf.Controls
 {
-    /// <summary>A toggle switch control with On/Off content.</summary>
+    /// <summary>
+    /// A toggle switch control with On/Off content.
+    /// </summary>
     /// <remarks>Inspired by WInUI's ToggleSwitch.</remarks>
     public class ToggleSwitch : System.Windows.Controls.Primitives.ToggleButton
     {
+        /// <summary>
+        /// Initializes static members of the ToggleSwitch class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the ToggleSwitch control uses its custom default
+        /// style by associating it with the appropriate style key. This is required for custom controls to apply their
+        /// styles correctly in XAML.</remarks>
         static ToggleSwitch()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
                 typeof(ToggleSwitch),
                 new FrameworkPropertyMetadata(typeof(ToggleSwitch)));
-        }
-
-        /// <inheritdoc />
-        protected override AutomationPeer OnCreateAutomationPeer()
-        {
-            return new ToggleSwitchAutomationPeer(this);
         }
 
         /// <summary>
@@ -63,8 +66,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object OnContent
         {
-            get { return GetValue(OnContentProperty); }
-            set { SetValue(OnContentProperty, value); }
+            get => GetValue(OnContentProperty);
+            set => SetValue(OnContentProperty, value);
         }
 
         /// <summary>
@@ -82,8 +85,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object OffContent
         {
-            get { return GetValue(OffContentProperty); }
-            set { SetValue(OffContentProperty, value); }
+            get => GetValue(OffContentProperty);
+            set => SetValue(OffContentProperty, value);
         }
 
         /// <summary>
@@ -101,8 +104,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public DataTemplate OnContentTemplate
         {
-            get { return (DataTemplate)GetValue(OnContentTemplateProperty); }
-            set { SetValue(OnContentTemplateProperty, value); }
+            get => (DataTemplate)GetValue(OnContentTemplateProperty);
+            set => SetValue(OnContentTemplateProperty, value);
         }
 
         /// <summary>
@@ -120,8 +123,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public DataTemplate OffContentTemplate
         {
-            get { return (DataTemplate)GetValue(OffContentTemplateProperty); }
-            set { SetValue(OffContentTemplateProperty, value); }
+            get => (DataTemplate)GetValue(OffContentTemplateProperty);
+            set => SetValue(OffContentTemplateProperty, value);
         }
 
         /// <summary>
@@ -139,8 +142,14 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object HeaderContent
         {
-            get { return GetValue(HeaderContentProperty); }
-            set { SetValue(HeaderContentProperty, value); }
+            get => GetValue(HeaderContentProperty);
+            set => SetValue(HeaderContentProperty, value);
+        }
+
+        /// <inheritdoc />
+        protected override AutomationPeer OnCreateAutomationPeer()
+        {
+            return new ToggleSwitchAutomationPeer(this);
         }
     }
 }

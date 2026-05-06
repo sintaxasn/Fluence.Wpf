@@ -25,20 +25,31 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-namespace Fluence.Wpf
+
+namespace Fluence.Wpf.Helpers
 {
-    /// <summary>
-    /// Visual style variant for <see cref="Fluence.Wpf.Controls.Card"/>.
-    /// </summary>
-    public enum CardVariant
+    internal sealed class WindowCapabilities(
+        bool supportsSystemBackdropType,
+        bool supportsMicaEffect,
+        bool supportsRoundedCorners,
+        bool supportsCaptionColor,
+        bool supportsBorderColor = false)
     {
-        /// <summary>Default card elevation and stroke.</summary>
-        Default,
-        /// <summary>Outlined card with transparent fill.</summary>
-        Outlined,
-        /// <summary>Solid filled card surface.</summary>
-        Filled,
-        /// <summary>Low-contrast subtle card surface.</summary>
-        Subtle
+        internal bool SupportsSystemBackdropType { get; private set; } = supportsSystemBackdropType;
+
+        internal bool SupportsMicaEffect { get; private set; } = supportsMicaEffect;
+
+        internal bool SupportsRoundedCorners { get; private set; } = supportsRoundedCorners;
+
+        internal bool SupportsCaptionColor { get; private set; } = supportsCaptionColor;
+
+        internal bool SupportsBorderColor { get; private set; } = supportsBorderColor;
+
+        internal static WindowCapabilities Current => new(
+            OsVersionHelper.SupportsSystemBackdropType,
+            OsVersionHelper.SupportsMicaEffect,
+            OsVersionHelper.SupportsRoundedCorners,
+            OsVersionHelper.SupportsCaptionColor,
+            OsVersionHelper.SupportsBorderColor);
     }
 }

@@ -25,9 +25,9 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 using System.Windows.Controls;
-using Fluence.Wpf;
 
 namespace Fluence.Wpf.Controls
 {
@@ -37,10 +37,15 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = PART_TextBlock, Type = typeof(System.Windows.Controls.TextBlock))]
     public class TextBlock : ContentControl
     {
+        // The name of the TextBlock part in the control template.
         private const string PART_TextBlock = "PART_TextBlock";
 
-        private System.Windows.Controls.TextBlock _partTextBlock;
-
+        /// <summary>
+        /// Initializes static members of the TextBlock class.
+        /// </summary>
+        /// <remarks>This static constructor overrides the default style key property metadata to
+        /// associate the TextBlock type with its default style. This ensures that the correct style is applied to all
+        /// instances of TextBlock.</remarks>
         static TextBlock()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -72,7 +77,7 @@ namespace Fluence.Wpf.Controls
                 new FrameworkPropertyMetadata(
                     FluentTypography.Body,
                     FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender,
-                    OnTypographyPropertyChanged));
+                    OnTextPropertyChanged));
 
         /// <summary>
         /// Identifies the <see cref="TextWrapping"/> dependency property.
@@ -80,12 +85,12 @@ namespace Fluence.Wpf.Controls
         public static readonly DependencyProperty TextWrappingProperty =
             DependencyProperty.Register(
                 nameof(TextWrapping),
-                typeof(System.Windows.TextWrapping),
+                typeof(TextWrapping),
                 typeof(TextBlock),
                 new FrameworkPropertyMetadata(
-                    System.Windows.TextWrapping.NoWrap,
+                    TextWrapping.NoWrap,
                     FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender,
-                    OnTextWrappingPropertyChanged));
+                    OnTextPropertyChanged));
 
         /// <summary>
         /// Identifies the <see cref="TextTrimming"/> dependency property.
@@ -93,20 +98,20 @@ namespace Fluence.Wpf.Controls
         public static readonly DependencyProperty TextTrimmingProperty =
             DependencyProperty.Register(
                 nameof(TextTrimming),
-                typeof(System.Windows.TextTrimming),
+                typeof(TextTrimming),
                 typeof(TextBlock),
                 new FrameworkPropertyMetadata(
-                    System.Windows.TextTrimming.None,
+                    TextTrimming.None,
                     FrameworkPropertyMetadataOptions.AffectsRender,
-                    OnTextTrimmingPropertyChanged));
+                    OnTextPropertyChanged));
 
         /// <summary>
         /// Gets or sets the text displayed by the inner <see cref="System.Windows.Controls.TextBlock"/>.
         /// </summary>
         public string Text
         {
-            get { return (string)GetValue(TextProperty); }
-            set { SetValue(TextProperty, value); }
+            get => (string)GetValue(TextProperty);
+            set => SetValue(TextProperty, value);
         }
 
         /// <summary>
@@ -114,26 +119,26 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public FluentTypography Typography
         {
-            get { return (FluentTypography)GetValue(TypographyProperty); }
-            set { SetValue(TypographyProperty, value); }
+            get => (FluentTypography)GetValue(TypographyProperty);
+            set => SetValue(TypographyProperty, value);
         }
 
         /// <summary>
         /// Gets or sets how text wraps within the inner <see cref="System.Windows.Controls.TextBlock"/>.
         /// </summary>
-        public System.Windows.TextWrapping TextWrapping
+        public TextWrapping TextWrapping
         {
-            get { return (System.Windows.TextWrapping)GetValue(TextWrappingProperty); }
-            set { SetValue(TextWrappingProperty, value); }
+            get => (TextWrapping)GetValue(TextWrappingProperty);
+            set => SetValue(TextWrappingProperty, value);
         }
 
         /// <summary>
         /// Gets or sets how text is trimmed when it overflows the layout area.
         /// </summary>
-        public System.Windows.TextTrimming TextTrimming
+        public TextTrimming TextTrimming
         {
-            get { return (System.Windows.TextTrimming)GetValue(TextTrimmingProperty); }
-            set { SetValue(TextTrimmingProperty, value); }
+            get => (TextTrimming)GetValue(TextTrimmingProperty);
+            set => SetValue(TextTrimmingProperty, value);
         }
 
         /// <inheritdoc />
@@ -146,25 +151,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnTextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = (TextBlock)d;
-            control.SyncPartTextBlock();
-        }
-
-        private static void OnTypographyPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var control = (TextBlock)d;
-            control.SyncPartTextBlock();
-        }
-
-        private static void OnTextWrappingPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var control = (TextBlock)d;
-            control.SyncPartTextBlock();
-        }
-
-        private static void OnTextTrimmingPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var control = (TextBlock)d;
+            TextBlock control = (TextBlock)d;
             control.SyncPartTextBlock();
         }
 
@@ -174,11 +161,18 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
             _partTextBlock.Text = Text ?? string.Empty;
             TextBlockExtensions.SetTypography(_partTextBlock, Typography);
             _partTextBlock.TextWrapping = TextWrapping;
             _partTextBlock.TextTrimming = TextTrimming;
         }
+
+        /// <summary>
+        /// Represents the underlying TextBlock control used for displaying text content.
+        /// </summary>
+        /// <remarks>This field is typically used internally to reference the template part associated
+        /// with text display in a custom control. It may be null if the template has not been applied or does not
+        /// contain a TextBlock with the expected part name.</remarks>
+        private System.Windows.Controls.TextBlock? _partTextBlock;
     }
 }

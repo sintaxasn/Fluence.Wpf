@@ -25,11 +25,11 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Windows;
 using System.Windows.Media.Effects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf;
 
 namespace Fluence.Wpf.Tests
 {
@@ -42,8 +42,8 @@ namespace Fluence.Wpf.Tests
     {
         private static void RunOnStaThread(Action action)
         {
-            Exception captured = null;
-            WpfTestSta.Dispatcher.Invoke(new Action(delegate
+            Exception? captured = null;
+            WpfTestSta.Dispatcher?.Invoke(new Action(delegate
             {
                 try { action(); }
                 catch (Exception ex) { captured = ex; }
@@ -55,19 +55,16 @@ namespace Fluence.Wpf.Tests
             }
         }
 
-        private static Application EnsureApp()
+        private static Application? EnsureApp()
         {
             return WpfTestSta.EnsureApplication();
         }
 
-        private static void ResetAndApply(ApplicationTheme theme, Application app = null)
+        private static void ResetAndApply(ApplicationTheme theme, Application? app = null)
         {
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
-            if (app != null)
-            {
-                app.Resources.MergedDictionaries.Clear();
-            }
+            app?.Resources.MergedDictionaries.Clear();
 
             ApplicationThemeManager.Apply(theme, BackdropType.None, true);
         }
@@ -81,9 +78,9 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var app = EnsureApp();
+                Application? app = EnsureApp();
                 ResetAndApply(ApplicationTheme.Light, app);
-                var cr = app.TryFindResource("ControlCornerRadius");
+                object? cr = app?.TryFindResource("ControlCornerRadius");
                 Assert.IsNotNull(cr, "ControlCornerRadius must resolve in Light theme.");
                 Assert.AreEqual(new CornerRadius(4), (CornerRadius)cr,
                     "ControlCornerRadius must equal CornerRadius(4) in Light theme.");
@@ -95,9 +92,9 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var app = EnsureApp();
+                Application? app = EnsureApp();
                 ResetAndApply(ApplicationTheme.Dark, app);
-                var cr = app.TryFindResource("ControlCornerRadius");
+                object? cr = app?.TryFindResource("ControlCornerRadius");
                 Assert.IsNotNull(cr, "ControlCornerRadius must resolve in Dark theme.");
                 Assert.AreEqual(new CornerRadius(4), (CornerRadius)cr,
                     "ControlCornerRadius must equal CornerRadius(4) in Dark theme.");
@@ -109,9 +106,9 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var app = EnsureApp();
+                Application? app = EnsureApp();
                 ResetAndApply(ApplicationTheme.HighContrast, app);
-                var cr = app.TryFindResource("ControlCornerRadius");
+                object? cr = app?.TryFindResource("ControlCornerRadius");
                 Assert.IsNotNull(cr, "ControlCornerRadius must resolve in HighContrast theme.");
                 Assert.AreEqual(new CornerRadius(4), (CornerRadius)cr,
                     "ControlCornerRadius must equal CornerRadius(4) in HighContrast theme.");
@@ -127,9 +124,9 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var app = EnsureApp();
+                Application? app = EnsureApp();
                 ResetAndApply(ApplicationTheme.Light, app);
-                var or_ = app.TryFindResource("OverlayCornerRadius");
+                object? or_ = app?.TryFindResource("OverlayCornerRadius");
                 Assert.IsNotNull(or_, "OverlayCornerRadius must resolve in Light theme.");
                 Assert.AreEqual(new CornerRadius(8), (CornerRadius)or_,
                     "OverlayCornerRadius must equal CornerRadius(8) in Light theme.");
@@ -141,9 +138,9 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var app = EnsureApp();
+                Application? app = EnsureApp();
                 ResetAndApply(ApplicationTheme.Dark, app);
-                var or_ = app.TryFindResource("OverlayCornerRadius");
+                object? or_ = app?.TryFindResource("OverlayCornerRadius");
                 Assert.IsNotNull(or_, "OverlayCornerRadius must resolve in Dark theme.");
                 Assert.AreEqual(new CornerRadius(8), (CornerRadius)or_,
                     "OverlayCornerRadius must equal CornerRadius(8) in Dark theme.");
@@ -155,9 +152,9 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var app = EnsureApp();
+                Application? app = EnsureApp();
                 ResetAndApply(ApplicationTheme.HighContrast, app);
-                var or_ = app.TryFindResource("OverlayCornerRadius");
+                object? or_ = app?.TryFindResource("OverlayCornerRadius");
                 Assert.IsNotNull(or_, "OverlayCornerRadius must resolve in HighContrast theme.");
                 Assert.AreEqual(new CornerRadius(8), (CornerRadius)or_,
                     "OverlayCornerRadius must equal CornerRadius(8) in HighContrast theme.");
@@ -173,11 +170,11 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var app = EnsureApp();
-                foreach (var theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark, ApplicationTheme.HighContrast })
+                Application? app = EnsureApp();
+                foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark, ApplicationTheme.HighContrast })
                 {
                     ResetAndApply(theme, app);
-                    var fx = app.TryFindResource("FlyoutShadowEffect");
+                    object? fx = app?.TryFindResource("FlyoutShadowEffect");
                     Assert.IsNotNull(fx,
                         "FlyoutShadowEffect must resolve in theme: " + theme);
                     Assert.IsInstanceOfType(fx, typeof(DropShadowEffect),
@@ -191,9 +188,9 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var app = EnsureApp();
+                Application? app = EnsureApp();
                 ResetAndApply(ApplicationTheme.Light, app);
-                var fx = (DropShadowEffect)app.TryFindResource("FlyoutShadowEffect");
+                DropShadowEffect? fx = (DropShadowEffect?)app?.TryFindResource("FlyoutShadowEffect");
                 Assert.IsNotNull(fx);
                 Assert.AreEqual(18.0, fx.BlurRadius, 0.01, "FlyoutShadowEffect.BlurRadius must be 18.");
                 Assert.AreEqual(270.0, fx.Direction, 0.01, "FlyoutShadowEffect.Direction must be 270.");
@@ -211,11 +208,11 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var app = EnsureApp();
-                foreach (var theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark, ApplicationTheme.HighContrast })
+                Application? app = EnsureApp();
+                foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark, ApplicationTheme.HighContrast })
                 {
                     ResetAndApply(theme, app);
-                    var style = app.TryFindResource("DefaultControlFocusVisualStyle");
+                    object? style = app?.TryFindResource("DefaultControlFocusVisualStyle");
                     Assert.IsNotNull(style,
                         "DefaultControlFocusVisualStyle must resolve in theme: " + theme);
                     Assert.IsInstanceOfType(style, typeof(Style),
@@ -233,14 +230,14 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var app = EnsureApp();
+                Application? app = EnsureApp();
                 ResetAndApply(ApplicationTheme.Light, app);
 
-                foreach (var theme in new[] { ApplicationTheme.Dark, ApplicationTheme.HighContrast, ApplicationTheme.Light })
+                foreach (ApplicationTheme theme in new[] { ApplicationTheme.Dark, ApplicationTheme.HighContrast, ApplicationTheme.Light })
                 {
                     ApplicationThemeManager.Apply(theme, BackdropType.None, true);
-                    var cr = app.TryFindResource("ControlCornerRadius");
-                    var or_ = app.TryFindResource("OverlayCornerRadius");
+                    object? cr = app?.TryFindResource("ControlCornerRadius");
+                    object? or_ = app?.TryFindResource("OverlayCornerRadius");
                     Assert.IsNotNull(cr, "ControlCornerRadius must survive theme switch to: " + theme);
                     Assert.IsNotNull(or_, "OverlayCornerRadius must survive theme switch to: " + theme);
                     Assert.AreEqual(new CornerRadius(4), (CornerRadius)cr,
@@ -260,9 +257,9 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var app = EnsureApp();
+                Application? app = EnsureApp();
                 ResetAndApply(ApplicationTheme.Light, app);
-                var style = app.TryFindResource("DefaultCollectionFocusVisualStyle");
+                object? style = app?.TryFindResource("DefaultCollectionFocusVisualStyle");
                 Assert.IsNotNull(style,
                     "DefaultCollectionFocusVisualStyle must resolve in Light theme.");
                 Assert.IsInstanceOfType(style, typeof(Style),
@@ -275,9 +272,9 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var app = EnsureApp();
+                Application? app = EnsureApp();
                 ResetAndApply(ApplicationTheme.Dark, app);
-                var style = app.TryFindResource("DefaultCollectionFocusVisualStyle");
+                object? style = app?.TryFindResource("DefaultCollectionFocusVisualStyle");
                 Assert.IsNotNull(style,
                     "DefaultCollectionFocusVisualStyle must resolve in Dark theme.");
             });
@@ -288,9 +285,9 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var app = EnsureApp();
+                Application? app = EnsureApp();
                 ResetAndApply(ApplicationTheme.HighContrast, app);
-                var style = app.TryFindResource("DefaultCollectionFocusVisualStyle");
+                object? style = app?.TryFindResource("DefaultCollectionFocusVisualStyle");
                 Assert.IsNotNull(style,
                     "DefaultCollectionFocusVisualStyle must resolve in HighContrast theme.");
             });

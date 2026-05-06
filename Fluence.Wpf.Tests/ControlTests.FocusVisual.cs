@@ -25,9 +25,9 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf;
 using Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Tests
@@ -49,14 +49,14 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
+                Application? app = EnsureApplication();
 
-                foreach (var theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark, ApplicationTheme.HighContrast })
+                foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark, ApplicationTheme.HighContrast })
                 {
-                    MergeGenericDictionary(app);
+                    _ = MergeGenericDictionary(app);
                     ApplicationThemeManager.Apply(theme, BackdropType.None, true);
 
-                    var style = app.TryFindResource("DefaultControlFocusVisualStyle") as Style;
+                    Style? style = app?.TryFindResource("DefaultControlFocusVisualStyle") as Style;
                     Assert.IsNotNull(style,
                         string.Format("DefaultControlFocusVisualStyle must resolve in theme: {0}", theme));
                 }
@@ -68,18 +68,18 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
                 // These per-control duplicate keys must no longer exist now that
                 // all four controls reference DefaultControlFocusVisualStyle.
-                Assert.IsNull(app.TryFindResource("ButtonFocusVisual"),
+                Assert.IsNull(app?.TryFindResource("ButtonFocusVisual"),
                     "ButtonFocusVisual per-control key must be removed.");
-                Assert.IsNull(app.TryFindResource("CheckBoxFocusVisual"),
+                Assert.IsNull(app?.TryFindResource("CheckBoxFocusVisual"),
                     "CheckBoxFocusVisual per-control key must be removed.");
-                Assert.IsNull(app.TryFindResource("RadioButtonFocusVisual"),
+                Assert.IsNull(app?.TryFindResource("RadioButtonFocusVisual"),
                     "RadioButtonFocusVisual per-control key must be removed.");
-                Assert.IsNull(app.TryFindResource("ToggleButtonFocusVisual"),
+                Assert.IsNull(app?.TryFindResource("ToggleButtonFocusVisual"),
                     "ToggleButtonFocusVisual per-control key must be removed.");
             });
         }
@@ -89,14 +89,14 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var sharedStyle = app.TryFindResource("DefaultControlFocusVisualStyle") as Style;
+                Style? sharedStyle = app?.TryFindResource("DefaultControlFocusVisualStyle") as Style;
                 Assert.IsNotNull(sharedStyle, "DefaultControlFocusVisualStyle must resolve.");
 
-                var btn = new Controls.Button();
-                var w = new Window { Content = btn, Width = 200, Height = 100 };
+                Button btn = new();
+                Window w = new() { Content = btn, Width = 200, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
@@ -111,14 +111,14 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var sharedStyle = app.TryFindResource("DefaultControlFocusVisualStyle") as Style;
+                Style? sharedStyle = app?.TryFindResource("DefaultControlFocusVisualStyle") as Style;
                 Assert.IsNotNull(sharedStyle, "DefaultControlFocusVisualStyle must resolve.");
 
-                var cb = new Controls.CheckBox { Content = "Test" };
-                var w = new Window { Content = cb, Width = 200, Height = 100 };
+                CheckBox cb = new() { Content = "Test" };
+                Window w = new() { Content = cb, Width = 200, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
@@ -133,14 +133,14 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var sharedStyle = app.TryFindResource("DefaultControlFocusVisualStyle") as Style;
+                Style? sharedStyle = app?.TryFindResource("DefaultControlFocusVisualStyle") as Style;
                 Assert.IsNotNull(sharedStyle, "DefaultControlFocusVisualStyle must resolve.");
 
-                var rb = new Controls.RadioButton { Content = "Option A" };
-                var w = new Window { Content = rb, Width = 200, Height = 100 };
+                RadioButton rb = new() { Content = "Option A" };
+                Window w = new() { Content = rb, Width = 200, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
@@ -155,14 +155,14 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var sharedStyle = app.TryFindResource("DefaultControlFocusVisualStyle") as Style;
+                Style? sharedStyle = app?.TryFindResource("DefaultControlFocusVisualStyle") as Style;
                 Assert.IsNotNull(sharedStyle, "DefaultControlFocusVisualStyle must resolve.");
 
-                var tb = new Controls.ToggleButton { Content = "Toggle" };
-                var w = new Window { Content = tb, Width = 200, Height = 100 };
+                ToggleButton tb = new() { Content = "Toggle" };
+                Window w = new() { Content = tb, Width = 200, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 

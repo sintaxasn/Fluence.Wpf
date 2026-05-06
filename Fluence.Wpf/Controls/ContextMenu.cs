@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 
 namespace Fluence.Wpf.Controls
@@ -36,6 +37,12 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     public class ContextMenu : System.Windows.Controls.ContextMenu
     {
+        /// <summary>
+        /// Initializes static members of the ContextMenu class and sets up metadata for its default style.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the ContextMenu control uses the correct default
+        /// style as defined in the application's resources. It is called automatically before any static members are
+        /// accessed or any instances are created.</remarks>
         static ContextMenu()
         {
             DefaultStyleKeyProperty.OverrideMetadata(

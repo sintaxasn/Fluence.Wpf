@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 using System.Windows.Media;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -46,15 +47,15 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var bar = new InfoBar { IsOpen = true, Title = "Test" };
-                var w = new Window { Content = bar, Width = 400, Height = 100 };
+                InfoBar bar = new() { IsOpen = true, Title = "Test" };
+                Window w = new() { Content = bar, Width = 400, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var root = FindVisualChildByName<System.Windows.Controls.Border>(bar, "RootBorder");
+                System.Windows.Controls.Border? root = FindVisualChildByName<System.Windows.Controls.Border>(bar, "RootBorder");
                 Assert.IsNotNull(root, "RootBorder must exist in InfoBar template (Fluence style applied).");
                 w.Close();
             });
@@ -65,11 +66,11 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var bar = new InfoBar { IsOpen = true, Title = "Test" };
-                var w = new Window { Content = bar, Width = 400, Height = 100 };
+                InfoBar bar = new() { IsOpen = true, Title = "Test" };
+                Window w = new() { Content = bar, Width = 400, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
@@ -92,15 +93,15 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var bar = new InfoBar { IsOpen = true, Severity = InfoBarSeverity.Informational, Title = "Info" };
-                var w = new Window { Content = bar, Width = 400, Height = 100 };
+                InfoBar bar = new() { IsOpen = true, Severity = InfoBarSeverity.Informational, Title = "Info" };
+                Window w = new() { Content = bar, Width = 400, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var indicator = FindVisualChildByName<System.Windows.Controls.Border>(bar, "IndicatorBar");
+                System.Windows.Controls.Border? indicator = FindVisualChildByName<System.Windows.Controls.Border>(bar, "IndicatorBar");
                 Assert.IsNotNull(indicator, "IndicatorBar must exist in InfoBar template.");
                 Assert.IsNotNull(indicator.Background, "IndicatorBar background must be set for Informational severity.");
                 w.Close();
@@ -112,17 +113,17 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var bar = new InfoBar { IsOpen = true, Severity = InfoBarSeverity.Informational, Title = "Test" };
-                var w = new Window { Content = bar, Width = 400, Height = 100 };
+                InfoBar bar = new() { IsOpen = true, Severity = InfoBarSeverity.Informational, Title = "Test" };
+                Window w = new() { Content = bar, Width = 400, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var indicator = FindVisualChildByName<System.Windows.Controls.Border>(bar, "IndicatorBar");
+                System.Windows.Controls.Border? indicator = FindVisualChildByName<System.Windows.Controls.Border>(bar, "IndicatorBar");
                 Assert.IsNotNull(indicator, "IndicatorBar must exist.");
-                var brushBefore = indicator.Background;
+                Brush brushBefore = indicator.Background;
 
                 // Change severity — trigger + GoToState must both fire
                 bar.Severity = InfoBarSeverity.Error;
@@ -139,10 +140,10 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var bar = new InfoBar
+                InfoBar bar = new()
                 {
                     IsOpen = true,
                     Severity = InfoBarSeverity.Error,
@@ -150,16 +151,16 @@ namespace Fluence.Wpf.Tests
                     Message = "Retry the operation.",
                     ActionButton = new Button { Content = "Retry" }
                 };
-                var w = new Window { Content = bar, Width = 520, Height = 120 };
+                Window w = new() { Content = bar, Width = 520, Height = 120 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var root = FindVisualChildByName<System.Windows.Controls.Border>(bar, "RootBorder");
+                System.Windows.Controls.Border? root = FindVisualChildByName<System.Windows.Controls.Border>(bar, "RootBorder");
                 Assert.IsNotNull(root, "RootBorder must exist in InfoBar template.");
                 Assert.IsFalse(root.ClipToBounds,
                     "RootBorder should not clip action-button focus visuals or shadow rendering.");
 
-                var presenter = FindVisualChildByName<System.Windows.Controls.ContentPresenter>(bar, "ActionPresenter");
+                System.Windows.Controls.ContentPresenter? presenter = FindVisualChildByName<System.Windows.Controls.ContentPresenter>(bar, "ActionPresenter");
                 Assert.IsNotNull(presenter, "ActionPresenter should host the retry action.");
                 Assert.AreEqual(Visibility.Visible, presenter.Visibility);
 

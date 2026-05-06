@@ -25,20 +25,19 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Fluence.Wpf;
 using Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryWindowPage : UserControl
     {
-
         private const string ThemeAndAccentXamlSource = @"<UserControl
     x:Class=""Fluence.Wpf.Demo.Pages.Window.ThemeAndAccent""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
@@ -505,17 +504,14 @@ namespace Fluence.Wpf.Demo.Pages.Window
         {
             InitializeComponent();
 
-            DemoSampleControl.ReplaceSourceLink(ThemeAndAccentSourceLink, ThemeAndAccentXamlSource, ThemeAndAccentCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(CaptionButtonsSourceLink, CaptionButtonsXamlSource, CaptionButtonsCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(ThemeAndAccentSourceLink, ThemeAndAccentXamlSource, ThemeAndAccentCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(CaptionButtonsSourceLink, CaptionButtonsXamlSource, CaptionButtonsCSharpSource);
 
             Loaded += GalleryWindowPage_Loaded;
             Unloaded += GalleryWindowPage_Unloaded;
         }
 
-        private FluenceWindow HostFluenceWindow
-        {
-            get { return Window.GetWindow(this) as FluenceWindow; }
-        }
+        private FluenceWindow? HostFluenceWindow => Window.GetWindow(this) as FluenceWindow;
 
         private void GalleryWindowPage_Loaded(object sender, RoutedEventArgs e)
         {
@@ -533,7 +529,7 @@ namespace Fluence.Wpf.Demo.Pages.Window
             ApplicationThemeManager.Changed -= ApplicationThemeManager_Changed;
         }
 
-        private void ApplicationThemeManager_Changed(object sender, ThemeChangedEventArgs e)
+        private void ApplicationThemeManager_Changed(object? sender, ThemeChangedEventArgs e)
         {
             SyncThemeRadioButtons();
             SyncBackdropComboFromWindow();
@@ -541,7 +537,7 @@ namespace Fluence.Wpf.Demo.Pages.Window
 
         private void SyncBackdropComboFromWindow()
         {
-            var fw = HostFluenceWindow;
+            FluenceWindow? fw = HostFluenceWindow;
             if (fw == null || BackdropCombo == null)
             {
                 return;
@@ -550,26 +546,14 @@ namespace Fluence.Wpf.Demo.Pages.Window
             _isSyncingBackdrop = true;
             try
             {
-                int idx;
-                switch (fw.SystemBackdropType)
+                int idx = fw.SystemBackdropType switch
                 {
-                    case BackdropType.None:
-                        idx = 1;
-                        break;
-                    case BackdropType.Mica:
-                        idx = 2;
-                        break;
-                    case BackdropType.Acrylic:
-                        idx = 3;
-                        break;
-                    case BackdropType.Tabbed:
-                        idx = 4;
-                        break;
-                    default:
-                        idx = 0;
-                        break;
-                }
-
+                    BackdropType.None => 1,
+                    BackdropType.Mica => 2,
+                    BackdropType.Acrylic => 3,
+                    BackdropType.Tabbed => 4,
+                    BackdropType.Auto or _ => 0,
+                };
                 BackdropCombo.SelectedIndex = idx;
             }
             finally
@@ -585,33 +569,19 @@ namespace Fluence.Wpf.Demo.Pages.Window
                 return;
             }
 
-            var rb = sender as System.Windows.Controls.RadioButton;
-            if (rb == null)
+            if (sender is not System.Windows.Controls.RadioButton rb)
             {
                 return;
             }
 
-            ApplicationTheme theme;
-            if (ReferenceEquals(rb, ThemeLight))
-            {
-                theme = ApplicationTheme.Light;
-            }
-            else if (ReferenceEquals(rb, ThemeDark))
-            {
-                theme = ApplicationTheme.Dark;
-            }
-            else if (ReferenceEquals(rb, ThemeHighContrast))
-            {
-                theme = ApplicationTheme.HighContrast;
-            }
-            else
-            {
-                theme = ApplicationTheme.Auto;
-            }
-
-            var fw = HostFluenceWindow;
-            var backdrop = fw != null ? fw.SystemBackdropType : BackdropType.Mica;
-            ApplicationThemeManager.Apply(theme, backdrop, true);
+            ApplicationTheme theme = ReferenceEquals(rb, ThemeLight)
+                ? ApplicationTheme.Light
+                : ReferenceEquals(rb, ThemeDark)
+                    ? ApplicationTheme.Dark
+                    : ReferenceEquals(rb, ThemeHighContrast) ? ApplicationTheme.HighContrast : ApplicationTheme.Auto;
+            FluenceWindow? fw = HostFluenceWindow;
+            BackdropType backdrop = fw != null ? fw.SystemBackdropType : BackdropType.Mica;
+            ApplicationThemeManager.Apply(theme, backdrop);
             UpdateThemeStateLabel(ApplicationThemeManager.CurrentTheme);
         }
 
@@ -622,48 +592,35 @@ namespace Fluence.Wpf.Demo.Pages.Window
                 return;
             }
 
-            var fw = HostFluenceWindow;
+            FluenceWindow? fw = HostFluenceWindow;
             if (fw == null)
             {
                 return;
             }
 
-            BackdropType backdrop;
-            switch (BackdropCombo.SelectedIndex)
+            BackdropType backdrop = BackdropCombo.SelectedIndex switch
             {
-                case 1:
-                    backdrop = BackdropType.None;
-                    break;
-                case 2:
-                    backdrop = BackdropType.Mica;
-                    break;
-                case 3:
-                    backdrop = BackdropType.Acrylic;
-                    break;
-                case 4:
-                    backdrop = BackdropType.Tabbed;
-                    break;
-                default:
-                    backdrop = BackdropType.Auto;
-                    break;
-            }
-
+                1 => BackdropType.None,
+                2 => BackdropType.Mica,
+                3 => BackdropType.Acrylic,
+                4 => BackdropType.Tabbed,
+                _ => BackdropType.Auto,
+            };
             fw.SystemBackdropType = backdrop;
             ApplicationThemeManager.Apply(ApplicationThemeManager.CurrentTheme, backdrop, false);
         }
 
         private void AccentSwatch_Click(object sender, RoutedEventArgs e)
         {
-            var button = sender as FrameworkElement;
-            if (button == null || button.Tag == null)
+            if (sender is not FrameworkElement button || button.Tag == null)
             {
                 return;
             }
 
-            var hex = button.Tag.ToString();
+            string? hex = button?.Tag?.ToString();
             try
             {
-                var converted = ColorConverter.ConvertFromString(hex);
+                object converted = ColorConverter.ConvertFromString(hex);
                 if (converted != null)
                 {
                     ApplicationAccentColorManager.ApplyCustomAccent((Color)converted);
@@ -671,6 +628,7 @@ namespace Fluence.Wpf.Demo.Pages.Window
             }
             catch (FormatException)
             {
+                // No idea what we're catching here.
             }
         }
 
@@ -686,7 +644,7 @@ namespace Fluence.Wpf.Demo.Pages.Window
                 return;
             }
 
-            var host = HostFluenceWindow;
+            FluenceWindow? host = HostFluenceWindow;
             if (host == null)
             {
                 return;
@@ -704,14 +662,14 @@ namespace Fluence.Wpf.Demo.Pages.Window
             }
         }
 
-        private void CaptionVisibilityCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void CaptionVisibilityCombo_SelectionChanged(object? sender, SelectionChangedEventArgs? e)
         {
             if (!IsLoaded)
             {
                 return;
             }
 
-            var fw = HostFluenceWindow;
+            FluenceWindow? fw = HostFluenceWindow;
             if (fw == null)
             {
                 return;
@@ -722,9 +680,10 @@ namespace Fluence.Wpf.Demo.Pages.Window
             ApplyCaptionVisibility(CloseVisibilityCombo, v => fw.IsCloseButtonVisible = v, en => fw.IsClosable = en);
         }
 
-        private void WindowChromeToggle_Changed(object sender, RoutedEventArgs e)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1075:URIs should not be hardcoded", Justification = "This is a demo application.")]
+        private void WindowChromeToggle_Changed(object? sender, RoutedEventArgs? e)
         {
-            var fw = HostFluenceWindow;
+            FluenceWindow? fw = HostFluenceWindow;
             if (fw == null)
             {
                 return;
@@ -733,7 +692,7 @@ namespace Fluence.Wpf.Demo.Pages.Window
             // Funnel through MainWindow helpers so the Top-pane + extended-chrome hide rule
             // (see MainWindow.ApplyTitleBarContentVisibility) stays authoritative for the
             // actual ShowIcon / ShowTitle DPs.
-            var main = fw as MainWindow;
+            MainWindow? main = fw as MainWindow;
 
             if (ShowWindowTitleToggle != null)
             {
@@ -753,7 +712,7 @@ namespace Fluence.Wpf.Demo.Pages.Window
             if (ShowWindowIconToggle != null)
             {
                 bool show = ShowWindowIconToggle.IsChecked == true;
-                ImageSource icon = show
+                ImageSource? icon = show
                     ? new BitmapImage(new Uri("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/fluence-wpf-appicon-256.ico"))
                     : null;
                 if (main != null)
@@ -778,7 +737,7 @@ namespace Fluence.Wpf.Demo.Pages.Window
             _isSyncingTheme = true;
             try
             {
-                var theme = ApplicationThemeManager.CurrentTheme;
+                ApplicationTheme theme = ApplicationThemeManager.CurrentTheme;
                 switch (theme)
                 {
                     case ApplicationTheme.Light:
@@ -790,6 +749,7 @@ namespace Fluence.Wpf.Demo.Pages.Window
                     case ApplicationTheme.HighContrast:
                         ThemeHighContrast.IsChecked = true;
                         break;
+                    case ApplicationTheme.Auto:
                     default:
                         ThemeAuto.IsChecked = true;
                         break;
@@ -805,10 +765,7 @@ namespace Fluence.Wpf.Demo.Pages.Window
 
         private void UpdateThemeStateLabel(ApplicationTheme theme)
         {
-            if (ThemeStateLabel != null)
-            {
-                ThemeStateLabel.Text = string.Format(CultureInfo.CurrentCulture, "Current: {0}", theme);
-            }
+            _ = (ThemeStateLabel?.Text = string.Format(CultureInfo.CurrentCulture, "Current: {0}", theme));
         }
 
         private static void ApplyCaptionVisibility(
@@ -816,8 +773,8 @@ namespace Fluence.Wpf.Demo.Pages.Window
             Action<Visibility> setVisibility,
             Action<bool> setEnabled)
         {
-            var item = combo != null ? combo.SelectedItem as ComboBoxItem : null;
-            var content = item != null ? item.Content as string : null;
+            ComboBoxItem? item = combo != null ? combo.SelectedItem as ComboBoxItem : null;
+            string? content = item != null ? item.Content as string : null;
 
             if (string.Equals(content, "Hidden", StringComparison.Ordinal))
             {

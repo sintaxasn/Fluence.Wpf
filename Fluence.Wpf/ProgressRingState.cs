@@ -25,21 +25,27 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// Specifies the view state for a ListView.
+    /// Visual state for <see cref="Controls.ProgressRing"/> arcs.
     /// </summary>
-    public enum ListViewState
+    public enum ProgressRingState
     {
         /// <summary>
-        /// Default list view with vertical items.
+        /// Normal active progress rendered with the accent brush.
         /// </summary>
-        Default = 0,
+        Normal,
 
         /// <summary>
-        /// Grid view with items arranged in a grid.
+        /// Paused progress rendered with the system caution brush.
         /// </summary>
-        GridView = 1
+        Paused,
+
+        /// <summary>
+        /// Error progress rendered with the system critical brush.
+        /// </summary>
+        Error,
     }
 }

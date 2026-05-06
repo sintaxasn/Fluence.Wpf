@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
@@ -42,6 +43,7 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = PART_HelperText, Type = typeof(System.Windows.Controls.TextBlock))]
     public class TextBox : System.Windows.Controls.TextBox
     {
+        // Template part names.
         private const string PART_ContentHost = "PART_ContentHost";
         private const string PART_ClearButton = "PART_ClearButton";
         private const string PART_CharacterCounter = "PART_CharacterCounter";
@@ -49,8 +51,12 @@ namespace Fluence.Wpf.Controls
         private const string PART_ValidationIcon = "PART_ValidationIcon";
         private const string PART_HelperText = "PART_HelperText";
 
-        private System.Windows.Controls.Button _clearButton;
-
+        /// <summary>
+        /// Initializes static members of the TextBox class and overrides the default style metadata for the control.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the TextBox control uses its own style by
+        /// default, rather than inheriting the style from its base class. This is important for proper theming and
+        /// appearance in WPF applications.</remarks>
         static TextBox()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -73,8 +79,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string PlaceholderText
         {
-            get { return (string)GetValue(PlaceholderTextProperty); }
-            set { SetValue(PlaceholderTextProperty, value); }
+            get => (string)GetValue(PlaceholderTextProperty);
+            set => SetValue(PlaceholderTextProperty, value);
         }
 
         /// <summary>
@@ -92,8 +98,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool PlaceholderEnabled
         {
-            get { return (bool)GetValue(PlaceholderEnabledProperty); }
-            set { SetValue(PlaceholderEnabledProperty, value); }
+            get => (bool)GetValue(PlaceholderEnabledProperty);
+            set => SetValue(PlaceholderEnabledProperty, value);
         }
 
         /// <summary>
@@ -111,8 +117,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object Icon
         {
-            get { return GetValue(IconProperty); }
-            set { SetValue(IconProperty, value); }
+            get => GetValue(IconProperty);
+            set => SetValue(IconProperty, value);
         }
 
         /// <summary>
@@ -130,8 +136,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public ElementPlacement IconPlacement
         {
-            get { return (ElementPlacement)GetValue(IconPlacementProperty); }
-            set { SetValue(IconPlacementProperty, value); }
+            get => (ElementPlacement)GetValue(IconPlacementProperty);
+            set => SetValue(IconPlacementProperty, value);
         }
 
         /// <summary>
@@ -149,8 +155,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool ClearButtonEnabled
         {
-            get { return (bool)GetValue(ClearButtonEnabledProperty); }
-            set { SetValue(ClearButtonEnabledProperty, value); }
+            get => (bool)GetValue(ClearButtonEnabledProperty);
+            set => SetValue(ClearButtonEnabledProperty, value);
         }
 
         /// <summary>
@@ -168,8 +174,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public CornerRadius CornerRadius
         {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(CornerRadiusProperty);
+            set => SetValue(CornerRadiusProperty, value);
         }
 
         /// <summary>
@@ -187,8 +193,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string HelperText
         {
-            get { return (string)GetValue(HelperTextProperty); }
-            set { SetValue(HelperTextProperty, value); }
+            get => (string)GetValue(HelperTextProperty);
+            set => SetValue(HelperTextProperty, value);
         }
 
         /// <summary>
@@ -206,8 +212,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string ValidationMessage
         {
-            get { return (string)GetValue(ValidationMessageProperty); }
-            set { SetValue(ValidationMessageProperty, value); }
+            get => (string)GetValue(ValidationMessageProperty);
+            set => SetValue(ValidationMessageProperty, value);
         }
 
         /// <summary>
@@ -225,8 +231,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public ValidationState ValidationState
         {
-            get { return (ValidationState)GetValue(ValidationStateProperty); }
-            set { SetValue(ValidationStateProperty, value); }
+            get => (ValidationState)GetValue(ValidationStateProperty);
+            set => SetValue(ValidationStateProperty, value);
         }
 
         /// <summary>
@@ -249,7 +255,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnChromePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var box = (TextBox)d;
+            TextBox box = (TextBox)d;
             box.UpdateHelperText();
         }
 
@@ -263,18 +269,9 @@ namespace Fluence.Wpf.Controls
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-
-            if (_clearButton != null)
-            {
-                _clearButton.Click -= OnClearButtonClick;
-            }
-
+            _clearButton?.Click -= OnClearButtonClick;
             _clearButton = GetTemplateChild(PART_ClearButton) as System.Windows.Controls.Button;
-            if (_clearButton != null)
-            {
-                _clearButton.Click += OnClearButtonClick;
-            }
-
+            _clearButton?.Click += OnClearButtonClick;
             UpdateCharacterCounter();
             UpdateHelperText();
         }
@@ -282,41 +279,37 @@ namespace Fluence.Wpf.Controls
         private void OnClearButtonClick(object sender, RoutedEventArgs e)
         {
             Clear();
-            Focus();
+            _ = Focus();
         }
 
         private void UpdateCharacterCounter()
         {
-            var counter = GetTemplateChild(PART_CharacterCounter) as System.Windows.Controls.TextBlock;
-            if (counter == null)
+            if (GetTemplateChild(PART_CharacterCounter) is not System.Windows.Controls.TextBlock counter)
             {
                 return;
             }
-
             if (MaxLength <= 0)
             {
                 counter.Visibility = Visibility.Collapsed;
                 return;
             }
-
             counter.Visibility = Visibility.Visible;
             counter.Text = string.Format(CultureInfo.CurrentCulture, "{0}/{1}", Text != null ? Text.Length : 0, MaxLength);
         }
 
         private void UpdateHelperText()
         {
-            var helper = GetTemplateChild(PART_HelperText) as System.Windows.Controls.TextBlock;
-            var icon = GetTemplateChild(PART_ValidationIcon) as System.Windows.Controls.TextBlock;
-            if (helper == null)
+            System.Windows.Controls.TextBlock? icon = GetTemplateChild(PART_ValidationIcon) as System.Windows.Controls.TextBlock;
+            if (GetTemplateChild(PART_HelperText) is not System.Windows.Controls.TextBlock helper)
             {
                 return;
             }
 
             if (ValidationState != ValidationState.None)
             {
-                var message = !string.IsNullOrEmpty(ValidationMessage) ? ValidationMessage : HelperText;
+                string message = !string.IsNullOrWhiteSpace(ValidationMessage) ? ValidationMessage : HelperText;
                 helper.Text = message;
-                helper.Visibility = string.IsNullOrEmpty(message) ? Visibility.Collapsed : Visibility.Visible;
+                helper.Visibility = string.IsNullOrWhiteSpace(message) ? Visibility.Collapsed : Visibility.Visible;
                 if (icon != null)
                 {
                     icon.Visibility = helper.Visibility;
@@ -334,12 +327,13 @@ namespace Fluence.Wpf.Controls
                             icon.Text = "\uE783";
                             icon.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "SystemFillColorCriticalBrush");
                             break;
+                        case ValidationState.None:
+                            break;
                         default:
                             icon.Visibility = Visibility.Collapsed;
                             break;
                     }
                 }
-
                 switch (ValidationState)
                 {
                     case ValidationState.Success:
@@ -351,19 +345,22 @@ namespace Fluence.Wpf.Controls
                     case ValidationState.Error:
                         helper.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "SystemFillColorCriticalBrush");
                         break;
+                    case ValidationState.None:
+                        break;
+                    default:
+                        break;
                 }
-
                 return;
             }
-
-            if (icon != null)
-            {
-                icon.Visibility = Visibility.Collapsed;
-            }
-
+            _ = (icon?.Visibility = Visibility.Collapsed);
             helper.Text = HelperText;
-            helper.Visibility = string.IsNullOrEmpty(HelperText) ? Visibility.Collapsed : Visibility.Visible;
+            helper.Visibility = string.IsNullOrWhiteSpace(HelperText) ? Visibility.Collapsed : Visibility.Visible;
             helper.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "TextFillColorSecondaryBrush");
         }
+
+        /// <summary>
+        /// Represents a reference to the clear button control.
+        /// </summary>
+        private System.Windows.Controls.Button? _clearButton;
     }
 }

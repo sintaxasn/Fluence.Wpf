@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
@@ -34,7 +35,6 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryTabsPage : UserControl
     {
-
         private const string TabControlBasicsXamlSource = @"<UserControl
     x:Class=""Fluence.Wpf.Demo.Pages.Tabs.TabControlBasics""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
@@ -294,15 +294,15 @@ namespace Fluence.Wpf.Demo.Pages.Tabs
 }
 ";
 
-private int _nextDocumentNumber = 4;
+        private int _nextDocumentNumber = 4;
 
         public GalleryTabsPage()
         {
             InitializeComponent();
 
-            DemoSampleControl.ReplaceSourceLink(TabControlBasicsSourceLink, TabControlBasicsXamlSource, TabControlBasicsCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(TabControlPlacementSourceLink, TabControlPlacementXamlSource, TabControlPlacementCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(TabViewDocumentsSourceLink, TabViewDocumentsXamlSource, TabViewDocumentsCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(TabControlBasicsSourceLink, TabControlBasicsXamlSource, TabControlBasicsCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(TabControlPlacementSourceLink, TabControlPlacementXamlSource, TabControlPlacementCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(TabViewDocumentsSourceLink, TabViewDocumentsXamlSource, TabViewDocumentsCSharpSource);
         }
 
         private void DemoTabView_AddTabButtonClick(object sender, RoutedEventArgs e)
@@ -313,8 +313,8 @@ private int _nextDocumentNumber = 4;
             }
 
             int number = _nextDocumentNumber++;
-            var icon = new FontIcon { Glyph = "\uE8A5", IconFontSize = 16 };
-            var body = new System.Windows.Controls.TextBlock
+            FontIcon icon = new() { Glyph = "\uE8A5", IconFontSize = 16 };
+            System.Windows.Controls.TextBlock body = new()
             {
                 Margin = new Thickness(16),
                 Foreground = (System.Windows.Media.Brush)FindResource("TextFillColorSecondaryBrush"),
@@ -322,22 +322,21 @@ private int _nextDocumentNumber = 4;
                 TextWrapping = TextWrapping.Wrap
             };
 
-            var tab = new TabViewItem
+            TabViewItem tab = new()
             {
                 Header = string.Format(CultureInfo.CurrentCulture, "Document {0}", number),
                 Icon = icon,
                 Content = body
             };
 
-            DemoTabView.Items.Add(tab);
+            _ = DemoTabView.Items.Add(tab);
             DemoTabView.SelectedItem = tab;
             UpdateStatus();
         }
 
         private void DemoTabView_TabCloseRequested(object sender, RoutedEventArgs e)
         {
-            var args = e as TabViewTabCloseRequestedEventArgs;
-            if (args == null || DemoTabView == null || args.Tab == null)
+            if (e is not TabViewTabCloseRequestedEventArgs args || DemoTabView == null || args.Tab == null)
             {
                 return;
             }

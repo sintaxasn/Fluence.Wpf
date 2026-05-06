@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Fluence.Wpf.Controls;
@@ -40,26 +41,26 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var application = WpfTestSta.EnsureApplication();
+                Application? application = WpfTestSta.EnsureApplication();
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
-                application.Resources.Clear();
+                application?.Resources.Clear();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
 
                 try
                 {
-                    var textBlock = new WpfTextBlock();
+                    WpfTextBlock textBlock = new();
                     TextBlockExtensions.SetTypography(textBlock, FluentTypography.BodyLarge);
 
                     Assert.AreSame(
-                        application.TryFindResource("BodyLargeTextBlockStyle"),
+                        application?.TryFindResource("BodyLargeTextBlockStyle"),
                         textBlock.Style,
                         "Attached typography should use the named XAML style resource as its source of truth.");
                 }
                 finally
                 {
-                    application.Resources.MergedDictionaries.Clear();
-                    application.Resources.Clear();
+                    application?.Resources.MergedDictionaries.Clear();
+                    application?.Resources.Clear();
                     ApplicationThemeManager.ResetForTesting();
                     ApplicationAccentColorManager.ResetForTesting();
                 }

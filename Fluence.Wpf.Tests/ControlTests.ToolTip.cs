@@ -25,10 +25,9 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-using System;
+
 using System.Windows;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf;
 using Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Tests
@@ -47,10 +46,10 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var brush = app.TryFindResource("SolidBackgroundFillColorTertiaryBrush");
+                object? brush = app?.TryFindResource("SolidBackgroundFillColorTertiaryBrush");
                 Assert.IsNotNull(brush,
                     "SolidBackgroundFillColorTertiaryBrush (ToolTip background) must resolve after theme apply.");
             });
@@ -61,10 +60,10 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var brush = app.TryFindResource("SurfaceStrokeColorFlyoutBrush");
+                object? brush = app?.TryFindResource("SurfaceStrokeColorFlyoutBrush");
                 Assert.IsNotNull(brush,
                     "SurfaceStrokeColorFlyoutBrush (ToolTip border) must resolve after theme apply.");
             });
@@ -75,16 +74,19 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
                 // Default style is keyed to the Fluence ToolTip type.
-                var style = app.TryFindResource(typeof(ToolTip)) as Style;
+                Style? style = app?.TryFindResource(typeof(ToolTip)) as Style;
                 Assert.IsNotNull(style, "A default Style must be registered for Fluence.Wpf.Controls.ToolTip.");
 
                 // Apply manually so property setters are evaluated.
-                var tt = new ToolTip { Content = "Test" };
-                tt.Style = style;
+                ToolTip tt = new()
+                {
+                    Content = "Test",
+                    Style = style
+                };
 
                 // FontSize and MaxWidth are ordinary DPs — they resolve via Style.Apply.
                 Assert.AreEqual(12.0, tt.FontSize, 0.01, "ToolTip.FontSize must be 12 per Fluent style.");
@@ -98,17 +100,17 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var brushKeys = new[] { "SolidBackgroundFillColorTertiaryBrush", "SurfaceStrokeColorFlyoutBrush", "TextFillColorPrimaryBrush" };
+                string[] brushKeys = ["SolidBackgroundFillColorTertiaryBrush", "SurfaceStrokeColorFlyoutBrush", "TextFillColorPrimaryBrush"];
 
-                foreach (var theme in new[] { ApplicationTheme.Dark, ApplicationTheme.HighContrast, ApplicationTheme.Light })
+                foreach (ApplicationTheme theme in new[] { ApplicationTheme.Dark, ApplicationTheme.HighContrast, ApplicationTheme.Light })
                 {
                     ApplicationThemeManager.Apply(theme, BackdropType.None, true);
-                    foreach (var key in brushKeys)
+                    foreach (string? key in brushKeys)
                     {
-                        Assert.IsNotNull(app.TryFindResource(key),
+                        Assert.IsNotNull(app?.TryFindResource(key),
                             string.Format("Resource '{0}' must resolve in ToolTip theme cycle step: {1}", key, theme));
                     }
                 }

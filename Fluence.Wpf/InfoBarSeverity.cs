@@ -25,22 +25,32 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// Visual severity style for <see cref="Fluence.Wpf.Controls.InfoBadge"/>.
+    /// Specifies the severity level of an <see cref="Controls.InfoBar"/>.
     /// </summary>
-    public enum InfoBadgeStyle
+    public enum InfoBarSeverity
     {
-        /// <summary>Accent-colored attention badge.</summary>
-        Attention,
-        /// <summary>Informational badge.</summary>
+        /// <summary>
+        /// Informational message requiring attention.
+        /// </summary>
         Informational,
-        /// <summary>Success (green) badge.</summary>
+
+        /// <summary>
+        /// Operation completed successfully.
+        /// </summary>
         Success,
-        /// <summary>Critical (red) badge.</summary>
-        Critical,
-        /// <summary>Caution (yellow) badge.</summary>
-        Caution
+
+        /// <summary>
+        /// A non-critical warning condition.
+        /// </summary>
+        Warning,
+
+        /// <summary>
+        /// A critical error condition.
+        /// </summary>
+        Error,
     }
 }

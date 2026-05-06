@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 
 namespace Fluence.Wpf.Controls
@@ -35,6 +36,12 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     public class ToolTip : System.Windows.Controls.ToolTip
     {
+        /// <summary>
+        /// Initializes static members of the ToolTip class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the ToolTip control uses its own style by
+        /// default, rather than inheriting the style from its base class. This is important for proper theming and
+        /// appearance in WPF applications.</remarks>
         static ToolTip()
         {
             DefaultStyleKeyProperty.OverrideMetadata(

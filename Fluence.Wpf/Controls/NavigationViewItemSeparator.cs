@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 using System.Windows.Controls;
 
@@ -36,6 +37,12 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     public class NavigationViewItemSeparator : Control
     {
+        /// <summary>
+        /// Initializes static members of the NavigationViewItemSeparator class and overrides default property metadata.
+        /// </summary>
+        /// <remarks>This static constructor sets the default style key and marks the control as not
+        /// focusable by default. These overrides ensure that the NavigationViewItemSeparator is styled and behaves
+        /// appropriately within the navigation view control hierarchy.</remarks>
         static NavigationViewItemSeparator()
         {
             DefaultStyleKeyProperty.OverrideMetadata(

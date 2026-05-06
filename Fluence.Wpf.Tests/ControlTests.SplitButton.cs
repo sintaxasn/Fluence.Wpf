@@ -25,11 +25,11 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf;
 using Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Tests
@@ -48,10 +48,10 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var btn = new SplitButton();
+                SplitButton btn = new();
                 Assert.AreEqual(
                     ControlAppearance.Standard,
                     btn.Appearance,
@@ -64,11 +64,11 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var btn = new SplitButton { Appearance = ControlAppearance.Accent, Content = "Go" };
-                var w = new Window { Content = btn, Width = 300, Height = 100 };
+                SplitButton btn = new() { Appearance = ControlAppearance.Accent, Content = "Go" };
+                Window w = new() { Content = btn, Width = 300, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
@@ -85,15 +85,15 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var btn = new SplitButton { Content = "Test" };
-                var w = new Window { Content = btn, Width = 300, Height = 100 };
+                SplitButton btn = new() { Content = "Test" };
+                Window w = new() { Content = btn, Width = 300, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var divider = FindVisualChildByName<Rectangle>(btn, "Divider");
+                Rectangle? divider = FindVisualChildByName<Rectangle>(btn, "Divider");
                 Assert.IsNotNull(divider, "Divider (Rectangle) must be present in SplitButton template.");
                 Assert.IsNotNull(divider.Fill, "Divider.Fill must not be null.");
                 w.Close();
@@ -105,30 +105,30 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
                 // Standard appearance — get divider color
-                var btnStd = new SplitButton { Appearance = ControlAppearance.Standard, Content = "Std" };
-                var wStd = new Window { Content = btnStd, Width = 300, Height = 100 };
+                SplitButton btnStd = new() { Appearance = ControlAppearance.Standard, Content = "Std" };
+                Window wStd = new() { Content = btnStd, Width = 300, Height = 100 };
                 wStd.Show();
                 DrainDispatcher(wStd.Dispatcher);
 
-                var dividerStd = FindVisualChildByName<Rectangle>(btnStd, "Divider");
+                Rectangle? dividerStd = FindVisualChildByName<Rectangle>(btnStd, "Divider");
                 Assert.IsNotNull(dividerStd, "Divider must be in template.");
-                var stdBrush = dividerStd.Fill as SolidColorBrush;
+                SolidColorBrush? stdBrush = dividerStd.Fill as SolidColorBrush;
                 Assert.IsNotNull(stdBrush, "Divider.Fill must be a SolidColorBrush in Standard mode.");
                 wStd.Close();
 
                 // Accent appearance — get divider color
-                var btnAcc = new SplitButton { Appearance = ControlAppearance.Accent, Content = "Acc" };
-                var wAcc = new Window { Content = btnAcc, Width = 300, Height = 100 };
+                SplitButton btnAcc = new() { Appearance = ControlAppearance.Accent, Content = "Acc" };
+                Window wAcc = new() { Content = btnAcc, Width = 300, Height = 100 };
                 wAcc.Show();
                 DrainDispatcher(wAcc.Dispatcher);
 
-                var dividerAcc = FindVisualChildByName<Rectangle>(btnAcc, "Divider");
+                Rectangle? dividerAcc = FindVisualChildByName<Rectangle>(btnAcc, "Divider");
                 Assert.IsNotNull(dividerAcc, "Divider must be in accent template.");
-                var accBrush = dividerAcc.Fill as SolidColorBrush;
+                SolidColorBrush? accBrush = dividerAcc.Fill as SolidColorBrush;
                 Assert.IsNotNull(accBrush, "Divider.Fill must be a SolidColorBrush in Accent mode.");
 
                 Assert.AreNotEqual(

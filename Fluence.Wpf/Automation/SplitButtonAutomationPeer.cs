@@ -25,10 +25,12 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
+using System.Windows.Input;
 using Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Automation
@@ -37,16 +39,9 @@ namespace Fluence.Wpf.Automation
     /// Exposes <see cref="SplitButton"/> to UI Automation with the Invoke pattern
     /// (primary half) and the ExpandCollapse pattern (flyout half).
     /// </summary>
-    public class SplitButtonAutomationPeer : FrameworkElementAutomationPeer, IInvokeProvider, IExpandCollapseProvider
+    /// <remarks>Initializes a new instance.</remarks>
+    public class SplitButtonAutomationPeer(SplitButton owner) : FrameworkElementAutomationPeer(owner), IInvokeProvider, IExpandCollapseProvider
     {
-        /// <summary>Initializes a new instance.</summary>
-        public SplitButtonAutomationPeer(SplitButton owner) : base(owner) { }
-
-        private SplitButton SplitButton
-        {
-            get { return (SplitButton)Owner; }
-        }
-
         /// <inheritdoc />
         protected override string GetClassNameCore()
         {
@@ -62,38 +57,55 @@ namespace Fluence.Wpf.Automation
         /// <inheritdoc />
         public override object GetPattern(PatternInterface patternInterface)
         {
-            if (patternInterface == PatternInterface.Invoke)
-            {
-                return this;
-            }
-
-            if (patternInterface == PatternInterface.ExpandCollapse)
-            {
-                return this;
-            }
-
-            return base.GetPattern(patternInterface);
+            return patternInterface is not (PatternInterface.Invoke or PatternInterface.ExpandCollapse)
+                ? base.GetPattern(patternInterface)
+                : this;
         }
 
-        void IInvokeProvider.Invoke()
+        /// <inheritdoc />
+        public virtual ExpandCollapseState ExpandCollapseState => SplitButton.IsFlyoutOpen
+            ? ExpandCollapseState.Expanded
+            : ExpandCollapseState.Collapsed;
+
+        /// <inheritdoc />
+        public virtual void Expand()
+        {
+            // The read-only IsFlyoutOpen reflects the secondary ToggleButton, which is
+            // part of the template. Automation clients opening a SplitButton without a
+            // visual tree see no-op behavior; with a template applied, the overridden
+            // PropertyChanged wiring flips the popup via the secondary button.
+            SplitButton thisButton = SplitButton;
+            System.Windows.Controls.Primitives.ToggleButton? toggle = thisButton.Template is not null
+                ? thisButton.Template.FindName("PART_SecondaryButton", thisButton) as System.Windows.Controls.Primitives.ToggleButton
+                : null;
+            _ = (toggle?.IsChecked = true);
+        }
+
+        /// <inheritdoc />
+        public virtual void Collapse()
+        {
+            SplitButton thisButton = SplitButton;
+            System.Windows.Controls.Primitives.ToggleButton? toggle = thisButton.Template is not null
+                ? thisButton.Template.FindName("PART_SecondaryButton", thisButton) as System.Windows.Controls.Primitives.ToggleButton
+                : null;
+            _ = (toggle?.IsChecked = false);
+        }
+
+        /// <inheritdoc />
+        public virtual void Invoke()
         {
             // Route Invoke to the primary half by raising SplitButton.Click and executing Command.
-            var button = SplitButton;
-            var command = button.Command;
-
+            SplitButton button = SplitButton;
             button.RaiseEvent(new RoutedEventArgs(SplitButton.ClickEvent, button));
-
-            if (command == null)
+            if (button.Command is not ICommand command)
             {
                 return;
             }
 
-            var parameter = button.CommandParameter;
-            var target = button.CommandTarget;
-
-            var routedCommand = command as System.Windows.Input.RoutedCommand;
-            if (routedCommand != null)
+            object parameter = button.CommandParameter;
+            if (command is RoutedCommand routedCommand)
             {
+                IInputElement target = button.CommandTarget;
                 if (routedCommand.CanExecute(parameter, target))
                 {
                     routedCommand.Execute(parameter, target);
@@ -105,40 +117,9 @@ namespace Fluence.Wpf.Automation
             }
         }
 
-        ExpandCollapseState IExpandCollapseProvider.ExpandCollapseState
-        {
-            get
-            {
-                return SplitButton.IsFlyoutOpen
-                    ? ExpandCollapseState.Expanded
-                    : ExpandCollapseState.Collapsed;
-            }
-        }
-
-        void IExpandCollapseProvider.Expand()
-        {
-            // The read-only IsFlyoutOpen reflects the secondary ToggleButton, which is
-            // part of the template. Automation clients opening a SplitButton without a
-            // visual tree see no-op behavior; with a template applied, the overridden
-            // PropertyChanged wiring flips the popup via the secondary button.
-            var owner = SplitButton;
-            var toggle = owner.Template == null ? null
-                : owner.Template.FindName("PART_SecondaryButton", owner) as System.Windows.Controls.Primitives.ToggleButton;
-            if (toggle != null)
-            {
-                toggle.IsChecked = true;
-            }
-        }
-
-        void IExpandCollapseProvider.Collapse()
-        {
-            var owner = SplitButton;
-            var toggle = owner.Template == null ? null
-                : owner.Template.FindName("PART_SecondaryButton", owner) as System.Windows.Controls.Primitives.ToggleButton;
-            if (toggle != null)
-            {
-                toggle.IsChecked = false;
-            }
-        }
+        /// <summary>
+        /// Gets the associated SplitButton control that owns this element.
+        /// </summary>
+        private SplitButton SplitButton => (SplitButton)Owner;
     }
 }

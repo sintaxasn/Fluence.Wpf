@@ -25,13 +25,13 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Runtime.ExceptionServices;
 using System.Windows;
-using System.Windows.Controls.Primitives;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf;
 using Fluence.Wpf.Controls;
+using System.Collections.ObjectModel;
 
 namespace Fluence.Wpf.Tests
 {
@@ -40,8 +40,8 @@ namespace Fluence.Wpf.Tests
     {
         private static void RunOnFreshStaThread(Action action)
         {
-            Exception capturedException = null;
-            WpfTestSta.Dispatcher.Invoke(new Action(delegate
+            Exception? capturedException = null;
+            WpfTestSta.Dispatcher?.Invoke(new Action(delegate
             {
                 try
                 {
@@ -59,26 +59,26 @@ namespace Fluence.Wpf.Tests
             }
         }
 
-        private static Application EnsureApplication()
+        private static Application? EnsureApplication()
         {
             return WpfTestSta.EnsureApplication();
         }
 
-        private static ResourceDictionary MergeTheme(Application application)
+        private static ResourceDictionary? MergeTheme(Application? application)
         {
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
-            application.Resources.MergedDictionaries.Clear();
+            application?.Resources.MergedDictionaries.Clear();
             ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-            var dictionaries = application.Resources.MergedDictionaries;
-            return dictionaries.Count > 0 ? dictionaries[dictionaries.Count - 1] : null;
+            Collection<ResourceDictionary>? dictionaries = application?.Resources.MergedDictionaries;
+            return dictionaries?.Count > 0 ? dictionaries[dictionaries.Count - 1] : null;
         }
 
         private static void RunWithComboBox(Action<ComboBox> testBody)
         {
             RunOnFreshStaThread(() =>
             {
-                var comboBox = new ComboBox();
+                ComboBox comboBox = new();
                 testBody(comboBox);
             });
         }
@@ -110,8 +110,8 @@ namespace Fluence.Wpf.Tests
         {
             RunWithComboBox(cb =>
             {
-                cb.Items.Add("A");
-                cb.Items.Add("B");
+                _ = cb.Items.Add("A");
+                _ = cb.Items.Add("B");
 
                 Assert.IsFalse(cb.IsDropDownOpen,
                     "IsDropDownOpen should be false by default.");
@@ -127,7 +127,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ComboBoxXaml_HoverUsesSubtleFillBrush()
         {
-            var xamlPath = System.IO.Path.Combine(
+            string xamlPath = System.IO.Path.Combine(
                 AppDomain.CurrentDomain.BaseDirectory,
                 @"..\..\..\..\Fluence.Wpf\Themes\Controls\ComboBox.xaml");
 
@@ -162,7 +162,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ComboBoxXaml_NoiseOverlay_IsNamed()
         {
-            var xamlPath = System.IO.Path.Combine(
+            string xamlPath = System.IO.Path.Combine(
                 AppDomain.CurrentDomain.BaseDirectory,
                 @"..\..\..\..\Fluence.Wpf\Themes\Controls\ComboBox.xaml");
 
@@ -183,7 +183,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ComboBoxXaml_UpwardTrigger_SetsNoiseOverlayCornerRadius()
         {
-            var xamlPath = System.IO.Path.Combine(
+            string xamlPath = System.IO.Path.Combine(
                 AppDomain.CurrentDomain.BaseDirectory,
                 @"..\..\..\..\Fluence.Wpf\Themes\Controls\ComboBox.xaml");
 
@@ -212,30 +212,30 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(() =>
             {
-                var application = EnsureApplication();
-                MergeTheme(application);
+                Application? application = EnsureApplication();
+                _ = MergeTheme(application);
 
-                var window = new Window();
+                Window window = new();
                 try
                 {
-                    var comboBox = new ComboBox();
-                    comboBox.Items.Add("Alpha");
-                    comboBox.Items.Add("Beta");
+                    ComboBox comboBox = new();
+                    _ = comboBox.Items.Add("Alpha");
+                    _ = comboBox.Items.Add("Beta");
 
                     window.Content = comboBox;
                     window.Width = 200;
                     window.Height = 80;
                     window.Show();
-                    WpfTestSta.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.Background);
+                    WpfTestSta.Dispatcher?.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.Background);
                     window.UpdateLayout();
-                    comboBox.ApplyTemplate();
+                    _ = comboBox.ApplyTemplate();
 
-                    var dropdownBorder = comboBox.Template.FindName("PART_DropdownBorder", comboBox)
+                    System.Windows.Controls.Border? dropdownBorder = comboBox.Template.FindName("PART_DropdownBorder", comboBox)
                         as System.Windows.Controls.Border;
                     Assert.IsNotNull(dropdownBorder,
                         "Template must expose PART_DropdownBorder so the popup backdrop is locatable.");
 
-                    var noiseOverlay = comboBox.Template.FindName("NoiseOverlay", comboBox)
+                    System.Windows.Controls.Border? noiseOverlay = comboBox.Template.FindName("NoiseOverlay", comboBox)
                         as System.Windows.Controls.Border;
                     Assert.IsNotNull(noiseOverlay,
                         "Template must expose NoiseOverlay (the inner acrylic-noise Border) so the " +
@@ -265,11 +265,11 @@ namespace Fluence.Wpf.Tests
         {
             RunWithComboBox(cb =>
             {
-                cb.Items.Add("Alpha");
-                cb.Items.Add("Beta");
-                cb.Items.Add("Gamma");
-                cb.Items.Add("Delta");
-                cb.Items.Add("Epsilon");
+                _ = cb.Items.Add("Alpha");
+                _ = cb.Items.Add("Beta");
+                _ = cb.Items.Add("Gamma");
+                _ = cb.Items.Add("Delta");
+                _ = cb.Items.Add("Epsilon");
 
                 Assert.AreEqual(0, cb.SelectedIndex,
                     "First item must be auto-selected when no SelectedIndex is provided.");
@@ -283,9 +283,9 @@ namespace Fluence.Wpf.Tests
             {
                 cb.SelectedIndex = -1;
 
-                cb.Items.Add("Alpha");
-                cb.Items.Add("Beta");
-                cb.Items.Add("Gamma");
+                _ = cb.Items.Add("Alpha");
+                _ = cb.Items.Add("Beta");
+                _ = cb.Items.Add("Gamma");
 
                 Assert.AreEqual(-1, cb.SelectedIndex,
                     "Explicit SelectedIndex=-1 must be respected; auto-select must not override it.");
@@ -300,9 +300,9 @@ namespace Fluence.Wpf.Tests
                 Assert.AreEqual(-1, cb.SelectedIndex,
                     "SelectedIndex must be -1 when no items exist.");
 
-                cb.Items.Add("First");
-                cb.Items.Add("Second");
-                cb.Items.Add("Third");
+                _ = cb.Items.Add("First");
+                _ = cb.Items.Add("Second");
+                _ = cb.Items.Add("Third");
 
                 Assert.AreEqual(0, cb.SelectedIndex,
                     "SelectedIndex must be 0 after dynamically adding items.");
@@ -314,13 +314,13 @@ namespace Fluence.Wpf.Tests
         {
             RunWithComboBox(cb =>
             {
-                cb.Items.Add("Alpha");
-                cb.Items.Add("Beta");
-                cb.Items.Add("Gamma");
+                _ = cb.Items.Add("Alpha");
+                _ = cb.Items.Add("Beta");
+                _ = cb.Items.Add("Gamma");
 
                 cb.SelectedIndex = 2;
 
-                cb.Items.Add("Delta");
+                _ = cb.Items.Add("Delta");
 
                 Assert.AreEqual(2, cb.SelectedIndex,
                     "Auto-select must not change an existing explicit selection.");

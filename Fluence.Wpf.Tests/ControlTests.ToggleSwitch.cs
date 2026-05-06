@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -47,15 +48,15 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var ts = new ToggleSwitch();
-                var w = new Window { Content = ts, Width = 160, Height = 60 };
+                ToggleSwitch ts = new();
+                Window w = new() { Content = ts, Width = 160, Height = 60 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var thumb = FindVisualChildByName<Ellipse>(ts, "SwitchThumb");
+                Ellipse? thumb = FindVisualChildByName<Ellipse>(ts, "SwitchThumb");
                 Assert.IsNotNull(thumb, "SwitchThumb Ellipse must exist in ToggleSwitch template.");
                 w.Close();
             });
@@ -66,15 +67,15 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var ts = new ToggleSwitch { IsChecked = false };
-                var w = new Window { Content = ts, Width = 160, Height = 60 };
+                ToggleSwitch ts = new() { IsChecked = false };
+                Window w = new() { Content = ts, Width = 160, Height = 60 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var thumb = FindVisualChildByName<Ellipse>(ts, "SwitchThumb");
+                Ellipse? thumb = FindVisualChildByName<Ellipse>(ts, "SwitchThumb");
                 Assert.IsNotNull(thumb, "SwitchThumb must exist.");
                 Assert.AreEqual(12.0, thumb.Width, 0.001,
                     "Default knob Width must be 12 (WinUI ToggleSwitch_themeresources.xaml SwitchKnobOff normal state).");
@@ -89,18 +90,18 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var ts = new ToggleSwitch { IsChecked = true };
-                var w = new Window { Content = ts, Width = 160, Height = 60 };
+                ToggleSwitch ts = new() { IsChecked = true };
+                Window w = new() { Content = ts, Width = 160, Height = 60 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var thumb = FindVisualChildByName<Ellipse>(ts, "SwitchThumb");
+                Ellipse? thumb = FindVisualChildByName<Ellipse>(ts, "SwitchThumb");
                 Assert.IsNotNull(thumb, "SwitchThumb must exist.");
 
-                var tx = thumb.RenderTransform as TranslateTransform;
+                TranslateTransform? tx = thumb.RenderTransform as TranslateTransform;
                 Assert.IsNotNull(tx,
                     "SwitchThumb RenderTransform must be TranslateTransform when IsChecked=True.");
                 Assert.AreEqual(20.0, tx.X, 0.5,
@@ -114,19 +115,18 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var ts = new ToggleSwitch { IsChecked = false };
-                var w = new Window { Content = ts, Width = 160, Height = 60 };
+                ToggleSwitch ts = new() { IsChecked = false };
+                Window w = new() { Content = ts, Width = 160, Height = 60 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var thumb = FindVisualChildByName<Ellipse>(ts, "SwitchThumb");
+                Ellipse? thumb = FindVisualChildByName<Ellipse>(ts, "SwitchThumb");
                 Assert.IsNotNull(thumb, "SwitchThumb must exist.");
 
-                var tx = thumb.RenderTransform as TranslateTransform;
-                if (tx != null)
+                if (thumb.RenderTransform is TranslateTransform tx)
                 {
                     Assert.AreEqual(0.0, tx.X, 0.5,
                         "Knob X translate must be 0 when IsChecked=False.");

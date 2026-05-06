@@ -25,12 +25,14 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 using System.Windows.Media;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Native;
+using Fluence.Wpf.Helpers;
+using System.Windows.Shell;
 
 namespace Fluence.Wpf.Tests
 {
@@ -63,7 +65,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ResolveEffectiveBackdrop_Auto_Win11_22H2_ReturnsMica()
         {
-            var effective = WindowPolicy.ResolveEffectiveBackdrop(
+            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
                 BackdropType.Auto,
                 Caps(systemBackdrop: true, roundedCorners: true, captionColor: true, borderColor: true));
 
@@ -74,7 +76,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ResolveEffectiveBackdrop_Auto_Win11Pre22H2_LegacyMicaOnly_ReturnsMica()
         {
-            var effective = WindowPolicy.ResolveEffectiveBackdrop(
+            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
                 BackdropType.Auto,
                 Caps(legacyMica: true, roundedCorners: true, captionColor: true));
 
@@ -85,7 +87,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ResolveEffectiveBackdrop_Auto_Win10_ReturnsNone()
         {
-            var effective = WindowPolicy.ResolveEffectiveBackdrop(
+            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
                 BackdropType.Auto,
                 Caps());
 
@@ -96,7 +98,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ResolveEffectiveBackdrop_None_Win11_PassesThrough()
         {
-            var effective = WindowPolicy.ResolveEffectiveBackdrop(
+            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
                 BackdropType.None,
                 Caps(systemBackdrop: true, roundedCorners: true));
 
@@ -107,7 +109,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ResolveEffectiveBackdrop_Mica_Win22H2_PassesThrough()
         {
-            var effective = WindowPolicy.ResolveEffectiveBackdrop(
+            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
                 BackdropType.Mica,
                 Caps(systemBackdrop: true, roundedCorners: true));
 
@@ -117,7 +119,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ResolveEffectiveBackdrop_Mica_Win11Pre22H2_UsesLegacyMica()
         {
-            var effective = WindowPolicy.ResolveEffectiveBackdrop(
+            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
                 BackdropType.Mica,
                 Caps(legacyMica: true, roundedCorners: true));
 
@@ -128,7 +130,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ResolveEffectiveBackdrop_Mica_Win10_DowngradesToNone()
         {
-            var effective = WindowPolicy.ResolveEffectiveBackdrop(
+            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
                 BackdropType.Mica,
                 Caps());
 
@@ -139,7 +141,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ResolveEffectiveBackdrop_Acrylic_Win22H2_PassesThrough()
         {
-            var effective = WindowPolicy.ResolveEffectiveBackdrop(
+            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
                 BackdropType.Acrylic,
                 Caps(systemBackdrop: true, roundedCorners: true));
 
@@ -149,7 +151,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ResolveEffectiveBackdrop_Acrylic_Win11Pre22H2_DowngradesToMica()
         {
-            var effective = WindowPolicy.ResolveEffectiveBackdrop(
+            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
                 BackdropType.Acrylic,
                 Caps(legacyMica: true, roundedCorners: true));
 
@@ -160,7 +162,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ResolveEffectiveBackdrop_Acrylic_Win10_DowngradesToNone()
         {
-            var effective = WindowPolicy.ResolveEffectiveBackdrop(
+            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
                 BackdropType.Acrylic,
                 Caps());
 
@@ -170,7 +172,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ResolveEffectiveBackdrop_Tabbed_Win22H2_PassesThrough()
         {
-            var effective = WindowPolicy.ResolveEffectiveBackdrop(
+            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
                 BackdropType.Tabbed,
                 Caps(systemBackdrop: true, roundedCorners: true));
 
@@ -180,7 +182,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ResolveEffectiveBackdrop_Tabbed_Win11Pre22H2_DowngradesToMica()
         {
-            var effective = WindowPolicy.ResolveEffectiveBackdrop(
+            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
                 BackdropType.Tabbed,
                 Caps(legacyMica: true, roundedCorners: true));
 
@@ -190,7 +192,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ResolveEffectiveBackdrop_Tabbed_Win10_DowngradesToNone()
         {
-            var effective = WindowPolicy.ResolveEffectiveBackdrop(
+            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
                 BackdropType.Tabbed,
                 Caps());
 
@@ -204,8 +206,8 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void BuildBackdropPlan_None_UsesFallbackBackground_EmitsDwmsbtNone()
         {
-            var fallback = Color.FromRgb(0xFA, 0xFA, 0xFA);
-            var plan = WindowPolicy.BuildBackdropPlan(
+            Color fallback = Color.FromRgb(0xFA, 0xFA, 0xFA);
+            BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
                 BackdropType.None,
                 ApplicationTheme.Light,
                 Caps(systemBackdrop: true),
@@ -226,7 +228,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void BuildBackdropPlan_None_OnWin10_OmitsSystemBackdropType()
         {
-            var plan = WindowPolicy.BuildBackdropPlan(
+            BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
                 BackdropType.None,
                 ApplicationTheme.Light,
                 Caps(),
@@ -243,7 +245,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void BuildBackdropPlan_Mica_LegacyPath_UsesDwmMicaEffect_NotSystemBackdrop()
         {
-            var plan = WindowPolicy.BuildBackdropPlan(
+            BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
                 BackdropType.Mica,
                 ApplicationTheme.Dark,
                 Caps(legacyMica: true, roundedCorners: true),
@@ -264,7 +266,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void BuildBackdropPlan_Mica_Win22H2_UsesDwmSystemBackdropType_NotLegacy()
         {
-            var plan = WindowPolicy.BuildBackdropPlan(
+            BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
                 BackdropType.Mica,
                 ApplicationTheme.Light,
                 Caps(systemBackdrop: true, roundedCorners: true, captionColor: true),
@@ -286,28 +288,28 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void BuildBackdropPlan_Acrylic_Win22H2_MapsToTransientWindow()
         {
-            var plan = WindowPolicy.BuildBackdropPlan(
+            BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
                 BackdropType.Acrylic,
                 ApplicationTheme.Light,
                 Caps(systemBackdrop: true, roundedCorners: true),
                 Colors.White);
 
             Assert.AreEqual(BackdropType.Acrylic, plan.EffectiveBackdrop);
-            Assert.AreEqual(NativeConstants.DWMSBT_TRANSIENTWINDOW, plan.SystemBackdropType.Value,
+            Assert.AreEqual(NativeConstants.DWMSBT_TRANSIENTWINDOW, plan.SystemBackdropType,
                 "Acrylic must map to DWMSBT_TRANSIENTWINDOW.");
         }
 
         [TestMethod]
         public void BuildBackdropPlan_Tabbed_Win22H2_MapsToTabbedWindow()
         {
-            var plan = WindowPolicy.BuildBackdropPlan(
+            BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
                 BackdropType.Tabbed,
                 ApplicationTheme.Light,
                 Caps(systemBackdrop: true, roundedCorners: true),
                 Colors.White);
 
             Assert.AreEqual(BackdropType.Tabbed, plan.EffectiveBackdrop);
-            Assert.AreEqual(NativeConstants.DWMSBT_TABBEDWINDOW, plan.SystemBackdropType.Value,
+            Assert.AreEqual(NativeConstants.DWMSBT_TABBEDWINDOW, plan.SystemBackdropType,
                 "Tabbed must map to DWMSBT_TABBEDWINDOW.");
         }
 
@@ -318,7 +320,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void BuildBackdropPlan_DarkTheme_SetsImmersiveDarkMode()
         {
-            var plan = WindowPolicy.BuildBackdropPlan(
+            BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
                 BackdropType.None,
                 ApplicationTheme.Dark,
                 Caps(systemBackdrop: true),
@@ -331,7 +333,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void BuildBackdropPlan_LightTheme_DoesNotSetImmersiveDarkMode()
         {
-            var plan = WindowPolicy.BuildBackdropPlan(
+            BackdropPlan plan = WindowPolicy.BuildBackdropPlan(
                 BackdropType.None,
                 ApplicationTheme.Light,
                 Caps(systemBackdrop: true),
@@ -381,7 +383,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void CreateWindowChrome_CaptionHeight_IsPassedThrough()
         {
-            var chrome = WindowPolicy.CreateWindowChrome(48d);
+            WindowChrome chrome = WindowPolicy.CreateWindowChrome(48d);
             Assert.AreEqual(48d, chrome.CaptionHeight,
                 "CaptionHeight must reflect the caller-supplied value (FluenceWindow sets 0 to route all hits through WM_NCHITTEST).");
         }
@@ -389,7 +391,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void CreateWindowChrome_GlassFrameThickness_IsMinusOneForShadow()
         {
-            var chrome = WindowPolicy.CreateWindowChrome(0d);
+            WindowChrome chrome = WindowPolicy.CreateWindowChrome(0d);
             Assert.AreEqual(new Thickness(-1), chrome.GlassFrameThickness,
                 "GlassFrameThickness = -1 opts into the full DWM glass frame, which is what gives Fluence windows their drop shadow.");
         }
@@ -397,7 +399,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void CreateWindowChrome_ResizeBorderThickness_Is4()
         {
-            var chrome = WindowPolicy.CreateWindowChrome(0d);
+            WindowChrome chrome = WindowPolicy.CreateWindowChrome(0d);
             Assert.AreEqual(new Thickness(4), chrome.ResizeBorderThickness,
                 "4dp resize border matches WinUI 3 / .NET 10 WPF FluentWindow — preserves the invisible hit-margin that lets users grab the edge.");
         }
@@ -405,7 +407,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void CreateWindowChrome_DisablesAeroCaptionButtons()
         {
-            var chrome = WindowPolicy.CreateWindowChrome(0d);
+            WindowChrome chrome = WindowPolicy.CreateWindowChrome(0d);
             Assert.IsFalse(chrome.UseAeroCaptionButtons,
                 "Fluence renders its own caption buttons; the native WPF Aero caption must stay off.");
         }
@@ -413,15 +415,15 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void CreateWindowChrome_NonClientFrameEdges_IsNone()
         {
-            var chrome = WindowPolicy.CreateWindowChrome(0d);
-            Assert.AreEqual(System.Windows.Shell.NonClientFrameEdges.None, chrome.NonClientFrameEdges,
+            WindowChrome chrome = WindowPolicy.CreateWindowChrome(0d);
+            Assert.AreEqual(NonClientFrameEdges.None, chrome.NonClientFrameEdges,
                 "NonClientFrameEdges.None is required so the client area extends into the caption strip and the custom caption paints.");
         }
 
         [TestMethod]
         public void CreateWindowChrome_CornerRadius_IsZero()
         {
-            var chrome = WindowPolicy.CreateWindowChrome(0d);
+            WindowChrome chrome = WindowPolicy.CreateWindowChrome(0d);
             Assert.AreEqual(new CornerRadius(0), chrome.CornerRadius,
                 "WindowChrome.CornerRadius must be 0 — rounded corners are driven by DWMWA_WINDOW_CORNER_PREFERENCE, not the WPF chrome (WPF-side rounding would clip DWM's Mica).");
         }
@@ -433,21 +435,21 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void GetResizeBorderThickness_Normal_CanResize_Returns4()
         {
-            var thickness = WindowPolicy.GetResizeBorderThickness(WindowState.Normal, ResizeMode.CanResize);
+            Thickness thickness = WindowPolicy.GetResizeBorderThickness(WindowState.Normal, ResizeMode.CanResize);
             Assert.AreEqual(new Thickness(4), thickness);
         }
 
         [TestMethod]
         public void GetResizeBorderThickness_Normal_CanResizeWithGrip_Returns4()
         {
-            var thickness = WindowPolicy.GetResizeBorderThickness(WindowState.Normal, ResizeMode.CanResizeWithGrip);
+            Thickness thickness = WindowPolicy.GetResizeBorderThickness(WindowState.Normal, ResizeMode.CanResizeWithGrip);
             Assert.AreEqual(new Thickness(4), thickness);
         }
 
         [TestMethod]
         public void GetResizeBorderThickness_Maximized_ReturnsZero()
         {
-            var thickness = WindowPolicy.GetResizeBorderThickness(WindowState.Maximized, ResizeMode.CanResize);
+            Thickness thickness = WindowPolicy.GetResizeBorderThickness(WindowState.Maximized, ResizeMode.CanResize);
             Assert.AreEqual(new Thickness(0), thickness,
                 "A maximised window has no resize handles — 4dp would bleed over the taskbar.");
         }
@@ -455,7 +457,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void GetResizeBorderThickness_NoResize_ReturnsZero()
         {
-            var thickness = WindowPolicy.GetResizeBorderThickness(WindowState.Normal, ResizeMode.NoResize);
+            Thickness thickness = WindowPolicy.GetResizeBorderThickness(WindowState.Normal, ResizeMode.NoResize);
             Assert.AreEqual(new Thickness(0), thickness,
                 "ResizeMode.NoResize must emit a zero-thickness hit margin — PSADT fluent dialogs rely on this.");
         }
@@ -463,7 +465,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void GetResizeBorderThickness_CanMinimize_ReturnsZero()
         {
-            var thickness = WindowPolicy.GetResizeBorderThickness(WindowState.Normal, ResizeMode.CanMinimize);
+            Thickness thickness = WindowPolicy.GetResizeBorderThickness(WindowState.Normal, ResizeMode.CanMinimize);
             Assert.AreEqual(new Thickness(0), thickness,
                 "ResizeMode.CanMinimize forbids drag-resize; the hit margin must be zero.");
         }
@@ -475,7 +477,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void BuildFramePlan_Normal_ActiveWithAccentBorder_UsesAccentKey()
         {
-            var plan = WindowPolicy.BuildFramePlan(
+            FramePlan plan = WindowPolicy.BuildFramePlan(
                 WindowState.Normal,
                 isActive: true,
                 isAccentBorderEnabled: true,
@@ -492,7 +494,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void BuildFramePlan_Normal_Inactive_UsesCardStrokeKey()
         {
-            var plan = WindowPolicy.BuildFramePlan(
+            FramePlan plan = WindowPolicy.BuildFramePlan(
                 WindowState.Normal,
                 isActive: false,
                 isAccentBorderEnabled: true,
@@ -506,7 +508,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void BuildFramePlan_Maximized_TemplateBorderIsZero()
         {
-            var plan = WindowPolicy.BuildFramePlan(
+            FramePlan plan = WindowPolicy.BuildFramePlan(
                 WindowState.Maximized,
                 isActive: true,
                 isAccentBorderEnabled: true,
@@ -520,7 +522,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void BuildFramePlan_NoBorderColorCapability_KeepsDwmDefault()
         {
-            var plan = WindowPolicy.BuildFramePlan(
+            FramePlan plan = WindowPolicy.BuildFramePlan(
                 WindowState.Normal,
                 isActive: true,
                 isAccentBorderEnabled: true,
@@ -538,7 +540,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void WindowCapabilities_Current_NotNull()
         {
-            var caps = WindowCapabilities.Current;
+            WindowCapabilities caps = WindowCapabilities.Current;
             Assert.IsNotNull(caps, "WindowCapabilities.Current must always resolve — it shields callers from OS-version probing.");
         }
 

@@ -25,47 +25,32 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// Controls how tab item widths are distributed inside a <see cref="Fluence.Wpf.Controls.TabView"/>.
+    /// Predefined visual preset for <see cref="Controls.Border"/>.
     /// </summary>
-    public enum TabViewWidthMode
+    public enum BorderVariant
     {
         /// <summary>
-        /// Each tab sizes to its content up to a maximum width.
+        /// No themed border styling.
         /// </summary>
-        SizeToContent = 0,
+        None,
 
         /// <summary>
-        /// All tabs share the available horizontal space equally.
+        /// Card-style border and background.
         /// </summary>
-        Equal = 1,
+        Card,
 
         /// <summary>
-        /// Selected tab sizes to content; unselected tabs collapse to a compact width showing the icon only when present.
+        /// Subtle outline suitable for grouped content.
         /// </summary>
-        Compact = 2,
-    }
-
-    /// <summary>
-    /// Controls when the per-tab close button is shown.
-    /// </summary>
-    public enum TabViewCloseButtonOverlayMode
-    {
-        /// <summary>
-        /// The close button is shown on the selected tab and on hovered unselected tabs.
-        /// </summary>
-        Auto = 0,
+        Subtle,
 
         /// <summary>
-        /// The close button is shown only when the tab is hovered.
+        /// Thin divider line between sections.
         /// </summary>
-        OnPointerOver = 1,
-
-        /// <summary>
-        /// The close button is always visible on every tab.
-        /// </summary>
-        Always = 2,
+        Divider,
     }
 }

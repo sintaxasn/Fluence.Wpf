@@ -25,26 +25,36 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+using System;
+using Fluence.Wpf.Controls;
+
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// Defines where spin buttons are placed relative to the <see cref="Fluence.Wpf.Controls.NumberBox"/> input.
+    /// Provides data for the <see cref="NavigationView.ItemInvoked"/> event.
     /// </summary>
-    public enum SpinButtonPlacementMode
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="NavigationViewItemInvokedEventArgs"/> class.
+    /// </remarks>
+    /// <param name="invokedItem">The data item that was invoked.</param>
+    /// <param name="invokedItemContainer">The navigation item container that was invoked.</param>
+    /// <param name="isSettingsInvoked">A value indicating whether the settings entry was invoked.</param>
+    public class NavigationViewItemInvokedEventArgs(object invokedItem, NavigationViewItem invokedItemContainer, bool isSettingsInvoked) : EventArgs
     {
         /// <summary>
-        /// Spin buttons are not shown.
+        /// Gets the data item that was invoked.
         /// </summary>
-        Hidden = 0,
+        public object InvokedItem { get; private set; } = invokedItem;
 
         /// <summary>
-        /// Spin buttons appear when the control is hovered or keyboard-focused.
+        /// Gets the navigation item container that was invoked.
         /// </summary>
-        Compact = 1,
+        public NavigationViewItem InvokedItemContainer { get; private set; } = invokedItemContainer;
 
         /// <summary>
-        /// Spin buttons are always visible.
+        /// Gets a value indicating whether the settings entry was invoked.
         /// </summary>
-        Inline = 2
+        public bool IsSettingsInvoked { get; private set; } = isSettingsInvoked;
     }
 }

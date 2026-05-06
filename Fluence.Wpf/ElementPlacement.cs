@@ -25,20 +25,22 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// High-level theme selection for <see cref="ApplicationThemeManager"/>.
+    /// Specifies the placement of an element relative to content.
     /// </summary>
-    public enum ApplicationTheme
+    public enum ElementPlacement
     {
-        /// <summary>Light surfaces and text colors.</summary>
-        Light = 0,
-        /// <summary>Dark surfaces and text colors.</summary>
-        Dark = 1,
-        /// <summary>High contrast theme for accessibility.</summary>
-        HighContrast = 2,
-        /// <summary>Follow Windows app theme setting (resolved to Light or Dark at runtime).</summary>
-        Auto = 3
+        /// <summary>
+        /// Element is placed to the left of the content.
+        /// </summary>
+        Left = 0,
+
+        /// <summary>
+        /// Element is placed to the right of the content.
+        /// </summary>
+        Right = 1,
     }
 }

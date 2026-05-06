@@ -25,31 +25,26 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 
 namespace Fluence.Wpf.Controls
 {
     internal static class CaptionButtonChrome
     {
-        public static void GetMinimizeChrome(
-            ResizeMode resizeMode,
-            out Visibility visibility,
-            out bool isEnabled)
+        internal static void GetMinimizeChrome(ResizeMode resizeMode, out Visibility visibility, out bool isEnabled)
         {
-            bool allowMinimize = resizeMode != ResizeMode.NoResize;
-            visibility = allowMinimize ? Visibility.Visible : Visibility.Collapsed;
-            isEnabled = allowMinimize;
+            isEnabled = resizeMode != ResizeMode.NoResize;
+            visibility = isEnabled ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        public static void GetCloseChrome(
-            out Visibility visibility,
-            out bool isEnabled)
+        internal static void GetCloseChrome(out Visibility visibility, out bool isEnabled)
         {
             visibility = Visibility.Visible;
             isEnabled = true;
         }
 
-        public static void GetMaximizeRestoreChrome(
+        internal static void GetMaximizeRestoreChrome(
             ResizeMode resizeMode,
             WindowState windowState,
             out Visibility maximizeVisibility,
@@ -58,15 +53,15 @@ namespace Fluence.Wpf.Controls
             out bool restoreEnabled)
         {
             GetMaximizeRestoreLayout(resizeMode, windowState, out maximizeVisibility, out restoreVisibility);
-            if (resizeMode == ResizeMode.NoResize || resizeMode == ResizeMode.CanMinimize)
-            {
-                maximizeEnabled = false;
-                restoreEnabled = false;
-            }
-            else
+            if (resizeMode is not ResizeMode.NoResize and not ResizeMode.CanMinimize)
             {
                 maximizeEnabled = maximizeVisibility == Visibility.Visible;
                 restoreEnabled = restoreVisibility == Visibility.Visible;
+            }
+            else
+            {
+                maximizeEnabled = false;
+                restoreEnabled = false;
             }
         }
 
@@ -82,9 +77,7 @@ namespace Fluence.Wpf.Controls
                 restoreVisibility = Visibility.Collapsed;
                 return;
             }
-
-            bool isMaximized = windowState == WindowState.Maximized;
-            if (isMaximized)
+            if (windowState == WindowState.Maximized)
             {
                 maximizeVisibility = Visibility.Collapsed;
                 restoreVisibility = Visibility.Visible;

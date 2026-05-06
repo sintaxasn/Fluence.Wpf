@@ -25,6 +25,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -38,9 +40,8 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = PartCloseButton, Type = typeof(ButtonBase))]
     public class TabViewItem : TabItem
     {
+        // Template part names.
         private const string PartCloseButton = "PART_CloseButton";
-
-        private ButtonBase _closeButton;
 
         /// <summary>
         /// Identifies the <see cref="IsClosable"/> dependency property.
@@ -68,9 +69,14 @@ namespace Fluence.Wpf.Controls
         public static readonly RoutedEvent CloseRequestedEvent = EventManager.RegisterRoutedEvent(
             nameof(CloseRequested),
             RoutingStrategy.Bubble,
-            typeof(System.Windows.RoutedEventHandler),
+            typeof(RoutedEventHandler),
             typeof(TabViewItem));
 
+        /// <summary>
+        /// Initializes static members of the TabViewItem class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that TabViewItem uses its own style by default,
+        /// allowing custom styling and theming through XAML resources.</remarks>
         static TabViewItem()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -84,52 +90,48 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool IsClosable
         {
-            get { return (bool)GetValue(IsClosableProperty); }
-            set { SetValue(IsClosableProperty, value); }
+            get => (bool)GetValue(IsClosableProperty);
+            set => SetValue(IsClosableProperty, value);
         }
 
         /// <summary>
         /// Gets or sets the icon shown at the leading edge of the tab header.
-        /// Accepts any element (typically a <see cref="FontIcon"/> or <see cref="System.Windows.Controls.Image"/>).
+        /// Accepts any element (typically a <see cref="FontIcon"/> or <see cref="Image"/>).
         /// </summary>
         public object Icon
         {
-            get { return GetValue(IconProperty); }
-            set { SetValue(IconProperty, value); }
+            get => GetValue(IconProperty);
+            set => SetValue(IconProperty, value);
         }
 
         /// <summary>
         /// Raised when the user clicks the per-tab close button. The parent <see cref="TabView"/>
         /// aggregates this into <see cref="TabView.TabCloseRequested"/> for convenience.
         /// </summary>
-        public event System.Windows.RoutedEventHandler CloseRequested
+        [SuppressMessage("Design", "S3908", Justification = "RoutedEventHandler is required by WPF's routed event infrastructure.")]
+        public event RoutedEventHandler CloseRequested
         {
-            add { AddHandler(CloseRequestedEvent, value); }
-            remove { RemoveHandler(CloseRequestedEvent, value); }
+            add => AddHandler(CloseRequestedEvent, value);
+            remove => RemoveHandler(CloseRequestedEvent, value);
         }
 
         /// <inheritdoc />
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-
-            if (_closeButton != null)
-            {
-                _closeButton.Click -= OnCloseButtonClick;
-            }
-
+            _closeButton?.Click -= OnCloseButtonClick;
             _closeButton = GetTemplateChild(PartCloseButton) as ButtonBase;
-
-            if (_closeButton != null)
-            {
-                _closeButton.Click += OnCloseButtonClick;
-            }
+            _closeButton?.Click += OnCloseButtonClick;
         }
 
         private void OnCloseButtonClick(object sender, RoutedEventArgs e)
         {
-            var data = DataContext ?? this;
-            RaiseEvent(new TabViewTabCloseRequestedEventArgs(CloseRequestedEvent, this, this, data));
+            RaiseEvent(new TabViewTabCloseRequestedEventArgs(CloseRequestedEvent, this, this, DataContext ?? this));
         }
+
+        /// <summary>
+        /// Represents the close button control associated with the current context.
+        /// </summary>
+        private ButtonBase? _closeButton;
     }
 }

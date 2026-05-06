@@ -28,16 +28,24 @@
 
 namespace Fluence.Wpf.Demo.Mvvm.ViewModels
 {
-    /// <summary>Controls which tasks are shown in the list.</summary>
+    /// <summary>
+    /// Controls which tasks are shown in the list.
+    /// </summary>
     public enum FilterMode
     {
-        /// <summary>Show all tasks.</summary>
+        /// <summary>
+        /// Show all tasks.
+        /// </summary>
         All,
 
-        /// <summary>Show only incomplete tasks.</summary>
+        /// <summary>
+        /// Show only incomplete tasks.
+        /// </summary>
         Pending,
 
-        /// <summary>Show only completed tasks.</summary>
+        /// <summary>
+        /// Show only completed tasks.
+        /// </summary>
         Completed
     }
 }

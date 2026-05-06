@@ -25,11 +25,13 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Fluence.Wpf.Controls;
+using System.Windows.Shapes;
 
 namespace Fluence.Wpf.Tests
 {
@@ -48,15 +50,15 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var slider = new Slider { Value = 50, Minimum = 0, Maximum = 100 };
-                var w = new Window { Content = slider, Width = 300, Height = 60 };
+                Slider slider = new() { Value = 50, Minimum = 0, Maximum = 100 };
+                Window w = new() { Content = slider, Width = 300, Height = 60 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var track = FindVisualChildByName<Track>(slider, "PART_Track");
+                Track? track = FindVisualChildByName<Track>(slider, "PART_Track");
                 Assert.IsNotNull(track, "PART_Track must exist in Slider visual tree after template applied.");
                 w.Close();
             });
@@ -67,22 +69,22 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var slider = new Slider { Value = 50, Minimum = 0, Maximum = 100 };
-                var w = new Window { Content = slider, Width = 300, Height = 60 };
+                Slider slider = new() { Value = 50, Minimum = 0, Maximum = 100 };
+                Window w = new() { Content = slider, Width = 300, Height = 60 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
                 // Thumb's template root Grid has a ScaleTransform named ThumbScale.
-                var thumb = FindVisualChild<Thumb>(slider);
+                Thumb? thumb = FindVisualChild<Thumb>(slider);
                 Assert.IsNotNull(thumb, "Thumb must exist in Slider visual tree.");
 
-                var grid = FindVisualChild<System.Windows.Controls.Grid>(thumb);
+                System.Windows.Controls.Grid? grid = FindVisualChild<System.Windows.Controls.Grid>(thumb);
                 Assert.IsNotNull(grid, "Thumb template root Grid must exist.");
 
-                var scale = grid.RenderTransform as ScaleTransform;
+                ScaleTransform? scale = grid.RenderTransform as ScaleTransform;
                 Assert.IsNotNull(scale, "Thumb root Grid RenderTransform must be a ScaleTransform.");
                 Assert.AreEqual(1.0, scale.ScaleX, 0.001,
                     "Default ScaleX must be 1.0 (WinUI Slider_themeresources.xaml: thumb starts unscaled).");
@@ -97,16 +99,16 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var slider = new Slider { Value = 30, Minimum = 0, Maximum = 100 };
-                var w = new Window { Content = slider, Width = 300, Height = 60 };
+                Slider slider = new() { Value = 30, Minimum = 0, Maximum = 100 };
+                Window w = new() { Content = slider, Width = 300, Height = 60 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var thumbEllipse = FindVisualChildByName<System.Windows.Shapes.Ellipse>(slider, "ThumbEllipse");
-                var innerDot = FindVisualChildByName<System.Windows.Shapes.Ellipse>(slider, "ThumbInnerDot");
+                Ellipse? thumbEllipse = FindVisualChildByName<Ellipse>(slider, "ThumbEllipse");
+                Ellipse? innerDot = FindVisualChildByName<Ellipse>(slider, "ThumbInnerDot");
 
                 Assert.IsNotNull(thumbEllipse, "ThumbEllipse element must exist in Slider template.");
                 Assert.IsNotNull(innerDot, "ThumbInnerDot element must exist in Slider template.");

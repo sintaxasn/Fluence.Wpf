@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Windows.Media;
 
@@ -36,27 +37,21 @@ namespace Fluence.Wpf
     /// <summary>
     /// Provides data for the <see cref="ApplicationThemeManager.Changed"/> event.
     /// </summary>
-    public class ThemeChangedEventArgs : EventArgs
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="ThemeChangedEventArgs"/> class.
+    /// </remarks>
+    /// <param name="theme">The resolved application theme after the change.</param>
+    /// <param name="accentColor">The accent color applied with the theme.</param>
+    public class ThemeChangedEventArgs(ApplicationTheme theme, Color accentColor) : EventArgs
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ThemeChangedEventArgs"/> class.
-        /// </summary>
-        /// <param name="theme">The resolved application theme after the change.</param>
-        /// <param name="accentColor">The accent color applied with the theme.</param>
-        public ThemeChangedEventArgs(ApplicationTheme theme, Color accentColor)
-        {
-            Theme = theme;
-            AccentColor = accentColor;
-        }
-
         /// <summary>
         /// Gets the resolved theme (Light, Dark, HighContrast, or logical Auto resolved to a concrete theme).
         /// </summary>
-        public ApplicationTheme Theme { get; }
+        public ApplicationTheme Theme { get; } = theme;
 
         /// <summary>
         /// Gets the accent color associated with this theme application.
         /// </summary>
-        public Color AccentColor { get; }
+        public Color AccentColor { get; } = accentColor;
     }
 }

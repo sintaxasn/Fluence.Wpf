@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
@@ -35,7 +36,6 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryTreesPage : UserControl
     {
-
         private const string TreeViewHierarchyXamlSource = @"<UserControl
     x:Class=""Fluence.Wpf.Demo.Pages.Trees.TreeViewHierarchy""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
@@ -226,13 +226,13 @@ namespace Fluence.Wpf.Demo.Pages.Trees
 }
 ";
 
-public GalleryTreesPage()
+        public GalleryTreesPage()
         {
             InitializeComponent();
 
-            DemoSampleControl.ReplaceSourceLink(TreeViewHierarchySourceLink, TreeViewHierarchyXamlSource, TreeViewHierarchyCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(TreeViewSelectionSourceLink, TreeViewSelectionXamlSource, TreeViewSelectionCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(TreeViewExpansionSourceLink, TreeViewExpansionXamlSource, TreeViewExpansionCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(TreeViewHierarchySourceLink, TreeViewHierarchyXamlSource, TreeViewHierarchyCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(TreeViewSelectionSourceLink, TreeViewSelectionXamlSource, TreeViewSelectionCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(TreeViewExpansionSourceLink, TreeViewExpansionXamlSource, TreeViewExpansionCSharpSource);
         }
 
         private void SelectionTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
@@ -242,14 +242,13 @@ public GalleryTreesPage()
                 return;
             }
 
-            var item = e.NewValue as FluenceTreeViewItem;
-            if (item == null)
+            if (e.NewValue is not FluenceTreeViewItem item)
             {
                 TreeSelectionLabel.Text = "Selected: -";
                 return;
             }
 
-            var path = BuildPath(item);
+            string path = BuildPath(item);
             TreeSelectionLabel.Text = string.Format(CultureInfo.CurrentCulture, "Selected: {0}", path);
         }
 
@@ -260,15 +259,14 @@ public GalleryTreesPage()
                 return string.Empty;
             }
 
-            var header = item.Header as string ?? string.Empty;
-            var parent = ItemsControl.ItemsControlFromItemContainer(item) as FluenceTreeViewItem;
-            if (parent == null)
+            string header = item.Header as string ?? string.Empty;
+            if (ItemsControl.ItemsControlFromItemContainer(item) is not FluenceTreeViewItem parent)
             {
                 return header;
             }
 
-            var parentPath = BuildPath(parent);
-            return string.IsNullOrEmpty(parentPath)
+            string parentPath = BuildPath(parent);
+            return string.IsNullOrWhiteSpace(parentPath)
                 ? header
                 : string.Format(CultureInfo.CurrentCulture, "{0} / {1}", parentPath, header);
         }
@@ -295,10 +293,9 @@ public GalleryTreesPage()
 
         private static void SetExpanded(ItemCollection items, bool expanded)
         {
-            foreach (var obj in items)
+            foreach (object? obj in items)
             {
-                var tvi = obj as FluenceTreeViewItem;
-                if (tvi == null)
+                if (obj is not FluenceTreeViewItem tvi)
                 {
                     continue;
                 }

@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -40,9 +41,15 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = PART_Rotate, Type = typeof(RotateTransform))]
     public class FontIcon : Control
     {
+        // Template part names.
         private const string PART_Mirror = "PART_Mirror";
         private const string PART_Rotate = "PART_Rotate";
 
+        /// <summary>
+        /// Initializes static members of the FontIcon class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the FontIcon control uses its own style by
+        /// default. This is necessary for custom controls to apply their styles correctly in WPF.</remarks>
         static FontIcon()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -65,8 +72,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string Glyph
         {
-            get { return (string)GetValue(GlyphProperty); }
-            set { SetValue(GlyphProperty, value); }
+            get => (string)GetValue(GlyphProperty);
+            set => SetValue(GlyphProperty, value);
         }
 
         /// <summary>
@@ -84,8 +91,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public FontFamily IconFontFamily
         {
-            get { return (FontFamily)GetValue(IconFontFamilyProperty); }
-            set { SetValue(IconFontFamilyProperty, value); }
+            get => (FontFamily)GetValue(IconFontFamilyProperty);
+            set => SetValue(IconFontFamilyProperty, value);
         }
 
         /// <summary>
@@ -103,8 +110,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public double IconFontSize
         {
-            get { return (double)GetValue(IconFontSizeProperty); }
-            set { SetValue(IconFontSizeProperty, value); }
+            get => (double)GetValue(IconFontSizeProperty);
+            set => SetValue(IconFontSizeProperty, value);
         }
 
         /// <summary>
@@ -122,18 +129,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public double Rotation
         {
-            get { return (double)GetValue(RotationProperty); }
-            set { SetValue(RotationProperty, value); }
-        }
-
-        private static void OnRotationChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var icon = (FontIcon)d;
-            var rotate = icon.GetTemplateChild(PART_Rotate) as RotateTransform;
-            if (rotate != null)
-            {
-                rotate.Angle = (double)e.NewValue;
-            }
+            get => (double)GetValue(RotationProperty);
+            set => SetValue(RotationProperty, value);
         }
 
         /// <summary>
@@ -152,13 +149,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool MirroredWhenRightToLeft
         {
-            get { return (bool)GetValue(MirroredWhenRightToLeftProperty); }
-            set { SetValue(MirroredWhenRightToLeftProperty, value); }
-        }
-
-        private static void OnMirroredWhenRightToLeftChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ((FontIcon)d).ApplyMirrorState();
+            get => (bool)GetValue(MirroredWhenRightToLeftProperty);
+            set => SetValue(MirroredWhenRightToLeftProperty, value);
         }
 
         /// <summary>
@@ -176,8 +168,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool EnableTransitions
         {
-            get { return (bool)GetValue(EnableTransitionsProperty); }
-            set { SetValue(EnableTransitionsProperty, value); }
+            get => (bool)GetValue(EnableTransitionsProperty);
+            set => SetValue(EnableTransitionsProperty, value);
         }
 
         /// <summary>
@@ -195,14 +187,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool IsSpinning
         {
-            get { return (bool)GetValue(IsSpinningProperty); }
-            set { SetValue(IsSpinningProperty, value); }
-        }
-
-        private static void OnIsSpinningChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            var icon = (FontIcon)d;
-            icon.ApplySpinState();
+            get => (bool)GetValue(IsSpinningProperty);
+            set => SetValue(IsSpinningProperty, value);
         }
 
         /// <inheritdoc />
@@ -210,8 +196,7 @@ namespace Fluence.Wpf.Controls
         {
             base.OnApplyTemplate();
 
-            var rotate = GetTemplateChild(PART_Rotate) as RotateTransform;
-            if (rotate != null)
+            if (GetTemplateChild(PART_Rotate) is RotateTransform rotate)
             {
                 rotate.Angle = Rotation;
             }
@@ -231,10 +216,29 @@ namespace Fluence.Wpf.Controls
             }
         }
 
+        private static void OnRotationChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            FontIcon icon = (FontIcon)d;
+            if (icon.GetTemplateChild(PART_Rotate) is RotateTransform rotate)
+            {
+                rotate.Angle = (double)e.NewValue;
+            }
+        }
+
+        private static void OnMirroredWhenRightToLeftChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((FontIcon)d).ApplyMirrorState();
+        }
+
+        private static void OnIsSpinningChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            FontIcon icon = (FontIcon)d;
+            icon.ApplySpinState();
+        }
+
         private void ApplyMirrorState()
         {
-            var mirror = GetTemplateChild(PART_Mirror) as ScaleTransform;
-            if (mirror == null)
+            if (GetTemplateChild(PART_Mirror) is not ScaleTransform mirror)
             {
                 return;
             }
@@ -244,8 +248,7 @@ namespace Fluence.Wpf.Controls
 
         private void ApplySpinState()
         {
-            var rotate = GetTemplateChild(PART_Rotate) as RotateTransform;
-            if (rotate == null)
+            if (GetTemplateChild(PART_Rotate) is not RotateTransform rotate)
             {
                 return;
             }
@@ -258,7 +261,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            var animation = new DoubleAnimation
+            DoubleAnimation animation = new()
             {
                 From = 0,
                 To = 360,

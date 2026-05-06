@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Diagnostics;
 using System.Windows;
@@ -32,7 +33,6 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
-using Fluence.Wpf;
 using Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Demo.Pages
@@ -40,12 +40,12 @@ namespace Fluence.Wpf.Demo.Pages
     public partial class GalleryHomePage : UserControl
     {
         private static readonly Uri LightBannerUri =
-            new Uri("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/fluence-wpf-banner-light.png", UriKind.Absolute);
+            new("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/fluence-wpf-banner-light.png", UriKind.Absolute);
 
         private static readonly Uri DarkBannerUri =
-            new Uri("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/fluence-wpf-banner-dark.png", UriKind.Absolute);
+            new("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/fluence-wpf-banner-dark.png", UriKind.Absolute);
 
-        private Uri _currentBannerUri;
+        private Uri? _currentBannerUri;
 
         public GalleryHomePage()
         {
@@ -66,7 +66,7 @@ namespace Fluence.Wpf.Demo.Pages
             ApplicationThemeManager.Changed -= ApplicationThemeManager_Changed;
         }
 
-        private void ApplicationThemeManager_Changed(object sender, ThemeChangedEventArgs e)
+        private void ApplicationThemeManager_Changed(object? sender, ThemeChangedEventArgs e)
         {
             UpdateBrandBanner(e.Theme);
         }
@@ -74,7 +74,7 @@ namespace Fluence.Wpf.Demo.Pages
         private void UpdateBrandBanner()
         {
             ApplicationTheme theme = ApplicationThemeManager.CurrentTheme;
-            if (theme == ApplicationTheme.Light || theme == ApplicationTheme.Dark || theme == ApplicationTheme.HighContrast)
+            if (theme is ApplicationTheme.Light or ApplicationTheme.Dark or ApplicationTheme.HighContrast)
             {
                 UpdateBrandBanner(theme);
                 return;
@@ -98,8 +98,8 @@ namespace Fluence.Wpf.Demo.Pages
 
         private static bool IsCurrentBackgroundDark()
         {
-            var app = Application.Current;
-            var brush = app != null
+            Application app = Application.Current;
+            SolidColorBrush? brush = app != null
                 ? app.TryFindResource("SolidBackgroundFillColorBaseBrush") as SolidColorBrush
                 : null;
             if (brush == null)
@@ -116,20 +116,17 @@ namespace Fluence.Wpf.Demo.Pages
 
         private void Card_Click(object sender, RoutedEventArgs e)
         {
-            var card = sender as Card;
-            if (card == null)
+            if (sender is not Card card)
             {
                 return;
             }
 
-            var tag = card.Tag as string;
-            if (string.IsNullOrEmpty(tag))
+            if (card.Tag is not string tag || string.IsNullOrWhiteSpace(tag))
             {
                 return;
             }
 
-            var host = Window.GetWindow(this) as MainWindow;
-            if (host != null)
+            if (Window.GetWindow(this) is MainWindow host)
             {
                 host.NavigateTo(tag);
             }
@@ -137,7 +134,7 @@ namespace Fluence.Wpf.Demo.Pages
 
         private void GitHubLink_RequestNavigate(object sender, RequestNavigateEventArgs e)
         {
-            Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
+            _ = Process.Start(new ProcessStartInfo(e.Uri.AbsoluteUri) { UseShellExecute = true });
             e.Handled = true;
         }
     }

@@ -25,20 +25,30 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+using System;
+using Fluence.Wpf.Controls;
+
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// Specifies the severity level of an <see cref="Controls.InfoBar"/>.
+    /// Event data for <see cref="NumberBox.ValueChanged"/>.
     /// </summary>
-    public enum InfoBarSeverity
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="NumberBoxValueChangedEventArgs"/> class.
+    /// </remarks>
+    /// <param name="oldValue">The previous value.</param>
+    /// <param name="newValue">The new value.</param>
+    public sealed class NumberBoxValueChangedEventArgs(double oldValue, double newValue) : EventArgs
     {
-        /// <summary>Informational message requiring attention.</summary>
-        Informational,
-        /// <summary>Operation completed successfully.</summary>
-        Success,
-        /// <summary>A non-critical warning condition.</summary>
-        Warning,
-        /// <summary>A critical error condition.</summary>
-        Error
+        /// <summary>
+        /// Gets the previous value.
+        /// </summary>
+        public double OldValue { get; } = oldValue;
+
+        /// <summary>
+        /// Gets the new value.
+        /// </summary>
+        public double NewValue { get; } = newValue;
     }
 }

@@ -25,12 +25,11 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-using System;
+
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.TextFormatting;
 
 namespace Fluence.Wpf.Controls
 {
@@ -39,9 +38,12 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     public class Button : System.Windows.Controls.Button
     {
-        private ContentPresenter _mainContentPresenter;
-        private bool _hasAutomaticToolTip;
-
+        /// <summary>
+        /// Initializes static members of the Button class and overrides the default style metadata for the control.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the Button control uses its own style by
+        /// default, rather than inheriting the style from its base class. This is important for custom control
+        /// development in WPF, as it allows the control to be styled appropriately when used in XAML.</remarks>
         static Button()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -64,8 +66,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public ControlAppearance Appearance
         {
-            get { return (ControlAppearance)GetValue(AppearanceProperty); }
-            set { SetValue(AppearanceProperty, value); }
+            get => (ControlAppearance)GetValue(AppearanceProperty);
+            set => SetValue(AppearanceProperty, value);
         }
 
         /// <summary>
@@ -83,8 +85,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public CornerRadius CornerRadius
         {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(CornerRadiusProperty);
+            set => SetValue(CornerRadiusProperty, value);
         }
 
         /// <summary>
@@ -102,8 +104,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object Icon
         {
-            get { return GetValue(IconProperty); }
-            set { SetValue(IconProperty, value); }
+            get => GetValue(IconProperty);
+            set => SetValue(IconProperty, value);
         }
 
         /// <summary>
@@ -121,26 +123,17 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public ElementPlacement IconPlacement
         {
-            get { return (ElementPlacement)GetValue(IconPlacementProperty); }
-            set { SetValue(IconPlacementProperty, value); }
+            get => (ElementPlacement)GetValue(IconPlacementProperty);
+            set => SetValue(IconPlacementProperty, value);
         }
 
         /// <inheritdoc />
         public override void OnApplyTemplate()
         {
-            if (_mainContentPresenter != null)
-            {
-                _mainContentPresenter.SizeChanged -= OnMainContentPresenterSizeChanged;
-            }
-
+            _mainContentPresenter?.SizeChanged -= OnMainContentPresenterSizeChanged;
             base.OnApplyTemplate();
-
             _mainContentPresenter = GetTemplateChild("MainContentPresenter") as ContentPresenter;
-            if (_mainContentPresenter != null)
-            {
-                _mainContentPresenter.SizeChanged += OnMainContentPresenterSizeChanged;
-            }
-
+            _mainContentPresenter?.SizeChanged += OnMainContentPresenterSizeChanged;
             UpdateTruncationToolTip();
         }
 
@@ -162,36 +155,21 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
-            var text = Content as string;
-            if (string.IsNullOrEmpty(text))
+            if (Content is not string text || string.IsNullOrWhiteSpace(text))
             {
                 ClearAutomaticToolTip();
                 return;
             }
-
             if (_mainContentPresenter == null)
             {
                 return;
             }
-
-            var textBlock = FindVisualChild<System.Windows.Controls.TextBlock>(_mainContentPresenter);
-            if (textBlock == null)
+            if (FindVisualChild<System.Windows.Controls.TextBlock>(_mainContentPresenter) is not System.Windows.Controls.TextBlock textBlock)
             {
                 ClearAutomaticToolTip();
                 return;
             }
-
-            var pixelsPerDip = 1.0;
-            try
-            {
-                pixelsPerDip = VisualTreeHelper.GetDpi(this).PixelsPerDip;
-            }
-            catch (InvalidOperationException)
-            {
-            }
-
-            var formattedText = new FormattedText(
+            FormattedText formattedText = new(
                 text,
                 CultureInfo.CurrentCulture,
                 FlowDirection.LeftToRight,
@@ -200,9 +178,9 @@ namespace Fluence.Wpf.Controls
                 textBlock.Foreground,
                 new NumberSubstitution(NumberCultureSource.Text, CultureInfo.CurrentCulture, NumberSubstitutionMethod.AsCulture),
                 TextFormattingMode.Display,
-                pixelsPerDip);
+                VisualTreeHelper.GetDpi(this).PixelsPerDip);
 
-            var textWidth = formattedText.WidthIncludingTrailingWhitespace;
+            double textWidth = formattedText.WidthIncludingTrailingWhitespace;
             if (textBlock.ActualWidth > 0 && textWidth > textBlock.ActualWidth + 0.5)
             {
                 SetAutomaticToolTip(text);
@@ -225,35 +203,41 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
             _hasAutomaticToolTip = false;
             ClearValue(ToolTipProperty);
         }
 
-        private static T FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
+        private static T? FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
         {
             if (parent == null)
             {
                 return null;
             }
-
-            var childCount = VisualTreeHelper.GetChildrenCount(parent);
-            for (var i = 0; i < childCount; i++)
+            int childCount = VisualTreeHelper.GetChildrenCount(parent);
+            for (int i = 0; i < childCount; i++)
             {
-                var child = VisualTreeHelper.GetChild(parent, i);
+                DependencyObject child = VisualTreeHelper.GetChild(parent, i);
                 if (child is T match)
                 {
                     return match;
                 }
 
-                var descendant = FindVisualChild<T>(child);
-                if (descendant != null)
+                if (FindVisualChild<T>(child) is T descendant)
                 {
                     return descendant;
                 }
             }
-
             return null;
         }
+
+        /// <summary>
+        /// Represents the main content presenter used to display content within the control.
+        /// </summary>
+        private ContentPresenter? _mainContentPresenter;
+
+        /// <summary>
+        /// Indicates whether an automatic tooltip is enabled.
+        /// </summary>
+        private bool _hasAutomaticToolTip;
     }
 }

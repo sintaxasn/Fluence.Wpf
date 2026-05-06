@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Diagnostics;
 using System.Windows;
@@ -38,6 +39,12 @@ namespace Fluence.Wpf.Controls
     /// <remarks>Inspired by WInUI's HyperlinkButton.</remarks>
     public class HyperlinkButton : System.Windows.Controls.Button
     {
+        /// <summary>
+        /// Initializes static members of the HyperlinkButton class and sets up the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the HyperlinkButton control uses its own default
+        /// style as defined in the application's resources. This is necessary for proper theming and appearance in WPF
+        /// applications.</remarks>
         static HyperlinkButton()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -68,8 +75,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public Uri NavigateUri
         {
-            get { return (Uri)GetValue(NavigateUriProperty); }
-            set { SetValue(NavigateUriProperty, value); }
+            get => (Uri)GetValue(NavigateUriProperty);
+            set => SetValue(NavigateUriProperty, value);
         }
 
         /// <summary>
@@ -87,8 +94,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public CornerRadius CornerRadius
         {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(CornerRadiusProperty);
+            set => SetValue(CornerRadiusProperty, value);
         }
 
         /// <summary>
@@ -106,8 +113,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object Icon
         {
-            get { return GetValue(IconProperty); }
-            set { SetValue(IconProperty, value); }
+            get => GetValue(IconProperty);
+            set => SetValue(IconProperty, value);
         }
 
         /// <summary>
@@ -125,19 +132,17 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public ElementPlacement IconPlacement
         {
-            get { return (ElementPlacement)GetValue(IconPlacementProperty); }
-            set { SetValue(IconPlacementProperty, value); }
+            get => (ElementPlacement)GetValue(IconPlacementProperty);
+            set => SetValue(IconPlacementProperty, value);
         }
 
         /// <inheritdoc />
         protected override void OnClick()
         {
             base.OnClick();
-
-            var uri = NavigateUri;
-            if (uri != null)
+            if (NavigateUri is Uri uri)
             {
-                Process.Start(uri.AbsoluteUri);
+                _ = Process.Start(uri.AbsoluteUri);
             }
         }
     }

@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows.Controls;
 
 namespace Fluence.Wpf.Demo.Pages
@@ -59,7 +60,7 @@ namespace Fluence.Wpf.Demo.Pages
         public GalleryLayoutPage()
         {
             InitializeComponent();
-            DemoSampleControl.ReplaceSourceLink(LayoutSourceLink, LayoutXamlSource, string.Empty);
+            _ = DemoSampleControl.ReplaceSourceLink(LayoutSourceLink, LayoutXamlSource, string.Empty);
         }
     }
 }

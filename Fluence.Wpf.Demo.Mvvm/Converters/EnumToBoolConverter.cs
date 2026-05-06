@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Globalization;
 using System.Windows.Data;
@@ -32,18 +33,24 @@ using System.Windows.Data;
 namespace Fluence.Wpf.Demo.Mvvm.Converters
 {
     /// <summary>
-    /// Returns <see langword="true"/> when the bound enum value equals
-    /// <paramref name="parameter"/>. Used to bind <c>RadioButton.IsChecked</c>
-    /// to a <c>FilterMode</c> enum property on the ViewModel.
+    /// Provides a value converter that maps an enumeration value to a Boolean value for use in data binding scenarios.
     /// </summary>
+    /// <remarks>This converter is typically used in WPF bindings to enable or disable UI elements, such as
+    /// radio buttons, based on whether a bound value matches a specific enumeration value. When used in a binding, the
+    /// converter compares the bound value to the parameter and returns a Boolean indicating equality. The reverse
+    /// conversion returns the parameter if the input is true, or Binding.DoNothing otherwise.</remarks>
     public class EnumToBoolConverter : IValueConverter
     {
         /// <inheritdoc />
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) =>
-            value != null && value.Equals(parameter);
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value != null && value.Equals(parameter);
+        }
 
         /// <inheritdoc />
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
-            value is true ? parameter : Binding.DoNothing;
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value is true ? parameter : Binding.DoNothing;
+        }
     }
 }

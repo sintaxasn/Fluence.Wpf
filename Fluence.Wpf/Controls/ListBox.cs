@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 
 namespace Fluence.Wpf.Controls
@@ -34,22 +35,32 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     public class ListBox : System.Windows.Controls.ListBox
     {
-        /// <summary>Identifies the <see cref="CornerRadius"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="CornerRadius"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty CornerRadiusProperty =
             DependencyProperty.Register(nameof(CornerRadius), typeof(CornerRadius), typeof(ListBox),
                 new FrameworkPropertyMetadata(new CornerRadius(4)));
 
+        /// <summary>
+        /// Initializes static members of the ListBox class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the ListBox control uses its specific default
+        /// style by overriding the DefaultStyleKeyProperty metadata. This affects the appearance of all ListBox
+        /// instances unless a different style is explicitly applied.</remarks>
         static ListBox()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(ListBox),
                 new FrameworkPropertyMetadata(typeof(ListBox)));
         }
 
-        /// <summary>Gets or sets the corner radius of the ListBox border.</summary>
+        /// <summary>
+        /// Gets or sets the corner radius of the ListBox border.
+        /// </summary>
         public CornerRadius CornerRadius
         {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(CornerRadiusProperty);
+            set => SetValue(CornerRadiusProperty, value);
         }
 
         /// <inheritdoc/>

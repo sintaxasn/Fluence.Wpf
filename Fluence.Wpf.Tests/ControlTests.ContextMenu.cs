@@ -25,11 +25,9 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-using System;
+
 using System.Windows;
-using System.Windows.Media;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf;
 using Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Tests
@@ -48,10 +46,10 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var style = app.TryFindResource(typeof(ContextMenu)) as Style;
+                Style? style = app?.TryFindResource(typeof(ContextMenu)) as Style;
                 Assert.IsNotNull(style,
                     "A default Style must be registered for Fluence.Wpf.Controls.ContextMenu.");
             });
@@ -62,12 +60,12 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                Assert.IsNotNull(app.TryFindResource("SolidBackgroundFillColorTertiaryBrush"),
+                Assert.IsNotNull(app?.TryFindResource("SolidBackgroundFillColorTertiaryBrush"),
                     "SolidBackgroundFillColorTertiaryBrush (ContextMenu background) must resolve.");
-                Assert.IsNotNull(app.TryFindResource("SurfaceStrokeColorFlyoutBrush"),
+                Assert.IsNotNull(app?.TryFindResource("SurfaceStrokeColorFlyoutBrush"),
                     "SurfaceStrokeColorFlyoutBrush (ContextMenu border) must resolve.");
             });
         }
@@ -77,20 +75,19 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var style = app.TryFindResource(typeof(ContextMenu)) as Style;
+                Style? style = app?.TryFindResource(typeof(ContextMenu)) as Style;
                 Assert.IsNotNull(style);
 
                 // HasDropShadow only activates when the Popup opens; verify the
                 // Setter is present and declared True rather than applying the style
                 // without a live popup (which returns the default value).
                 bool found = false;
-                foreach (var setter in style.Setters)
+                foreach (SetterBase? setter in style.Setters)
                 {
-                    var s = setter as Setter;
-                    if (s != null && s.Property == ContextMenu.HasDropShadowProperty
+                    if (setter is Setter s && s.Property == System.Windows.Controls.ContextMenu.HasDropShadowProperty
                         && true.Equals(s.Value))
                     {
                         found = true;
@@ -111,10 +108,10 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var style = app.TryFindResource(typeof(MenuItem)) as Style;
+                Style? style = app?.TryFindResource(typeof(MenuItem)) as Style;
                 Assert.IsNotNull(style,
                     "A default Style must be registered for Fluence.Wpf.Controls.MenuItem.");
             });
@@ -125,12 +122,12 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                Assert.IsNotNull(app.TryFindResource("SubtleFillColorSecondaryBrush"),
+                Assert.IsNotNull(app?.TryFindResource("SubtleFillColorSecondaryBrush"),
                     "SubtleFillColorSecondaryBrush (MenuItem hover) must resolve.");
-                Assert.IsNotNull(app.TryFindResource("SubtleFillColorTertiaryBrush"),
+                Assert.IsNotNull(app?.TryFindResource("SubtleFillColorTertiaryBrush"),
                     "SubtleFillColorTertiaryBrush (MenuItem pressed) must resolve.");
             });
         }
@@ -140,11 +137,11 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var mi = new MenuItem { Header = "Test" };
-                var style = app.TryFindResource(typeof(MenuItem)) as Style;
+                MenuItem mi = new() { Header = "Test" };
+                Style? style = app?.TryFindResource(typeof(MenuItem)) as Style;
                 Assert.IsNotNull(style);
                 mi.Style = style;
                 Assert.AreEqual(14.0, mi.FontSize, 0.01,
@@ -161,24 +158,24 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var keys = new[]
-                {
+                string[] keys =
+                [
                     "SolidBackgroundFillColorTertiaryBrush",
                     "SurfaceStrokeColorFlyoutBrush",
                     "SubtleFillColorSecondaryBrush",
                     "SubtleFillColorTertiaryBrush",
                     "DividerStrokeColorDefaultBrush"
-                };
+                ];
 
-                foreach (var theme in new[] { ApplicationTheme.Dark, ApplicationTheme.HighContrast, ApplicationTheme.Light })
+                foreach (ApplicationTheme theme in new[] { ApplicationTheme.Dark, ApplicationTheme.HighContrast, ApplicationTheme.Light })
                 {
                     ApplicationThemeManager.Apply(theme, BackdropType.None, true);
-                    foreach (var key in keys)
+                    foreach (string? key in keys)
                     {
-                        Assert.IsNotNull(app.TryFindResource(key),
+                        Assert.IsNotNull(app?.TryFindResource(key),
                             string.Format("Resource '{0}' must resolve in ContextMenu theme cycle step: {1}", key, theme));
                     }
                 }

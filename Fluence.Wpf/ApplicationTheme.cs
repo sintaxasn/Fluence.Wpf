@@ -25,22 +25,32 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// DWM backdrop material applied to a <see cref="Fluence.Wpf.Controls.FluenceWindow"/> non-client area on Windows 11.
+    /// High-level theme selection for <see cref="ApplicationThemeManager"/>.
     /// </summary>
-    public enum BackdropType
+    public enum ApplicationTheme
     {
-        /// <summary>No Mica/Acrylic; standard solid backdrop.</summary>
-        None = 0,
-        /// <summary>Let the library pick the best supported backdrop for the OS version.</summary>
-        Auto = 1,
-        /// <summary>Mica (layered tint over wallpaper).</summary>
-        Mica = 2,
-        /// <summary>Acrylic blur.</summary>
-        Acrylic = 3,
-        /// <summary>Tabbed Mica for tabbed window groups (Windows 11).</summary>
-        Tabbed = 4
+        /// <summary>
+        /// Light surfaces and text colors.
+        /// </summary>
+        Light = 0,
+
+        /// <summary>
+        /// Dark surfaces and text colors.
+        /// </summary>
+        Dark = 1,
+
+        /// <summary>
+        /// High contrast theme for accessibility.
+        /// </summary>
+        HighContrast = 2,
+
+        /// <summary>
+        /// Follow Windows app theme setting (resolved to Light or Dark at runtime).
+        /// </summary>
+        Auto = 3,
     }
 }

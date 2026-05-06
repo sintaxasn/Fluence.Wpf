@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 
 namespace Fluence.Wpf.Controls
@@ -34,6 +35,11 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     public class ListBoxItem : System.Windows.Controls.ListBoxItem
     {
+        /// <summary>
+        /// Initializes static members of the ListBoxItem class.
+        /// </summary>
+        /// <remarks>This static constructor overrides the default style metadata for ListBoxItem,
+        /// ensuring that the correct style is applied to all instances of the class.</remarks>
         static ListBoxItem()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(ListBoxItem),

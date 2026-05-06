@@ -25,59 +25,48 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Collections.Generic;
 
 namespace Fluence.Wpf.Demo
 {
-    public sealed class DemoNavigationItem
+    public sealed class DemoNavigationItem(string title, string route, string keywords, string glyph, bool isDefault)
     {
-        public DemoNavigationItem(string title, string route, string keywords, string glyph, bool isDefault)
-        {
-            Title = title;
-            Route = route;
-            Keywords = keywords;
-            Glyph = glyph;
-            IsDefault = isDefault;
-        }
+        public string Title { get; private set; } = title;
 
-        public string Title { get; private set; }
+        public string Route { get; private set; } = route;
 
-        public string Route { get; private set; }
+        public string Keywords { get; private set; } = keywords;
 
-        public string Keywords { get; private set; }
+        public string Glyph { get; private set; } = glyph;
 
-        public string Glyph { get; private set; }
-
-        public bool IsDefault { get; private set; }
+        public bool IsDefault { get; private set; } = isDefault;
     }
 
     public static class DemoNavigationCatalog
     {
         private static readonly DemoNavigationItem[] CatalogItems =
-        {
-            new DemoNavigationItem("Home", "home", "overview welcome start", "\uE80F", true),
-            new DemoNavigationItem("Colors", "colors", "color brush swatch theme resource high contrast accent", "\uE790", false),
-            new DemoNavigationItem("Iconography", "iconography", "fonticon icon glyph segoe fluent symbols", "\uED58", false),
-            new DemoNavigationItem("Typography", "typography", "text textblock font style type ramp", "\uE8D2", false),
-            new DemoNavigationItem("Buttons", "buttons", "button dropdownbutton splitbutton hyperlinkbutton repeatbutton togglebutton accent icon", "\uE8E5", false),
-            new DemoNavigationItem("Selection", "selection", "checkbox radio radiobutton toggleswitch combobox rating slider", "\uE73E", false),
-            new DemoNavigationItem("Inputs", "inputs", "textbox passwordbox numberbox slider text input validation", "\uE70F", false),
-            new DemoNavigationItem("Forms", "forms", "signin checkout settings form text input", "\uE7C3", false),
-            new DemoNavigationItem("Data", "data", "card listbox listview collection empty state", "\uE8FD", false),
-            new DemoNavigationItem("Data binding", "data binding", "observablecollection binding selection datatemplate", "\uE8FD", false),
-            new DemoNavigationItem("Trees", "trees", "treeview hierarchy expand collapse selection", "\uE8EB", false),
-            new DemoNavigationItem("Menus", "menus", "menu menubar contextmenu tooltip dropdown split flyout command", "\uE115", false),
-            new DemoNavigationItem("Navigation", "navigation", "navigationview pane left top compact", "\uE700", false),
-            new DemoNavigationItem("Tabs", "tabs", "tabcontrol tabview tab tabs document close add", "\uF22C", false),
-            new DemoNavigationItem("Layout", "layout", "border dockpanel stackpanel expander separator layout surface", "\uECA5", false),
-            new DemoNavigationItem("Status", "status", "infobar infobadge progressbar progressring personpicture progress ring busy", "\uE916", false),
-            new DemoNavigationItem("Accessibility", "accessibility", "screen reader narrator automation keyboard focus contrast rtl", "\uE776", false),
-            new DemoNavigationItem("Windowing", "window", "fluencewindow window theme backdrop mica acrylic titlebar caption chrome", "\uE737", false)
-        };
+        [
+            new("Home", "home", "overview welcome start", "\uE80F", true),
+            new("Colors", "colors", "color brush swatch theme resource high contrast accent", "\uE790", false),
+            new("Iconography", "iconography", "fonticon icon glyph segoe fluent symbols", "\uED58", false),
+            new("Typography", "typography", "text textblock font style type ramp", "\uE8D2", false),
+            new("Buttons", "buttons", "button dropdownbutton splitbutton hyperlinkbutton repeatbutton togglebutton accent icon", "\uE8E5", false),
+            new("Selection", "selection", "checkbox radio radiobutton toggleswitch combobox rating slider", "\uE73E", false),
+            new("Inputs", "inputs", "textbox passwordbox numberbox slider text input validation", "\uE70F", false),
+            new("Forms", "forms", "signin checkout settings form text input", "\uE7C3", false),
+            new("Data", "data", "card listbox listview collection empty state", "\uE8FD", false),
+            new("Data binding", "data binding", "observablecollection binding selection datatemplate", "\uE8FD", false),
+            new("Trees", "trees", "treeview hierarchy expand collapse selection", "\uE8EB", false),
+            new("Menus", "menus", "menu menubar contextmenu tooltip dropdown split flyout command", "\uE115", false),
+            new("Navigation", "navigation", "navigationview pane left top compact", "\uE700", false),
+            new("Tabs", "tabs", "tabcontrol tabview tab tabs document close add", "\uF22C", false),
+            new("Layout", "layout", "border dockpanel stackpanel expander separator layout surface", "\uECA5", false),
+            new("Status", "status", "infobar infobadge progressbar progressring personpicture progress ring busy", "\uE916", false),
+            new("Accessibility", "accessibility", "screen reader narrator automation keyboard focus contrast rtl", "\uE776", false),
+            new("Windowing", "window", "fluencewindow window theme backdrop mica acrylic titlebar caption chrome", "\uE737", false)
+        ];
 
-        public static IEnumerable<DemoNavigationItem> Items
-        {
-            get { return CatalogItems; }
-        }
+        public static IEnumerable<DemoNavigationItem> Items => CatalogItems;
     }
 }

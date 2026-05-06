@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -37,6 +38,7 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     public static class TextBlockExtensions
     {
+        // Style keys for typography styles defined in the resource dictionaries.
         private const string CaptionTextBlockStyleKey = "CaptionTextBlockStyle";
         private const string BodyTextBlockStyleKey = "BodyTextBlockStyle";
         private const string BodyStrongTextBlockStyleKey = "BodyStrongTextBlockStyle";
@@ -76,51 +78,37 @@ namespace Fluence.Wpf.Controls
 
         private static void OnTypographyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var textBlock = d as System.Windows.Controls.TextBlock;
-            if (textBlock == null)
+            if (d is not System.Windows.Controls.TextBlock textBlock)
             {
                 return;
             }
-
-            var typography = (FluentTypography)e.NewValue;
+            FluentTypography typography = (FluentTypography)e.NewValue;
             ApplyTypography(textBlock, typography);
         }
 
         private static void ApplyTypography(System.Windows.Controls.TextBlock textBlock, FluentTypography typography)
         {
-            var styleKey = GetTypographyStyleKey(typography);
-            if (styleKey == null)
+            if (GetTypographyStyleKey(typography) is not string styleKey)
             {
                 return;
             }
-
             textBlock.SetResourceReference(FrameworkElement.StyleProperty, styleKey);
         }
 
-        private static string GetTypographyStyleKey(FluentTypography typography)
+        private static string? GetTypographyStyleKey(FluentTypography typography)
         {
-            switch (typography)
+            return typography switch
             {
-                case FluentTypography.Caption:
-                    return CaptionTextBlockStyleKey;
-                case FluentTypography.Body:
-                    return BodyTextBlockStyleKey;
-                case FluentTypography.BodyStrong:
-                    return BodyStrongTextBlockStyleKey;
-                case FluentTypography.BodyLarge:
-                    return BodyLargeTextBlockStyleKey;
-                case FluentTypography.Subtitle:
-                    return SubtitleTextBlockStyleKey;
-                case FluentTypography.Title:
-                    return TitleTextBlockStyleKey;
-                case FluentTypography.TitleLarge:
-                    return TitleLargeTextBlockStyleKey;
-                case FluentTypography.Display:
-                    return DisplayTextBlockStyleKey;
-                case FluentTypography.None:
-                default:
-                    return null;
-            }
+                FluentTypography.Caption => CaptionTextBlockStyleKey,
+                FluentTypography.Body => BodyTextBlockStyleKey,
+                FluentTypography.BodyStrong => BodyStrongTextBlockStyleKey,
+                FluentTypography.BodyLarge => BodyLargeTextBlockStyleKey,
+                FluentTypography.Subtitle => SubtitleTextBlockStyleKey,
+                FluentTypography.Title => TitleTextBlockStyleKey,
+                FluentTypography.TitleLarge => TitleLargeTextBlockStyleKey,
+                FluentTypography.Display => DisplayTextBlockStyleKey,
+                FluentTypography.None or _ => null,
+            };
         }
 
         #endregion
@@ -159,12 +147,10 @@ namespace Fluence.Wpf.Controls
 
         private static void OnTextTrimmingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var textBlock = d as System.Windows.Controls.TextBlock;
-            if (textBlock == null)
+            if (d is not System.Windows.Controls.TextBlock textBlock)
             {
                 return;
             }
-
             textBlock.TextTrimming = (TextTrimming)e.NewValue;
         }
 
@@ -204,12 +190,10 @@ namespace Fluence.Wpf.Controls
 
         private static void OnIsTextSelectionEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var textBlock = d as System.Windows.Controls.TextBlock;
-            if (textBlock == null)
+            if (d is not System.Windows.Controls.TextBlock textBlock)
             {
                 return;
             }
-
             if ((bool)e.NewValue)
             {
                 if (textBlock.IsLoaded)
@@ -225,7 +209,7 @@ namespace Fluence.Wpf.Controls
 
         private static void OnTextBlockLoadedForSelection(object sender, RoutedEventArgs e)
         {
-            var textBlock = (System.Windows.Controls.TextBlock)sender;
+            System.Windows.Controls.TextBlock textBlock = (System.Windows.Controls.TextBlock)sender;
             textBlock.Loaded -= OnTextBlockLoadedForSelection;
             ApplySelectionOverlay(textBlock);
         }
@@ -236,27 +220,23 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
-            var parent = VisualTreeHelper.GetParent(textBlock) as Panel;
-            if (parent == null)
+            if (VisualTreeHelper.GetParent(textBlock) is not Panel parent)
             {
                 return;
             }
 
-            var index = parent.Children.IndexOf(textBlock);
+            int index = parent.Children.IndexOf(textBlock);
             if (index < 0)
             {
                 return;
             }
 
             parent.Children.RemoveAt(index);
-
-            var grid = new Grid();
+            Grid grid = new();
             textBlock.Opacity = 0;
             textBlock.IsHitTestVisible = false;
-            grid.Children.Add(textBlock);
-
-            var overlay = new System.Windows.Controls.TextBox
+            _ = grid.Children.Add(textBlock);
+            System.Windows.Controls.TextBox overlay = new()
             {
                 Background = Brushes.Transparent,
                 BorderThickness = new Thickness(0),
@@ -274,19 +254,16 @@ namespace Fluence.Wpf.Controls
                 CaretBrush = textBlock.Foreground,
                 SelectionBrush = SystemColors.HighlightBrush
             };
-
             TextOptions.SetTextFormattingMode(overlay, TextOptions.GetTextFormattingMode(textBlock));
             TextOptions.SetTextRenderingMode(overlay, TextOptions.GetTextRenderingMode(textBlock));
             TextOptions.SetTextHintingMode(overlay, TextOptions.GetTextHintingMode(textBlock));
-
-            overlay.SetBinding(System.Windows.Controls.TextBox.TextProperty, new Binding
+            _ = overlay.SetBinding(System.Windows.Controls.TextBox.TextProperty, new Binding
             {
                 Path = new PropertyPath(System.Windows.Controls.TextBlock.TextProperty),
                 Source = textBlock,
                 Mode = BindingMode.OneWay
             });
-
-            grid.Children.Add(overlay);
+            _ = grid.Children.Add(overlay);
             parent.Children.Insert(index, grid);
         }
 

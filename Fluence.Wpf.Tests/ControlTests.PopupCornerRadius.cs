@@ -25,9 +25,9 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf;
 using Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Tests
@@ -47,13 +47,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var overlayRadius = (CornerRadius)app.FindResource("OverlayCornerRadius");
+                CornerRadius? overlayRadius = (CornerRadius?)app?.FindResource("OverlayCornerRadius");
 
-                var cb = new Controls.ComboBox();
-                var w = new Window { Content = cb, Width = 300, Height = 100 };
+                ComboBox cb = new();
+                Window w = new() { Content = cb, Width = 300, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
@@ -68,11 +68,11 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var cb = new Controls.ComboBox();
-                var w = new Window { Content = cb, Width = 300, Height = 100 };
+                ComboBox cb = new();
+                Window w = new() { Content = cb, Width = 300, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
@@ -91,13 +91,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var overlayRadius = (CornerRadius)app.FindResource("OverlayCornerRadius");
+                CornerRadius? overlayRadius = (CornerRadius?)app?.FindResource("OverlayCornerRadius");
 
-                var ddb = new Controls.DropDownButton();
-                var w = new Window { Content = ddb, Width = 200, Height = 100 };
+                DropDownButton ddb = new();
+                Window w = new() { Content = ddb, Width = 200, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
@@ -112,11 +112,11 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var ddb = new Controls.DropDownButton();
-                var w = new Window { Content = ddb, Width = 200, Height = 100 };
+                DropDownButton ddb = new();
+                Window w = new() { Content = ddb, Width = 200, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 

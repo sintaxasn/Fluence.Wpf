@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -44,33 +45,34 @@ namespace Fluence.Wpf.Demo
         internal const string GalleryWindowTitle = "Fluence.Wpf \u2014 Control Gallery";
 
         private readonly Dictionary<NavigationViewItem, DemoNavigationItem> _navigationItemByContainer =
-            new Dictionary<NavigationViewItem, DemoNavigationItem>();
+            [];
         private readonly Dictionary<NavigationViewItem, object> _pageByContainer =
-            new Dictionary<NavigationViewItem, object>();
+            [];
         private bool _userShowIcon;
         private bool _userShowTitle;
-        private ImageSource _userIcon;
+        private ImageSource? _userIcon;
         private string _userTitle;
         private bool _userNavBackButtonVisible;
         private bool _userNavPaneToggleButtonVisible;
         private bool _lastAppliedExtendedTitleBar;
         private bool _isApplyingTitleBarChrome;
         private bool _isUpdatingExtendedTitleOverlap;
-        private Image _titleBarIconView;
-        private DependencyPropertyDescriptor _extendsDpd;
-        private DependencyPropertyDescriptor _paneModeDpd;
-        private DependencyPropertyDescriptor _backEnabledDpd;
-        private DependencyPropertyDescriptor _backVisibleDpd;
-        private DependencyPropertyDescriptor _paneToggleVisibleDpd;
-        private object _lastAnimatedPageContent;
+        private Image? _titleBarIconView;
+        private DependencyPropertyDescriptor? _extendsDpd;
+        private DependencyPropertyDescriptor? _paneModeDpd;
+        private DependencyPropertyDescriptor? _backEnabledDpd;
+        private DependencyPropertyDescriptor? _backVisibleDpd;
+        private DependencyPropertyDescriptor? _paneToggleVisibleDpd;
+        private object? _lastAnimatedPageContent;
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3366:\"this\" should not be exposed from constructors", Justification = "This is only demo code.")]
         public MainWindow()
         {
             InitializeComponent();
 
             Title = GalleryWindowTitle;
             SystemThemeWatcher.Watch(this);
-            ApplicationThemeManager.Apply(ApplicationTheme.Auto, BackdropType.Mica, true);
+            ApplicationThemeManager.Apply(ApplicationTheme.Auto, BackdropType.Mica);
 
             _userShowIcon = ShowIcon;
             _userShowTitle = ShowTitle;
@@ -79,10 +81,7 @@ namespace Fluence.Wpf.Demo
             _userNavBackButtonVisible = DemoNav != null && DemoNav.IsBackButtonVisible;
             _userNavPaneToggleButtonVisible = DemoNav == null || DemoNav.IsPaneToggleButtonVisible;
 
-            if (DemoNav != null)
-            {
-                DemoNav.SelectionChanged += DemoNav_SelectionChanged;
-            }
+            DemoNav?.SelectionChanged += DemoNav_SelectionChanged;
 
             PopulateNavigation();
             WatchTitleBarDependencies();
@@ -91,10 +90,7 @@ namespace Fluence.Wpf.Demo
 
         protected override void OnClosed(EventArgs e)
         {
-            if (_extendsDpd != null)
-            {
-                _extendsDpd.RemoveValueChanged(this, OnTitleBarDependencyChanged);
-            }
+            _extendsDpd?.RemoveValueChanged(this, OnTitleBarDependencyChanged);
 
             if (_paneModeDpd != null && DemoNav != null)
             {
@@ -116,10 +112,7 @@ namespace Fluence.Wpf.Demo
                 _paneToggleVisibleDpd.RemoveValueChanged(DemoNav, OnTitleBarDependencyChanged);
             }
 
-            if (DemoNav != null)
-            {
-                DemoNav.SelectionChanged -= DemoNav_SelectionChanged;
-            }
+            DemoNav?.SelectionChanged -= DemoNav_SelectionChanged;
 
             base.OnClosed(e);
         }
@@ -135,11 +128,11 @@ namespace Fluence.Wpf.Demo
             _navigationItemByContainer.Clear();
             _pageByContainer.Clear();
 
-            NavigationViewItem defaultItem = null;
+            NavigationViewItem? defaultItem = null;
             foreach (DemoNavigationItem item in DemoNavigationCatalog.Items)
             {
                 NavigationViewItem navItem = CreateNavigationItem(item);
-                DemoNav.Items.Add(navItem);
+                _ = DemoNav.Items.Add(navItem);
                 _navigationItemByContainer[navItem] = item;
                 if (item.IsDefault)
                 {
@@ -167,13 +160,12 @@ namespace Fluence.Wpf.Demo
 
         private void DemoNav_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var selected = DemoNav.SelectedItem as NavigationViewItem;
-            if (selected == null)
+            if (DemoNav.SelectedItem is not NavigationViewItem selected)
             {
                 return;
             }
 
-            var page = EnsurePageContent(selected);
+            object? page = EnsurePageContent(selected);
             if (page != null)
             {
                 DemoNav.Content = page;
@@ -192,7 +184,7 @@ namespace Fluence.Wpf.Demo
                 return;
             }
 
-            if (NavSearchBox != null && !string.IsNullOrEmpty(NavSearchBox.Text))
+            if (NavSearchBox != null && !string.IsNullOrWhiteSpace(NavSearchBox.Text))
             {
                 NavSearchBox.Text = string.Empty;
             }
@@ -200,40 +192,37 @@ namespace Fluence.Wpf.Demo
             NavigateToItem(FindFirstMatchingItem(tag));
         }
 
-        private void NavigateToItem(NavigationViewItem item)
+        private void NavigateToItem(NavigationViewItem? item)
         {
             if (item == null || DemoNav == null)
             {
                 return;
             }
 
-            var page = EnsurePageContent(item);
-            if (!ReferenceEquals(DemoNav.SelectedItem, item))
-            {
-                DemoNav.SelectedItem = item;
-            }
-            else
+            if (ReferenceEquals(DemoNav.SelectedItem, item) && EnsurePageContent(item) is object page)
             {
                 DemoNav.Content = page;
                 AnimatePageInIfChanged(page);
             }
+            else
+            {
+                DemoNav.SelectedItem = item;
+            }
         }
 
-        private object EnsurePageContent(NavigationViewItem item)
+        private object? EnsurePageContent(NavigationViewItem item)
         {
             if (item == null)
             {
                 return null;
             }
 
-            object page;
-            if (_pageByContainer.TryGetValue(item, out page))
+            if (_pageByContainer.TryGetValue(item, out object? page))
             {
                 return page;
             }
 
-            DemoNavigationItem metadata;
-            if (!_navigationItemByContainer.TryGetValue(item, out metadata))
+            if (!_navigationItemByContainer.TryGetValue(item, out DemoNavigationItem? metadata))
             {
                 return null;
             }
@@ -245,47 +234,28 @@ namespace Fluence.Wpf.Demo
 
         private static object CreatePageForRoute(string route)
         {
-            switch ((route ?? string.Empty).ToLowerInvariant())
+            return (route ?? string.Empty).ToLowerInvariant() switch
             {
-                case "home":
-                    return new GalleryHomePage();
-                case "colors":
-                    return new GalleryColorsPage();
-                case "iconography":
-                    return new GalleryGlyphsPage();
-                case "typography":
-                    return new GalleryTypographyPage();
-                case "accessibility":
-                    return new GalleryAccessibilityPage();
-                case "buttons":
-                    return new GalleryButtonsPage();
-                case "selection":
-                    return new GallerySelectionPage();
-                case "inputs":
-                    return new GalleryInputsPage();
-                case "forms":
-                    return new GalleryFormsPage();
-                case "data":
-                    return new GalleryDataPage();
-                case "data binding":
-                    return new GalleryDataBindingPage();
-                case "trees":
-                    return new GalleryTreesPage();
-                case "menus":
-                    return new GalleryMenusPage();
-                case "navigation":
-                    return new GalleryNavigationPage();
-                case "tabs":
-                    return new GalleryTabsPage();
-                case "layout":
-                    return new GalleryLayoutPage();
-                case "status":
-                    return new GalleryStatusPage();
-                case "window":
-                    return new GalleryWindowPage();
-                default:
-                    return new GalleryHomePage();
-            }
+                "home" => new GalleryHomePage(),
+                "colors" => new GalleryColorsPage(),
+                "iconography" => new GalleryGlyphsPage(),
+                "typography" => new GalleryTypographyPage(),
+                "accessibility" => new GalleryAccessibilityPage(),
+                "buttons" => new GalleryButtonsPage(),
+                "selection" => new GallerySelectionPage(),
+                "inputs" => new GalleryInputsPage(),
+                "forms" => new GalleryFormsPage(),
+                "data" => new GalleryDataPage(),
+                "data binding" => new GalleryDataBindingPage(),
+                "trees" => new GalleryTreesPage(),
+                "menus" => new GalleryMenusPage(),
+                "navigation" => new GalleryNavigationPage(),
+                "tabs" => new GalleryTabsPage(),
+                "layout" => new GalleryLayoutPage(),
+                "status" => new GalleryStatusPage(),
+                "window" => new GalleryWindowPage(),
+                _ => new GalleryHomePage(),
+            };
         }
 
         private void NavSearchBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -295,6 +265,8 @@ namespace Fluence.Wpf.Demo
 
         private void NavSearchBox_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
+
+            // No idea why this is empty.
         }
 
         private void NavSearchBox_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -304,14 +276,14 @@ namespace Fluence.Wpf.Demo
                 return;
             }
 
-            var query = (NavSearchBox == null ? null : NavSearchBox.Text) ?? string.Empty;
+            string query = (NavSearchBox?.Text) ?? string.Empty;
             query = query.Trim();
             if (query.Length == 0)
             {
                 return;
             }
 
-            var match = FindFirstMatchingItem(query);
+            NavigationViewItem? match = FindFirstMatchingItem(query);
             if (match != null)
             {
                 NavigateToItem(match);
@@ -319,47 +291,44 @@ namespace Fluence.Wpf.Demo
             }
         }
 
-        private NavigationViewItem FindFirstMatchingItem(string query)
+        private NavigationViewItem? FindFirstMatchingItem(string query)
         {
             if (DemoNav == null || string.IsNullOrWhiteSpace(query))
             {
                 return null;
             }
 
-            var trimmed = query.Trim();
-            NavigationViewItem fallback = null;
+            string trimmed = query.Trim();
             foreach (object obj in DemoNav.Items)
             {
-                var item = obj as NavigationViewItem;
-                if (item == null)
+                if (obj is not NavigationViewItem item)
                 {
                     continue;
                 }
 
-                var title = (item.Content as string) ?? string.Empty;
-                DemoNavigationItem metadata;
-                _navigationItemByContainer.TryGetValue(item, out metadata);
+                string title = (item.Content as string) ?? string.Empty;
+                _ = _navigationItemByContainer.TryGetValue(item, out DemoNavigationItem? metadata);
                 if (string.Equals(title, trimmed, StringComparison.OrdinalIgnoreCase) ||
                     (metadata != null && string.Equals(metadata.Route, trimmed, StringComparison.OrdinalIgnoreCase)))
                 {
                     return item;
                 }
 
-                if (fallback == null && ItemMatches(item, metadata, trimmed))
+                if (ItemMatches(item, metadata, trimmed))
                 {
-                    fallback = item;
+                    return item;
                 }
             }
 
-            return fallback;
+            return null;
         }
 
-        private static bool ItemMatches(NavigationViewItem item, DemoNavigationItem metadata, string needle)
+        private static bool ItemMatches(NavigationViewItem item, DemoNavigationItem? metadata, string needle)
         {
-            var title = (item.Content as string) ?? string.Empty;
-            var tag = (item.Tag as string) ?? string.Empty;
-            var route = metadata == null ? string.Empty : metadata.Route;
-            var keywords = metadata == null ? string.Empty : metadata.Keywords;
+            string title = (item.Content as string) ?? string.Empty;
+            string tag = (item.Tag as string) ?? string.Empty;
+            string route = metadata == null ? string.Empty : metadata.Route;
+            string keywords = metadata == null ? string.Empty : metadata.Keywords;
             return ContainsOrdinalIgnoreCase(title + " " + tag + " " + route + " " + keywords, needle);
         }
 
@@ -379,13 +348,12 @@ namespace Fluence.Wpf.Demo
                 return;
             }
 
-            var query = (NavSearchBox.Text ?? string.Empty).Trim();
+            string query = (NavSearchBox.Text ?? string.Empty).Trim();
             if (query.Length == 0)
             {
                 foreach (object obj in DemoNav.Items)
                 {
-                    var item = obj as NavigationViewItem;
-                    if (item != null)
+                    if (obj is NavigationViewItem item)
                     {
                         item.Visibility = Visibility.Visible;
                     }
@@ -396,14 +364,12 @@ namespace Fluence.Wpf.Demo
 
             foreach (object obj in DemoNav.Items)
             {
-                var item = obj as NavigationViewItem;
-                if (item == null)
+                if (obj is not NavigationViewItem item)
                 {
                     continue;
                 }
 
-                DemoNavigationItem metadata;
-                _navigationItemByContainer.TryGetValue(item, out metadata);
+                _ = _navigationItemByContainer.TryGetValue(item, out DemoNavigationItem? metadata);
                 item.Visibility = ItemMatches(item, metadata, query)
                     ? Visibility.Visible
                     : Visibility.Collapsed;
@@ -423,32 +389,30 @@ namespace Fluence.Wpf.Demo
 
         private static void AnimatePageIn(object page)
         {
-            var element = page as UIElement;
-            if (element == null)
+            if (page is not UIElement element)
             {
                 return;
             }
 
-            element.BeginAnimation(UIElement.OpacityProperty, null);
+            element.BeginAnimation(OpacityProperty, null);
             element.RenderTransform = new TranslateTransform(0.0, 20.0);
             element.Opacity = 0.0;
 
-            var easing = new CubicEase { EasingMode = EasingMode.EaseOut };
-            var opacityAnimation = new DoubleAnimation(0.0, 1.0, new Duration(TimeSpan.FromMilliseconds(160)))
+            CubicEase easing = new() { EasingMode = EasingMode.EaseOut };
+            DoubleAnimation opacityAnimation = new(0.0, 1.0, new Duration(TimeSpan.FromMilliseconds(160)))
             {
                 EasingFunction = easing
             };
             opacityAnimation.Completed += delegate
             {
-                element.BeginAnimation(UIElement.OpacityProperty, null);
+                element.BeginAnimation(OpacityProperty, null);
                 element.Opacity = 1.0;
             };
-            element.BeginAnimation(UIElement.OpacityProperty, opacityAnimation);
+            element.BeginAnimation(OpacityProperty, opacityAnimation);
 
-            var transform = element.RenderTransform as TranslateTransform;
-            if (transform != null)
+            if (element.RenderTransform is TranslateTransform transform)
             {
-                var slideAnimation = new DoubleAnimation(20.0, 0.0, new Duration(TimeSpan.FromMilliseconds(167)))
+                DoubleAnimation slideAnimation = new(20.0, 0.0, new Duration(TimeSpan.FromMilliseconds(167)))
                 {
                     EasingFunction = easing
                 };
@@ -466,7 +430,7 @@ namespace Fluence.Wpf.Demo
         /// </summary>
         /// <param name="show">Whether the icon should be visible when layout permits it.</param>
         /// <param name="icon">The icon to apply when visible.</param>
-        public void SetUserShowIcon(bool show, ImageSource icon)
+        public void SetUserShowIcon(bool show, ImageSource? icon)
         {
             _userShowIcon = show;
             _userIcon = icon;
@@ -488,45 +452,30 @@ namespace Fluence.Wpf.Demo
         private void WatchTitleBarDependencies()
         {
             _extendsDpd = DependencyPropertyDescriptor.FromProperty(
-                FluenceWindow.ExtendsContentIntoTitleBarProperty, typeof(FluenceWindow));
-            if (_extendsDpd != null)
-            {
-                _extendsDpd.AddValueChanged(this, OnTitleBarDependencyChanged);
-            }
+                ExtendsContentIntoTitleBarProperty, typeof(FluenceWindow));
+            _extendsDpd?.AddValueChanged(this, OnTitleBarDependencyChanged);
 
             if (DemoNav != null)
             {
                 _paneModeDpd = DependencyPropertyDescriptor.FromProperty(
                     NavigationView.PaneDisplayModeProperty, typeof(NavigationView));
-                if (_paneModeDpd != null)
-                {
-                    _paneModeDpd.AddValueChanged(DemoNav, OnTitleBarDependencyChanged);
-                }
+                _paneModeDpd?.AddValueChanged(DemoNav, OnTitleBarDependencyChanged);
 
                 _backEnabledDpd = DependencyPropertyDescriptor.FromProperty(
                     NavigationView.IsBackEnabledProperty, typeof(NavigationView));
-                if (_backEnabledDpd != null)
-                {
-                    _backEnabledDpd.AddValueChanged(DemoNav, OnTitleBarDependencyChanged);
-                }
+                _backEnabledDpd?.AddValueChanged(DemoNav, OnTitleBarDependencyChanged);
 
                 _backVisibleDpd = DependencyPropertyDescriptor.FromProperty(
                     NavigationView.IsBackButtonVisibleProperty, typeof(NavigationView));
-                if (_backVisibleDpd != null)
-                {
-                    _backVisibleDpd.AddValueChanged(DemoNav, OnTitleBarDependencyChanged);
-                }
+                _backVisibleDpd?.AddValueChanged(DemoNav, OnTitleBarDependencyChanged);
 
                 _paneToggleVisibleDpd = DependencyPropertyDescriptor.FromProperty(
                     NavigationView.IsPaneToggleButtonVisibleProperty, typeof(NavigationView));
-                if (_paneToggleVisibleDpd != null)
-                {
-                    _paneToggleVisibleDpd.AddValueChanged(DemoNav, OnTitleBarDependencyChanged);
-                }
+                _paneToggleVisibleDpd?.AddValueChanged(DemoNav, OnTitleBarDependencyChanged);
             }
         }
 
-        private void OnTitleBarDependencyChanged(object sender, EventArgs e)
+        private void OnTitleBarDependencyChanged(object? sender, EventArgs e)
         {
             if (sender == DemoNav && !_isApplyingTitleBarChrome)
             {
@@ -559,15 +508,12 @@ namespace Fluence.Wpf.Demo
             ShowIcon = !extendedTitleBar && _userShowIcon;
             ShowTitle = !extendedTitleBar && _userShowTitle;
             Icon = _userIcon;
-            if (_userShowTitle && !string.IsNullOrEmpty(_userTitle))
+            if (_userShowTitle && !string.IsNullOrWhiteSpace(_userTitle))
             {
                 Title = _userTitle;
             }
 
-            if (NavSearchBox != null)
-            {
-                NavSearchBox.Visibility = Visibility.Visible;
-            }
+            _ = (NavSearchBox?.Visibility = Visibility.Visible);
 
             if (DemoNav != null)
             {
@@ -594,9 +540,10 @@ namespace Fluence.Wpf.Demo
             if (ShellTitleBar != null)
             {
                 ShellTitleBar.Title = extendedTitleBar && _userShowTitle ? (_userTitle ?? string.Empty) : string.Empty;
-                ShellTitleBar.Icon = extendedTitleBar && _userShowIcon && _userIcon != null
-                    ? GetTitleBarIconView()
-                    : null;
+                if (extendedTitleBar && _userShowIcon && _userIcon != null)
+                {
+                    ShellTitleBar.Icon = GetTitleBarIconView();
+                }
                 ShellTitleBar.IsBackButtonVisible = extendedTitleBar
                     && _userNavBackButtonVisible
                     && DemoNav != null
@@ -635,10 +582,7 @@ namespace Fluence.Wpf.Demo
 
         private void ShellTitleBar_PaneToggleRequested(object sender, EventArgs e)
         {
-            if (DemoNav != null)
-            {
-                DemoNav.IsPaneOpen = !DemoNav.IsPaneOpen;
-            }
+            _ = (DemoNav?.IsPaneOpen = !DemoNav.IsPaneOpen);
         }
 
         private void ShellTitleBar_BackRequested(object sender, EventArgs e)
@@ -651,7 +595,7 @@ namespace Fluence.Wpf.Demo
 
         private void ScheduleExtendedTitleOverlapCheck()
         {
-            Dispatcher.BeginInvoke(new Action(UpdateExtendedTitleOverlap), DispatcherPriority.Loaded);
+            _ = Dispatcher.BeginInvoke(new Action(UpdateExtendedTitleOverlap), DispatcherPriority.Loaded);
         }
 
         private void UpdateExtendedTitleOverlap()
@@ -670,7 +614,7 @@ namespace Fluence.Wpf.Demo
                 }
 
                 string desiredTitle = _userShowTitle ? (_userTitle ?? string.Empty) : string.Empty;
-                if (string.IsNullOrEmpty(desiredTitle))
+                if (string.IsNullOrWhiteSpace(desiredTitle))
                 {
                     ShellTitleBar.Title = string.Empty;
                     return;
@@ -679,15 +623,12 @@ namespace Fluence.Wpf.Demo
                 if (!string.Equals(ShellTitleBar.Title, desiredTitle, StringComparison.Ordinal))
                 {
                     ShellTitleBar.Title = desiredTitle;
-                    ShellTitleBar.ApplyTemplate();
+                    _ = ShellTitleBar.ApplyTemplate();
                     ShellTitleBar.UpdateLayout();
-                    if (NavSearchBox != null)
-                    {
-                        NavSearchBox.UpdateLayout();
-                    }
+                    NavSearchBox?.UpdateLayout();
                 }
 
-                System.Windows.Controls.TextBlock titleText = GetTitleBarTemplatePart<System.Windows.Controls.TextBlock>("PART_TitleText");
+                System.Windows.Controls.TextBlock? titleText = GetTitleBarTemplatePart<System.Windows.Controls.TextBlock>("PART_TitleText");
                 if (titleText == null
                     || NavSearchBox == null
                     || titleText.Visibility != Visibility.Visible
@@ -698,21 +639,15 @@ namespace Fluence.Wpf.Demo
                     return;
                 }
 
-                var titlePoint = titleText.TransformToAncestor(this).Transform(new Point(0, 0));
-                var searchPoint = NavSearchBox.TransformToAncestor(this).Transform(new Point(0, 0));
+                Point titlePoint = titleText.TransformToAncestor(this).Transform(new Point(0, 0));
+                Point searchPoint = NavSearchBox.TransformToAncestor(this).Transform(new Point(0, 0));
                 double titleRight = titlePoint.X + titleText.ActualWidth;
                 double searchLeft = searchPoint.X;
-                if (titleRight + 12.0 > searchLeft)
-                {
-                    ShellTitleBar.Title = string.Empty;
-                }
-                else
-                {
-                    ShellTitleBar.Title = desiredTitle;
-                }
+                ShellTitleBar.Title = titleRight + 12.0 > searchLeft ? string.Empty : desiredTitle;
             }
             catch (InvalidOperationException)
             {
+                // No idea what we're swallowing here.
             }
             finally
             {
@@ -720,7 +655,7 @@ namespace Fluence.Wpf.Demo
             }
         }
 
-        private T GetTitleBarTemplatePart<T>(string partName)
+        private T? GetTitleBarTemplatePart<T>(string partName)
             where T : FrameworkElement
         {
             if (ShellTitleBar == null)
@@ -728,7 +663,7 @@ namespace Fluence.Wpf.Demo
                 return null;
             }
 
-            ShellTitleBar.ApplyTemplate();
+            _ = ShellTitleBar.ApplyTemplate();
             return ShellTitleBar.Template == null ? null : ShellTitleBar.Template.FindName(partName, ShellTitleBar) as T;
         }
 

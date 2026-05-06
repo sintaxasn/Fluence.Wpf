@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -38,10 +39,10 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = WpfTestSta.EnsureApplication();
+                Application? app = WpfTestSta.EnsureApplication();
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
-                app.Resources.MergedDictionaries.Clear();
+                app?.Resources.MergedDictionaries.Clear();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
                 ApplicationAccentColorManager.ApplySystemAccent();
 
@@ -56,20 +57,20 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                WpfTestSta.EnsureApplication();
+                _ = WpfTestSta.EnsureApplication();
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
                 Application.Current.Resources.MergedDictionaries.Clear();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
 
-                var window = new Window { Width = 200, Height = 120 };
+                Window window = new() { Width = 200, Height = 120 };
                 try
                 {
-                    var panel = new System.Windows.Controls.Border { Width = 10, Height = 10 };
+                    Controls.Border panel = new() { Width = 10, Height = 10 };
                     window.Content = panel;
                     window.Show();
                     window.Dispatcher.Invoke(() => { }, System.Windows.Threading.DispatcherPriority.Loaded);
-                    var dpi = System.Windows.Media.VisualTreeHelper.GetDpi(panel);
+                    DpiScale dpi = System.Windows.Media.VisualTreeHelper.GetDpi(panel);
                     Assert.IsTrue(dpi.PixelsPerDip > 0, "DpiScale.PixelsPerDip should be positive.");
                 }
                 finally

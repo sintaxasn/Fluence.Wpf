@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 using System.Windows.Media;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -49,16 +50,16 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var rc = new RatingControl();
-                var w = new Window { Content = rc, Width = 300, Height = 100 };
+                RatingControl rc = new();
+                Window w = new() { Content = rc, Width = 300, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
                 // PART_StarsPanel must be present after template is applied.
-                var panel = FindVisualChildByName<WpfStackPanel>(rc, "PART_StarsPanel");
+                WpfStackPanel? panel = FindVisualChildByName<WpfStackPanel>(rc, "PART_StarsPanel");
                 Assert.IsNotNull(panel, "PART_StarsPanel must be present in RatingControl template.");
                 w.Close();
             });
@@ -69,15 +70,15 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var rc = new RatingControl();
-                var w = new Window { Content = rc, Width = 300, Height = 100 };
+                RatingControl rc = new();
+                Window w = new() { Content = rc, Width = 300, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var panel = FindVisualChildByName<WpfStackPanel>(rc, "PART_StarsPanel");
+                WpfStackPanel? panel = FindVisualChildByName<WpfStackPanel>(rc, "PART_StarsPanel");
                 Assert.IsNotNull(panel);
                 Assert.AreEqual(5, panel.Children.Count,
                     "Default MaxRating=5 must generate 5 star TextBlocks.");
@@ -90,21 +91,26 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var rc = new RatingControl { Value = 3 };
-                var w = new Window { Content = rc, Width = 300, Height = 100 };
+                RatingControl rc = new() { Value = 3 };
+                Window w = new() { Content = rc, Width = 300, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var panel = FindVisualChildByName<WpfStackPanel>(rc, "PART_StarsPanel");
+                WpfStackPanel? panel = FindVisualChildByName<WpfStackPanel>(rc, "PART_StarsPanel");
                 Assert.IsNotNull(panel);
 
                 // Stars 1–3 must be filled (U+E735), stars 4–5 must be empty (U+E734).
                 int filledCount = 0;
                 foreach (WpfTextBlock star in panel.Children)
-                    if (star.Text == "\uE735") filledCount++;
+                {
+                    if (star.Text == "\uE735")
+                    {
+                        filledCount++;
+                    }
+                }
 
                 Assert.AreEqual(3, filledCount,
                     "Value=3 must fill exactly 3 stars with U+E735 (StarFilled).");
@@ -117,23 +123,23 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var rc = new RatingControl { Value = 2 };
-                var w = new Window { Content = rc, Width = 300, Height = 100 };
+                RatingControl rc = new() { Value = 2 };
+                Window w = new() { Content = rc, Width = 300, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var panel = FindVisualChildByName<WpfStackPanel>(rc, "PART_StarsPanel");
+                WpfStackPanel? panel = FindVisualChildByName<WpfStackPanel>(rc, "PART_StarsPanel");
                 Assert.IsNotNull(panel);
 
-                var accentBrush = app.TryFindResource("AccentFillColorDefaultBrush") as SolidColorBrush;
+                SolidColorBrush? accentBrush = app?.TryFindResource("AccentFillColorDefaultBrush") as SolidColorBrush;
                 Assert.IsNotNull(accentBrush, "AccentFillColorDefaultBrush must resolve.");
 
                 // First two stars (filled) must use AccentFillColorDefaultBrush.
-                var star1 = panel.Children[0] as WpfTextBlock;
-                var star1Fg = star1?.Foreground as SolidColorBrush;
+                WpfTextBlock? star1 = panel.Children[0] as WpfTextBlock;
+                SolidColorBrush? star1Fg = star1?.Foreground as SolidColorBrush;
                 Assert.IsNotNull(star1Fg, "First filled star Foreground must be a SolidColorBrush.");
                 Assert.AreEqual(accentBrush.Color, star1Fg.Color,
                     "Filled stars must use AccentFillColorDefaultBrush per WinUI 3 RatingControl.");
@@ -146,22 +152,22 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var rc = new RatingControl { Value = 0 };
-                var w = new Window { Content = rc, Width = 300, Height = 100 };
+                RatingControl rc = new() { Value = 0 };
+                Window w = new() { Content = rc, Width = 300, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var panel = FindVisualChildByName<WpfStackPanel>(rc, "PART_StarsPanel");
+                WpfStackPanel? panel = FindVisualChildByName<WpfStackPanel>(rc, "PART_StarsPanel");
                 Assert.IsNotNull(panel);
 
-                var secondaryBrush = app.TryFindResource("TextFillColorSecondaryBrush") as SolidColorBrush;
+                SolidColorBrush? secondaryBrush = app?.TryFindResource("TextFillColorSecondaryBrush") as SolidColorBrush;
                 Assert.IsNotNull(secondaryBrush, "TextFillColorSecondaryBrush must resolve.");
 
-                var star = panel.Children[0] as WpfTextBlock;
-                var starFg = star?.Foreground as SolidColorBrush;
+                WpfTextBlock? star = panel.Children[0] as WpfTextBlock;
+                SolidColorBrush? starFg = star?.Foreground as SolidColorBrush;
                 Assert.IsNotNull(starFg, "Empty star Foreground must be a SolidColorBrush.");
                 Assert.AreEqual(secondaryBrush.Color, starFg.Color,
                     "Empty stars must use TextFillColorSecondaryBrush per WinUI 3 RatingControl.");
@@ -174,15 +180,15 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var rc = new RatingControl { Value = 4, Caption = "4.0" };
-                var w = new Window { Content = rc, Width = 300, Height = 100 };
+                RatingControl rc = new() { Value = 4, Caption = "4.0" };
+                Window w = new() { Content = rc, Width = 300, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var caption = FindVisualChildByName<WpfTextBlock>(rc, "PART_Caption");
+                WpfTextBlock? caption = FindVisualChildByName<WpfTextBlock>(rc, "PART_Caption");
                 Assert.IsNotNull(caption, "PART_Caption must be present.");
                 Assert.AreEqual(Visibility.Visible, caption.Visibility,
                     "PART_Caption must be Visible when Caption is set.");
@@ -197,15 +203,15 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var rc = new RatingControl { Caption = string.Empty };
-                var w = new Window { Content = rc, Width = 300, Height = 100 };
+                RatingControl rc = new() { Caption = string.Empty };
+                Window w = new() { Content = rc, Width = 300, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var caption = FindVisualChildByName<WpfTextBlock>(rc, "PART_Caption");
+                WpfTextBlock? caption = FindVisualChildByName<WpfTextBlock>(rc, "PART_Caption");
                 Assert.IsNotNull(caption, "PART_Caption must be present.");
                 Assert.AreEqual(Visibility.Collapsed, caption.Visibility,
                     "PART_Caption must be Collapsed when Caption is empty.");
@@ -218,11 +224,11 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var rc = new RatingControl { MaxRating = 3 };
-                var w = new Window { Content = rc, Width = 300, Height = 100 };
+                RatingControl rc = new() { MaxRating = 3 };
+                Window w = new() { Content = rc, Width = 300, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
@@ -241,18 +247,18 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var rc = new RatingControl { Value = 3 };
-                var w = new Window { Content = rc, Width = 300, Height = 100 };
+                RatingControl rc = new() { Value = 3 };
+                Window w = new() { Content = rc, Width = 300, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
                 ThemeTestHelpers.ApplyStandardThemeCycle();
                 DrainDispatcher(w.Dispatcher);
 
-                var panel = FindVisualChildByName<WpfStackPanel>(rc, "PART_StarsPanel");
+                WpfStackPanel? panel = FindVisualChildByName<WpfStackPanel>(rc, "PART_StarsPanel");
                 Assert.IsNotNull(panel,
                     "PART_StarsPanel must still be present after theme cycle.");
                 w.Close();

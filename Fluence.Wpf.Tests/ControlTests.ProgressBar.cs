@@ -25,10 +25,10 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 using System.Windows.Media;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf;
 using FluenceProgressBar = Fluence.Wpf.Controls.ProgressBar;
 using WpfBorder = System.Windows.Controls.Border;
 
@@ -52,27 +52,27 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var progressBar = new FluenceProgressBar
+                FluenceProgressBar progressBar = new()
                 {
                     Width = 240,
                     Height = 24,
                     Value = 50,
                     ProgressMode = mode
                 };
-                var w = new Window { Content = progressBar, Width = 300, Height = 120 };
+                Window w = new() { Content = progressBar, Width = 300, Height = 120 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var fill = FindVisualChildByName<WpfBorder>(progressBar, "PART_Fill");
+                WpfBorder? fill = FindVisualChildByName<WpfBorder>(progressBar, "PART_Fill");
                 Assert.IsNotNull(fill, "ProgressBar template must expose PART_Fill.");
 
-                var expected = app.TryFindResource(brushKey) as SolidColorBrush;
+                SolidColorBrush? expected = app?.TryFindResource(brushKey) as SolidColorBrush;
                 Assert.IsNotNull(expected, brushKey + " must resolve.");
 
-                var actual = fill.Background as SolidColorBrush;
+                SolidColorBrush? actual = fill.Background as SolidColorBrush;
                 Assert.IsNotNull(actual, "PART_Fill.Background should be a SolidColorBrush.");
                 Assert.AreEqual(expected.Color, actual.Color, "ProgressBar fill should use the requested state brush.");
 

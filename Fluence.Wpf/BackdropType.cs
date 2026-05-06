@@ -25,26 +25,37 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// Specifies the visual appearance of a Fluent control.
+    /// DWM backdrop material applied to a <see cref="Controls.FluenceWindow"/> non-client area on Windows 11.
     /// </summary>
-    public enum ControlAppearance
+    public enum BackdropType
     {
         /// <summary>
-        /// Standard control appearance with default fill and elevation border.
+        /// No Mica/Acrylic; standard solid backdrop.
         /// </summary>
-        Standard = 0,
+        None = 0,
 
         /// <summary>
-        /// Accent-colored appearance for primary actions.
+        /// Let the library pick the best supported backdrop for the OS version.
         /// </summary>
-        Accent = 1,
+        Auto = 1,
 
         /// <summary>
-        /// Subtle appearance with transparent rest state.
+        /// Mica (layered tint over wallpaper).
         /// </summary>
-        Subtle = 2
+        Mica = 2,
+
+        /// <summary>
+        /// Acrylic blur.
+        /// </summary>
+        Acrylic = 3,
+
+        /// <summary>
+        /// Tabbed Mica for tabbed window groups (Windows 11).
+        /// </summary>
+        Tabbed = 4,
     }
 }

@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
@@ -51,21 +52,21 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var lv = new FluenceListView();
-                lv.Items.Add(new ListViewItem { Content = "Item A" });
-                lv.Items.Add(new ListViewItem { Content = "Item B" });
-                var w = new Window { Content = lv, Width = 300, Height = 200 };
+                FluenceListView lv = new();
+                _ = lv.Items.Add(new ListViewItem { Content = "Item A" });
+                _ = lv.Items.Add(new ListViewItem { Content = "Item B" });
+                Window w = new() { Content = lv, Width = 300, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
                 // Find the first ListViewItem in the visual tree
-                var item = FindVisualChild<ListViewItem>(lv);
+                ListViewItem? item = FindVisualChild<ListViewItem>(lv);
                 Assert.IsNotNull(item, "ListViewItem must exist in visual tree after Show.");
 
-                var indicator = FindVisualChildByName<WpfBorder>(item, "SelectionIndicator");
+                WpfBorder? indicator = FindVisualChildByName<WpfBorder>(item, "SelectionIndicator");
                 Assert.IsNotNull(indicator,
                     "SelectionIndicator border must be present in ListViewItem template per WI-3 C20.");
                 w.Close();
@@ -77,18 +78,18 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var lv = new FluenceListView();
-                lv.Items.Add(new ListViewItem { Content = "Item A" });
-                var w = new Window { Content = lv, Width = 300, Height = 200 };
+                FluenceListView lv = new();
+                _ = lv.Items.Add(new ListViewItem { Content = "Item A" });
+                Window w = new() { Content = lv, Width = 300, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var item = FindVisualChild<ListViewItem>(lv);
+                ListViewItem? item = FindVisualChild<ListViewItem>(lv);
                 Assert.IsNotNull(item, "ListViewItem must exist.");
-                var indicator = FindVisualChildByName<WpfBorder>(item, "SelectionIndicator");
+                WpfBorder? indicator = FindVisualChildByName<WpfBorder>(item, "SelectionIndicator");
                 Assert.IsNotNull(indicator, "SelectionIndicator must be present.");
 
                 Assert.AreEqual(3.0, indicator.Width, 0.01,
@@ -102,18 +103,18 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var lv = new FluenceListView();
-                lv.Items.Add(new ListViewItem { Content = "Item A" });
-                var w = new Window { Content = lv, Width = 300, Height = 200 };
+                FluenceListView lv = new();
+                _ = lv.Items.Add(new ListViewItem { Content = "Item A" });
+                Window w = new() { Content = lv, Width = 300, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var item = FindVisualChild<ListViewItem>(lv);
+                ListViewItem? item = FindVisualChild<ListViewItem>(lv);
                 Assert.IsNotNull(item, "ListViewItem must exist.");
-                var indicator = FindVisualChildByName<WpfBorder>(item, "SelectionIndicator");
+                WpfBorder? indicator = FindVisualChildByName<WpfBorder>(item, "SelectionIndicator");
                 Assert.IsNotNull(indicator, "SelectionIndicator must be present.");
 
                 Assert.AreEqual(new CornerRadius(1.5), indicator.CornerRadius,
@@ -127,24 +128,24 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var lv = new FluenceListView();
-                lv.Items.Add(new ListViewItem { Content = "Item A" });
-                var w = new Window { Content = lv, Width = 300, Height = 200 };
+                FluenceListView lv = new();
+                _ = lv.Items.Add(new ListViewItem { Content = "Item A" });
+                Window w = new() { Content = lv, Width = 300, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var item = FindVisualChild<ListViewItem>(lv);
+                ListViewItem? item = FindVisualChild<ListViewItem>(lv);
                 Assert.IsNotNull(item, "ListViewItem must exist.");
-                var indicator = FindVisualChildByName<WpfBorder>(item, "SelectionIndicator");
+                WpfBorder? indicator = FindVisualChildByName<WpfBorder>(item, "SelectionIndicator");
                 Assert.IsNotNull(indicator, "SelectionIndicator must be present.");
 
-                var expected = app.TryFindResource("AccentFillColorDefaultBrush") as SolidColorBrush;
+                SolidColorBrush? expected = app?.TryFindResource("AccentFillColorDefaultBrush") as SolidColorBrush;
                 Assert.IsNotNull(expected, "AccentFillColorDefaultBrush must resolve.");
 
-                var actual = indicator.Background as SolidColorBrush;
+                SolidColorBrush? actual = indicator.Background as SolidColorBrush;
                 Assert.IsNotNull(actual, "SelectionIndicator.Background must be a SolidColorBrush.");
                 Assert.AreEqual(
                     expected.Color,
@@ -159,18 +160,18 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var items = new ObservableCollection<string> { "One", "Two", "Three" };
-                var lv = new FluenceListView
+                ObservableCollection<string> items = ["One", "Two", "Three"];
+                FluenceListView lv = new()
                 {
                     Width = 300,
                     Height = 180,
                     ItemsSource = items,
                     ItemAnimationsEnabled = true
                 };
-                var w = new Window { Content = lv, Width = 360, Height = 240 };
+                Window w = new() { Content = lv, Width = 360, Height = 240 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
                 w.UpdateLayout();

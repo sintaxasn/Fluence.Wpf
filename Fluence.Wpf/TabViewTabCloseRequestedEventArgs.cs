@@ -25,18 +25,32 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+using System.Windows;
+using Fluence.Wpf.Controls;
+
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// Visual state for <see cref="Controls.ProgressRing"/> arcs.
+    /// Event data for <see cref="TabView.TabCloseRequested"/> and <see cref="TabViewItem.CloseRequested"/>.
     /// </summary>
-    public enum ProgressRingState
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="TabViewTabCloseRequestedEventArgs"/> class.
+    /// </remarks>
+    /// <param name="routedEvent">The routed event being raised.</param>
+    /// <param name="source">The element raising the event.</param>
+    /// <param name="tab">The <see cref="TabViewItem"/> the user has asked to close.</param>
+    /// <param name="item">The bound data item, or the <see cref="TabViewItem"/> itself if no data was bound.</param>
+    public class TabViewTabCloseRequestedEventArgs(RoutedEvent routedEvent, object source, TabViewItem tab, object item) : RoutedEventArgs(routedEvent, source)
     {
-        /// <summary>Normal active progress rendered with the accent brush.</summary>
-        Normal,
-        /// <summary>Paused progress rendered with the system caution brush.</summary>
-        Paused,
-        /// <summary>Error progress rendered with the system critical brush.</summary>
-        Error
+        /// <summary>
+        /// Gets the tab container the user asked to close.
+        /// </summary>
+        public TabViewItem Tab { get; } = tab;
+
+        /// <summary>
+        /// Gets the data item bound to <see cref="Tab"/>, or the tab itself when items are declared inline.
+        /// </summary>
+        public object Item { get; } = item;
     }
 }

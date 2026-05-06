@@ -25,8 +25,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
-using System.Windows.Controls;
 
 namespace Fluence.Wpf.Controls
 {
@@ -50,13 +50,13 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public BorderVariant Variant
         {
-            get { return (BorderVariant)GetValue(VariantProperty); }
-            set { SetValue(VariantProperty, value); }
+            get => (BorderVariant)GetValue(VariantProperty);
+            set => SetValue(VariantProperty, value);
         }
 
         private static void OnVariantChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var border = (Border)d;
+            Border border = (Border)d;
             border.ApplyVariant();
         }
 
@@ -83,6 +83,8 @@ namespace Fluence.Wpf.Controls
                     SetResourceReference(BorderBrushProperty, "DividerStrokeColorDefaultBrush");
                     BorderThickness = new Thickness(0, 0, 0, 1);
                     CornerRadius = new CornerRadius(0);
+                    break;
+                default:
                     break;
             }
         }

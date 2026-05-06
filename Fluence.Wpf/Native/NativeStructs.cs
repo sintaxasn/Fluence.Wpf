@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Runtime.InteropServices;
 
 namespace Fluence.Wpf.Native
@@ -74,8 +75,8 @@ namespace Fluence.Wpf.Native
         public int Right;
         public int Bottom;
 
-        public int Width => Right - Left;
-        public int Height => Bottom - Top;
+        public readonly int Width => Right - Left;
+        public readonly int Height => Bottom - Top;
     }
 
     [StructLayout(LayoutKind.Sequential)]

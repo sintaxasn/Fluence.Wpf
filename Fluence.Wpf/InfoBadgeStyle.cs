@@ -25,19 +25,37 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-using System;
 
-namespace Fluence.Wpf.Controls
+namespace Fluence.Wpf
 {
     /// <summary>
-    /// Provides data for the <see cref="InfoBar.Closing"/> event.
+    /// Visual severity style for <see cref="Controls.InfoBadge"/>.
     /// </summary>
-    public class InfoBarClosingEventArgs : EventArgs
+    public enum InfoBadgeStyle
     {
         /// <summary>
-        /// Gets or sets a value indicating whether the close operation should be canceled.
-        /// Set to <see langword="true"/> to prevent the <see cref="InfoBar"/> from closing.
+        /// Accent-colored attention badge.
         /// </summary>
-        public bool Cancel { get; set; }
+        Attention,
+
+        /// <summary>
+        /// Informational badge.
+        /// </summary>
+        Informational,
+
+        /// <summary>
+        /// Success (green) badge.
+        /// </summary>
+        Success,
+
+        /// <summary>
+        /// Critical (red) badge.
+        /// </summary>
+        Critical,
+
+        /// <summary>
+        /// Caution (yellow) badge.
+        /// </summary>
+        Caution,
     }
 }

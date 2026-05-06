@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
@@ -33,7 +34,6 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GallerySelectionPage : UserControl
     {
-
         private const string CheckBoxStatesXamlSource = @"<UserControl
     x:Class=""Fluence.Wpf.Demo.Pages.Selection.CheckBoxStates""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
@@ -238,14 +238,14 @@ namespace Fluence.Wpf.Demo.Pages.Selection
 }
 ";
 
-public GallerySelectionPage()
+        public GallerySelectionPage()
         {
             InitializeComponent();
 
-            DemoSampleControl.ReplaceSourceLink(CheckBoxStatesSourceLink, CheckBoxStatesXamlSource, CheckBoxStatesCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(RadioButtonGroupsSourceLink, RadioButtonGroupsXamlSource, RadioButtonGroupsCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(ToggleSwitchStatesSourceLink, ToggleSwitchStatesXamlSource, ToggleSwitchStatesCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(ComboBoxSelectionSourceLink, ComboBoxSelectionXamlSource, ComboBoxSelectionCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(CheckBoxStatesSourceLink, CheckBoxStatesXamlSource, CheckBoxStatesCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(RadioButtonGroupsSourceLink, RadioButtonGroupsXamlSource, RadioButtonGroupsCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(ToggleSwitchStatesSourceLink, ToggleSwitchStatesXamlSource, ToggleSwitchStatesCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(ComboBoxSelectionSourceLink, ComboBoxSelectionXamlSource, ComboBoxSelectionCSharpSource);
 
             Loaded += GallerySelectionPage_Loaded;
         }
@@ -256,7 +256,7 @@ public GallerySelectionPage()
             DefaultToggle_Changed(null, null);
         }
 
-        private void DefaultToggle_Changed(object sender, RoutedEventArgs e)
+        private void DefaultToggle_Changed(object? sender, RoutedEventArgs? e)
         {
             if (ToggleStateLabel == null || DefaultToggle == null)
             {
@@ -276,11 +276,10 @@ public GallerySelectionPage()
                 return;
             }
 
-            var selectedItem = SelectionDemoCombo.SelectedItem as ComboBoxItem;
             ComboStateLabel.Text = string.Format(
                 CultureInfo.CurrentCulture,
                 "Selected: {0}",
-                selectedItem != null ? selectedItem.Content : "none");
+                SelectionDemoCombo.SelectedItem is ComboBoxItem selectedItem ? selectedItem.Content : "none");
         }
     }
 }

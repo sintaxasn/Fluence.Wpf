@@ -25,6 +25,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
+using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -36,6 +38,12 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     public class Card : ContentControl
     {
+        /// <summary>
+        /// Initializes static members of the Card class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the Card control uses its custom style by
+        /// default. It is called automatically before any static members are accessed or any instances are
+        /// created.</remarks>
         static Card()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -58,8 +66,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public CardVariant Variant
         {
-            get { return (CardVariant)GetValue(VariantProperty); }
-            set { SetValue(VariantProperty, value); }
+            get => (CardVariant)GetValue(VariantProperty);
+            set => SetValue(VariantProperty, value);
         }
 
         /// <summary>
@@ -77,8 +85,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public CornerRadius CornerRadius
         {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(CornerRadiusProperty);
+            set => SetValue(CornerRadiusProperty, value);
         }
 
         /// <summary>
@@ -96,8 +104,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object Icon
         {
-            get { return GetValue(IconProperty); }
-            set { SetValue(IconProperty, value); }
+            get => GetValue(IconProperty);
+            set => SetValue(IconProperty, value);
         }
 
         /// <summary>
@@ -115,8 +123,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object Header
         {
-            get { return GetValue(HeaderProperty); }
-            set { SetValue(HeaderProperty, value); }
+            get => GetValue(HeaderProperty);
+            set => SetValue(HeaderProperty, value);
         }
 
         /// <summary>
@@ -134,8 +142,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public DataTemplate HeaderTemplate
         {
-            get { return (DataTemplate)GetValue(HeaderTemplateProperty); }
-            set { SetValue(HeaderTemplateProperty, value); }
+            get => (DataTemplate)GetValue(HeaderTemplateProperty);
+            set => SetValue(HeaderTemplateProperty, value);
         }
 
         /// <summary>
@@ -153,8 +161,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object Footer
         {
-            get { return GetValue(FooterProperty); }
-            set { SetValue(FooterProperty, value); }
+            get => GetValue(FooterProperty);
+            set => SetValue(FooterProperty, value);
         }
 
         /// <summary>
@@ -172,8 +180,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public DataTemplate FooterTemplate
         {
-            get { return (DataTemplate)GetValue(FooterTemplateProperty); }
-            set { SetValue(FooterTemplateProperty, value); }
+            get => (DataTemplate)GetValue(FooterTemplateProperty);
+            set => SetValue(FooterTemplateProperty, value);
         }
 
         /// <summary>
@@ -191,8 +199,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool IsClickable
         {
-            get { return (bool)GetValue(IsClickableProperty); }
-            set { SetValue(IsClickableProperty, value); }
+            get => (bool)GetValue(IsClickableProperty);
+            set => SetValue(IsClickableProperty, value);
         }
 
         private static readonly DependencyPropertyKey IsPressedPropertyKey =
@@ -213,8 +221,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool IsPressed
         {
-            get { return (bool)GetValue(IsPressedProperty); }
-            private set { SetValue(IsPressedPropertyKey, value); }
+            get => (bool)GetValue(IsPressedProperty);
+            private set => SetValue(IsPressedPropertyKey, value);
         }
 
         /// <summary>
@@ -231,22 +239,18 @@ namespace Fluence.Wpf.Controls
         /// Occurs when a clickable card is activated by a mouse left-button release
         /// that began with a press inside the card bounds.
         /// </summary>
+        [SuppressMessage("Design", "S3908", Justification = "RoutedEventHandler is required by WPF's routed event infrastructure.")]
         public event RoutedEventHandler Click
         {
-            add { AddHandler(ClickEvent, value); }
-            remove { RemoveHandler(ClickEvent, value); }
+            add => AddHandler(ClickEvent, value);
+            remove => RemoveHandler(ClickEvent, value);
         }
 
         /// <inheritdoc />
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
-            if (!IsClickable || !IsEnabled)
-            {
-                return;
-            }
-
-            if (e.Key == Key.Enter || e.Key == Key.Space)
+            if (IsClickable && IsEnabled && e.Key is Key.Enter or Key.Space)
             {
                 IsPressed = true;
                 e.Handled = true;
@@ -257,12 +261,7 @@ namespace Fluence.Wpf.Controls
         protected override void OnKeyUp(KeyEventArgs e)
         {
             base.OnKeyUp(e);
-            if (!IsClickable || !IsEnabled)
-            {
-                return;
-            }
-
-            if (e.Key == Key.Enter || e.Key == Key.Space)
+            if (IsClickable && IsEnabled && e.Key is Key.Enter or Key.Space)
             {
                 bool wasPressed = IsPressed;
                 IsPressed = false;
@@ -270,7 +269,6 @@ namespace Fluence.Wpf.Controls
                 {
                     RaiseEvent(new RoutedEventArgs(ClickEvent, this));
                 }
-
                 e.Handled = true;
             }
         }
@@ -279,13 +277,11 @@ namespace Fluence.Wpf.Controls
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonDown(e);
-            if (!IsClickable || !IsEnabled)
+            if (IsClickable && IsEnabled)
             {
-                return;
+                IsPressed = true;
+                _ = CaptureMouse();
             }
-
-            IsPressed = true;
-            CaptureMouse();
         }
 
         /// <inheritdoc />
@@ -298,7 +294,6 @@ namespace Fluence.Wpf.Controls
                 IsPressed = false;
                 ReleaseMouseCapture();
             }
-
             if (wasPressed && IsClickable && IsEnabled)
             {
                 RaiseEvent(new RoutedEventArgs(ClickEvent, this));

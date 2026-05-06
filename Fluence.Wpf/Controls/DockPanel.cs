@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -51,8 +52,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public double Spacing
         {
-            get { return (double)GetValue(SpacingProperty); }
-            set { SetValue(SpacingProperty, value); }
+            get => (double)GetValue(SpacingProperty);
+            set => SetValue(SpacingProperty, value);
         }
 
         /// <summary>
@@ -70,40 +71,38 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool LastChildFill
         {
-            get { return (bool)GetValue(LastChildFillProperty); }
-            set { SetValue(LastChildFillProperty, value); }
+            get => (bool)GetValue(LastChildFillProperty);
+            set => SetValue(LastChildFillProperty, value);
         }
 
         /// <inheritdoc />
         protected override Size MeasureOverride(Size availableSize)
         {
-            var children = InternalChildren;
-            var count = children.Count;
+            UIElementCollection children = InternalChildren;
+            int count = children.Count;
             if (count == 0)
             {
-                return new Size(0, 0);
+                return new(0, 0);
             }
 
-            var available = availableSize;
-            var lastFill = LastChildFill;
-            var lastIndex = lastFill ? count - 1 : count;
-
+            Size available = availableSize;
+            bool lastFill = LastChildFill;
+            int lastIndex = lastFill ? count - 1 : count;
             double maxWidth = 0;
             double maxHeight = 0;
             double accumulatedWidth = 0;
             double accumulatedHeight = 0;
-
-            for (var i = 0; i < lastIndex; i++)
+            for (int i = 0; i < lastIndex; i++)
             {
-                var child = children[i];
+                UIElement child = children[i];
                 if (child == null)
                 {
                     continue;
                 }
 
                 child.Measure(available);
-                var desired = child.DesiredSize;
-                var dock = System.Windows.Controls.DockPanel.GetDock(child);
+                Size desired = child.DesiredSize;
+                Dock dock = System.Windows.Controls.DockPanel.GetDock(child);
 
                 switch (dock)
                 {
@@ -119,57 +118,54 @@ namespace Fluence.Wpf.Controls
                         accumulatedHeight += desired.Height;
                         available = new Size(available.Width, Math.Max(0, available.Height - desired.Height - Spacing));
                         break;
+                    default:
+                        break;
                 }
             }
-
             maxWidth = Math.Max(maxWidth, accumulatedWidth);
             maxHeight = Math.Max(maxHeight, accumulatedHeight);
-
             if (lastFill && count > 0)
             {
-                var child = children[count - 1];
+                UIElement child = children[count - 1];
                 if (child != null)
                 {
                     child.Measure(available);
-                    var desired = child.DesiredSize;
+                    Size desired = child.DesiredSize;
                     maxWidth = Math.Max(maxWidth, accumulatedWidth + desired.Width);
                     maxHeight = Math.Max(maxHeight, accumulatedHeight + desired.Height);
                 }
             }
-
-            return new Size(maxWidth, maxHeight);
+            return new(maxWidth, maxHeight);
         }
 
         /// <inheritdoc />
         protected override Size ArrangeOverride(Size finalSize)
         {
-            var children = InternalChildren;
-            var count = children.Count;
+            UIElementCollection children = InternalChildren;
+            int count = children.Count;
             if (count == 0)
             {
                 return finalSize;
             }
 
-            var remaining = new Rect(0, 0, finalSize.Width, finalSize.Height);
-            var lastFill = LastChildFill;
-            var lastIndex = lastFill ? count - 1 : count;
-
-            for (var i = 0; i < lastIndex; i++)
+            Rect remaining = new(0, 0, finalSize.Width, finalSize.Height);
+            bool lastFill = LastChildFill;
+            int lastIndex = lastFill ? count - 1 : count;
+            for (int i = 0; i < lastIndex; i++)
             {
-                var child = children[i];
+                UIElement child = children[i];
                 if (child == null)
                 {
                     continue;
                 }
 
-                var dock = System.Windows.Controls.DockPanel.GetDock(child);
-                var desired = child.DesiredSize;
-
+                Dock dock = System.Windows.Controls.DockPanel.GetDock(child);
+                Size desired = child.DesiredSize;
                 switch (dock)
                 {
                     case Dock.Left:
                         {
-                            var width = Math.Min(desired.Width, remaining.Width);
+                            double width = Math.Min(desired.Width, remaining.Width);
                             child.Arrange(new Rect(remaining.Left, remaining.Top, width, remaining.Height));
                             remaining.X += width + Spacing;
                             remaining.Width = Math.Max(0, remaining.Width - width - Spacing);
@@ -177,14 +173,14 @@ namespace Fluence.Wpf.Controls
                         }
                     case Dock.Right:
                         {
-                            var width = Math.Min(desired.Width, remaining.Width);
+                            double width = Math.Min(desired.Width, remaining.Width);
                             child.Arrange(new Rect(remaining.Right - width, remaining.Top, width, remaining.Height));
                             remaining.Width = Math.Max(0, remaining.Width - width - Spacing);
                             break;
                         }
                     case Dock.Top:
                         {
-                            var height = Math.Min(desired.Height, remaining.Height);
+                            double height = Math.Min(desired.Height, remaining.Height);
                             child.Arrange(new Rect(remaining.Left, remaining.Top, remaining.Width, height));
                             remaining.Y += height + Spacing;
                             remaining.Height = Math.Max(0, remaining.Height - height - Spacing);
@@ -192,23 +188,20 @@ namespace Fluence.Wpf.Controls
                         }
                     case Dock.Bottom:
                         {
-                            var height = Math.Min(desired.Height, remaining.Height);
+                            double height = Math.Min(desired.Height, remaining.Height);
                             child.Arrange(new Rect(remaining.Left, remaining.Bottom - height, remaining.Width, height));
                             remaining.Height = Math.Max(0, remaining.Height - height - Spacing);
                             break;
                         }
+                    default:
+                        break;
                 }
             }
-
             if (lastFill && count > 0)
             {
-                var child = children[count - 1];
-                if (child != null)
-                {
-                    child.Arrange(remaining);
-                }
+                UIElement child = children[count - 1];
+                child?.Arrange(remaining);
             }
-
             return finalSize;
         }
     }

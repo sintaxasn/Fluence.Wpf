@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -25,44 +25,27 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-using System;
 
-namespace Fluence.Wpf.Controls
+namespace Fluence.Wpf
 {
     /// <summary>
-    /// Provides data for the <see cref="NavigationView.ItemInvoked"/> event.
+    /// Controls how tab item widths are distributed inside a <see cref="Controls.TabView"/>.
     /// </summary>
-    public class NavigationViewItemInvokedEventArgs : EventArgs
+    public enum TabViewWidthMode
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="NavigationViewItemInvokedEventArgs"/> class.
+        /// Each tab sizes to its content up to a maximum width.
         /// </summary>
-        /// <param name="invokedItem">The data item that was invoked.</param>
-        /// <param name="invokedItemContainer">The navigation item container that was invoked.</param>
-        /// <param name="isSettingsInvoked">A value indicating whether the settings entry was invoked.</param>
-        public NavigationViewItemInvokedEventArgs(
-            object invokedItem,
-            NavigationViewItem invokedItemContainer,
-            bool isSettingsInvoked)
-        {
-            InvokedItem = invokedItem;
-            InvokedItemContainer = invokedItemContainer;
-            IsSettingsInvoked = isSettingsInvoked;
-        }
+        SizeToContent = 0,
 
         /// <summary>
-        /// Gets the data item that was invoked.
+        /// All tabs share the available horizontal space equally.
         /// </summary>
-        public object InvokedItem { get; private set; }
+        Equal = 1,
 
         /// <summary>
-        /// Gets the navigation item container that was invoked.
+        /// Selected tab sizes to content; unselected tabs collapse to a compact width showing the icon only when present.
         /// </summary>
-        public NavigationViewItem InvokedItemContainer { get; private set; }
-
-        /// <summary>
-        /// Gets a value indicating whether the settings entry was invoked.
-        /// </summary>
-        public bool IsSettingsInvoked { get; private set; }
+        Compact = 2,
     }
 }

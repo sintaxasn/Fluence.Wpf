@@ -25,13 +25,13 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows.Controls;
 
 namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryColorsPage : UserControl
     {
-
         private const string ColorSamplesXamlSource = @"<UserControl
     x:Class=""Fluence.Wpf.Demo.Pages.Colors.ColorSamples""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
@@ -292,6 +292,7 @@ namespace Fluence.Wpf.Demo.Pages
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows.Controls;
 
 namespace Fluence.Wpf.Demo.Pages.Colors
@@ -306,17 +307,16 @@ namespace Fluence.Wpf.Demo.Pages.Colors
 }
 ";
 
-public GalleryColorsPage()
+        public GalleryColorsPage()
         {
             InitializeComponent();
 
-            var parent = ColorSamplesContent.Parent as Panel;
-            if (parent == null)
+            if (ColorSamplesContent.Parent is not Panel parent)
             {
                 return;
             }
 
-            var index = parent.Children.IndexOf(ColorSamplesContent);
+            int index = parent.Children.IndexOf(ColorSamplesContent);
             parent.Children.Remove(ColorSamplesContent);
             parent.Children.Insert(index, new DemoSampleControl
             {

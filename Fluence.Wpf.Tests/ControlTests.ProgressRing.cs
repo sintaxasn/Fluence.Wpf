@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Reflection;
 using System.Windows;
@@ -33,7 +34,6 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf;
 using Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Tests
@@ -53,10 +53,10 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var ring = new ProgressRing();
+                ProgressRing ring = new();
                 Assert.IsTrue(ring.IsActive, "Default IsActive must be true.");
                 Assert.IsTrue(ring.IsIndeterminate, "Default IsIndeterminate must be true.");
                 Assert.AreEqual(0.0, ring.Value, "Default Value must be 0.");
@@ -71,15 +71,15 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var ring = new ProgressRing();
-                var w = new Window { Content = ring, Width = 200, Height = 200 };
+                ProgressRing ring = new();
+                Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var arc = FindVisualChildByName<Path>(ring, "PART_DeterminateArc");
+                Path? arc = FindVisualChildByName<Path>(ring, "PART_DeterminateArc");
                 Assert.IsNotNull(arc, "ProgressRing template must contain PART_DeterminateArc.");
                 w.Close();
             });
@@ -94,23 +94,23 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var ring = new ProgressRing { IsIndeterminate = true, IsActive = true };
-                var w = new Window { Content = ring, Width = 200, Height = 200 };
+                ProgressRing ring = new() { IsIndeterminate = true, IsActive = true };
+                Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
                 WaitForAnimationAndDrain(w.Dispatcher, 200);
 
-                var arc = FindVisualChildByName<Path>(ring, "PART_IndeterminateArc");
+                Path? arc = FindVisualChildByName<Path>(ring, "PART_IndeterminateArc");
                 Assert.IsNotNull(arc, "ProgressRing template must contain PART_IndeterminateArc.");
                 Assert.AreEqual(Visibility.Visible, arc.Visibility,
                     "Indeterminate arc should be visible when IsActive=True and IsIndeterminate=True.");
                 Assert.IsNotNull(arc.Data,
                     "Indeterminate arc Path.Data should be populated by the caterpillar geometry renderer.");
 
-                var dotHost = FindVisualChildByName<Grid>(ring, "DotHost");
+                Grid? dotHost = FindVisualChildByName<Grid>(ring, "DotHost");
                 Assert.IsNull(dotHost, "Default ProgressRing template should no longer use the legacy orbit-dot host.");
 
                 w.Close();
@@ -128,11 +128,11 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var ring = new ProgressRing { Width = 32, Height = 32 };
-                var w = new Window { Content = ring, Width = 200, Height = 200 };
+                ProgressRing ring = new() { Width = 32, Height = 32 };
+                Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
@@ -151,11 +151,11 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var ring = new ProgressRing { Width = 64, Height = 64 };
-                var w = new Window { Content = ring, Width = 200, Height = 200 };
+                ProgressRing ring = new() { Width = 64, Height = 64 };
+                Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
@@ -178,10 +178,10 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var ring = new ProgressRing
+                ProgressRing ring = new()
                 {
                     IsIndeterminate = false,
                     Width = 64,
@@ -190,11 +190,11 @@ namespace Fluence.Wpf.Tests
                     Minimum = 0,
                     Maximum = 100
                 };
-                var w = new Window { Content = ring, Width = 200, Height = 200 };
+                Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var arc = FindVisualChildByName<Path>(ring, "PART_DeterminateArc");
+                Path? arc = FindVisualChildByName<Path>(ring, "PART_DeterminateArc");
                 Assert.IsNotNull(arc, "PART_DeterminateArc must exist.");
                 Assert.IsNotNull(arc.Data,
                     "Determinate arc Path.Data must be populated when Value > 0 and IsIndeterminate=false.");
@@ -208,10 +208,10 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var ring = new ProgressRing
+                ProgressRing ring = new()
                 {
                     IsIndeterminate = false,
                     Width = 64,
@@ -220,11 +220,11 @@ namespace Fluence.Wpf.Tests
                     Minimum = 0,
                     Maximum = 100
                 };
-                var w = new Window { Content = ring, Width = 200, Height = 200 };
+                Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var arc = FindVisualChildByName<Path>(ring, "PART_DeterminateArc");
+                Path? arc = FindVisualChildByName<Path>(ring, "PART_DeterminateArc");
                 Assert.IsNotNull(arc, "PART_DeterminateArc must exist.");
                 Assert.IsNull(arc.Data,
                     "Determinate arc Path.Data must be null when Value=0 (no arc to draw).");
@@ -238,27 +238,27 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var ring = new ProgressRing
+                ProgressRing ring = new()
                 {
                     IsIndeterminate = false,
                     Width = 64,
                     Height = 64,
                     Value = 75
                 };
-                var w = new Window { Content = ring, Width = 200, Height = 200 };
+                Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var arc = FindVisualChildByName<Path>(ring, "PART_DeterminateArc");
-                Assert.IsNotNull(arc.Data, "Pre-condition: arc has geometry in determinate mode.");
+                Path? arc = FindVisualChildByName<Path>(ring, "PART_DeterminateArc");
+                Assert.IsNotNull(arc?.Data, "Pre-condition: arc has geometry in determinate mode.");
 
                 ring.IsIndeterminate = true;
                 DrainDispatcher(w.Dispatcher);
 
-                Assert.IsNull(arc.Data,
+                Assert.IsNull(arc?.Data,
                     "Switching to indeterminate must clear the determinate arc geometry.");
 
                 w.Close();
@@ -270,22 +270,22 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var ring = new ProgressRing
+                ProgressRing ring = new()
                 {
                     IsIndeterminate = true,
                     Width = 64,
                     Height = 64,
                     Value = 75
                 };
-                var w = new Window { Content = ring, Width = 200, Height = 200 };
+                Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
                 WaitForAnimationAndDrain(w.Dispatcher, 200);
 
-                var indeterminateArc = FindVisualChildByName<Path>(ring, "PART_IndeterminateArc");
+                Path? indeterminateArc = FindVisualChildByName<Path>(ring, "PART_IndeterminateArc");
                 Assert.IsNotNull(indeterminateArc, "PART_IndeterminateArc must exist.");
                 Assert.IsNotNull(indeterminateArc.Data, "Pre-condition: indeterminate arc has geometry.");
 
@@ -304,22 +304,22 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var ring = new ProgressRing
+                ProgressRing ring = new()
                 {
                     IsIndeterminate = true,
                     Width = 64,
                     Height = 64,
                     IsActive = true
                 };
-                var w = new Window { Content = ring, Width = 200, Height = 200 };
+                Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
                 WaitForAnimationAndDrain(w.Dispatcher, 200);
 
-                var indeterminateArc = FindVisualChildByName<Path>(ring, "PART_IndeterminateArc");
+                Path? indeterminateArc = FindVisualChildByName<Path>(ring, "PART_IndeterminateArc");
                 Assert.IsNotNull(indeterminateArc, "PART_IndeterminateArc must exist.");
                 Assert.IsNotNull(indeterminateArc.Data, "Pre-condition: indeterminate arc has geometry.");
 
@@ -340,16 +340,16 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var ring = new ProgressRing();
-                var w = new Window { Content = ring, Width = 200, Height = 200 };
+                ProgressRing ring = new();
+                Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var fg = ring.Foreground as SolidColorBrush;
-                var expected = app.TryFindResource("AccentFillColorDefaultBrush") as SolidColorBrush;
+                SolidColorBrush? fg = ring.Foreground as SolidColorBrush;
+                SolidColorBrush? expected = app?.TryFindResource("AccentFillColorDefaultBrush") as SolidColorBrush;
 
                 Assert.IsNotNull(expected, "AccentFillColorDefaultBrush must resolve.");
                 Assert.IsNotNull(fg, "ProgressRing.Foreground must be a SolidColorBrush.");
@@ -365,10 +365,10 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var ring = new ProgressRing
+                ProgressRing ring = new()
                 {
                     ProgressState = ProgressRingState.Paused,
                     IsActive = true,
@@ -376,21 +376,21 @@ namespace Fluence.Wpf.Tests
                     Width = 64,
                     Height = 64
                 };
-                var w = new Window { Content = ring, Width = 200, Height = 200 };
+                Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var expected = app.TryFindResource("SystemFillColorCautionBrush") as SolidColorBrush;
+                SolidColorBrush? expected = app?.TryFindResource("SystemFillColorCautionBrush") as SolidColorBrush;
                 Assert.IsNotNull(expected, "SystemFillColorCautionBrush must resolve.");
 
-                var indeterminateArc = FindVisualChildByName<Path>(ring, "PART_IndeterminateArc");
+                Path? indeterminateArc = FindVisualChildByName<Path>(ring, "PART_IndeterminateArc");
                 AssertPathStroke(indeterminateArc, expected, "Paused indeterminate arc should use the caution brush.");
 
                 ring.IsIndeterminate = false;
                 ring.Value = 50;
                 DrainDispatcher(w.Dispatcher);
 
-                var determinateArc = FindVisualChildByName<Path>(ring, "PART_DeterminateArc");
+                Path? determinateArc = FindVisualChildByName<Path>(ring, "PART_DeterminateArc");
                 AssertPathStroke(determinateArc, expected, "Paused determinate arc should use the caution brush.");
 
                 w.Close();
@@ -402,8 +402,8 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var start = InvokePrivateAnimationFactory("CreateIndeterminateStartAnimation");
-                var sweep = InvokePrivateAnimationFactory("CreateIndeterminateSweepAnimation");
+                DoubleAnimationUsingKeyFrames start = InvokePrivateAnimationFactory("CreateIndeterminateStartAnimation");
+                DoubleAnimationUsingKeyFrames sweep = InvokePrivateAnimationFactory("CreateIndeterminateSweepAnimation");
 
                 Assert.AreEqual(TimeSpan.FromMilliseconds(4000), start.Duration.TimeSpan,
                     "Indeterminate start animation should use the configured 4 second cadence.");
@@ -412,22 +412,22 @@ namespace Fluence.Wpf.Tests
                 Assert.AreEqual(RepeatBehavior.Forever, start.RepeatBehavior);
                 Assert.AreEqual(RepeatBehavior.Forever, sweep.RepeatBehavior);
 
-                AssertKeyFrames(start, new[]
-                {
+                AssertKeyFrames(start,
+                [
                     -720.0, -540.0, -360.0, -180.0, 0.0, 180.0, 360.0, 540.0, 720.0
-                });
-                AssertKeyFrames(sweep, new[]
-                {
+                ]);
+                AssertKeyFrames(sweep,
+                [
                     0.0, 50.0, 100.0, 50.0, 5.0, 50.0, 100.0, 50.0, 0.0
-                });
-                AssertKeyFramePercents(start, new[]
-                {
+                ]);
+                AssertKeyFramePercents(start,
+                [
                     0.0, 0.125, 0.25, 0.325, 0.5, 0.625, 0.75, 0.875, 1.0
-                });
-                AssertKeyFramePercents(sweep, new[]
-                {
+                ]);
+                AssertKeyFramePercents(sweep,
+                [
                     0.0, 0.125, 0.25, 0.325, 0.5, 0.625, 0.75, 0.875, 1.0
-                });
+                ]);
             });
         }
 
@@ -436,10 +436,10 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var ring = new ProgressRing
+                ProgressRing ring = new()
                 {
                     ProgressState = ProgressRingState.Paused,
                     IsActive = true,
@@ -447,20 +447,20 @@ namespace Fluence.Wpf.Tests
                     Width = 64,
                     Height = 64
                 };
-                var w = new Window { Content = ring, Width = 200, Height = 200 };
+                Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var indeterminateArc = FindVisualChildByName<Path>(ring, "PART_IndeterminateArc");
+                Path? indeterminateArc = FindVisualChildByName<Path>(ring, "PART_IndeterminateArc");
                 Assert.IsNotNull(indeterminateArc, "PART_IndeterminateArc must exist.");
                 Assert.AreEqual(Visibility.Visible, indeterminateArc.Visibility,
                     "Paused indeterminate ProgressRing should remain visible.");
                 Assert.IsNotNull(indeterminateArc.Data,
                     "Paused indeterminate ProgressRing should render a static arc.");
 
-                var initialBounds = indeterminateArc.Data.Bounds;
+                Rect initialBounds = indeterminateArc.Data.Bounds;
                 WaitForAnimationAndDrain(w.Dispatcher, 400);
-                var laterBounds = indeterminateArc.Data.Bounds;
+                Rect laterBounds = indeterminateArc.Data.Bounds;
 
                 Assert.AreEqual(initialBounds.X, laterBounds.X, 0.01,
                     "Paused ProgressRing should not animate the arc position.");
@@ -484,10 +484,10 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var ring = new ProgressRing
+                ProgressRing ring = new()
                 {
                     ProgressState = ProgressRingState.Error,
                     IsActive = true,
@@ -496,23 +496,23 @@ namespace Fluence.Wpf.Tests
                     Height = 64,
                     Value = 50
                 };
-                var w = new Window { Content = ring, Width = 200, Height = 200 };
+                Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
                 ThemeTestHelpers.ApplyStandardThemeCycle();
                 DrainDispatcher(w.Dispatcher);
 
-                var expected = app.TryFindResource("SystemFillColorCriticalBrush") as SolidColorBrush;
+                SolidColorBrush? expected = app?.TryFindResource("SystemFillColorCriticalBrush") as SolidColorBrush;
                 Assert.IsNotNull(expected, "SystemFillColorCriticalBrush must resolve.");
 
-                var determinateArc = FindVisualChildByName<Path>(ring, "PART_DeterminateArc");
+                Path? determinateArc = FindVisualChildByName<Path>(ring, "PART_DeterminateArc");
                 AssertPathStroke(determinateArc, expected, "Error determinate arc should use the critical brush.");
 
                 ring.IsIndeterminate = true;
                 DrainDispatcher(w.Dispatcher);
 
-                var indeterminateArc = FindVisualChildByName<Path>(ring, "PART_IndeterminateArc");
+                Path? indeterminateArc = FindVisualChildByName<Path>(ring, "PART_IndeterminateArc");
                 AssertPathStroke(indeterminateArc, expected, "Error indeterminate arc should use the critical brush.");
 
                 w.Close();
@@ -524,50 +524,50 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var ring = new ProgressRing();
-                var w = new Window { Content = ring, Width = 200, Height = 200 };
+                ProgressRing ring = new();
+                Window w = new() { Content = ring, Width = 200, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
                 ThemeTestHelpers.ApplyStandardThemeCycle();
                 DrainDispatcher(w.Dispatcher);
 
-                var arc = FindVisualChildByName<Path>(ring, "PART_DeterminateArc");
+                Path? arc = FindVisualChildByName<Path>(ring, "PART_DeterminateArc");
                 Assert.IsNotNull(arc, "PART_DeterminateArc must still exist after theme cycle.");
 
                 w.Close();
             });
         }
 
-        private static void AssertPathStroke(Path path, SolidColorBrush expected, string message)
+        private static void AssertPathStroke(Path? path, SolidColorBrush expected, string message)
         {
             Assert.IsNotNull(path, "Expected template path to exist.");
-            var actual = path.Stroke as SolidColorBrush;
+            SolidColorBrush? actual = path.Stroke as SolidColorBrush;
             Assert.IsNotNull(actual, "Path stroke should be a SolidColorBrush.");
             Assert.AreEqual(expected.Color, actual.Color, message);
         }
 
         private static DoubleAnimationUsingKeyFrames InvokePrivateAnimationFactory(string methodName)
         {
-            var method = typeof(ProgressRing).GetMethod(methodName, BindingFlags.Static | BindingFlags.NonPublic);
+            MethodInfo? method = typeof(ProgressRing).GetMethod(methodName, BindingFlags.Static | BindingFlags.NonPublic);
             Assert.IsNotNull(method, "ProgressRing should expose private factory: " + methodName);
-            var animation = method.Invoke(null, null) as DoubleAnimationUsingKeyFrames;
+            DoubleAnimationUsingKeyFrames? animation = method.Invoke(null, null) as DoubleAnimationUsingKeyFrames;
             Assert.IsNotNull(animation, methodName + " should return keyframe animation.");
             return animation;
         }
 
         private static void AssertDependencyPropertyNotAnimated(ProgressRing ring, string fieldName, string message)
         {
-            var field = typeof(ProgressRing).GetField(fieldName, BindingFlags.Static | BindingFlags.NonPublic);
+            FieldInfo? field = typeof(ProgressRing).GetField(fieldName, BindingFlags.Static | BindingFlags.NonPublic);
             Assert.IsNotNull(field, "ProgressRing should expose private dependency property field: " + fieldName);
-            var property = field.GetValue(null) as DependencyProperty;
+            DependencyProperty? property = field.GetValue(null) as DependencyProperty;
             Assert.IsNotNull(property, fieldName + " should be a dependency property.");
 
-            var currentValue = (double)ring.GetValue(property);
-            var baseValue = (double)ring.GetAnimationBaseValue(property);
+            double currentValue = (double)ring.GetValue(property);
+            double baseValue = (double)ring.GetAnimationBaseValue(property);
             Assert.AreEqual(baseValue, currentValue, 0.01, message);
         }
 

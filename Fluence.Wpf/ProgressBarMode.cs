@@ -25,20 +25,37 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// Rounded corner preference for top-level windows (DWM), used with <see cref="Fluence.Wpf.Controls.FluenceWindow"/>.
+    /// Display mode for <see cref="Controls.ProgressBar"/>.
     /// </summary>
-    public enum CornerPreference
+    public enum ProgressBarMode
     {
-        /// <summary>OS default rounding.</summary>
-        Default = 0,
-        /// <summary>Sharp corners.</summary>
-        DoNotRound = 1,
-        /// <summary>Large radius.</summary>
-        Round = 2,
-        /// <summary>Smaller radius.</summary>
-        RoundSmall = 3
+        /// <summary>
+        /// Determinate progress between minimum and maximum.
+        /// </summary>
+        Standard,
+
+        /// <summary>
+        /// Indeterminate animation when value is unknown.
+        /// </summary>
+        Indeterminate,
+
+        /// <summary>
+        /// Segmented step progress display.
+        /// </summary>
+        StepProgress,
+
+        /// <summary>
+        /// Error state with critical-severity fill color.
+        /// </summary>
+        Error,
+
+        /// <summary>
+        /// Paused state with caution-severity fill color.
+        /// </summary>
+        Paused,
     }
 }

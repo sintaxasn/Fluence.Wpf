@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Controls;
@@ -39,13 +40,20 @@ namespace Fluence.Wpf.Controls
     /// <remarks>Inspired by WinUI3's NavigationView.</remarks>
     public class NavigationViewItem : ListBoxItem
     {
+        /// <summary>
+        /// Identifies the read-only IsPressed dependency property key for the NavigationViewItem control.
+        /// </summary>
+        /// <remarks>This key is used internally to set the value of the IsPressed property. Consumers
+        /// should use the IsPressed property for reading the value.</remarks>
         private static readonly DependencyPropertyKey IsPressedPropertyKey = DependencyProperty.RegisterReadOnly(
             "IsPressed",
             typeof(bool),
             typeof(NavigationViewItem),
             new FrameworkPropertyMetadata(false));
 
-        /// <summary>Identifies the read-only <see cref="IsPressed"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the read-only <see cref="IsPressed"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty IsPressedProperty = IsPressedPropertyKey.DependencyProperty;
 
         /// <summary>
@@ -75,6 +83,12 @@ namespace Fluence.Wpf.Controls
             typeof(NavigationViewItem),
             new FrameworkPropertyMetadata(false));
 
+        /// <summary>
+        /// Initializes static members of the NavigationViewItem class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the NavigationViewItem control uses its own
+        /// style by default, as defined in the application's resource dictionaries. This is necessary for proper
+        /// theming and templating in WPF custom controls.</remarks>
         static NavigationViewItem()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -87,8 +101,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object Icon
         {
-            get { return GetValue(IconProperty); }
-            set { SetValue(IconProperty, value); }
+            get => GetValue(IconProperty);
+            set => SetValue(IconProperty, value);
         }
 
         /// <summary>
@@ -96,8 +110,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object InfoBadge
         {
-            get { return GetValue(InfoBadgeProperty); }
-            set { SetValue(InfoBadgeProperty, value); }
+            get => GetValue(InfoBadgeProperty);
+            set => SetValue(InfoBadgeProperty, value);
         }
 
         /// <summary>
@@ -106,30 +120,24 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool IsChildItem
         {
-            get { return (bool)GetValue(IsChildItemProperty); }
-            set { SetValue(IsChildItemProperty, value); }
+            get => (bool)GetValue(IsChildItemProperty);
+            set => SetValue(IsChildItemProperty, value);
         }
 
-        /// <summary>Gets whether the item is currently being pressed by a pointer.</summary>
-        public bool IsPressed
-        {
-            get { return (bool)GetValue(IsPressedProperty); }
-        }
+        /// <summary>
+        /// Gets whether the item is currently being pressed by a pointer.
+        /// </summary>
+        public bool IsPressed => (bool)GetValue(IsPressedProperty);
 
         /// <inheritdoc />
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            if ((e.Key == Key.Enter || e.Key == Key.Space) && IsEnabled)
+            if ((e.Key == Key.Enter || e.Key == Key.Space) && IsEnabled && ItemsControl.ItemsControlFromItemContainer(this) is NavigationView nav)
             {
-                var nav = ItemsControl.ItemsControlFromItemContainer(this) as NavigationView;
-                if (nav != null)
-                {
-                    nav.InvokeItem(this);
-                    e.Handled = true;
-                    return;
-                }
+                nav.InvokeItem(this);
+                e.Handled = true;
+                return;
             }
-
             base.OnKeyDown(e);
         }
 
@@ -137,7 +145,7 @@ namespace Fluence.Wpf.Controls
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             SetValue(IsPressedPropertyKey, true);
-            Mouse.Capture(this, CaptureMode.SubTree);
+            _ = Mouse.Capture(this, CaptureMode.SubTree);
             base.OnMouseLeftButtonDown(e);
         }
 
@@ -145,7 +153,7 @@ namespace Fluence.Wpf.Controls
         protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
         {
             SetValue(IsPressedPropertyKey, false);
-            Mouse.Capture(null);
+            _ = Mouse.Capture(null);
             base.OnMouseLeftButtonUp(e);
         }
 
@@ -156,7 +164,6 @@ namespace Fluence.Wpf.Controls
             {
                 SetValue(IsPressedPropertyKey, false);
             }
-
             base.OnMouseLeave(e);
         }
 
@@ -179,16 +186,13 @@ namespace Fluence.Wpf.Controls
                 base.OnPreviewMouseLeftButtonDown(e);
                 return;
             }
-
-            var nav = ItemsControl.ItemsControlFromItemContainer(this) as NavigationView;
-            if (nav == null)
+            if (ItemsControl.ItemsControlFromItemContainer(this) is not NavigationView nav)
             {
                 base.OnPreviewMouseLeftButtonDown(e);
                 return;
             }
-
             nav.InvokeItem(this);
-            Focus();
+            _ = Focus();
             e.Handled = true;
         }
 
@@ -197,14 +201,9 @@ namespace Fluence.Wpf.Controls
             ApplyDefaultFontIconSize(e.NewValue as FontIcon);
         }
 
-        private static void ApplyDefaultFontIconSize(FontIcon icon)
+        private static void ApplyDefaultFontIconSize(FontIcon? icon)
         {
-            if (icon == null)
-            {
-                return;
-            }
-
-            if (icon.ReadLocalValue(FontIcon.IconFontSizeProperty) == DependencyProperty.UnsetValue)
+            if (icon?.ReadLocalValue(FontIcon.IconFontSizeProperty) == DependencyProperty.UnsetValue)
             {
                 icon.SetCurrentValue(FontIcon.IconFontSizeProperty, 20.0);
             }

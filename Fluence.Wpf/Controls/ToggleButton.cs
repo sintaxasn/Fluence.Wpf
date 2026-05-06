@@ -25,9 +25,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
-using System.Windows.Controls.Primitives;
-using Fluence.Wpf;
 
 namespace Fluence.Wpf.Controls
 {
@@ -36,6 +35,12 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     public class ToggleButton : System.Windows.Controls.Primitives.ToggleButton
     {
+        /// <summary>
+        /// Initializes static members of the ToggleButton class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the ToggleButton control uses its own style by
+        /// default, rather than inheriting the style from its base class. This is important for custom control theming
+        /// in WPF.</remarks>
         static ToggleButton()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -68,8 +73,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public CornerRadius CornerRadius
         {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(CornerRadiusProperty);
+            set => SetValue(CornerRadiusProperty, value);
         }
 
         /// <summary>
@@ -77,8 +82,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public ControlAppearance Appearance
         {
-            get { return (ControlAppearance)GetValue(AppearanceProperty); }
-            set { SetValue(AppearanceProperty, value); }
+            get => (ControlAppearance)GetValue(AppearanceProperty);
+            set => SetValue(AppearanceProperty, value);
         }
     }
 }

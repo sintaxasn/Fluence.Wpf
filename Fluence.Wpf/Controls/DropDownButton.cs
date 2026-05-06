@@ -25,9 +25,9 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 using System.Windows.Automation.Peers;
-using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using Fluence.Wpf.Automation;
 
@@ -39,10 +39,15 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = PART_Popup, Type = typeof(Popup))]
     public class DropDownButton : ToggleButton
     {
+        // Template part names.
         private const string PART_Popup = "PART_Popup";
 
-        private Popup _popup;
-
+        /// <summary>
+        /// Initializes static members of the DropDownButton class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the DropDownButton control uses its own default
+        /// style by associating the control with its style metadata. This is required for custom controls to apply
+        /// their styles correctly in WPF.</remarks>
         static DropDownButton()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -65,8 +70,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object Flyout
         {
-            get { return GetValue(FlyoutProperty); }
-            set { SetValue(FlyoutProperty, value); }
+            get => GetValue(FlyoutProperty);
+            set => SetValue(FlyoutProperty, value);
         }
 
         /// <summary>
@@ -84,8 +89,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public DataTemplate FlyoutTemplate
         {
-            get { return (DataTemplate)GetValue(FlyoutTemplateProperty); }
-            set { SetValue(FlyoutTemplateProperty, value); }
+            get => (DataTemplate)GetValue(FlyoutTemplateProperty);
+            set => SetValue(FlyoutTemplateProperty, value);
         }
 
         /// <summary>
@@ -95,7 +100,7 @@ namespace Fluence.Wpf.Controls
         /// Shadows the <c>Control.CornerRadiusProperty</c> introduced in net6+ so the property
         /// is also available on net472 where <c>Control</c> does not declare it.
         /// </remarks>
-        public new static readonly DependencyProperty CornerRadiusProperty =
+        public static new readonly DependencyProperty CornerRadiusProperty =
             DependencyProperty.Register(
                 nameof(CornerRadius),
                 typeof(CornerRadius),
@@ -107,8 +112,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public new CornerRadius CornerRadius
         {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(CornerRadiusProperty);
+            set => SetValue(CornerRadiusProperty, value);
         }
 
         /// <summary>
@@ -126,8 +131,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public CornerRadius DropdownCornerRadius
         {
-            get { return (CornerRadius)GetValue(DropdownCornerRadiusProperty); }
-            set { SetValue(DropdownCornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(DropdownCornerRadiusProperty);
+            set => SetValue(DropdownCornerRadiusProperty, value);
         }
 
         /// <inheritdoc />
@@ -139,14 +144,9 @@ namespace Fluence.Wpf.Controls
         /// <inheritdoc />
         public override void OnApplyTemplate()
         {
-            if (_popup != null)
-            {
-                _popup.Closed -= OnPopupClosed;
-                _popup = null;
-            }
-
+            _popup?.Closed -= OnPopupClosed;
+            _popup = null;
             base.OnApplyTemplate();
-
             _popup = GetTemplateChild(PART_Popup) as Popup;
             if (_popup != null)
             {
@@ -177,9 +177,14 @@ namespace Fluence.Wpf.Controls
             popup.Closed += OnPopupClosed;
         }
 
-        private void OnPopupClosed(object sender, System.EventArgs e)
+        private void OnPopupClosed(object? sender, System.EventArgs e)
         {
             IsChecked = false;
         }
+
+        /// <summary>
+        /// Represents the underlying popup control instance, or null if no popup is currently associated.
+        /// </summary>
+        private Popup? _popup;
     }
 }

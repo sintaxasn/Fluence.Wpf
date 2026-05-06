@@ -25,12 +25,12 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace Fluence.Wpf.Controls
@@ -47,9 +47,11 @@ namespace Fluence.Wpf.Controls
     [TemplateVisualState(GroupName = "EditableFocusedStates", Name = "EditableUnfocused")]
     public class ComboBox : System.Windows.Controls.ComboBox
     {
-        private const string PART_Popup = "PART_Popup";
+        // Template part names.
         private const string PART_DropdownBorder = "PART_DropdownBorder";
+        private const string PART_Popup = "PART_Popup";
 
+        // Read-only dependency properties for selected content and text.
         private static readonly DependencyPropertyKey SelectedContentPropertyKey =
             DependencyProperty.RegisterReadOnly(
                 nameof(SelectedContent),
@@ -76,6 +78,12 @@ namespace Fluence.Wpf.Controls
         public static readonly DependencyProperty SelectedTextProperty =
             SelectedTextPropertyKey.DependencyProperty;
 
+        /// <summary>
+        /// Initializes static members of the ComboBox class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the ComboBox control uses its specific default
+        /// style as defined in the application's theme or resource dictionaries. This is necessary for proper rendering
+        /// and theming of the control in WPF applications.</remarks>
         static ComboBox()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -98,8 +106,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string PlaceholderText
         {
-            get { return (string)GetValue(PlaceholderTextProperty); }
-            set { SetValue(PlaceholderTextProperty, value); }
+            get => (string)GetValue(PlaceholderTextProperty);
+            set => SetValue(PlaceholderTextProperty, value);
         }
 
         /// <summary>
@@ -107,8 +115,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object SelectedContent
         {
-            get { return GetValue(SelectedContentProperty); }
-            private set { SetValue(SelectedContentPropertyKey, value); }
+            get => GetValue(SelectedContentProperty);
+            private set => SetValue(SelectedContentPropertyKey, value);
         }
 
         /// <summary>
@@ -116,8 +124,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string SelectedText
         {
-            get { return (string)GetValue(SelectedTextProperty); }
-            private set { SetValue(SelectedTextPropertyKey, value); }
+            get => (string)GetValue(SelectedTextProperty);
+            private set => SetValue(SelectedTextPropertyKey, value);
         }
 
         /// <summary>
@@ -135,8 +143,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public CornerRadius CornerRadius
         {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(CornerRadiusProperty);
+            set => SetValue(CornerRadiusProperty, value);
         }
 
         /// <summary>
@@ -154,8 +162,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object Icon
         {
-            get { return GetValue(IconProperty); }
-            set { SetValue(IconProperty, value); }
+            get => GetValue(IconProperty);
+            set => SetValue(IconProperty, value);
         }
 
         /// <summary>
@@ -173,8 +181,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public CornerRadius DropdownCornerRadius
         {
-            get { return (CornerRadius)GetValue(DropdownCornerRadiusProperty); }
-            set { SetValue(DropdownCornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(DropdownCornerRadiusProperty);
+            set => SetValue(DropdownCornerRadiusProperty, value);
         }
 
         private static readonly DependencyPropertyKey IsDropDownOpenedUpwardPropertyKey =
@@ -195,12 +203,9 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool IsDropDownOpenedUpward
         {
-            get { return (bool)GetValue(IsDropDownOpenedUpwardProperty); }
-            private set { SetValue(IsDropDownOpenedUpwardPropertyKey, value); }
+            get => (bool)GetValue(IsDropDownOpenedUpwardProperty);
+            private set => SetValue(IsDropDownOpenedUpwardPropertyKey, value);
         }
-
-        private Popup _popup;
-        private bool _isAutoSelecting;
 
         /// <inheritdoc />
         public override void OnApplyTemplate()
@@ -209,13 +214,9 @@ namespace Fluence.Wpf.Controls
             _popup = GetTemplateChild(PART_Popup) as Popup;
             UpdateSelectedContent();
             UpdateFocusState(false);
-
             if (SelectedIndex == -1 && Items.Count > 0 && !IsSelectedIndexExplicitlySet())
             {
-                Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    TryAutoSelectFirstItem();
-                }), DispatcherPriority.Loaded);
+                _ = Dispatcher.BeginInvoke(TryAutoSelectFirstItem, DispatcherPriority.Loaded);
             }
         }
 
@@ -231,10 +232,7 @@ namespace Fluence.Wpf.Controls
         {
             base.OnDropDownClosed(e);
             IsDropDownOpenedUpward = false;
-            if (_popup != null)
-            {
-                _popup.Placement = PlacementMode.Bottom;
-            }
+            _ = (_popup?.Placement = PlacementMode.Bottom);
         }
 
         /// <inheritdoc />
@@ -268,7 +266,7 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateFocusState(bool useTransitions)
         {
-            VisualStateManager.GoToState(
+            _ = VisualStateManager.GoToState(
                 this,
                 IsKeyboardFocusWithin ? "Focused" : "Unfocused",
                 useTransitions);
@@ -276,60 +274,32 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateDropDownDirection()
         {
-            if (_popup == null)
+            if (_popup is null || PresentationSource.FromVisual(this) is not PresentationSource source || source.CompositionTarget is null)
             {
                 return;
             }
-
-            try
-            {
-                var source = PresentationSource.FromVisual(this);
-                if (source == null || source.CompositionTarget == null)
-                {
-                    return;
-                }
-
-                var bottomEdge = PointToScreen(new Point(0, ActualHeight));
-                var topEdge = PointToScreen(new Point(0, 0));
-
-                double dpiY = source.CompositionTarget.TransformToDevice.M22;
-                double maxHeightPx = (MaxDropDownHeight > 0 ? MaxDropDownHeight : 480) * dpiY;
-                double workBottom = SystemParameters.WorkArea.Bottom * dpiY;
-                double workTop = SystemParameters.WorkArea.Top * dpiY;
-
-                double spaceBelow = workBottom - bottomEdge.Y;
-                double spaceAbove = topEdge.Y - workTop;
-
-                bool openUpward = spaceBelow < maxHeightPx && spaceAbove > spaceBelow;
-
-                IsDropDownOpenedUpward = openUpward;
-                _popup.Placement = openUpward ? PlacementMode.Top : PlacementMode.Bottom;
-            }
-            catch
-            {
-                IsDropDownOpenedUpward = false;
-                if (_popup != null)
-                {
-                    _popup.Placement = PlacementMode.Bottom;
-                }
-            }
+            double dpiY = source.CompositionTarget.TransformToDevice.M22;
+            double maxHeightPx = (MaxDropDownHeight > 0 ? MaxDropDownHeight : 480) * dpiY;
+            Point bottomEdge = PointToScreen(new Point(0, ActualHeight));
+            Point topEdge = PointToScreen(new Point(0, 0));
+            double workBottom = SystemParameters.WorkArea.Bottom * dpiY;
+            double workTop = SystemParameters.WorkArea.Top * dpiY;
+            double spaceBelow = workBottom - bottomEdge.Y;
+            double spaceAbove = topEdge.Y - workTop;
+            bool openUpward = spaceBelow < maxHeightPx && spaceAbove > spaceBelow;
+            IsDropDownOpenedUpward = openUpward;
+            _popup.Placement = openUpward ? PlacementMode.Top : PlacementMode.Bottom;
         }
 
         private bool IsSelectedIndexExplicitlySet()
         {
-            var source = DependencyPropertyHelper.GetValueSource(
-                this, Selector.SelectedIndexProperty);
+            ValueSource source = DependencyPropertyHelper.GetValueSource(this, SelectedIndexProperty);
             return source.BaseValueSource != BaseValueSource.Default;
         }
 
         private void TryAutoSelectFirstItem()
         {
-            if (_isAutoSelecting || SelectedIndex != -1 || Items.Count == 0)
-            {
-                return;
-            }
-
-            if (!IsSelectedIndexExplicitlySet())
+            if (!_isAutoSelecting && SelectedIndex == -1 && Items.Count > 0 && !IsSelectedIndexExplicitlySet())
             {
                 _isAutoSelecting = true;
                 try
@@ -345,17 +315,27 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateSelectedContent()
         {
-            var item = SelectedItem;
-            var comboBoxItem = item as ComboBoxItem;
-            if (comboBoxItem != null)
+            object item = SelectedItem;
+            if (item is ComboBoxItem comboBoxItem)
             {
                 SelectedContent = comboBoxItem.Content;
-                SelectedText = comboBoxItem.Content != null ? comboBoxItem.Content.ToString() : string.Empty;
+                SelectedText = comboBoxItem.Content?.ToString() ?? string.Empty;
                 return;
             }
-
             SelectedContent = item;
-            SelectedText = item != null ? item.ToString() : string.Empty;
+            SelectedText = item?.ToString() ?? string.Empty;
         }
+
+        /// <summary>
+        /// Represents the backing field for a Popup instance, which may be null if no popup is currently associated.
+        /// </summary>
+        /// <remarks>This field is typically used internally to store a reference to a Popup control. It
+        /// is not intended for direct access outside the containing class.</remarks>
+        private Popup? _popup;
+
+        /// <summary>
+        /// Indicates whether the auto-selection process is currently active.
+        /// </summary>
+        private bool _isAutoSelecting;
     }
 }

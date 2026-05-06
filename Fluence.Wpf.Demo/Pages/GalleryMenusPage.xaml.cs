@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
@@ -33,7 +34,6 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryMenusPage : UserControl
     {
-
         private const string MenuBarXamlSource = @"<UserControl
     x:Class=""Fluence.Wpf.Demo.Pages.Menus.MenuBar""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
@@ -371,14 +371,14 @@ namespace Fluence.Wpf.Demo.Pages.Menus
 }
 ";
 
-public GalleryMenusPage()
+        public GalleryMenusPage()
         {
             InitializeComponent();
 
-            DemoSampleControl.ReplaceSourceLink(MenuBarSourceLink, MenuBarXamlSource, MenuBarCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(ContextMenuSourceLink, ContextMenuXamlSource, ContextMenuCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(ToolTipsSourceLink, ToolTipsXamlSource, ToolTipsCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(DropDownAndSplitButtonsSourceLink, DropDownAndSplitButtonsXamlSource, DropDownAndSplitButtonsCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(MenuBarSourceLink, MenuBarXamlSource, MenuBarCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(ContextMenuSourceLink, ContextMenuXamlSource, ContextMenuCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(ToolTipsSourceLink, ToolTipsXamlSource, ToolTipsCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(DropDownAndSplitButtonsSourceLink, DropDownAndSplitButtonsXamlSource, DropDownAndSplitButtonsCSharpSource);
         }
 
         private void MenuBar_Click(object sender, RoutedEventArgs e)
@@ -403,9 +403,8 @@ public GalleryMenusPage()
 
         private static void SetTextFromTag(TextBlock label, string prefix, object sender)
         {
-            var element = sender as FrameworkElement;
-            var action = element != null ? element.Tag as string : null;
-            label.Text = string.Format(CultureInfo.CurrentCulture, "{0}: {1}", prefix, string.IsNullOrEmpty(action) ? "None" : action);
+            string? action = sender is FrameworkElement element ? element.Tag as string : null;
+            label.Text = string.Format(CultureInfo.CurrentCulture, "{0}: {1}", prefix, string.IsNullOrWhiteSpace(action) ? "None" : action);
         }
     }
 }

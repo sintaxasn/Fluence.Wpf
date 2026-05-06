@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 
 namespace Fluence.Wpf.Controls
@@ -38,9 +39,16 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = PART_ItemsHost, Type = typeof(System.Windows.Controls.ItemsPresenter))]
     public class TreeViewItem : System.Windows.Controls.TreeViewItem
     {
+        // Template part names for the header and items host elements in the control template.
         private const string PART_Header = "PART_Header";
         private const string PART_ItemsHost = "ItemsHost";
 
+        /// <summary>
+        /// Initializes static members of the TreeViewItem class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that TreeViewItem uses its own style by default,
+        /// rather than inheriting the style from its base class. This is important for applying custom control
+        /// templates and visual styles specific to TreeViewItem.</remarks>
         static TreeViewItem()
         {
             DefaultStyleKeyProperty.OverrideMetadata(

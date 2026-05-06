@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Windows.Media;
 
@@ -32,6 +33,7 @@ namespace Fluence.Wpf.Helpers
 {
     internal static class HsvColorHelper
     {
+        // Windows' blue accent color has a custom ramp that doesn't follow the normal algorithm, so we hardcode it here.
         private static readonly Color WindowsBlueAccent = Color.FromRgb(0x00, 0x78, 0xD4);
         private static readonly Color WindowsBlueAccentLight1 = Color.FromRgb(0x00, 0x91, 0xF8);
         private static readonly Color WindowsBlueAccentLight2 = Color.FromRgb(0x4C, 0xC2, 0xFF);
@@ -40,7 +42,7 @@ namespace Fluence.Wpf.Helpers
         private static readonly Color WindowsBlueAccentDark2 = Color.FromRgb(0x00, 0x3E, 0x92);
         private static readonly Color WindowsBlueAccentDark3 = Color.FromRgb(0x00, 0x1A, 0x68);
 
-        public static (double Hue, double Saturation, double Value) RgbToHsv(Color color)
+        internal static (double Hue, double Saturation, double Value) RgbToHsv(Color color)
         {
             double r = color.R / 255.0;
             double g = color.G / 255.0;
@@ -53,47 +55,31 @@ namespace Fluence.Wpf.Helpers
             double hue = 0;
             double saturation = 0;
             double value = max;
-
             if (delta > 0)
             {
-                if (max == r)
-                {
-                    hue = 60 * (((g - b) / delta) % 6);
-                }
-                else if (max == g)
-                {
-                    hue = 60 * (((b - r) / delta) + 2);
-                }
-                else
-                {
-                    hue = 60 * (((r - g) / delta) + 4);
-                }
-
+                hue = max == r ? 60 * ((g - b) / delta % 6) : max == g ? 60 * (((b - r) / delta) + 2) : 60 * (((r - g) / delta) + 4);
                 if (hue < 0)
                 {
                     hue += 360;
                 }
-
                 saturation = max > 0 ? delta / max : 0;
             }
-
             return (hue, saturation, value);
         }
 
-        public static Color HsvToRgb(double hue, double saturation, double value)
+        internal static Color HsvToRgb(double hue, double saturation, double value)
         {
-            hue = hue % 360;
-            if (hue < 0) hue += 360;
-
+            hue %= 360;
+            if (hue < 0)
+            {
+                hue += 360;
+            }
             saturation = Math.Max(0, Math.Min(1, saturation));
             value = Math.Max(0, Math.Min(1, value));
-
             double c = value * saturation;
-            double x = c * (1 - Math.Abs((hue / 60) % 2 - 1));
+            double x = c * (1 - Math.Abs((hue / 60 % 2) - 1));
             double m = value - c;
-
             double r, g, b;
-
             if (hue < 60)
             {
                 r = c; g = x; b = 0;
@@ -118,20 +104,14 @@ namespace Fluence.Wpf.Helpers
             {
                 r = c; g = 0; b = x;
             }
-
-            return Color.FromRgb(
-                (byte)Math.Round((r + m) * 255),
-                (byte)Math.Round((g + m) * 255),
-                (byte)Math.Round((b + m) * 255));
+            return Color.FromRgb((byte)Math.Round((r + m) * 255), (byte)Math.Round((g + m) * 255), (byte)Math.Round((b + m) * 255));
         }
 
-        public static Color GetLightVariant(Color baseColor, int level)
+        internal static Color GetLightVariant(Color baseColor, int level)
         {
-            var (hue, saturation, value) = RgbToHsv(baseColor);
-
+            (double hue, double saturation, double value) = RgbToHsv(baseColor);
             double saturationReduction;
             double valueIncrease;
-
             switch (level)
             {
                 case 1:
@@ -151,20 +131,16 @@ namespace Fluence.Wpf.Helpers
                     valueIncrease = 0;
                     break;
             }
-
             double newSaturation = Math.Max(saturation - saturationReduction, 0);
             double newValue = Math.Min(value + valueIncrease, 1);
-
             return HsvToRgb(hue, newSaturation, newValue);
         }
 
-        public static Color GetDarkVariant(Color baseColor, int level)
+        internal static Color GetDarkVariant(Color baseColor, int level)
         {
-            var (hue, saturation, value) = RgbToHsv(baseColor);
-
+            (double hue, double saturation, double value) = RgbToHsv(baseColor);
             double saturationIncrease;
             double valueDecrease;
-
             switch (level)
             {
                 case 1:
@@ -184,28 +160,26 @@ namespace Fluence.Wpf.Helpers
                     valueDecrease = 0;
                     break;
             }
-
             double newSaturation = Math.Min(saturation + saturationIncrease, 1);
             double newValue = Math.Max(value - valueDecrease, 0);
-
             return HsvToRgb(hue, newSaturation, newValue);
         }
 
-        public static Color Lighten(Color color, double amount)
+        internal static Color Lighten(Color color, double amount)
         {
-            var (hue, saturation, value) = RgbToHsv(color);
+            (double hue, double saturation, double value) = RgbToHsv(color);
             double newValue = Math.Min(value + amount, 1);
             return HsvToRgb(hue, saturation, newValue);
         }
 
-        public static Color Darken(Color color, double amount)
+        internal static Color Darken(Color color, double amount)
         {
-            var (hue, saturation, value) = RgbToHsv(color);
+            (double hue, double saturation, double value) = RgbToHsv(color);
             double newValue = Math.Max(value - amount, 0);
             return HsvToRgb(hue, saturation, newValue);
         }
 
-        public static Color WithAlpha(Color color, byte alpha)
+        internal static Color WithAlpha(Color color, byte alpha)
         {
             return Color.FromArgb(alpha, color.R, color.G, color.B);
         }
@@ -214,24 +188,22 @@ namespace Fluence.Wpf.Helpers
         /// Determines whether white text should be used on a given background color.
         /// Uses the same weighted formula as Windows (winaccent): (5*G + 2*R + B) &lt;= 1024.
         /// </summary>
-        public static bool ShouldUseWhiteText(Color color)
+        internal static bool ShouldUseWhiteText(Color color)
         {
-            return (5 * color.G + 2 * color.R + color.B) <= 1024;
+            return ((5 * color.G) + (2 * color.R) + color.B) <= 1024;
         }
 
         /// <summary>
         /// Linear RGB blend matching Windows' palette generation.
         /// <paramref name="intensity"/> is 0-100 weight toward <paramref name="c1"/>.
         /// </summary>
-        public static Color BlendColors(Color c1, Color c2, double intensity)
+        internal static Color BlendColors(Color c1, Color c2, double intensity)
         {
             double scaled = intensity * 255.0 / 100.0;
             double inv = 255.0 - scaled;
-
-            byte r = (byte)Math.Round((c1.R * scaled + c2.R * inv) / 255.0);
-            byte g = (byte)Math.Round((c1.G * scaled + c2.G * inv) / 255.0);
-            byte b = (byte)Math.Round((c1.B * scaled + c2.B * inv) / 255.0);
-
+            byte r = (byte)Math.Round(((c1.R * scaled) + (c2.R * inv)) / 255.0);
+            byte g = (byte)Math.Round(((c1.G * scaled) + (c2.G * inv)) / 255.0);
+            byte b = (byte)Math.Round(((c1.B * scaled) + (c2.B * inv)) / 255.0);
             return Color.FromRgb(r, g, b);
         }
 
@@ -239,7 +211,7 @@ namespace Fluence.Wpf.Helpers
         /// Boosts saturation in HLS color space by the given factor (capped at 1.0).
         /// Matches winaccent's increase_saturation which uses Python colorsys HLS (not HSV).
         /// </summary>
-        public static Color IncreaseSaturationHls(Color color, double factor)
+        internal static Color IncreaseSaturationHls(Color color, double factor)
         {
             double r = color.R / 255.0;
             double g = color.G / 255.0;
@@ -251,71 +223,22 @@ namespace Fluence.Wpf.Helpers
             double h = 0;
             double l = (max + min) / 2.0;
             double s = 0;
-
             if (max != min)
             {
                 double d = max - min;
                 s = l > 0.5 ? d / (2.0 - max - min) : d / (max + min);
-
-                if (max == r)
-                {
-                    h = (g - b) / d + (g < b ? 6 : 0);
-                }
-                else if (max == g)
-                {
-                    h = (b - r) / d + 2;
-                }
-                else
-                {
-                    h = (r - g) / d + 4;
-                }
-
+                h = max == r ? ((g - b) / d) + (g < b ? 6 : 0) : max == g ? ((b - r) / d) + 2 : ((r - g) / d) + 4;
                 h /= 6.0;
             }
-
             s = Math.Min(1.0, s * factor);
-
             return HlsToRgb(h, l, s);
-        }
-
-        private static Color HlsToRgb(double h, double l, double s)
-        {
-            double r, g, b;
-
-            if (s == 0)
-            {
-                r = g = b = l;
-            }
-            else
-            {
-                double q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-                double p = 2 * l - q;
-                r = HueToChannel(p, q, h + 1.0 / 3.0);
-                g = HueToChannel(p, q, h);
-                b = HueToChannel(p, q, h - 1.0 / 3.0);
-            }
-
-            return Color.FromRgb(
-                (byte)Math.Round(r * 255),
-                (byte)Math.Round(g * 255),
-                (byte)Math.Round(b * 255));
-        }
-
-        private static double HueToChannel(double p, double q, double t)
-        {
-            if (t < 0) t += 1;
-            if (t > 1) t -= 1;
-            if (t < 1.0 / 6.0) return p + (q - p) * 6 * t;
-            if (t < 1.0 / 2.0) return q;
-            if (t < 2.0 / 3.0) return p + (q - p) * (2.0 / 3.0 - t) * 6;
-            return p;
         }
 
         /// <summary>
         /// Generates accent ramp using winaccent's algorithm: linear RGB blend toward white/black,
         /// then HLS saturation doubled. Produces shades matching the Windows AccentPalette blob.
         /// </summary>
-        public static void GenerateAccentRampWinaccent(
+        internal static void GenerateAccentRampWinaccent(
             Color baseColor,
             out Color light1, out Color light2, out Color light3,
             out Color dark1, out Color dark2, out Color dark3)
@@ -330,16 +253,45 @@ namespace Fluence.Wpf.Helpers
                 dark3 = WindowsBlueAccentDark3;
                 return;
             }
-
             Color white = Color.FromRgb(0xFF, 0xFF, 0xFF);
             Color black = Color.FromRgb(0x00, 0x00, 0x00);
-
             light3 = IncreaseSaturationHls(BlendColors(white, baseColor, 75), 2);
             light2 = IncreaseSaturationHls(BlendColors(white, baseColor, 50), 2);
             light1 = IncreaseSaturationHls(BlendColors(white, baseColor, 25), 2);
             dark1 = IncreaseSaturationHls(BlendColors(black, baseColor, 25), 2);
             dark2 = IncreaseSaturationHls(BlendColors(black, baseColor, 50), 2);
             dark3 = IncreaseSaturationHls(BlendColors(black, baseColor, 75), 2);
+        }
+
+        private static Color HlsToRgb(double h, double l, double s)
+        {
+            double r, g, b;
+            if (s is not 0)
+            {
+                double q = l < 0.5 ? l * (1 + s) : l + s - (l * s);
+                double p = (2 * l) - q;
+                r = HueToChannel(p, q, h + (1.0 / 3.0));
+                g = HueToChannel(p, q, h);
+                b = HueToChannel(p, q, h - (1.0 / 3.0));
+            }
+            else
+            {
+                r = g = b = l;
+            }
+            return Color.FromRgb((byte)Math.Round(r * 255), (byte)Math.Round(g * 255), (byte)Math.Round(b * 255));
+        }
+
+        private static double HueToChannel(double p, double q, double t)
+        {
+            if (t < 0)
+            {
+                t += 1;
+            }
+            if (t > 1)
+            {
+                t -= 1;
+            }
+            return t < 1.0 / 6.0 ? p + ((q - p) * 6 * t) : t < 1.0 / 2.0 ? q : t < 2.0 / 3.0 ? p + ((q - p) * ((2.0 / 3.0) - t) * 6) : p;
         }
 
         private static bool IsWindowsBlueAccent(Color color)

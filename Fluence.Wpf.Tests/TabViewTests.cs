@@ -25,17 +25,20 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Collections.Generic;
 using System.Runtime.ExceptionServices;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf;
 using Fluence.Wpf.Controls;
+using System.Windows.Automation.Peers;
+using System.Windows.Automation.Provider;
+using System.Collections.ObjectModel;
+using System.Reflection;
 
 namespace Fluence.Wpf.Tests
 {
@@ -44,8 +47,8 @@ namespace Fluence.Wpf.Tests
     {
         private static void RunOnFreshStaThread(Action action)
         {
-            Exception capturedException = null;
-            WpfTestSta.Dispatcher.Invoke(new Action(delegate
+            Exception? capturedException = null;
+            WpfTestSta.Dispatcher?.Invoke(new Action(delegate
             {
                 try
                 {
@@ -63,47 +66,45 @@ namespace Fluence.Wpf.Tests
             }
         }
 
-        private static Application EnsureApplication()
+        private static Application? EnsureApplication()
         {
             return WpfTestSta.EnsureApplication();
         }
 
-        private static ResourceDictionary MergeGenericDictionary(Application application)
+        private static ResourceDictionary? MergeGenericDictionary(Application? application)
         {
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
-            application.Resources.MergedDictionaries.Clear();
+            application?.Resources.MergedDictionaries.Clear();
             ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-            var dictionaries = application.Resources.MergedDictionaries;
-            return dictionaries.Count > 0 ? dictionaries[dictionaries.Count - 1] : null;
+            Collection<ResourceDictionary>? dictionaries = application?.Resources.MergedDictionaries;
+            return dictionaries?.Count > 0 ? dictionaries[dictionaries.Count - 1] : null;
         }
 
         private static void DrainDispatcher(Dispatcher dispatcher)
         {
-            dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
+            _ = dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
         }
 
-        private static T FindVisualChild<T>(DependencyObject root) where T : DependencyObject
+        private static T? FindVisualChild<T>(DependencyObject root) where T : DependencyObject
         {
             if (root == null)
             {
                 return null;
             }
 
-            var childCount = VisualTreeHelper.GetChildrenCount(root);
-            for (var index = 0; index < childCount; index++)
+            int childCount = VisualTreeHelper.GetChildrenCount(root);
+            for (int index = 0; index < childCount; index++)
             {
-                var child = VisualTreeHelper.GetChild(root, index);
-                var match = child as T;
-                if (match != null)
+                DependencyObject child = VisualTreeHelper.GetChild(root, index);
+                if (child is T match)
                 {
                     return match;
                 }
 
-                match = FindVisualChild<T>(child);
-                if (match != null)
+                if (FindVisualChild<T>(child) is T visual)
                 {
-                    return match;
+                    return visual;
                 }
             }
 
@@ -117,44 +118,41 @@ namespace Fluence.Wpf.Tests
                 yield break;
             }
 
-            var childCount = VisualTreeHelper.GetChildrenCount(root);
-            for (var index = 0; index < childCount; index++)
+            int childCount = VisualTreeHelper.GetChildrenCount(root);
+            for (int index = 0; index < childCount; index++)
             {
-                var child = VisualTreeHelper.GetChild(root, index);
-                var match = child as T;
-                if (match != null)
+                DependencyObject child = VisualTreeHelper.GetChild(root, index);
+                if (child is T match)
                 {
                     yield return match;
                 }
 
-                foreach (var descendant in FindVisualChildren<T>(child))
+                foreach (T descendant in FindVisualChildren<T>(child))
                 {
                     yield return descendant;
                 }
             }
         }
 
-        private static T FindVisualChildByName<T>(DependencyObject root, string name) where T : FrameworkElement
+        private static T? FindVisualChildByName<T>(DependencyObject root, string name) where T : FrameworkElement
         {
-            if (root == null || string.IsNullOrEmpty(name))
+            if (root == null || string.IsNullOrWhiteSpace(name))
             {
                 return null;
             }
 
-            var childCount = VisualTreeHelper.GetChildrenCount(root);
-            for (var index = 0; index < childCount; index++)
+            int childCount = VisualTreeHelper.GetChildrenCount(root);
+            for (int index = 0; index < childCount; index++)
             {
-                var child = VisualTreeHelper.GetChild(root, index) as FrameworkElement;
-                if (child != null && child.Name == name)
+                if (VisualTreeHelper.GetChild(root, index) is FrameworkElement child && child.Name == name)
                 {
-                    var match = child as T;
-                    if (match != null)
+                    if (child is T match)
                     {
                         return match;
                     }
                 }
 
-                var found = FindVisualChildByName<T>(VisualTreeHelper.GetChild(root, index), name);
+                T? found = FindVisualChildByName<T>(VisualTreeHelper.GetChild(root, index), name);
                 if (found != null)
                 {
                     return found;
@@ -171,7 +169,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(() =>
             {
-                var tab = new TabViewItem();
+                TabViewItem tab = new();
                 Assert.IsTrue(tab.IsClosable);
             });
         }
@@ -181,7 +179,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(() =>
             {
-                var tab = new TabViewItem();
+                TabViewItem tab = new();
                 Assert.IsNull(tab.Icon);
             });
         }
@@ -191,8 +189,8 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(() =>
             {
-                var tab = new TabViewItem();
-                var icon = new FontIcon { Glyph = "\uE8A5" };
+                TabViewItem tab = new();
+                FontIcon icon = new() { Glyph = "\uE8A5" };
                 tab.Icon = icon;
 
                 Assert.AreSame(icon, tab.Icon);
@@ -206,7 +204,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(() =>
             {
-                var tabs = new TabView();
+                TabView tabs = new();
                 Assert.IsTrue(tabs.IsAddTabButtonVisible);
             });
         }
@@ -216,7 +214,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(() =>
             {
-                var tabs = new TabView();
+                TabView tabs = new();
                 Assert.AreEqual(TabViewWidthMode.SizeToContent, tabs.TabWidthMode);
             });
         }
@@ -226,7 +224,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(() =>
             {
-                var tabs = new TabView();
+                TabView tabs = new();
                 Assert.AreEqual(TabViewCloseButtonOverlayMode.Auto, tabs.CloseButtonOverlayMode);
             });
         }
@@ -236,11 +234,15 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
-                var tabs = new TabView { Width = 420, Height = 200 };
-                tabs.ItemsSource = new[] { "Alpha", "Beta" };
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+                TabView tabs = new()
+                {
+                    Width = 420,
+                    Height = 200,
+                    ItemsSource = new[] { "Alpha", "Beta" }
+                };
 
                 try
                 {
@@ -249,7 +251,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var container = tabs.ItemContainerGenerator.ContainerFromIndex(0);
+                    DependencyObject container = tabs.ItemContainerGenerator.ContainerFromIndex(0);
                     Assert.IsInstanceOfType(container, typeof(TabViewItem),
                         "TabView should generate TabViewItem containers, not base TabItem.");
                 }
@@ -258,7 +260,7 @@ namespace Fluence.Wpf.Tests
                     window.Close();
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -269,17 +271,17 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(() =>
             {
-                var tabs = new TabView();
-                var candidate = new TabViewItem();
+                TabView tabs = new();
+                TabViewItem candidate = new();
 
-                var method = typeof(TabView).GetMethod(
+                MethodInfo? method = typeof(TabView).GetMethod(
                     "IsItemItsOwnContainerOverride",
-                    System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Public);
+                    BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
                 Assert.IsNotNull(method, "TabView must override IsItemItsOwnContainerOverride.");
-                var result = (bool)method.Invoke(tabs, new object[] { candidate });
+                bool? result = (bool?)method.Invoke(tabs, [candidate]);
                 Assert.IsTrue(result, "A TabViewItem should be recognized as its own container.");
 
-                var nonTab = (bool)method.Invoke(tabs, new object[] { "Alpha" });
+                bool? nonTab = (bool?)method.Invoke(tabs, ["Alpha"]);
                 Assert.IsFalse(nonTab, "Plain objects should require container generation.");
             });
         }
@@ -291,10 +293,10 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
-                var tabs = new TabView { Width = 420, Height = 200, IsAddTabButtonVisible = true };
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+                TabView tabs = new() { Width = 420, Height = 200, IsAddTabButtonVisible = true };
 
                 try
                 {
@@ -303,14 +305,14 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var addButton = tabs.Template.FindName("PART_AddTabButton", tabs) as ButtonBase;
+                    ButtonBase? addButton = tabs.Template.FindName("PART_AddTabButton", tabs) as ButtonBase;
                     Assert.IsNotNull(addButton, "TabView template must expose PART_AddTabButton.");
 
-                    var raised = 0;
+                    int raised = 0;
                     tabs.AddTabButtonClick += (s, e) => raised++;
-                    var peer = new System.Windows.Automation.Peers.ButtonAutomationPeer(addButton as System.Windows.Controls.Button);
-                    var invoke = peer.GetPattern(System.Windows.Automation.Peers.PatternInterface.Invoke)
-                        as System.Windows.Automation.Provider.IInvokeProvider;
+                    ButtonAutomationPeer peer = new(addButton as System.Windows.Controls.Button);
+                    IInvokeProvider? invoke = peer.GetPattern(PatternInterface.Invoke)
+                        as IInvokeProvider;
                     Assert.IsNotNull(invoke, "PART_AddTabButton must expose an Invoke pattern.");
                     invoke.Invoke();
 
@@ -323,7 +325,7 @@ namespace Fluence.Wpf.Tests
                     window.Close();
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -334,14 +336,14 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
-                var tabs = new TabView { Width = 420, Height = 200 };
-                var first = new TabViewItem { Header = "Alpha", IsSelected = true };
-                var second = new TabViewItem { Header = "Beta" };
-                tabs.Items.Add(first);
-                tabs.Items.Add(second);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+                TabView tabs = new() { Width = 420, Height = 200 };
+                TabViewItem first = new() { Header = "Alpha", IsSelected = true };
+                TabViewItem second = new() { Header = "Beta" };
+                _ = tabs.Items.Add(first);
+                _ = tabs.Items.Add(second);
 
                 try
                 {
@@ -350,13 +352,13 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     // Force template application on the first tab so its PART_CloseButton is realized.
-                    first.ApplyTemplate();
+                    _ = first.ApplyTemplate();
 
-                    var closeButton = first.Template.FindName("PART_CloseButton", first) as ButtonBase;
+                    ButtonBase? closeButton = first.Template.FindName("PART_CloseButton", first) as ButtonBase;
                     Assert.IsNotNull(closeButton, "TabViewItem template must expose PART_CloseButton.");
 
-                    TabViewTabCloseRequestedEventArgs viewArgs = null;
-                    var itemRaised = 0;
+                    TabViewTabCloseRequestedEventArgs? viewArgs = null;
+                    int itemRaised = 0;
                     first.CloseRequested += (s, e) =>
                     {
                         itemRaised++;
@@ -366,9 +368,9 @@ namespace Fluence.Wpf.Tests
                         viewArgs = e as TabViewTabCloseRequestedEventArgs;
                     };
 
-                    var peer = new System.Windows.Automation.Peers.ButtonAutomationPeer(closeButton as System.Windows.Controls.Button);
-                    var invoke = peer.GetPattern(System.Windows.Automation.Peers.PatternInterface.Invoke)
-                        as System.Windows.Automation.Provider.IInvokeProvider;
+                    ButtonAutomationPeer peer = new(closeButton as System.Windows.Controls.Button);
+                    IInvokeProvider? invoke = peer.GetPattern(PatternInterface.Invoke)
+                        as IInvokeProvider;
                     Assert.IsNotNull(invoke, "PART_CloseButton must expose an Invoke pattern.");
                     invoke.Invoke();
                     DrainDispatcher(window.Dispatcher);
@@ -382,7 +384,7 @@ namespace Fluence.Wpf.Tests
                     window.Close();
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -393,12 +395,12 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
-                var tabs = new TabView { Width = 420, Height = 200 };
-                var locked = new TabViewItem { Header = "Pinned", IsClosable = false, IsSelected = true };
-                tabs.Items.Add(locked);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+                TabView tabs = new() { Width = 420, Height = 200 };
+                TabViewItem locked = new() { Header = "Pinned", IsClosable = false, IsSelected = true };
+                _ = tabs.Items.Add(locked);
 
                 try
                 {
@@ -406,9 +408,9 @@ namespace Fluence.Wpf.Tests
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    locked.ApplyTemplate();
+                    _ = locked.ApplyTemplate();
 
-                    var closeButton = locked.Template.FindName("PART_CloseButton", locked) as FrameworkElement;
+                    FrameworkElement? closeButton = locked.Template.FindName("PART_CloseButton", locked) as FrameworkElement;
                     Assert.IsNotNull(closeButton, "Template should still create PART_CloseButton, just hidden.");
                     Assert.IsFalse(closeButton.IsVisible,
                         "IsClosable=false should hide the close button regardless of overlay mode.");
@@ -418,7 +420,7 @@ namespace Fluence.Wpf.Tests
                     window.Close();
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -429,10 +431,10 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
-                var tabs = new TabView { Width = 420, Height = 200, IsAddTabButtonVisible = false };
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+                TabView tabs = new() { Width = 420, Height = 200, IsAddTabButtonVisible = false };
 
                 try
                 {
@@ -441,7 +443,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var addButton = tabs.Template.FindName("PART_AddTabButton", tabs) as FrameworkElement;
+                    FrameworkElement? addButton = tabs.Template.FindName("PART_AddTabButton", tabs) as FrameworkElement;
                     Assert.IsNotNull(addButton, "Template always produces PART_AddTabButton.");
                     Assert.IsFalse(addButton.IsVisible,
                         "IsAddTabButtonVisible=false should collapse the add button.");
@@ -451,7 +453,7 @@ namespace Fluence.Wpf.Tests
                     window.Close();
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -462,12 +464,12 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
-                var tabs = new TabView { Width = 420, Height = 200 };
-                var first = new TabViewItem { Header = "Alpha", IsSelected = true };
-                tabs.Items.Add(first);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+                TabView tabs = new() { Width = 420, Height = 200 };
+                TabViewItem first = new() { Header = "Alpha", IsSelected = true };
+                _ = tabs.Items.Add(first);
 
                 try
                 {
@@ -476,8 +478,8 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var added = new TabViewItem { Header = "Beta" };
-                    tabs.Items.Add(added);
+                    TabViewItem added = new() { Header = "Beta" };
+                    _ = tabs.Items.Add(added);
                     tabs.SelectedItem = added;
                     DrainDispatcher(window.Dispatcher);
 
@@ -495,7 +497,7 @@ namespace Fluence.Wpf.Tests
                     window.Close();
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });

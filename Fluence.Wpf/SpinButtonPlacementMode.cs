@@ -25,14 +25,27 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-using System;
 
-namespace Fluence.Wpf.Controls
+namespace Fluence.Wpf
 {
     /// <summary>
-    /// Provides data for the <see cref="NavigationView.BackRequested"/> event.
+    /// Defines where spin buttons are placed relative to the <see cref="Controls.NumberBox"/> input.
     /// </summary>
-    public class NavigationViewBackRequestedEventArgs : EventArgs
+    public enum SpinButtonPlacementMode
     {
+        /// <summary>
+        /// Spin buttons are not shown.
+        /// </summary>
+        Hidden = 0,
+
+        /// <summary>
+        /// Spin buttons appear when the control is hovered or keyboard-focused.
+        /// </summary>
+        Compact = 1,
+
+        /// <summary>
+        /// Spin buttons are always visible.
+        /// </summary>
+        Inline = 2,
     }
 }

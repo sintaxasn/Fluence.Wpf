@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,18 +39,15 @@ using System.Windows.Media;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf;
-using Fluent = Fluence.Wpf.Controls;
 using Fluence.Wpf.Demo;
+using System.Windows.Shapes;
+using System.Collections.ObjectModel;
 
 namespace Fluence.Wpf.Tests
 {
     [TestClass]
     public partial class ControlTests
     {
-        private static readonly Uri GenericDictionaryUri =
-            new Uri("/Fluence.Wpf;component/Themes/Generic.xaml", UriKind.Relative);
-
         [TestInitialize]
         public void ControlTestsInitialize()
         {
@@ -64,28 +62,23 @@ namespace Fluence.Wpf.Tests
 
         private static void ResetSharedWpfState()
         {
-            var application = Application.Current;
-            if (application == null)
+            Application application = Application.Current ?? new Application
             {
-                application = new Application
-                {
-                    ShutdownMode = ShutdownMode.OnExplicitShutdown
-                };
-            }
-
+                ShutdownMode = ShutdownMode.OnExplicitShutdown
+            };
             Keyboard.ClearFocus();
 
-            var windows = application.Windows.Cast<Window>().ToArray();
-            foreach (var window in windows)
+            Window[] windows = [.. application.Windows.Cast<Window>()];
+            foreach (Window? window in windows)
             {
                 window.Content = null;
                 window.Close();
             }
 
-            var dispatcher = Dispatcher.CurrentDispatcher;
-            dispatcher.Invoke(DispatcherPriority.Loaded, new Action(delegate { }));
-            dispatcher.Invoke(DispatcherPriority.ContextIdle, new Action(delegate { }));
-            dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
+            Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
+            _ = dispatcher.Invoke(DispatcherPriority.Loaded, new Action(delegate { }));
+            _ = dispatcher.Invoke(DispatcherPriority.ContextIdle, new Action(delegate { }));
+            _ = dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
 
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
@@ -95,10 +88,10 @@ namespace Fluence.Wpf.Tests
 
         private static void RunOnStaThread(Action action)
         {
-            var dispatcher = WpfTestSta.Dispatcher;
+            Dispatcher? dispatcher = WpfTestSta.Dispatcher;
 
-            Exception capturedException = null;
-            dispatcher.Invoke(new Action(delegate
+            Exception? capturedException = null;
+            dispatcher?.Invoke(new Action(delegate
             {
                 try
                 {
@@ -116,56 +109,54 @@ namespace Fluence.Wpf.Tests
             }
         }
 
-        private static Application EnsureApplication()
+        private static Application? EnsureApplication()
         {
             return WpfTestSta.EnsureApplication();
         }
 
-        private static ResourceDictionary MergeGenericDictionary(Application application)
+        private static ResourceDictionary? MergeGenericDictionary(Application? application)
         {
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
-            application.Resources.MergedDictionaries.Clear();
-            application.Resources.Clear();
+            application?.Resources.MergedDictionaries.Clear();
+            application?.Resources.Clear();
             ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-            var dictionaries = application.Resources.MergedDictionaries;
-            var genericDictionary = dictionaries.Count > 0 ? dictionaries[dictionaries.Count - 1] : null;
+            Collection<ResourceDictionary>? dictionaries = application?.Resources.MergedDictionaries;
+            ResourceDictionary? genericDictionary = dictionaries?.Count > 0 ? dictionaries[dictionaries.Count - 1] : null;
 
-            var demoShared = new ResourceDictionary
+            ResourceDictionary demoShared = new()
             {
                 Source = new Uri("/Fluence.Wpf.Demo;component/Resources/DemoSharedStyles.xaml", UriKind.Relative)
             };
-            application.Resources.MergedDictionaries.Add(demoShared);
+            application?.Resources.MergedDictionaries.Add(demoShared);
 
             return genericDictionary;
         }
 
-        private static void DrainDispatcher(Dispatcher dispatcher)
+        private static void DrainDispatcher(Dispatcher? dispatcher)
         {
-            dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
+            _ = dispatcher?.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
         }
 
-        private static T FindVisualChild<T>(DependencyObject root) where T : DependencyObject
+        private static T? FindVisualChild<T>(DependencyObject root) where T : DependencyObject
         {
             if (root == null)
             {
                 return null;
             }
 
-            var childCount = VisualTreeHelper.GetChildrenCount(root);
-            for (var index = 0; index < childCount; index++)
+            int childCount = VisualTreeHelper.GetChildrenCount(root);
+            for (int index = 0; index < childCount; index++)
             {
-                var child = VisualTreeHelper.GetChild(root, index);
-                var match = child as T;
-                if (match != null)
+                DependencyObject child = VisualTreeHelper.GetChild(root, index);
+                if (child is T match)
                 {
                     return match;
                 }
 
-                match = FindVisualChild<T>(child);
-                if (match != null)
+                if (FindVisualChild<T>(child) is T visual)
                 {
-                    return match;
+                    return visual;
                 }
             }
 
@@ -179,24 +170,23 @@ namespace Fluence.Wpf.Tests
                 yield break;
             }
 
-            var childCount = VisualTreeHelper.GetChildrenCount(root);
-            for (var index = 0; index < childCount; index++)
+            int childCount = VisualTreeHelper.GetChildrenCount(root);
+            for (int index = 0; index < childCount; index++)
             {
-                var child = VisualTreeHelper.GetChild(root, index);
-                var match = child as T;
-                if (match != null)
+                DependencyObject child = VisualTreeHelper.GetChild(root, index);
+                if (child is T match)
                 {
                     yield return match;
                 }
 
-                foreach (var descendant in FindVisualChildren<T>(child))
+                foreach (T descendant in FindVisualChildren<T>(child))
                 {
                     yield return descendant;
                 }
             }
         }
 
-        private static DependencyObject FindVisualChildByTypeName(DependencyObject root, string typeName)
+        private static DependencyObject? FindVisualChildByTypeName(DependencyObject root, string typeName)
         {
             if (root == null)
             {
@@ -208,10 +198,10 @@ namespace Fluence.Wpf.Tests
                 return root;
             }
 
-            var childCount = VisualTreeHelper.GetChildrenCount(root);
-            for (var index = 0; index < childCount; index++)
+            int childCount = VisualTreeHelper.GetChildrenCount(root);
+            for (int index = 0; index < childCount; index++)
             {
-                var found = FindVisualChildByTypeName(VisualTreeHelper.GetChild(root, index), typeName);
+                DependencyObject? found = FindVisualChildByTypeName(VisualTreeHelper.GetChild(root, index), typeName);
                 if (found != null)
                 {
                     return found;
@@ -221,27 +211,25 @@ namespace Fluence.Wpf.Tests
             return null;
         }
 
-        private static T FindVisualChildByName<T>(DependencyObject root, string name) where T : FrameworkElement
+        private static T? FindVisualChildByName<T>(DependencyObject root, string name) where T : FrameworkElement
         {
-            if (root == null || string.IsNullOrEmpty(name))
+            if (root == null || string.IsNullOrWhiteSpace(name))
             {
                 return null;
             }
 
-            var childCount = VisualTreeHelper.GetChildrenCount(root);
-            for (var index = 0; index < childCount; index++)
+            int childCount = VisualTreeHelper.GetChildrenCount(root);
+            for (int index = 0; index < childCount; index++)
             {
-                var child = VisualTreeHelper.GetChild(root, index) as FrameworkElement;
-                if (child != null && child.Name == name)
+                if (VisualTreeHelper.GetChild(root, index) is FrameworkElement child && child.Name == name)
                 {
-                    var match = child as T;
-                    if (match != null)
+                    if (child is T match)
                     {
                         return match;
                     }
                 }
 
-                var found = FindVisualChildByName<T>(VisualTreeHelper.GetChild(root, index), name);
+                T? found = FindVisualChildByName<T>(VisualTreeHelper.GetChild(root, index), name);
                 if (found != null)
                 {
                     return found;
@@ -251,21 +239,16 @@ namespace Fluence.Wpf.Tests
             return null;
         }
 
-        private static StackPanel GetNavigationViewItemsHostPanel(Fluent.NavigationView nav)
+        private static StackPanel? GetNavigationViewItemsHostPanel(Controls.NavigationView nav)
         {
-            var presenter = FindVisualChild<ItemsPresenter>(nav);
+            ItemsPresenter? presenter = FindVisualChild<ItemsPresenter>(nav);
             if (presenter == null)
             {
                 return null;
             }
 
-            var childCount = VisualTreeHelper.GetChildrenCount(presenter);
-            if (childCount < 1)
-            {
-                return null;
-            }
-
-            return VisualTreeHelper.GetChild(presenter, 0) as StackPanel;
+            int childCount = VisualTreeHelper.GetChildrenCount(presenter);
+            return childCount < 1 ? null : VisualTreeHelper.GetChild(presenter, 0) as StackPanel;
         }
 
         [TestMethod]
@@ -273,7 +256,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var fontIcon = new Fluent.FontIcon();
+                Controls.FontIcon fontIcon = new();
 
                 Assert.AreEqual("Segoe Fluent Icons", fontIcon.IconFontFamily.Source);
             });
@@ -284,8 +267,8 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var fontIcon = new Fluent.FontIcon();
-                var testGlyph = "\uE710";
+                Controls.FontIcon fontIcon = new();
+                string testGlyph = "\uE710";
 
                 fontIcon.Glyph = testGlyph;
 
@@ -298,7 +281,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var button = new Fluent.Button();
+                Controls.Button button = new();
 
                 Assert.AreEqual(ControlAppearance.Standard, button.Appearance);
             });
@@ -309,9 +292,10 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var button = new Fluent.Button();
-
-                button.Appearance = ControlAppearance.Accent;
+                Controls.Button button = new()
+                {
+                    Appearance = ControlAppearance.Accent
+                };
 
                 Assert.AreEqual(ControlAppearance.Accent, button.Appearance);
             });
@@ -322,8 +306,8 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var textBox = new Fluent.TextBox();
-                var placeholder = "Enter text here...";
+                Controls.TextBox textBox = new();
+                string placeholder = "Enter text here...";
 
                 textBox.PlaceholderText = placeholder;
 
@@ -336,7 +320,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var textBox = new Fluent.TextBox();
+                Controls.TextBox textBox = new();
 
                 Assert.IsTrue(textBox.ClearButtonEnabled);
             });
@@ -347,7 +331,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var passwordBox = new Fluent.PasswordBox();
+                Controls.PasswordBox passwordBox = new();
 
                 Assert.IsTrue(passwordBox.RevealButtonEnabled);
             });
@@ -358,7 +342,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var passwordBox = new Fluent.PasswordBox();
+                Controls.PasswordBox passwordBox = new();
 
                 Assert.IsFalse(passwordBox.IsPasswordRevealed);
             });
@@ -369,11 +353,11 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-                var window = new Window();
-                var textBox = new Fluent.TextBox
+                Window window = new();
+                Controls.TextBox textBox = new()
                 {
                     Width = 260
                 };
@@ -385,8 +369,8 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var mainBorder = textBox.Template.FindName("MainBorder", textBox) as Border;
-                    var clearButton = textBox.Template.FindName("PART_ClearButton", textBox) as Button;
+                    Border? mainBorder = textBox.Template.FindName("MainBorder", textBox) as Border;
+                    Button? clearButton = textBox.Template.FindName("PART_ClearButton", textBox) as Button;
 
                     Assert.IsNotNull(mainBorder);
                     Assert.IsNotNull(clearButton);
@@ -398,7 +382,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -408,11 +392,11 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-                var window = new Window();
-                var textBox = new Fluent.TextBox
+                Window window = new();
+                Controls.TextBox textBox = new()
                 {
                     Width = 260,
                     Text = "Focused"
@@ -422,11 +406,11 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = textBox;
                     window.Show();
-                    textBox.Focus();
+                    _ = textBox.Focus();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var accentLine = textBox.Template.FindName("FocusAccentLine", textBox) as Border;
+                    Border? accentLine = textBox.Template.FindName("FocusAccentLine", textBox) as Border;
 
                     Assert.IsNotNull(accentLine, "FocusAccentLine should exist in the template.");
                     Assert.AreEqual(1.0, accentLine.Opacity, "Accent line should be visible when focused.");
@@ -435,7 +419,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -445,11 +429,11 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-                var window = new Window();
-                var passwordBox = new Fluent.PasswordBox
+                Window window = new();
+                Controls.PasswordBox passwordBox = new()
                 {
                     Width = 260
                 };
@@ -461,8 +445,8 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var mainBorder = passwordBox.Template.FindName("MainBorder", passwordBox) as Border;
-                    var revealButton = passwordBox.Template.FindName("PART_RevealButton", passwordBox) as Button;
+                    Border? mainBorder = passwordBox.Template.FindName("MainBorder", passwordBox) as Border;
+                    Button? revealButton = passwordBox.Template.FindName("PART_RevealButton", passwordBox) as Button;
 
                     Assert.IsNotNull(mainBorder);
                     Assert.IsNotNull(revealButton);
@@ -474,7 +458,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -484,11 +468,11 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-                var window = new Window();
-                var passwordBox = new Fluent.PasswordBox
+                Window window = new();
+                Controls.PasswordBox passwordBox = new()
                 {
                     Width = 260,
                     Password = "Focused"
@@ -501,13 +485,13 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var innerPasswordBox = passwordBox.Template.FindName("PART_PasswordBox", passwordBox) as PasswordBox;
-                    var accentLine = passwordBox.Template.FindName("FocusAccentLine", passwordBox) as Border;
+                    PasswordBox? innerPasswordBox = passwordBox.Template.FindName("PART_PasswordBox", passwordBox) as PasswordBox;
+                    Border? accentLine = passwordBox.Template.FindName("FocusAccentLine", passwordBox) as Border;
 
                     Assert.IsNotNull(innerPasswordBox);
                     Assert.IsNotNull(accentLine, "FocusAccentLine should exist in the template.");
 
-                    innerPasswordBox.Focus();
+                    _ = innerPasswordBox.Focus();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
@@ -517,7 +501,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -527,7 +511,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var listView = new Fluent.ListView();
+                Controls.ListView listView = new();
 
                 Assert.IsTrue(listView.ItemAnimationsEnabled);
             });
@@ -538,7 +522,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var listView = new Fluent.ListView();
+                Controls.ListView listView = new();
 
                 Assert.IsTrue(listView.HoverHighlightEnabled);
             });
@@ -549,16 +533,16 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-                var window = new Window();
-                var listView = new Fluent.ListView
+                Window window = new();
+                Controls.ListView listView = new()
                 {
                     Width = 260,
                     Height = 120
                 };
-                listView.Items.Add("Item 1");
+                _ = listView.Items.Add("Item 1");
 
                 try
                 {
@@ -567,7 +551,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var item = listView.ItemContainerGenerator.ContainerFromIndex(0) as ListViewItem;
+                    ListViewItem? item = listView.ItemContainerGenerator.ContainerFromIndex(0) as ListViewItem;
 
                     Assert.IsNotNull(item);
                     Assert.AreEqual(new Thickness(12, 0, 12, 0), item.Padding);
@@ -577,7 +561,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -587,16 +571,16 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-                var window = new Window();
-                var listView = new Fluent.ListView
+                Window window = new();
+                Controls.ListView listView = new()
                 {
                     Width = 260,
                     Height = 120
                 };
-                listView.Items.Add("Item 1");
+                _ = listView.Items.Add("Item 1");
 
                 try
                 {
@@ -605,11 +589,11 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var item = listView.ItemContainerGenerator.ContainerFromIndex(0) as ListViewItem;
+                    ListViewItem? item = listView.ItemContainerGenerator.ContainerFromIndex(0) as ListViewItem;
                     Assert.IsNotNull(item);
 
-                    item.ApplyTemplate();
-                    var selectionIndicator = item.Template.FindName("SelectionIndicator", item) as Border;
+                    _ = item.ApplyTemplate();
+                    Border? selectionIndicator = item.Template.FindName("SelectionIndicator", item) as Border;
 
                     Assert.IsNotNull(selectionIndicator);
                     // WI-3 C20: canonical ListViewItemSelectionIndicatorCornerRadius = 1.5
@@ -618,7 +602,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -628,24 +612,24 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
-                var window = new Window
+                Window window = new()
                 {
                     Left = -20000,
                     Top = -20000,
                     WindowStartupLocation = WindowStartupLocation.Manual,
                     ShowInTaskbar = false
                 };
-                var listView = new Fluent.ListView
+                Controls.ListView listView = new()
                 {
                     Width = 260,
                     Height = 120,
                     SelectionMode = SelectionMode.Single
                 };
-                listView.Items.Add("Item 1");
+                _ = listView.Items.Add("Item 1");
 
                 try
                 {
@@ -658,14 +642,14 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var item = listView.ItemContainerGenerator.ContainerFromIndex(0) as ListViewItem;
+                    ListViewItem? item = listView.ItemContainerGenerator.ContainerFromIndex(0) as ListViewItem;
                     Assert.IsNotNull(item);
 
-                    item.ApplyTemplate();
-                    var selectedOverlay = item.Template.FindName("SelectedOverlay", item) as Border;
-                    var selectionIndicator = item.Template.FindName("SelectionIndicator", item) as Border;
-                    var expectedSelectedBrush = application.Resources["SubtleFillColorSecondaryBrush"] as SolidColorBrush;
-                    var expectedIndicatorBrush = application.Resources["AccentFillColorDefaultBrush"] as SolidColorBrush;
+                    _ = item.ApplyTemplate();
+                    Border? selectedOverlay = item.Template.FindName("SelectedOverlay", item) as Border;
+                    Border? selectionIndicator = item.Template.FindName("SelectionIndicator", item) as Border;
+                    SolidColorBrush? expectedSelectedBrush = application?.Resources["SubtleFillColorSecondaryBrush"] as SolidColorBrush;
+                    SolidColorBrush? expectedIndicatorBrush = application?.Resources["AccentFillColorDefaultBrush"] as SolidColorBrush;
 
                     Assert.IsNotNull(selectedOverlay);
                     Assert.IsNotNull(selectionIndicator);
@@ -679,7 +663,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -689,23 +673,23 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
 
                 try
                 {
-                    var textBlock = new TextBlock();
+                    TextBlock textBlock = new();
 
-                    Fluent.TextBlockExtensions.SetTypography(textBlock, FluentTypography.BodyLarge);
+                    Controls.TextBlockExtensions.SetTypography(textBlock, FluentTypography.BodyLarge);
 
-                    Assert.AreSame(application.TryFindResource("BodyLargeTextBlockStyle"), textBlock.Style);
+                    Assert.AreSame(application?.TryFindResource("BodyLargeTextBlockStyle"), textBlock.Style);
                     Assert.AreEqual(18.0, textBlock.FontSize);
                 }
                 finally
                 {
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -716,14 +700,14 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
-                var textBox = new Fluent.TextBox
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+                Controls.TextBox textBox = new()
                 {
                     Width = 260,
                     PlaceholderText = "With icon",
-                    Icon = new Fluent.FontIcon
+                    Icon = new Controls.FontIcon
                     {
                         Glyph = "\uE721",
                         IconFontSize = 14
@@ -734,25 +718,25 @@ namespace Fluence.Wpf.Tests
                 {
                     window.Content = textBox;
                     window.Show();
-                    textBox.Focus();
+                    _ = textBox.Focus();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var placeholder = textBox.Template.FindName("PlaceholderTextBlock", textBox) as FrameworkElement;
-                    var textView = FindVisualChildByTypeName(textBox, "TextBoxView") as FrameworkElement;
+                    FrameworkElement? placeholder = textBox.Template.FindName("PlaceholderTextBlock", textBox) as FrameworkElement;
+                    FrameworkElement? textView = FindVisualChildByTypeName(textBox, "TextBoxView") as FrameworkElement;
 
                     Assert.IsNotNull(placeholder);
                     Assert.IsNotNull(textView);
 
-                    var placeholderX = placeholder.TransformToAncestor(window).Transform(new Point(0, 0)).X;
-                    var textViewX = textView.TransformToAncestor(window).Transform(new Point(0, 0)).X;
+                    double placeholderX = placeholder.TransformToAncestor(window).Transform(new Point(0, 0)).X;
+                    double textViewX = textView.TransformToAncestor(window).Transform(new Point(0, 0)).X;
 
                     Assert.AreEqual(placeholderX, textViewX, 0.5, "Text caret host should start where placeholder text starts.");
                 }
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -762,13 +746,13 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
 
-                var window = new Window();
-                var button = new Fluent.Button
+                Window window = new();
+                Controls.Button button = new()
                 {
                     Width = 140,
                     Content = "Accent",
@@ -783,8 +767,8 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var restFill = button.Template.FindName("RestFill", button) as Border;
-                    var accentBrush = application.Resources["AccentFillColorDefaultBrush"] as SolidColorBrush;
+                    Border? restFill = button.Template.FindName("RestFill", button) as Border;
+                    SolidColorBrush? accentBrush = application?.Resources["AccentFillColorDefaultBrush"] as SolidColorBrush;
 
                     Assert.IsNotNull(restFill);
                     Assert.IsNotNull(accentBrush);
@@ -794,7 +778,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -804,14 +788,14 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
-                var button = new Fluent.Button
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+                Controls.Button button = new()
                 {
                     Width = 180,
                     Content = "With Icon",
-                    Icon = new Fluent.FontIcon
+                    Icon = new Controls.FontIcon
                     {
                         Glyph = "\uE710",
                         IconFontSize = 14
@@ -830,7 +814,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -840,15 +824,15 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
-                var button = new Fluent.Button
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+                Controls.Button button = new()
                 {
                     Width = 180,
                     Content = "Icon Right",
                     IconPlacement = ElementPlacement.Right,
-                    Icon = new Fluent.FontIcon
+                    Icon = new Controls.FontIcon
                     {
                         Glyph = "\uE72A",
                         IconFontSize = 14
@@ -867,7 +851,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -877,14 +861,14 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
-                var button = new Fluent.Button
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+                Controls.Button button = new()
                 {
                     Width = 180,
                     Content = "With Icon",
-                    Icon = new Fluent.FontIcon
+                    Icon = new Controls.FontIcon
                     {
                         Glyph = "\uE710",
                         IconFontSize = 14
@@ -898,8 +882,8 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    TextBlock glyphTextBlock = null;
-                    foreach (var textBlock in FindVisualChildren<TextBlock>(button))
+                    TextBlock? glyphTextBlock = null;
+                    foreach (TextBlock textBlock in FindVisualChildren<TextBlock>(button))
                     {
                         if (string.Equals(textBlock.Text, "\uE710", StringComparison.Ordinal))
                         {
@@ -915,7 +899,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -925,13 +909,13 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
 
-                var window = new Window();
-                var button = new Fluent.Button
+                Window window = new();
+                Controls.Button button = new()
                 {
                     Width = 140,
                     Content = "Accent",
@@ -946,14 +930,14 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var restFill = button.Template.FindName("RestFill", button) as Border;
-                    var outerBorder = button.Template.FindName("OuterBorder", button) as Border;
-                    var accentDefaultBrush = application.Resources["AccentFillColorDefaultBrush"] as SolidColorBrush;
-                    var accentBorderBrush = application.Resources["AccentControlElevationBorderBrush"] as LinearGradientBrush;
-                    var accentSecondaryBrush = application.Resources["AccentFillColorSecondaryBrush"] as SolidColorBrush;
-                    var accentTertiaryBrush = application.Resources["AccentFillColorTertiaryBrush"] as SolidColorBrush;
-                    var fluentFontFamily = application.Resources["FluentFontFamily"] as FontFamily;
-                    var contentText = FindVisualChildren<TextBlock>(button)
+                    Border? restFill = button.Template.FindName("RestFill", button) as Border;
+                    Border? outerBorder = button.Template.FindName("OuterBorder", button) as Border;
+                    SolidColorBrush? accentDefaultBrush = application?.Resources["AccentFillColorDefaultBrush"] as SolidColorBrush;
+                    LinearGradientBrush? accentBorderBrush = application?.Resources["AccentControlElevationBorderBrush"] as LinearGradientBrush;
+                    SolidColorBrush? accentSecondaryBrush = application?.Resources["AccentFillColorSecondaryBrush"] as SolidColorBrush;
+                    SolidColorBrush? accentTertiaryBrush = application?.Resources["AccentFillColorTertiaryBrush"] as SolidColorBrush;
+                    FontFamily? fluentFontFamily = application?.Resources["FluentFontFamily"] as FontFamily;
+                    TextBlock? contentText = FindVisualChildren<TextBlock>(button)
                         .FirstOrDefault(tb => string.Equals(tb.Text, "Accent", StringComparison.Ordinal));
 
                     Assert.IsNotNull(restFill);
@@ -981,7 +965,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -991,9 +975,9 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                MainWindow window = null;
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                MainWindow? window = null;
 
                 try
                 {
@@ -1004,12 +988,10 @@ namespace Fluence.Wpf.Tests
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Windowing");
 
-                    var accentSwatchButtons = FindVisualChildren<Fluent.Button>(window)
-                        .Where(b => b.Tag is string hex && hex.Length > 0 && hex[0] == '#')
-                        .ToList();
+                    List<Controls.Button> accentSwatchButtons = [.. FindVisualChildren<Controls.Button>(window).Where(b => b.Tag is string hex && hex.Length > 0 && hex[0] == '#')];
 
-                    var expectedSwatches = new List<string>
-                    {
+                    List<string> expectedSwatches =
+                    [
                         "#E80000",
                         "#F58809",
                         "#F5E70C",
@@ -1017,23 +999,20 @@ namespace Fluence.Wpf.Tests
                         "#09C4DE",
                         "#AA04DE",
                         "#FF00E8"
-                    };
+                    ];
 
                     CollectionAssert.AreEqual(expectedSwatches, accentSwatchButtons.Select(b => (string)b.Tag).ToList(),
                         "Window page should expose the seven logo accent swatches.");
-                    foreach (var swatch in accentSwatchButtons)
+                    foreach (Controls.Button swatch in accentSwatchButtons)
                     {
-                        Assert.IsInstanceOfType(swatch, typeof(Fluent.Button));
+                        Assert.IsInstanceOfType(swatch, typeof(Controls.Button));
                     }
                 }
                 finally
                 {
-                    if (window != null)
-                    {
-                        window.Close();
-                    }
+                    window?.Close();
 
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1043,9 +1022,9 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                MainWindow window = null;
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                MainWindow? window = null;
 
                 try
                 {
@@ -1056,20 +1035,17 @@ namespace Fluence.Wpf.Tests
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Windowing");
 
-                    Assert.IsInstanceOfType(FindVisualChildByName<Fluent.RadioButton>(window, "ThemeLight"), typeof(Fluent.RadioButton));
-                    Assert.IsInstanceOfType(FindVisualChildByName<Fluent.RadioButton>(window, "ThemeDark"), typeof(Fluent.RadioButton));
-                    Assert.IsInstanceOfType(FindVisualChildByName<Fluent.RadioButton>(window, "ThemeHighContrast"), typeof(Fluent.RadioButton));
-                    Assert.IsInstanceOfType(FindVisualChildByName<Fluent.RadioButton>(window, "ThemeAuto"), typeof(Fluent.RadioButton));
-                    Assert.IsInstanceOfType(FindVisualChildByName<Fluent.ComboBox>(window, "BackdropCombo"), typeof(Fluent.ComboBox));
+                    Assert.IsInstanceOfType(FindVisualChildByName<Controls.RadioButton>(window, "ThemeLight"), typeof(Controls.RadioButton));
+                    Assert.IsInstanceOfType(FindVisualChildByName<Controls.RadioButton>(window, "ThemeDark"), typeof(Controls.RadioButton));
+                    Assert.IsInstanceOfType(FindVisualChildByName<Controls.RadioButton>(window, "ThemeHighContrast"), typeof(Controls.RadioButton));
+                    Assert.IsInstanceOfType(FindVisualChildByName<Controls.RadioButton>(window, "ThemeAuto"), typeof(Controls.RadioButton));
+                    Assert.IsInstanceOfType(FindVisualChildByName<Controls.ComboBox>(window, "BackdropCombo"), typeof(Controls.ComboBox));
                 }
                 finally
                 {
-                    if (window != null)
-                    {
-                        window.Close();
-                    }
+                    window?.Close();
 
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1079,10 +1055,10 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Auto, BackdropType.Auto, true);
-                MainWindow window = null;
+                MainWindow? window = null;
 
                 try
                 {
@@ -1093,8 +1069,8 @@ namespace Fluence.Wpf.Tests
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Windowing");
 
-                    var themeDark = FindVisualChildByName<Fluent.RadioButton>(window, "ThemeDark");
-                    var themeStateLabel = FindVisualChildByName<TextBlock>(window, "ThemeStateLabel");
+                    Controls.RadioButton? themeDark = FindVisualChildByName<Controls.RadioButton>(window, "ThemeDark");
+                    TextBlock? themeStateLabel = FindVisualChildByName<TextBlock>(window, "ThemeStateLabel");
 
                     Assert.IsNotNull(themeDark);
                     Assert.IsNotNull(themeStateLabel);
@@ -1107,12 +1083,9 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    if (window != null)
-                    {
-                        window.Close();
-                    }
+                    window?.Close();
 
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1122,9 +1095,9 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                MainWindow window = null;
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                MainWindow? window = null;
 
                 try
                 {
@@ -1135,8 +1108,8 @@ namespace Fluence.Wpf.Tests
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Buttons");
 
-                    var iconLeftButton = FindFluentButtonByContent(window, "Icon Left");
-                    var iconRightButton = FindFluentButtonByContent(window, "Icon Right");
+                    Controls.Button? iconLeftButton = FindFluentButtonByContent(window, "Icon Left");
+                    Controls.Button? iconRightButton = FindFluentButtonByContent(window, "Icon Right");
 
                     Assert.IsNotNull(iconLeftButton, "Buttons page should contain an 'Icon Left' button.");
                     Assert.IsNotNull(iconRightButton, "Buttons page should contain an 'Icon Right' button.");
@@ -1146,12 +1119,9 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    if (window != null)
-                    {
-                        window.Close();
-                    }
+                    window?.Close();
 
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1161,10 +1131,10 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-                MainWindow window = null;
+                MainWindow? window = null;
 
                 try
                 {
@@ -1175,16 +1145,16 @@ namespace Fluence.Wpf.Tests
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Buttons");
 
-                    var iconLeftButton = FindFluentButtonByContent(window, "Icon Left");
-                    var iconRightButton = FindFluentButtonByContent(window, "Icon Right");
-                    var expectedBrush = application.Resources["TextFillColorPrimaryBrush"] as SolidColorBrush;
+                    Controls.Button? iconLeftButton = FindFluentButtonByContent(window, "Icon Left");
+                    Controls.Button? iconRightButton = FindFluentButtonByContent(window, "Icon Right");
+                    SolidColorBrush? expectedBrush = application?.Resources["TextFillColorPrimaryBrush"] as SolidColorBrush;
 
                     Assert.IsNotNull(iconLeftButton, "Buttons page should contain an 'Icon Left' button.");
                     Assert.IsNotNull(iconRightButton, "Buttons page should contain an 'Icon Right' button.");
                     Assert.IsNotNull(expectedBrush);
 
-                    var iconLeftGlyph = FindButtonIconTextBlock(iconLeftButton);
-                    var iconRightGlyph = FindButtonIconTextBlock(iconRightButton);
+                    TextBlock? iconLeftGlyph = FindButtonIconTextBlock(iconLeftButton);
+                    TextBlock? iconRightGlyph = FindButtonIconTextBlock(iconRightButton);
 
                     Assert.IsNotNull(iconLeftGlyph, "Icon Left demo button should render an icon glyph.");
                     Assert.IsNotNull(iconRightGlyph, "Icon Right demo button should render an icon glyph.");
@@ -1195,12 +1165,9 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    if (window != null)
-                    {
-                        window.Close();
-                    }
+                    window?.Close();
 
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1210,15 +1177,15 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var tabControl = new TabControl();
-                    tabControl.Items.Add(new TabItem { Header = "First", Content = new TextBlock { Text = "A" } });
-                    tabControl.Items.Add(new TabItem { Header = "Second", Content = new TextBlock { Text = "B" } });
+                    TabControl tabControl = new();
+                    _ = tabControl.Items.Add(new TabItem { Header = "First", Content = new TextBlock { Text = "A" } });
+                    _ = tabControl.Items.Add(new TabItem { Header = "Second", Content = new TextBlock { Text = "B" } });
                     window.Content = tabControl;
                     window.Width = 640;
                     window.Height = 480;
@@ -1230,22 +1197,22 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var selectedTab = tabControl.ItemContainerGenerator.ContainerFromIndex(1) as TabItem;
-                    var contentPanel = tabControl.Template.FindName("ContentPanel", tabControl) as FrameworkElement;
+                    TabItem? selectedTab = tabControl.ItemContainerGenerator.ContainerFromIndex(1) as TabItem;
+                    FrameworkElement? contentPanel = tabControl.Template.FindName("ContentPanel", tabControl) as FrameworkElement;
 
                     Assert.IsNotNull(selectedTab);
                     Assert.IsNotNull(contentPanel);
 
-                    var selectedOrigin = selectedTab.TransformToAncestor(window).Transform(new Point(0, 0));
-                    var contentOrigin = contentPanel.TransformToAncestor(window).Transform(new Point(0, 0));
-                    var selectedBottom = selectedOrigin.Y + selectedTab.ActualHeight;
+                    Point selectedOrigin = selectedTab.TransformToAncestor(window).Transform(new Point(0, 0));
+                    Point contentOrigin = contentPanel.TransformToAncestor(window).Transform(new Point(0, 0));
+                    double selectedBottom = selectedOrigin.Y + selectedTab.ActualHeight;
 
                     Assert.IsTrue(contentOrigin.Y - selectedBottom >= 6.0,
                         "Fluent TabControl should separate selected tabs from the card-like content surface.");
                     Assert.IsInstanceOfType(contentPanel, typeof(Border),
                         "ContentPanel should be a Border so the Fluent surface can own background, stroke, and corner radius.");
 
-                    var contentBorder = (Border)contentPanel;
+                    Border contentBorder = (Border)contentPanel;
                     Assert.IsNotNull(contentBorder.Background,
                         "TabControl content surface should resolve a Fluent card background brush.");
                     Assert.IsNotNull(contentBorder.BorderBrush,
@@ -1254,7 +1221,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1264,18 +1231,18 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var tabControl = new TabControl
+                    TabControl tabControl = new()
                     {
                         TabStripPlacement = Dock.Left
                     };
-                    tabControl.Items.Add(new TabItem { Header = "First", Content = new TextBlock { Text = "A" } });
-                    tabControl.Items.Add(new TabItem { Header = "Second", Content = new TextBlock { Text = "B" } });
+                    _ = tabControl.Items.Add(new TabItem { Header = "First", Content = new TextBlock { Text = "A" } });
+                    _ = tabControl.Items.Add(new TabItem { Header = "Second", Content = new TextBlock { Text = "B" } });
                     window.Content = tabControl;
                     window.Width = 640;
                     window.Height = 480;
@@ -1283,8 +1250,8 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var headerPanel = tabControl.Template.FindName("HeaderPanel", tabControl) as FrameworkElement;
-                    var contentPanel = tabControl.Template.FindName("ContentPanel", tabControl) as FrameworkElement;
+                    FrameworkElement? headerPanel = tabControl.Template.FindName("HeaderPanel", tabControl) as FrameworkElement;
+                    FrameworkElement? contentPanel = tabControl.Template.FindName("ContentPanel", tabControl) as FrameworkElement;
 
                     Assert.IsNotNull(headerPanel);
                     Assert.IsNotNull(contentPanel);
@@ -1298,7 +1265,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1308,9 +1275,9 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                MainWindow window = null;
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                MainWindow? window = null;
 
                 try
                 {
@@ -1323,28 +1290,25 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(FindFluentButtonByContent(window, "Icon Left"));
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Inputs");
-                    Assert.IsNotNull(FindVisualChildByName<Fluent.TextBox>(window, "CharCountTextBox"));
+                    Assert.IsNotNull(FindVisualChildByName<Controls.TextBox>(window, "CharCountTextBox"));
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Selection");
-                    Assert.IsNotNull(FindVisualChildByName<Fluent.ToggleSwitch>(window, "DefaultToggle"));
+                    Assert.IsNotNull(FindVisualChildByName<Controls.ToggleSwitch>(window, "DefaultToggle"));
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Selection");
-                    Assert.IsNotNull(FindVisualChildByName<Fluent.ComboBox>(window, "SelectionDemoCombo"));
+                    Assert.IsNotNull(FindVisualChildByName<Controls.ComboBox>(window, "SelectionDemoCombo"));
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Status");
-                    Assert.IsNotNull(FindVisualChildByName<Fluent.ProgressBar>(window, "StepProgressBar"));
+                    Assert.IsNotNull(FindVisualChildByName<Controls.ProgressBar>(window, "StepProgressBar"));
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Data");
-                    Assert.IsNotNull(FindVisualChildByName<Fluent.ListView>(window, "EmptyStateListView"));
+                    Assert.IsNotNull(FindVisualChildByName<Controls.ListView>(window, "EmptyStateListView"));
                 }
                 finally
                 {
-                    if (window != null)
-                    {
-                        window.Close();
-                    }
+                    window?.Close();
 
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1354,9 +1318,9 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                MainWindow window = null;
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                MainWindow? window = null;
 
                 try
                 {
@@ -1365,18 +1329,16 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var nav = window.FindName("DemoNav") as Fluent.NavigationView;
+                    Controls.NavigationView? nav = window.FindName("DemoNav") as Controls.NavigationView;
                     Assert.IsNotNull(nav);
-                    var pages = new List<string>();
-                    foreach (var obj in nav.Items)
+                    List<string> pages = [];
+                    foreach (object? obj in nav.Items)
                     {
-                        var item = obj as Fluent.NavigationViewItem;
-                        if (item == null)
+                        if (obj is not Controls.NavigationViewItem item || item.Content is not string content)
                         {
                             continue;
                         }
 
-                        var content = item.Content as string;
                         Assert.IsNull(item.InfoBadge, "Simplified demo navigation should not use category group badges.");
                         pages.Add(content);
                     }
@@ -1393,12 +1355,9 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    if (window != null)
-                    {
-                        window.Close();
-                    }
+                    window?.Close();
 
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1408,9 +1367,9 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                MainWindow window = null;
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                MainWindow? window = null;
 
                 try
                 {
@@ -1423,18 +1382,15 @@ namespace Fluence.Wpf.Tests
                     Assert.IsTrue(window.IsMaximizable);
                     Assert.IsTrue(window.IsClosable);
 
-                    var closeButton = window.Template.FindName("PART_CloseButton", window) as Button;
+                    Button? closeButton = window.Template.FindName("PART_CloseButton", window) as Button;
                     Assert.IsNotNull(closeButton);
                     Assert.AreEqual(Visibility.Visible, closeButton.Visibility);
                 }
                 finally
                 {
-                    if (window != null)
-                    {
-                        window.Close();
-                    }
+                    window?.Close();
 
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1444,9 +1400,9 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                MainWindow window = null;
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                MainWindow? window = null;
 
                 try
                 {
@@ -1457,8 +1413,8 @@ namespace Fluence.Wpf.Tests
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Windowing");
 
-                    var toggle = FindVisualChildByName<Fluent.ToggleSwitch>(window, "ThemeWatcherToggle");
-                    var label = FindVisualChildByName<TextBlock>(window, "SystemThemeLabel");
+                    Controls.ToggleSwitch? toggle = FindVisualChildByName<Controls.ToggleSwitch>(window, "ThemeWatcherToggle");
+                    TextBlock? label = FindVisualChildByName<TextBlock>(window, "SystemThemeLabel");
 
                     Assert.IsNotNull(toggle);
                     Assert.IsNotNull(label);
@@ -1473,12 +1429,9 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    if (window != null)
-                    {
-                        window.Close();
-                    }
+                    window?.Close();
 
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1488,9 +1441,9 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                MainWindow window = null;
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                MainWindow? window = null;
 
                 try
                 {
@@ -1501,26 +1454,23 @@ namespace Fluence.Wpf.Tests
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Buttons");
 
-                    var button = FindFluentButtonByContent(window, "Icon Left");
+                    Controls.Button? button = FindFluentButtonByContent(window, "Icon Left");
                     Assert.IsNotNull(button, "Buttons page should contain an 'Icon Left' button.");
 
-                    var glyphTextBlock = FindButtonGlyphTextBlock(button, "\uE774");
+                    TextBlock? glyphTextBlock = FindButtonGlyphTextBlock(button, "\uE774");
                     Assert.IsNotNull(glyphTextBlock);
-                    var buttonOrigin = button.TransformToAncestor(window).Transform(new Point(0, 0));
-                    var glyphOrigin = glyphTextBlock.TransformToAncestor(window).Transform(new Point(0, 0));
-                    var buttonCenterY = buttonOrigin.Y + (button.ActualHeight / 2.0);
-                    var glyphCenterY = glyphOrigin.Y + (glyphTextBlock.ActualHeight / 2.0);
+                    Point buttonOrigin = button.TransformToAncestor(window).Transform(new Point(0, 0));
+                    Point glyphOrigin = glyphTextBlock.TransformToAncestor(window).Transform(new Point(0, 0));
+                    double buttonCenterY = buttonOrigin.Y + (button.ActualHeight / 2.0);
+                    double glyphCenterY = glyphOrigin.Y + (glyphTextBlock.ActualHeight / 2.0);
 
                     Assert.AreEqual(buttonCenterY, glyphCenterY, 1.0, "Button icon should be vertically centered.");
                 }
                 finally
                 {
-                    if (window != null)
-                    {
-                        window.Close();
-                    }
+                    window?.Close();
 
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1530,9 +1480,9 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                MainWindow window = null;
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                MainWindow? window = null;
 
                 try
                 {
@@ -1543,8 +1493,8 @@ namespace Fluence.Wpf.Tests
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Buttons");
 
-                    var iconLeftButton = FindFluentButtonByContent(window, "Icon Left");
-                    var iconRightButton = FindFluentButtonByContent(window, "Icon Right");
+                    Controls.Button? iconLeftButton = FindFluentButtonByContent(window, "Icon Left");
+                    Controls.Button? iconRightButton = FindFluentButtonByContent(window, "Icon Right");
 
                     Assert.IsNotNull(iconLeftButton, "Buttons page should contain an 'Icon Left' button.");
                     Assert.IsNotNull(iconRightButton, "Buttons page should contain an 'Icon Right' button.");
@@ -1554,12 +1504,9 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    if (window != null)
-                    {
-                        window.Close();
-                    }
+                    window?.Close();
 
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1569,7 +1516,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var card = new Fluent.Card();
+                Controls.Card card = new();
                 Assert.AreEqual(CardVariant.Default, card.Variant);
             });
         }
@@ -1579,7 +1526,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var card = new Fluent.Card { IsClickable = true };
+                Controls.Card card = new() { IsClickable = true };
                 Assert.IsFalse(card.IsPressed);
             });
         }
@@ -1589,7 +1536,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var cb = new Fluent.CheckBox { Content = "Test" };
+                Controls.CheckBox cb = new() { Content = "Test" };
                 Assert.AreEqual("Test", cb.Content as string);
             });
         }
@@ -1599,7 +1546,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var combo = new Fluent.ComboBox { PlaceholderText = "Pick one" };
+                Controls.ComboBox combo = new() { PlaceholderText = "Pick one" };
                 Assert.AreEqual("Pick one", combo.PlaceholderText);
             });
         }
@@ -1609,12 +1556,12 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
-                var combo = new Fluent.ComboBox { Width = 240 };
-                combo.Items.Add(new ComboBoxItem { Content = "Alpha" });
-                combo.Items.Add(new ComboBoxItem { Content = "Beta" });
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+                Controls.ComboBox combo = new() { Width = 240 };
+                _ = combo.Items.Add(new ComboBoxItem { Content = "Alpha" });
+                _ = combo.Items.Add(new ComboBoxItem { Content = "Beta" });
                 combo.SelectedIndex = 0;
 
                 try
@@ -1624,7 +1571,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var presenter = combo.Template.FindName("contentPresenter", combo) as ContentPresenter;
+                    ContentPresenter? presenter = combo.Template.FindName("contentPresenter", combo) as ContentPresenter;
                     Assert.IsNotNull(presenter, "contentPresenter should exist in the template.");
                     Assert.AreEqual("Alpha", presenter.Content as string, "Initial displayed content should match first selection.");
 
@@ -1637,7 +1584,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1647,12 +1594,12 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
-                var combo = new Fluent.ComboBox { Width = 240 };
-                combo.Items.Add(new ComboBoxItem { Content = "Alpha" });
-                combo.Items.Add(new ComboBoxItem { Content = "Beta" });
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+                Controls.ComboBox combo = new() { Width = 240 };
+                _ = combo.Items.Add(new ComboBoxItem { Content = "Alpha" });
+                _ = combo.Items.Add(new ComboBoxItem { Content = "Beta" });
 
                 try
                 {
@@ -1665,14 +1612,14 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var item = combo.ItemContainerGenerator.ContainerFromIndex(0) as ComboBoxItem;
+                    ComboBoxItem? item = combo.ItemContainerGenerator.ContainerFromIndex(0) as ComboBoxItem;
                     Assert.IsNotNull(item, "ComboBoxItem container should be generated.");
-                    item.ApplyTemplate();
+                    _ = item.ApplyTemplate();
 
-                    var outerBorder = item.Template.FindName("OuterBorder", item);
+                    object outerBorder = item.Template.FindName("OuterBorder", item);
                     Assert.IsNotNull(outerBorder, "ComboBoxItem template should contain an OuterBorder element.");
 
-                    var selectionIndicator = item.Template.FindName("SelectionIndicator", item);
+                    object selectionIndicator = item.Template.FindName("SelectionIndicator", item);
                     Assert.IsNotNull(selectionIndicator, "ComboBoxItem template should contain a SelectionIndicator element.");
 
                     combo.IsDropDownOpen = false;
@@ -1680,7 +1627,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1690,16 +1637,16 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
-                var combo = new Fluent.ComboBox
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+                Controls.ComboBox combo = new()
                 {
                     Width = 240,
                     PlaceholderText = "Choose...",
                     SelectedIndex = -1
                 };
-                combo.Items.Add(new ComboBoxItem { Content = "Alpha" });
+                _ = combo.Items.Add(new ComboBoxItem { Content = "Alpha" });
 
                 try
                 {
@@ -1708,7 +1655,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var placeholder = combo.Template.FindName("PlaceholderTextBlock", combo) as TextBlock;
+                    TextBlock? placeholder = combo.Template.FindName("PlaceholderTextBlock", combo) as TextBlock;
                     Assert.IsNotNull(placeholder, "PlaceholderTextBlock should exist in the template.");
                     Assert.AreEqual(Visibility.Visible, placeholder.Visibility, "Placeholder should be visible when SelectedIndex is explicitly -1.");
 
@@ -1721,7 +1668,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1731,16 +1678,16 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
-                var combo = new Fluent.ComboBox
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+                Controls.ComboBox combo = new()
                 {
                     Width = 240,
                     PlaceholderText = "Pick one"
                 };
-                combo.Items.Add(new ComboBoxItem { Content = "Alpha" });
-                combo.Items.Add(new ComboBoxItem { Content = "Beta" });
+                _ = combo.Items.Add(new ComboBoxItem { Content = "Alpha" });
+                _ = combo.Items.Add(new ComboBoxItem { Content = "Beta" });
 
                 try
                 {
@@ -1749,15 +1696,15 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    combo.ApplyTemplate();
-                    var toggle = combo.Template.FindName("ToggleButton", combo) as ToggleButton;
-                    var popup = combo.Template.FindName("PART_Popup", combo) as Popup;
+                    _ = combo.ApplyTemplate();
+                    ToggleButton? toggle = combo.Template.FindName("ToggleButton", combo) as ToggleButton;
+                    Popup? popup = combo.Template.FindName("PART_Popup", combo) as Popup;
 
                     Assert.IsNotNull(toggle);
                     Assert.IsNotNull(popup);
 
-                    var peer = new ToggleButtonAutomationPeer(toggle);
-                    var toggleProvider = peer.GetPattern(PatternInterface.Toggle) as IToggleProvider;
+                    ToggleButtonAutomationPeer peer = new(toggle);
+                    IToggleProvider? toggleProvider = peer.GetPattern(PatternInterface.Toggle) as IToggleProvider;
 
                     Assert.IsNotNull(toggleProvider, "ComboBox toggle should expose a toggle pattern.");
 
@@ -1771,7 +1718,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1781,15 +1728,15 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
-                var combo = new Fluent.ComboBox
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+                Controls.ComboBox combo = new()
                 {
                     Width = 240,
                     PlaceholderText = "Pick one"
                 };
-                combo.Items.Add(new ComboBoxItem { Content = "Alpha" });
+                _ = combo.Items.Add(new ComboBoxItem { Content = "Alpha" });
 
                 try
                 {
@@ -1798,8 +1745,8 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    combo.ApplyTemplate();
-                    var toggle = combo.Template.FindName("ToggleButton", combo) as ToggleButton;
+                    _ = combo.ApplyTemplate();
+                    ToggleButton? toggle = combo.Template.FindName("ToggleButton", combo) as ToggleButton;
 
                     Assert.IsNotNull(toggle);
                     Assert.AreEqual(ClickMode.Release, toggle.ClickMode, "ComboBox toggle should use release-click behavior so the drop-down stays open on a normal click.");
@@ -1807,7 +1754,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1817,16 +1764,16 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
-                var combo = new Fluent.ComboBox
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+                Controls.ComboBox combo = new()
                 {
                     Width = 240,
                     PlaceholderText = "Pick one"
                 };
-                combo.Items.Add(new ComboBoxItem { Content = "Alpha" });
-                combo.Items.Add(new ComboBoxItem { Content = "Beta" });
+                _ = combo.Items.Add(new ComboBoxItem { Content = "Alpha" });
+                _ = combo.Items.Add(new ComboBoxItem { Content = "Beta" });
 
                 try
                 {
@@ -1839,7 +1786,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var item = combo.ItemContainerGenerator.ContainerFromIndex(1) as ComboBoxItem;
+                    ComboBoxItem? item = combo.ItemContainerGenerator.ContainerFromIndex(1) as ComboBoxItem;
                     Assert.IsNotNull(item, "ComboBox should generate the drop-down item container when opened.");
 
                     item.IsSelected = true;
@@ -1852,7 +1799,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -1862,7 +1809,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var bar = new Fluent.ProgressBar();
+                Controls.ProgressBar bar = new();
                 Assert.AreEqual(ProgressBarMode.Standard, bar.ProgressMode);
             });
         }
@@ -1872,7 +1819,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var border = new Fluent.Border();
+                Controls.Border border = new();
                 Assert.AreEqual(BorderVariant.None, border.Variant);
             });
         }
@@ -1882,7 +1829,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var panel = new Fluent.StackPanel();
+                Controls.StackPanel panel = new();
                 Assert.AreEqual(0.0, panel.Spacing);
             });
         }
@@ -1892,7 +1839,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var dock = new Fluent.DockPanel();
+                Controls.DockPanel dock = new();
                 Assert.IsTrue(dock.LastChildFill);
             });
         }
@@ -1902,7 +1849,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var tb = new Fluent.TextBox();
+                Controls.TextBox tb = new();
                 Assert.AreEqual(ValidationState.None, tb.ValidationState);
             });
         }
@@ -1912,7 +1859,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var tb = new Fluent.TextBox { HelperText = "Hint" };
+                Controls.TextBox tb = new() { HelperText = "Hint" };
                 Assert.AreEqual("Hint", tb.HelperText);
             });
         }
@@ -1922,7 +1869,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var pb = new Fluent.PasswordBox();
+                Controls.PasswordBox pb = new();
                 Assert.IsTrue(pb.ShowCapsLockIndicator);
             });
         }
@@ -1932,7 +1879,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var pb = new Fluent.PasswordBox { Password = "Aa1!aaaaaa" };
+                Controls.PasswordBox pb = new() { Password = "Aa1!aaaaaa" };
                 Assert.IsTrue(pb.PasswordStrength >= 3);
             });
         }
@@ -1942,7 +1889,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var list = new Fluent.ListView();
+                Controls.ListView list = new();
                 Assert.IsNull(list.EmptyContent);
             });
         }
@@ -1952,7 +1899,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var icon = new Fluent.FontIcon { Rotation = 33 };
+                Controls.FontIcon icon = new() { Rotation = 33 };
                 Assert.AreEqual(33.0, icon.Rotation);
             });
         }
@@ -1962,7 +1909,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var icon = new Fluent.FontIcon { IsSpinning = true };
+                Controls.FontIcon icon = new() { IsSpinning = true };
                 Assert.IsTrue(icon.IsSpinning);
             });
         }
@@ -1972,7 +1919,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var icon = new Fluent.FontIcon();
+                Controls.FontIcon icon = new();
                 Assert.IsTrue(icon.EnableTransitions);
             });
         }
@@ -1982,11 +1929,11 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-                var window = new Window();
-                var textBox = new Fluent.TextBox
+                Window window = new();
+                Controls.TextBox textBox = new()
                 {
                     Width = 260,
                     MaxLength = 40,
@@ -2000,14 +1947,14 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var counter = textBox.Template.FindName("PART_CharacterCounter", textBox) as TextBlock;
+                    TextBlock? counter = textBox.Template.FindName("PART_CharacterCounter", textBox) as TextBlock;
                     Assert.IsNotNull(counter);
                     Assert.AreEqual("2/40", counter.Text);
                 }
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2017,11 +1964,11 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-                var window = new Window();
-                var list = new Fluent.ListView
+                Window window = new();
+                Controls.ListView list = new()
                 {
                     Width = 200,
                     Height = 100,
@@ -2041,7 +1988,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2051,11 +1998,11 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-                var window = new Window();
-                var bar = new Fluent.ProgressBar { Width = 200, Height = 8, Value = 40, Maximum = 100 };
+                Window window = new();
+                Controls.ProgressBar bar = new() { Width = 200, Height = 8, Value = 40, Maximum = 100 };
 
                 try
                 {
@@ -2070,7 +2017,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2080,11 +2027,11 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-                var window = new Window();
-                var slider = new Fluent.Slider { Width = 220, Minimum = 0, Maximum = 100, Value = 30 };
+                Window window = new();
+                Controls.Slider slider = new() { Width = 220, Minimum = 0, Maximum = 100, Value = 30 };
 
                 try
                 {
@@ -2098,7 +2045,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2108,9 +2055,9 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                MainWindow window = null;
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                MainWindow? window = null;
 
                 try
                 {
@@ -2121,9 +2068,9 @@ namespace Fluence.Wpf.Tests
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Status");
 
-                    var slider = FindVisualChildByName<Fluent.Slider>(window, "ProgressSlider");
-                    var label = FindVisualChildByName<TextBlock>(window, "SliderValueLabel");
-                    Assert.IsNotNull(slider, "ProgressSlider should be a Fluent.Slider control.");
+                    Controls.Slider? slider = FindVisualChildByName<Controls.Slider>(window, "ProgressSlider");
+                    TextBlock? label = FindVisualChildByName<TextBlock>(window, "SliderValueLabel");
+                    Assert.IsNotNull(slider, "ProgressSlider should be a Controls.Slider control.");
                     Assert.IsNotNull(label, "Slider value label should exist in progress tab.");
 
                     slider.Value = 73;
@@ -2134,12 +2081,9 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    if (window != null)
-                    {
-                        window.Close();
-                    }
+                    window?.Close();
 
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2149,9 +2093,9 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                MainWindow window = null;
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                MainWindow? window = null;
 
                 try
                 {
@@ -2162,7 +2106,7 @@ namespace Fluence.Wpf.Tests
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Selection");
 
-                    var combo = FindVisualChildByName<Fluent.ComboBox>(window, "SelectionDemoCombo");
+                    Controls.ComboBox? combo = FindVisualChildByName<Controls.ComboBox>(window, "SelectionDemoCombo");
                     Assert.IsNotNull(combo, "SelectionDemoCombo should exist on the ComboBox page.");
                     Assert.AreEqual(3, combo.Items.Count, "SelectionDemoCombo should list three items.");
 
@@ -2174,12 +2118,9 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    if (window != null)
-                    {
-                        window.Close();
-                    }
+                    window?.Close();
 
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2189,9 +2130,9 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                MainWindow window = null;
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                MainWindow? window = null;
 
                 try
                 {
@@ -2201,16 +2142,16 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Selection");
-                    var nav = window.FindName("DemoNav") as Fluent.NavigationView;
+                    Controls.NavigationView? nav = window.FindName("DemoNav") as Controls.NavigationView;
                     Assert.IsNotNull(nav, "Main window should expose DemoNav.");
 
-                    var selectedContent = nav.Content as DependencyObject;
+                    DependencyObject? selectedContent = nav.Content as DependencyObject;
                     Assert.IsNotNull(selectedContent, "ComboBox page should be selected.");
 
-                    var comboBoxes = FindVisualChildren<Fluent.ComboBox>(selectedContent).ToList();
+                    List<Controls.ComboBox> comboBoxes = [.. FindVisualChildren<Controls.ComboBox>(selectedContent)];
                     Assert.IsTrue(comboBoxes.Count >= 2, "ComboBox page should display multiple ComboBox examples.");
 
-                    foreach (var comboBox in comboBoxes)
+                    foreach (Controls.ComboBox comboBox in comboBoxes)
                     {
                         Assert.AreEqual(-1, comboBox.SelectedIndex,
                             "ComboBox page examples should not look selected before the user chooses an item.");
@@ -2218,12 +2159,9 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    if (window != null)
-                    {
-                        window.Close();
-                    }
+                    window?.Close();
 
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2233,11 +2171,11 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-                var window = new Window();
-                var button = new Fluent.HyperlinkButton
+                Window window = new();
+                Controls.HyperlinkButton button = new()
                 {
                     Content = "Link",
                     Width = 120
@@ -2250,7 +2188,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var accentBrush = application.Resources["AccentTextFillColorPrimaryBrush"] as SolidColorBrush;
+                    SolidColorBrush? accentBrush = application?.Resources["AccentTextFillColorPrimaryBrush"] as SolidColorBrush;
                     Assert.IsNotNull(accentBrush);
                     Assert.IsInstanceOfType(button.Foreground, typeof(SolidColorBrush));
                     Assert.AreEqual(accentBrush.Color, ((SolidColorBrush)button.Foreground).Color,
@@ -2259,20 +2197,21 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
 
         [TestMethod]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Blocker Code Smell", "S2699:Tests should include assertions", Justification = "Suppress this for now.")]
         public void HyperlinkButton_Click_WithNavigateUri_DoesNotThrow()
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
-                var button = new Fluent.HyperlinkButton
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+                Controls.HyperlinkButton button = new()
                 {
                     Content = "Link",
                     Width = 120
@@ -2285,13 +2224,13 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    button.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
+                    button.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
                     DrainDispatcher(window.Dispatcher);
                 }
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2301,11 +2240,11 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-                var window = new Window();
-                var infoBar = new Fluent.InfoBar
+                Window window = new();
+                Controls.InfoBar infoBar = new()
                 {
                     Severity = InfoBarSeverity.Error,
                     Title = "Error",
@@ -2320,18 +2259,18 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var expectedBrush = application.Resources["SystemFillColorCriticalBackgroundBrush"] as Brush;
+                    Brush? expectedBrush = application?.Resources["SystemFillColorCriticalBackgroundBrush"] as Brush;
                     Assert.IsNotNull(expectedBrush, "SystemFillColorCriticalBackgroundBrush should be defined.");
 
-                    infoBar.ApplyTemplate();
-                    var rootBorder = infoBar.Template.FindName("RootBorder", infoBar) as System.Windows.Controls.Border;
+                    _ = infoBar.ApplyTemplate();
+                    Border? rootBorder = infoBar.Template.FindName("RootBorder", infoBar) as Border;
                     Assert.IsNotNull(rootBorder);
                     Assert.IsNotNull(rootBorder.Background, "InfoBar Error severity should have a non-null background.");
                 }
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2341,10 +2280,10 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
-                var infoBar = new Fluent.InfoBar
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+                Controls.InfoBar infoBar = new()
                 {
                     IsClosable = true,
                     IsOpen = true,
@@ -2358,12 +2297,12 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    infoBar.ApplyTemplate();
-                    var closeButton = infoBar.Template.FindName("PART_CloseButton", infoBar) as Button;
+                    _ = infoBar.ApplyTemplate();
+                    Button? closeButton = infoBar.Template.FindName("PART_CloseButton", infoBar) as Button;
                     Assert.IsNotNull(closeButton);
 
-                    var peer = new ButtonAutomationPeer(closeButton);
-                    var invokeProvider = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
+                    ButtonAutomationPeer peer = new(closeButton);
+                    IInvokeProvider? invokeProvider = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
                     Assert.IsNotNull(invokeProvider);
 
                     invokeProvider.Invoke();
@@ -2374,7 +2313,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2384,10 +2323,10 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
-                var infoBar = new Fluent.InfoBar
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+                Controls.InfoBar infoBar = new()
                 {
                     IsClosable = true,
                     IsOpen = true,
@@ -2403,12 +2342,12 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    infoBar.ApplyTemplate();
-                    var closeButton = infoBar.Template.FindName("PART_CloseButton", infoBar) as Button;
+                    _ = infoBar.ApplyTemplate();
+                    Button? closeButton = infoBar.Template.FindName("PART_CloseButton", infoBar) as Button;
                     Assert.IsNotNull(closeButton);
 
-                    var peer = new ButtonAutomationPeer(closeButton);
-                    var invokeProvider = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
+                    ButtonAutomationPeer peer = new(closeButton);
+                    IInvokeProvider? invokeProvider = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
                     Assert.IsNotNull(invokeProvider);
 
                     invokeProvider.Invoke();
@@ -2419,7 +2358,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2429,12 +2368,12 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
-                var window = new Window();
-                var radio = new Fluent.RadioButton
+                Window window = new();
+                Controls.RadioButton radio = new()
                 {
                     Content = "Test",
                     IsChecked = true
@@ -2447,9 +2386,9 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    radio.ApplyTemplate();
-                    var checkedEllipse = radio.Template.FindName("CheckedEllipse", radio) as System.Windows.Shapes.Ellipse;
-                    var accentBrush = application.Resources["AccentFillColorDefaultBrush"] as SolidColorBrush;
+                    _ = radio.ApplyTemplate();
+                    Ellipse? checkedEllipse = radio.Template.FindName("CheckedEllipse", radio) as Ellipse;
+                    SolidColorBrush? accentBrush = application?.Resources["AccentFillColorDefaultBrush"] as SolidColorBrush;
 
                     Assert.IsNotNull(checkedEllipse);
                     Assert.IsNotNull(accentBrush);
@@ -2461,7 +2400,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2471,16 +2410,16 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
-                var panel = new StackPanel();
-                var radio1 = new Fluent.RadioButton { Content = "A", GroupName = "TestGroup", IsChecked = true };
-                var radio2 = new Fluent.RadioButton { Content = "B", GroupName = "TestGroup" };
-                var radio3 = new Fluent.RadioButton { Content = "C", GroupName = "TestGroup" };
-                panel.Children.Add(radio1);
-                panel.Children.Add(radio2);
-                panel.Children.Add(radio3);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+                StackPanel panel = new();
+                Controls.RadioButton radio1 = new() { Content = "A", GroupName = "TestGroup", IsChecked = true };
+                Controls.RadioButton radio2 = new() { Content = "B", GroupName = "TestGroup" };
+                Controls.RadioButton radio3 = new() { Content = "C", GroupName = "TestGroup" };
+                _ = panel.Children.Add(radio1);
+                _ = panel.Children.Add(radio2);
+                _ = panel.Children.Add(radio3);
 
                 try
                 {
@@ -2501,7 +2440,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2511,10 +2450,10 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
-                var toggle = new Fluent.ToggleSwitch
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+                Controls.ToggleSwitch toggle = new()
                 {
                     OnContent = "On",
                     OffContent = "Off",
@@ -2528,9 +2467,9 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    toggle.ApplyTemplate();
-                    var offPresenter = toggle.Template.FindName("OffContentPresenter", toggle) as FrameworkElement;
-                    var onPresenter = toggle.Template.FindName("OnContentPresenter", toggle) as FrameworkElement;
+                    _ = toggle.ApplyTemplate();
+                    FrameworkElement? offPresenter = toggle.Template.FindName("OffContentPresenter", toggle) as FrameworkElement;
+                    FrameworkElement? onPresenter = toggle.Template.FindName("OnContentPresenter", toggle) as FrameworkElement;
                     Assert.IsNotNull(offPresenter);
                     Assert.IsNotNull(onPresenter);
                     Assert.AreEqual(Visibility.Visible, offPresenter.Visibility, "Off content should be visible when unchecked.");
@@ -2546,7 +2485,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2556,10 +2495,10 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
-                var toggle = new Fluent.ToggleSwitch { IsChecked = false };
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+                Controls.ToggleSwitch toggle = new() { IsChecked = false };
 
                 try
                 {
@@ -2570,8 +2509,8 @@ namespace Fluence.Wpf.Tests
 
                     Assert.IsFalse(toggle.IsChecked == true, "ToggleSwitch should start unchecked.");
 
-                    var peer = new System.Windows.Automation.Peers.ToggleButtonAutomationPeer(toggle);
-                    var toggleProvider = (System.Windows.Automation.Provider.IToggleProvider)peer;
+                    ToggleButtonAutomationPeer peer = new(toggle);
+                    IToggleProvider toggleProvider = peer;
                     toggleProvider.Toggle();
                     DrainDispatcher(window.Dispatcher);
 
@@ -2580,7 +2519,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2590,10 +2529,10 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
-                var ring = new Fluent.ProgressRing
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+                Controls.ProgressRing ring = new()
                 {
                     IsIndeterminate = false,
                     Width = 48,
@@ -2611,15 +2550,15 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    ring.ApplyTemplate();
-                    var arcPath = ring.Template.FindName("PART_DeterminateArc", ring) as System.Windows.Shapes.Path;
+                    _ = ring.ApplyTemplate();
+                    Path? arcPath = ring.Template.FindName("PART_DeterminateArc", ring) as Path;
                     Assert.IsNotNull(arcPath, "PART_DeterminateArc should exist in the template.");
                     Assert.IsNotNull(arcPath.Data, "Determinate arc should have non-null Data at 50%.");
                 }
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2629,10 +2568,10 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
-                var ring = new Fluent.ProgressRing
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+                Controls.ProgressRing ring = new()
                 {
                     IsIndeterminate = true,
                     Width = 48,
@@ -2647,8 +2586,8 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    ring.ApplyTemplate();
-                    var indeterminateArc = ring.Template.FindName("PART_IndeterminateArc", ring) as System.Windows.Shapes.Path;
+                    _ = ring.ApplyTemplate();
+                    Path? indeterminateArc = ring.Template.FindName("PART_IndeterminateArc", ring) as Path;
                     Assert.IsNotNull(indeterminateArc, "PART_IndeterminateArc should exist in the indeterminate template.");
                     Assert.AreEqual(Visibility.Visible, indeterminateArc.Visibility,
                         "PART_IndeterminateArc should be Visible when IsActive=True and IsIndeterminate=True.");
@@ -2660,13 +2599,13 @@ namespace Fluence.Wpf.Tests
                     Assert.IsTrue(arcDataReady,
                         "PART_IndeterminateArc should have non-null Data for the caterpillar geometry.");
 
-                    var dotHost = ring.Template.FindName("DotHost", ring) as FrameworkElement;
+                    FrameworkElement? dotHost = ring.Template.FindName("DotHost", ring) as FrameworkElement;
                     Assert.IsNull(dotHost, "DotHost should not exist in the default arc-based template.");
                 }
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -2676,13 +2615,13 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
 
                 ApplicationThemeManager.Apply(ApplicationTheme.Auto, BackdropType.Auto, true);
                 ApplicationAccentColorManager.ApplySystemAccent();
 
-                MainWindow window = null;
+                MainWindow? window = null;
 
                 try
                 {
@@ -2690,7 +2629,7 @@ namespace Fluence.Wpf.Tests
                     window.Show();
                     window.UpdateLayout();
 
-                    var nav = window.FindName("DemoNav") as Fluent.NavigationView;
+                    Controls.NavigationView? nav = window.FindName("DemoNav") as Controls.NavigationView;
                     Assert.IsNotNull(nav);
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Buttons");
@@ -2698,19 +2637,16 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    if (window != null)
-                    {
-                        window.Close();
-                    }
+                    window?.Close();
 
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
 
         private static void SelectMainWindowNavPage(MainWindow window, Dispatcher dispatcher, string itemContent)
         {
-            var nav = window.FindName("DemoNav") as Fluent.NavigationView;
+            Controls.NavigationView? nav = window.FindName("DemoNav") as Controls.NavigationView;
             Assert.IsNotNull(nav, "Main window should expose DemoNav.");
 
             window.NavigateTo(itemContent);
@@ -2720,10 +2656,10 @@ namespace Fluence.Wpf.Tests
             window.UpdateLayout();
             DrainDispatcher(dispatcher);
 
-            var selected = nav.SelectedItem as Fluent.NavigationViewItem;
-            var selectedLabel = selected == null ? null : selected.Content as string;
-            var selectedTag = selected == null ? null : selected.Tag as string;
-            var matchesRequest = string.Equals(selectedLabel, itemContent, StringComparison.OrdinalIgnoreCase) ||
+            Controls.NavigationViewItem? selected = nav.SelectedItem as Controls.NavigationViewItem;
+            string? selectedLabel = selected == null ? null : selected.Content as string;
+            string? selectedTag = selected == null ? null : selected.Tag as string;
+            bool matchesRequest = string.Equals(selectedLabel, itemContent, StringComparison.OrdinalIgnoreCase) ||
                 (selectedTag != null && selectedTag.IndexOf(itemContent, StringComparison.OrdinalIgnoreCase) >= 0);
             if (selected == null || nav.Content == null || !matchesRequest)
             {
@@ -2731,19 +2667,19 @@ namespace Fluence.Wpf.Tests
             }
         }
 
-        private static void AssertButtonShowsGlyph(Fluent.Button button, string glyph)
+        private static void AssertButtonShowsGlyph(Controls.Button button, string glyph)
         {
-            var glyphTextBlock = FindButtonGlyphTextBlock(button, glyph);
+            TextBlock? glyphTextBlock = FindButtonGlyphTextBlock(button, glyph);
             Assert.IsNotNull(glyphTextBlock, "Expected button glyph was not found in the visual tree.");
             Assert.IsTrue(glyphTextBlock.IsVisible, "Expected button glyph should be visible.");
             Assert.IsTrue(glyphTextBlock.ActualWidth > 0, "Expected button glyph should occupy layout space.");
         }
 
-        private static TextBlock FindButtonIconTextBlock(Fluent.Button button)
+        private static TextBlock? FindButtonIconTextBlock(Controls.Button button)
         {
-            foreach (var textBlock in FindVisualChildren<TextBlock>(button))
+            foreach (TextBlock textBlock in FindVisualChildren<TextBlock>(button))
             {
-                var fontFamily = textBlock.FontFamily;
+                FontFamily fontFamily = textBlock.FontFamily;
                 if (fontFamily != null &&
                     fontFamily.Source != null &&
                     fontFamily.Source.IndexOf("Segoe Fluent Icons", StringComparison.OrdinalIgnoreCase) >= 0)
@@ -2755,9 +2691,9 @@ namespace Fluence.Wpf.Tests
             return null;
         }
 
-        private static TextBlock FindButtonGlyphTextBlock(Fluent.Button button, string glyph)
+        private static TextBlock? FindButtonGlyphTextBlock(Controls.Button button, string glyph)
         {
-            foreach (var textBlock in FindVisualChildren<TextBlock>(button))
+            foreach (TextBlock textBlock in FindVisualChildren<TextBlock>(button))
             {
                 if (string.Equals(textBlock.Text, glyph, StringComparison.Ordinal))
                 {
@@ -2768,20 +2704,20 @@ namespace Fluence.Wpf.Tests
             return null;
         }
 
-        private static void AssertGlyphWithinButtonBounds(Window window, Fluent.Button button, string glyph)
+        private static void AssertGlyphWithinButtonBounds(Window window, Controls.Button button, string glyph)
         {
-            var glyphTextBlock = FindButtonGlyphTextBlock(button, glyph);
+            TextBlock? glyphTextBlock = FindButtonGlyphTextBlock(button, glyph);
 
             Assert.IsNotNull(glyphTextBlock, "Expected button glyph was not found in the visual tree.");
             Assert.IsTrue(glyphTextBlock.IsVisible, "Expected button glyph should be visible.");
             Assert.IsTrue(glyphTextBlock.ActualWidth > 0, "Expected button glyph should occupy layout space.");
 
-            var buttonOrigin = button.TransformToAncestor(window).Transform(new Point(0, 0));
-            var glyphOrigin = glyphTextBlock.TransformToAncestor(window).Transform(new Point(0, 0));
-            var buttonRight = buttonOrigin.X + button.ActualWidth;
-            var buttonBottom = buttonOrigin.Y + button.ActualHeight;
-            var glyphRight = glyphOrigin.X + glyphTextBlock.ActualWidth;
-            var glyphBottom = glyphOrigin.Y + glyphTextBlock.ActualHeight;
+            Point buttonOrigin = button.TransformToAncestor(window).Transform(new Point(0, 0));
+            Point glyphOrigin = glyphTextBlock.TransformToAncestor(window).Transform(new Point(0, 0));
+            double buttonRight = buttonOrigin.X + button.ActualWidth;
+            double buttonBottom = buttonOrigin.Y + button.ActualHeight;
+            double glyphRight = glyphOrigin.X + glyphTextBlock.ActualWidth;
+            double glyphBottom = glyphOrigin.Y + glyphTextBlock.ActualHeight;
 
             Assert.IsTrue(glyphOrigin.X >= buttonOrigin.X - 0.5, "Expected button glyph should not render left of the button.");
             Assert.IsTrue(glyphOrigin.Y >= buttonOrigin.Y - 0.5, "Expected button glyph should not render above the button.");
@@ -2789,9 +2725,9 @@ namespace Fluence.Wpf.Tests
             Assert.IsTrue(glyphBottom <= buttonBottom + 0.5, "Expected button glyph should not render below the button.");
         }
 
-        private static Fluent.Button FindFluentButtonByContent(DependencyObject root, string content)
+        private static Controls.Button? FindFluentButtonByContent(DependencyObject root, string content)
         {
-            foreach (var button in FindVisualChildren<Fluent.Button>(root))
+            foreach (Controls.Button button in FindVisualChildren<Controls.Button>(root))
             {
                 if (string.Equals(button.Content as string, content, StringComparison.Ordinal))
                 {
@@ -2802,13 +2738,13 @@ namespace Fluence.Wpf.Tests
             return null;
         }
 
-        private static void AssertContentGroupIsCentered(Window window, Fluent.Button button, string content, string glyph)
+        private static void AssertContentGroupIsCentered(Window window, Controls.Button button, string content, string glyph)
         {
-            var glyphTextBlock = FindButtonGlyphTextBlock(button, glyph);
+            TextBlock? glyphTextBlock = FindButtonGlyphTextBlock(button, glyph);
             Assert.IsNotNull(glyphTextBlock, "Expected button glyph was not found in the visual tree.");
 
-            ContentPresenter textPresenter = null;
-            foreach (var presenter in FindVisualChildren<ContentPresenter>(button))
+            ContentPresenter? textPresenter = null;
+            foreach (ContentPresenter presenter in FindVisualChildren<ContentPresenter>(button))
             {
                 if (string.Equals(presenter.Content as string, content, StringComparison.Ordinal))
                 {
@@ -2819,14 +2755,14 @@ namespace Fluence.Wpf.Tests
 
             Assert.IsNotNull(textPresenter, "Expected button content presenter was not found in the visual tree.");
 
-            var buttonOrigin = button.TransformToAncestor(window).Transform(new Point(0, 0));
-            var buttonCenter = buttonOrigin.X + (button.ActualWidth / 2.0);
+            Point buttonOrigin = button.TransformToAncestor(window).Transform(new Point(0, 0));
+            double buttonCenter = buttonOrigin.X + (button.ActualWidth / 2.0);
 
-            var glyphOrigin = glyphTextBlock.TransformToAncestor(window).Transform(new Point(0, 0));
-            var contentOrigin = textPresenter.TransformToAncestor(window).Transform(new Point(0, 0));
-            var groupLeft = Math.Min(glyphOrigin.X, contentOrigin.X);
-            var groupRight = Math.Max(glyphOrigin.X + glyphTextBlock.ActualWidth, contentOrigin.X + textPresenter.ActualWidth);
-            var groupCenter = groupLeft + ((groupRight - groupLeft) / 2.0);
+            Point glyphOrigin = glyphTextBlock.TransformToAncestor(window).Transform(new Point(0, 0));
+            Point contentOrigin = textPresenter.TransformToAncestor(window).Transform(new Point(0, 0));
+            double groupLeft = Math.Min(glyphOrigin.X, contentOrigin.X);
+            double groupRight = Math.Max(glyphOrigin.X + glyphTextBlock.ActualWidth, contentOrigin.X + textPresenter.ActualWidth);
+            double groupCenter = groupLeft + ((groupRight - groupLeft) / 2.0);
 
             Assert.AreEqual(buttonCenter, groupCenter, 1.0, "Button icon and text should stay centered as a single content group.");
         }

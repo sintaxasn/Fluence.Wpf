@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -40,20 +41,20 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
 
                 try
                 {
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, true);
                     ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
 
-                    AssertDisabledAccentButtonUsesDarkTokens(application);
+                    AssertDisabledAccentButtonUsesDarkTokens();
                 }
                 finally
                 {
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -63,20 +64,20 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
 
                 try
                 {
                     ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, false);
 
-                    AssertDisabledAccentButtonUsesDarkTokens(application);
+                    AssertDisabledAccentButtonUsesDarkTokens();
                 }
                 finally
                 {
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
@@ -86,11 +87,11 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
-                var toolTip = new Fluent.ToolTip { Content = "Save changes" };
-                var button = new Fluent.Button
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+                Fluent.ToolTip toolTip = new() { Content = "Save changes" };
+                Fluent.Button button = new()
                 {
                     Width = 160,
                     Content = "Save",
@@ -110,15 +111,15 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
 
-        private static void AssertDisabledAccentButtonUsesDarkTokens(Application application)
+        private static void AssertDisabledAccentButtonUsesDarkTokens()
         {
-            var window = new Window();
-            var button = new Fluent.Button
+            Window window = new();
+            Fluent.Button button = new()
             {
                 Width = 100,
                 Appearance = ControlAppearance.Accent,
@@ -133,7 +134,7 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(window.Dispatcher);
                 window.UpdateLayout();
 
-                var restFill = button.Template.FindName("RestFill", button) as Border;
+                Border? restFill = button.Template.FindName("RestFill", button) as Border;
 
                 Assert.IsNotNull(restFill, "Button template should expose RestFill.");
                 Assert.IsInstanceOfType(restFill.Background, typeof(SolidColorBrush));

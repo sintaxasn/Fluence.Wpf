@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows;
@@ -36,7 +37,6 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryTypographyPage : UserControl
     {
-
         private const string TypographyTableXamlSource = @"<UserControl
     x:Class=""Fluence.Wpf.Demo.Pages.Typography.TypographyTable""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
@@ -141,19 +141,19 @@ namespace Fluence.Wpf.Demo.Pages.Typography
 }
 ";
 
-private const string CopyGlyph = "\uE8C8";
+        private const string CopyGlyph = "\uE8C8";
 
         private static readonly TypographyRow[] Rows =
-        {
-            new TypographyRow("Caption", "Small, Regular", "12/16 epx", "CaptionTextBlockStyle"),
-            new TypographyRow("Body", "Text, Regular", "14/20 epx", "BodyTextBlockStyle"),
-            new TypographyRow("Body Strong", "Text, SemiBold", "14/20 epx", "BodyStrongTextBlockStyle"),
-            new TypographyRow("Body Large", "Text, Regular", "18/24 epx", "BodyLargeTextBlockStyle"),
-            new TypographyRow("Subtitle", "Display, SemiBold", "20/28 epx", "SubtitleTextBlockStyle"),
-            new TypographyRow("Title", "Display, SemiBold", "28/36 epx", "TitleTextBlockStyle"),
-            new TypographyRow("Title Large", "Display, SemiBold", "40/52 epx", "TitleLargeTextBlockStyle"),
-            new TypographyRow("Display", "Display, SemiBold", "68/92 epx", "DisplayTextBlockStyle")
-        };
+        [
+            new("Caption", "Small, Regular", "12/16 epx", "CaptionTextBlockStyle"),
+            new("Body", "Text, Regular", "14/20 epx", "BodyTextBlockStyle"),
+            new("Body Strong", "Text, SemiBold", "14/20 epx", "BodyStrongTextBlockStyle"),
+            new("Body Large", "Text, Regular", "18/24 epx", "BodyLargeTextBlockStyle"),
+            new("Subtitle", "Display, SemiBold", "20/28 epx", "SubtitleTextBlockStyle"),
+            new("Title", "Display, SemiBold", "28/36 epx", "TitleTextBlockStyle"),
+            new("Title Large", "Display, SemiBold", "40/52 epx", "TitleLargeTextBlockStyle"),
+            new("Display", "Display, SemiBold", "68/92 epx", "DisplayTextBlockStyle")
+        ];
 
         public GalleryTypographyPage()
         {
@@ -173,9 +173,9 @@ private const string CopyGlyph = "\uE8C8";
             AddHeader(2, "Size/Line height");
             AddHeader(3, "Style");
 
-            for (var i = 0; i < Rows.Length; i++)
+            for (int i = 0; i < Rows.Length; i++)
             {
-                var rowIndex = i + 1;
+                int rowIndex = i + 1;
                 TypographyTable.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
                 AddTypographyRow(rowIndex, Rows[i], i % 2 == 0);
             }
@@ -183,7 +183,7 @@ private const string CopyGlyph = "\uE8C8";
 
         private void AddHeader(int column, string text)
         {
-            var header = CreateTextBlock(text, "BodyStrongTextBlockStyle", new Thickness(24, 0, 16, 16));
+            TextBlock header = CreateTextBlock(text, "BodyStrongTextBlockStyle", new Thickness(24, 0, 16, 16));
             AddCell(header, 0, column);
         }
 
@@ -191,7 +191,7 @@ private const string CopyGlyph = "\uE8C8";
         {
             if (shaded)
             {
-                var background = new Border
+                Border background = new()
                 {
                     CornerRadius = new CornerRadius(6),
                     IsHitTestVisible = false,
@@ -200,7 +200,7 @@ private const string CopyGlyph = "\uE8C8";
                 background.SetResourceReference(Border.BackgroundProperty, "SubtleFillColorSecondaryBrush");
                 Grid.SetRow(background, rowIndex);
                 Grid.SetColumnSpan(background, 5);
-                TypographyTable.Children.Add(background);
+                _ = TypographyTable.Children.Add(background);
             }
 
             AddCell(CreateTextBlock(row.Example, row.StyleKey, new Thickness(24, 16, 16, 16)), rowIndex, 0);
@@ -212,20 +212,20 @@ private const string CopyGlyph = "\uE8C8";
 
         private static TextBlock CreateTextBlock(string text, string styleKey, Thickness margin)
         {
-            var textBlock = new TextBlock
+            TextBlock textBlock = new()
             {
                 Margin = margin,
                 Text = text,
                 TextWrapping = TextWrapping.Wrap,
                 VerticalAlignment = VerticalAlignment.Center
             };
-            textBlock.SetResourceReference(FrameworkElement.StyleProperty, styleKey);
+            textBlock.SetResourceReference(StyleProperty, styleKey);
             return textBlock;
         }
 
         private static Fluent.Button CreateCopyButton(string styleKey)
         {
-            var button = new Fluent.Button
+            Fluent.Button button = new()
             {
                 Content = new Fluent.FontIcon { Glyph = CopyGlyph, IconFontSize = 16 },
                 Height = 36,
@@ -247,18 +247,17 @@ private const string CopyGlyph = "\uE8C8";
         {
             Grid.SetRow(element, row);
             Grid.SetColumn(element, column);
-            TypographyTable.Children.Add(element);
+            _ = TypographyTable.Children.Add(element);
         }
 
         private void WrapTypographyTable()
         {
-            var parent = TypographyTable.Parent as Panel;
-            if (parent == null)
+            if (TypographyTable.Parent is not Panel parent)
             {
                 return;
             }
 
-            var index = parent.Children.IndexOf(TypographyTable);
+            int index = parent.Children.IndexOf(TypographyTable);
             TypographyTable.Margin = new Thickness(0);
             parent.Children.Remove(TypographyTable);
             parent.Children.Insert(index, new DemoSampleControl
@@ -272,11 +271,11 @@ private const string CopyGlyph = "\uE8C8";
             });
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S6670:\"Trace.Write\" and \"Trace.WriteLine\" should not be used", Justification = "Don't care for now.")]
         private static void CopyStyleKey_Click(object sender, RoutedEventArgs e)
         {
-            var button = sender as Fluent.Button;
-            var styleKey = button != null ? button.Tag as string : null;
-            if (string.IsNullOrEmpty(styleKey))
+            string? styleKey = sender is Fluent.Button button ? button.Tag as string : null;
+            if (string.IsNullOrWhiteSpace(styleKey))
             {
                 return;
             }
@@ -295,23 +294,15 @@ private const string CopyGlyph = "\uE8C8";
             }
         }
 
-        private sealed class TypographyRow
+        private sealed class TypographyRow(string example, string variableFont, string sizeAndLineHeight, string styleKey)
         {
-            public TypographyRow(string example, string variableFont, string sizeAndLineHeight, string styleKey)
-            {
-                Example = example;
-                VariableFont = variableFont;
-                SizeAndLineHeight = sizeAndLineHeight;
-                StyleKey = styleKey;
-            }
+            public string Example { get; private set; } = example;
 
-            public string Example { get; private set; }
+            public string VariableFont { get; private set; } = variableFont;
 
-            public string VariableFont { get; private set; }
+            public string SizeAndLineHeight { get; private set; } = sizeAndLineHeight;
 
-            public string SizeAndLineHeight { get; private set; }
-
-            public string StyleKey { get; private set; }
+            public string StyleKey { get; private set; } = styleKey;
         }
     }
 }

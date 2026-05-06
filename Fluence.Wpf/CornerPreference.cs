@@ -25,56 +25,32 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// Specifies the typography style for text elements following Windows 11 Fluent Design.
+    /// Rounded corner preference for top-level windows (DWM), used with <see cref="Controls.FluenceWindow"/>.
     /// </summary>
-    public enum FluentTypography
+    public enum CornerPreference
     {
         /// <summary>
-        /// No typography style applied.
+        /// OS default rounding.
         /// </summary>
-        None = 0,
+        Default = 0,
 
         /// <summary>
-        /// Caption text: 12px, Regular.
+        /// Sharp corners.
         /// </summary>
-        Caption = 1,
+        DoNotRound = 1,
 
         /// <summary>
-        /// Body text: 14px, Regular.
+        /// Large radius.
         /// </summary>
-        Body = 2,
+        Round = 2,
 
         /// <summary>
-        /// Body strong text: 14px, SemiBold.
+        /// Smaller radius.
         /// </summary>
-        BodyStrong = 3,
-
-        /// <summary>
-        /// Body large text: 18px, Regular.
-        /// </summary>
-        BodyLarge = 4,
-
-        /// <summary>
-        /// Subtitle text: 20px, SemiBold.
-        /// </summary>
-        Subtitle = 5,
-
-        /// <summary>
-        /// Title text: 28px, SemiBold.
-        /// </summary>
-        Title = 6,
-
-        /// <summary>
-        /// Title large text: 40px, Regular.
-        /// </summary>
-        TitleLarge = 7,
-
-        /// <summary>
-        /// Display text: 68px, SemiBold.
-        /// </summary>
-        Display = 8
+        RoundSmall = 3,
     }
 }

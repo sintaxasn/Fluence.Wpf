@@ -25,8 +25,8 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
-using System.Windows.Controls;
 
 namespace Fluence.Wpf.Controls
 {
@@ -35,6 +35,12 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     public class Expander : System.Windows.Controls.Expander
     {
+        /// <summary>
+        /// Initializes static members of the Expander class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the Expander control uses its own style by
+        /// default, rather than inheriting the style from its base class. This is important for custom control
+        /// development in WPF, as it enables the control to apply its default template automatically.</remarks>
         static Expander()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -57,8 +63,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public CornerRadius CornerRadius
         {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(CornerRadiusProperty);
+            set => SetValue(CornerRadiusProperty, value);
         }
     }
 }

@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
@@ -34,10 +35,11 @@ using System.Windows.Input;
 
 namespace Fluence.Wpf.Demo.Pages
 {
-    /// <summary>Gallery page demonstrating ObservableCollection binding and ListView SelectionMode variants.</summary>
+    /// <summary>
+    /// Gallery page demonstrating ObservableCollection binding and ListView SelectionMode variants.
+    /// </summary>
     public partial class GalleryDataBindingPage : UserControl
     {
-
         private const string ObservableCollectionListViewXamlSource = @"<UserControl
     x:Class=""Fluence.Wpf.Demo.Pages.DataBinding.ObservableCollectionListView""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
@@ -396,17 +398,19 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
 }
 ";
 
-private readonly ObservableCollection<DemoItem> _items = new ObservableCollection<DemoItem>();
-        private readonly ObservableCollection<DemoItem> _templateItems = new ObservableCollection<DemoItem>();
+        private readonly ObservableCollection<DemoItem> _items = [];
+        private readonly ObservableCollection<DemoItem> _templateItems = [];
 
-        /// <summary>Initializes a new instance of <see cref="GalleryDataBindingPage"/>.</summary>
+        /// <summary>
+        /// Initializes a new instance of <see cref="GalleryDataBindingPage"/>.
+        /// </summary>
         public GalleryDataBindingPage()
         {
             InitializeComponent();
 
-            DemoSampleControl.ReplaceSourceLink(ObservableCollectionListViewSourceLink, ObservableCollectionListViewXamlSource, ObservableCollectionListViewCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(ListViewSelectionModeSourceLink, ListViewSelectionModeXamlSource, ListViewSelectionModeCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(DataTemplateRowSourceLink, DataTemplateRowXamlSource, DataTemplateRowCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(ObservableCollectionListViewSourceLink, ObservableCollectionListViewXamlSource, ObservableCollectionListViewCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(ListViewSelectionModeSourceLink, ListViewSelectionModeXamlSource, ListViewSelectionModeCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(DataTemplateRowSourceLink, DataTemplateRowXamlSource, DataTemplateRowCSharpSource);
 
             Loaded += OnLoaded;
         }
@@ -434,15 +438,15 @@ private readonly ObservableCollection<DemoItem> _items = new ObservableCollectio
                 return;
             }
 
-            var text = (NewItemBox.Text ?? string.Empty).Trim();
-            if (string.IsNullOrEmpty(text))
+            string text = (NewItemBox.Text ?? string.Empty).Trim();
+            if (string.IsNullOrWhiteSpace(text))
             {
                 return;
             }
 
             AddDemoItem(text);
             NewItemBox.Text = string.Empty;
-            NewItemBox.Focus();
+            _ = NewItemBox.Focus();
             UpdateCount();
         }
 
@@ -462,8 +466,7 @@ private readonly ObservableCollection<DemoItem> _items = new ObservableCollectio
                 return;
             }
 
-            var selected = BoundListView.SelectedItem as DemoItem;
-            if (selected != null)
+            if (BoundListView.SelectedItem is DemoItem selected)
             {
                 BoundListView.AnimateRemove(selected, UpdateCount);
             }
@@ -489,10 +492,7 @@ private readonly ObservableCollection<DemoItem> _items = new ObservableCollectio
 
         private void UpdateCount()
         {
-            if (ItemCountLabel != null)
-            {
-                ItemCountLabel.Text = string.Format(CultureInfo.CurrentCulture, "{0} item{1}", _items.Count, _items.Count == 1 ? "" : "s");
-            }
+            _ = (ItemCountLabel?.Text = string.Format(CultureInfo.CurrentCulture, "{0} item{1}", _items.Count, _items.Count == 1 ? "" : "s"));
         }
 
         private void SelectionMode_Changed(object sender, RoutedEventArgs e)
@@ -502,18 +502,9 @@ private readonly ObservableCollection<DemoItem> _items = new ObservableCollectio
                 return;
             }
 
-            if (MultipleModeRadio?.IsChecked == true)
-            {
-                SelectionModeListView.SelectionMode = SelectionMode.Multiple;
-            }
-            else if (ExtendedModeRadio?.IsChecked == true)
-            {
-                SelectionModeListView.SelectionMode = SelectionMode.Extended;
-            }
-            else
-            {
-                SelectionModeListView.SelectionMode = SelectionMode.Single;
-            }
+            SelectionModeListView.SelectionMode = MultipleModeRadio?.IsChecked == true
+                ? SelectionMode.Multiple
+                : ExtendedModeRadio?.IsChecked == true ? SelectionMode.Extended : SelectionMode.Single;
 
             SelectionModeListView.UnselectAll();
             UpdateSelectionLabel();
@@ -531,7 +522,7 @@ private readonly ObservableCollection<DemoItem> _items = new ObservableCollectio
                 return;
             }
 
-            var count = SelectionModeListView.SelectedItems.Count;
+            int count = SelectionModeListView.SelectedItems.Count;
             if (count == 0)
             {
                 SelectionCountLabel.Text = "Selected: none";
@@ -544,13 +535,19 @@ private readonly ObservableCollection<DemoItem> _items = new ObservableCollectio
         }
     }
 
-    /// <summary>Simple view-model item for the bound list demo.</summary>
+    /// <summary>
+    /// Simple view-model item for the bound list demo.
+    /// </summary>
     public sealed class DemoItem
     {
-        /// <summary>Gets or sets the display name.</summary>
-        public string Name { get; set; }
+        /// <summary>
+        /// Gets or sets the display name.
+        /// </summary>
+        public string? Name { get; set; }
 
-        /// <summary>Gets or sets the time the item was added (formatted string).</summary>
-        public string AddedAt { get; set; }
+        /// <summary>
+        /// Gets or sets the time the item was added (formatted string).
+        /// </summary>
+        public string? AddedAt { get; set; }
     }
 }

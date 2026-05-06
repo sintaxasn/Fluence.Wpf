@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Windows;
 using System.Windows.Automation.Peers;
@@ -43,10 +44,15 @@ namespace Fluence.Wpf.Controls
     [TemplateVisualState(GroupName = "SeverityLevels", Name = "Error")]
     public class InfoBar : ContentControl
     {
+        // Template part names.
         private const string PART_CloseButton = "PART_CloseButton";
 
-        private System.Windows.Controls.Button _closeButton;
-
+        /// <summary>
+        /// Initializes static members of the InfoBar class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the InfoBar control uses its custom style by
+        /// default. It is called automatically before any static members are accessed or any instances are
+        /// created.</remarks>
         static InfoBar()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -69,8 +75,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string Title
         {
-            get { return (string)GetValue(TitleProperty); }
-            set { SetValue(TitleProperty, value); }
+            get => (string)GetValue(TitleProperty);
+            set => SetValue(TitleProperty, value);
         }
 
         /// <summary>
@@ -88,8 +94,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string Message
         {
-            get { return (string)GetValue(MessageProperty); }
-            set { SetValue(MessageProperty, value); }
+            get => (string)GetValue(MessageProperty);
+            set => SetValue(MessageProperty, value);
         }
 
         /// <summary>
@@ -107,8 +113,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public InfoBarSeverity Severity
         {
-            get { return (InfoBarSeverity)GetValue(SeverityProperty); }
-            set { SetValue(SeverityProperty, value); }
+            get => (InfoBarSeverity)GetValue(SeverityProperty);
+            set => SetValue(SeverityProperty, value);
         }
 
         /// <summary>
@@ -126,8 +132,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool IsOpen
         {
-            get { return (bool)GetValue(IsOpenProperty); }
-            set { SetValue(IsOpenProperty, value); }
+            get => (bool)GetValue(IsOpenProperty);
+            set => SetValue(IsOpenProperty, value);
         }
 
         /// <summary>
@@ -145,8 +151,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool IsClosable
         {
-            get { return (bool)GetValue(IsClosableProperty); }
-            set { SetValue(IsClosableProperty, value); }
+            get => (bool)GetValue(IsClosableProperty);
+            set => SetValue(IsClosableProperty, value);
         }
 
         /// <summary>
@@ -164,8 +170,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool IsIconVisible
         {
-            get { return (bool)GetValue(IsIconVisibleProperty); }
-            set { SetValue(IsIconVisibleProperty, value); }
+            get => (bool)GetValue(IsIconVisibleProperty);
+            set => SetValue(IsIconVisibleProperty, value);
         }
 
         /// <summary>
@@ -183,8 +189,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object Icon
         {
-            get { return GetValue(IconProperty); }
-            set { SetValue(IconProperty, value); }
+            get => GetValue(IconProperty);
+            set => SetValue(IconProperty, value);
         }
 
         /// <summary>
@@ -202,8 +208,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object ActionButton
         {
-            get { return GetValue(ActionButtonProperty); }
-            set { SetValue(ActionButtonProperty, value); }
+            get => GetValue(ActionButtonProperty);
+            set => SetValue(ActionButtonProperty, value);
         }
 
         /// <summary>
@@ -221,20 +227,20 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public CornerRadius CornerRadius
         {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(CornerRadiusProperty);
+            set => SetValue(CornerRadiusProperty, value);
         }
 
         /// <summary>
         /// Occurs before the info bar closes. Set <see cref="InfoBarClosingEventArgs.Cancel"/>
         /// to <see langword="true"/> to prevent closing.
         /// </summary>
-        public event EventHandler<InfoBarClosingEventArgs> Closing;
+        public event EventHandler<InfoBarClosingEventArgs>? Closing;
 
         /// <summary>
         /// Occurs after the info bar has closed.
         /// </summary>
-        public event EventHandler Closed;
+        public event EventHandler? Closed;
 
         /// <inheritdoc />
         protected override AutomationPeer OnCreateAutomationPeer()
@@ -245,19 +251,10 @@ namespace Fluence.Wpf.Controls
         /// <inheritdoc />
         public override void OnApplyTemplate()
         {
-            if (_closeButton != null)
-            {
-                _closeButton.Click -= OnCloseButtonClick;
-            }
-
+            _closeButton?.Click -= OnCloseButtonClick;
             base.OnApplyTemplate();
-
             _closeButton = GetTemplateChild(PART_CloseButton) as System.Windows.Controls.Button;
-            if (_closeButton != null)
-            {
-                _closeButton.Click += OnCloseButtonClick;
-            }
-
+            _closeButton?.Click += OnCloseButtonClick;
             UpdateSeverityState(false);
         }
 
@@ -272,24 +269,13 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         private void UpdateSeverityState(bool useTransitions)
         {
-            string stateName;
-            switch (Severity)
+            _ = VisualStateManager.GoToState(this, Severity switch
             {
-                case InfoBarSeverity.Success:
-                    stateName = "Success";
-                    break;
-                case InfoBarSeverity.Warning:
-                    stateName = "Warning";
-                    break;
-                case InfoBarSeverity.Error:
-                    stateName = "Error";
-                    break;
-                default:
-                    stateName = "Informational";
-                    break;
-            }
-
-            VisualStateManager.GoToState(this, stateName, useTransitions);
+                InfoBarSeverity.Success => "Success",
+                InfoBarSeverity.Warning => "Warning",
+                InfoBarSeverity.Error => "Error",
+                InfoBarSeverity.Informational or _ => "Informational",
+            }, useTransitions);
         }
 
         private void OnCloseButtonClick(object sender, RoutedEventArgs e)
@@ -303,16 +289,18 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         protected virtual void OnCloseButtonClick()
         {
-            var args = new InfoBarClosingEventArgs();
+            InfoBarClosingEventArgs args = new();
             Closing?.Invoke(this, args);
-
-            if (args.Cancel)
+            if (!args.Cancel)
             {
-                return;
+                IsOpen = false;
+                Closed?.Invoke(this, EventArgs.Empty);
             }
-
-            IsOpen = false;
-            Closed?.Invoke(this, EventArgs.Empty);
         }
+
+        /// <summary>
+        /// Represents a reference to the close button control, or null if the button is not available.
+        /// </summary>
+        private System.Windows.Controls.Button? _closeButton;
     }
 }

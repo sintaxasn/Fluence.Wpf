@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -33,9 +34,6 @@ using Fluence.Wpf.Native;
 
 namespace Fluence.Wpf
 {
-    // Fluence.Wpf - SystemThemeWatcher
-    // Hooks Win32 settings changes so theme/accent updates propagate while the window is open.
-
     /// <summary>
     /// Subscribes a <see cref="Window"/> to high-priority settings change notifications (theme, accent) with debouncing.
     /// </summary>
@@ -44,11 +42,6 @@ namespace Fluence.Wpf
     /// </remarks>
     public static class SystemThemeWatcher
     {
-        private static readonly List<WatchedWindow> _watchedWindows = new List<WatchedWindow>();
-        private static readonly object _lock = new object();
-        private static long _lastUpdateTick;
-        private const long DebounceIntervalTicks = 1000000;
-
         /// <summary>
         /// Begins watching the specified window for system theme and accent changes.
         /// </summary>
@@ -56,34 +49,27 @@ namespace Fluence.Wpf
         /// <exception cref="ArgumentNullException"><paramref name="window"/> is <c>null</c>.</exception>
         public static void Watch(Window window)
         {
-#if NET6_0_OR_GREATER
-            ArgumentNullException.ThrowIfNull(window);
-#else
             if (window == null)
             {
                 throw new ArgumentNullException(nameof(window));
             }
-#endif
-
             lock (_lock)
             {
                 if (FindWatchedWindow(window) != null)
                 {
                     return;
                 }
-
-                var watched = new WatchedWindow(window);
+                WatchedWindow watched = new(window);
                 _watchedWindows.Add(watched);
-
-                if (window.IsLoaded)
-                {
-                    AttachHook(watched);
-                }
-                else
+                if (!window.IsLoaded)
                 {
                     // HwndSource does not exist until SourceInitialized. Defer the native
                     // hook rather than forcing handle creation during construction.
                     window.SourceInitialized += OnWindowSourceInitialized;
+                }
+                else
+                {
+                    AttachHook(watched);
                 }
             }
         }
@@ -95,44 +81,32 @@ namespace Fluence.Wpf
         /// <exception cref="ArgumentNullException"><paramref name="window"/> is <c>null</c>.</exception>
         public static void UnWatch(Window window)
         {
-#if NET6_0_OR_GREATER
-            ArgumentNullException.ThrowIfNull(window);
-#else
             if (window == null)
             {
                 throw new ArgumentNullException(nameof(window));
             }
-#endif
-
             lock (_lock)
             {
-                var watched = FindWatchedWindow(window);
-                if (watched == null)
+                if (FindWatchedWindow(window) is not WatchedWindow watched)
                 {
                     return;
                 }
-
                 DetachHook(watched);
-                _watchedWindows.Remove(watched);
-
+                _ = _watchedWindows.Remove(watched);
                 window.SourceInitialized -= OnWindowSourceInitialized;
             }
         }
 
-        private static void OnWindowSourceInitialized(object sender, EventArgs e)
+        private static void OnWindowSourceInitialized(object? sender, EventArgs e)
         {
-            var window = sender as Window;
-            if (window == null)
+            if (sender is not Window window)
             {
                 return;
             }
-
             window.SourceInitialized -= OnWindowSourceInitialized;
-
             lock (_lock)
             {
-                var watched = FindWatchedWindow(window);
-                if (watched != null)
+                if (FindWatchedWindow(window) is WatchedWindow watched)
                 {
                     AttachHook(watched);
                 }
@@ -145,21 +119,18 @@ namespace Fluence.Wpf
             {
                 return;
             }
-
-            var helper = new WindowInteropHelper(watched.Window);
-            var handle = helper.Handle;
-
+            WindowInteropHelper helper = new(watched.Window);
+            IntPtr handle = helper.Handle;
             if (handle == IntPtr.Zero)
             {
                 return;
             }
 
-            var source = HwndSource.FromHwnd(handle);
+            HwndSource source = HwndSource.FromHwnd(handle);
             if (source == null)
             {
                 return;
             }
-
             watched.HwndSource = source;
             source.AddHook(WndProc);
             watched.IsHooked = true;
@@ -171,13 +142,12 @@ namespace Fluence.Wpf
             {
                 return;
             }
-
             watched.HwndSource.RemoveHook(WndProc);
             watched.IsHooked = false;
             watched.HwndSource = null;
         }
 
-        private static WatchedWindow FindWatchedWindow(Window window)
+        private static WatchedWindow? FindWatchedWindow(Window window)
         {
             for (int i = 0; i < _watchedWindows.Count; i++)
             {
@@ -191,19 +161,18 @@ namespace Fluence.Wpf
 
         private static IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
-            if (msg == NativeConstants.WM_SETTINGCHANGE ||
-                msg == NativeConstants.WM_DWMCOLORIZATIONCOLORCHANGED ||
-                msg == NativeConstants.WM_THEMECHANGED ||
-                msg == NativeConstants.WM_SYSCOLORCHANGE)
+            if (msg is NativeConstants.WM_SETTINGCHANGE or
+                NativeConstants.WM_DWMCOLORIZATIONCOLORCHANGED or
+                NativeConstants.WM_THEMECHANGED or
+                NativeConstants.WM_SYSCOLORCHANGE)
             {
-                var currentTick = DateTime.UtcNow.Ticks;
+                long currentTick = DateTime.UtcNow.Ticks;
                 if (currentTick - _lastUpdateTick > DebounceIntervalTicks)
                 {
                     _lastUpdateTick = currentTick;
                     OnSystemThemeChanged();
                 }
             }
-
             return IntPtr.Zero;
         }
 
@@ -213,32 +182,57 @@ namespace Fluence.Wpf
             {
                 return;
             }
-
-            Application.Current.Dispatcher.BeginInvoke(new Action(() =>
+            _ = Application.Current.Dispatcher.BeginInvoke(new Action(() =>
             {
                 // Settings messages arrive on the HWND hook path. Re-enter through the
                 // Dispatcher so ResourceDictionary mutation stays on the WPF UI thread.
-                if (ApplicationThemeManager.CurrentTheme == ApplicationTheme.Auto)
+                if (ApplicationThemeManager.CurrentTheme != ApplicationTheme.Auto)
                 {
-                    ApplicationThemeManager.ApplySystemTheme();
+                    ApplicationAccentColorManager.RefreshAccent();
                 }
                 else
                 {
-                    ApplicationAccentColorManager.RefreshAccent();
+                    ApplicationThemeManager.ApplySystemTheme();
                 }
             }));
         }
 
-        private class WatchedWindow
+        /// <summary>
+        /// Represents a window being monitored for changes or events within the application.
+        /// </summary>
+        /// <param name="window">The window instance to be tracked by this object. Cannot be null.</param>
+        private class WatchedWindow(Window window)
         {
-            public WatchedWindow(Window window)
-            {
-                Window = window;
-            }
-
-            public Window Window { get; private set; }
-            public HwndSource HwndSource { get; set; }
-            public bool IsHooked { get; set; }
+            internal Window Window { get; private set; } = window;
+            internal HwndSource? HwndSource { get; set; }
+            internal bool IsHooked { get; set; }
         }
+
+        /// <summary>
+        /// Contains the collection of windows currently being monitored for changes.
+        /// </summary>
+        /// <remarks>This list is intended for internal use to track windows of interest. It should not be
+        /// modified directly outside of the containing class.</remarks>
+        private static readonly List<WatchedWindow> _watchedWindows = [];
+
+        /// <summary>
+        /// Provides a synchronization object for thread-safe operations within the containing class.
+        /// </summary>
+        /// <remarks>Use this object with lock statements to ensure that critical sections are accessed by
+        /// only one thread at a time. This helps prevent race conditions and ensures data consistency in multithreaded
+        /// scenarios.</remarks>
+        private static readonly object _lock = new();
+
+        /// <summary>
+        /// Stores the tick count representing the last time an update occurred.
+        /// </summary>
+        private static long _lastUpdateTick;
+
+        /// <summary>
+        /// Represents the debounce interval, in ticks, used to limit the frequency of certain operations.
+        /// </summary>
+        /// <remarks>A tick is equal to 100 nanoseconds. This constant can be used to implement debouncing
+        /// logic, ensuring that actions are not performed more frequently than the specified interval.</remarks>
+        private const long DebounceIntervalTicks = 1_000_000;
     }
 }

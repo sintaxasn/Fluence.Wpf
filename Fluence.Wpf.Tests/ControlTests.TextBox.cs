@@ -25,12 +25,12 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf;
 using FluenceTextBox = Fluence.Wpf.Controls.TextBox;
 using FluencePasswordBox = Fluence.Wpf.Controls.PasswordBox;
 using WpfBorder = System.Windows.Controls.Border;
@@ -54,21 +54,21 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var tb = new FluenceTextBox { PlaceholderText = "Search…", PlaceholderEnabled = true };
-                var w = new Window { Content = tb, Width = 300, Height = 60 };
+                FluenceTextBox tb = new() { PlaceholderText = "Search…", PlaceholderEnabled = true };
+                Window w = new() { Content = tb, Width = 300, Height = 60 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var placeholder = FindVisualChildByName<WpfTextBlock>(tb, "PlaceholderTextBlock");
+                WpfTextBlock? placeholder = FindVisualChildByName<WpfTextBlock>(tb, "PlaceholderTextBlock");
                 Assert.IsNotNull(placeholder, "PlaceholderTextBlock must be present in TextBox template.");
 
-                var expected = app.TryFindResource("TextFillColorTertiaryBrush") as SolidColorBrush;
+                SolidColorBrush? expected = app?.TryFindResource("TextFillColorTertiaryBrush") as SolidColorBrush;
                 Assert.IsNotNull(expected, "TextFillColorTertiaryBrush resource must resolve.");
 
-                var actual = placeholder.Foreground as SolidColorBrush;
+                SolidColorBrush? actual = placeholder.Foreground as SolidColorBrush;
                 Assert.IsNotNull(actual, "PlaceholderTextBlock.Foreground must be a SolidColorBrush.");
                 Assert.AreEqual(
                     expected.Color,
@@ -83,21 +83,21 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var pb = new FluencePasswordBox { PlaceholderText = "Password" };
-                var w = new Window { Content = pb, Width = 300, Height = 60 };
+                FluencePasswordBox pb = new() { PlaceholderText = "Password" };
+                Window w = new() { Content = pb, Width = 300, Height = 60 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var placeholder = FindVisualChildByName<WpfTextBlock>(pb, "PlaceholderTextBlock");
+                WpfTextBlock? placeholder = FindVisualChildByName<WpfTextBlock>(pb, "PlaceholderTextBlock");
                 Assert.IsNotNull(placeholder, "PlaceholderTextBlock must be present in PasswordBox template.");
 
-                var expected = app.TryFindResource("TextFillColorTertiaryBrush") as SolidColorBrush;
+                SolidColorBrush? expected = app?.TryFindResource("TextFillColorTertiaryBrush") as SolidColorBrush;
                 Assert.IsNotNull(expected, "TextFillColorTertiaryBrush resource must resolve.");
 
-                var actual = placeholder.Foreground as SolidColorBrush;
+                SolidColorBrush? actual = placeholder.Foreground as SolidColorBrush;
                 Assert.IsNotNull(actual, "PlaceholderTextBlock.Foreground must be a SolidColorBrush.");
                 Assert.AreEqual(
                     expected.Color,
@@ -112,24 +112,24 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var tb = new FluenceTextBox { PlaceholderText = "Hint", PlaceholderEnabled = true };
-                var w = new Window { Content = tb, Width = 300, Height = 60 };
+                FluenceTextBox tb = new() { PlaceholderText = "Hint", PlaceholderEnabled = true };
+                Window w = new() { Content = tb, Width = 300, Height = 60 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
                 ThemeTestHelpers.ApplyStandardThemeCycle();
                 DrainDispatcher(w.Dispatcher);
 
-                var placeholder = FindVisualChildByName<WpfTextBlock>(tb, "PlaceholderTextBlock");
+                WpfTextBlock? placeholder = FindVisualChildByName<WpfTextBlock>(tb, "PlaceholderTextBlock");
                 Assert.IsNotNull(placeholder, "PlaceholderTextBlock must remain present after theme cycle.");
 
-                var expected = app.TryFindResource("TextFillColorTertiaryBrush") as SolidColorBrush;
+                SolidColorBrush? expected = app?.TryFindResource("TextFillColorTertiaryBrush") as SolidColorBrush;
                 Assert.IsNotNull(expected, "TextFillColorTertiaryBrush must resolve after theme cycle.");
 
-                var actual = placeholder.Foreground as SolidColorBrush;
+                SolidColorBrush? actual = placeholder.Foreground as SolidColorBrush;
                 Assert.IsNotNull(actual);
                 Assert.AreEqual(
                     expected.Color,
@@ -144,31 +144,31 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var tb = new FluenceTextBox
+                FluenceTextBox tb = new()
                 {
                     Width = 240,
                     ValidationState = ValidationState.Error,
                     Text = "Invalid value"
                 };
-                var w = new Window { Content = tb, Width = 320, Height = 120 };
+                Window w = new() { Content = tb, Width = 320, Height = 120 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var validationLine = FindVisualChildByName<WpfBorder>(tb, "PART_ValidationLine");
+                WpfBorder? validationLine = FindVisualChildByName<WpfBorder>(tb, "PART_ValidationLine");
                 Assert.IsNotNull(validationLine, "TextBox template must expose PART_ValidationLine.");
                 Assert.AreEqual(0.0, validationLine.Opacity, 0.001, "Validation underline should be hidden before focus.");
 
                 FocusManager.SetFocusedElement(w, tb);
-                Keyboard.Focus(tb);
+                _ = Keyboard.Focus(tb);
                 DrainDispatcher(w.Dispatcher);
 
                 Assert.AreEqual(1.0, validationLine.Opacity, 0.001, "Validation underline should appear while focused.");
-                var expected = app.TryFindResource("SystemFillColorCriticalBrush") as SolidColorBrush;
+                SolidColorBrush? expected = app?.TryFindResource("SystemFillColorCriticalBrush") as SolidColorBrush;
                 Assert.IsNotNull(expected, "SystemFillColorCriticalBrush must resolve.");
-                var actual = validationLine.Background as SolidColorBrush;
+                SolidColorBrush? actual = validationLine.Background as SolidColorBrush;
                 Assert.IsNotNull(actual, "Validation underline should use a brush background.");
                 Assert.AreEqual(expected.Color, actual.Color, "Error validation underline should use the critical brush.");
 
@@ -181,23 +181,23 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var tb = new FluenceTextBox
+                FluenceTextBox tb = new()
                 {
                     Width = 240,
                     HelperText = "Helper text",
                     Text = "Value"
                 };
-                var w = new Window { Content = tb, Width = 320, Height = 120 };
+                Window w = new() { Content = tb, Width = 320, Height = 120 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var helper = FindVisualChildByName<WpfTextBlock>(tb, "PART_HelperText");
+                WpfTextBlock? helper = FindVisualChildByName<WpfTextBlock>(tb, "PART_HelperText");
                 Assert.IsNotNull(helper, "TextBox template must expose PART_HelperText.");
 
-                var helperRow = VisualTreeHelper.GetParent(helper) as StackPanel;
+                StackPanel? helperRow = VisualTreeHelper.GetParent(helper) as StackPanel;
                 Assert.IsNotNull(helperRow, "Helper text should be hosted in the validation/helper row.");
                 Assert.AreEqual(new Thickness(12, 2, 12, 0), helperRow.Margin,
                     "Helper and validation text should sit 2px below the input chrome.");

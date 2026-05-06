@@ -2,18 +2,13 @@
 
   <PropertyGroup>
     <TargetFrameworks>net472;net10.0-windows10.0.26100.0</TargetFrameworks>
-    <LangVersion Condition="'$(TargetFramework)' == 'net472'">7.3</LangVersion>
-    <LangVersion Condition="$(TargetFramework.StartsWith('net10'))">latest</LangVersion>
     <UseWPF>true</UseWPF>
     <RootNamespace>Fluence.Wpf</RootNamespace>
     <AssemblyName>Fluence.Wpf</AssemblyName>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningLevel>4</WarningLevel>
+    <NoWarn>$(NoWarn);SYSLIB1045;IDE0330;S1244;VSTHRD001</NoWarn>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Fluence.Wpf.xml</DocumentationFile>
     <Description>Windows 11 Fluent Design controls and theming for WPF (.NET Framework 4.7.2 and .NET 10)</Description>
-    <Authors>Dan Cunningham</Authors>
-    <Copyright>Copyright © 2026 Dan Cunningham</Copyright>
     <Product>Fluence.Wpf</Product>
     <Title>Fluence.Wpf</Title>
     <PackageId>Fluence.Wpf</PackageId>

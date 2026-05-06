@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 using System.Windows.Controls.Primitives;
 
@@ -34,11 +35,15 @@ namespace Fluence.Wpf.Controls
     /// Fluent-styled slider control.
     /// </summary>
     /// <remarks>Inspired by WInUI's Slider.</remarks>
-    [TemplatePart(Name = PART_Track, Type = typeof(Track))]
+    [TemplatePart(Name = "PART_Track", Type = typeof(Track))]
     public class Slider : System.Windows.Controls.Slider
     {
-        private const string PART_Track = "PART_Track";
-
+        /// <summary>
+        /// Initializes static members of the Slider class and overrides the default style metadata for the control.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the Slider control uses its default style as
+        /// defined in the theme resource dictionaries. This is necessary for custom controls to apply their visual
+        /// styles correctly in WPF.</remarks>
         static Slider()
         {
             DefaultStyleKeyProperty.OverrideMetadata(

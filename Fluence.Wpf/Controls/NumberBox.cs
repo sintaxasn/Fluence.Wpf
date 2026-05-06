@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Globalization;
 using System.Windows;
@@ -47,33 +48,6 @@ using Fluence.Wpf.Automation;
 namespace Fluence.Wpf.Controls
 {
     /// <summary>
-    /// Event data for <see cref="NumberBox.ValueChanged"/>.
-    /// </summary>
-    public sealed class NumberBoxValueChangedEventArgs : EventArgs
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NumberBoxValueChangedEventArgs"/> class.
-        /// </summary>
-        /// <param name="oldValue">The previous value.</param>
-        /// <param name="newValue">The new value.</param>
-        public NumberBoxValueChangedEventArgs(double oldValue, double newValue)
-        {
-            OldValue = oldValue;
-            NewValue = newValue;
-        }
-
-        /// <summary>
-        /// Gets the previous value.
-        /// </summary>
-        public double OldValue { get; }
-
-        /// <summary>
-        /// Gets the new value.
-        /// </summary>
-        public double NewValue { get; }
-    }
-
-    /// <summary>
     /// A numeric input control with optional spin buttons and min/max clamping.
     /// </summary>
     [TemplatePart(Name = PartTextBox, Type = typeof(System.Windows.Controls.TextBox))]
@@ -81,15 +55,17 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = PartDownButton, Type = typeof(System.Windows.Controls.Primitives.RepeatButton))]
     public class NumberBox : Control
     {
+        // Template part names. These must match the names used in the default control template.
         private const string PartTextBox = "PART_TextBox";
         private const string PartUpButton = "PART_UpButton";
         private const string PartDownButton = "PART_DownButton";
 
-        private System.Windows.Controls.TextBox _partTextBox;
-        private System.Windows.Controls.Primitives.RepeatButton _partUpButton;
-        private System.Windows.Controls.Primitives.RepeatButton _partDownButton;
-        private bool _suppressTextSync;
-
+        /// <summary>
+        /// Initializes static members of the NumberBox class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the NumberBox control uses its custom style by
+        /// associating the DefaultStyleKey with the NumberBox type. This enables the control to apply its default
+        /// template as defined in themes or resource dictionaries.</remarks>
         static NumberBox()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -217,15 +193,15 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Occurs when <see cref="Value"/> changes after coercion.
         /// </summary>
-        public event EventHandler<NumberBoxValueChangedEventArgs> ValueChanged;
+        public event EventHandler<NumberBoxValueChangedEventArgs>? ValueChanged;
 
         /// <summary>
         /// Gets or sets the numeric value.
         /// </summary>
         public double Value
         {
-            get { return (double)GetValue(ValueProperty); }
-            set { SetValue(ValueProperty, value); }
+            get => (double)GetValue(ValueProperty);
+            set => SetValue(ValueProperty, value);
         }
 
         /// <summary>
@@ -233,8 +209,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public double Minimum
         {
-            get { return (double)GetValue(MinimumProperty); }
-            set { SetValue(MinimumProperty, value); }
+            get => (double)GetValue(MinimumProperty);
+            set => SetValue(MinimumProperty, value);
         }
 
         /// <summary>
@@ -242,8 +218,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public double Maximum
         {
-            get { return (double)GetValue(MaximumProperty); }
-            set { SetValue(MaximumProperty, value); }
+            get => (double)GetValue(MaximumProperty);
+            set => SetValue(MaximumProperty, value);
         }
 
         /// <summary>
@@ -251,8 +227,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public double SmallChange
         {
-            get { return (double)GetValue(SmallChangeProperty); }
-            set { SetValue(SmallChangeProperty, value); }
+            get => (double)GetValue(SmallChangeProperty);
+            set => SetValue(SmallChangeProperty, value);
         }
 
         /// <summary>
@@ -260,8 +236,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public double LargeChange
         {
-            get { return (double)GetValue(LargeChangeProperty); }
-            set { SetValue(LargeChangeProperty, value); }
+            get => (double)GetValue(LargeChangeProperty);
+            set => SetValue(LargeChangeProperty, value);
         }
 
         /// <summary>
@@ -269,8 +245,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public object Header
         {
-            get { return GetValue(HeaderProperty); }
-            set { SetValue(HeaderProperty, value); }
+            get => GetValue(HeaderProperty);
+            set => SetValue(HeaderProperty, value);
         }
 
         /// <summary>
@@ -278,8 +254,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public SpinButtonPlacementMode SpinButtonPlacementMode
         {
-            get { return (SpinButtonPlacementMode)GetValue(SpinButtonPlacementModeProperty); }
-            set { SetValue(SpinButtonPlacementModeProperty, value); }
+            get => (SpinButtonPlacementMode)GetValue(SpinButtonPlacementModeProperty);
+            set => SetValue(SpinButtonPlacementModeProperty, value);
         }
 
         /// <summary>
@@ -287,8 +263,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool AcceptsExpression
         {
-            get { return (bool)GetValue(AcceptsExpressionProperty); }
-            set { SetValue(AcceptsExpressionProperty, value); }
+            get => (bool)GetValue(AcceptsExpressionProperty);
+            set => SetValue(AcceptsExpressionProperty, value);
         }
 
         /// <summary>
@@ -296,8 +272,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string PlaceholderText
         {
-            get { return (string)GetValue(PlaceholderTextProperty); }
-            set { SetValue(PlaceholderTextProperty, value); }
+            get => (string)GetValue(PlaceholderTextProperty);
+            set => SetValue(PlaceholderTextProperty, value);
         }
 
         /// <summary>
@@ -305,8 +281,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string Description
         {
-            get { return (string)GetValue(DescriptionProperty); }
-            set { SetValue(DescriptionProperty, value); }
+            get => (string)GetValue(DescriptionProperty);
+            set => SetValue(DescriptionProperty, value);
         }
 
         /// <summary>
@@ -314,8 +290,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string Text
         {
-            get { return (string)GetValue(TextProperty); }
-            set { SetValue(TextProperty, value); }
+            get => (string)GetValue(TextProperty);
+            set => SetValue(TextProperty, value);
         }
 
         /// <summary>
@@ -324,23 +300,15 @@ namespace Fluence.Wpf.Controls
         /// <returns><c>true</c> if a number was parsed and applied; otherwise <c>false</c>.</returns>
         public bool TryParseText()
         {
-            string s = Text;
-            if (s == null)
-            {
-                s = string.Empty;
-            }
-
-            double parsed;
+            string s = Text ?? string.Empty;
             if (AcceptsExpression)
             {
                 s = s.Trim();
             }
-
-            if (!double.TryParse(s, NumberStyles.Any, CultureInfo.CurrentCulture, out parsed))
+            if (!double.TryParse(s, NumberStyles.Any, CultureInfo.CurrentCulture, out double parsed))
             {
                 return false;
             }
-
             Value = parsed;
             return true;
         }
@@ -352,11 +320,7 @@ namespace Fluence.Wpf.Controls
         /// <param name="newValue">The new value.</param>
         protected virtual void OnValueChanged(double oldValue, double newValue)
         {
-            EventHandler<NumberBoxValueChangedEventArgs> handler = ValueChanged;
-            if (handler != null)
-            {
-                handler(this, new NumberBoxValueChangedEventArgs(oldValue, newValue));
-            }
+            ValueChanged?.Invoke(this, new NumberBoxValueChangedEventArgs(oldValue, newValue));
         }
 
         /// <summary>
@@ -387,7 +351,7 @@ namespace Fluence.Wpf.Controls
             base.OnGotKeyboardFocus(e);
             if (_partTextBox != null && !_partTextBox.IsKeyboardFocusWithin)
             {
-                _partTextBox.Focus();
+                _ = _partTextBox.Focus();
             }
         }
 
@@ -397,7 +361,7 @@ namespace Fluence.Wpf.Controls
             base.OnPreviewMouseLeftButtonDown(e);
             if (_partTextBox != null && !_partTextBox.IsKeyboardFocusWithin)
             {
-                _partTextBox.Focus();
+                _ = _partTextBox.Focus();
             }
         }
 
@@ -405,63 +369,42 @@ namespace Fluence.Wpf.Controls
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-
             if (_partTextBox != null)
             {
                 _partTextBox.KeyDown -= OnPartTextBoxKeyDown;
                 _partTextBox.LostKeyboardFocus -= OnPartTextBoxLostKeyboardFocus;
             }
-
-            if (_partUpButton != null)
-            {
-                _partUpButton.Click -= OnPartUpButtonClick;
-            }
-
-            if (_partDownButton != null)
-            {
-                _partDownButton.Click -= OnPartDownButtonClick;
-            }
-
+            _partUpButton?.Click -= OnPartUpButtonClick;
+            _partDownButton?.Click -= OnPartDownButtonClick;
             _partTextBox = GetTemplateChild(PartTextBox) as System.Windows.Controls.TextBox;
             _partUpButton = GetTemplateChild(PartUpButton) as System.Windows.Controls.Primitives.RepeatButton;
             _partDownButton = GetTemplateChild(PartDownButton) as System.Windows.Controls.Primitives.RepeatButton;
-
             if (_partTextBox != null)
             {
                 _partTextBox.KeyDown += OnPartTextBoxKeyDown;
                 _partTextBox.LostKeyboardFocus += OnPartTextBoxLostKeyboardFocus;
             }
-
-            if (_partUpButton != null)
-            {
-                _partUpButton.Click += OnPartUpButtonClick;
-            }
-
-            if (_partDownButton != null)
-            {
-                _partDownButton.Click += OnPartDownButtonClick;
-            }
-
+            _partUpButton?.Click += OnPartUpButtonClick;
+            _partDownButton?.Click += OnPartDownButtonClick;
             UpdateTextFromValue();
         }
 
         private static object CoerceValueCallback(DependencyObject d, object baseValue)
         {
-            var box = (NumberBox)d;
+            NumberBox box = (NumberBox)d;
             double v = (double)baseValue;
             if (double.IsNaN(v))
             {
                 return baseValue;
             }
-
             double clamped = box.ClampValue(v);
-            return double.IsNaN(clamped) ? baseValue : (object)clamped;
+            return double.IsNaN(clamped) ? baseValue : clamped;
         }
 
         private static void OnValuePropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             // Value is already clamped by CoerceValueCallback; OldValue/NewValue are both committed values.
-            var box = (NumberBox)d;
+            NumberBox box = (NumberBox)d;
             box.OnValueChanged((double)e.OldValue, (double)e.NewValue);
             box.UpdateTextFromValue();
         }
@@ -474,15 +417,14 @@ namespace Fluence.Wpf.Controls
 
         private static void OnTextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var box = (NumberBox)d;
+            NumberBox box = (NumberBox)d;
             if (box._suppressTextSync)
             {
                 return;
             }
-
-            if (box._partTextBox != null && !string.Equals(box._partTextBox.Text, box.Text as string, StringComparison.Ordinal))
+            if (box._partTextBox != null && !string.Equals(box._partTextBox.Text, box.Text, StringComparison.Ordinal))
             {
-                box._partTextBox.Text = box.Text != null ? box.Text : string.Empty;
+                box._partTextBox.Text = box.Text ?? string.Empty;
             }
         }
 
@@ -490,18 +432,18 @@ namespace Fluence.Wpf.Controls
         {
             if (e.Key == Key.Enter)
             {
-                TryParseText();
+                _ = TryParseText();
                 e.Handled = true;
             }
             else if (e.Key == Key.Up)
             {
-                TryParseText();
+                _ = TryParseText();
                 OnUpClick();
                 e.Handled = true;
             }
             else if (e.Key == Key.Down)
             {
-                TryParseText();
+                _ = TryParseText();
                 OnDownClick();
                 e.Handled = true;
             }
@@ -509,7 +451,7 @@ namespace Fluence.Wpf.Controls
 
         private void OnPartTextBoxLostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
         {
-            TryParseText();
+            _ = TryParseText();
         }
 
         private void OnPartUpButtonClick(object sender, RoutedEventArgs e)
@@ -546,28 +488,38 @@ namespace Fluence.Wpf.Controls
             double max = Maximum;
             if (min > max)
             {
-                double t = min;
-                min = max;
-                max = t;
+                (max, min) = (min, max);
             }
-
-            if (value < min)
-            {
-                return min;
-            }
-
-            if (value > max)
-            {
-                return max;
-            }
-
-            return value;
+            return Math.Min(Math.Max(value, min), max);
         }
 
-        private static bool AreClose(double a, double b)
-        {
-            const double eps = 1e-9;
-            return Math.Abs(a - b) < eps;
-        }
+        /// <summary>
+        /// Represents the TextBox control associated with this part.
+        /// </summary>
+        private System.Windows.Controls.TextBox? _partTextBox;
+
+        /// <summary>
+        /// Represents the up button part of the control, typically used to increment a value or scroll upward.
+        /// </summary>
+        /// <remarks>This field is usually assigned by the control template and may be null if the
+        /// template does not define an up button part. It is intended for internal use within the control to handle
+        /// user interactions related to increasing values or scrolling.</remarks>
+        private System.Windows.Controls.Primitives.RepeatButton? _partUpButton;
+
+        /// <summary>
+        /// Represents the down button part of the control template, typically used to decrease a value or scroll
+        /// downward.
+        /// </summary>
+        /// <remarks>This field is usually assigned when the control template is applied and may be null
+        /// if the template part is not present. It is intended for internal use within custom controls that utilize a
+        /// RepeatButton for decrementing actions.</remarks>
+        private System.Windows.Controls.Primitives.RepeatButton? _partDownButton;
+
+        /// <summary>
+        /// Indicates whether text synchronization events should be suppressed.
+        /// </summary>
+        /// <remarks>When set to true, changes to the text will not trigger synchronization logic. This is
+        /// typically used to prevent recursive or unwanted updates during programmatic changes.</remarks>
+        private bool _suppressTextSync;
     }
 }

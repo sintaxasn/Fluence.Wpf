@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Fluence.Wpf.Controls;
@@ -39,8 +40,8 @@ namespace Fluence.Wpf.Tests
         {
             CaptionButtonChrome.GetMinimizeChrome(
                 ResizeMode.NoResize,
-                out var vis,
-                out var en);
+                out Visibility vis,
+                out bool en);
 
             Assert.AreEqual(Visibility.Collapsed, vis);
             Assert.IsFalse(en);
@@ -51,8 +52,8 @@ namespace Fluence.Wpf.Tests
         {
             CaptionButtonChrome.GetMinimizeChrome(
                 ResizeMode.CanResize,
-                out var vis,
-                out var en);
+                out Visibility vis,
+                out bool en);
 
             Assert.AreEqual(Visibility.Visible, vis);
             Assert.IsTrue(en);
@@ -64,10 +65,10 @@ namespace Fluence.Wpf.Tests
             CaptionButtonChrome.GetMaximizeRestoreChrome(
                 ResizeMode.CanResize,
                 WindowState.Normal,
-                out var maxVis,
-                out var restVis,
-                out var maxEn,
-                out var restEn);
+                out Visibility maxVis,
+                out Visibility restVis,
+                out bool maxEn,
+                out bool restEn);
 
             Assert.AreEqual(Visibility.Visible, maxVis);
             Assert.AreEqual(Visibility.Collapsed, restVis);
@@ -81,10 +82,10 @@ namespace Fluence.Wpf.Tests
             CaptionButtonChrome.GetMaximizeRestoreChrome(
                 ResizeMode.CanResize,
                 WindowState.Maximized,
-                out var maxVis,
-                out var restVis,
-                out var maxEn,
-                out var restEn);
+                out Visibility maxVis,
+                out Visibility restVis,
+                out bool maxEn,
+                out bool restEn);
 
             Assert.AreEqual(Visibility.Collapsed, maxVis);
             Assert.AreEqual(Visibility.Visible, restVis);
@@ -98,10 +99,10 @@ namespace Fluence.Wpf.Tests
             CaptionButtonChrome.GetMaximizeRestoreChrome(
                 ResizeMode.CanMinimize,
                 WindowState.Normal,
-                out var maxVis,
-                out var restVis,
-                out var maxEn,
-                out var restEn);
+                out Visibility maxVis,
+                out _,
+                out bool maxEn,
+                out bool restEn);
 
             Assert.AreEqual(Visibility.Visible, maxVis);
             Assert.IsFalse(maxEn);
@@ -112,8 +113,8 @@ namespace Fluence.Wpf.Tests
         public void Close_VisibleAndEnabled()
         {
             CaptionButtonChrome.GetCloseChrome(
-                out var vis,
-                out var en);
+                out Visibility vis,
+                out bool en);
 
             Assert.AreEqual(Visibility.Visible, vis);
             Assert.IsTrue(en);

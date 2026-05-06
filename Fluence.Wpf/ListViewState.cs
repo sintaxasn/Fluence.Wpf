@@ -25,23 +25,22 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// Specifies how the pane of a <see cref="Controls.NavigationView"/> is arranged.
+    /// Specifies the view state for a ListView.
     /// </summary>
-    public enum NavigationViewPaneDisplayMode
+    public enum ListViewState
     {
-        /// <summary>A vertical pane on the left side of the control.</summary>
-        Left,
-
-        /// <summary>A horizontal pane across the top of the control.</summary>
-        Top,
+        /// <summary>
+        /// Default list view with vertical items.
+        /// </summary>
+        Default = 0,
 
         /// <summary>
-        /// A compact vertical pane that starts collapsed (icons only, 48px) and
-        /// expands as an overlay without pushing content.
+        /// Grid view with items arranged in a grid.
         /// </summary>
-        LeftCompact
+        GridView = 1,
     }
 }

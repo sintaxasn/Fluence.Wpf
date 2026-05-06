@@ -25,7 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-using System.Windows.Automation;
+
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
@@ -36,16 +36,9 @@ namespace Fluence.Wpf.Automation
     /// <summary>
     /// Exposes <see cref="NavigationViewItem"/> to UI Automation as a selectable list item.
     /// </summary>
-    public class NavigationViewItemAutomationPeer : FrameworkElementAutomationPeer, ISelectionItemProvider, IInvokeProvider
+    /// <remarks>Initializes a new instance.</remarks>
+    public class NavigationViewItemAutomationPeer(NavigationViewItem owner) : FrameworkElementAutomationPeer(owner), ISelectionItemProvider, IInvokeProvider
     {
-        /// <summary>Initializes a new instance.</summary>
-        public NavigationViewItemAutomationPeer(NavigationViewItem owner) : base(owner) { }
-
-        private NavigationViewItem NavigationViewItem
-        {
-            get { return (NavigationViewItem)Owner; }
-        }
-
         /// <inheritdoc />
         protected override string GetClassNameCore()
         {
@@ -61,59 +54,52 @@ namespace Fluence.Wpf.Automation
         /// <inheritdoc />
         public override object GetPattern(PatternInterface patternInterface)
         {
-            if (patternInterface == PatternInterface.SelectionItem || patternInterface == PatternInterface.Invoke)
-            {
-                return this;
-            }
-
-            return base.GetPattern(patternInterface);
+            return patternInterface is not (PatternInterface.SelectionItem or PatternInterface.Invoke)
+                ? base.GetPattern(patternInterface)
+                : this;
         }
 
-        bool ISelectionItemProvider.IsSelected
-        {
-            get { return NavigationViewItem.IsSelected; }
-        }
+        /// <inheritdoc />
+        public virtual bool IsSelected => NavigationViewItem.IsSelected;
 
-        IRawElementProviderSimple ISelectionItemProvider.SelectionContainer
-        {
-            get
-            {
-                var nav = ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) as NavigationView;
-                if (nav == null)
-                {
-                    return null;
-                }
+        /// <inheritdoc />
+        public virtual IRawElementProviderSimple? SelectionContainer => ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) is NavigationView nav
+            ? ProviderFromPeer(CreatePeerForElement(nav))
+            : null;
 
-                var peer = CreatePeerForElement(nav);
-                return peer != null ? ProviderFromPeer(peer) : null;
-            }
-        }
-
-        void ISelectionItemProvider.Select()
+        /// <inheritdoc />
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1716:Identifiers should not match keywords")]
+        public virtual void Select()
         {
-            var nav = ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) as NavigationView;
-            if (nav != null)
+            if (ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) is NavigationView nav)
             {
                 nav.SelectItemFromContainer(NavigationViewItem);
             }
         }
 
-        void ISelectionItemProvider.AddToSelection()
+        /// <inheritdoc />
+        public virtual void AddToSelection()
         {
-            ((ISelectionItemProvider)this).Select();
+            Select();
         }
 
-        void ISelectionItemProvider.RemoveFromSelection()
+        /// <inheritdoc />
+        public virtual void RemoveFromSelection()
         {
         }
 
-        void IInvokeProvider.Invoke()
+        /// <inheritdoc />
+        public virtual void Invoke()
         {
-            var nav = ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) as NavigationView;
-            if (nav != null)
+            if (ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) is NavigationView nav)
             {
                 nav.InvokeItem(NavigationViewItem);
             }
         }
+
+        /// <summary>
+        /// Gets the associated NavigationViewItem that owns this instance.
+        /// </summary>
+        private NavigationViewItem NavigationViewItem => (NavigationViewItem)Owner;
     }
 }

@@ -25,14 +25,23 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows;
 
 namespace Fluence.Wpf.Controls
 {
-    /// <summary>A Fluent Design styled radio button with optional description text.</summary>
+    /// <summary>
+    /// A Fluent Design styled radio button with optional description text.
+    /// </summary>
     /// <remarks>Inspired by WInUI's RadioButton.</remarks>
     public class RadioButton : System.Windows.Controls.RadioButton
     {
+        /// <summary>
+        /// Initializes static members of the RadioButton class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the RadioButton control uses its default style
+        /// as defined in the application's theme or resource dictionaries. This is typically required for custom
+        /// controls to apply their visual appearance correctly.</remarks>
         static RadioButton()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -55,8 +64,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public string Description
         {
-            get { return (string)GetValue(DescriptionProperty); }
-            set { SetValue(DescriptionProperty, value); }
+            get => (string)GetValue(DescriptionProperty);
+            set => SetValue(DescriptionProperty, value);
         }
 
         /// <summary>
@@ -74,8 +83,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public CornerRadius CornerRadius
         {
-            get { return (CornerRadius)GetValue(CornerRadiusProperty); }
-            set { SetValue(CornerRadiusProperty, value); }
+            get => (CornerRadius)GetValue(CornerRadiusProperty);
+            set => SetValue(CornerRadiusProperty, value);
         }
     }
 }

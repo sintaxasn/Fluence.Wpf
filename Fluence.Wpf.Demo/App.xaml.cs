@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -37,16 +38,15 @@ namespace Fluence.Wpf.Demo
     {
         private const string IconographyPageTitle = "Iconography";
         private const string SmokeTestArgument = "--smoke-test";
-        private static readonly Uri DemoSharedStylesUri = new Uri(
+        private static readonly Uri DemoSharedStylesUri = new(
             "/Fluence.Wpf.Demo;component/Resources/DemoSharedStyles.xaml",
             UriKind.Relative);
 
         static App()
         {
-            var textOptionsMetadata = FrameworkPropertyMetadataOptions.AffectsMeasure |
+            const FrameworkPropertyMetadataOptions textOptionsMetadata = FrameworkPropertyMetadataOptions.AffectsMeasure |
                 FrameworkPropertyMetadataOptions.AffectsRender |
                 FrameworkPropertyMetadataOptions.Inherits;
-
             TextOptions.TextFormattingModeProperty.OverrideMetadata(
                 typeof(Window),
                 new FrameworkPropertyMetadata(TextFormattingMode.Display, textOptionsMetadata));
@@ -61,23 +61,23 @@ namespace Fluence.Wpf.Demo
         {
             base.OnStartup(e);
 
-            ApplicationThemeManager.Apply(ApplicationTheme.Auto, BackdropType.Auto, true);
+            ApplicationThemeManager.Apply(ApplicationTheme.Auto);
             ApplicationAccentColorManager.ApplySystemAccent();
             LoadDemoSharedStyles();
 
-            var mainWindow = new MainWindow();
+            MainWindow mainWindow = new();
             MainWindow = mainWindow;
             mainWindow.Show();
 
             if (IsSmokeTest(e.Args))
             {
-                Dispatcher.BeginInvoke(new Action(delegate { RunSmokeTest(mainWindow); }), DispatcherPriority.ApplicationIdle);
+                _ = Dispatcher.BeginInvoke(new Action(delegate { RunSmokeTest(mainWindow); }), DispatcherPriority.ApplicationIdle);
             }
         }
 
         private static void RunSmokeTest(MainWindow mainWindow)
         {
-            foreach (var item in DemoNavigationCatalog.Items)
+            foreach (DemoNavigationItem item in DemoNavigationCatalog.Items)
             {
                 mainWindow.NavigateTo(item.Title);
                 mainWindow.UpdateLayout();
@@ -88,10 +88,10 @@ namespace Fluence.Wpf.Demo
                 }
             }
 
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.Auto, true);
-            ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.Auto, true);
-            ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.Auto, true);
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.Auto, true);
+            ApplicationThemeManager.Apply(ApplicationTheme.Light);
+            ApplicationThemeManager.Apply(ApplicationTheme.Dark);
+            ApplicationThemeManager.Apply(ApplicationTheme.HighContrast);
+            ApplicationThemeManager.Apply(ApplicationTheme.Light);
 
             mainWindow.Close();
         }
@@ -103,13 +103,8 @@ namespace Fluence.Wpf.Demo
 
         private static void RealizeIconographyList(DependencyObject root)
         {
-            var list = FindVisualChildByName<ListView>(root, "IconCatalogList");
-            if (list == null)
-            {
-                throw new InvalidOperationException("The Iconography page did not create IconCatalogList.");
-            }
-
-            list.ApplyTemplate();
+            ListView list = FindVisualChildByName<ListView>(root, "IconCatalogList") ?? throw new InvalidOperationException("The Iconography page did not create IconCatalogList.");
+            _ = list.ApplyTemplate();
             list.UpdateLayout();
             if (list.Items.Count == 0)
             {
@@ -119,31 +114,29 @@ namespace Fluence.Wpf.Demo
             list.ScrollIntoView(list.Items[0]);
             list.UpdateLayout();
 
-            var firstContainer = list.ItemContainerGenerator.ContainerFromIndex(0) as FrameworkElement;
-            if (firstContainer == null)
+            if (list.ItemContainerGenerator.ContainerFromIndex(0) is not FrameworkElement firstContainer)
             {
                 throw new InvalidOperationException("The Iconography page did not realize the first icon row.");
             }
 
-            firstContainer.ApplyTemplate();
+            _ = firstContainer.ApplyTemplate();
             firstContainer.UpdateLayout();
 
-            var lastIndex = list.Items.Count - 1;
+            int lastIndex = list.Items.Count - 1;
             list.ScrollIntoView(list.Items[lastIndex]);
             list.UpdateLayout();
             DrainDispatcher(list.Dispatcher);
 
-            var lastContainer = list.ItemContainerGenerator.ContainerFromIndex(lastIndex) as FrameworkElement;
-            if (lastContainer == null)
+            if (list.ItemContainerGenerator.ContainerFromIndex(lastIndex) is not FrameworkElement lastContainer)
             {
                 throw new InvalidOperationException("The Iconography page did not realize the final icon row after scrolling.");
             }
 
-            lastContainer.ApplyTemplate();
+            _ = lastContainer.ApplyTemplate();
             lastContainer.UpdateLayout();
         }
 
-        private static T FindVisualChildByName<T>(DependencyObject root, string name)
+        private static T? FindVisualChildByName<T>(DependencyObject root, string name)
             where T : FrameworkElement
         {
             if (root == null)
@@ -151,16 +144,15 @@ namespace Fluence.Wpf.Demo
                 return null;
             }
 
-            var rootElement = root as T;
-            if (rootElement != null && string.Equals(rootElement.Name, name, StringComparison.Ordinal))
+            if (root is T rootElement && string.Equals(rootElement.Name, name, StringComparison.Ordinal))
             {
                 return rootElement;
             }
 
-            var childCount = VisualTreeHelper.GetChildrenCount(root);
-            for (var i = 0; i < childCount; i++)
+            int childCount = VisualTreeHelper.GetChildrenCount(root);
+            for (int i = 0; i < childCount; i++)
             {
-                var match = FindVisualChildByName<T>(VisualTreeHelper.GetChild(root, i), name);
+                T? match = FindVisualChildByName<T>(VisualTreeHelper.GetChild(root, i), name);
                 if (match != null)
                 {
                     return match;
@@ -172,7 +164,7 @@ namespace Fluence.Wpf.Demo
 
         private static void DrainDispatcher(Dispatcher dispatcher)
         {
-            dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
+            _ = dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
         }
 
         private static bool IsSmokeTest(string[] args)
@@ -182,7 +174,7 @@ namespace Fluence.Wpf.Demo
                 return false;
             }
 
-            for (var i = 0; i < args.Length; i++)
+            for (int i = 0; i < args.Length; i++)
             {
                 if (string.Equals(args[i], SmokeTestArgument, StringComparison.OrdinalIgnoreCase))
                 {

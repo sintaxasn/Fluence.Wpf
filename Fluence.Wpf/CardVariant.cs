@@ -25,20 +25,31 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// Predefined visual preset for <see cref="Fluence.Wpf.Controls.Border"/>.
+    /// Visual style variant for <see cref="Controls.Card"/>.
     /// </summary>
-    public enum BorderVariant
+    public enum CardVariant
     {
-        /// <summary>No themed border styling.</summary>
-        None,
-        /// <summary>Card-style border and background.</summary>
-        Card,
-        /// <summary>Subtle outline suitable for grouped content.</summary>
+        /// <summary>
+        /// Default card elevation and stroke.
+        /// </summary>
+        Default,
+
+        /// <summary>
+        /// Outlined card with transparent fill.
+        /// </summary>
+        Outlined,
+        /// <summary>
+        /// Solid filled card surface.
+        /// </summary>
+        Filled,
+
+        /// <summary>
+        /// Low-contrast subtle card surface.
+        /// </summary>
         Subtle,
-        /// <summary>Thin divider line between sections.</summary>
-        Divider
     }
 }
