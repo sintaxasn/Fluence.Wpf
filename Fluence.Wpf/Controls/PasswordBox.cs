@@ -436,8 +436,8 @@ namespace Fluence.Wpf.Controls
             _isUpdatingPassword = true;
             try
             {
-                Password = _passwordBox.Password;
-                _ = (_revealTextBox?.Text = _passwordBox.Password);
+                Password = _passwordBox?.Password ?? string.Empty;
+                _ = (_revealTextBox?.Text = _passwordBox?.Password ?? string.Empty);
 
                 UpdatePasswordStrengthFromPassword();
                 UpdateStrengthMeter();
@@ -458,8 +458,8 @@ namespace Fluence.Wpf.Controls
             _isUpdatingPassword = true;
             try
             {
-                Password = _revealTextBox.Text;
-                _ = (_passwordBox?.Password = _revealTextBox.Text);
+                Password = _revealTextBox?.Text ?? string.Empty;
+                _ = (_passwordBox?.Password = _revealTextBox?.Text ?? string.Empty);
 
                 UpdatePasswordStrengthFromPassword();
                 UpdateStrengthMeter();
