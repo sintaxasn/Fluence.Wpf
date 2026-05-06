@@ -114,62 +114,50 @@ namespace Fluence.Wpf.Helpers
         public override Type TargetPropertyType => typeof(GridLength);
 
         /// <summary>
-        /// Creates a new, frozen clone of this animation.
-        /// </summary>
-        /// <returns>A fresh <see cref="GridLengthAnimation"/> instance.</returns>
-        protected override Freezable CreateInstanceCore()
-        {
-            return new GridLengthAnimation();
-        }
-
-        /// <summary>
         /// Returns the interpolated <see cref="GridLength"/> for the current animation time.
         /// </summary>
         /// <param name="defaultOriginValue">Default origin (unused; <see cref="From"/> wins).</param>
         /// <param name="defaultDestinationValue">Default destination (unused; <see cref="To"/> wins).</param>
         /// <param name="animationClock">Clock providing the normalised progress.</param>
         /// <returns>The interpolated current <see cref="GridLength"/>.</returns>
-        public override object GetCurrentValue(
-            object defaultOriginValue,
-            object defaultDestinationValue,
-            AnimationClock animationClock)
+        public override object GetCurrentValue(object defaultOriginValue, object defaultDestinationValue, AnimationClock animationClock)
         {
-#if NET6_0_OR_GREATER
-            ArgumentNullException.ThrowIfNull(animationClock);
-#else
-            if (animationClock == null)
-            {
-                throw new ArgumentNullException(nameof(animationClock));
-            }
-#endif
-
             // If From is left at its Auto sentinel (the common "To-only" case), start
             // from the property's current animated base value — this is what WPF does
             // for a DoubleAnimation with only To set, and is what keeps a reverse
             // collapse (280 -> 48) from snapping to 0 on the first frame.
-            double fromValue;
-            GridLength fromLength = From;
+            if (animationClock == null)
+            {
+                throw new ArgumentNullException(nameof(animationClock));
+            }
+            GridLength fromLength = From; double fromValue;
             if (fromLength.GridUnitType == GridUnitType.Auto)
             {
-                GridLength originLength = defaultOriginValue is GridLength origin
-                    ? origin
-                    : new GridLength(0d, GridUnitType.Pixel);
+                GridLength originLength = defaultOriginValue is not GridLength origin
+                    ? new GridLength(0d, GridUnitType.Pixel)
+                    : origin;
                 fromValue = originLength.Value;
             }
             else
             {
                 fromValue = fromLength.Value;
             }
-
-            double toValue = To.Value;
             double progress = animationClock.CurrentProgress ?? 0d;
             if (EasingFunction != null)
             {
                 progress = EasingFunction.Ease(progress);
             }
-
-            double current = fromValue + ((toValue - fromValue) * progress);
+            double current = fromValue + ((To.Value - fromValue) * progress);
             return new GridLength(current, GridUnitType.Pixel);
+        }
+
+        /// <summary>
+        /// Creates a new, frozen clone of this animation.
+        /// </summary>
+        /// <returns>A fresh <see cref="GridLengthAnimation"/> instance.</returns>
+        protected override Freezable CreateInstanceCore()
+        {
+            return new GridLengthAnimation();
         }
     }
 }

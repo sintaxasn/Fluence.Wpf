@@ -35,13 +35,7 @@ namespace Fluence.Wpf.Helpers
 {
     internal static class AcrylicNoiseHelper
     {
-        private static ImageBrush? _cachedBrush;
-
-        /// <summary>
-        /// Returns a frozen, tiled ImageBrush containing a 128x128 procedural
-        /// luminosity-noise texture.  The brush is created once and cached.
-        /// </summary>
-        public static ImageBrush GetNoiseBrush()
+        internal static ImageBrush GetNoiseBrush()
         {
             if (_cachedBrush != null)
             {
@@ -52,7 +46,6 @@ namespace Fluence.Wpf.Helpers
             const int stride = size * 4;
             byte[] pixels = new byte[size * stride];
             Random rng = new(42);
-
             for (int i = 0; i < pixels.Length; i += 4)
             {
                 byte gray = (byte)rng.Next(0, 256);
@@ -61,9 +54,7 @@ namespace Fluence.Wpf.Helpers
                 pixels[i + 2] = gray; // R
                 pixels[i + 3] = 12;   // A  (~5 % opacity per pixel)
             }
-
-            BitmapSource bitmap = BitmapSource.Create(
-                size, size, 96, 96, PixelFormats.Bgra32, null, pixels, stride);
+            BitmapSource bitmap = BitmapSource.Create(size, size, 96, 96, PixelFormats.Bgra32, null, pixels, stride);
             bitmap.Freeze();
 
             ImageBrush brush = new(bitmap)
@@ -74,7 +65,6 @@ namespace Fluence.Wpf.Helpers
                 Stretch = Stretch.None
             };
             brush.Freeze();
-
             _cachedBrush = brush;
             return _cachedBrush;
         }
@@ -83,5 +73,13 @@ namespace Fluence.Wpf.Helpers
         {
             _cachedBrush = null;
         }
+
+        /// <summary>
+        /// Stores a cached instance of an ImageBrush for reuse.
+        /// </summary>
+        /// <remarks>This field is intended to improve performance by avoiding repeated creation of
+        /// ImageBrush instances. It may be null if the brush has not yet been initialized or has been
+        /// cleared.</remarks>
+        private static ImageBrush? _cachedBrush;
     }
 }

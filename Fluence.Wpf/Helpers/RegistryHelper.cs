@@ -35,25 +35,25 @@ namespace Fluence.Wpf.Helpers
 {
     internal static class RegistryHelper
     {
-        public static bool GetAppsUseLightTheme()
+        internal static bool GetAppsUseLightTheme()
         {
             using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.PersonalizeRegistryPath);
             return key?.GetValue(NativeConstants.AppsUseLightTheme) is not int intValue || intValue != 0;
         }
 
-        public static bool GetSystemUsesLightTheme()
+        internal static bool GetSystemUsesLightTheme()
         {
             using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.PersonalizeRegistryPath);
             return key?.GetValue(NativeConstants.SystemUsesLightTheme) is not int intValue || intValue != 0;
         }
 
-        public static bool GetColorPrevalence()
+        internal static bool GetColorPrevalence()
         {
             using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath);
             return key?.GetValue(NativeConstants.ColorPrevalence) is not int intValue || intValue != 0;
         }
 
-        public static bool TryGetAccentPalette(out Color[]? palette)
+        internal static bool TryGetAccentPalette(out Color[]? palette)
         {
             using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.AccentRegistryPath);
             if (key?.GetValue(NativeConstants.AccentPalette) is byte[] bytes && bytes.Length >= 32)
@@ -74,7 +74,7 @@ namespace Fluence.Wpf.Helpers
             return false;
         }
 
-        public static Color GetAccentColor()
+        internal static Color GetAccentColor()
         {
             using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.AccentRegistryPath);
             if (key?.GetValue(NativeConstants.AccentColor) is int intValue)
@@ -89,7 +89,7 @@ namespace Fluence.Wpf.Helpers
             return Color.FromRgb(0x00, 0x78, 0xD4);
         }
 
-        public static bool IsHighContrastEnabled()
+        internal static bool IsHighContrastEnabled()
         {
             return SystemParameters.HighContrast;
         }
@@ -97,7 +97,7 @@ namespace Fluence.Wpf.Helpers
         /// <summary>
         /// Reads DWM AccentColor (ABGR DWORD) used for the active titlebar when ColorPrevalence is on.
         /// </summary>
-        public static bool TryGetDwmAccentColor(out Color color)
+        internal static bool TryGetDwmAccentColor(out Color color)
         {
             using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath);
             if (key?.GetValue(NativeConstants.AccentColor) is int intValue)
@@ -117,7 +117,7 @@ namespace Fluence.Wpf.Helpers
         /// <summary>
         /// Reads DWM AccentColorInactive (ABGR DWORD) for the inactive titlebar.
         /// </summary>
-        public static bool TryGetDwmAccentColorInactive(out Color color)
+        internal static bool TryGetDwmAccentColorInactive(out Color color)
         {
             using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath);
             if (key?.GetValue(NativeConstants.AccentColorInactive) is int intValue)
@@ -137,7 +137,7 @@ namespace Fluence.Wpf.Helpers
         /// <summary>
         /// Reads DWM ColorizationColor (ARGB) and ColorizationColorBalance for Win10 border blending.
         /// </summary>
-        public static bool TryGetColorizationBalance(out Color colorizationColor, out int balance)
+        internal static bool TryGetColorizationBalance(out Color colorizationColor, out int balance)
         {
             using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath);
             if (key?.GetValue(NativeConstants.ColorizationColor) is int colorInt && key?.GetValue(NativeConstants.ColorizationColorBalance) is int balanceInt)
