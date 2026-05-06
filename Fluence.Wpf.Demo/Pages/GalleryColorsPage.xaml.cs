@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows.Controls;
 
 namespace Fluence.Wpf.Demo.Pages
@@ -292,6 +293,7 @@ namespace Fluence.Wpf.Demo.Pages
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 using System.Windows.Controls;
 
 namespace Fluence.Wpf.Demo.Pages.Colors
