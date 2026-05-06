@@ -25,7 +25,6 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
-using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
@@ -173,15 +172,6 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            double pixelsPerDip = 1.0;
-            try
-            {
-                pixelsPerDip = VisualTreeHelper.GetDpi(this).PixelsPerDip;
-            }
-            catch (InvalidOperationException)
-            {
-            }
-
             FormattedText formattedText = new(
                 text,
                 CultureInfo.CurrentCulture,
@@ -191,7 +181,7 @@ namespace Fluence.Wpf.Controls
                 textBlock.Foreground,
                 new NumberSubstitution(NumberCultureSource.Text, CultureInfo.CurrentCulture, NumberSubstitutionMethod.AsCulture),
                 TextFormattingMode.Display,
-                pixelsPerDip);
+                VisualTreeHelper.GetDpi(this).PixelsPerDip);
 
             double textWidth = formattedText.WidthIncludingTrailingWhitespace;
             if (textBlock.ActualWidth > 0 && textWidth > textBlock.ActualWidth + 0.5)
