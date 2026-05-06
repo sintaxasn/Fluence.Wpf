@@ -83,6 +83,8 @@ namespace Fluence.Wpf.Controls
                     BorderThickness = new Thickness(0, 0, 0, 1);
                     CornerRadius = new CornerRadius(0);
                     break;
+                default:
+                    break;
             }
         }
     }

@@ -119,6 +119,8 @@ namespace Fluence.Wpf.Controls
                         accumulatedHeight += desired.Height;
                         available = new Size(available.Width, Math.Max(0, available.Height - desired.Height - Spacing));
                         break;
+                    default:
+                        break;
                 }
             }
 
@@ -197,6 +199,9 @@ namespace Fluence.Wpf.Controls
                             remaining.Height = Math.Max(0, remaining.Height - height - Spacing);
                             break;
                         }
+
+                    default:
+                        break;
                 }
             }
 

@@ -289,7 +289,7 @@ namespace Fluence.Wpf
             {
                 ApplicationTheme.Dark => "Dark",
                 ApplicationTheme.HighContrast => "HighContrast",
-                _ => "Light",
+                ApplicationTheme.Light or ApplicationTheme.Auto or _ => "Light",
             };
             return new Uri(PackBase + "Themes/Colors/Theme." + themeName + ".xaml", UriKind.Absolute);
         }

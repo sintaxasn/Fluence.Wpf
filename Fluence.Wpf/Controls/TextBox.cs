@@ -326,6 +326,8 @@ namespace Fluence.Wpf.Controls
                             icon.Text = "\uE783";
                             icon.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "SystemFillColorCriticalBrush");
                             break;
+                        case ValidationState.None:
+                            break;
                         default:
                             icon.Visibility = Visibility.Collapsed;
                             break;
@@ -342,6 +344,10 @@ namespace Fluence.Wpf.Controls
                         break;
                     case ValidationState.Error:
                         helper.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "SystemFillColorCriticalBrush");
+                        break;
+                    case ValidationState.None:
+                        break;
+                    default:
                         break;
                 }
 

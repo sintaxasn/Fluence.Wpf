@@ -108,7 +108,7 @@ namespace Fluence.Wpf.Controls
                 FluentTypography.Title => TitleTextBlockStyleKey,
                 FluentTypography.TitleLarge => TitleLargeTextBlockStyleKey,
                 FluentTypography.Display => DisplayTextBlockStyleKey,
-                _ => null,
+                FluentTypography.None or _ => null,
             };
         }
 

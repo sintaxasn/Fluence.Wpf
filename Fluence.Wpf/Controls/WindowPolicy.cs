@@ -185,7 +185,7 @@ namespace Fluence.Wpf.Controls
             {
                 BackdropType.Acrylic => NativeConstants.DWMSBT_TRANSIENTWINDOW,
                 BackdropType.Tabbed => NativeConstants.DWMSBT_TABBEDWINDOW,
-                _ => NativeConstants.DWMSBT_MAINWINDOW,
+                BackdropType.Mica or BackdropType.Auto or BackdropType.None or _ => NativeConstants.DWMSBT_MAINWINDOW,
             };
         }
     }

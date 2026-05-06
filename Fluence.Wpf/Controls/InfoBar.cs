@@ -271,7 +271,7 @@ namespace Fluence.Wpf.Controls
                 InfoBarSeverity.Success => "Success",
                 InfoBarSeverity.Warning => "Warning",
                 InfoBarSeverity.Error => "Error",
-                _ => "Informational",
+                InfoBarSeverity.Informational or _ => "Informational",
             };
             _ = VisualStateManager.GoToState(this, stateName, useTransitions);
         }
