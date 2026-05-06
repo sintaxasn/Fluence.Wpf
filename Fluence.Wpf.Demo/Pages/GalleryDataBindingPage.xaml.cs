@@ -398,8 +398,8 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
 }
 ";
 
-private readonly ObservableCollection<DemoItem> _items = new ObservableCollection<DemoItem>();
-        private readonly ObservableCollection<DemoItem> _templateItems = new ObservableCollection<DemoItem>();
+        private readonly ObservableCollection<DemoItem> _items = [];
+        private readonly ObservableCollection<DemoItem> _templateItems = [];
 
         /// <summary>
         /// Initializes a new instance of <see cref="GalleryDataBindingPage"/>.
@@ -408,9 +408,9 @@ private readonly ObservableCollection<DemoItem> _items = new ObservableCollectio
         {
             InitializeComponent();
 
-            DemoSampleControl.ReplaceSourceLink(ObservableCollectionListViewSourceLink, ObservableCollectionListViewXamlSource, ObservableCollectionListViewCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(ListViewSelectionModeSourceLink, ListViewSelectionModeXamlSource, ListViewSelectionModeCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(DataTemplateRowSourceLink, DataTemplateRowXamlSource, DataTemplateRowCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(ObservableCollectionListViewSourceLink, ObservableCollectionListViewXamlSource, ObservableCollectionListViewCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(ListViewSelectionModeSourceLink, ListViewSelectionModeXamlSource, ListViewSelectionModeCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(DataTemplateRowSourceLink, DataTemplateRowXamlSource, DataTemplateRowCSharpSource);
 
             Loaded += OnLoaded;
         }
@@ -438,7 +438,7 @@ private readonly ObservableCollection<DemoItem> _items = new ObservableCollectio
                 return;
             }
 
-            var text = (NewItemBox.Text ?? string.Empty).Trim();
+            string text = (NewItemBox.Text ?? string.Empty).Trim();
             if (string.IsNullOrEmpty(text))
             {
                 return;
@@ -446,7 +446,7 @@ private readonly ObservableCollection<DemoItem> _items = new ObservableCollectio
 
             AddDemoItem(text);
             NewItemBox.Text = string.Empty;
-            NewItemBox.Focus();
+            _ = NewItemBox.Focus();
             UpdateCount();
         }
 
@@ -466,8 +466,7 @@ private readonly ObservableCollection<DemoItem> _items = new ObservableCollectio
                 return;
             }
 
-            var selected = BoundListView.SelectedItem as DemoItem;
-            if (selected != null)
+            if (BoundListView.SelectedItem is DemoItem selected)
             {
                 BoundListView.AnimateRemove(selected, UpdateCount);
             }
@@ -493,10 +492,7 @@ private readonly ObservableCollection<DemoItem> _items = new ObservableCollectio
 
         private void UpdateCount()
         {
-            if (ItemCountLabel != null)
-            {
-                ItemCountLabel.Text = string.Format(CultureInfo.CurrentCulture, "{0} item{1}", _items.Count, _items.Count == 1 ? "" : "s");
-            }
+            _ = (ItemCountLabel?.Text = string.Format(CultureInfo.CurrentCulture, "{0} item{1}", _items.Count, _items.Count == 1 ? "" : "s"));
         }
 
         private void SelectionMode_Changed(object sender, RoutedEventArgs e)
@@ -506,18 +502,9 @@ private readonly ObservableCollection<DemoItem> _items = new ObservableCollectio
                 return;
             }
 
-            if (MultipleModeRadio?.IsChecked == true)
-            {
-                SelectionModeListView.SelectionMode = SelectionMode.Multiple;
-            }
-            else if (ExtendedModeRadio?.IsChecked == true)
-            {
-                SelectionModeListView.SelectionMode = SelectionMode.Extended;
-            }
-            else
-            {
-                SelectionModeListView.SelectionMode = SelectionMode.Single;
-            }
+            SelectionModeListView.SelectionMode = MultipleModeRadio?.IsChecked == true
+                ? SelectionMode.Multiple
+                : ExtendedModeRadio?.IsChecked == true ? SelectionMode.Extended : SelectionMode.Single;
 
             SelectionModeListView.UnselectAll();
             UpdateSelectionLabel();
@@ -535,7 +522,7 @@ private readonly ObservableCollection<DemoItem> _items = new ObservableCollectio
                 return;
             }
 
-            var count = SelectionModeListView.SelectedItems.Count;
+            int count = SelectionModeListView.SelectedItems.Count;
             if (count == 0)
             {
                 SelectionCountLabel.Text = "Selected: none";
@@ -556,11 +543,11 @@ private readonly ObservableCollection<DemoItem> _items = new ObservableCollectio
         /// <summary>
         /// Gets or sets the display name.
         /// </summary>
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         /// <summary>
         /// Gets or sets the time the item was added (formatted string).
         /// </summary>
-        public string AddedAt { get; set; }
+        public string? AddedAt { get; set; }
     }
 }

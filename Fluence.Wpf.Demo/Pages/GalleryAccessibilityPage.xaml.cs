@@ -420,22 +420,22 @@ namespace Fluence.Wpf.Demo.Pages.Accessibility
 }
 ";
 
-// Representative Fluence key → Windows HC system colour pairs shown in the mapping table.
-        private static readonly string[][] HcPairs = new string[][]
-        {
-            new string[] { "TextFillColorPrimaryBrush",       "WindowText"        },
-            new string[] { "TextFillColorSecondaryBrush",     "WindowText"        },
-            new string[] { "TextFillColorTertiaryBrush",      "GrayText"          },
-            new string[] { "TextFillColorDisabledBrush",      "GrayText"          },
-            new string[] { "AccentFillColorDefaultBrush",     "Highlight"         },
-            new string[] { "AccentTextFillColorPrimaryBrush", "HotTrack"          },
-            new string[] { "ControlFillColorDefaultBrush",    "Control"           },
-            new string[] { "ControlStrokeColorDefaultBrush",  "ControlDark"       },
-            new string[] { "FocusStrokeColorOuterBrush",      "Highlight"         },
-            new string[] { "FocusStrokeColorInnerBrush",      "HighlightText"     },
-            new string[] { "CardBackgroundFillColorDefaultBrush", "Control"       },
-            new string[] { "SolidBackgroundFillColorBaseBrush",   "Window"        },
-        };
+        // Representative Fluence key → Windows HC system colour pairs shown in the mapping table.
+        private static readonly string[][] HcPairs =
+        [
+            ["TextFillColorPrimaryBrush",       "WindowText"],
+            ["TextFillColorSecondaryBrush",     "WindowText"],
+            ["TextFillColorTertiaryBrush",      "GrayText"],
+            ["TextFillColorDisabledBrush",      "GrayText"],
+            ["AccentFillColorDefaultBrush",     "Highlight"],
+            ["AccentTextFillColorPrimaryBrush", "HotTrack"],
+            ["ControlFillColorDefaultBrush",    "Control"],
+            ["ControlStrokeColorDefaultBrush",  "ControlDark"],
+            ["FocusStrokeColorOuterBrush",      "Highlight"],
+            ["FocusStrokeColorInnerBrush",      "HighlightText"],
+            ["CardBackgroundFillColorDefaultBrush", "Control"],
+            ["SolidBackgroundFillColorBaseBrush",   "Window"],
+        ];
 
         /// <summary>
         /// Initializes a new instance of <see cref="GalleryAccessibilityPage"/>.
@@ -444,10 +444,10 @@ namespace Fluence.Wpf.Demo.Pages.Accessibility
         {
             InitializeComponent();
 
-            DemoSampleControl.ReplaceSourceLink(FocusAndTabOrderSourceLink, FocusAndTabOrderXamlSource, FocusAndTabOrderCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(HighContrastMappingSourceLink, HighContrastMappingXamlSource, HighContrastMappingCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(AutomationPropertiesSourceLink, AutomationPropertiesXamlSource, AutomationPropertiesCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(RtlLayoutSourceLink, RtlLayoutXamlSource, RtlLayoutCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(FocusAndTabOrderSourceLink, FocusAndTabOrderXamlSource, FocusAndTabOrderCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(HighContrastMappingSourceLink, HighContrastMappingXamlSource, HighContrastMappingCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(AutomationPropertiesSourceLink, AutomationPropertiesXamlSource, AutomationPropertiesCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(RtlLayoutSourceLink, RtlLayoutXamlSource, RtlLayoutCSharpSource);
 
             Loaded += OnLoaded;
         }
@@ -460,12 +460,15 @@ namespace Fluence.Wpf.Demo.Pages.Accessibility
 
         private void PopulateHcTable()
         {
-            if (HcMappingTable == null) return;
-
-            var rows = new List<HcBrushEntry>();
-            foreach (var pair in HcPairs)
+            if (HcMappingTable == null)
             {
-                var brush = TryFindResource(pair[0]) as Brush ?? Brushes.Transparent;
+                return;
+            }
+
+            List<HcBrushEntry> rows = [];
+            foreach (string[] pair in HcPairs)
+            {
+                Brush brush = TryFindResource(pair[0]) as Brush ?? Brushes.Transparent;
                 rows.Add(new HcBrushEntry
                 {
                     Key = pair[0],
@@ -479,7 +482,11 @@ namespace Fluence.Wpf.Demo.Pages.Accessibility
 
         private void RtlToggle_Changed(object sender, RoutedEventArgs e)
         {
-            if (RtlDemoCard == null || RtlToggle == null) return;
+            if (RtlDemoCard == null || RtlToggle == null)
+            {
+                return;
+            }
+
             RtlDemoCard.FlowDirection = RtlToggle.IsChecked == true
                 ? FlowDirection.RightToLeft
                 : FlowDirection.LeftToRight;
@@ -494,16 +501,16 @@ namespace Fluence.Wpf.Demo.Pages.Accessibility
         /// <summary>
         /// Gets or sets the Fluence resource key (e.g. <c>TextFillColorPrimaryBrush</c>).
         /// </summary>
-        public string Key { get; set; }
+        public string? Key { get; set; }
 
         /// <summary>
         /// Gets or sets the Windows HC system colour name (e.g. <c>WindowText</c>).
         /// </summary>
-        public string HcMapping { get; set; }
+        public string? HcMapping { get; set; }
 
         /// <summary>
         /// Gets or sets the live brush resolved from the current theme dictionary.
         /// </summary>
-        public Brush Brush { get; set; }
+        public Brush? Brush { get; set; }
     }
 }

@@ -183,13 +183,13 @@ namespace Fluence.Wpf.Demo.Pages.Forms
 }
 ";
 
-public GalleryFormsPage()
+        public GalleryFormsPage()
         {
             InitializeComponent();
 
-            DemoSampleControl.ReplaceSourceLink(SignInFormSourceLink, SignInFormXamlSource, SignInFormCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(CheckoutFormSourceLink, CheckoutFormXamlSource, CheckoutFormCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(SettingsFormSourceLink, SettingsFormXamlSource, SettingsFormCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(SignInFormSourceLink, SignInFormXamlSource, SignInFormCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(CheckoutFormSourceLink, CheckoutFormXamlSource, CheckoutFormCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(SettingsFormSourceLink, SettingsFormXamlSource, SettingsFormCSharpSource);
 
             Loaded += GalleryFormsPage_Loaded;
         }
@@ -202,7 +202,7 @@ public GalleryFormsPage()
                 .AddValueChanged(SignInPasswordBox, SignInPassword_Changed);
         }
 
-        private void SignInField_Changed(object sender, RoutedEventArgs e)
+        private void SignInField_Changed(object? sender, RoutedEventArgs e)
         {
             if (SignInButton == null || SignInEmailBox == null || SignInPasswordBox == null)
             {
@@ -214,25 +214,19 @@ public GalleryFormsPage()
                 !string.IsNullOrWhiteSpace(SignInPasswordBox.Password);
         }
 
-        private void SignInPassword_Changed(object sender, System.EventArgs e)
+        private void SignInPassword_Changed(object? sender, System.EventArgs e)
         {
             SignInField_Changed(sender, new RoutedEventArgs());
         }
 
         private void SignInButton_Click(object sender, RoutedEventArgs e)
         {
-            if (SignInStatusBar != null)
-            {
-                SignInStatusBar.IsOpen = true;
-            }
+            _ = (SignInStatusBar?.IsOpen = true);
         }
 
         private void SaveSettingsButton_Click(object sender, RoutedEventArgs e)
         {
-            if (SettingsSavedBar != null)
-            {
-                SettingsSavedBar.IsOpen = true;
-            }
+            _ = (SettingsSavedBar?.IsOpen = true);
         }
     }
 }

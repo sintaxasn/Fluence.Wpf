@@ -45,7 +45,7 @@ namespace Fluence.Wpf.Demo.Pages
             CSharp
         }
 
-        private static readonly HashSet<string> CSharpKeywords = new HashSet<string>(StringComparer.Ordinal)
+        private static readonly HashSet<string> CSharpKeywords = new(StringComparer.Ordinal)
         {
             "abstract",
             "as",
@@ -167,38 +167,37 @@ namespace Fluence.Wpf.Demo.Pages
 
         public string Title
         {
-            get { return (string)GetValue(TitleProperty); }
-            set { SetValue(TitleProperty, value); }
+            get => (string)GetValue(TitleProperty);
+            set => SetValue(TitleProperty, value);
         }
 
         public string Description
         {
-            get { return (string)GetValue(DescriptionProperty); }
-            set { SetValue(DescriptionProperty, value); }
+            get => (string)GetValue(DescriptionProperty);
+            set => SetValue(DescriptionProperty, value);
         }
 
         public string XamlSource
         {
-            get { return (string)GetValue(XamlSourceProperty); }
-            set { SetValue(XamlSourceProperty, value); }
+            get => (string)GetValue(XamlSourceProperty);
+            set => SetValue(XamlSourceProperty, value);
         }
 
         public string CSharpSource
         {
-            get { return (string)GetValue(CSharpSourceProperty); }
-            set { SetValue(CSharpSourceProperty, value); }
+            get => (string)GetValue(CSharpSourceProperty);
+            set => SetValue(CSharpSourceProperty, value);
         }
 
         public UIElement SampleContent
         {
-            get { return (UIElement)GetValue(SampleContentProperty); }
-            set { SetValue(SampleContentProperty, value); }
+            get => (UIElement)GetValue(SampleContentProperty);
+            set => SetValue(SampleContentProperty, value);
         }
 
         private static void OnHeaderTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = d as DemoSampleControl;
-            if (control != null)
+            if (d is DemoSampleControl control)
             {
                 control.UpdateHeaderVisibility();
             }
@@ -206,8 +205,7 @@ namespace Fluence.Wpf.Demo.Pages
 
         private static void OnSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = d as DemoSampleControl;
-            if (control != null)
+            if (d is DemoSampleControl control)
             {
                 control.ResetSource();
             }
@@ -215,8 +213,7 @@ namespace Fluence.Wpf.Demo.Pages
 
         private static void OnSampleContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var control = d as DemoSampleControl;
-            if (control != null)
+            if (d is DemoSampleControl control)
             {
                 control.UpdateSampleContentVisibility();
             }
@@ -238,12 +235,9 @@ namespace Fluence.Wpf.Demo.Pages
 
         private void UpdateSourceVisibility()
         {
-            if (SourceExpander != null)
-            {
-                SourceExpander.Visibility = string.IsNullOrWhiteSpace(XamlSource) && string.IsNullOrWhiteSpace(CSharpSource)
+            _ = (SourceExpander?.Visibility = string.IsNullOrWhiteSpace(XamlSource) && string.IsNullOrWhiteSpace(CSharpSource)
                     ? Visibility.Collapsed
-                    : Visibility.Visible;
-            }
+                    : Visibility.Visible);
         }
 
         private void UpdateSampleContentVisibility()
@@ -269,10 +263,7 @@ namespace Fluence.Wpf.Demo.Pages
         private void ResetSource()
         {
             _sourceLoaded = false;
-            if (SourceTabs != null)
-            {
-                SourceTabs.Items.Clear();
-            }
+            SourceTabs?.Items.Clear();
 
             UpdateSourceVisibility();
         }
@@ -304,7 +295,7 @@ namespace Fluence.Wpf.Demo.Pages
 
         private void AddSourceTab(string header, string source, SourceLanguage language)
         {
-            SourceTabs.Items.Add(new Fluence.Wpf.Controls.TabViewItem
+            _ = SourceTabs.Items.Add(new Controls.TabViewItem
             {
                 Header = header,
                 IsClosable = false,
@@ -319,30 +310,30 @@ namespace Fluence.Wpf.Demo.Pages
 
         private Grid CreateSourcePane(string source, SourceLanguage language)
         {
-            var panel = new Grid();
+            Grid panel = new();
             panel.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
             panel.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
 
-            var copyButton = CreateCopyButton(source);
+            Controls.Button copyButton = CreateCopyButton(source);
             Grid.SetRow(copyButton, 0);
-            panel.Children.Add(copyButton);
+            _ = panel.Children.Add(copyButton);
 
-            var viewer = CreateSourceViewer(source, language);
+            RichTextBox viewer = CreateSourceViewer(source, language);
             Grid.SetRow(viewer, 1);
-            panel.Children.Add(viewer);
+            _ = panel.Children.Add(viewer);
 
             return panel;
         }
 
-        private Fluence.Wpf.Controls.Button CreateCopyButton(string source)
+        private Controls.Button CreateCopyButton(string source)
         {
-            var button = new Fluence.Wpf.Controls.Button
+            Controls.Button button = new()
             {
                 Name = "CopySourceButton",
                 Appearance = ControlAppearance.Subtle,
                 Content = "Copy",
                 HorizontalAlignment = HorizontalAlignment.Right,
-                Icon = new Fluence.Wpf.Controls.FontIcon { Glyph = "\uE8C8" },
+                Icon = new Controls.FontIcon { Glyph = "\uE8C8" },
                 Margin = new Thickness(0, 0, 0, 8),
                 Tag = source
             };
@@ -352,8 +343,7 @@ namespace Fluence.Wpf.Demo.Pages
 
         private void OnCopySourceButtonClick(object sender, RoutedEventArgs e)
         {
-            var element = sender as FrameworkElement;
-            var source = element != null ? element.Tag as string : null;
+            string? source = sender is FrameworkElement element ? element.Tag as string : null;
             if (!string.IsNullOrEmpty(source))
             {
                 Clipboard.SetText(source);
@@ -362,7 +352,7 @@ namespace Fluence.Wpf.Demo.Pages
 
         private static RichTextBox CreateSourceViewer(string source, SourceLanguage language)
         {
-            var viewer = new RichTextBox
+            RichTextBox viewer = new()
             {
                 FontFamily = new FontFamily("Consolas"),
                 FontSize = 12,
@@ -373,16 +363,16 @@ namespace Fluence.Wpf.Demo.Pages
                 Padding = new Thickness(0),
                 VerticalScrollBarVisibility = ScrollBarVisibility.Auto
             };
-            viewer.SetResourceReference(Control.BackgroundProperty, "SolidBackgroundFillColorTertiaryBrush");
-            viewer.SetResourceReference(Control.ForegroundProperty, "TextFillColorPrimaryBrush");
-            viewer.SetResourceReference(Control.BorderBrushProperty, "CardStrokeColorDefaultBrush");
+            viewer.SetResourceReference(BackgroundProperty, "SolidBackgroundFillColorTertiaryBrush");
+            viewer.SetResourceReference(ForegroundProperty, "TextFillColorPrimaryBrush");
+            viewer.SetResourceReference(BorderBrushProperty, "CardStrokeColorDefaultBrush");
             viewer.Document = CreateSourceDocument(source, language);
             return viewer;
         }
 
         private static FlowDocument CreateSourceDocument(string source, SourceLanguage language)
         {
-            var document = new FlowDocument
+            FlowDocument document = new()
             {
                 FontFamily = new FontFamily("Consolas"),
                 FontSize = 12,
@@ -390,16 +380,16 @@ namespace Fluence.Wpf.Demo.Pages
             };
             document.SetResourceReference(TextElement.ForegroundProperty, "TextFillColorPrimaryBrush");
 
-            var paragraph = new Paragraph
+            Paragraph paragraph = new()
             {
                 LineHeight = 18,
                 Margin = new Thickness(0)
             };
             document.Blocks.Add(paragraph);
 
-            var normalized = (source ?? string.Empty).Replace("\r\n", "\n").Replace('\r', '\n');
-            var lines = normalized.Split('\n');
-            for (var i = 0; i < lines.Length; i++)
+            string normalized = (source ?? string.Empty).Replace("\r\n", "\n").Replace('\r', '\n');
+            string[] lines = normalized.Split('\n');
+            for (int i = 0; i < lines.Length; i++)
             {
                 AddFormattedLine(paragraph, lines[i], language);
                 if (i < lines.Length - 1)
@@ -430,7 +420,7 @@ namespace Fluence.Wpf.Demo.Pages
 
         private static void AddXamlLine(Paragraph paragraph, string line)
         {
-            var index = 0;
+            int index = 0;
             while (index < line.Length)
             {
                 if (StartsWith(line, index, "<!--"))
@@ -439,16 +429,16 @@ namespace Fluence.Wpf.Demo.Pages
                     return;
                 }
 
-                var current = line[index];
-                if (current == '"' || current == '\'')
+                char current = line[index];
+                if (current is '"' or '\'')
                 {
-                    var end = FindQuotedTextEnd(line, index, current);
+                    int end = FindQuotedTextEnd(line, index, current);
                     AddRun(paragraph, line.Substring(index, end - index), "SystemFillColorCautionBrush");
                     index = end;
                     continue;
                 }
 
-                if (current == '<' || current == '>' || current == '/')
+                if (current is '<' or '>' or '/')
                 {
                     AddRun(paragraph, line.Substring(index, 1), "AccentTextFillColorPrimaryBrush");
                     index++;
@@ -457,22 +447,22 @@ namespace Fluence.Wpf.Demo.Pages
 
                 if (IsXamlNameStart(current))
                 {
-                    var start = index;
+                    int start = index;
                     while (index < line.Length && IsXamlNameChar(line[index]))
                     {
                         index++;
                     }
 
-                    var name = line.Substring(start, index - start);
-                    var next = SkipWhiteSpace(line, index);
-                    var resourceKey = next < line.Length && line[next] == '='
+                    string name = line.Substring(start, index - start);
+                    int next = SkipWhiteSpace(line, index);
+                    string resourceKey = next < line.Length && line[next] == '='
                         ? "SystemFillColorSuccessBrush"
                         : "AccentTextFillColorPrimaryBrush";
                     AddRun(paragraph, name, resourceKey);
                     continue;
                 }
 
-                var plainStart = index;
+                int plainStart = index;
                 while (index < line.Length &&
                        line[index] != '<' &&
                        line[index] != '>' &&
@@ -490,7 +480,7 @@ namespace Fluence.Wpf.Demo.Pages
 
         private static void AddCSharpLine(Paragraph paragraph, string line)
         {
-            var index = 0;
+            int index = 0;
             while (index < line.Length)
             {
                 if (StartsWith(line, index, "//"))
@@ -499,10 +489,10 @@ namespace Fluence.Wpf.Demo.Pages
                     return;
                 }
 
-                var current = line[index];
+                char current = line[index];
                 if (current == '"')
                 {
-                    var end = FindQuotedTextEnd(line, index, current);
+                    int end = FindQuotedTextEnd(line, index, current);
                     AddRun(paragraph, line.Substring(index, end - index), "SystemFillColorCautionBrush");
                     index = end;
                     continue;
@@ -510,7 +500,7 @@ namespace Fluence.Wpf.Demo.Pages
 
                 if (current == '\'' && index + 2 < line.Length)
                 {
-                    var end = FindQuotedTextEnd(line, index, current);
+                    int end = FindQuotedTextEnd(line, index, current);
                     AddRun(paragraph, line.Substring(index, end - index), "SystemFillColorCautionBrush");
                     index = end;
                     continue;
@@ -518,20 +508,20 @@ namespace Fluence.Wpf.Demo.Pages
 
                 if (char.IsLetter(current) || current == '_')
                 {
-                    var start = index;
+                    int start = index;
                     while (index < line.Length && (char.IsLetterOrDigit(line[index]) || line[index] == '_'))
                     {
                         index++;
                     }
 
-                    var word = line.Substring(start, index - start);
+                    string word = line.Substring(start, index - start);
                     AddRun(paragraph, word, CSharpKeywords.Contains(word)
                         ? "AccentTextFillColorPrimaryBrush"
                         : "TextFillColorPrimaryBrush");
                     continue;
                 }
 
-                var plainStart = index;
+                int plainStart = index;
                 while (index < line.Length &&
                        !StartsWith(line, index, "//") &&
                        line[index] != '"' &&
@@ -553,7 +543,7 @@ namespace Fluence.Wpf.Demo.Pages
                 return;
             }
 
-            var run = new Run(text);
+            Run run = new(text);
             run.SetResourceReference(TextElement.ForegroundProperty, resourceKey);
             paragraph.Inlines.Add(run);
         }
@@ -566,7 +556,7 @@ namespace Fluence.Wpf.Demo.Pages
 
         private static int FindQuotedTextEnd(string text, int start, char quote)
         {
-            var index = start + 1;
+            int index = start + 1;
             while (index < text.Length)
             {
                 if (text[index] == '\\')
@@ -610,6 +600,7 @@ namespace Fluence.Wpf.Demo.Pages
                    value == '-';
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S2302:\"nameof\" should be used", Justification = "False positive.")]
         public static DemoSampleControl ReplaceSourceLink(FrameworkElement placeholder, string xamlSource, string csharpSource)
         {
 #if NET6_0_OR_GREATER
@@ -621,7 +612,7 @@ namespace Fluence.Wpf.Demo.Pages
             }
 #endif
 
-            var sample = new DemoSampleControl
+            DemoSampleControl sample = new()
             {
                 Name = placeholder.Name,
                 HorizontalAlignment = HorizontalAlignment.Stretch,
@@ -630,7 +621,7 @@ namespace Fluence.Wpf.Demo.Pages
                 CSharpSource = csharpSource
             };
 
-            var hostCard = FindAncestorCard(placeholder);
+            FluenceCard? hostCard = FindAncestorCard(placeholder);
             if (hostCard != null && hostCard.Content is UIElement sampleContent)
             {
                 sample.Margin = hostCard.Margin;
@@ -640,10 +631,9 @@ namespace Fluence.Wpf.Demo.Pages
                 hostCard.Content = null;
                 sample.SampleContent = sampleContent;
 
-                var hostPanel = hostCard.Parent as Panel;
-                if (hostPanel != null)
+                if (hostCard.Parent is Panel hostPanel)
                 {
-                    var index = hostPanel.Children.IndexOf(hostCard);
+                    int index = hostPanel.Children.IndexOf(hostCard);
                     if (index >= 0)
                     {
                         hostPanel.Children.RemoveAt(index);
@@ -652,8 +642,7 @@ namespace Fluence.Wpf.Demo.Pages
                     }
                 }
 
-                var hostContent = hostCard.Parent as ContentControl;
-                if (hostContent != null && ReferenceEquals(hostContent.Content, hostCard))
+                if (hostCard.Parent is ContentControl hostContent && ReferenceEquals(hostContent.Content, hostCard))
                 {
                     hostContent.Content = sample;
                     return sample;
@@ -663,10 +652,9 @@ namespace Fluence.Wpf.Demo.Pages
             sample.Margin = placeholder.Margin;
             CopyAttachedLayout(placeholder, sample);
 
-            var parentPanel = placeholder.Parent as Panel;
-            if (parentPanel != null)
+            if (placeholder.Parent is Panel parentPanel)
             {
-                var index = parentPanel.Children.IndexOf(placeholder);
+                int index = parentPanel.Children.IndexOf(placeholder);
                 if (index >= 0)
                 {
                     parentPanel.Children.RemoveAt(index);
@@ -675,8 +663,7 @@ namespace Fluence.Wpf.Demo.Pages
                 }
             }
 
-            var parentContent = placeholder.Parent as ContentControl;
-            if (parentContent != null && ReferenceEquals(parentContent.Content, placeholder))
+            if (placeholder.Parent is ContentControl parentContent && ReferenceEquals(parentContent.Content, placeholder))
             {
                 parentContent.Content = sample;
                 return sample;
@@ -685,13 +672,12 @@ namespace Fluence.Wpf.Demo.Pages
             throw new InvalidOperationException("Source link placeholder must be hosted by a Panel or ContentControl.");
         }
 
-        private static FluenceCard FindAncestorCard(FrameworkElement element)
+        private static FluenceCard? FindAncestorCard(FrameworkElement element)
         {
-            DependencyObject current = element;
+            DependencyObject? current = element;
             while (current != null)
             {
-                var card = current as FluenceCard;
-                if (card != null)
+                if (current is FluenceCard card)
                 {
                     return card;
                 }
@@ -702,33 +688,20 @@ namespace Fluence.Wpf.Demo.Pages
             return null;
         }
 
-        private static DependencyObject GetParentObject(DependencyObject current)
+        private static DependencyObject? GetParentObject(DependencyObject current)
         {
-            if (current == null)
-            {
-                return null;
-            }
-
-            var parent = VisualTreeHelper.GetParent(current);
-            if (parent != null)
-            {
-                return parent;
-            }
-
-            return LogicalTreeHelper.GetParent(current);
+            return current is not null ? VisualTreeHelper.GetParent(current) ?? LogicalTreeHelper.GetParent(current) : null;
         }
 
         private static void RemovePlaceholderFromParent(FrameworkElement placeholder)
         {
-            var parentPanel = placeholder.Parent as Panel;
-            if (parentPanel != null)
+            if (placeholder.Parent is Panel parentPanel)
             {
                 parentPanel.Children.Remove(placeholder);
                 return;
             }
 
-            var parentContent = placeholder.Parent as ContentControl;
-            if (parentContent != null && ReferenceEquals(parentContent.Content, placeholder))
+            if (placeholder.Parent is ContentControl parentContent && ReferenceEquals(parentContent.Content, placeholder))
             {
                 parentContent.Content = null;
             }

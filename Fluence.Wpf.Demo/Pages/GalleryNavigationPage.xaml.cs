@@ -31,7 +31,6 @@ using System.Windows;
 using System.Windows.Controls;
 using NavigationView = Fluence.Wpf.Controls.NavigationView;
 using NavigationViewItem = Fluence.Wpf.Controls.NavigationViewItem;
-using NavigationViewItemInvokedEventArgs = Fluence.Wpf.Controls.NavigationViewItemInvokedEventArgs;
 
 namespace Fluence.Wpf.Demo.Pages
 {
@@ -236,15 +235,15 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
 }
 ";
 
-private int _backRequestCount;
+        private int _backRequestCount;
 
         public GalleryNavigationPage()
         {
             InitializeComponent();
 
-            DemoSampleControl.ReplaceSourceLink(LeftNavigationViewSourceLink, LeftNavigationViewXamlSource, LeftNavigationViewCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(TopNavigationViewSourceLink, TopNavigationViewXamlSource, TopNavigationViewCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(CompactNavigationViewSourceLink, CompactNavigationViewXamlSource, CompactNavigationViewCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(LeftNavigationViewSourceLink, LeftNavigationViewXamlSource, LeftNavigationViewCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(TopNavigationViewSourceLink, TopNavigationViewXamlSource, TopNavigationViewCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(CompactNavigationViewSourceLink, CompactNavigationViewXamlSource, CompactNavigationViewCSharpSource);
 
             Loaded += GalleryNavigationPage_Loaded;
         }
@@ -267,61 +266,56 @@ private int _backRequestCount;
             SetNavigationDemoContent(sender as NavigationView, e.InvokedItemContainer);
         }
 
-        private static void SetNavigationDemoContent(NavigationView nav, NavigationViewItem item)
+        private static void SetNavigationDemoContent(NavigationView? nav, NavigationViewItem item)
         {
             if (nav == null || item == null)
             {
                 return;
             }
 
-            var title = item.Content as string;
+            string? title = item.Content as string;
             nav.Content = CreateNavigationDemoContent(title ?? string.Empty);
         }
 
         private static FrameworkElement CreateNavigationDemoContent(string title)
         {
-            switch (title)
+            return title switch
             {
-                case "Home":
-                    return CreateDescribedContent(
-                        "Home",
-                        "A persistent left pane keeps destinations available while content changes.");
-                case "Dashboard":
-                    return CreateDescribedContent(
-                        "Dashboard",
-                        "Toggle back availability below to update the back button state.");
-                case "Overview":
-                    return CreateSimpleContent("Overview dashboard");
-                case "Activity":
-                    return CreateSimpleContent("Recent activity");
-                default:
-                    return CreateSimpleContent(title);
-            }
+                "Home" => CreateDescribedContent(
+                                        "Home",
+                                        "A persistent left pane keeps destinations available while content changes."),
+                "Dashboard" => CreateDescribedContent(
+                                        "Dashboard",
+                                        "Toggle back availability below to update the back button state."),
+                "Overview" => CreateSimpleContent("Overview dashboard"),
+                "Activity" => CreateSimpleContent("Recent activity"),
+                _ => CreateSimpleContent(title),
+            };
         }
 
         private static StackPanel CreateDescribedContent(string title, string description)
         {
-            var panel = new StackPanel { Margin = new Thickness(20) };
-            var titleBlock = CreateSimpleContent(title);
+            StackPanel panel = new() { Margin = new Thickness(20) };
+            TextBlock titleBlock = CreateSimpleContent(title);
             titleBlock.Margin = new Thickness(0);
             titleBlock.FontSize = 18;
             titleBlock.FontWeight = FontWeights.SemiBold;
-            panel.Children.Add(titleBlock);
+            _ = panel.Children.Add(titleBlock);
 
-            var descriptionBlock = new TextBlock
+            TextBlock descriptionBlock = new()
             {
                 Margin = new Thickness(0, 6, 0, 0),
                 Text = description,
                 TextWrapping = TextWrapping.Wrap
             };
             descriptionBlock.SetResourceReference(TextBlock.ForegroundProperty, "TextFillColorSecondaryBrush");
-            panel.Children.Add(descriptionBlock);
+            _ = panel.Children.Add(descriptionBlock);
             return panel;
         }
 
         private static TextBlock CreateSimpleContent(string text)
         {
-            var textBlock = new TextBlock
+            TextBlock textBlock = new()
             {
                 Margin = new Thickness(20),
                 Text = text
@@ -335,7 +329,7 @@ private int _backRequestCount;
             UpdateBackState();
         }
 
-        private void CompactNavigationDemo_BackRequested(object sender, Fluence.Wpf.Controls.NavigationViewBackRequestedEventArgs e)
+        private void CompactNavigationDemo_BackRequested(object sender, NavigationViewBackRequestedEventArgs e)
         {
             _backRequestCount++;
             UpdateBackState();
@@ -343,19 +337,13 @@ private int _backRequestCount;
 
         private void UpdateBackState()
         {
-            var isBackEnabled = BackEnabledToggle != null && BackEnabledToggle.IsChecked == true;
+            bool isBackEnabled = BackEnabledToggle != null && BackEnabledToggle.IsChecked == true;
 
-            if (CompactNavigationDemo != null)
-            {
-                CompactNavigationDemo.IsBackEnabled = isBackEnabled;
-            }
+            _ = (CompactNavigationDemo?.IsBackEnabled = isBackEnabled);
 
-            if (BackStatusLabel != null)
-            {
-                BackStatusLabel.Text = isBackEnabled
+            _ = (BackStatusLabel?.Text = isBackEnabled
                     ? string.Format(CultureInfo.CurrentCulture, "Back button enabled ({0} requests)", _backRequestCount)
-                    : "Back button disabled";
-            }
+                    : "Back button disabled");
         }
     }
 }

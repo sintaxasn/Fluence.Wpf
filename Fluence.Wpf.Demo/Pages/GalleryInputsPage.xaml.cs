@@ -286,15 +286,15 @@ namespace Fluence.Wpf.Demo.Pages.Inputs
 }
 ";
 
-public GalleryInputsPage()
+        public GalleryInputsPage()
         {
             InitializeComponent();
 
-            DemoSampleControl.ReplaceSourceLink(TextBoxInputSourceLink, TextBoxInputXamlSource, TextBoxInputCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(TextBoxValidationSourceLink, TextBoxValidationXamlSource, TextBoxValidationCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(PasswordBoxInputSourceLink, PasswordBoxInputXamlSource, PasswordBoxInputCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(NumberBoxInputSourceLink, NumberBoxInputXamlSource, NumberBoxInputCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(SliderInputSourceLink, SliderInputXamlSource, SliderInputCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(TextBoxInputSourceLink, TextBoxInputXamlSource, TextBoxInputCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(TextBoxValidationSourceLink, TextBoxValidationXamlSource, TextBoxValidationCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(PasswordBoxInputSourceLink, PasswordBoxInputXamlSource, PasswordBoxInputCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(NumberBoxInputSourceLink, NumberBoxInputXamlSource, NumberBoxInputCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(SliderInputSourceLink, SliderInputXamlSource, SliderInputCSharpSource);
         }
 
         private void CharCountTextBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -304,7 +304,7 @@ public GalleryInputsPage()
                 return;
             }
 
-            var len = CharCountTextBox.Text != null ? CharCountTextBox.Text.Length : 0;
+            int len = CharCountTextBox.Text != null ? CharCountTextBox.Text.Length : 0;
             CharCountLabel.Text = string.Format(CultureInfo.CurrentCulture, "Characters: {0}", len);
         }
     }

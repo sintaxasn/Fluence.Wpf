@@ -307,17 +307,16 @@ namespace Fluence.Wpf.Demo.Pages.Colors
 }
 ";
 
-public GalleryColorsPage()
+        public GalleryColorsPage()
         {
             InitializeComponent();
 
-            var parent = ColorSamplesContent.Parent as Panel;
-            if (parent == null)
+            if (ColorSamplesContent.Parent is not Panel parent)
             {
                 return;
             }
 
-            var index = parent.Children.IndexOf(ColorSamplesContent);
+            int index = parent.Children.IndexOf(ColorSamplesContent);
             parent.Children.Remove(ColorSamplesContent);
             parent.Children.Insert(index, new DemoSampleControl
             {

@@ -346,16 +346,16 @@ namespace Fluence.Wpf.Demo.Pages.Buttons
 }
 ";
 
-public GalleryButtonsPage()
+        public GalleryButtonsPage()
         {
             InitializeComponent();
 
-            DemoSampleControl.ReplaceSourceLink(ButtonAppearancesSourceLink, ButtonAppearancesXamlSource, ButtonAppearancesCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(ButtonIconsSourceLink, ButtonIconsXamlSource, ButtonIconsCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(HyperlinkButtonsSourceLink, HyperlinkButtonsXamlSource, HyperlinkButtonsCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(DropDownButtonsSourceLink, DropDownButtonsXamlSource, DropDownButtonsCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(SplitButtonsSourceLink, SplitButtonsXamlSource, SplitButtonsCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(ToggleAndRepeatButtonsSourceLink, ToggleAndRepeatButtonsXamlSource, ToggleAndRepeatButtonsCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(ButtonAppearancesSourceLink, ButtonAppearancesXamlSource, ButtonAppearancesCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(ButtonIconsSourceLink, ButtonIconsXamlSource, ButtonIconsCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(HyperlinkButtonsSourceLink, HyperlinkButtonsXamlSource, HyperlinkButtonsCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(DropDownButtonsSourceLink, DropDownButtonsXamlSource, DropDownButtonsCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(SplitButtonsSourceLink, SplitButtonsXamlSource, SplitButtonsCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(ToggleAndRepeatButtonsSourceLink, ToggleAndRepeatButtonsXamlSource, ToggleAndRepeatButtonsCSharpSource);
         }
     }
 }

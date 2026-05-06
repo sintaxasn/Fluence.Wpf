@@ -30,8 +30,6 @@ using System;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
-using Fluence.Wpf;
-using Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Demo.Pages
 {
@@ -474,15 +472,15 @@ namespace Fluence.Wpf.Demo.Pages.Status
 }
 ";
 
-public GalleryStatusPage()
+        public GalleryStatusPage()
         {
             InitializeComponent();
 
-            DemoSampleControl.ReplaceSourceLink(ProgressBarValueSourceLink, ProgressBarValueXamlSource, ProgressBarValueCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(ProgressBarIndeterminateSourceLink, ProgressBarIndeterminateXamlSource, ProgressBarIndeterminateCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(ProgressBarStepsSourceLink, ProgressBarStepsXamlSource, ProgressBarStepsCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(ProgressRingsSourceLink, ProgressRingsXamlSource, ProgressRingsCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(InfoBarsSourceLink, InfoBarsXamlSource, InfoBarsCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(ProgressBarValueSourceLink, ProgressBarValueXamlSource, ProgressBarValueCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(ProgressBarIndeterminateSourceLink, ProgressBarIndeterminateXamlSource, ProgressBarIndeterminateCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(ProgressBarStepsSourceLink, ProgressBarStepsXamlSource, ProgressBarStepsCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(ProgressRingsSourceLink, ProgressRingsXamlSource, ProgressRingsCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(InfoBarsSourceLink, InfoBarsXamlSource, InfoBarsCSharpSource);
 
             Loaded += GalleryStatusPage_Loaded;
         }
@@ -495,7 +493,7 @@ public GalleryStatusPage()
             ProgressRingSlider_ValueChanged(null, null);
         }
 
-        private void IndeterminateToggle_Toggled(object sender, RoutedEventArgs e)
+        private void IndeterminateToggle_Toggled(object? sender, RoutedEventArgs? e)
         {
             if (!IsLoaded || IndeterminateProgressBar == null || IndeterminateToggle == null)
             {
@@ -507,25 +505,19 @@ public GalleryStatusPage()
                 : ProgressBarMode.Standard;
         }
 
-        private void ProgressSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void ProgressSlider_ValueChanged(object? sender, RoutedPropertyChangedEventArgs<double>? e)
         {
             if (ProgressSlider == null)
             {
                 return;
             }
 
-            if (SliderValueLabel != null)
-            {
-                SliderValueLabel.Text = string.Format(CultureInfo.CurrentCulture, "Value: {0:0}", ProgressSlider.Value);
-            }
+            _ = (SliderValueLabel?.Text = string.Format(CultureInfo.CurrentCulture, "Value: {0:0}", ProgressSlider.Value));
 
-            if (StandardProgressBar != null)
-            {
-                StandardProgressBar.Value = ProgressSlider.Value;
-            }
+            _ = (StandardProgressBar?.Value = ProgressSlider.Value);
         }
 
-        private void ProgressRingSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        private void ProgressRingSlider_ValueChanged(object? sender, RoutedPropertyChangedEventArgs<double>? e)
         {
             if (DeterminateProgressRing != null && ProgressRingSlider != null)
             {
@@ -540,9 +532,9 @@ public GalleryStatusPage()
                 return;
             }
 
-            var button = sender as FrameworkElement;
-            var tag = button != null && button.Tag != null ? button.Tag.ToString() : string.Empty;
+            FrameworkElement? button = sender as FrameworkElement;
 
+            string tag = button?.Tag?.ToString() ?? string.Empty;
             if (string.Equals(tag, "Next", StringComparison.OrdinalIgnoreCase))
             {
                 if (StepProgressBar.CurrentStep < StepProgressBar.Steps)

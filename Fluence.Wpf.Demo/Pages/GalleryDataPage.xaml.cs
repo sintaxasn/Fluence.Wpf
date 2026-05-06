@@ -272,24 +272,24 @@ namespace Fluence.Wpf.Demo.Pages.Data
 }
 ";
 
-private int _addCounter;
+        private int _addCounter;
 
         private static readonly string[] SampleNames =
-        {
+        [
             "Liam Torres",
             "Nora Fischer",
             "Eli Nakamura",
             "Priya Kapoor",
             "Dante Reeves"
-        };
+        ];
 
         public GalleryDataPage()
         {
             InitializeComponent();
 
-            DemoSampleControl.ReplaceSourceLink(ListViewItemsSourceLink, ListViewItemsXamlSource, ListViewItemsCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(ListViewEmptyStateSourceLink, ListViewEmptyStateXamlSource, ListViewEmptyStateCSharpSource);
-            DemoSampleControl.ReplaceSourceLink(CardVariantsSourceLink, CardVariantsXamlSource, CardVariantsCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(ListViewItemsSourceLink, ListViewItemsXamlSource, ListViewItemsCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(ListViewEmptyStateSourceLink, ListViewEmptyStateXamlSource, ListViewEmptyStateCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(CardVariantsSourceLink, CardVariantsXamlSource, CardVariantsCSharpSource);
         }
 
         private void AddListItem_Click(object sender, RoutedEventArgs e)
@@ -299,10 +299,10 @@ private int _addCounter;
                 return;
             }
 
-            var name = SampleNames[_addCounter % SampleNames.Length];
+            string name = SampleNames[_addCounter % SampleNames.Length];
             _addCounter++;
 
-            EmptyStateListView.Items.Add(new ListViewItem { Content = name });
+            _ = EmptyStateListView.Items.Add(new ListViewItem { Content = name });
         }
 
         private void RemoveListItem_Click(object sender, RoutedEventArgs e)
@@ -312,7 +312,7 @@ private int _addCounter;
                 return;
             }
 
-            var lastItem = EmptyStateListView.Items[EmptyStateListView.Items.Count - 1];
+            object lastItem = EmptyStateListView.Items[EmptyStateListView.Items.Count - 1];
             EmptyStateListView.AnimateRemove(lastItem, null);
         }
     }
