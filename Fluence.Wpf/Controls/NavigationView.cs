@@ -600,7 +600,7 @@ namespace Fluence.Wpf.Controls
 
         private Point GetCurrentIndicatorPosition()
         {
-            if (_selectionIndicator.RenderTransform is TransformGroup group && group.Children.Count >= 2)
+            if (_selectionIndicator?.RenderTransform is TransformGroup group && group.Children.Count >= 2)
             {
                 if (group.Children[1] is TranslateTransform translate)
                 {
@@ -916,17 +916,7 @@ namespace Fluence.Wpf.Controls
 
             _selectionIndicator.BeginAnimation(OpacityProperty, null);
 
-            TransformGroup? group = _selectionIndicator.RenderTransform as TransformGroup;
-            bool needsReplacement = group == null
-                || group.IsFrozen
-                || group.Children.Count < 2;
-
-            if (!needsReplacement)
-            {
-                needsReplacement = group.Children[0] is not ScaleTransform s || group.Children[1] is not TranslateTransform t || s.IsFrozen || t.IsFrozen;
-            }
-
-            if (needsReplacement)
+            if (_selectionIndicator.RenderTransform as TransformGroup is not TransformGroup group || group.IsFrozen || group.Children.Count < 2 || group.Children[0] is not ScaleTransform s || group.Children[1] is not TranslateTransform t || s.IsFrozen || t.IsFrozen)
             {
                 TransformGroup newGroup = new();
                 newGroup.Children.Add(new ScaleTransform(1.0, 1.0));
