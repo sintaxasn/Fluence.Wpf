@@ -71,7 +71,7 @@ namespace Fluence.Wpf.Helpers
 
         public static Color HsvToRgb(double hue, double saturation, double value)
         {
-            hue = hue % 360;
+            hue %= 360;
             if (hue < 0)
             {
                 hue += 360;

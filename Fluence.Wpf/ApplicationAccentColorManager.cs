@@ -151,11 +151,8 @@ namespace Fluence.Wpf
         {
             _useSystemAccent = true;
 
-            Color accent;
-
             if (RegistryHelper.TryGetAccentPalette(out Color[] palette))
             {
-                accent = palette[3];
                 _systemAccentColorLight3 = palette[0];
                 _systemAccentColorLight2 = palette[1];
                 _systemAccentColorLight1 = palette[2];
@@ -166,7 +163,7 @@ namespace Fluence.Wpf
             }
             else
             {
-                accent = GetAccentFromDwm();
+                Color accent = GetAccentFromDwm();
                 _systemAccentColor = accent;
                 GenerateAccentRamp(accent);
             }

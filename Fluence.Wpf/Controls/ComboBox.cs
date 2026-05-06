@@ -211,10 +211,7 @@ namespace Fluence.Wpf.Controls
 
             if (SelectedIndex == -1 && Items.Count > 0 && !IsSelectedIndexExplicitlySet())
             {
-                _ = Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    TryAutoSelectFirstItem();
-                }), DispatcherPriority.Loaded);
+                _ = Dispatcher.BeginInvoke(TryAutoSelectFirstItem, DispatcherPriority.Loaded);
             }
         }
 

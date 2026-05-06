@@ -71,7 +71,6 @@ namespace Fluence.Wpf.Controls
 
         private System.Windows.Controls.Button _backButton;
         private System.Windows.Controls.Button _paneToggleButton;
-        private ScrollViewer _paneScrollViewer;
         private FrameworkElement _selectionIndicator;
         private FrameworkElement _indicatorHost;
         private int _indicatorAnimationGeneration;
@@ -308,7 +307,6 @@ namespace Fluence.Wpf.Controls
             _paneToggleButton = GetTemplateChild(PartPaneToggleButton) as System.Windows.Controls.Button;
             _paneToggleButton?.Click += OnPaneToggleButtonClick;
 
-            _paneScrollViewer = GetTemplateChild(PartPaneItemsScrollViewer) as ScrollViewer;
             _selectionIndicator = GetTemplateChild(PartSelectionIndicator) as FrameworkElement;
 
             _indicatorHost = _selectionIndicator != null ? VisualTreeHelper.GetParent(_selectionIndicator) as FrameworkElement : null;

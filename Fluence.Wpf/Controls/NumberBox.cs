@@ -520,9 +520,7 @@ namespace Fluence.Wpf.Controls
             double max = Maximum;
             if (min > max)
             {
-                double t = min;
-                min = max;
-                max = t;
+                (max, min) = (min, max);
             }
 
             return Math.Min(Math.Max(value, min), max);

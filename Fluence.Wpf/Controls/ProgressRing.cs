@@ -682,8 +682,7 @@ namespace Fluence.Wpf.Controls
                 if (deferForLayout && isLayoutSizeUnavailable)
                 {
                     // Defer determinate first render until the initial layout pass provides a size.
-                    EventHandler handler = null;
-                    handler = delegate
+                    void handler(object sender, EventArgs e)
                     {
                         LayoutUpdated -= handler;
                         if (!IsActive || IsIndeterminate)
@@ -692,7 +691,7 @@ namespace Fluence.Wpf.Controls
                         }
 
                         RenderDeterminateArc(deferredFraction);
-                    };
+                    }
                     LayoutUpdated += handler;
                 }
 
