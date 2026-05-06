@@ -331,12 +331,12 @@ namespace Fluence.Wpf.Controls
             if (item is ComboBoxItem comboBoxItem)
             {
                 SelectedContent = comboBoxItem.Content;
-                SelectedText = comboBoxItem.Content != null ? comboBoxItem.Content.ToString() : string.Empty;
+                SelectedText = comboBoxItem.Content?.ToString() ?? string.Empty;
                 return;
             }
 
             SelectedContent = item;
-            SelectedText = item != null ? item.ToString() : string.Empty;
+            SelectedText = item?.ToString() ?? string.Empty;
         }
     }
 }
