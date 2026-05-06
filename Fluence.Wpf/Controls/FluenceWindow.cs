@@ -950,8 +950,9 @@ namespace Fluence.Wpf.Controls
 
         private int HitTestTitleBar(IntPtr lParam)
         {
-            int x = (short)(lParam.ToInt64() & 0xFFFF);
-            int y = (short)((lParam.ToInt64() >> 16) & 0xFFFF);
+            long lParamValue = lParam.ToInt64();
+            int x = unchecked((short)(lParamValue & 0xFFFF));
+            int y = unchecked((short)((lParamValue >> 16) & 0xFFFF));
             Point point = PointFromScreen(new(x, y));
             if (point.Y < 0 || point.Y > TitleBarHeight)
             {
