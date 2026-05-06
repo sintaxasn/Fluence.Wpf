@@ -36,103 +36,55 @@ namespace Fluence.Wpf.Helpers
     {
         public static bool GetAppsUseLightTheme()
         {
-            try
-            {
-                using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.PersonalizeRegistryPath);
-                if (key?.GetValue(NativeConstants.AppsUseLightTheme) is int intValue)
-                {
-                    return intValue != 0;
-                }
-            }
-            catch
-            {
-            }
-
-            return true;
+            using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.PersonalizeRegistryPath);
+            return key?.GetValue(NativeConstants.AppsUseLightTheme) is not int intValue || intValue != 0;
         }
 
         public static bool GetSystemUsesLightTheme()
         {
-            try
-            {
-                using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.PersonalizeRegistryPath);
-                if (key?.GetValue(NativeConstants.SystemUsesLightTheme) is int intValue)
-                {
-                    return intValue != 0;
-                }
-            }
-            catch
-            {
-            }
-
-            return true;
+            using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.PersonalizeRegistryPath);
+            return key?.GetValue(NativeConstants.SystemUsesLightTheme) is not int intValue || intValue != 0;
         }
 
         public static bool GetColorPrevalence()
         {
-            try
-            {
-                using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath);
-                if (key?.GetValue(NativeConstants.ColorPrevalence) is int intValue)
-                {
-                    return intValue != 0;
-                }
-            }
-            catch
-            {
-            }
-
-            return false;
+            using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath);
+            return key?.GetValue(NativeConstants.ColorPrevalence) is not int intValue || intValue != 0;
         }
 
         public static bool TryGetAccentPalette(out Color[]? palette)
         {
-            palette = null;
-
-            try
+            using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.AccentRegistryPath);
+            if (key?.GetValue(NativeConstants.AccentPalette) is byte[] bytes && bytes.Length >= 32)
             {
-                using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.AccentRegistryPath);
-                if (key?.GetValue(NativeConstants.AccentPalette) is byte[] bytes && bytes.Length >= 32)
+                palette = new Color[8];
+                for (int i = 0; i < 8; i++)
                 {
-                    palette = new Color[8];
-                    for (int i = 0; i < 8; i++)
-                    {
-                        int offset = i * 4;
-                        byte r = bytes[offset];
-                        byte g = bytes[offset + 1];
-                        byte b = bytes[offset + 2];
-                        byte a = bytes[offset + 3];
-                        palette[i] = Color.FromArgb(a == 0 ? (byte)255 : a, r, g, b);
-                    }
-                    return true;
+                    int offset = i * 4;
+                    byte r = bytes[offset];
+                    byte g = bytes[offset + 1];
+                    byte b = bytes[offset + 2];
+                    byte a = bytes[offset + 3];
+                    palette[i] = Color.FromArgb(a == 0 ? (byte)255 : a, r, g, b);
                 }
+                return true;
             }
-            catch
-            {
-            }
-
+            palette = null;
             return false;
         }
 
         public static Color GetAccentColor()
         {
-            try
+            using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.AccentRegistryPath);
+            if (key?.GetValue(NativeConstants.AccentColor) is int intValue)
             {
-                using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.AccentRegistryPath);
-                if (key?.GetValue(NativeConstants.AccentColor) is int intValue)
-                {
-                    uint color = unchecked((uint)intValue);
-                    byte a = (byte)((color >> 24) & 0xFF);
-                    byte b = (byte)((color >> 16) & 0xFF);
-                    byte g = (byte)((color >> 8) & 0xFF);
-                    byte r = (byte)(color & 0xFF);
-                    return Color.FromArgb(a == 0 ? (byte)255 : a, r, g, b);
-                }
+                uint color = unchecked((uint)intValue);
+                byte a = (byte)((color >> 24) & 0xFF);
+                byte b = (byte)((color >> 16) & 0xFF);
+                byte g = (byte)((color >> 8) & 0xFF);
+                byte r = (byte)(color & 0xFF);
+                return Color.FromArgb(a == 0 ? (byte)255 : a, r, g, b);
             }
-            catch
-            {
-            }
-
             return Color.FromRgb(0x00, 0x78, 0xD4);
         }
 
@@ -146,25 +98,18 @@ namespace Fluence.Wpf.Helpers
         /// </summary>
         public static bool TryGetDwmAccentColor(out Color color)
         {
+            using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath);
+            if (key?.GetValue(NativeConstants.AccentColor) is int intValue)
+            {
+                uint raw = unchecked((uint)intValue);
+                byte a = (byte)((raw >> 24) & 0xFF);
+                byte b = (byte)((raw >> 16) & 0xFF);
+                byte g = (byte)((raw >> 8) & 0xFF);
+                byte r = (byte)(raw & 0xFF);
+                color = Color.FromArgb(a == 0 ? (byte)255 : a, r, g, b);
+                return true;
+            }
             color = default;
-            try
-            {
-                using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath);
-                if (key?.GetValue(NativeConstants.AccentColor) is int intValue)
-                {
-                    uint raw = unchecked((uint)intValue);
-                    byte a = (byte)((raw >> 24) & 0xFF);
-                    byte b = (byte)((raw >> 16) & 0xFF);
-                    byte g = (byte)((raw >> 8) & 0xFF);
-                    byte r = (byte)(raw & 0xFF);
-                    color = Color.FromArgb(a == 0 ? (byte)255 : a, r, g, b);
-                    return true;
-                }
-            }
-            catch
-            {
-            }
-
             return false;
         }
 
@@ -173,25 +118,18 @@ namespace Fluence.Wpf.Helpers
         /// </summary>
         public static bool TryGetDwmAccentColorInactive(out Color color)
         {
+            using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath);
+            if (key?.GetValue(NativeConstants.AccentColorInactive) is int intValue)
+            {
+                uint raw = unchecked((uint)intValue);
+                byte a = (byte)((raw >> 24) & 0xFF);
+                byte b = (byte)((raw >> 16) & 0xFF);
+                byte g = (byte)((raw >> 8) & 0xFF);
+                byte r = (byte)(raw & 0xFF);
+                color = Color.FromArgb(a == 0 ? (byte)255 : a, r, g, b);
+                return true;
+            }
             color = default;
-            try
-            {
-                using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath);
-                if (key?.GetValue(NativeConstants.AccentColorInactive) is int intValue)
-                {
-                    uint raw = unchecked((uint)intValue);
-                    byte a = (byte)((raw >> 24) & 0xFF);
-                    byte b = (byte)((raw >> 16) & 0xFF);
-                    byte g = (byte)((raw >> 8) & 0xFF);
-                    byte r = (byte)(raw & 0xFF);
-                    color = Color.FromArgb(a == 0 ? (byte)255 : a, r, g, b);
-                    return true;
-                }
-            }
-            catch
-            {
-            }
-
             return false;
         }
 
@@ -200,27 +138,20 @@ namespace Fluence.Wpf.Helpers
         /// </summary>
         public static bool TryGetColorizationBalance(out Color colorizationColor, out int balance)
         {
+            using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath);
+            if (key?.GetValue(NativeConstants.ColorizationColor) is int colorInt && key?.GetValue(NativeConstants.ColorizationColorBalance) is int balanceInt)
+            {
+                uint raw = unchecked((uint)colorInt);
+                byte a = (byte)((raw >> 24) & 0xFF);
+                byte r = (byte)((raw >> 16) & 0xFF);
+                byte g = (byte)((raw >> 8) & 0xFF);
+                byte b = (byte)(raw & 0xFF);
+                colorizationColor = Color.FromArgb(a == 0 ? (byte)255 : a, r, g, b);
+                balance = balanceInt;
+                return true;
+            }
             colorizationColor = default;
             balance = 0;
-            try
-            {
-                using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath);
-                if (key?.GetValue(NativeConstants.ColorizationColor) is int colorInt && key?.GetValue(NativeConstants.ColorizationColorBalance) is int balanceInt)
-                {
-                    uint raw = unchecked((uint)colorInt);
-                    byte a = (byte)((raw >> 24) & 0xFF);
-                    byte r = (byte)((raw >> 16) & 0xFF);
-                    byte g = (byte)((raw >> 8) & 0xFF);
-                    byte b = (byte)(raw & 0xFF);
-                    colorizationColor = Color.FromArgb(a == 0 ? (byte)255 : a, r, g, b);
-                    balance = balanceInt;
-                    return true;
-                }
-            }
-            catch
-            {
-            }
-
             return false;
         }
     }
