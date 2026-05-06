@@ -34,13 +34,16 @@ namespace Fluence.Wpf.Demo.Mvvm.ViewModels
     /// Represents a single task item. Demonstrates <see cref="ObservableObject"/>
     /// with source-generated <c>[ObservableProperty]</c> backing fields.
     /// </summary>
-    public partial class TaskItemViewModel : ObservableObject
+    /// <remarks>
+    /// Initializes a new task with the given title.
+    /// </remarks>
+    public partial class TaskItemViewModel(string title) : ObservableObject
     {
         /// <summary>
         /// The task description text.
         /// </summary>
         [ObservableProperty]
-        private string _title;
+        private string _title = title;
 
         /// <summary>
         /// Whether the task is complete. Toggled via a CheckBox in the
@@ -48,13 +51,5 @@ namespace Fluence.Wpf.Demo.Mvvm.ViewModels
         /// </summary>
         [ObservableProperty]
         private bool _isCompleted;
-
-        /// <summary>
-        /// Initializes a new task with the given title.
-        /// </summary>
-        public TaskItemViewModel(string title)
-        {
-            _title = title;
-        }
     }
 }

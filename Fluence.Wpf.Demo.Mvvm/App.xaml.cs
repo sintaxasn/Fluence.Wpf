@@ -28,7 +28,6 @@
 
 using System.Windows;
 using System.Windows.Media;
-using Fluence.Wpf;
 
 namespace Fluence.Wpf.Demo.Mvvm
 {
@@ -37,10 +36,9 @@ namespace Fluence.Wpf.Demo.Mvvm
         static App()
         {
             // Inherit on-screen ClearType text rendering from root Window downward.
-            var textOptionsMetadata = FrameworkPropertyMetadataOptions.AffectsMeasure |
+            const FrameworkPropertyMetadataOptions textOptionsMetadata = FrameworkPropertyMetadataOptions.AffectsMeasure |
                 FrameworkPropertyMetadataOptions.AffectsRender |
                 FrameworkPropertyMetadataOptions.Inherits;
-
             TextOptions.TextFormattingModeProperty.OverrideMetadata(
                 typeof(Window),
                 new FrameworkPropertyMetadata(TextFormattingMode.Display, textOptionsMetadata));
@@ -57,10 +55,10 @@ namespace Fluence.Wpf.Demo.Mvvm
             base.OnStartup(e);
 
             // Apply Fluent theme + system accent. Must run before any Window is shown.
-            ApplicationThemeManager.Apply(ApplicationTheme.Auto, BackdropType.Auto, updateAccent: true);
+            ApplicationThemeManager.Apply(ApplicationTheme.Auto);
             ApplicationAccentColorManager.ApplySystemAccent();
 
-            var mainWindow = new MainWindow();
+            MainWindow mainWindow = new();
             MainWindow = mainWindow;
             mainWindow.Show();
         }
