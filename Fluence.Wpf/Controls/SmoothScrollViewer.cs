@@ -142,11 +142,11 @@ namespace Fluence.Wpf.Controls
         {
             base.OnScrollChanged(e);
 
-            if (e.ExtentHeightChange != 0 || e.ViewportHeightChange != 0)
+            if (e.ExtentHeightChange is not 0 || e.ViewportHeightChange is not 0)
             {
                 _targetVerticalOffset = Clamp(VerticalOffset, 0, ScrollableHeight);
             }
-            if (e.ExtentWidthChange != 0 || e.ViewportWidthChange != 0)
+            if (e.ExtentWidthChange is not 0 || e.ViewportWidthChange is not 0)
             {
                 _targetHorizontalOffset = Clamp(HorizontalOffset, 0, ScrollableWidth);
             }

@@ -541,7 +541,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            if (ResolveNavigationViewItem(SelectedItem) is not NavigationViewItem nvi || !nvi.IsVisible || nvi.ActualHeight == 0)
+            if (ResolveNavigationViewItem(SelectedItem) is not NavigationViewItem nvi || !nvi.IsVisible || nvi.ActualHeight is 0)
             {
                 HideIndicator();
                 return;

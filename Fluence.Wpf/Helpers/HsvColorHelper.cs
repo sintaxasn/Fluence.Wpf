@@ -263,7 +263,7 @@ namespace Fluence.Wpf.Helpers
         {
             double r, g, b;
 
-            if (s == 0)
+            if (s is 0)
             {
                 r = g = b = l;
             }
