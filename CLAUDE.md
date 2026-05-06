@@ -10,7 +10,7 @@ Self-contained persistent memory for engineers (human and AI) working in this re
 
 - **Fluence.Wpf** is a WPF control library that recreates the **Windows 11 Fluent / WinUI 3** visual language and interaction patterns on WPF.
 - **Target frameworks** (library + tests): `net472` (primary) and `net10.0-windows`. Gallery demo (`Fluence.Wpf.Demo`) targets `net472`; MVVM demo (`Fluence.Wpf.Demo.Mvvm`) targets `net10.0-windows`.
-- **Language**: `C# 7.3` on `net472` (see `Directory.Build.props` conditional `LangVersion`). No `net472` sources may use C# 8+ features (nullable reference types, ranges, default-interface methods, `record`, `with`, range/index, raw strings, etc.).
+- **Language**: `LangVersion=latest` across all TFMs, set centrally in `Directory.Build.props` — no per-TFM language restriction. `net472` still constrains **runtime API** availability (see §4.3); avoid APIs that don't ship in `net472`, but C# language features themselves are not restricted. Nullable reference types are **enabled** (`Nullable=enable` in `Directory.Build.props`); individual projects may override with `<Nullable>disable</Nullable>` (e.g. `Fluence.Wpf.Demo.Mvvm`).
 - **License**: BSD 3-Clause. Every `.cs` file begins with the same 27-line header; copy it verbatim from any existing library file when adding new sources. Do not edit the copyright year unless the user asks.
 - **OS**: Windows 10 1809+ baseline. Mica and rounded-corner extras light up on Windows 11.
 - **XML namespace URI**: `http://schemas.fluencewpf.com` - suggested prefix `fluence`.
@@ -47,16 +47,48 @@ Every `.cs` file in the library, demo, and tests starts with the BSD 3-Clause he
 
 ### Language features
 
-- `net472`: **C# 7.3 only**. Prefer `out var`, tuples (`System.ValueTuple`), `is T name`, expression-bodied members, local functions, explicit interface methods.
-- Multi-target: do not guard with `#if NET10_0_OR_GREATER` to gain features that would break `net472`.
-- No nullable reference types in library or demo code.
+- All TFMs use `LangVersion=latest` (set in `Directory.Build.props`). Use modern C# features freely; verify any runtime API is available in `net472` before using it.
+- Do not guard blocks with `#if NET10_0_OR_GREATER` to gain runtime APIs not present in `net472`; instead apply §4.3 guidance.
+- Nullable reference types are **enabled** (`Nullable=enable` in `Directory.Build.props`). Library and test code must be nullable-clean — annotate parameters and returns with `?` only where genuinely nullable.
 - `public` API must have `///` XML doc comments. The library builds with `<DocumentationFile>` and does not suppress `CS1591` / `CS1574`; missing comments fail the build.
 - **File encoding**: All `.cs`, `.xaml`, and `.csproj` files must be saved as **UTF-8 with BOM** (EF BB BF). Never commit UTF-16 LE files - they produce spurious full-file diffs, break `grep`-based tooling, and may cause XML parser failures on some build agents. If your editor does not default to UTF-8 with BOM, configure it project-wide (Visual Studio: Tools → Advanced Save Options; VS Code: `"files.encoding": "utf8bom"`). Verify with `[System.IO.File]::ReadAllBytes($path)[0..2]` - must be `0xEF 0xBB 0xBF`.
 
 ### Warnings and analyzers
 
-- `TreatWarningsAsErrors` is **on** for the library. Fix root cause instead of suppressing.
-- Prefer `EventArgs.Empty`, `nameof(...)`, explicit `readonly`, and immutable helpers.
+`Directory.Build.props` + `.editorconfig` harden the compiler to the maximum:
+
+- **`TreatWarningsAsErrors=True`** and **`WarningLevel=9999`**: every diagnostic is a build error. Fix root cause; never suppress without an explicit entry.
+- **`AnalysisLevel=latest-all`** + **`EnforceCodeStyleInBuild=true`**: all Roslyn analyzers and IDE style rules run as build-time errors across every project.
+- **`CheckForOverflowUnderflow=True`**: arithmetic that overflows fails the build. Win32 bit-mask operations (HIWORD/LOWORD extractions from `lParam`) **must** be wrapped in `unchecked { }`. See `FluenceWindow.HitTestTitleBar` for the canonical pattern.
+- **`Microsoft.CodeAnalysis.BannedApiAnalyzers`** (RS0030) reads `BannedSymbols.txt` at the solution root. **`string.IsNullOrEmpty()` is banned** — always use `string.IsNullOrWhiteSpace()`. Adding new banned symbols requires updating `BannedSymbols.txt`.
+- **`Microsoft.Extensions.StaticAnalysis`** (SonarAnalyzer): Sxxx rules run as errors; see `.editorconfig` for the suppressed subset.
+
+**Suppressions in `.editorconfig`** — do not re-enable without discussion:
+- `IDE0056` / `IDE0057` — index/range operators (net472 runtime gap)
+- `CA1307` / `CA1310` / `CA1847` / `CA1866` — string ordinal/span overloads (net472 API gap)
+- SonarAnalyzer: `S103`, `S104`, `S107`, `S109`, `S1067`, `S1121`, `S1449`, `S1659`, `S3358`, `S3458`, `S3532`, `S3869`
+
+**Per-library suppressions** (in `Fluence.Wpf.csproj` `<NoWarn>`):
+- `SYSLIB1045` — regex source generator (not available on `net472`)
+- `IDE0330` — `using` alias preference (style override)
+- `S1244` — floating-point equality (necessary for pixel math)
+- `VSTHRD001` — task/thread analyzer (WPF dispatcher pattern conflict)
+
+Prefer `EventArgs.Empty`, `nameof(...)`, explicit `readonly`, and immutable helpers. **Never** use inline `#pragma warning disable` except in exceptional third-party interop cases.
+
+### C# style conventions
+
+`EnforceCodeStyleInBuild=true` + `AnalysisLevel=latest-all` make the following patterns **mandatory** (violations are build errors):
+
+- **Explicit types over `var`**: `Color customColor = ...` not `var customColor = ...`. Exception: anonymous types have no explicit form.
+- **Target-typed `new()`**: `MainWindow mainWindow = new()` not `var mainWindow = new MainWindow()` — use when the type is clear from the declaration.
+- **Discard ignored returns with `_`**: methods that return a value must have the return consumed or explicitly discarded. `_ = Dispatcher.BeginInvoke(...)`, `_ = list.ApplyTemplate()`.
+- **`default` not `default(T)`**: `Assert.AreNotEqual(default, value)` not `Assert.AreNotEqual(default(Color), value)`.
+- **`is not` for null pattern checks**: `if (x is not FrameworkElement fe) throw ...` instead of `x as T; if (x == null) throw ...`.
+- **`??` throw expressions**: `FindVisualChildByName<T>(...) ?? throw new InvalidOperationException(...)` instead of a separate null-check + throw block.
+- **`const` for compile-time-known locals**: `const FrameworkPropertyMetadataOptions flags = ...` when a local's value is statically determined.
+- **Auto-properties over manual backing fields**: `public static Color SystemAccentColor { get; private set; }` instead of a `private static Color _systemAccentColor` field plus an expression-bodied getter.
+- **Remove redundant `using` directives**: unused imports are `error` (IDE0005).
 
 ### Naming
 
@@ -256,6 +288,9 @@ dotnet test    Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug
 - **Navigating via an external back-stack** in the demo ⇒ divergence with the current tag-based `NavigateTo`. The back stack is intentionally not wired up.
 - **Holding designer-only brushes as immutable resources** ⇒ designer no longer matches runtime after a theme change. Fix: keep `DesignTime.xaml` minimal and aligned with Light + `#0078D4`.
 - **Relying on a previous test's theme state leaking into yours** ⇒ intermittent color-alpha mismatches when tests run as a suite but pass in isolation. Fix: always call `MergeGenericDictionary(Application.Current)` (which resets managers, clears dictionaries, and applies a known theme) as the first step of any control test body.
+- **Using `string.IsNullOrEmpty()`** ⇒ build error RS0030 (banned via `BannedApiAnalyzers` + `BannedSymbols.txt`). Fix: always use `string.IsNullOrWhiteSpace()`.
+- **Win32 bit-mask arithmetic without `unchecked`** ⇒ `OverflowException` at runtime; caught as a build error because `CheckForOverflowUnderflow=True`. Fix: wrap HIWORD/LOWORD extractions in `unchecked { }`. See `FluenceWindow.HitTestTitleBar` for the canonical pattern.
+- **Ignoring a return value from a non-void method** ⇒ build error CA1806. Fix: discard with `_ = method()`.
 
 ---
 
@@ -285,7 +320,7 @@ Anything under `docs/_internal/` is not part of the public doc set. Do not link 
 
 When you are editing this repository, you are acting as a **senior C#/.NET WPF engineer and Windows-theme specialist**. Every change must honour the following gates:
 
-1. **Standards respected**: BSD header, C# 7.3 on `net472`, XML docs on public API, `DynamicResource` for theme-bound values, no hard-coded RGB, canonical WinUI key names.
+1. **Standards respected**: BSD header, `LangVersion=latest` with nullable-clean code, XML docs on public API, `DynamicResource` for theme-bound values, no hard-coded RGB, canonical WinUI key names, no banned APIs (`string.IsNullOrEmpty` etc.).
 2. **Reference authority followed**: any visual or behavioural decision is backed by §4 (in-tree precedent → per-domain authority → Windows 11 docs). Fabricated design choices do not pass review.
 3. **Build clean**: `dotnet build Fluence.Wpf.sln` with **zero** errors and **zero** warnings after your change on every TFM.
 4. **Tests green, and extended**: `dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj` passes on every TFM; every new control, public API, or behaviour change ships with an MSTest that exercises it, including a theme cycle where relevant. No regressions against the HEAD-of-branch baseline (see §6).
