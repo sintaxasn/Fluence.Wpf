@@ -42,6 +42,12 @@ namespace Fluence.Wpf.Controls
     [TemplateVisualState(GroupName = "DisplayKindStates", Name = "Value")]
     public class InfoBadge : ContentControl
     {
+        /// <summary>
+        /// Initializes static members of the InfoBadge class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the InfoBadge control uses its custom style by
+        /// default. It is called automatically by the .NET runtime before any static members are accessed or any
+        /// instances are created.</remarks>
         static InfoBadge()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -116,24 +122,20 @@ namespace Fluence.Wpf.Controls
         private static void OnIconSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             InfoBadge badge = (InfoBadge)d;
-            badge.Content = e.NewValue ?? (badge.Value >= 0
-                ? badge.Value.ToString(CultureInfo.CurrentCulture)
-                : null);
-
+            badge.Content = e.NewValue ?? (badge.Value >= 0 ? badge.Value.ToString(CultureInfo.CurrentCulture) : null);
             badge.UpdateDisplayKindState();
         }
 
         private static void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             InfoBadge badge = (InfoBadge)d;
-            if (badge.IconSource != null)
+            if (badge.IconSource is null)
             {
-                return;
+                int val = (int)e.NewValue;
+                badge.Content = val >= 0 ? val.ToString(CultureInfo.CurrentCulture) : null;
+                badge.UpdateDisplayKindState();
             }
 
-            int val = (int)e.NewValue;
-            badge.Content = val >= 0 ? val.ToString(CultureInfo.CurrentCulture) : null;
-            badge.UpdateDisplayKindState();
         }
 
         private void UpdateDisplayKindState(bool useTransitions = true)

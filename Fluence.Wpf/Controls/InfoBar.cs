@@ -44,10 +44,15 @@ namespace Fluence.Wpf.Controls
     [TemplateVisualState(GroupName = "SeverityLevels", Name = "Error")]
     public class InfoBar : ContentControl
     {
+        // Template part names.
         private const string PART_CloseButton = "PART_CloseButton";
 
-        private System.Windows.Controls.Button? _closeButton;
-
+        /// <summary>
+        /// Initializes static members of the InfoBar class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the InfoBar control uses its custom style by
+        /// default. It is called automatically before any static members are accessed or any instances are
+        /// created.</remarks>
         static InfoBar()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -247,12 +252,9 @@ namespace Fluence.Wpf.Controls
         public override void OnApplyTemplate()
         {
             _closeButton?.Click -= OnCloseButtonClick;
-
             base.OnApplyTemplate();
-
             _closeButton = GetTemplateChild(PART_CloseButton) as System.Windows.Controls.Button;
             _closeButton?.Click += OnCloseButtonClick;
-
             UpdateSeverityState(false);
         }
 
@@ -267,14 +269,13 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         private void UpdateSeverityState(bool useTransitions)
         {
-            string stateName = Severity switch
+            _ = VisualStateManager.GoToState(this, Severity switch
             {
                 InfoBarSeverity.Success => "Success",
                 InfoBarSeverity.Warning => "Warning",
                 InfoBarSeverity.Error => "Error",
                 InfoBarSeverity.Informational or _ => "Informational",
-            };
-            _ = VisualStateManager.GoToState(this, stateName, useTransitions);
+            }, useTransitions);
         }
 
         private void OnCloseButtonClick(object sender, RoutedEventArgs e)
@@ -290,14 +291,16 @@ namespace Fluence.Wpf.Controls
         {
             InfoBarClosingEventArgs args = new();
             Closing?.Invoke(this, args);
-
-            if (args.Cancel)
+            if (!args.Cancel)
             {
-                return;
+                IsOpen = false;
+                Closed?.Invoke(this, EventArgs.Empty);
             }
-
-            IsOpen = false;
-            Closed?.Invoke(this, EventArgs.Empty);
         }
+
+        /// <summary>
+        /// Represents a reference to the close button control, or null if the button is not available.
+        /// </summary>
+        private System.Windows.Controls.Button? _closeButton;
     }
 }

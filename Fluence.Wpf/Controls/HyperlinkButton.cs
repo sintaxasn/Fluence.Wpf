@@ -39,6 +39,12 @@ namespace Fluence.Wpf.Controls
     /// <remarks>Inspired by WInUI's HyperlinkButton.</remarks>
     public class HyperlinkButton : System.Windows.Controls.Button
     {
+        /// <summary>
+        /// Initializes static members of the HyperlinkButton class and sets up the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the HyperlinkButton control uses its own default
+        /// style as defined in the application's resources. This is necessary for proper theming and appearance in WPF
+        /// applications.</remarks>
         static HyperlinkButton()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -134,9 +140,7 @@ namespace Fluence.Wpf.Controls
         protected override void OnClick()
         {
             base.OnClick();
-
-            Uri uri = NavigateUri;
-            if (uri != null)
+            if (NavigateUri is Uri uri)
             {
                 _ = Process.Start(uri.AbsoluteUri);
             }
