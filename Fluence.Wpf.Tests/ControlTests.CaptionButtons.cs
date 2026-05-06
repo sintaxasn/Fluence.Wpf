@@ -28,7 +28,6 @@
 
 using System;
 using System.Windows;
-using System.Windows.Shell;
 using System.Windows.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Fluence.Wpf.Controls;
@@ -50,7 +49,7 @@ namespace Fluence.Wpf.Tests
     {
         private static FluenceWindow CreateAndShowOffScreenFluenceWindow()
         {
-            var window = new FluenceWindow
+            FluenceWindow window = new()
             {
                 Width = 520,
                 Height = 360,
@@ -61,13 +60,13 @@ namespace Fluence.Wpf.Tests
                 ShowInTaskbar = false
             };
             window.Show();
-            window.Dispatcher.Invoke(DispatcherPriority.Loaded, new Action(delegate { }));
+            _ = window.Dispatcher.Invoke(DispatcherPriority.Loaded, new Action(delegate { }));
             return window;
         }
 
         private static WpfButton GetCaptionButton(FluenceWindow window, string name)
         {
-            var button = FindVisualChildByName<WpfButton>(window, name);
+            WpfButton? button = FindVisualChildByName<WpfButton>(window, name);
             Assert.IsNotNull(button,
                 string.Format("Caption template part '{0}' must exist on FluenceWindow.", name));
             return button;
@@ -78,18 +77,18 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(delegate
             {
-                EnsureApplication();
-                MergeGenericDictionary(Application.Current);
+                _ = EnsureApplication();
+                _ = MergeGenericDictionary(Application.Current);
 
-                FluenceWindow window = null;
+                FluenceWindow? window = null;
                 try
                 {
                     window = CreateAndShowOffScreenFluenceWindow();
 
-                    var minimize = GetCaptionButton(window, "PART_MinimizeButton");
-                    var maximize = GetCaptionButton(window, "PART_MaximizeButton");
-                    var restore = GetCaptionButton(window, "PART_RestoreButton");
-                    var close = GetCaptionButton(window, "PART_CloseButton");
+                    WpfButton minimize = GetCaptionButton(window, "PART_MinimizeButton");
+                    WpfButton maximize = GetCaptionButton(window, "PART_MaximizeButton");
+                    WpfButton restore = GetCaptionButton(window, "PART_RestoreButton");
+                    WpfButton close = GetCaptionButton(window, "PART_CloseButton");
 
                     Assert.AreSame(SystemCommands.MinimizeWindowCommand, minimize.Command,
                         "PART_MinimizeButton must bind to SystemCommands.MinimizeWindowCommand.");
@@ -102,10 +101,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    if (window != null)
-                    {
-                        window.Close();
-                    }
+                    window?.Close();
                 }
             });
         }
@@ -115,18 +111,18 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(delegate
             {
-                EnsureApplication();
-                MergeGenericDictionary(Application.Current);
+                _ = EnsureApplication();
+                _ = MergeGenericDictionary(Application.Current);
 
-                FluenceWindow window = null;
+                FluenceWindow? window = null;
                 try
                 {
                     window = CreateAndShowOffScreenFluenceWindow();
 
-                    var minimize = GetCaptionButton(window, "PART_MinimizeButton");
-                    var maximize = GetCaptionButton(window, "PART_MaximizeButton");
-                    var restore = GetCaptionButton(window, "PART_RestoreButton");
-                    var close = GetCaptionButton(window, "PART_CloseButton");
+                    WpfButton minimize = GetCaptionButton(window, "PART_MinimizeButton");
+                    WpfButton maximize = GetCaptionButton(window, "PART_MaximizeButton");
+                    WpfButton restore = GetCaptionButton(window, "PART_RestoreButton");
+                    WpfButton close = GetCaptionButton(window, "PART_CloseButton");
 
                     Assert.AreEqual(0, System.Windows.Controls.Grid.GetColumn(minimize));
                     Assert.AreEqual(1, System.Windows.Controls.Grid.GetColumn(maximize));
@@ -158,10 +154,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    if (window != null)
-                    {
-                        window.Close();
-                    }
+                    window?.Close();
                 }
             });
         }
@@ -171,10 +164,10 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(delegate
             {
-                EnsureApplication();
-                MergeGenericDictionary(Application.Current);
+                _ = EnsureApplication();
+                _ = MergeGenericDictionary(Application.Current);
 
-                FluenceWindow window = null;
+                FluenceWindow? window = null;
                 try
                 {
                     window = CreateAndShowOffScreenFluenceWindow();
@@ -204,10 +197,10 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(delegate
             {
-                EnsureApplication();
-                MergeGenericDictionary(Application.Current);
+                _ = EnsureApplication();
+                _ = MergeGenericDictionary(Application.Current);
 
-                FluenceWindow window = null;
+                FluenceWindow? window = null;
                 try
                 {
                     window = CreateAndShowOffScreenFluenceWindow();
@@ -222,10 +215,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    if (window != null)
-                    {
-                        window.Close();
-                    }
+                    window?.Close();
                 }
             });
         }
@@ -235,10 +225,10 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(delegate
             {
-                EnsureApplication();
-                MergeGenericDictionary(Application.Current);
+                _ = EnsureApplication();
+                _ = MergeGenericDictionary(Application.Current);
 
-                FluenceWindow window = null;
+                FluenceWindow? window = null;
                 try
                 {
                     window = CreateAndShowOffScreenFluenceWindow();
@@ -255,10 +245,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    if (window != null)
-                    {
-                        window.Close();
-                    }
+                    window?.Close();
                 }
             });
         }
@@ -268,10 +255,10 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(delegate
             {
-                EnsureApplication();
-                MergeGenericDictionary(Application.Current);
+                _ = EnsureApplication();
+                _ = MergeGenericDictionary(Application.Current);
 
-                FluenceWindow window = null;
+                FluenceWindow? window = null;
                 try
                 {
                     window = CreateAndShowOffScreenFluenceWindow();
@@ -283,7 +270,7 @@ namespace Fluence.Wpf.Tests
                     // WM_SYSCOMMAND/SC_CLOSE via PostMessage. Block at Background priority
                     // so the Win32 message pump processes the queued message and close
                     // flow runs before we assert.
-                    window.Dispatcher.Invoke(DispatcherPriority.Background, new Action(delegate { }));
+                    _ = window.Dispatcher.Invoke(DispatcherPriority.Background, new Action(delegate { }));
 
                     Assert.IsTrue(closingFired,
                         "CloseWindowCommand must raise Window.Closing via SystemCommands.CloseWindow -> WM_SYSCOMMAND/SC_CLOSE.");
@@ -293,10 +280,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    if (window != null)
-                    {
-                        window.Close();
-                    }
+                    window?.Close();
                 }
             });
         }

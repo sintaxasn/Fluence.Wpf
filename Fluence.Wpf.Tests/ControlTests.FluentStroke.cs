@@ -32,8 +32,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf;
-using Fluent = Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Tests
 {
@@ -41,13 +39,13 @@ namespace Fluence.Wpf.Tests
     {
         // Lightweight subclass that exposes the protected mouse button overrides so we
         // can assert Card click semantics without relying on a real input device.
-        private sealed class ClickableCardProbe : Fluent.Card
+        private sealed class ClickableCardProbe : Controls.Card
         {
             public void SimulateMouseDown()
             {
-                var args = new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left)
+                MouseButtonEventArgs args = new(Mouse.PrimaryDevice, 0, MouseButton.Left)
                 {
-                    RoutedEvent = UIElement.MouseLeftButtonDownEvent,
+                    RoutedEvent = MouseLeftButtonDownEvent,
                     Source = this
                 };
                 OnMouseLeftButtonDown(args);
@@ -55,9 +53,9 @@ namespace Fluence.Wpf.Tests
 
             public void SimulateMouseUp()
             {
-                var args = new MouseButtonEventArgs(Mouse.PrimaryDevice, 0, MouseButton.Left)
+                MouseButtonEventArgs args = new(Mouse.PrimaryDevice, 0, MouseButton.Left)
                 {
-                    RoutedEvent = UIElement.MouseLeftButtonUpEvent,
+                    RoutedEvent = MouseLeftButtonUpEvent,
                     Source = this
                 };
                 OnMouseLeftButtonUp(args);
@@ -67,15 +65,15 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void RadioButton_OuterRing_UsesControlStrongStrokeBrush()
         {
-            RunOnStaThread(() =>
+            RunOnStaThread(static () =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var radio = new Fluent.RadioButton
+                    Controls.RadioButton radio = new()
                     {
                         Content = "Ring",
                         Width = 200,
@@ -88,16 +86,16 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    radio.ApplyTemplate();
-                    var outerEllipse = FindVisualChildByName<Ellipse>(radio, "OuterEllipse");
+                    _ = radio.ApplyTemplate();
+                    Ellipse? outerEllipse = FindVisualChildByName<Ellipse>(radio, "OuterEllipse");
                     Assert.IsNotNull(outerEllipse, "RadioButton template should contain OuterEllipse.");
 
-                    var expected = radio.FindResource("ControlStrongStrokeColorDefaultBrush") as Brush;
+                    Brush? expected = radio.FindResource("ControlStrongStrokeColorDefaultBrush") as Brush;
                     Assert.IsNotNull(expected, "ControlStrongStrokeColorDefaultBrush should be defined in the theme.");
                     Assert.AreSame(expected, outerEllipse.Stroke,
                         "Unchecked RadioButton ring must use ControlStrongStrokeColorDefaultBrush for WinUI 3 visibility parity.");
 
-                    var strokeColor = ((SolidColorBrush)outerEllipse.Stroke).Color;
+                    Color strokeColor = ((SolidColorBrush)outerEllipse.Stroke).Color;
                     Assert.AreEqual(0x72, strokeColor.A,
                         "Light theme ControlStrongStrokeColorDefault alpha must be 0x72 (WinUI canonical value).");
                 }
@@ -108,7 +106,7 @@ namespace Fluence.Wpf.Tests
                     window.Close();
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -117,15 +115,15 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void RadioButton_OuterRing_SwitchesToDisabledStrokeWhenDisabled()
         {
-            RunOnStaThread(() =>
+            RunOnStaThread(static () =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var radio = new Fluent.RadioButton
+                    Controls.RadioButton radio = new()
                     {
                         Content = "Disabled ring",
                         Width = 200,
@@ -138,15 +136,15 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    radio.ApplyTemplate();
+                    _ = radio.ApplyTemplate();
                     radio.IsEnabled = false;
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var outerEllipse = FindVisualChildByName<Ellipse>(radio, "OuterEllipse");
+                    Ellipse? outerEllipse = FindVisualChildByName<Ellipse>(radio, "OuterEllipse");
                     Assert.IsNotNull(outerEllipse);
 
-                    var expected = radio.FindResource("ControlStrongStrokeColorDisabledBrush") as Brush;
+                    Brush? expected = radio.FindResource("ControlStrongStrokeColorDisabledBrush") as Brush;
                     Assert.IsNotNull(expected, "ControlStrongStrokeColorDisabledBrush must exist in the theme.");
                     Assert.AreSame(expected, outerEllipse.Stroke,
                         "Disabled RadioButton ring must swap to ControlStrongStrokeColorDisabledBrush.");
@@ -158,7 +156,7 @@ namespace Fluence.Wpf.Tests
                     window.Close();
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -169,13 +167,13 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var card = new ClickableCardProbe
+                    ClickableCardProbe card = new()
                     {
                         IsClickable = true,
                         Content = "Home",
@@ -189,8 +187,8 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var clicks = 0;
-                    RoutedEventHandler handler = delegate { clicks++; };
+                    int clicks = 0;
+                    void handler(object sender, RoutedEventArgs e) { clicks++; }
                     card.Click += handler;
 
                     card.SimulateMouseDown();
@@ -210,7 +208,7 @@ namespace Fluence.Wpf.Tests
                     window.Close();
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -221,13 +219,13 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var card = new ClickableCardProbe
+                    ClickableCardProbe card = new()
                     {
                         IsClickable = false,
                         Content = "Static",
@@ -241,8 +239,8 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var clicks = 0;
-                    RoutedEventHandler handler = delegate { clicks++; };
+                    int clicks = 0;
+                    void handler(object sender, RoutedEventArgs e) { clicks++; }
                     card.Click += handler;
 
                     card.SimulateMouseDown();
@@ -260,7 +258,7 @@ namespace Fluence.Wpf.Tests
                     window.Close();
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -269,31 +267,31 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void NavigationView_Left_ContentBorder_HasWinUiCornerRadiusAndStroke()
         {
-            RunOnStaThread(() =>
+            RunOnStaThread(static () =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    Controls.NavigationView nav = new()
                     {
                         Width = 640,
                         Height = 400,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Left
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Home" });
+                    _ = nav.Items.Add(new Controls.NavigationViewItem { Content = "Home" });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    nav.ApplyTemplate();
-                    var contentPresenter = nav.Template.FindName("PART_ContentPresenter", nav) as ContentPresenter;
+                    _ = nav.ApplyTemplate();
+                    ContentPresenter? contentPresenter = nav.Template.FindName("PART_ContentPresenter", nav) as ContentPresenter;
                     Assert.IsNotNull(contentPresenter, "Left template must expose PART_ContentPresenter.");
 
-                    var contentBorder = VisualTreeHelper.GetParent(contentPresenter) as Border;
+                    Border? contentBorder = VisualTreeHelper.GetParent(contentPresenter) as Border;
                     Assert.IsNotNull(contentBorder, "PART_ContentPresenter must be hosted by a Border in the Left template.");
 
                     Assert.AreEqual(new CornerRadius(8, 0, 0, 0), contentBorder.CornerRadius,
@@ -303,12 +301,12 @@ namespace Fluence.Wpf.Tests
                     // PART_ContentPresenter lines up with the pane column edge. Wrapping the
                     // presenter in a BorderThickness=1 Border snapped content.X to 281.333 at
                     // 150% DPI (layout rounding), breaking the pane-layout assertions.
-                    var contentGrid = VisualTreeHelper.GetParent(contentBorder) as Grid;
+                    Grid? contentGrid = VisualTreeHelper.GetParent(contentBorder) as Grid;
                     Assert.IsNotNull(contentGrid, "The content Border must be hosted in a Grid that also carries the decorative stroke Border.");
                     Assert.AreEqual(2, VisualTreeHelper.GetChildrenCount(contentGrid),
                         "The content Grid must contain exactly two children: the background Border and the decorative stroke Border.");
 
-                    var strokeBorder = VisualTreeHelper.GetChild(contentGrid, 1) as Border;
+                    Border? strokeBorder = VisualTreeHelper.GetChild(contentGrid, 1) as Border;
                     Assert.IsNotNull(strokeBorder, "The second child of the content Grid must be the decorative stroke Border.");
                     Assert.IsFalse(strokeBorder.IsHitTestVisible, "The decorative stroke Border must not capture hit-tests.");
                     Assert.AreEqual(new CornerRadius(8, 0, 0, 0), strokeBorder.CornerRadius,
@@ -316,7 +314,7 @@ namespace Fluence.Wpf.Tests
                     Assert.AreEqual(new Thickness(1, 1, 0, 0), strokeBorder.BorderThickness,
                         "Left-mode content region must draw a 1,1,0,0 stroke separating it from the pane and top chrome.");
 
-                    var expectedStroke = nav.FindResource("CardStrokeColorDefaultBrush") as Brush;
+                    Brush? expectedStroke = nav.FindResource("CardStrokeColorDefaultBrush") as Brush;
                     Assert.IsNotNull(expectedStroke, "CardStrokeColorDefaultBrush should be available from the active theme.");
                     Assert.AreSame(expectedStroke, strokeBorder.BorderBrush,
                         "Left-mode content region stroke must bind to CardStrokeColorDefaultBrush so theme switching updates it.");
@@ -328,7 +326,7 @@ namespace Fluence.Wpf.Tests
                     window.Close();
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -337,31 +335,31 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void NavigationView_LeftCompact_ContentBorder_HasWinUiCornerRadiusAndStroke()
         {
-            RunOnStaThread(() =>
+            RunOnStaThread(static () =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    Controls.NavigationView nav = new()
                     {
                         Width = 640,
                         Height = 400,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Home" });
+                    _ = nav.Items.Add(new Controls.NavigationViewItem { Content = "Home" });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    nav.ApplyTemplate();
-                    var contentPresenter = nav.Template.FindName("PART_ContentPresenter", nav) as ContentPresenter;
+                    _ = nav.ApplyTemplate();
+                    ContentPresenter? contentPresenter = nav.Template.FindName("PART_ContentPresenter", nav) as ContentPresenter;
                     Assert.IsNotNull(contentPresenter, "LeftCompact template must expose PART_ContentPresenter.");
 
-                    var contentBorder = VisualTreeHelper.GetParent(contentPresenter) as Border;
+                    Border? contentBorder = VisualTreeHelper.GetParent(contentPresenter) as Border;
                     Assert.IsNotNull(contentBorder, "PART_ContentPresenter must be hosted by a Border in the LeftCompact template.");
 
                     Assert.AreEqual(new CornerRadius(8, 0, 0, 0), contentBorder.CornerRadius,
@@ -370,12 +368,12 @@ namespace Fluence.Wpf.Tests
                     // WI-1 F1: the 1,1,0,0 stroke sits on a sibling decorative Border so
                     // PART_ContentPresenter lines up with the pane column edge at both 48 px
                     // (pane closed) and 280 px (pane open) without layout-rounding drift.
-                    var contentGrid = VisualTreeHelper.GetParent(contentBorder) as Grid;
+                    Grid? contentGrid = VisualTreeHelper.GetParent(contentBorder) as Grid;
                     Assert.IsNotNull(contentGrid, "The content Border must be hosted in a Grid that also carries the decorative stroke Border.");
                     Assert.AreEqual(2, VisualTreeHelper.GetChildrenCount(contentGrid),
                         "The content Grid must contain exactly two children: the background Border and the decorative stroke Border.");
 
-                    var strokeBorder = VisualTreeHelper.GetChild(contentGrid, 1) as Border;
+                    Border? strokeBorder = VisualTreeHelper.GetChild(contentGrid, 1) as Border;
                     Assert.IsNotNull(strokeBorder, "The second child of the content Grid must be the decorative stroke Border.");
                     Assert.IsFalse(strokeBorder.IsHitTestVisible, "The decorative stroke Border must not capture hit-tests.");
                     Assert.AreEqual(new CornerRadius(8, 0, 0, 0), strokeBorder.CornerRadius,
@@ -383,7 +381,7 @@ namespace Fluence.Wpf.Tests
                     Assert.AreEqual(new Thickness(1, 1, 0, 0), strokeBorder.BorderThickness,
                         "LeftCompact-mode content region must draw a 1,1,0,0 stroke consistent with Left mode.");
 
-                    var expectedStroke = nav.FindResource("CardStrokeColorDefaultBrush") as Brush;
+                    Brush? expectedStroke = nav.FindResource("CardStrokeColorDefaultBrush") as Brush;
                     Assert.IsNotNull(expectedStroke, "CardStrokeColorDefaultBrush should be available from the active theme.");
                     Assert.AreSame(expectedStroke, strokeBorder.BorderBrush,
                         "LeftCompact-mode content region stroke must bind to CardStrokeColorDefaultBrush so theme switching updates it.");
@@ -395,7 +393,7 @@ namespace Fluence.Wpf.Tests
                     window.Close();
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -404,34 +402,34 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void NavigationView_DefaultStyle_AppliesLeftTemplate()
         {
-            RunOnStaThread(() =>
+            RunOnStaThread(static () =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    Controls.NavigationView nav = new()
                     {
                         Width = 400,
                         Height = 320
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Item" });
+                    _ = nav.Items.Add(new Controls.NavigationViewItem { Content = "Item" });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    nav.ApplyTemplate();
+                    _ = nav.ApplyTemplate();
 
                     Assert.AreEqual(NavigationViewPaneDisplayMode.Left, nav.PaneDisplayMode,
                         "Default PaneDisplayMode should be Left to match WinUI 3 default presentation.");
 
-                    var paneToggle = nav.Template.FindName("PART_PaneToggleButton", nav) as System.Windows.Controls.Button;
+                    Button? paneToggle = nav.Template.FindName("PART_PaneToggleButton", nav) as Button;
                     Assert.IsNotNull(paneToggle, "Default (Left) template must expose PART_PaneToggleButton.");
 
-                    var backButton = nav.Template.FindName("PART_BackButton", nav) as System.Windows.Controls.Button;
+                    Button? backButton = nav.Template.FindName("PART_BackButton", nav) as Button;
                     Assert.IsNotNull(backButton, "Default (Left) template must expose PART_BackButton.");
                 }
                 finally
@@ -441,7 +439,7 @@ namespace Fluence.Wpf.Tests
                     window.Close();
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });

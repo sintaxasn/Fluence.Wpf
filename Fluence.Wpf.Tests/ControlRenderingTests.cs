@@ -31,8 +31,7 @@ using System.Runtime.ExceptionServices;
 using System.Windows;
 using System.Windows.Media;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf;
-using Fluent = Fluence.Wpf.Controls;
+using Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Tests
 {
@@ -41,8 +40,8 @@ namespace Fluence.Wpf.Tests
     {
         private static void RunOnFreshStaThread(Action action)
         {
-            Exception capturedException = null;
-            WpfTestSta.Dispatcher.Invoke(new Action(delegate
+            Exception? capturedException = null;
+            WpfTestSta.Dispatcher?.Invoke(new Action(delegate
             {
                 try
                 {
@@ -60,22 +59,22 @@ namespace Fluence.Wpf.Tests
             }
         }
 
-        private static Application EnsureApplicationSta()
+        private static Application? EnsureApplicationSta()
         {
             return WpfTestSta.EnsureApplication();
         }
 
-        private static void MergeThemeAndGeneric(Application app)
+        private static void MergeThemeAndGeneric(Application? app)
         {
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
-            app.Resources.MergedDictionaries.Clear();
+            app?.Resources.MergedDictionaries.Clear();
             ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-            var demoShared = new ResourceDictionary
+            ResourceDictionary demoShared = new()
             {
                 Source = new Uri("/Fluence.Wpf.Demo;component/Resources/DemoSharedStyles.xaml", UriKind.Relative)
             };
-            app.Resources.MergedDictionaries.Add(demoShared);
+            app?.Resources.MergedDictionaries.Add(demoShared);
         }
 
         private static void AssertCrispRenderingSetters(FrameworkElement element)
@@ -97,11 +96,11 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(delegate
             {
-                var app = EnsureApplicationSta();
+                Application? app = EnsureApplicationSta();
                 MergeThemeAndGeneric(app);
-                var button = new Fluent.Button();
+                Button button = new();
                 _ = new Window { Content = button };
-                button.ApplyTemplate();
+                _ = button.ApplyTemplate();
                 AssertCrispRenderingSetters(button);
             });
         }
@@ -111,11 +110,11 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(delegate
             {
-                var app = EnsureApplicationSta();
+                Application? app = EnsureApplicationSta();
                 MergeThemeAndGeneric(app);
-                var textBox = new Fluent.TextBox();
+                TextBox textBox = new();
                 _ = new Window { Content = textBox };
-                textBox.ApplyTemplate();
+                _ = textBox.ApplyTemplate();
                 AssertCrispRenderingSetters(textBox);
             });
         }
@@ -125,16 +124,16 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(delegate
             {
-                var app = EnsureApplicationSta();
+                Application? app = EnsureApplicationSta();
                 MergeThemeAndGeneric(app);
 
-                foreach (var theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark, ApplicationTheme.HighContrast })
+                foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.Dark, ApplicationTheme.HighContrast })
                 {
                     ApplicationThemeManager.Apply(theme, BackdropType.None, true);
 
-                    var checkBox = new Fluent.CheckBox();
+                    CheckBox checkBox = new();
                     _ = new Window { Content = checkBox };
-                    checkBox.ApplyTemplate();
+                    _ = checkBox.ApplyTemplate();
                     AssertCrispRenderingSetters(checkBox);
                 }
             });

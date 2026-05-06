@@ -26,11 +26,9 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System;
 using System.Windows;
 using System.Windows.Media;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf;
 
 namespace Fluence.Wpf.Tests
 {
@@ -42,7 +40,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                WpfTestSta.EnsureApplication();
+                _ = WpfTestSta.EnsureApplication();
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
                 Application.Current.Resources.MergedDictionaries.Clear();
@@ -54,10 +52,10 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = Application.Current;
+                Application app = Application.Current;
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
 
-                var textColor = app.Resources["TextFillColorPrimary"] as Color?;
+                Color? textColor = app.Resources["TextFillColorPrimary"] as Color?;
                 Assert.IsNotNull(textColor, "TextFillColorPrimary should be defined");
 
                 Assert.AreEqual((byte)0xE4, textColor.Value.A, "Alpha should be 0xE4");
@@ -72,10 +70,10 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = Application.Current;
+                Application app = Application.Current;
                 ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, false);
 
-                var textColor = app.Resources["TextFillColorPrimary"] as Color?;
+                Color? textColor = app.Resources["TextFillColorPrimary"] as Color?;
                 Assert.IsNotNull(textColor, "TextFillColorPrimary should be defined");
 
                 Assert.AreEqual((byte)0xFF, textColor.Value.A, "Alpha should be 0xFF");
@@ -90,10 +88,10 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = Application.Current;
+                Application app = Application.Current;
                 ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, false);
 
-                var brush = app.Resources["TextFillColorPrimaryBrush"] as SolidColorBrush;
+                SolidColorBrush? brush = app.Resources["TextFillColorPrimaryBrush"] as SolidColorBrush;
                 Assert.IsNotNull(brush, "TextFillColorPrimaryBrush should be defined");
             });
         }
@@ -104,7 +102,7 @@ namespace Fluence.Wpf.Tests
             WpfTestSta.Invoke(() =>
             {
                 int eventCount = 0;
-                EventHandler<ThemeChangedEventArgs> handler = (s, e) => eventCount++;
+                void handler(object? sender, ThemeChangedEventArgs e) { eventCount++; }
 
                 ApplicationThemeManager.Changed += handler;
                 try
@@ -125,7 +123,7 @@ namespace Fluence.Wpf.Tests
             WpfTestSta.Invoke(() =>
             {
                 int eventCount = 0;
-                EventHandler<ThemeChangedEventArgs> handler = (s, e) => eventCount++;
+                void handler(object? sender, ThemeChangedEventArgs e) { eventCount++; }
 
                 ApplicationThemeManager.Changed += handler;
                 try
@@ -146,7 +144,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = Application.Current;
+                Application app = Application.Current;
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
                 int initialCount = app.Resources.MergedDictionaries.Count;
 
@@ -164,7 +162,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void IsSystemInDarkMode_IsInverseOfRegistrySystemLight()
         {
-            bool registryLight = Fluence.Wpf.Helpers.RegistryHelper.GetSystemUsesLightTheme();
+            bool registryLight = Helpers.RegistryHelper.GetSystemUsesLightTheme();
             bool result = ApplicationThemeManager.IsSystemInDarkMode;
             Assert.AreEqual(!registryLight, result);
         }
@@ -172,7 +170,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void IsAppInDarkMode_IsInverseOfRegistryAppsLight()
         {
-            bool registryLight = Fluence.Wpf.Helpers.RegistryHelper.GetAppsUseLightTheme();
+            bool registryLight = Helpers.RegistryHelper.GetAppsUseLightTheme();
             bool result = ApplicationThemeManager.IsAppInDarkMode;
             Assert.AreEqual(!registryLight, result);
         }

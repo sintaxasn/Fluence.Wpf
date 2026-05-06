@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,6 +27,7 @@
  */
 
 using System;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Windows;
@@ -71,8 +72,8 @@ namespace Fluence.Wpf.Tests
                 },
                 titleBar =>
                 {
-                    var backButton = GetTemplateButton(titleBar, "PART_BackButton");
-                    var paneToggleButton = GetTemplateButton(titleBar, "PART_PaneToggleButton");
+                    WpfButton backButton = GetTemplateButton(titleBar, "PART_BackButton");
+                    WpfButton paneToggleButton = GetTemplateButton(titleBar, "PART_PaneToggleButton");
 
                     Assert.AreEqual(Visibility.Visible, backButton.Visibility,
                         "PART_BackButton must be visible when IsBackButtonVisible is true.");
@@ -88,10 +89,10 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void TitleBar_PaneToggleClick_ExecutesCommandThenRaisesRequested()
         {
-            var parameter = new object();
-            var command = new RecordingCommand(true);
-            var eventCount = 0;
-            var commandCountObservedByEvent = -1;
+            object parameter = new();
+            RecordingCommand command = new(true);
+            int eventCount = 0;
+            int commandCountObservedByEvent = -1;
 
             RunWithTitleBar(
                 delegate
@@ -127,9 +128,9 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void TitleBar_BackButtonVisibilityAndCommand_Work()
         {
-            var parameter = new object();
-            var command = new RecordingCommand(true);
-            var eventCount = 0;
+            object parameter = new();
+            RecordingCommand command = new(true);
+            int eventCount = 0;
 
             RunWithTitleBar(
                 delegate
@@ -142,7 +143,7 @@ namespace Fluence.Wpf.Tests
                 },
                 titleBar =>
                 {
-                    var backButton = GetTemplateButton(titleBar, "PART_BackButton");
+                    WpfButton backButton = GetTemplateButton(titleBar, "PART_BackButton");
                     Assert.AreEqual(Visibility.Collapsed, backButton.Visibility,
                         "PART_BackButton must default to collapsed.");
 
@@ -169,10 +170,10 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(delegate
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                Window window = null;
-                Fluent.TitleBar titleBar = null;
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window? window = null;
+                Fluent.TitleBar? titleBar = null;
 
                 try
                 {
@@ -191,7 +192,7 @@ namespace Fluence.Wpf.Tests
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    titleBar.ApplyTemplate();
+                    _ = titleBar.ApplyTemplate();
                     DrainDispatcher(window.Dispatcher);
 
                     testBody(titleBar);
@@ -206,7 +207,7 @@ namespace Fluence.Wpf.Tests
 
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -214,23 +215,23 @@ namespace Fluence.Wpf.Tests
 
         private static WpfButton GetTemplateButton(Fluent.TitleBar titleBar, string partName)
         {
-            var button = titleBar.Template.FindName(partName, titleBar) as WpfButton;
+            WpfButton? button = titleBar.Template.FindName(partName, titleBar) as WpfButton;
             Assert.IsNotNull(button, partName + " must exist in the TitleBar template.");
             return button;
         }
 
         private static void InvokeButton(WpfButton button)
         {
-            var peer = UIElementAutomationPeer.CreatePeerForElement(button);
-            var invoke = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
+            AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(button);
+            IInvokeProvider invoke = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
             invoke.Invoke();
             DrainDispatcher(button.Dispatcher);
         }
 
         private static void RunOnFreshStaThread(Action action)
         {
-            Exception capturedException = null;
-            WpfTestSta.Dispatcher.Invoke(new Action(delegate
+            Exception? capturedException = null;
+            WpfTestSta.Dispatcher?.Invoke(new Action(delegate
             {
                 try
                 {
@@ -248,48 +249,47 @@ namespace Fluence.Wpf.Tests
             }
         }
 
-        private static Application EnsureApplication()
+        private static Application? EnsureApplication()
         {
             return WpfTestSta.EnsureApplication();
         }
 
-        private static ResourceDictionary MergeGenericDictionary(Application application)
+        private static ResourceDictionary? MergeGenericDictionary(Application? application)
         {
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
-            application.Resources.MergedDictionaries.Clear();
-            application.Resources.Clear();
+            application?.Resources.MergedDictionaries.Clear();
+            application?.Resources.Clear();
             ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-            var dictionaries = application.Resources.MergedDictionaries;
-            return dictionaries.Count > 0 ? dictionaries[dictionaries.Count - 1] : null;
+            Collection<ResourceDictionary>? dictionaries = application?.Resources.MergedDictionaries;
+            return dictionaries?.Count > 0 ? dictionaries[dictionaries.Count - 1] : null;
         }
 
         private static void DrainDispatcher(Dispatcher dispatcher)
         {
-            dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
+            _ = dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
         }
 
         private static void ResetSharedWpfState()
         {
-            var application = WpfTestSta.EnsureApplication();
+            Application? application = WpfTestSta.EnsureApplication();
             Keyboard.ClearFocus();
 
-            var windows = application.Windows.Cast<Window>().ToArray();
-            foreach (var window in windows)
+            foreach (Window? window in application?.Windows.Cast<Window>() ?? [])
             {
                 window.Content = null;
                 window.Close();
             }
 
-            var dispatcher = Dispatcher.CurrentDispatcher;
-            dispatcher.Invoke(DispatcherPriority.Loaded, new Action(delegate { }));
-            dispatcher.Invoke(DispatcherPriority.ContextIdle, new Action(delegate { }));
-            dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
+            Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
+            _ = dispatcher.Invoke(DispatcherPriority.Loaded, new Action(delegate { }));
+            _ = dispatcher.Invoke(DispatcherPriority.ContextIdle, new Action(delegate { }));
+            _ = dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
 
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
-            application.Resources.MergedDictionaries.Clear();
-            application.Resources.Clear();
+            application?.Resources.MergedDictionaries.Clear();
+            application?.Resources.Clear();
         }
 
         private sealed class RecordingCommand : ICommand
@@ -301,7 +301,8 @@ namespace Fluence.Wpf.Tests
                 _canExecute = canExecute;
             }
 
-            public event EventHandler CanExecuteChanged
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S108:Nested blocks of code should not be left empty", Justification = "This is just test code.")]
+            public event EventHandler? CanExecuteChanged
             {
                 add { }
                 remove { }
@@ -309,14 +310,14 @@ namespace Fluence.Wpf.Tests
 
             internal int ExecuteCount { get; private set; }
 
-            internal object LastParameter { get; private set; }
+            internal object? LastParameter { get; private set; }
 
-            public bool CanExecute(object parameter)
+            public bool CanExecute(object? parameter)
             {
                 return _canExecute;
             }
 
-            public void Execute(object parameter)
+            public void Execute(object? parameter)
             {
                 ExecuteCount++;
                 LastParameter = parameter;

@@ -28,7 +28,6 @@
 
 using System.Windows;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf;
 
 namespace Fluence.Wpf.Tests
 {
@@ -50,13 +49,13 @@ namespace Fluence.Wpf.Tests
             ApplicationThemeManager.Apply(ApplicationTheme.Light, backdrop, updateAccent);
         }
 
-        internal static void AssertKeyThemeBrushesResolve(Application application)
+        internal static void AssertKeyThemeBrushesResolve(Application? application)
         {
-            Assert.IsNotNull(application.TryFindResource("ApplicationBackgroundBrush"),
+            Assert.IsNotNull(application?.TryFindResource("ApplicationBackgroundBrush"),
                 "ApplicationBackgroundBrush should resolve.");
-            Assert.IsNotNull(application.TryFindResource("TextFillColorPrimaryBrush"),
+            Assert.IsNotNull(application?.TryFindResource("TextFillColorPrimaryBrush"),
                 "TextFillColorPrimaryBrush should resolve.");
-            Assert.IsNotNull(application.TryFindResource("AccentFillColorDefaultBrush"),
+            Assert.IsNotNull(application?.TryFindResource("AccentFillColorDefaultBrush"),
                 "AccentFillColorDefaultBrush should resolve.");
         }
     }

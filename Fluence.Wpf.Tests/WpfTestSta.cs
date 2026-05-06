@@ -39,22 +39,21 @@ namespace Fluence.Wpf.Tests
     /// </summary>
     internal static class WpfTestSta
     {
-        private static Dispatcher _dispatcher;
-        private static readonly object LockObj = new object();
+        private static Dispatcher? _dispatcher;
+        private static readonly object LockObj = new();
 
-        internal static Dispatcher Dispatcher
-        {
-            get { return EnsureDispatcher(); }
-        }
+        internal static Dispatcher? Dispatcher => EnsureDispatcher();
 
-        internal static Application EnsureApplication()
+        internal static Application? EnsureApplication()
         {
-            return Invoke(() =>
+            return Invoke(static () =>
             {
                 if (Application.Current == null)
                 {
-                    var app = new Application();
-                    app.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+                    Application app = new()
+                    {
+                        ShutdownMode = ShutdownMode.OnExplicitShutdown
+                    };
                 }
 
                 return Application.Current;
@@ -63,15 +62,15 @@ namespace Fluence.Wpf.Tests
 
         internal static void Invoke(Action action)
         {
-            EnsureDispatcher().Invoke(action);
+            EnsureDispatcher()?.Invoke(action);
         }
 
-        internal static T Invoke<T>(Func<T> func)
+        internal static T? Invoke<T>(Func<T> func) where T : class?
         {
-            return EnsureDispatcher().Invoke(func);
+            return EnsureDispatcher()?.Invoke(func);
         }
 
-        private static Dispatcher EnsureDispatcher()
+        private static Dispatcher? EnsureDispatcher()
         {
             lock (LockObj)
             {
@@ -80,9 +79,9 @@ namespace Fluence.Wpf.Tests
                     return _dispatcher;
                 }
 
-                Dispatcher created = null;
-                var ready = new ManualResetEventSlim(false);
-                var thread = new Thread(() =>
+                Dispatcher? created = null;
+                using ManualResetEventSlim ready = new(false);
+                Thread thread = new(() =>
                 {
                     created = Dispatcher.CurrentDispatcher;
                     ready.Set();

@@ -52,18 +52,18 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var tv = new FluenceTreeView();
-                tv.Items.Add(new FluenceTreeViewItem { Header = "Node 1" });
-                tv.Items.Add(new FluenceTreeViewItem { Header = "Node 2" });
-                var w = new Window { Content = tv, Width = 300, Height = 200 };
+                FluenceTreeView tv = new();
+                _ = tv.Items.Add(new FluenceTreeViewItem { Header = "Node 1" });
+                _ = tv.Items.Add(new FluenceTreeViewItem { Header = "Node 2" });
+                Window w = new() { Content = tv, Width = 300, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
                 // Template applied → ScrollViewer present
-                var sv = FindVisualChild<ScrollViewer>(tv);
+                ScrollViewer? sv = FindVisualChild<ScrollViewer>(tv);
                 Assert.IsNotNull(sv, "TreeView template must contain a ScrollViewer.");
                 w.Close();
             });
@@ -74,21 +74,21 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var item = new FluenceTreeViewItem { Header = "Node A" };
-                item.Items.Add(new FluenceTreeViewItem { Header = "Child 1" });
-                var tv = new FluenceTreeView();
-                tv.Items.Add(item);
-                var w = new Window { Content = tv, Width = 300, Height = 200 };
+                FluenceTreeViewItem item = new() { Header = "Node A" };
+                _ = item.Items.Add(new FluenceTreeViewItem { Header = "Child 1" });
+                FluenceTreeView tv = new();
+                _ = tv.Items.Add(item);
+                Window w = new() { Content = tv, Width = 300, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var cp = FindVisualChildByName<ContentPresenter>(item, "PART_Header");
+                ContentPresenter? cp = FindVisualChildByName<ContentPresenter>(item, "PART_Header");
                 Assert.IsNotNull(cp, "PART_Header ContentPresenter must be present in TreeViewItem template.");
 
-                var itemsPresenter = FindVisualChildByName<ItemsPresenter>(item, "ItemsHost");
+                ItemsPresenter? itemsPresenter = FindVisualChildByName<ItemsPresenter>(item, "ItemsHost");
                 Assert.IsNotNull(itemsPresenter, "ItemsHost ItemsPresenter must be present in TreeViewItem template.");
 
                 w.Close();
@@ -100,19 +100,19 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var item = new FluenceTreeViewItem { Header = "Node A" };
-                item.Items.Add(new FluenceTreeViewItem { Header = "Child 1" });
-                var tv = new FluenceTreeView();
-                tv.Items.Add(item);
-                var w = new Window { Content = tv, Width = 300, Height = 200 };
+                FluenceTreeViewItem item = new() { Header = "Node A" };
+                _ = item.Items.Add(new FluenceTreeViewItem { Header = "Child 1" });
+                FluenceTreeView tv = new();
+                _ = tv.Items.Add(item);
+                Window w = new() { Content = tv, Width = 300, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
                 // The ToggleButton expander must be Visible when HasItems is true
-                var expander = FindVisualChildByName<ToggleButton>(item, "Expander");
+                ToggleButton? expander = FindVisualChildByName<ToggleButton>(item, "Expander");
                 Assert.IsNotNull(expander, "Expander ToggleButton must exist in TreeViewItem template.");
                 Assert.AreEqual(Visibility.Visible, expander.Visibility,
                     "Expander must be Visible when TreeViewItem has children.");
@@ -126,17 +126,17 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var item = new FluenceTreeViewItem { Header = "Leaf" };
-                var tv = new FluenceTreeView();
-                tv.Items.Add(item);
-                var w = new Window { Content = tv, Width = 300, Height = 200 };
+                FluenceTreeViewItem item = new() { Header = "Leaf" };
+                FluenceTreeView tv = new();
+                _ = tv.Items.Add(item);
+                Window w = new() { Content = tv, Width = 300, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var expander = FindVisualChildByName<ToggleButton>(item, "Expander");
+                ToggleButton? expander = FindVisualChildByName<ToggleButton>(item, "Expander");
                 Assert.IsNotNull(expander, "Expander ToggleButton must exist.");
                 Assert.AreEqual(Visibility.Collapsed, expander.Visibility,
                     "Expander must be Collapsed when TreeViewItem has no children.");
@@ -150,19 +150,19 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var item = new FluenceTreeViewItem { Header = "Node A" };
-                item.Items.Add(new FluenceTreeViewItem { Header = "Child 1" });
-                var tv = new FluenceTreeView();
-                tv.Items.Add(item);
-                var w = new Window { Content = tv, Width = 300, Height = 200 };
+                FluenceTreeViewItem item = new() { Header = "Node A" };
+                _ = item.Items.Add(new FluenceTreeViewItem { Header = "Child 1" });
+                FluenceTreeView tv = new();
+                _ = tv.Items.Add(item);
+                Window w = new() { Content = tv, Width = 300, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
                 // Initially collapsed
-                var itemsHost = FindVisualChildByName<ItemsPresenter>(item, "ItemsHost");
+                ItemsPresenter? itemsHost = FindVisualChildByName<ItemsPresenter>(item, "ItemsHost");
                 Assert.IsNotNull(itemsHost, "ItemsHost must exist.");
                 Assert.AreEqual(Visibility.Collapsed, itemsHost.Visibility,
                     "ItemsHost must be Collapsed when IsExpanded=False.");
@@ -183,28 +183,28 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var item = new FluenceTreeViewItem { Header = "Node A" };
-                var tv = new FluenceTreeView();
-                tv.Items.Add(item);
-                var w = new Window { Content = tv, Width = 300, Height = 200 };
+                FluenceTreeViewItem item = new() { Header = "Node A" };
+                FluenceTreeView tv = new();
+                _ = tv.Items.Add(item);
+                Window w = new() { Content = tv, Width = 300, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var itemBorder = FindVisualChildByName<WpfBorder>(item, "ItemBorder");
+                WpfBorder? itemBorder = FindVisualChildByName<WpfBorder>(item, "ItemBorder");
                 Assert.IsNotNull(itemBorder, "ItemBorder must exist in TreeViewItem template.");
 
                 // Background must be transparent (or null) in normal state
-                var normalBg = itemBorder.Background;
+                Brush normalBg = itemBorder.Background;
 
                 // Select the item
                 item.IsSelected = true;
                 DrainDispatcher(w.Dispatcher);
 
-                var selectedBg = itemBorder.Background as SolidColorBrush;
-                var expectedBrush = app.TryFindResource("SubtleFillColorSecondaryBrush") as SolidColorBrush;
+                SolidColorBrush? selectedBg = itemBorder.Background as SolidColorBrush;
+                SolidColorBrush? expectedBrush = app?.TryFindResource("SubtleFillColorSecondaryBrush") as SolidColorBrush;
                 Assert.IsNotNull(expectedBrush, "SubtleFillColorSecondaryBrush must resolve.");
                 Assert.IsNotNull(selectedBg, "ItemBorder.Background must be a SolidColorBrush when selected.");
                 Assert.AreEqual(expectedBrush.Color, selectedBg.Color,
@@ -219,14 +219,14 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var item = new FluenceTreeViewItem { Header = "Parent" };
-                item.Items.Add(new FluenceTreeViewItem { Header = "Child" });
-                var tv = new FluenceTreeView();
-                tv.Items.Add(item);
-                var w = new Window { Content = tv, Width = 300, Height = 200 };
+                FluenceTreeViewItem item = new() { Header = "Parent" };
+                _ = item.Items.Add(new FluenceTreeViewItem { Header = "Child" });
+                FluenceTreeView tv = new();
+                _ = tv.Items.Add(item);
+                Window w = new() { Content = tv, Width = 300, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
@@ -236,8 +236,7 @@ namespace Fluence.Wpf.Tests
 
                 foreach (TriggerBase triggerBase in item.Template.Triggers)
                 {
-                    var trigger = triggerBase as Trigger;
-                    if (trigger != null && trigger.Property == UIElement.IsMouseOverProperty)
+                    if (triggerBase is Trigger trigger && trigger.Property == UIElement.IsMouseOverProperty)
                     {
                         if (trigger.SourceName == "ItemBorder")
                         {
@@ -249,8 +248,7 @@ namespace Fluence.Wpf.Tests
                         }
                     }
 
-                    var multiTrigger = triggerBase as MultiTrigger;
-                    if (multiTrigger != null)
+                    if (triggerBase is MultiTrigger multiTrigger)
                     {
                         foreach (Condition condition in multiTrigger.Conditions)
                         {
@@ -283,19 +281,19 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var tv = new FluenceTreeView();
-                tv.Items.Add(new FluenceTreeViewItem { Header = "Node 1" });
-                var w = new Window { Content = tv, Width = 300, Height = 200 };
+                FluenceTreeView tv = new();
+                _ = tv.Items.Add(new FluenceTreeViewItem { Header = "Node 1" });
+                Window w = new() { Content = tv, Width = 300, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
                 ThemeTestHelpers.ApplyStandardThemeCycle();
                 DrainDispatcher(w.Dispatcher);
 
-                var sv = FindVisualChild<ScrollViewer>(tv);
+                ScrollViewer? sv = FindVisualChild<ScrollViewer>(tv);
                 Assert.IsNotNull(sv, "TreeView template must still contain ScrollViewer after theme cycle.");
 
                 w.Close();
@@ -307,20 +305,20 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var item = new FluenceTreeViewItem { Header = "Node A" };
-                item.Items.Add(new FluenceTreeViewItem { Header = "Child" });
-                var tv = new FluenceTreeView();
-                tv.Items.Add(item);
-                var w = new Window { Content = tv, Width = 300, Height = 200 };
+                FluenceTreeViewItem item = new() { Header = "Node A" };
+                _ = item.Items.Add(new FluenceTreeViewItem { Header = "Child" });
+                FluenceTreeView tv = new();
+                _ = tv.Items.Add(item);
+                Window w = new() { Content = tv, Width = 300, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var expander = FindVisualChildByName<ToggleButton>(item, "Expander");
+                ToggleButton? expander = FindVisualChildByName<ToggleButton>(item, "Expander");
                 Assert.IsNotNull(expander, "Expander must be present.");
-                var chevron = FindVisualChildByName<TextBlock>(expander, "ChevronGlyph");
+                TextBlock? chevron = FindVisualChildByName<TextBlock>(expander, "ChevronGlyph");
                 Assert.IsNotNull(chevron,
                     "ChevronGlyph TextBlock must be present inside Expander per WI-5B.2.");
                 Assert.AreEqual("\uE76C", chevron.Text,

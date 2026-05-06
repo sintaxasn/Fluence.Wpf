@@ -27,7 +27,6 @@
  */
 
 using System.Windows;
-using System.Windows.Media;
 using System.Windows.Media.Effects;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Fluence.Wpf.Controls;
@@ -51,15 +50,15 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var card = new Card { Variant = CardVariant.Default, Width = 200, Height = 100 };
-                var w = new Window { Content = card, Width = 300, Height = 200 };
+                Card card = new() { Variant = CardVariant.Default, Width = 200, Height = 100 };
+                Window w = new() { Content = card, Width = 300, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var outerBorder = FindVisualChildByName<WpfBorder>(card, "OuterBorder");
+                WpfBorder? outerBorder = FindVisualChildByName<WpfBorder>(card, "OuterBorder");
                 Assert.IsNotNull(outerBorder, "OuterBorder must exist in Card template.");
 
                 Assert.IsNotNull(outerBorder.Effect,
@@ -75,15 +74,15 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var card = new Card { Variant = CardVariant.Subtle, Width = 200, Height = 100 };
-                var w = new Window { Content = card, Width = 300, Height = 200 };
+                Card card = new() { Variant = CardVariant.Subtle, Width = 200, Height = 100 };
+                Window w = new() { Content = card, Width = 300, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var outerBorder = FindVisualChildByName<WpfBorder>(card, "OuterBorder");
+                WpfBorder? outerBorder = FindVisualChildByName<WpfBorder>(card, "OuterBorder");
                 Assert.IsNotNull(outerBorder, "OuterBorder must exist in Card template.");
 
                 Assert.IsNull(outerBorder.Effect,
@@ -97,15 +96,15 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var card = new Card { Variant = CardVariant.Outlined, Width = 200, Height = 100 };
-                var w = new Window { Content = card, Width = 300, Height = 200 };
+                Card card = new() { Variant = CardVariant.Outlined, Width = 200, Height = 100 };
+                Window w = new() { Content = card, Width = 300, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var outerBorder = FindVisualChildByName<WpfBorder>(card, "OuterBorder");
+                WpfBorder? outerBorder = FindVisualChildByName<WpfBorder>(card, "OuterBorder");
                 Assert.IsNotNull(outerBorder, "OuterBorder must exist in Card template.");
 
                 Assert.IsNull(outerBorder.Effect,
@@ -119,15 +118,15 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var card = new Card { Variant = CardVariant.Filled, Width = 200, Height = 100 };
-                var w = new Window { Content = card, Width = 300, Height = 200 };
+                Card card = new() { Variant = CardVariant.Filled, Width = 200, Height = 100 };
+                Window w = new() { Content = card, Width = 300, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var outerBorder = FindVisualChildByName<WpfBorder>(card, "OuterBorder");
+                WpfBorder? outerBorder = FindVisualChildByName<WpfBorder>(card, "OuterBorder");
                 Assert.IsNotNull(outerBorder, "OuterBorder must exist in Card template.");
 
                 Assert.IsNull(outerBorder.Effect,
@@ -141,23 +140,23 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var card = new Card { Variant = CardVariant.Default, Width = 200, Height = 100 };
-                var w = new Window { Content = card, Width = 300, Height = 200 };
+                Card card = new() { Variant = CardVariant.Default, Width = 200, Height = 100 };
+                Window w = new() { Content = card, Width = 300, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var outerBorder = FindVisualChildByName<WpfBorder>(card, "OuterBorder");
+                WpfBorder? outerBorder = FindVisualChildByName<WpfBorder>(card, "OuterBorder");
                 Assert.IsNotNull(outerBorder, "OuterBorder must exist.");
-                var shadow = outerBorder.Effect as DropShadowEffect;
+                DropShadowEffect? shadow = outerBorder.Effect as DropShadowEffect;
                 Assert.IsNotNull(shadow, "Effect must be DropShadowEffect.");
 
                 // WI-3 C21: subtle elevation — soft blur, low opacity, downward direction
-                Assert.IsTrue(shadow.BlurRadius >= 4 && shadow.BlurRadius <= 16,
+                Assert.IsTrue(shadow.BlurRadius is >= 4 and <= 16,
                     $"BlurRadius {shadow.BlurRadius} outside expected range [4,16].");
-                Assert.IsTrue(shadow.Opacity > 0 && shadow.Opacity <= 0.2,
+                Assert.IsTrue(shadow.Opacity is > 0 and <= 0.2,
                     $"Opacity {shadow.Opacity} outside expected range (0, 0.2].");
                 w.Close();
             });

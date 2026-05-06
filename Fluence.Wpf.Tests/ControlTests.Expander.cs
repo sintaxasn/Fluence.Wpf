@@ -30,7 +30,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf.Controls;
+using System.Windows.Controls;
 
 namespace Fluence.Wpf.Tests
 {
@@ -48,16 +48,16 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var expander = new Fluence.Wpf.Controls.Expander { Header = "Test", Content = "Content" };
-                var w = new Window { Content = expander, Width = 300, Height = 200 };
+                Controls.Expander expander = new() { Header = "Test", Content = "Content" };
+                Window w = new() { Content = expander, Width = 300, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
                 // RootBorder is the template root — proves Fluence style applied.
-                var rootBorder = FindVisualChildByName<System.Windows.Controls.Border>(expander, "RootBorder");
+                Border? rootBorder = FindVisualChildByName<Border>(expander, "RootBorder");
                 Assert.IsNotNull(rootBorder, "RootBorder must exist in Expander template (Fluence style applied).");
                 w.Close();
             });
@@ -68,22 +68,22 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var expander = new Fluence.Wpf.Controls.Expander { Header = "Test", Content = "Body", IsExpanded = false };
-                var w = new Window { Content = expander, Width = 300, Height = 200 };
+                Controls.Expander expander = new() { Header = "Test", Content = "Body", IsExpanded = false };
+                Window w = new() { Content = expander, Width = 300, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var chevron = FindVisualChildByName<Path>(expander, "Chevron");
+                Path? chevron = FindVisualChildByName<Path>(expander, "Chevron");
                 Assert.IsNotNull(chevron, "Chevron Path must exist in Expander header template.");
 
                 // Parent Border owns the RotateTransform.
-                var parent = System.Windows.Media.VisualTreeHelper.GetParent(chevron) as System.Windows.Controls.Border;
+                Border? parent = VisualTreeHelper.GetParent(chevron) as Border;
                 Assert.IsNotNull(parent, "Chevron parent must be a Border.");
 
-                var rt = parent.RenderTransform as RotateTransform;
+                RotateTransform? rt = parent.RenderTransform as RotateTransform;
                 Assert.IsNotNull(rt,
                     "Border containing Chevron must have RenderTransform=RotateTransform (ChevronRotation).");
                 Assert.AreEqual(0.0, rt.Angle, 1.0,
@@ -97,16 +97,16 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var expander = new Fluence.Wpf.Controls.Expander { Header = "Test", Content = "Body", IsExpanded = true };
-                var w = new Window { Content = expander, Width = 300, Height = 200 };
+                Controls.Expander expander = new() { Header = "Test", Content = "Body", IsExpanded = true };
+                Window w = new() { Content = expander, Width = 300, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
                 // Structural check: ExpandSite ContentPresenter is present.
-                var site = FindVisualChildByName<System.Windows.Controls.ContentPresenter>(expander, "ExpandSite");
+                ContentPresenter? site = FindVisualChildByName<ContentPresenter>(expander, "ExpandSite");
                 Assert.IsNotNull(site, "ExpandSite ContentPresenter must exist in Expander template.");
                 w.Close();
             });
@@ -117,15 +117,15 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var expander = new Fluence.Wpf.Controls.Expander { Header = "Test" };
-                var w = new Window { Content = expander, Width = 300, Height = 200 };
+                Controls.Expander expander = new() { Header = "Test" };
+                Window w = new() { Content = expander, Width = 300, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var headerBorder = FindVisualChildByName<System.Windows.Controls.Border>(expander, "HeaderBorder");
+                Border? headerBorder = FindVisualChildByName<Border>(expander, "HeaderBorder");
                 Assert.IsNotNull(headerBorder, "HeaderBorder must exist in ExpanderHeaderToggleButton template.");
                 Assert.AreEqual(new CornerRadius(4), headerBorder.CornerRadius,
                     "HeaderBorder CornerRadius must be 4 (matching WinUI Expander corner spec).");

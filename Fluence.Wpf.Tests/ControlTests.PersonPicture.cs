@@ -51,16 +51,16 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var pp = new PersonPicture();
-                var w = new Window { Content = pp, Width = 200, Height = 200 };
+                PersonPicture pp = new();
+                Window w = new() { Content = pp, Width = 200, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
                 // Background ellipse must be in visual tree
-                var ellipse = FindVisualChild<Ellipse>(pp);
+                Ellipse? ellipse = FindVisualChild<Ellipse>(pp);
                 Assert.IsNotNull(ellipse, "PersonPicture template must contain an Ellipse.");
                 w.Close();
             });
@@ -71,21 +71,21 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var pp = new PersonPicture();
-                var w = new Window { Content = pp, Width = 200, Height = 200 };
+                PersonPicture pp = new();
+                Window w = new() { Content = pp, Width = 200, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var initialsText = FindVisualChildByName<WpfTextBlock>(pp, "PART_InitialsText");
+                WpfTextBlock? initialsText = FindVisualChildByName<WpfTextBlock>(pp, "PART_InitialsText");
                 Assert.IsNotNull(initialsText, "PART_InitialsText must be present.");
 
-                var imageEllipse = FindVisualChildByName<Ellipse>(pp, "PART_ImageEllipse");
+                Ellipse? imageEllipse = FindVisualChildByName<Ellipse>(pp, "PART_ImageEllipse");
                 Assert.IsNotNull(imageEllipse, "PART_ImageEllipse must be present.");
 
-                var badgeGrid = FindVisualChildByName<WpfGrid>(pp, "PART_BadgeGrid");
+                WpfGrid? badgeGrid = FindVisualChildByName<WpfGrid>(pp, "PART_BadgeGrid");
                 Assert.IsNotNull(badgeGrid, "PART_BadgeGrid must be present.");
 
                 w.Close();
@@ -97,16 +97,16 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
                 // No DisplayName, no Initials, no ProfilePicture
-                var pp = new PersonPicture();
-                var w = new Window { Content = pp, Width = 200, Height = 200 };
+                PersonPicture pp = new();
+                Window w = new() { Content = pp, Width = 200, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var initialsText = FindVisualChildByName<WpfTextBlock>(pp, "PART_InitialsText");
+                WpfTextBlock? initialsText = FindVisualChildByName<WpfTextBlock>(pp, "PART_InitialsText");
                 Assert.IsNotNull(initialsText);
                 // Contact glyph U+E77B
                 Assert.AreEqual("\uE77B", initialsText.Text,
@@ -122,15 +122,15 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var pp = new PersonPicture { DisplayName = "John Doe" };
-                var w = new Window { Content = pp, Width = 200, Height = 200 };
+                PersonPicture pp = new() { DisplayName = "John Doe" };
+                Window w = new() { Content = pp, Width = 200, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var initialsText = FindVisualChildByName<WpfTextBlock>(pp, "PART_InitialsText");
+                WpfTextBlock? initialsText = FindVisualChildByName<WpfTextBlock>(pp, "PART_InitialsText");
                 Assert.IsNotNull(initialsText);
                 Assert.AreEqual("JD", initialsText.Text,
                     "DisplayName='John Doe' must generate initials 'JD'.");
@@ -143,15 +143,15 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var pp = new PersonPicture { DisplayName = "John Doe", Initials = "XY" };
-                var w = new Window { Content = pp, Width = 200, Height = 200 };
+                PersonPicture pp = new() { DisplayName = "John Doe", Initials = "XY" };
+                Window w = new() { Content = pp, Width = 200, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var initialsText = FindVisualChildByName<WpfTextBlock>(pp, "PART_InitialsText");
+                WpfTextBlock? initialsText = FindVisualChildByName<WpfTextBlock>(pp, "PART_InitialsText");
                 Assert.IsNotNull(initialsText);
                 Assert.AreEqual("XY", initialsText.Text,
                     "Explicit Initials='XY' must override DisplayName-derived initials.");
@@ -164,15 +164,15 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var pp = new PersonPicture { IsGroup = true };
-                var w = new Window { Content = pp, Width = 200, Height = 200 };
+                PersonPicture pp = new() { IsGroup = true };
+                Window w = new() { Content = pp, Width = 200, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var initialsText = FindVisualChildByName<WpfTextBlock>(pp, "PART_InitialsText");
+                WpfTextBlock? initialsText = FindVisualChildByName<WpfTextBlock>(pp, "PART_InitialsText");
                 Assert.IsNotNull(initialsText);
                 Assert.AreEqual("\uE716", initialsText.Text,
                     "IsGroup=true must show people glyph U+E716 per WinUI 3 PersonPicture.");
@@ -185,20 +185,20 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var pp = new PersonPicture { BadgeNumber = 3 };
-                var w = new Window { Content = pp, Width = 200, Height = 200 };
+                PersonPicture pp = new() { BadgeNumber = 3 };
+                Window w = new() { Content = pp, Width = 200, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var badgeGrid = FindVisualChildByName<WpfGrid>(pp, "PART_BadgeGrid");
+                WpfGrid? badgeGrid = FindVisualChildByName<WpfGrid>(pp, "PART_BadgeGrid");
                 Assert.IsNotNull(badgeGrid);
                 Assert.AreEqual(Visibility.Visible, badgeGrid.Visibility,
                     "BadgeNumber > 0 must make PART_BadgeGrid Visible.");
 
-                var badgeText = FindVisualChildByName<WpfTextBlock>(pp, "PART_BadgeText");
+                WpfTextBlock? badgeText = FindVisualChildByName<WpfTextBlock>(pp, "PART_BadgeText");
                 Assert.IsNotNull(badgeText);
                 Assert.AreEqual("3", badgeText.Text,
                     "PART_BadgeText must display the BadgeNumber.");
@@ -211,19 +211,19 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var pp = new PersonPicture { Width = 48, Height = 48, BadgeNumber = 150 };
-                var w = new Window { Content = pp, Width = 200, Height = 200 };
+                PersonPicture pp = new() { Width = 48, Height = 48, BadgeNumber = 150 };
+                Window w = new() { Content = pp, Width = 200, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
                 w.UpdateLayout();
                 DrainDispatcher(w.Dispatcher);
 
-                var badgeGrid = FindVisualChildByName<WpfGrid>(pp, "PART_BadgeGrid");
-                var badgeBackground = FindVisualChildByName<WpfBorder>(pp, "PART_BadgeBackground");
-                var badgeText = FindVisualChildByName<WpfTextBlock>(pp, "PART_BadgeText");
+                WpfGrid? badgeGrid = FindVisualChildByName<WpfGrid>(pp, "PART_BadgeGrid");
+                WpfBorder? badgeBackground = FindVisualChildByName<WpfBorder>(pp, "PART_BadgeBackground");
+                WpfTextBlock? badgeText = FindVisualChildByName<WpfTextBlock>(pp, "PART_BadgeText");
                 Assert.IsNotNull(badgeGrid);
                 Assert.IsNotNull(badgeBackground);
                 Assert.IsNotNull(badgeText);
@@ -253,15 +253,15 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var pp = new PersonPicture { BadgeNumber = 0, BadgeGlyph = null };
-                var w = new Window { Content = pp, Width = 200, Height = 200 };
+                PersonPicture pp = new() { BadgeNumber = 0 };
+                Window w = new() { Content = pp, Width = 200, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var badgeGrid = FindVisualChildByName<WpfGrid>(pp, "PART_BadgeGrid");
+                WpfGrid? badgeGrid = FindVisualChildByName<WpfGrid>(pp, "PART_BadgeGrid");
                 Assert.IsNotNull(badgeGrid);
                 Assert.AreEqual(Visibility.Collapsed, badgeGrid.Visibility,
                     "PART_BadgeGrid must be Collapsed when BadgeNumber=0 and BadgeGlyph=null.");
@@ -274,11 +274,11 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var pp = new PersonPicture();
-                var w = new Window { Content = pp, Width = 200, Height = 200 };
+                PersonPicture pp = new();
+                Window w = new() { Content = pp, Width = 200, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
@@ -295,18 +295,18 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var pp = new PersonPicture { DisplayName = "Alice Smith" };
-                var w = new Window { Content = pp, Width = 200, Height = 200 };
+                PersonPicture pp = new() { DisplayName = "Alice Smith" };
+                Window w = new() { Content = pp, Width = 200, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
                 ThemeTestHelpers.ApplyStandardThemeCycle();
                 DrainDispatcher(w.Dispatcher);
 
-                var initialsText = FindVisualChildByName<WpfTextBlock>(pp, "PART_InitialsText");
+                WpfTextBlock? initialsText = FindVisualChildByName<WpfTextBlock>(pp, "PART_InitialsText");
                 Assert.IsNotNull(initialsText,
                     "PART_InitialsText must still be present after theme cycle.");
                 w.Close();

@@ -30,6 +30,7 @@ using System.Windows;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Fluence.Wpf.Controls;
 using WpfRepeatButton = System.Windows.Controls.Primitives.RepeatButton;
+using System.Windows.Controls;
 
 namespace Fluence.Wpf.Tests
 {
@@ -47,17 +48,17 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var tv = new TabView();
-                tv.Items.Add(new TabViewItem { Header = "Tab 1" });
-                tv.Items.Add(new TabViewItem { Header = "Tab 2" });
-                var w = new Window { Content = tv, Width = 600, Height = 200 };
+                TabView tv = new();
+                _ = tv.Items.Add(new TabViewItem { Header = "Tab 1" });
+                _ = tv.Items.Add(new TabViewItem { Header = "Tab 2" });
+                Window w = new() { Content = tv, Width = 600, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var btn = FindVisualChildByName<WpfRepeatButton>(tv, "PART_ScrollBackButton");
+                WpfRepeatButton? btn = FindVisualChildByName<WpfRepeatButton>(tv, "PART_ScrollBackButton");
                 Assert.IsNotNull(btn, "PART_ScrollBackButton (RepeatButton) must exist in TabView template.");
                 w.Close();
             });
@@ -68,17 +69,17 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var tv = new TabView();
-                tv.Items.Add(new TabViewItem { Header = "Tab 1" });
-                tv.Items.Add(new TabViewItem { Header = "Tab 2" });
-                var w = new Window { Content = tv, Width = 600, Height = 200 };
+                TabView tv = new();
+                _ = tv.Items.Add(new TabViewItem { Header = "Tab 1" });
+                _ = tv.Items.Add(new TabViewItem { Header = "Tab 2" });
+                Window w = new() { Content = tv, Width = 600, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var btn = FindVisualChildByName<WpfRepeatButton>(tv, "PART_ScrollForwardButton");
+                WpfRepeatButton? btn = FindVisualChildByName<WpfRepeatButton>(tv, "PART_ScrollForwardButton");
                 Assert.IsNotNull(btn, "PART_ScrollForwardButton (RepeatButton) must exist in TabView template.");
                 w.Close();
             });
@@ -89,16 +90,16 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var tv = new TabView();
-                tv.Items.Add(new TabViewItem { Header = "Tab 1" });
-                var w = new Window { Content = tv, Width = 600, Height = 200 };
+                TabView tv = new();
+                _ = tv.Items.Add(new TabViewItem { Header = "Tab 1" });
+                Window w = new() { Content = tv, Width = 600, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var sv = FindVisualChildByName<System.Windows.Controls.ScrollViewer>(tv, "PART_TabContentScroller");
+                ScrollViewer? sv = FindVisualChildByName<ScrollViewer>(tv, "PART_TabContentScroller");
                 Assert.IsNotNull(sv, "PART_TabContentScroller (ScrollViewer) must exist in TabView template.");
                 w.Close();
             });
@@ -109,21 +110,21 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var tv = new TabView();
-                tv.Items.Add(new TabViewItem { Header = "A" });
-                tv.Items.Add(new TabViewItem { Header = "B" });
+                TabView tv = new();
+                _ = tv.Items.Add(new TabViewItem { Header = "A" });
+                _ = tv.Items.Add(new TabViewItem { Header = "B" });
                 // Wide window: 2 short tabs will not overflow a 700px wide control
-                var w = new Window { Content = tv, Width = 700, Height = 200 };
+                Window w = new() { Content = tv, Width = 700, Height = 200 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var back = FindVisualChildByName<WpfRepeatButton>(tv, "PART_ScrollBackButton");
-                var fwd  = FindVisualChildByName<WpfRepeatButton>(tv, "PART_ScrollForwardButton");
+                WpfRepeatButton? back = FindVisualChildByName<WpfRepeatButton>(tv, "PART_ScrollBackButton");
+                WpfRepeatButton? fwd = FindVisualChildByName<WpfRepeatButton>(tv, "PART_ScrollForwardButton");
                 Assert.IsNotNull(back, "PART_ScrollBackButton must be in template.");
-                Assert.IsNotNull(fwd,  "PART_ScrollForwardButton must be in template.");
+                Assert.IsNotNull(fwd, "PART_ScrollForwardButton must be in template.");
 
                 Assert.AreEqual(
                     Visibility.Collapsed, back.Visibility,

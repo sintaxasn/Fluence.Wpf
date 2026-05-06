@@ -30,7 +30,7 @@ using System;
 using System.Windows;
 using System.Windows.Media;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf;
+using System.Collections.ObjectModel;
 
 namespace Fluence.Wpf.Tests
 {
@@ -42,7 +42,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                WpfTestSta.EnsureApplication();
+                _ = WpfTestSta.EnsureApplication();
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
                 Application.Current.Resources.MergedDictionaries.Clear();
@@ -54,7 +54,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = Application.Current;
+                Application app = Application.Current;
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
                 int baselineCount = app.Resources.MergedDictionaries.Count;
 
@@ -76,7 +76,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = Application.Current;
+                Application app = Application.Current;
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
                 int countAfterFirst = app.Resources.MergedDictionaries.Count;
 
@@ -93,7 +93,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = Application.Current;
+                Application app = Application.Current;
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
                 int lightCount = app.Resources.MergedDictionaries.Count;
 
@@ -113,7 +113,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = Application.Current;
+                Application app = Application.Current;
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
 
                 Assert.AreEqual(5, app.Resources.MergedDictionaries.Count,
@@ -126,12 +126,12 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = Application.Current;
+                Application app = Application.Current;
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
-                var dictionaries = app.Resources.MergedDictionaries;
-                var accentRef = dictionaries[1];
-                var typographyRef = dictionaries[3];
-                var genericRef = dictionaries[4];
+                Collection<ResourceDictionary> dictionaries = app.Resources.MergedDictionaries;
+                ResourceDictionary accentRef = dictionaries[1];
+                ResourceDictionary typographyRef = dictionaries[3];
+                ResourceDictionary genericRef = dictionaries[4];
 
                 ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, false);
 
@@ -146,15 +146,15 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = Application.Current;
+                Application app = Application.Current;
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
-                var brushesRef = app.Resources.MergedDictionaries[2];
+                ResourceDictionary brushesRef = app.Resources.MergedDictionaries[2];
 
                 ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, false);
                 Assert.AreNotSame(brushesRef, app.Resources.MergedDictionaries[2],
                     "Brushes dictionary should be reloaded after Light->Dark to pick up new Colors.");
 
-                var brushesAfterDark = app.Resources.MergedDictionaries[2];
+                ResourceDictionary brushesAfterDark = app.Resources.MergedDictionaries[2];
                 ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, false);
                 Assert.AreSame(brushesAfterDark, app.Resources.MergedDictionaries[2],
                     "Brushes dictionary should NOT be reloaded for HighContrast (HC promotes its own brushes).");
@@ -166,7 +166,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = Application.Current;
+                Application app = Application.Current;
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
                 int countBefore = app.Resources.MergedDictionaries.Count;
 
@@ -183,23 +183,23 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = Application.Current;
+                Application app = Application.Current;
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
                 ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, true);
                 ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, true);
 
-                var keyBrushNames = new[]
-                {
+                string[] keyBrushNames =
+                [
                     "TextFillColorPrimaryBrush",
                     "AccentFillColorDefaultBrush",
                     "SubtleFillColorSecondaryBrush",
                     "ControlStrokeColorDefaultBrush",
                     "CardBackgroundFillColorDefaultBrush"
-                };
+                ];
 
-                foreach (var key in keyBrushNames)
+                foreach (string? key in keyBrushNames)
                 {
-                    var brush = app.Resources[key] as Brush;
+                    Brush? brush = app.Resources[key] as Brush;
                     Assert.IsNotNull(brush, string.Format("Brush key '{0}' should resolve to non-null after Light->Dark->HC cycle.", key));
                 }
             });
@@ -210,24 +210,24 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = Application.Current;
+                Application app = Application.Current;
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
-                var dictionaries = app.Resources.MergedDictionaries;
+                Collection<ResourceDictionary> dictionaries = app.Resources.MergedDictionaries;
 
                 Assert.AreEqual(5, dictionaries.Count);
 
-                var expectedFragments = new[]
-                {
+                string[] expectedFragments =
+                [
                     "Theme.Light",
                     "Accent",
                     "Brushes",
                     "Typography",
                     "Generic"
-                };
+                ];
 
                 for (int i = 0; i < expectedFragments.Length; i++)
                 {
-                    var source = dictionaries[i].Source;
+                    Uri source = dictionaries[i].Source;
                     Assert.IsNotNull(source, string.Format("Dictionary at [{0}] should have a Source URI.", i));
                     Assert.IsTrue(source.OriginalString.IndexOf(expectedFragments[i], StringComparison.OrdinalIgnoreCase) >= 0,
                         string.Format("Dictionary at [{0}] Source should contain '{1}', but was '{2}'.",

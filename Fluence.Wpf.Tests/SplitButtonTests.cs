@@ -34,8 +34,8 @@ using System.Windows.Automation.Provider;
 using System.Windows.Input;
 using System.Windows.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf;
 using Fluence.Wpf.Controls;
+using System.Windows.Controls.Primitives;
 
 namespace Fluence.Wpf.Tests
 {
@@ -44,8 +44,8 @@ namespace Fluence.Wpf.Tests
     {
         private static void RunOnSta(Action action)
         {
-            Exception capturedException = null;
-            WpfTestSta.Dispatcher.Invoke(new Action(delegate
+            Exception? capturedException = null;
+            WpfTestSta.Dispatcher?.Invoke(new Action(delegate
             {
                 try
                 {
@@ -68,13 +68,13 @@ namespace Fluence.Wpf.Tests
             dispatcher.Invoke(new Action(delegate { }), DispatcherPriority.ApplicationIdle);
         }
 
-        private static void MergeGeneric(Application application)
+        private static void MergeGeneric(Application? application)
         {
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
-            application.Resources.MergedDictionaries.Clear();
+            application?.Resources.MergedDictionaries.Clear();
             ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-            application.Resources.MergedDictionaries.Add(new ResourceDictionary
+            application?.Resources.MergedDictionaries.Add(new ResourceDictionary
             {
                 Source = new Uri("/Fluence.Wpf.Demo;component/Resources/DemoSharedStyles.xaml", UriKind.Relative)
             });
@@ -87,7 +87,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnSta(() =>
             {
-                var button = new SplitButton();
+                SplitButton button = new();
 
                 Assert.AreEqual(new CornerRadius(4), button.CornerRadius,
                     "SplitButton.CornerRadius must default to 4 (Fluent control corner).");
@@ -112,7 +112,7 @@ namespace Fluence.Wpf.Tests
                 // Direct SetValue on the public IsFlyoutOpenProperty must fail: only the
                 // internal PropertyKey may mutate it. Guard against accidental promotion
                 // of the property to read/write.
-                var button = new SplitButton();
+                SplitButton button = new();
                 bool threw = false;
                 try
                 {
@@ -137,13 +137,13 @@ namespace Fluence.Wpf.Tests
         {
             RunOnSta(() =>
             {
-                var application = WpfTestSta.EnsureApplication();
+                Application? application = WpfTestSta.EnsureApplication();
                 MergeGeneric(application);
 
-                var window = new Window();
+                Window window = new();
                 try
                 {
-                    var splitButton = new SplitButton
+                    SplitButton splitButton = new()
                     {
                         Content = "Action",
                         Flyout = new System.Windows.Controls.TextBlock { Text = "Flyout content" },
@@ -154,20 +154,20 @@ namespace Fluence.Wpf.Tests
                     window.Height = 80;
                     window.Show();
                     Drain(window.Dispatcher);
-                    splitButton.ApplyTemplate();
+                    _ = splitButton.ApplyTemplate();
 
-                    var primary = splitButton.Template.FindName("PART_PrimaryButton", splitButton)
+                    System.Windows.Controls.Button? primary = splitButton.Template.FindName("PART_PrimaryButton", splitButton)
                         as System.Windows.Controls.Button;
                     Assert.IsNotNull(primary,
                         "Template must expose PART_PrimaryButton (the primary-action hit target).");
 
-                    var secondary = splitButton.Template.FindName("PART_SecondaryButton", splitButton)
+                    System.Windows.Controls.Primitives.ToggleButton? secondary = splitButton.Template.FindName("PART_SecondaryButton", splitButton)
                         as System.Windows.Controls.Primitives.ToggleButton;
                     Assert.IsNotNull(secondary,
                         "Template must expose PART_SecondaryButton (the flyout-toggle hit target).");
 
-                    var popup = splitButton.Template.FindName("PART_Popup", splitButton)
-                        as System.Windows.Controls.Primitives.Popup;
+                    Popup? popup = splitButton.Template.FindName("PART_Popup", splitButton)
+                        as Popup;
                     Assert.IsNotNull(popup,
                         "Template must expose PART_Popup (the flyout host).");
                     Assert.IsFalse(popup.StaysOpen,
@@ -189,13 +189,13 @@ namespace Fluence.Wpf.Tests
         {
             RunOnSta(() =>
             {
-                var application = WpfTestSta.EnsureApplication();
+                Application? application = WpfTestSta.EnsureApplication();
                 MergeGeneric(application);
 
-                var window = new Window();
+                Window window = new();
                 try
                 {
-                    var splitButton = new SplitButton
+                    SplitButton splitButton = new()
                     {
                         Content = "Action",
                         Width = 140
@@ -208,16 +208,16 @@ namespace Fluence.Wpf.Tests
                     window.Height = 80;
                     window.Show();
                     Drain(window.Dispatcher);
-                    splitButton.ApplyTemplate();
+                    _ = splitButton.ApplyTemplate();
 
-                    var primary = splitButton.Template.FindName("PART_PrimaryButton", splitButton)
+                    System.Windows.Controls.Button? primary = splitButton.Template.FindName("PART_PrimaryButton", splitButton)
                         as System.Windows.Controls.Button;
                     Assert.IsNotNull(primary);
 
                     // Use UI Automation peer -> IInvokeProvider.Invoke(), the canonical
                     // equivalent of a user press-release on the button.
-                    var peer = UIElementAutomationPeer.CreatePeerForElement(primary);
-                    var invoke = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
+                    AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(primary);
+                    IInvokeProvider invoke = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
                     invoke.Invoke();
                     Drain(window.Dispatcher);
 
@@ -236,16 +236,16 @@ namespace Fluence.Wpf.Tests
         {
             RunOnSta(() =>
             {
-                var application = WpfTestSta.EnsureApplication();
+                Application? application = WpfTestSta.EnsureApplication();
                 MergeGeneric(application);
 
-                var window = new Window();
+                Window window = new();
                 try
                 {
                     int executed = 0;
-                    var command = new RelayCommand(p => executed++);
+                    RelayCommand command = new(p => executed++);
 
-                    var splitButton = new SplitButton
+                    SplitButton splitButton = new()
                     {
                         Content = "Action",
                         Command = command,
@@ -257,12 +257,12 @@ namespace Fluence.Wpf.Tests
                     window.Height = 80;
                     window.Show();
                     Drain(window.Dispatcher);
-                    splitButton.ApplyTemplate();
+                    _ = splitButton.ApplyTemplate();
 
-                    var primary = splitButton.Template.FindName("PART_PrimaryButton", splitButton)
+                    System.Windows.Controls.Button? primary = splitButton.Template.FindName("PART_PrimaryButton", splitButton)
                         as System.Windows.Controls.Button;
-                    var peer = UIElementAutomationPeer.CreatePeerForElement(primary);
-                    var invoke = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
+                    AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(primary);
+                    IInvokeProvider invoke = (IInvokeProvider)peer.GetPattern(PatternInterface.Invoke);
                     invoke.Invoke();
                     Drain(window.Dispatcher);
 
@@ -285,13 +285,13 @@ namespace Fluence.Wpf.Tests
         {
             RunOnSta(() =>
             {
-                var application = WpfTestSta.EnsureApplication();
+                Application? application = WpfTestSta.EnsureApplication();
                 MergeGeneric(application);
 
-                var window = new Window();
+                Window window = new();
                 try
                 {
-                    var splitButton = new SplitButton
+                    SplitButton splitButton = new()
                     {
                         Content = "Action",
                         Flyout = new System.Windows.Controls.TextBlock { Text = "Hello" },
@@ -303,12 +303,12 @@ namespace Fluence.Wpf.Tests
                     window.Height = 80;
                     window.Show();
                     Drain(window.Dispatcher);
-                    splitButton.ApplyTemplate();
+                    _ = splitButton.ApplyTemplate();
 
-                    var secondary = splitButton.Template.FindName("PART_SecondaryButton", splitButton)
+                    System.Windows.Controls.Primitives.ToggleButton? secondary = splitButton.Template.FindName("PART_SecondaryButton", splitButton)
                         as System.Windows.Controls.Primitives.ToggleButton;
-                    var popup = splitButton.Template.FindName("PART_Popup", splitButton)
-                        as System.Windows.Controls.Primitives.Popup;
+                    Popup? popup = splitButton.Template.FindName("PART_Popup", splitButton)
+                        as Popup;
                     Assert.IsNotNull(secondary);
                     Assert.IsNotNull(popup);
 
@@ -347,8 +347,8 @@ namespace Fluence.Wpf.Tests
         {
             RunOnSta(() =>
             {
-                var splitButton = new SplitButton();
-                var peer = UIElementAutomationPeer.CreatePeerForElement(splitButton);
+                SplitButton splitButton = new();
+                AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(splitButton);
                 Assert.IsNotNull(peer, "SplitButton must return an AutomationPeer.");
 
                 Assert.AreEqual(AutomationControlType.SplitButton,
@@ -363,13 +363,14 @@ namespace Fluence.Wpf.Tests
 
         #endregion
 
-        private sealed class RelayCommand : ICommand
+        private sealed class RelayCommand(Action<object?> execute) : ICommand
         {
-            private readonly Action<object> _execute;
-            public RelayCommand(Action<object> execute) { _execute = execute; }
-            public bool CanExecute(object parameter) { return true; }
-            public void Execute(object parameter) { _execute(parameter); }
-            public event EventHandler CanExecuteChanged { add { } remove { } }
+            private readonly Action<object?> _execute = execute;
+
+            public bool CanExecute(object? parameter) { return true; }
+            public void Execute(object? parameter) { _execute(parameter); }
+            [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S108:Nested blocks of code should not be left empty", Justification = "This is just test code.")]
+            public event EventHandler? CanExecuteChanged { add { } remove { } }
         }
     }
 }

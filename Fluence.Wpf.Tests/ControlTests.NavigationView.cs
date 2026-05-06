@@ -36,8 +36,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf;
-using Fluent = Fluence.Wpf.Controls;
 using Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Tests
@@ -57,8 +55,8 @@ namespace Fluence.Wpf.Tests
         // HoldEnd state before the test samples layout values.
         private static void WaitForAnimationAndDrain(Dispatcher dispatcher, int milliseconds)
         {
-            var frame = new DispatcherFrame();
-            var timer = new DispatcherTimer(
+            DispatcherFrame frame = new();
+            DispatcherTimer timer = new(
                 TimeSpan.FromMilliseconds(milliseconds),
                 DispatcherPriority.Normal,
                 delegate { frame.Continue = false; },
@@ -66,23 +64,23 @@ namespace Fluence.Wpf.Tests
             timer.Start();
             Dispatcher.PushFrame(frame);
             timer.Stop();
-            dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
+            _ = dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
         }
 
         private static bool WaitUntil(Dispatcher dispatcher, int milliseconds, Func<bool> condition)
         {
-            var deadline = DateTime.UtcNow.AddMilliseconds(milliseconds);
+            DateTime deadline = DateTime.UtcNow.AddMilliseconds(milliseconds);
 
             do
             {
-                dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
+                _ = dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
                 if (condition())
                 {
                     return true;
                 }
 
-                var frame = new DispatcherFrame();
-                var timer = new DispatcherTimer(
+                DispatcherFrame frame = new();
+                DispatcherTimer timer = new(
                     TimeSpan.FromMilliseconds(16),
                     DispatcherPriority.Normal,
                     delegate { frame.Continue = false; },
@@ -93,7 +91,7 @@ namespace Fluence.Wpf.Tests
             }
             while (DateTime.UtcNow < deadline);
 
-            dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
+            _ = dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
             return condition();
         }
 
@@ -104,7 +102,7 @@ namespace Fluence.Wpf.Tests
             double expectedOffset,
             string message)
         {
-            WaitUntil(window.Dispatcher, 3000, delegate
+            _ = WaitUntil(window.Dispatcher, 3000, delegate
             {
                 window.UpdateLayout();
                 return Math.Abs(GetContentOffsetX(nav, presenter) - expectedOffset) <= 1.0;
@@ -129,8 +127,8 @@ namespace Fluence.Wpf.Tests
         {
             return WaitUntil(dispatcher, 250, delegate
             {
-                var xIsUnchanged = Math.Abs(translate.X - expectedX) <= 0.5;
-                var yMovedInExpectedDirection = upward ? translate.Y < originalY : translate.Y > originalY;
+                bool xIsUnchanged = Math.Abs(translate.X - expectedX) <= 0.5;
+                bool yMovedInExpectedDirection = upward ? translate.Y < originalY : translate.Y > originalY;
                 return xIsUnchanged && yMovedInExpectedDirection && indicator.Opacity < 1.0;
             });
         }
@@ -140,26 +138,26 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 400,
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Left
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Two" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "Two" });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var host = GetNavigationViewItemsHostPanel(nav);
+                    System.Windows.Controls.StackPanel? host = GetNavigationViewItemsHostPanel(nav);
                     Assert.IsNotNull(host);
                     Assert.AreEqual(Orientation.Vertical, host.Orientation);
                 }
@@ -168,7 +166,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -179,26 +177,26 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 400,
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Top
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Two" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "Two" });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var host = GetNavigationViewItemsHostPanel(nav);
+                    System.Windows.Controls.StackPanel? host = GetNavigationViewItemsHostPanel(nav);
                     Assert.IsNotNull(host);
                     Assert.AreEqual(Orientation.Horizontal, host.Orientation);
                 }
@@ -207,7 +205,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -218,8 +216,8 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
 
                 try
                 {
@@ -231,7 +229,7 @@ namespace Fluence.Wpf.Tests
                 {
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -242,13 +240,13 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 420,
                         Height = 320,
@@ -256,13 +254,13 @@ namespace Fluence.Wpf.Tests
                         IsPaneOpen = false,
                         PaneFooter = new System.Windows.Controls.TextBlock { Text = "Footer" }
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var footerHost = FindVisualChildByName<System.Windows.Controls.Border>(nav, "PaneFooterHost");
+                    System.Windows.Controls.Border? footerHost = FindVisualChildByName<System.Windows.Controls.Border>(nav, "PaneFooterHost");
                     Assert.IsNotNull(footerHost, "LeftCompact template should expose PaneFooterHost.");
                     Assert.AreEqual(Visibility.Collapsed, footerHost.Visibility,
                         "LeftCompact footer should be collapsed while the compact pane is closed.");
@@ -278,7 +276,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -289,25 +287,25 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 420,
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Left
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var glyph = FindVisualChildByName<FontIcon>(nav, "PaneToggleGlyph");
+                    FontIcon? glyph = FindVisualChildByName<FontIcon>(nav, "PaneToggleGlyph");
                     Assert.IsNotNull(glyph, "Left pane template should expose PaneToggleGlyph.");
                     Assert.AreEqual(2.0, glyph.Margin.Left, 0.01,
                         "Pane toggle glyph should be nudged right to align with navigation item glyphs.");
@@ -317,7 +315,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -328,13 +326,13 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 420,
                         Height = 320,
@@ -342,18 +340,18 @@ namespace Fluence.Wpf.Tests
                         IsBackButtonVisible = true,
                         IsBackEnabled = true
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var back = nav.Template.FindName(Fluent.NavigationView.PartBackButton, nav) as System.Windows.Controls.Button;
-                    var paneToggle = nav.Template.FindName(Fluent.NavigationView.PartPaneToggleButton, nav) as System.Windows.Controls.Button;
+                    System.Windows.Controls.Button? back = nav.Template.FindName(NavigationView.PartBackButton, nav) as System.Windows.Controls.Button;
+                    System.Windows.Controls.Button? paneToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as System.Windows.Controls.Button;
                     Assert.IsNotNull(back, "PART_BackButton must exist in Left template.");
                     Assert.IsNotNull(paneToggle, "PART_PaneToggleButton must exist in Left template.");
 
-                    var chrome = FindVisualChildByName<System.Windows.Controls.StackPanel>(nav, "PaneChrome");
+                    System.Windows.Controls.StackPanel? chrome = FindVisualChildByName<System.Windows.Controls.StackPanel>(nav, "PaneChrome");
                     Assert.IsNotNull(chrome, "Left template should expose the pane chrome host.");
                     Assert.AreEqual(Orientation.Horizontal, chrome.Orientation,
                         "Left pane chrome should arrange back and pane toggle in a horizontal row.");
@@ -373,7 +371,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -384,20 +382,20 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var icon = new Fluent.FontIcon { Glyph = "\uE80F" };
-                    var nav = new Fluent.NavigationView
+                    FontIcon icon = new() { Glyph = "\uE80F" };
+                    NavigationView nav = new()
                     {
                         Width = 420,
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Left
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One", Icon = icon });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "One", Icon = icon });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
@@ -411,7 +409,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -422,17 +420,17 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var badge = new Fluent.FontIcon { Glyph = "\uE70D", IconFontSize = 12 };
-                    var item = new Fluent.NavigationViewItem
+                    FontIcon badge = new() { Glyph = "\uE70D", IconFontSize = 12 };
+                    NavigationViewItem item = new()
                     {
                         Content = "Section",
-                        Icon = new Fluent.FontIcon { Glyph = "\uE8FD", IconFontSize = 20 },
+                        Icon = new FontIcon { Glyph = "\uE8FD", IconFontSize = 20 },
                         InfoBadge = badge
                     };
 
@@ -443,7 +441,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var presenter = FindVisualChildByName<ContentPresenter>(item, "InfoBadgePresenter");
+                    ContentPresenter? presenter = FindVisualChildByName<ContentPresenter>(item, "InfoBadgePresenter");
                     Assert.IsNotNull(presenter, "NavigationViewItem template must render InfoBadge content.");
                     Assert.AreSame(badge, presenter.Content,
                         "NavigationViewItem InfoBadge presenter must bind to NavigationViewItem.InfoBadge.");
@@ -453,7 +451,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -464,23 +462,23 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 400,
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Top,
                         SelectionFollowsFocus = false
                     };
-                    var item0 = new Fluent.NavigationViewItem { Content = "Zero" };
-                    var item1 = new Fluent.NavigationViewItem { Content = "One" };
-                    nav.Items.Add(item0);
-                    nav.Items.Add(item1);
+                    NavigationViewItem item0 = new() { Content = "Zero" };
+                    NavigationViewItem item1 = new() { Content = "One" };
+                    _ = nav.Items.Add(item0);
+                    _ = nav.Items.Add(item1);
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
@@ -498,7 +496,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -509,43 +507,43 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 400,
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Left
                     };
-                    var item0 = new Fluent.NavigationViewItem { Content = "Zero" };
-                    var item1 = new Fluent.NavigationViewItem { Content = "One" };
-                    nav.Items.Add(item0);
-                    nav.Items.Add(item1);
+                    NavigationViewItem item0 = new() { Content = "Zero" };
+                    NavigationViewItem item1 = new() { Content = "One" };
+                    _ = nav.Items.Add(item0);
+                    _ = nav.Items.Add(item1);
                     nav.SelectedItem = item0;
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var calls = new List<string>();
-                    NavigationViewItemInvokedEventArgs invokedArgs = null;
-                    nav.ItemInvoked += delegate(object sender, NavigationViewItemInvokedEventArgs e)
+                    List<string> calls = [];
+                    NavigationViewItemInvokedEventArgs? invokedArgs = null;
+                    nav.ItemInvoked += delegate (object? sender, NavigationViewItemInvokedEventArgs e)
                     {
                         invokedArgs = e;
-                        calls.Add("invoked:" + ((Fluent.NavigationViewItem)e.InvokedItemContainer).Content);
+                        calls.Add("invoked:" + e.InvokedItemContainer.Content);
                     };
                     nav.SelectionChanged += delegate
                     {
-                        calls.Add("selection:" + ((Fluent.NavigationViewItem)nav.SelectedItem).Content);
+                        calls.Add("selection:" + ((NavigationViewItem)nav.SelectedItem).Content);
                     };
 
-                    var peer = UIElementAutomationPeer.CreatePeerForElement(item1);
+                    AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(item1);
                     Assert.IsNotNull(peer, "NavigationViewItem should create an automation peer.");
-                    var invokeProvider = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
+                    IInvokeProvider? invokeProvider = peer.GetPattern(PatternInterface.Invoke) as IInvokeProvider;
                     Assert.IsNotNull(invokeProvider, "NavigationViewItem automation peer must expose Invoke.");
 
                     invokeProvider.Invoke();
@@ -569,7 +567,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -580,30 +578,30 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 400,
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Top,
                         SelectionFollowsFocus = true
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Zero" });
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "Zero" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     nav.SelectedIndex = 0;
-                    var container1 = nav.ItemContainerGenerator.ContainerFromIndex(1) as FrameworkElement;
+                    FrameworkElement? container1 = nav.ItemContainerGenerator.ContainerFromIndex(1) as FrameworkElement;
                     Assert.IsNotNull(container1);
-                    Keyboard.Focus(container1);
+                    _ = Keyboard.Focus(container1);
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
@@ -614,7 +612,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -625,30 +623,30 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 400,
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Top,
                         SelectionFollowsFocus = false
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Zero" });
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "Zero" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
                     nav.SelectedIndex = 0;
-                    var container1 = nav.ItemContainerGenerator.ContainerFromIndex(1) as FrameworkElement;
+                    FrameworkElement? container1 = nav.ItemContainerGenerator.ContainerFromIndex(1) as FrameworkElement;
                     Assert.IsNotNull(container1);
-                    Keyboard.Focus(container1);
+                    _ = Keyboard.Focus(container1);
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
@@ -659,7 +657,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -670,27 +668,27 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 400,
                         Height = 320,
                         IsBackButtonVisible = false,
                         IsBackEnabled = true
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Item" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "Item" });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    nav.ApplyTemplate();
-                    var back = nav.Template.FindName(Fluent.NavigationView.PartBackButton, nav) as System.Windows.Controls.Button;
+                    _ = nav.ApplyTemplate();
+                    System.Windows.Controls.Button? back = nav.Template.FindName(NavigationView.PartBackButton, nav) as System.Windows.Controls.Button;
                     Assert.IsNotNull(back);
                     Assert.AreEqual(Visibility.Collapsed, back.Visibility);
                 }
@@ -699,7 +697,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -710,28 +708,28 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 400,
                         Height = 320,
                         IsBackButtonVisible = true,
                         IsBackEnabled = false
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Item" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "Item" });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    nav.ApplyTemplate();
-                    var back = nav.Template.FindName(Fluent.NavigationView.PartBackButton, nav) as System.Windows.Controls.Button;
-                    var paneToggle = nav.Template.FindName(Fluent.NavigationView.PartPaneToggleButton, nav) as System.Windows.Controls.Button;
+                    _ = nav.ApplyTemplate();
+                    System.Windows.Controls.Button? back = nav.Template.FindName(NavigationView.PartBackButton, nav) as System.Windows.Controls.Button;
+                    System.Windows.Controls.Button? paneToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as System.Windows.Controls.Button;
                     Assert.IsNotNull(back);
                     Assert.IsNotNull(paneToggle);
                     Assert.AreEqual(Visibility.Collapsed, back.Visibility,
@@ -744,7 +742,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -755,27 +753,27 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 400,
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Left,
                         IsPaneToggleButtonVisible = false
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Item" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "Item" });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    nav.ApplyTemplate();
-                    var paneToggle = nav.Template.FindName(Fluent.NavigationView.PartPaneToggleButton, nav) as System.Windows.Controls.Button;
+                    _ = nav.ApplyTemplate();
+                    System.Windows.Controls.Button? paneToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as System.Windows.Controls.Button;
                     Assert.IsNotNull(paneToggle);
                     Assert.AreEqual(Visibility.Collapsed, paneToggle.Visibility);
                 }
@@ -784,7 +782,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -795,32 +793,29 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 400,
                         Height = 320,
                         IsBackButtonVisible = true,
                         IsBackEnabled = true
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Item" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "Item" });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var fired = false;
-                    EventHandler<NavigationViewBackRequestedEventArgs> handler = delegate
-                    {
-                        fired = true;
-                    };
+                    bool fired = false;
+                    void handler(object? sender, NavigationViewBackRequestedEventArgs e) { fired = true; }
                     nav.BackRequested += handler;
-                    nav.ApplyTemplate();
+                    _ = nav.ApplyTemplate();
                     nav.RaiseBackRequestedForTesting();
                     DrainDispatcher(window.Dispatcher);
 
@@ -831,7 +826,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -842,19 +837,19 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 400,
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Top
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Item" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "Item" });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
@@ -862,12 +857,12 @@ namespace Fluence.Wpf.Tests
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
                     DrainDispatcher(window.Dispatcher);
-                    Assert.IsTrue(application.Resources.MergedDictionaries.Count > 0);
-                    var lightBase = (Color)application.Resources.MergedDictionaries[0]["SolidBackgroundFillColorBase"];
+                    Assert.IsTrue(application?.Resources.MergedDictionaries.Count > 0);
+                    Color lightBase = (Color)application.Resources.MergedDictionaries[0]["SolidBackgroundFillColorBase"];
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, true);
                     DrainDispatcher(window.Dispatcher);
-                    var darkBase = (Color)application.Resources.MergedDictionaries[0]["SolidBackgroundFillColorBase"];
+                    Color darkBase = (Color)application.Resources.MergedDictionaries[0]["SolidBackgroundFillColorBase"];
 
                     Assert.AreNotEqual(lightBase, darkBase,
                         "Theme color SolidBackgroundFillColorBase should differ between light and dark.");
@@ -878,7 +873,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -889,29 +884,29 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 400,
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Left
                     };
-                    var item0 = new Fluent.NavigationViewItem { Content = "One" };
-                    var item1 = new Fluent.NavigationViewItem { Content = "Two" };
-                    nav.Items.Add(item0);
-                    nav.Items.Add(item1);
+                    NavigationViewItem item0 = new() { Content = "One" };
+                    NavigationViewItem item1 = new() { Content = "Two" };
+                    _ = nav.Items.Add(item0);
+                    _ = nav.Items.Add(item1);
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    nav.ApplyTemplate();
-                    var indicator = nav.GetSelectionIndicatorForTesting();
+                    _ = nav.ApplyTemplate();
+                    FrameworkElement? indicator = nav.GetSelectionIndicatorForTesting();
                     Assert.IsNotNull(indicator, "PART_SelectionIndicator should exist in the NavigationView template.");
                     Assert.AreEqual(0.0, indicator.Opacity, 0.01, "Indicator should be hidden when nothing is selected.");
 
@@ -927,7 +922,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -938,24 +933,24 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 400,
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Left
                     };
-                    var item = new Fluent.NavigationViewItem
+                    NavigationViewItem item = new()
                     {
                         Content = "Home",
-                        Icon = new Fluent.FontIcon { Glyph = "\uE80F", IconFontSize = 20 }
+                        Icon = new FontIcon { Glyph = "\uE80F", IconFontSize = 20 }
                     };
-                    nav.Items.Add(item);
+                    _ = nav.Items.Add(item);
                     nav.SelectedItem = item;
 
                     window.Content = nav;
@@ -964,7 +959,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     DrainDispatcher(window.Dispatcher);
 
-                    var indicator = nav.GetSelectionIndicatorForTesting();
+                    FrameworkElement? indicator = nav.GetSelectionIndicatorForTesting();
                     Assert.IsNotNull(indicator, "PART_SelectionIndicator should exist in the NavigationView template.");
                     Assert.AreEqual(1.0, indicator.Opacity, 0.01,
                         "Selection made before template application should show the shared indicator after layout.");
@@ -974,7 +969,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -985,24 +980,24 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 400,
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Left
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem
+                    _ = nav.Items.Add(new NavigationViewItem
                     {
                         Content = "Home",
-                        Icon = new Fluent.FontIcon { Glyph = "\uE80F", IconFontSize = 20 }
+                        Icon = new FontIcon { Glyph = "\uE80F", IconFontSize = 20 }
                     });
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Child", IsChildItem = true });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "Child", IsChildItem = true });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
@@ -1013,9 +1008,9 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     DrainDispatcher(window.Dispatcher);
 
-                    var indicator = nav.GetSelectionIndicatorForTesting();
+                    FrameworkElement? indicator = nav.GetSelectionIndicatorForTesting();
                     Assert.IsNotNull(indicator, "PART_SelectionIndicator should exist in the NavigationView template.");
-                    var iconItemX = GetSelectionIndicatorTranslate(indicator).X;
+                    double iconItemX = GetSelectionIndicatorTranslate(indicator).X;
                     Assert.AreEqual(4.0, iconItemX, 0.5,
                         "Icon item indicator should sit inside the selected item background.");
 
@@ -1024,7 +1019,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     DrainDispatcher(window.Dispatcher);
 
-                    var childItemX = GetSelectionIndicatorTranslate(indicator).X;
+                    double childItemX = GetSelectionIndicatorTranslate(indicator).X;
                     Assert.AreEqual(48.0, childItemX, 0.5,
                         "Iconless child item indicator should move inward without overlapping the content column.");
                 }
@@ -1033,7 +1028,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -1044,27 +1039,27 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 400,
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Left
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem
+                    _ = nav.Items.Add(new NavigationViewItem
                     {
                         Content = "Home",
-                        Icon = new Fluent.FontIcon { Glyph = "\uE80F", IconFontSize = 20 }
+                        Icon = new FontIcon { Glyph = "\uE80F", IconFontSize = 20 }
                     });
-                    nav.Items.Add(new Fluent.NavigationViewItem
+                    _ = nav.Items.Add(new NavigationViewItem
                     {
                         Content = "Settings",
-                        Icon = new Fluent.FontIcon { Glyph = "\uE713", IconFontSize = 20 }
+                        Icon = new FontIcon { Glyph = "\uE713", IconFontSize = 20 }
                     });
                     window.Content = nav;
                     window.Show();
@@ -1076,9 +1071,9 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     DrainDispatcher(window.Dispatcher);
 
-                    var indicator = nav.GetSelectionIndicatorForTesting();
+                    FrameworkElement? indicator = nav.GetSelectionIndicatorForTesting();
                     Assert.IsNotNull(indicator, "PART_SelectionIndicator should exist in the NavigationView template.");
-                    var translate = GetSelectionIndicatorTranslate(indicator);
+                    TranslateTransform translate = GetSelectionIndicatorTranslate(indicator);
                     Assert.IsFalse(translate.HasAnimatedProperties,
                         "Initial selection should snap before later changes animate.");
 
@@ -1096,7 +1091,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -1107,24 +1102,24 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 400,
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Left
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem
+                    _ = nav.Items.Add(new NavigationViewItem
                     {
                         Content = "Parent",
-                        Icon = new Fluent.FontIcon { Glyph = "\uE80F", IconFontSize = 20 }
+                        Icon = new FontIcon { Glyph = "\uE80F", IconFontSize = 20 }
                     });
-                    nav.Items.Add(new Fluent.NavigationViewItem
+                    _ = nav.Items.Add(new NavigationViewItem
                     {
                         Content = "Child",
                         IsChildItem = true
@@ -1139,11 +1134,11 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     DrainDispatcher(window.Dispatcher);
 
-                    var indicator = nav.GetSelectionIndicatorForTesting();
+                    FrameworkElement? indicator = nav.GetSelectionIndicatorForTesting();
                     Assert.IsNotNull(indicator, "PART_SelectionIndicator should exist in the NavigationView template.");
-                    var translate = GetSelectionIndicatorTranslate(indicator);
-                    var parentX = translate.X;
-                    var parentY = translate.Y;
+                    TranslateTransform translate = GetSelectionIndicatorTranslate(indicator);
+                    double parentX = translate.X;
+                    double parentY = translate.Y;
 
                     nav.SelectedIndex = 1;
                     Assert.IsTrue(
@@ -1161,7 +1156,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -1172,24 +1167,24 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 400,
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Left
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem
+                    _ = nav.Items.Add(new NavigationViewItem
                     {
                         Content = "Parent",
-                        Icon = new Fluent.FontIcon { Glyph = "\uE80F", IconFontSize = 20 }
+                        Icon = new FontIcon { Glyph = "\uE80F", IconFontSize = 20 }
                     });
-                    nav.Items.Add(new Fluent.NavigationViewItem
+                    _ = nav.Items.Add(new NavigationViewItem
                     {
                         Content = "Child",
                         IsChildItem = true
@@ -1204,11 +1199,11 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     DrainDispatcher(window.Dispatcher);
 
-                    var indicator = nav.GetSelectionIndicatorForTesting();
+                    FrameworkElement? indicator = nav.GetSelectionIndicatorForTesting();
                     Assert.IsNotNull(indicator, "PART_SelectionIndicator should exist in the NavigationView template.");
-                    var translate = GetSelectionIndicatorTranslate(indicator);
-                    var childX = translate.X;
-                    var childY = translate.Y;
+                    TranslateTransform translate = GetSelectionIndicatorTranslate(indicator);
+                    double childX = translate.X;
+                    double childY = translate.Y;
 
                     nav.SelectedIndex = 0;
                     Assert.IsTrue(
@@ -1226,7 +1221,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -1237,24 +1232,24 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 400,
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Left
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem
+                    _ = nav.Items.Add(new NavigationViewItem
                     {
                         Content = "Home",
-                        Icon = new Fluent.FontIcon { Glyph = "\uE80F", IconFontSize = 20 }
+                        Icon = new FontIcon { Glyph = "\uE80F", IconFontSize = 20 }
                     });
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "No icon top-level" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "No icon top-level" });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
@@ -1265,16 +1260,16 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     DrainDispatcher(window.Dispatcher);
 
-                    var indicator = nav.GetSelectionIndicatorForTesting();
+                    FrameworkElement? indicator = nav.GetSelectionIndicatorForTesting();
                     Assert.IsNotNull(indicator, "PART_SelectionIndicator should exist in the NavigationView template.");
-                    var iconItemX = GetSelectionIndicatorTranslate(indicator).X;
+                    double iconItemX = GetSelectionIndicatorTranslate(indicator).X;
 
                     nav.SelectedIndex = 1;
                     WaitForAnimationAndDrain(window.Dispatcher, 600);
                     window.UpdateLayout();
                     DrainDispatcher(window.Dispatcher);
 
-                    var noIconItemX = GetSelectionIndicatorTranslate(indicator).X;
+                    double noIconItemX = GetSelectionIndicatorTranslate(indicator).X;
                     Assert.AreEqual(iconItemX, noIconItemX, 0.5,
                         "A top-level item without an icon should keep the top-level indicator position; child indentation must be explicit.");
                 }
@@ -1283,7 +1278,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -1294,19 +1289,18 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
 
                 try
                 {
-                    var style = application.TryFindResource("NavigationViewItemFocusVisual") as Style;
+                    Style? style = application?.TryFindResource("NavigationViewItemFocusVisual") as Style;
                     Assert.IsNotNull(style, "NavigationViewItemFocusVisual should be present in Generic.xaml.");
 
-                    ControlTemplate template = null;
-                    foreach (var setterBase in style.Setters)
+                    ControlTemplate? template = null;
+                    foreach (SetterBase? setterBase in style.Setters)
                     {
-                        var setter = setterBase as Setter;
-                        if (setter != null && setter.Property == Control.TemplateProperty)
+                        if (setterBase is Setter setter && setter.Property == Control.TemplateProperty)
                         {
                             template = setter.Value as ControlTemplate;
                             break;
@@ -1315,10 +1309,10 @@ namespace Fluence.Wpf.Tests
 
                     Assert.IsNotNull(template, "NavigationViewItemFocusVisual should provide a ControlTemplate.");
 
-                    var root = template.LoadContent() as DependencyObject;
+                    DependencyObject root = template.LoadContent();
                     Assert.IsNotNull(root, "Focus visual template should load a visual tree.");
 
-                    foreach (var border in FindVisualChildren<System.Windows.Controls.Border>(root))
+                    foreach (System.Windows.Controls.Border border in FindVisualChildren<System.Windows.Controls.Border>(root))
                     {
                         Assert.IsTrue(border.Margin.Left >= 0.0 && border.Margin.Right >= 0.0,
                             "Navigation item focus strokes should stay inside the selected item bounds horizontally.");
@@ -1328,7 +1322,7 @@ namespace Fluence.Wpf.Tests
                 {
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -1339,19 +1333,19 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 400,
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Left
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
@@ -1362,22 +1356,22 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     DrainDispatcher(window.Dispatcher);
 
-                    var indicator = nav.GetSelectionIndicatorForTesting();
-                    Assert.AreEqual(1.0, indicator.Opacity, 0.01);
+                    FrameworkElement? indicator = nav.GetSelectionIndicatorForTesting();
+                    Assert.AreEqual(1.0, indicator?.Opacity ?? 0.0, 0.01);
 
                     nav.SelectedItem = null;
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(0.0, indicator.Opacity, 0.01, "Indicator should hide when selection is cleared.");
+                    Assert.AreEqual(0.0, indicator?.Opacity ?? 1.0, 0.01, "Indicator should hide when selection is cleared.");
                 }
                 finally
                 {
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -1388,20 +1382,20 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 600,
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Top
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Alpha" });
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Beta" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "Alpha" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "Beta" });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
@@ -1412,7 +1406,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     DrainDispatcher(window.Dispatcher);
 
-                    var indicator = nav.GetSelectionIndicatorForTesting();
+                    FrameworkElement? indicator = nav.GetSelectionIndicatorForTesting();
                     Assert.IsNotNull(indicator, "PART_SelectionIndicator should exist in Top pane template.");
                     Assert.AreEqual(1.0, indicator.Opacity, 0.01, "Indicator should be visible in top mode.");
                 }
@@ -1421,44 +1415,45 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
         }
 
         [TestMethod]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Blocker Code Smell", "S2699:Tests should include assertions", Justification = "Don't care for now.")]
         public void NavigationView_FullThemeCycle_NoExceptions()
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 400,
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Left
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Item" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "Item" });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var themes = new ApplicationTheme[]
-                    {
+                    ApplicationTheme[] themes =
+                    [
                         ApplicationTheme.Light,
                         ApplicationTheme.Dark,
                         ApplicationTheme.HighContrast,
                         ApplicationTheme.Auto
-                    };
+                    ];
 
-                    for (var i = 0; i < themes.Length; i++)
+                    for (int i = 0; i < themes.Length; i++)
                     {
                         ApplicationThemeManager.Apply(themes[i], BackdropType.None, true);
                         DrainDispatcher(window.Dispatcher);
@@ -1470,7 +1465,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -1481,20 +1476,20 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 600,
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Left
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Two" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "Two" });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
@@ -1510,7 +1505,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     DrainDispatcher(window.Dispatcher);
 
-                    var indicator = nav.GetSelectionIndicatorForTesting();
+                    FrameworkElement? indicator = nav.GetSelectionIndicatorForTesting();
                     Assert.IsNotNull(indicator, "Indicator should exist after mode switch.");
                     Assert.AreEqual(1.0, indicator.Opacity, 0.01, "Indicator should remain visible after mode switch.");
                 }
@@ -1519,7 +1514,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -1530,20 +1525,20 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 400,
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Left,
                         IsPaneOpen = true
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
@@ -1559,7 +1554,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     DrainDispatcher(window.Dispatcher);
 
-                    var indicator = nav.GetSelectionIndicatorForTesting();
+                    FrameworkElement? indicator = nav.GetSelectionIndicatorForTesting();
                     Assert.IsNotNull(indicator, "Indicator should exist after pane collapse.");
                     Assert.AreEqual(1.0, indicator.Opacity, 0.01, "Indicator should remain visible after pane collapse.");
 
@@ -1575,7 +1570,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -1586,32 +1581,32 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 400,
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Left
                     };
-                    var item = new Fluent.NavigationViewItem { Content = "Disabled" };
-                    nav.Items.Add(item);
+                    NavigationViewItem item = new() { Content = "Disabled" };
+                    _ = nav.Items.Add(item);
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var enabledForeground = item.Foreground;
+                    Brush enabledForeground = item.Foreground;
 
                     item.IsEnabled = false;
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var disabledForeground = item.Foreground;
+                    Brush disabledForeground = item.Foreground;
                     Assert.AreNotEqual(enabledForeground, disabledForeground,
                         "Foreground should change when item is disabled.");
                 }
@@ -1620,7 +1615,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -1631,30 +1626,30 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 800,
                         Height = 480,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Left,
                         IsPaneOpen = false
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     DrainDispatcher(window.Dispatcher);
 
-                    var presenter = FindVisualChildByName<ContentPresenter>(nav, Fluent.NavigationView.PartContentPresenter);
+                    ContentPresenter? presenter = FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter);
                     Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in Left template.");
 
-                    var offset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
+                    Point offset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
                     Assert.AreEqual(48.0, offset.X, 1.0,
                         "When Left mode starts with IsPaneOpen=false, content must start at the 48px compact rail, not at the expanded pane width.");
                 }
@@ -1663,7 +1658,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -1674,30 +1669,30 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 800,
                         Height = 480,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Left,
                         IsPaneOpen = true
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     DrainDispatcher(window.Dispatcher);
 
-                    var presenter = FindVisualChildByName<ContentPresenter>(nav, Fluent.NavigationView.PartContentPresenter);
+                    ContentPresenter? presenter = FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter);
                     Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in Left template.");
 
-                    var offset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
+                    Point offset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
                     Assert.AreEqual(42.0, offset.Y, 1.0,
                         "Left NavigationView content should start 42px below the top of the window.");
                 }
@@ -1706,7 +1701,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -1717,13 +1712,13 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 800,
                         Height = 480,
@@ -1731,17 +1726,17 @@ namespace Fluence.Wpf.Tests
                         IsPaneOpen = true,
                         Header = new System.Windows.Controls.Border { Width = 100, Height = 20 }
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     DrainDispatcher(window.Dispatcher);
 
-                    var presenter = FindVisualChildByName<ContentPresenter>(nav, Fluent.NavigationView.PartContentPresenter);
+                    ContentPresenter? presenter = FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter);
                     Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in Left template.");
 
-                    var offset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
+                    Point offset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
                     Assert.AreEqual(20.0, offset.Y, 1.0,
                         "Left NavigationView should only reserve the 42px top gap when Header is empty.");
                 }
@@ -1750,7 +1745,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -1767,20 +1762,20 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 800,
                         Height = 480,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact,
                         IsPaneOpen = true
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
@@ -1789,7 +1784,7 @@ namespace Fluence.Wpf.Tests
                     WaitForAnimationAndDrain(window.Dispatcher, 300);
                     window.UpdateLayout();
 
-                    var presenter = FindVisualChildByName<ContentPresenter>(nav, Fluent.NavigationView.PartContentPresenter);
+                    ContentPresenter? presenter = FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter);
                     Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in LeftCompact template.");
 
                     AssertContentOffsetEventually(window, nav, presenter, 280.0,
@@ -1800,7 +1795,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -1811,13 +1806,13 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 800,
                         Height = 480,
@@ -1825,7 +1820,7 @@ namespace Fluence.Wpf.Tests
                         IsPaneOpen = true,
                         Header = new System.Windows.Controls.Border { Width = 100, Height = 20 }
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
@@ -1833,10 +1828,10 @@ namespace Fluence.Wpf.Tests
                     WaitForAnimationAndDrain(window.Dispatcher, 300);
                     window.UpdateLayout();
 
-                    var presenter = FindVisualChildByName<ContentPresenter>(nav, Fluent.NavigationView.PartContentPresenter);
+                    ContentPresenter? presenter = FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter);
                     Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in LeftCompact template.");
 
-                    var offset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
+                    Point offset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
                     Assert.AreEqual(20.0, offset.Y, 1.0,
                         "LeftCompact NavigationView should only reserve the 42px top gap when Header is empty.");
                 }
@@ -1845,7 +1840,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -1856,27 +1851,27 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 800,
                         Height = 480,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact,
                         IsPaneOpen = false
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
                     DrainDispatcher(window.Dispatcher);
 
-                    var presenter = FindVisualChildByName<ContentPresenter>(nav, Fluent.NavigationView.PartContentPresenter);
+                    ContentPresenter? presenter = FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter);
                     Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in LeftCompact template.");
 
                     AssertContentOffsetEventually(window, nav, presenter, 48.0,
@@ -1887,7 +1882,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -1898,13 +1893,13 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 800,
                         Height = 480,
@@ -1914,7 +1909,7 @@ namespace Fluence.Wpf.Tests
                         IsBackEnabled = true,
                         IsPaneToggleButtonVisible = true
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
@@ -1926,9 +1921,9 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     DrainDispatcher(window.Dispatcher);
 
-                    var back = nav.Template.FindName(Fluent.NavigationView.PartBackButton, nav) as System.Windows.Controls.Button;
-                    var paneToggle = nav.Template.FindName(Fluent.NavigationView.PartPaneToggleButton, nav) as System.Windows.Controls.Button;
-                    var presenter = FindVisualChildByName<ContentPresenter>(nav, Fluent.NavigationView.PartContentPresenter);
+                    System.Windows.Controls.Button? back = nav.Template.FindName(NavigationView.PartBackButton, nav) as System.Windows.Controls.Button;
+                    System.Windows.Controls.Button? paneToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as System.Windows.Controls.Button;
+                    ContentPresenter? presenter = FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter);
                     Assert.IsNotNull(back, "PART_BackButton must exist in LeftCompact template.");
                     Assert.IsNotNull(paneToggle, "PART_PaneToggleButton must exist in LeftCompact template.");
                     Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in LeftCompact template.");
@@ -1946,7 +1941,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -1957,20 +1952,20 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 800,
                         Height = 480,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact,
                         IsPaneOpen = true
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "One" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
@@ -1979,7 +1974,7 @@ namespace Fluence.Wpf.Tests
                     WaitForAnimationAndDrain(window.Dispatcher, 300);
                     window.UpdateLayout();
 
-                    var presenter = FindVisualChildByName<ContentPresenter>(nav, Fluent.NavigationView.PartContentPresenter);
+                    ContentPresenter? presenter = FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter);
                     Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in LeftCompact template.");
 
                     AssertContentOffsetEventually(window, nav, presenter, 280.0, "Open state: content begins at 280.");
@@ -1995,7 +1990,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -2008,13 +2003,13 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 400,
                         Height = 320,
@@ -2025,8 +2020,8 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var expected = application.TryFindResource("NavigationViewContentBackgroundBrush") as SolidColorBrush;
-                    var actual = nav.ContentBackground as SolidColorBrush;
+                    SolidColorBrush? expected = application?.TryFindResource("NavigationViewContentBackgroundBrush") as SolidColorBrush;
+                    SolidColorBrush? actual = nav.ContentBackground as SolidColorBrush;
 
                     Assert.IsNotNull(expected, "NavigationViewContentBackgroundBrush must be present in merged resources.");
                     Assert.IsNotNull(actual, "NavigationView.ContentBackground must be a SolidColorBrush.");
@@ -2038,7 +2033,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -2051,28 +2046,28 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 400,
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Left
                     };
-                    var header = new Fluent.NavigationViewItemHeader { Content = "Input" };
-                    var item = new Fluent.NavigationViewItem { Content = "Buttons" };
-                    nav.Items.Add(header);
-                    nav.Items.Add(item);
+                    NavigationViewItemHeader header = new() { Content = "Input" };
+                    NavigationViewItem item = new() { Content = "Buttons" };
+                    _ = nav.Items.Add(header);
+                    _ = nav.Items.Add(item);
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var renderedHeader = FindVisualChild<Fluent.NavigationViewItemHeader>(nav);
+                    NavigationViewItemHeader? renderedHeader = FindVisualChild<NavigationViewItemHeader>(nav);
                     Assert.IsNotNull(renderedHeader, "NavigationViewItemHeader must render inside the pane.");
                     Assert.IsFalse(renderedHeader.Focusable, "Header must not be focusable.");
                     Assert.IsNull(nav.SelectedItem, "Header must not be auto-selected even when placed at index 0.");
@@ -2082,7 +2077,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -2097,13 +2092,13 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView { Width = 700, Height = 500 };
+                    NavigationView nav = new() { Width = 700, Height = 500 };
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
@@ -2119,7 +2114,9 @@ namespace Fluence.Wpf.Tests
                 {
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    {
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
                 }
             });
         }
@@ -2129,18 +2126,18 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView { Width = 700, Height = 500, IsBackButtonVisible = true };
+                    NavigationView nav = new() { Width = 700, Height = 500, IsBackButtonVisible = true };
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
 
-                    var back = nav.Template.FindName(Fluent.NavigationView.PartBackButton, nav) as System.Windows.Controls.Button;
+                    System.Windows.Controls.Button? back = nav.Template.FindName(NavigationView.PartBackButton, nav) as System.Windows.Controls.Button;
                     Assert.IsNotNull(back, "PART_BackButton must exist.");
                     Assert.AreEqual(Visibility.Visible, back.Visibility,
                         "PART_BackButton must be Visible when IsBackButtonVisible=True (WI-3 B15 VSM).");
@@ -2149,7 +2146,9 @@ namespace Fluence.Wpf.Tests
                 {
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    {
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
                 }
             });
         }
@@ -2164,13 +2163,13 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 640,
                         Height = 400,
@@ -2185,14 +2184,14 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     Assert.IsNotNull(nav.ContentBackground,
                         "ContentBackground must resolve under Light theme.");
-                    Assert.IsNotNull(application.TryFindResource("NavigationViewContentBackgroundBrush"),
+                    Assert.IsNotNull(application?.TryFindResource("NavigationViewContentBackgroundBrush"),
                         "NavigationViewContentBackgroundBrush must resolve under Light theme.");
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, true);
                     DrainDispatcher(window.Dispatcher);
                     Assert.IsNotNull(nav.ContentBackground,
                         "ContentBackground must resolve under Dark theme.");
-                    Assert.IsNotNull(application.TryFindResource("NavigationViewContentBackgroundBrush"),
+                    Assert.IsNotNull(application?.TryFindResource("NavigationViewContentBackgroundBrush"),
                         "NavigationViewContentBackgroundBrush must resolve under Dark theme.");
 
                     ThemeTestHelpers.ApplyStandardThemeCycle();
@@ -2207,7 +2206,7 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -2226,26 +2225,26 @@ namespace Fluence.Wpf.Tests
             // backdrop entirely. This test asserts the reverted state is preserved.
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
 
                 // ---- Left pane ----
-                var winLeft = new Window();
+                Window winLeft = new();
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 400,
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Left
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Item" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "Item" });
                     winLeft.Content = nav;
                     winLeft.Show();
                     DrainDispatcher(winLeft.Dispatcher);
                     winLeft.UpdateLayout();
 
-                    var paneBorder = FindVisualChildByName<System.Windows.Controls.Border>(nav, "PaneBorder");
+                    System.Windows.Controls.Border? paneBorder = FindVisualChildByName<System.Windows.Controls.Border>(nav, "PaneBorder");
                     Assert.IsNotNull(paneBorder, "Left pane must expose Border named 'PaneBorder'.");
                     AssertBrushIsTransparentOrNull(paneBorder.Background,
                         "PaneBorder.Background must be Transparent so DWM backdrop shows through.");
@@ -2256,22 +2255,22 @@ namespace Fluence.Wpf.Tests
                 }
 
                 // ---- LeftCompact pane ----
-                var winCompact = new Window();
+                Window winCompact = new();
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 400,
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Item" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "Item" });
                     winCompact.Content = nav;
                     winCompact.Show();
                     DrainDispatcher(winCompact.Dispatcher);
                     winCompact.UpdateLayout();
 
-                    var compactPane = FindVisualChildByName<System.Windows.Controls.Border>(nav, "CompactPane");
+                    System.Windows.Controls.Border? compactPane = FindVisualChildByName<System.Windows.Controls.Border>(nav, "CompactPane");
                     Assert.IsNotNull(compactPane, "LeftCompact pane must expose Border named 'CompactPane'.");
                     AssertBrushIsTransparentOrNull(compactPane.Background,
                         "CompactPane.Background must be Transparent so DWM backdrop shows through.");
@@ -2282,22 +2281,22 @@ namespace Fluence.Wpf.Tests
                 }
 
                 // ---- Top pane ----
-                var winTop = new Window();
+                Window winTop = new();
                 try
                 {
-                    var nav = new Fluent.NavigationView
+                    NavigationView nav = new()
                     {
                         Width = 600,
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Top
                     };
-                    nav.Items.Add(new Fluent.NavigationViewItem { Content = "Item" });
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "Item" });
                     winTop.Content = nav;
                     winTop.Show();
                     DrainDispatcher(winTop.Dispatcher);
                     winTop.UpdateLayout();
 
-                    var paneHeader = FindVisualChildByName<System.Windows.Controls.Border>(nav, "PaneHeaderBorder");
+                    System.Windows.Controls.Border? paneHeader = FindVisualChildByName<System.Windows.Controls.Border>(nav, "PaneHeaderBorder");
                     Assert.IsNotNull(paneHeader, "Top pane must expose Border named 'PaneHeaderBorder'.");
                     AssertBrushIsTransparentOrNull(paneHeader.Background,
                         "PaneHeaderBorder.Background must be Transparent so DWM backdrop shows through.");
@@ -2306,7 +2305,9 @@ namespace Fluence.Wpf.Tests
                 {
                     CloseWindowAndDrain(winTop);
                     if (genericDictionary != null)
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    {
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
                 }
             });
         }
@@ -2315,47 +2316,52 @@ namespace Fluence.Wpf.Tests
         /// Asserts that <paramref name="brush"/> is null, Brushes.Transparent, or a
         /// SolidColorBrush whose alpha channel is zero — i.e. effectively transparent.
         /// </summary>
-        private static void AssertBrushIsTransparentOrNull(System.Windows.Media.Brush brush, string message)
+        private static void AssertBrushIsTransparentOrNull(Brush brush, string message)
         {
             if (brush == null)
+            {
                 return; // null == no background == transparent
+            }
 
-            if (brush == System.Windows.Media.Brushes.Transparent)
+            if (brush == Brushes.Transparent)
+            {
                 return;
+            }
 
-            var solid = brush as SolidColorBrush;
-            if (solid != null && solid.Color.A == 0)
+            if (brush is SolidColorBrush solid && solid.Color.A == 0)
+            {
                 return;
+            }
 
             Assert.Fail(message + " Actual: " + brush);
         }
 
         private static void AssertPaneItemsScrollViewerUsesFluentStyle(NavigationViewPaneDisplayMode mode, bool isPaneOpen)
         {
-            var application = EnsureApplication();
-            var expected = application.TryFindResource("ScrollViewerStyle") as Style;
+            Application? application = EnsureApplication();
+            Style? expected = application?.TryFindResource("ScrollViewerStyle") as Style;
             Assert.IsNotNull(expected, "ScrollViewerStyle must be present in merged Fluence resources.");
 
-            var window = new Window();
+            Window window = new();
             try
             {
-                var nav = new Fluent.NavigationView
+                NavigationView nav = new()
                 {
                     Width = 640,
                     Height = 420,
                     PaneDisplayMode = mode,
                     IsPaneOpen = isPaneOpen
                 };
-                nav.Items.Add(new Fluent.NavigationViewItem { Content = "Item" });
+                _ = nav.Items.Add(new NavigationViewItem { Content = "Item" });
 
                 window.Content = nav;
                 window.Show();
                 DrainDispatcher(window.Dispatcher);
                 window.UpdateLayout();
 
-                var scrollViewer = FindVisualChildByName<ScrollViewer>(nav, Fluent.NavigationView.PartPaneItemsScrollViewer);
+                ScrollViewer? scrollViewer = FindVisualChildByName<ScrollViewer>(nav, NavigationView.PartPaneItemsScrollViewer);
                 Assert.IsNotNull(scrollViewer, "NavigationView template must expose PART_PaneItemsScrollViewer.");
-                Assert.IsInstanceOfType(scrollViewer, typeof(Fluent.SmoothScrollViewer),
+                Assert.IsInstanceOfType(scrollViewer, typeof(SmoothScrollViewer),
                     "NavigationView pane items should use SmoothScrollViewer so the pane scrollbar uses the Fluent scrolling surface.");
                 Assert.AreSame(expected, scrollViewer.Style,
                     "NavigationView pane items ScrollViewer must use the Fluence ScrollViewerStyle.");
@@ -2368,10 +2374,10 @@ namespace Fluence.Wpf.Tests
 
         private static TranslateTransform GetSelectionIndicatorTranslate(FrameworkElement indicator)
         {
-            var group = indicator.RenderTransform as TransformGroup;
+            TransformGroup? group = indicator.RenderTransform as TransformGroup;
             Assert.IsNotNull(group, "Selection indicator must use a TransformGroup.");
             Assert.IsTrue(group.Children.Count >= 2, "Selection indicator TransformGroup must contain scale and translate transforms.");
-            var translate = group.Children[1] as TranslateTransform;
+            TranslateTransform? translate = group.Children[1] as TranslateTransform;
             Assert.IsNotNull(translate, "Selection indicator transform index 1 must be a TranslateTransform.");
             return translate;
         }
@@ -2386,13 +2392,13 @@ namespace Fluence.Wpf.Tests
             // per-item one must NOT exist in the template.
             RunOnStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
-                var window = new Window();
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
 
                 try
                 {
-                    var item = new Fluent.NavigationViewItem
+                    NavigationViewItem item = new()
                     {
                         Content = "Item",
                         IsSelected = true
@@ -2404,7 +2410,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var inner = FindVisualChildByName<System.Windows.Controls.Border>(item, "SelectionIndicator");
+                    System.Windows.Controls.Border? inner = FindVisualChildByName<System.Windows.Controls.Border>(item, "SelectionIndicator");
                     Assert.IsNull(inner,
                         "NavigationViewItem template must not contain a per-item Border named 'SelectionIndicator'. " +
                         "The pane-level PART_SelectionIndicator owns the selection visual.");
@@ -2413,7 +2419,9 @@ namespace Fluence.Wpf.Tests
                 {
                     CloseWindowAndDrain(window);
                     if (genericDictionary != null)
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                    {
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
                 }
             });
         }

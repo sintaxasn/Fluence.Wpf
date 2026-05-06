@@ -79,10 +79,10 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var application = WpfTestSta.EnsureApplication();
+                Application? application = WpfTestSta.EnsureApplication();
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
-                application.Resources.Clear();
+                application?.Resources.Clear();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
 
                 AssertStyleTextRenderingPolicy(application, typeof(FluentButton), TextFormattingMode.Display);
@@ -122,11 +122,11 @@ namespace Fluence.Wpf.Tests
                 AssertStyleTextRenderingPolicy(application, typeof(RatingControl), TextFormattingMode.Display);
                 AssertStyleTextRenderingPolicy(application, typeof(PersonPicture), TextFormattingMode.Display);
 
-                AssertKeyedStyleTextRenderingPolicy(application, "ComboBoxItemStyle", TextFormattingMode.Display);
-                AssertKeyedStyleTextRenderingPolicy(application, "ListViewGroupItemStyle", TextFormattingMode.Display);
-                AssertKeyedStyleTextRenderingPolicy(application, "ListViewItemStyle", TextFormattingMode.Display);
-                AssertKeyedStyleTextRenderingPolicy(application, "TabControlStyle", TextFormattingMode.Display);
-                AssertKeyedStyleTextRenderingPolicy(application, "TabItemStyle", TextFormattingMode.Display);
+                AssertTextBlockStyleRenderingPolicy(application, "ComboBoxItemStyle", TextFormattingMode.Display);
+                AssertTextBlockStyleRenderingPolicy(application, "ListViewGroupItemStyle", TextFormattingMode.Display);
+                AssertTextBlockStyleRenderingPolicy(application, "ListViewItemStyle", TextFormattingMode.Display);
+                AssertTextBlockStyleRenderingPolicy(application, "TabControlStyle", TextFormattingMode.Display);
+                AssertTextBlockStyleRenderingPolicy(application, "TabItemStyle", TextFormattingMode.Display);
             });
         }
 
@@ -135,10 +135,10 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var application = WpfTestSta.EnsureApplication();
+                Application? application = WpfTestSta.EnsureApplication();
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
-                application.Resources.Clear();
+                application?.Resources.Clear();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
 
                 AssertStyleFontFamilyPolicy(application, typeof(FluentButton));
@@ -191,10 +191,10 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var application = WpfTestSta.EnsureApplication();
+                Application? application = WpfTestSta.EnsureApplication();
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
-                application.Resources.Clear();
+                application?.Resources.Clear();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
 
                 AssertTextBlockStyleRenderingPolicy(application, "CaptionTextBlockStyle", TextFormattingMode.Display);
@@ -213,20 +213,20 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var application = WpfTestSta.EnsureApplication();
+                Application? application = WpfTestSta.EnsureApplication();
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
-                application.Resources.Clear();
+                application?.Resources.Clear();
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
 
-                var body = new WpfTextBlock();
+                WpfTextBlock body = new();
                 TextBlockExtensions.SetTypography(body, FluentTypography.Body);
 
                 Assert.AreEqual(TextFormattingMode.Display, TextOptions.GetTextFormattingMode(body));
                 Assert.AreEqual(TextRenderingMode.ClearType, TextOptions.GetTextRenderingMode(body));
                 Assert.AreEqual(TextHintingMode.Fixed, TextOptions.GetTextHintingMode(body));
 
-                var title = new WpfTextBlock();
+                WpfTextBlock title = new();
                 TextBlockExtensions.SetTypography(title, FluentTypography.Title);
 
                 Assert.AreEqual(TextFormattingMode.Ideal, TextOptions.GetTextFormattingMode(title));
@@ -240,7 +240,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var textBlock = new WpfTextBlock();
+                WpfTextBlock textBlock = new();
                 TextBlockExtensions.SetTypography(textBlock, FluentTypography.Body);
 
                 textBlock.FontFamily = new FontFamily("Arial");
@@ -272,41 +272,32 @@ namespace Fluence.Wpf.Tests
             AssertDemoAppTextMetadataOverrides(Path.Combine("Fluence.Wpf.Demo.Mvvm", "App.xaml.cs"));
         }
 
-        private static void AssertStyleTextRenderingPolicy(Application application, Type targetType, TextFormattingMode expectedFormattingMode)
+        private static void AssertStyleTextRenderingPolicy(Application? application, Type targetType, TextFormattingMode expectedFormattingMode)
         {
-            var style = application.TryFindResource(targetType) as Style;
+            Style? style = application?.TryFindResource(targetType) as Style;
             Assert.IsNotNull(style, "Style should resolve for " + targetType.Name + ".");
             AssertStyleSetterOrBasedOn(style, TextOptions.TextFormattingModeProperty, expectedFormattingMode, targetType.Name);
             AssertStyleSetterOrBasedOn(style, TextOptions.TextRenderingModeProperty, TextRenderingMode.ClearType, targetType.Name);
             AssertStyleSetterOrBasedOn(style, TextOptions.TextHintingModeProperty, TextHintingMode.Fixed, targetType.Name);
         }
 
-        private static void AssertKeyedStyleTextRenderingPolicy(Application application, string styleKey, TextFormattingMode expectedFormattingMode)
+        private static void AssertStyleFontFamilyPolicy(Application? application, Type targetType)
         {
-            var style = application.TryFindResource(styleKey) as Style;
-            Assert.IsNotNull(style, styleKey + " should resolve.");
-            AssertStyleSetterOrBasedOn(style, TextOptions.TextFormattingModeProperty, expectedFormattingMode, styleKey);
-            AssertStyleSetterOrBasedOn(style, TextOptions.TextRenderingModeProperty, TextRenderingMode.ClearType, styleKey);
-            AssertStyleSetterOrBasedOn(style, TextOptions.TextHintingModeProperty, TextHintingMode.Fixed, styleKey);
-        }
-
-        private static void AssertStyleFontFamilyPolicy(Application application, Type targetType)
-        {
-            var style = application.TryFindResource(targetType) as Style;
+            Style? style = application?.TryFindResource(targetType) as Style;
             Assert.IsNotNull(style, "Style should resolve for " + targetType.Name + ".");
             AssertStyleFluentFontFamilySetterOrBasedOn(style, targetType.Name);
         }
 
-        private static void AssertKeyedStyleFontFamilyPolicy(Application application, string styleKey)
+        private static void AssertKeyedStyleFontFamilyPolicy(Application? application, string styleKey)
         {
-            var style = application.TryFindResource(styleKey) as Style;
+            Style? style = application?.TryFindResource(styleKey) as Style;
             Assert.IsNotNull(style, styleKey + " should resolve.");
             AssertStyleFluentFontFamilySetterOrBasedOn(style, styleKey);
         }
 
-        private static void AssertTextBlockStyleRenderingPolicy(Application application, string styleKey, TextFormattingMode expectedFormattingMode)
+        private static void AssertTextBlockStyleRenderingPolicy(Application? application, string styleKey, TextFormattingMode expectedFormattingMode)
         {
-            var style = application.TryFindResource(styleKey) as Style;
+            Style? style = application?.TryFindResource(styleKey) as Style;
             Assert.IsNotNull(style, styleKey + " should resolve.");
             // Named styles may inherit TextOptions via BasedOn; walk the full chain.
             AssertStyleSetterOrBasedOn(style, TextOptions.TextFormattingModeProperty, expectedFormattingMode, styleKey);
@@ -314,30 +305,14 @@ namespace Fluence.Wpf.Tests
             AssertStyleSetterOrBasedOn(style, TextOptions.TextHintingModeProperty, TextHintingMode.Fixed, styleKey);
         }
 
-        private static void AssertStyleSetter(Style style, DependencyProperty property, object expectedValue, string description)
-        {
-            foreach (var setterBase in style.Setters)
-            {
-                var setter = setterBase as Setter;
-                if (setter != null && setter.Property == property)
-                {
-                    Assert.AreEqual(expectedValue, setter.Value, description + " should set " + property.Name + ".");
-                    return;
-                }
-            }
-
-            Assert.Fail(description + " should set " + property.Name + ".");
-        }
-
         private static void AssertStyleFluentFontFamilySetterOrBasedOn(Style style, string description)
         {
-            var current = style;
+            Style current = style;
             while (current != null)
             {
-                foreach (var setterBase in current.Setters)
+                foreach (SetterBase? setterBase in current.Setters)
                 {
-                    var setter = setterBase as Setter;
-                    if (setter != null && setter.Property == Control.FontFamilyProperty)
+                    if (setterBase is Setter setter && setter.Property == Control.FontFamilyProperty)
                     {
                         Assert.IsTrue(IsFluentFontFamilySetterValue(setter.Value),
                             description + " should set FontFamily from FluentFontFamily.");
@@ -353,14 +328,9 @@ namespace Fluence.Wpf.Tests
 
         private static bool IsFluentFontFamilySetterValue(object value)
         {
-            var dynamicResource = value as DynamicResourceExtension;
-            if (dynamicResource != null)
-            {
-                return Equals(dynamicResource.ResourceKey, "FluentFontFamily");
-            }
-
-            var fontFamily = value as FontFamily;
-            return fontFamily != null &&
+            return value is DynamicResourceExtension dynamicResource
+                ? Equals(dynamicResource.ResourceKey, "FluentFontFamily")
+                : value is FontFamily fontFamily &&
                 fontFamily.Source.IndexOf("Segoe UI Variable", StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
@@ -371,13 +341,12 @@ namespace Fluence.Wpf.Tests
         /// </summary>
         private static void AssertStyleSetterOrBasedOn(Style style, DependencyProperty property, object expectedValue, string description)
         {
-            var current = style;
+            Style current = style;
             while (current != null)
             {
-                foreach (var setterBase in current.Setters)
+                foreach (SetterBase? setterBase in current.Setters)
                 {
-                    var setter = setterBase as Setter;
-                    if (setter != null && setter.Property == property)
+                    if (setterBase is Setter setter && setter.Property == property)
                     {
                         Assert.AreEqual(expectedValue, setter.Value, description + " should set " + property.Name + ".");
                         return;
@@ -392,7 +361,7 @@ namespace Fluence.Wpf.Tests
 
         private static void AssertDemoAppTextMetadataOverrides(string relativePath)
         {
-            var source = File.ReadAllText(Path.Combine(FindRepoRoot(), relativePath));
+            string source = File.ReadAllText(Path.Combine(FindRepoRoot(), relativePath));
 
             StringAssert.Contains(source, "TextOptions.TextFormattingModeProperty.OverrideMetadata(");
             StringAssert.Contains(source, "new FrameworkPropertyMetadata(TextFormattingMode.Display, textOptionsMetadata)");
@@ -405,7 +374,7 @@ namespace Fluence.Wpf.Tests
 
         private static string FindRepoRoot()
         {
-            var directory = new DirectoryInfo(AppContext.BaseDirectory);
+            DirectoryInfo? directory = new(AppContext.BaseDirectory);
             while (directory != null)
             {
                 if (File.Exists(Path.Combine(directory.FullName, "Fluence.Wpf.sln")))

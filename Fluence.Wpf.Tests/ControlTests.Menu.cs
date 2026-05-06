@@ -47,17 +47,17 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var menu = new Menu();
-                menu.Items.Add(new MenuItem { Header = "File" });
-                var w = new Window { Content = menu, Width = 400, Height = 100 };
+                Menu menu = new();
+                _ = menu.Items.Add(new MenuItem { Header = "File" });
+                Window w = new() { Content = menu, Width = 400, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
                 // Background must be Transparent (from style setter)
-                var bg = menu.Background as SolidColorBrush;
+                SolidColorBrush? bg = menu.Background as SolidColorBrush;
                 Assert.IsNotNull(bg, "Menu.Background must be a SolidColorBrush.");
                 Assert.AreEqual(
                     Colors.Transparent,
@@ -72,12 +72,12 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var menu = new Menu();
-                menu.Items.Add(new MenuItem { Header = "Edit" });
-                var w = new Window { Content = menu, Width = 400, Height = 100 };
+                Menu menu = new();
+                _ = menu.Items.Add(new MenuItem { Header = "Edit" });
+                Window w = new() { Content = menu, Width = 400, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
@@ -94,15 +94,15 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var menu = new Menu();
-                var item1 = new MenuItem { Header = "File" };
-                var item2 = new MenuItem { Header = "Edit" };
-                menu.Items.Add(item1);
-                menu.Items.Add(item2);
-                var w = new Window { Content = menu, Width = 400, Height = 100 };
+                Menu menu = new();
+                MenuItem item1 = new() { Header = "File" };
+                MenuItem item2 = new() { Header = "Edit" };
+                _ = menu.Items.Add(item1);
+                _ = menu.Items.Add(item2);
+                Window w = new() { Content = menu, Width = 400, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
@@ -120,19 +120,19 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var menu = new Menu();
-                menu.Items.Add(new MenuItem { Header = "View" });
-                var w = new Window { Content = menu, Width = 400, Height = 100 };
+                Menu menu = new();
+                _ = menu.Items.Add(new MenuItem { Header = "View" });
+                Window w = new() { Content = menu, Width = 400, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
                 ThemeTestHelpers.ApplyStandardThemeCycle();
                 DrainDispatcher(w.Dispatcher);
 
-                var bg = menu.Background as SolidColorBrush;
+                SolidColorBrush? bg = menu.Background as SolidColorBrush;
                 Assert.IsNotNull(bg, "Menu.Background must remain a SolidColorBrush after theme cycle.");
                 Assert.AreEqual(
                     Colors.Transparent,

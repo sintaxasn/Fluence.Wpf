@@ -30,8 +30,9 @@ using System;
 using System.IO;
 using System.Windows;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf;
 using Fluence.Wpf.Controls;
+using System.Windows.Media;
+using Fluence.Wpf.Helpers;
 
 namespace Fluence.Wpf.Tests
 {
@@ -44,8 +45,8 @@ namespace Fluence.Wpf.Tests
     {
         private static void RunOnStaThread(Action action)
         {
-            Exception captured = null;
-            WpfTestSta.Dispatcher.Invoke(new Action(delegate
+            Exception? captured = null;
+            WpfTestSta.Dispatcher?.Invoke(new Action(delegate
             {
                 try { action(); }
                 catch (Exception ex) { captured = ex; }
@@ -57,15 +58,15 @@ namespace Fluence.Wpf.Tests
             }
         }
 
-        private static Application EnsureApp()
+        private static Application? EnsureApp()
         {
             return WpfTestSta.EnsureApplication();
         }
 
         private static string GetRepositoryFilePath(params string[] relativeSegments)
         {
-            var root = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\.."));
-            var pathParts = new string[relativeSegments.Length + 1];
+            string root = Path.GetFullPath(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, @"..\..\..\.."));
+            string[] pathParts = new string[relativeSegments.Length + 1];
             pathParts[0] = root;
             Array.Copy(relativeSegments, 0, pathParts, 1, relativeSegments.Length);
             return Path.Combine(pathParts);
@@ -73,19 +74,16 @@ namespace Fluence.Wpf.Tests
 
         private static string ReadRepositoryFile(params string[] relativeSegments)
         {
-            var path = GetRepositoryFilePath(relativeSegments);
+            string path = GetRepositoryFilePath(relativeSegments);
             Assert.IsTrue(File.Exists(path), "Repository file must be readable at: " + path);
             return File.ReadAllText(path);
         }
 
-        private static void ResetAndApply(ApplicationTheme theme, Application app = null)
+        private static void ResetAndApply(ApplicationTheme theme, Application? app = null)
         {
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
-            if (app != null)
-            {
-                app.Resources.MergedDictionaries.Clear();
-            }
+            app?.Resources.MergedDictionaries.Clear();
 
             ApplicationThemeManager.Apply(theme, BackdropType.None, true);
         }
@@ -99,9 +97,9 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var app = EnsureApp();
+                Application? app = EnsureApp();
                 ResetAndApply(ApplicationTheme.Light, app);
-                var w = new FluenceWindow();
+                FluenceWindow w = new();
                 try
                 {
                     Assert.AreEqual(BackdropType.Auto, w.SystemBackdropType,
@@ -117,12 +115,12 @@ namespace Fluence.Wpf.Tests
             // Verifies that the DP accepts all four BackdropType values without throwing.
             RunOnStaThread(() =>
             {
-                var app = EnsureApp();
+                Application? app = EnsureApp();
                 ResetAndApply(ApplicationTheme.Light, app);
-                var w = new FluenceWindow();
+                FluenceWindow w = new();
                 try
                 {
-                    foreach (var bd in new[] { BackdropType.None, BackdropType.Mica, BackdropType.Acrylic, BackdropType.Tabbed, BackdropType.Auto })
+                    foreach (BackdropType bd in new[] { BackdropType.None, BackdropType.Mica, BackdropType.Acrylic, BackdropType.Tabbed, BackdropType.Auto })
                     {
                         w.SystemBackdropType = bd;
                         Assert.AreEqual(bd, w.SystemBackdropType,
@@ -142,11 +140,11 @@ namespace Fluence.Wpf.Tests
         {
             RunOnStaThread(() =>
             {
-                var app = EnsureApp();
+                Application? app = EnsureApp();
                 ResetAndApply(ApplicationTheme.Light, app);
 
-                var keys = new[]
-                {
+                string[] keys =
+                [
                     "ApplicationBackgroundBrush",
                     "TextFillColorPrimaryBrush",
                     "TextFillColorSecondaryBrush",
@@ -155,14 +153,14 @@ namespace Fluence.Wpf.Tests
                     "WindowCloseButtonBackgroundPointerOverBrush",
                     "WindowCloseButtonBackgroundPressedBrush",
                     "WindowCloseButtonForegroundPointerOverBrush"
-                };
+                ];
 
-                foreach (var theme in new[] { ApplicationTheme.Dark, ApplicationTheme.HighContrast, ApplicationTheme.Light })
+                foreach (ApplicationTheme theme in new[] { ApplicationTheme.Dark, ApplicationTheme.HighContrast, ApplicationTheme.Light })
                 {
                     ApplicationThemeManager.Apply(theme, BackdropType.None, true);
-                    foreach (var key in keys)
+                    foreach (string? key in keys)
                     {
-                        var resource = app.TryFindResource(key);
+                        object? resource = app?.TryFindResource(key);
                         Assert.IsNotNull(resource,
                             "Resource '" + key + "' must resolve after switching to " + theme);
                     }
@@ -178,11 +176,11 @@ namespace Fluence.Wpf.Tests
             // general critical brush available for controls that intentionally consume it.
             RunOnStaThread(() =>
             {
-                var app = EnsureApp();
+                Application? app = EnsureApp();
                 ResetAndApply(ApplicationTheme.Light, app);
 
                 ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, true);
-                var brush = app.TryFindResource("SystemFillColorCriticalBrush");
+                object? brush = app?.TryFindResource("SystemFillColorCriticalBrush");
                 Assert.IsNotNull(brush,
                     "SystemFillColorCriticalBrush must resolve in HighContrast theme.");
             });
@@ -232,7 +230,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void FluenceWindow_DeclaresCaptionButtonTemplateParts()
         {
-            var attributes = typeof(FluenceWindow).GetCustomAttributes(typeof(TemplatePartAttribute), false);
+            object[] attributes = typeof(FluenceWindow).GetCustomAttributes(typeof(TemplatePartAttribute), false);
 
             AssertTemplatePart(attributes, "PART_MinimizeButton");
             AssertTemplatePart(attributes, "PART_MaximizeButton");
@@ -251,9 +249,9 @@ namespace Fluence.Wpf.Tests
 
         private static void AssertTemplatePart(object[] attributes, string name)
         {
-            foreach (TemplatePartAttribute attribute in attributes)
+            foreach (object attribute in attributes)
             {
-                if (attribute.Name == name && attribute.Type == typeof(System.Windows.Controls.Button))
+                if (attribute is TemplatePartAttribute templatePath && templatePath.Name == name && templatePath.Type == typeof(System.Windows.Controls.Button))
                 {
                     return;
                 }
@@ -270,38 +268,38 @@ namespace Fluence.Wpf.Tests
         public void BuildBackdropPlan_None_ReturnsOpaqueBackground()
         {
             // Capability with no backdrop support at all.
-            var caps = new WindowCapabilities(
+            WindowCapabilities caps = new(
                 supportsSystemBackdropType: false,
                 supportsMicaEffect: false,
                 supportsRoundedCorners: false,
                 supportsCaptionColor: false,
                 supportsBorderColor: false);
 
-            var light = System.Windows.Media.Color.FromRgb(0xFA, 0xFA, 0xFA);
-            var plan = WindowPolicy.BuildBackdropPlan(BackdropType.None, ApplicationTheme.Light, caps, light);
+            Color light = Color.FromRgb(0xFA, 0xFA, 0xFA);
+            BackdropPlan plan = WindowPolicy.BuildBackdropPlan(BackdropType.None, ApplicationTheme.Light, caps, light);
 
             Assert.IsFalse(plan.UseTransparentBackground,
                 "BackdropType.None must NOT use transparent background.");
-            Assert.AreNotEqual(System.Windows.Media.Colors.Transparent, plan.BackgroundColor,
+            Assert.AreNotEqual(Colors.Transparent, plan.BackgroundColor,
                 "BackdropType.None must return a fallback opaque background color.");
         }
 
         [TestMethod]
         public void BuildBackdropPlan_Mica_SupportedOs_ReturnsTransparent()
         {
-            var caps = new WindowCapabilities(
+            WindowCapabilities caps = new(
                 supportsSystemBackdropType: true,
                 supportsMicaEffect: true,
                 supportsRoundedCorners: true,
                 supportsCaptionColor: true,
                 supportsBorderColor: true);
 
-            var fallback = System.Windows.Media.Color.FromRgb(0xFA, 0xFA, 0xFA);
-            var plan = WindowPolicy.BuildBackdropPlan(BackdropType.Mica, ApplicationTheme.Light, caps, fallback);
+            Color fallback = Color.FromRgb(0xFA, 0xFA, 0xFA);
+            BackdropPlan plan = WindowPolicy.BuildBackdropPlan(BackdropType.Mica, ApplicationTheme.Light, caps, fallback);
 
             Assert.IsTrue(plan.UseTransparentBackground,
                 "Mica backdrop on a capable OS must use transparent background.");
-            Assert.AreEqual(System.Windows.Media.Colors.Transparent, plan.BackgroundColor,
+            Assert.AreEqual(Colors.Transparent, plan.BackgroundColor,
                 "Mica backdrop on a capable OS must set Colors.Transparent as the background color.");
         }
 
@@ -310,14 +308,14 @@ namespace Fluence.Wpf.Tests
         {
             // Windows 10 21H2: supports DwmSetWindowAttribute(DWMWA_MICA_EFFECT) but NOT
             // DWMWA_SYSTEMBACKDROP_TYPE. Acrylic request must downgrade to Mica.
-            var caps = new WindowCapabilities(
+            WindowCapabilities caps = new(
                 supportsSystemBackdropType: false,
                 supportsMicaEffect: true,
                 supportsRoundedCorners: false,
                 supportsCaptionColor: false);
 
-            var fallback = System.Windows.Media.Color.FromRgb(0x20, 0x20, 0x20);
-            var plan = WindowPolicy.BuildBackdropPlan(BackdropType.Acrylic, ApplicationTheme.Dark, caps, fallback);
+            Color fallback = Color.FromRgb(0x20, 0x20, 0x20);
+            BackdropPlan plan = WindowPolicy.BuildBackdropPlan(BackdropType.Acrylic, ApplicationTheme.Dark, caps, fallback);
 
             // Should fall back to Mica (legacy) and use transparent background.
             Assert.IsTrue(plan.UseTransparentBackground,

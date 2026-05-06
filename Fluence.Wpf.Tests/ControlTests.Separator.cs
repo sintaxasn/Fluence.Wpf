@@ -35,7 +35,7 @@ using FluenceSeparator = Fluence.Wpf.Controls.Separator;
 namespace Fluence.Wpf.Tests
 {
     /// <summary>
-    /// Gap-audit tests: Fluent <see cref="Fluence.Wpf.Controls.Separator"/> control.
+    /// Gap-audit tests: Fluent <see cref="Controls.Separator"/> control.
     /// Authority: .NET 10 WPF PresentationFramework.Fluent/Styles/Separator.xaml.
     /// </summary>
     public partial class ControlTests
@@ -49,16 +49,16 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var sep = new FluenceSeparator();
-                var w = new Window { Content = sep, Width = 300, Height = 100 };
+                FluenceSeparator sep = new();
+                Window w = new() { Content = sep, Width = 300, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
                 // Template applied — Border is the root of the template
-                var border = FindVisualChild<Border>(sep);
+                Border? border = FindVisualChild<Border>(sep);
                 Assert.IsNotNull(border, "Separator template must contain a Border.");
                 w.Close();
             });
@@ -69,11 +69,11 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var sep = new FluenceSeparator();
-                var w = new Window { Content = sep, Width = 300, Height = 100 };
+                FluenceSeparator sep = new();
+                Window w = new() { Content = sep, Width = 300, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
@@ -88,16 +88,16 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var sep = new FluenceSeparator();
-                var w = new Window { Content = sep, Width = 300, Height = 100 };
+                FluenceSeparator sep = new();
+                Window w = new() { Content = sep, Width = 300, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                var bg = sep.Background as SolidColorBrush;
-                var expected = app.TryFindResource("DividerStrokeColorDefaultBrush") as SolidColorBrush;
+                SolidColorBrush? bg = sep.Background as SolidColorBrush;
+                SolidColorBrush? expected = app?.TryFindResource("DividerStrokeColorDefaultBrush") as SolidColorBrush;
 
                 Assert.IsNotNull(expected, "DividerStrokeColorDefaultBrush must resolve.");
                 Assert.IsNotNull(bg, "Separator.Background must be a SolidColorBrush.");
@@ -112,18 +112,18 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApplication();
-                MergeGenericDictionary(app);
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
 
-                var sep = new FluenceSeparator();
-                var w = new Window { Content = sep, Width = 300, Height = 100 };
+                FluenceSeparator sep = new();
+                Window w = new() { Content = sep, Width = 300, Height = 100 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
                 ThemeTestHelpers.ApplyStandardThemeCycle();
                 DrainDispatcher(w.Dispatcher);
 
-                var border = FindVisualChild<Border>(sep);
+                Border? border = FindVisualChild<Border>(sep);
                 Assert.IsNotNull(border, "Separator template Border must still exist after theme cycle.");
                 w.Close();
             });

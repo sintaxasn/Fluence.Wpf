@@ -32,8 +32,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf;
-using Fluent = Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Tests
 {
@@ -45,18 +43,18 @@ namespace Fluence.Wpf.Tests
             d.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
         }
 
-        private static Application EnsureApp()
+        private static Application? EnsureApp()
         {
             return WpfTestSta.EnsureApplication();
         }
 
-        private static void MergeGeneric(Application app)
+        private static void MergeGeneric(Application? app)
         {
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
-            app.Resources.MergedDictionaries.Clear();
+            app?.Resources.MergedDictionaries.Clear();
             ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-            app.Resources.MergedDictionaries.Add(new ResourceDictionary
+            app?.Resources.MergedDictionaries.Add(new ResourceDictionary
             {
                 Source = new Uri("/Fluence.Wpf.Demo;component/Resources/DemoSharedStyles.xaml", UriKind.Relative)
             });
@@ -67,16 +65,16 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApp();
+                Application? app = EnsureApp();
                 MergeGeneric(app);
-                var window = new Window();
-                var numberBox = new Fluent.NumberBox { Width = 160, Value = 3 };
+                Window window = new();
+                Controls.NumberBox numberBox = new() { Width = 160, Value = 3 };
                 try
                 {
                     window.Content = numberBox;
                     window.Show();
                     Drain(window.Dispatcher);
-                    numberBox.ApplyTemplate();
+                    _ = numberBox.ApplyTemplate();
                     Assert.IsNotNull(numberBox.Template.FindName("PART_TextBox", numberBox));
                 }
                 finally
@@ -91,7 +89,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var box = new Fluent.NumberBox { Value = 42.5 };
+                Controls.NumberBox box = new() { Value = 42.5 };
                 Assert.AreEqual(42.5, box.Value, 0.001);
             });
         }
@@ -101,7 +99,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var ex = new Fluent.Expander();
+                Controls.Expander ex = new();
                 Assert.AreEqual(new CornerRadius(4), ex.CornerRadius);
             });
         }
@@ -111,16 +109,16 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApp();
+                Application? app = EnsureApp();
                 MergeGeneric(app);
-                var window = new Window();
-                var ex = new Fluent.Expander { Header = "H", Content = new TextBlock { Text = "C" }, Width = 200 };
+                Window window = new();
+                Controls.Expander ex = new() { Header = "H", Content = new TextBlock { Text = "C" }, Width = 200 };
                 try
                 {
                     window.Content = ex;
                     window.Show();
                     Drain(window.Dispatcher);
-                    ex.ApplyTemplate();
+                    _ = ex.ApplyTemplate();
                     Assert.IsNotNull(ex.Template);
                 }
                 finally
@@ -135,16 +133,16 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApp();
+                Application? app = EnsureApp();
                 MergeGeneric(app);
-                var window = new Window();
-                var btn = new Fluent.DropDownButton { Content = "Open", Width = 120, Flyout = new TextBlock { Text = "Flyout" } };
+                Window window = new();
+                Controls.DropDownButton btn = new() { Content = "Open", Width = 120, Flyout = new TextBlock { Text = "Flyout" } };
                 try
                 {
                     window.Content = btn;
                     window.Show();
                     Drain(window.Dispatcher);
-                    btn.ApplyTemplate();
+                    _ = btn.ApplyTemplate();
                     Assert.IsNotNull(btn.Template.FindName("PART_Popup", btn));
                 }
                 finally
@@ -159,18 +157,18 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApp();
+                Application? app = EnsureApp();
                 MergeGeneric(app);
-                var window = new Window();
-                var btn = new Fluent.DropDownButton { Content = "Open", Width = 160, Flyout = new StackPanel() };
+                Window window = new();
+                Controls.DropDownButton btn = new() { Content = "Open", Width = 160, Flyout = new StackPanel() };
                 try
                 {
                     window.Content = btn;
                     window.Show();
                     Drain(window.Dispatcher);
-                    btn.ApplyTemplate();
+                    _ = btn.ApplyTemplate();
 
-                    var presenter = btn.Template.FindName("FlyoutContentPresenter", btn) as ContentPresenter;
+                    ContentPresenter? presenter = btn.Template.FindName("FlyoutContentPresenter", btn) as ContentPresenter;
                     Assert.IsNotNull(presenter, "DropDownButton template must expose FlyoutContentPresenter.");
                     Assert.AreEqual(HorizontalAlignment.Stretch, presenter.HorizontalAlignment,
                         "Flyout presenter should stretch so left-aligned menu buttons fill the flyout width.");
@@ -187,18 +185,18 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApp();
+                Application? app = EnsureApp();
                 MergeGeneric(app);
-                var window = new Window();
-                var btn = new Fluent.SplitButton { Content = "Export", Width = 180, Flyout = new StackPanel() };
+                Window window = new();
+                Controls.SplitButton btn = new() { Content = "Export", Width = 180, Flyout = new StackPanel() };
                 try
                 {
                     window.Content = btn;
                     window.Show();
                     Drain(window.Dispatcher);
-                    btn.ApplyTemplate();
+                    _ = btn.ApplyTemplate();
 
-                    var presenter = btn.Template.FindName("FlyoutContentPresenter", btn) as ContentPresenter;
+                    ContentPresenter? presenter = btn.Template.FindName("FlyoutContentPresenter", btn) as ContentPresenter;
                     Assert.IsNotNull(presenter, "SplitButton template must expose FlyoutContentPresenter.");
                     Assert.AreEqual(HorizontalAlignment.Stretch, presenter.HorizontalAlignment,
                         "Flyout presenter should stretch so left-aligned menu buttons fill the flyout width.");
@@ -215,7 +213,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var badge = new Fluent.InfoBadge { Value = 9 };
+                Controls.InfoBadge badge = new() { Value = 9 };
                 Assert.AreEqual(9, badge.Value);
             });
         }
@@ -225,16 +223,16 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = EnsureApp();
+                Application? app = EnsureApp();
                 MergeGeneric(app);
-                var window = new Window();
-                var badge = new Fluent.InfoBadge { Value = 2, Width = 32, Height = 32 };
+                Window window = new();
+                Controls.InfoBadge badge = new() { Value = 2, Width = 32, Height = 32 };
                 try
                 {
                     window.Content = badge;
                     window.Show();
                     Drain(window.Dispatcher);
-                    badge.ApplyTemplate();
+                    _ = badge.ApplyTemplate();
                     Assert.IsNotNull(badge.Template);
                 }
                 finally
@@ -249,13 +247,13 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var list = new Fluent.ListBox();
-                var m = typeof(Fluent.ListBox).GetMethod(
+                Controls.ListBox list = new();
+                MethodInfo? m = typeof(Controls.ListBox).GetMethod(
                     "GetContainerForItemOverride",
                     BindingFlags.Instance | BindingFlags.NonPublic);
                 Assert.IsNotNull(m);
-                var container = m.Invoke(list, Array.Empty<object>());
-                Assert.IsInstanceOfType(container, typeof(Fluent.ListBoxItem));
+                object? container = m.Invoke(list, []);
+                Assert.IsInstanceOfType(container, typeof(Controls.ListBoxItem));
             });
         }
     }

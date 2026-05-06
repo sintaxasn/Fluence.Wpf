@@ -29,7 +29,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -46,6 +45,7 @@ using FluenceExpander = Fluence.Wpf.Controls.Expander;
 using FluenceListView = Fluence.Wpf.Controls.ListView;
 using WpfTextBlock = System.Windows.Controls.TextBlock;
 using WpfButton = System.Windows.Controls.Button;
+using System.Linq;
 
 namespace Fluence.Wpf.Tests
 {
@@ -53,29 +53,29 @@ namespace Fluence.Wpf.Tests
     public sealed class DemoMainWindowTests
     {
         private static readonly DemoPageExpectation[] PageExpectations =
-        {
-            new DemoPageExpectation("colors", typeof(GalleryColorsPage)),
-            new DemoPageExpectation("iconography", typeof(GalleryGlyphsPage)),
-            new DemoPageExpectation("typography", typeof(GalleryTypographyPage)),
-            new DemoPageExpectation("accessibility", typeof(GalleryAccessibilityPage)),
-            new DemoPageExpectation("buttons", typeof(GalleryButtonsPage)),
-            new DemoPageExpectation("selection", typeof(GallerySelectionPage)),
-            new DemoPageExpectation("inputs", typeof(GalleryInputsPage)),
-            new DemoPageExpectation("data binding", typeof(GalleryDataBindingPage)),
-            new DemoPageExpectation("data", typeof(GalleryDataPage)),
-            new DemoPageExpectation("trees", typeof(GalleryTreesPage)),
-            new DemoPageExpectation("menus", typeof(GalleryMenusPage)),
-            new DemoPageExpectation("navigation", typeof(GalleryNavigationPage)),
-            new DemoPageExpectation("tabs", typeof(GalleryTabsPage)),
-            new DemoPageExpectation("layout", typeof(GalleryLayoutPage)),
-            new DemoPageExpectation("status", typeof(GalleryStatusPage)),
-            new DemoPageExpectation("window", typeof(GalleryWindowPage))
-        };
+        [
+            new("colors", typeof(GalleryColorsPage)),
+            new("iconography", typeof(GalleryGlyphsPage)),
+            new("typography", typeof(GalleryTypographyPage)),
+            new("accessibility", typeof(GalleryAccessibilityPage)),
+            new("buttons", typeof(GalleryButtonsPage)),
+            new("selection", typeof(GallerySelectionPage)),
+            new("inputs", typeof(GalleryInputsPage)),
+            new("data binding", typeof(GalleryDataBindingPage)),
+            new("data", typeof(GalleryDataPage)),
+            new("trees", typeof(GalleryTreesPage)),
+            new("menus", typeof(GalleryMenusPage)),
+            new("navigation", typeof(GalleryNavigationPage)),
+            new("tabs", typeof(GalleryTabsPage)),
+            new("layout", typeof(GalleryLayoutPage)),
+            new("status", typeof(GalleryStatusPage)),
+            new("window", typeof(GalleryWindowPage))
+        ];
 
         private static void RunOnSta(Action action)
         {
-            Exception captured = null;
-            WpfTestSta.Dispatcher.Invoke(new Action(delegate
+            Exception? captured = null;
+            WpfTestSta.Dispatcher?.Invoke(new Action(delegate
             {
                 try
                 {
@@ -136,7 +136,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(content, "Initial home navigation must create page content.");
                     Assert.AreEqual(typeof(GalleryHomePage), content.GetType(), "The first selected page should be Home.");
 
-                    NavigationView nav = FindByName<NavigationView>(window, "DemoNav");
+                    NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
                     Assert.IsNotNull(nav, "DemoNav must exist.");
                     Assert.AreSame(content, nav.Content, "NavigationView.Content should be populated for the initial Home page.");
                 }
@@ -153,11 +153,11 @@ namespace Fluence.Wpf.Tests
             RunOnSta(delegate
             {
                 EnsureTheme();
-                GalleryHomePage page = new GalleryHomePage();
+                GalleryHomePage page = new();
                 Window window = CreateHostWindow(page);
                 try
                 {
-                    Image image = FindByName<Image>(page, "BrandBannerImage");
+                    Image? image = FindByName<Image>(page, "BrandBannerImage");
                     Assert.IsNotNull(image, "Home page should expose the brand banner image.");
                     Assert.IsInstanceOfType(image.Source, typeof(BitmapImage), "The light banner PNG should load as an image source.");
                     Assert.AreEqual("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/fluence-wpf-banner-light.png", image.Tag as string,
@@ -226,7 +226,7 @@ namespace Fluence.Wpf.Tests
                 MainWindow window = CreateShownMainWindow();
                 try
                 {
-                    Fluence.Wpf.Controls.TextBox search = FindByName<Fluence.Wpf.Controls.TextBox>(window, "NavSearchBox");
+                    Controls.TextBox? search = FindByName<Controls.TextBox>(window, "NavSearchBox");
                     Assert.IsNotNull(search, "Demo search box must be present.");
 
                     search.Text = "progress ring";
@@ -254,7 +254,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void MainWindow_NavigationCatalog_PutsAccessibilityBeforeWindowing()
         {
-            var items = new List<DemoNavigationItem>(DemoNavigationCatalog.Items);
+            List<DemoNavigationItem> items = [.. DemoNavigationCatalog.Items];
             Assert.IsTrue(items.Count >= 2, "Navigation catalog should contain at least two entries.");
             Assert.AreEqual("Accessibility", items[items.Count - 2].Title,
                 "Accessibility should be second-last in the NavigationView list.");
@@ -271,7 +271,7 @@ namespace Fluence.Wpf.Tests
                 MainWindow window = CreateShownMainWindow();
                 try
                 {
-                    Fluence.Wpf.Controls.TextBox search = FindByName<Fluence.Wpf.Controls.TextBox>(window, "NavSearchBox");
+                    Controls.TextBox? search = FindByName<Controls.TextBox>(window, "NavSearchBox");
                     Assert.IsNotNull(search, "Demo search box must be present.");
                     Assert.AreEqual(Visibility.Visible, search.Visibility, "Search should start visible in the normal title bar.");
 
@@ -303,13 +303,13 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
-                    TitleBar shellTitleBar = FindByName<TitleBar>(window, "ShellTitleBar");
-                    Fluence.Wpf.Controls.TextBox search = FindByName<Fluence.Wpf.Controls.TextBox>(window, "NavSearchBox");
+                    TitleBar? shellTitleBar = FindByName<TitleBar>(window, "ShellTitleBar");
+                    Controls.TextBox? search = FindByName<Controls.TextBox>(window, "NavSearchBox");
                     Assert.IsNotNull(shellTitleBar, "Extended title bar should use the shared TitleBar control.");
                     Assert.IsNotNull(search, "Demo search box must be present.");
-                    Assert.AreEqual(window.ActualWidth / 2.0, GetVisualCenterX(search, window), 1.0,
+                    Assert.AreEqual(window.ActualWidth / 2.0, GetVisualCenterX(search, window) ?? double.MaxValue, 1.0,
                         "Search should stay horizontally centered in the window.");
-                    Assert.AreEqual(GetVisualCenterY(shellTitleBar, window) + 2.0, GetVisualCenterY(search, window), 1.0,
+                    Assert.AreEqual((GetVisualCenterY(shellTitleBar, window) ?? double.MinValue) + 2.0, GetVisualCenterY(search, window) ?? double.MaxValue, 1.0,
                         "Search should sit 2px below the title-bar vertical center.");
                 }
                 finally
@@ -328,7 +328,7 @@ namespace Fluence.Wpf.Tests
                 MainWindow window = CreateShownMainWindow();
                 try
                 {
-                    NavigationView nav = FindByName<NavigationView>(window, "DemoNav");
+                    NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
                     Assert.IsNotNull(nav, "DemoNav must exist.");
 
                     window.ExtendsContentIntoTitleBar = true;
@@ -336,38 +336,38 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
-                    TitleBar shellTitleBar = FindByName<TitleBar>(window, "ShellTitleBar");
+                    TitleBar? shellTitleBar = FindByName<TitleBar>(window, "ShellTitleBar");
                     Assert.IsNotNull(shellTitleBar, "Extended title bar should use the shared TitleBar control.");
 
-                    WpfButton titleBarToggle = FindByName<WpfButton>(shellTitleBar, "PART_PaneToggleButton");
+                    WpfButton? titleBarToggle = FindByName<WpfButton>(shellTitleBar, "PART_PaneToggleButton");
                     Assert.IsNotNull(titleBarToggle, "Extended title bar should expose a pane toggle button.");
                     Assert.AreEqual(Visibility.Visible, titleBarToggle.Visibility,
                         "Pane toggle should move into the title bar when content extends into the title bar.");
                     Assert.AreEqual(42.0, titleBarToggle.ActualWidth, 0.5,
                         "Title-bar pane toggle should match the compact title-bar glyph slot.");
 
-                    WpfTextBlock titleBarGlyph = FindVisualChild<WpfTextBlock>(titleBarToggle);
+                    WpfTextBlock? titleBarGlyph = FindVisualChild<WpfTextBlock>(titleBarToggle);
                     Assert.IsNotNull(titleBarGlyph, "Title-bar pane toggle should render a Segoe Fluent Icons glyph.");
                     Assert.AreEqual(16.0, titleBarGlyph.FontSize, 0.01,
                         "Title-bar pane toggle glyph should match the compact title-bar glyph style.");
 
-                    WpfButton titleBarBack = FindByName<WpfButton>(shellTitleBar, "PART_BackButton");
+                    WpfButton? titleBarBack = FindByName<WpfButton>(shellTitleBar, "PART_BackButton");
                     Assert.IsNotNull(titleBarBack, "Extended title bar should expose a back button slot.");
                     Assert.AreEqual(Visibility.Collapsed, titleBarBack.Visibility,
                         "Back button should collapse in the title bar when no back route is enabled.");
 
-                    NavigationViewItem firstItem = nav.Items.Count > 0 ? nav.Items[0] as NavigationViewItem : null;
+                    NavigationViewItem? firstItem = nav.Items.Count > 0 ? nav.Items[0] as NavigationViewItem : null;
                     Assert.IsNotNull(firstItem, "DemoNav should contain a first navigation item.");
-                    FontIcon itemGlyph = FindVisualChild<FontIcon>(firstItem);
+                    FontIcon? itemGlyph = FindVisualChild<FontIcon>(firstItem);
                     Assert.IsNotNull(itemGlyph, "First navigation item should render an icon.");
-                    Assert.AreEqual(GetVisualCenterX(itemGlyph, window), GetVisualCenterX(titleBarGlyph, window), 2.5,
+                    Assert.AreEqual(GetVisualCenterX(itemGlyph, window) ?? double.MaxValue, GetVisualCenterX(titleBarGlyph, window) ?? double.MaxValue, 2.5,
                         "Title-bar pane toggle glyph should align with the NavigationViewItem glyph rail.");
 
-                    ContentPresenter titleIcon = FindByName<ContentPresenter>(shellTitleBar, "PART_IconPresenter");
+                    ContentPresenter? titleIcon = FindByName<ContentPresenter>(shellTitleBar, "PART_IconPresenter");
                     Assert.IsNotNull(titleIcon, "Extended title bar icon presenter should exist.");
                     Assert.AreEqual(Visibility.Visible, titleIcon.Visibility,
                         "Extended title bar icon should be visible by default.");
-                    Image titleIconImage = FindVisualChild<Image>(titleIcon);
+                    Image? titleIconImage = FindVisualChild<Image>(titleIcon);
                     Assert.IsNotNull(titleIconImage, "Extended title bar icon should render an Image.");
                     Assert.AreEqual(20.0, titleIconImage.ActualWidth, 0.5,
                         "Extended title bar icon should match the larger navigation glyph size.");
@@ -376,8 +376,8 @@ namespace Fluence.Wpf.Tests
                     Assert.IsTrue(GetVisualX(titleIcon, window) >= GetVisualX(titleBarToggle, window) + titleBarToggle.ActualWidth - 0.5,
                         "Title identity should start after the title-bar navigation slot.");
 
-                    nav.ApplyTemplate();
-                    var internalToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as WpfButton;
+                    _ = nav.ApplyTemplate();
+                    WpfButton? internalToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as WpfButton;
                     Assert.IsNotNull(internalToggle, "Internal NavigationView pane toggle should still exist in the template.");
                     Assert.AreEqual(Visibility.Collapsed, internalToggle.Visibility,
                         "Internal NavigationView pane toggle should be hidden while title-bar chrome owns it.");
@@ -398,7 +398,7 @@ namespace Fluence.Wpf.Tests
                 MainWindow window = CreateShownMainWindow();
                 try
                 {
-                    NavigationView nav = FindByName<NavigationView>(window, "DemoNav");
+                    NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
                     Assert.IsNotNull(nav, "DemoNav must exist.");
                     nav.IsBackButtonVisible = true;
                     nav.IsBackEnabled = true;
@@ -408,26 +408,26 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
-                    TitleBar shellTitleBar = FindByName<TitleBar>(window, "ShellTitleBar");
+                    TitleBar? shellTitleBar = FindByName<TitleBar>(window, "ShellTitleBar");
                     Assert.IsNotNull(shellTitleBar, "Extended title bar should use the shared TitleBar control.");
-                    WpfButton titleBarBack = FindByName<WpfButton>(shellTitleBar, "PART_BackButton");
-                    WpfButton titleBarToggle = FindByName<WpfButton>(shellTitleBar, "PART_PaneToggleButton");
+                    WpfButton? titleBarBack = FindByName<WpfButton>(shellTitleBar, "PART_BackButton");
+                    WpfButton? titleBarToggle = FindByName<WpfButton>(shellTitleBar, "PART_PaneToggleButton");
                     Assert.IsNotNull(titleBarBack, "Extended title bar should expose a back button.");
                     Assert.IsNotNull(titleBarToggle, "Extended title bar should expose a pane toggle button.");
                     Assert.AreEqual(Visibility.Visible, titleBarBack.Visibility,
                         "Back should be visible in the title bar when back navigation is enabled.");
                     Assert.AreEqual(Visibility.Visible, titleBarToggle.Visibility,
                         "Pane toggle should remain visible after back appears.");
-                    Assert.IsTrue(GetVisualX(titleBarBack, window) < GetVisualX(titleBarToggle, window),
+                    Assert.IsTrue((GetVisualX(titleBarBack, window) ?? double.MaxValue) < (GetVisualX(titleBarToggle, window) ?? double.MaxValue),
                         "Back should occupy the first title-bar navigation slot.");
-                    Assert.AreEqual(GetVisualY(titleBarBack, window), GetVisualY(titleBarToggle, window), 1.0,
+                    Assert.AreEqual(GetVisualY(titleBarBack, window) ?? double.MaxValue, GetVisualY(titleBarToggle, window) ?? double.MaxValue, 1.0,
                         "Back and pane toggle should be arranged in the same title-bar row.");
 
-                    ContentPresenter titleIcon = FindByName<ContentPresenter>(shellTitleBar, "PART_IconPresenter");
+                    ContentPresenter? titleIcon = FindByName<ContentPresenter>(shellTitleBar, "PART_IconPresenter");
                     Assert.IsNotNull(titleIcon, "Extended title bar icon should exist.");
                     Assert.AreEqual(Visibility.Visible, titleIcon.Visibility,
                         "Extended title bar icon should be visible while tracking title identity reflow.");
-                    double titleIconWithBackX = GetVisualX(titleIcon, window);
+                    double? titleIconWithBackX = GetVisualX(titleIcon, window);
 
                     nav.IsBackEnabled = false;
                     Drain(window.Dispatcher);
@@ -436,7 +436,7 @@ namespace Fluence.Wpf.Tests
 
                     Assert.AreEqual(Visibility.Collapsed, titleBarBack.Visibility,
                         "Back must collapse in the title bar when back navigation is disabled.");
-                    Assert.AreEqual(titleIconWithBackX - 46.0, GetVisualX(titleIcon, window), 1.5,
+                    Assert.AreEqual((titleIconWithBackX ?? double.MaxValue) - 46.0, GetVisualX(titleIcon, window) ?? double.MaxValue, 1.5,
                         "Title identity should shift left by one rail slot when the back glyph collapses.");
                 }
                 finally
@@ -455,7 +455,7 @@ namespace Fluence.Wpf.Tests
                 MainWindow window = CreateShownMainWindow();
                 try
                 {
-                    NavigationView nav = FindByName<NavigationView>(window, "DemoNav");
+                    NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
                     Assert.IsNotNull(nav, "DemoNav must exist.");
 
                     window.ExtendsContentIntoTitleBar = true;
@@ -466,9 +466,9 @@ namespace Fluence.Wpf.Tests
                     Assert.AreEqual(42.0, window.TitleBarHeight, 0.01,
                         "The demo shell should use a compact 42px title bar.");
 
-                    NavigationViewItem firstItem = nav.Items.Count > 0 ? nav.Items[0] as NavigationViewItem : null;
+                    NavigationViewItem? firstItem = nav.Items.Count > 0 ? nav.Items[0] as NavigationViewItem : null;
                     Assert.IsNotNull(firstItem, "DemoNav should contain a first navigation item.");
-                    double itemY = GetVisualY(firstItem, window);
+                    double? itemY = GetVisualY(firstItem, window);
                     Assert.IsTrue(itemY >= window.TitleBarHeight - 0.5,
                         "The first navigation item should be below the extended title bar. itemY=" + itemY + ", titleBarHeight=" + window.TitleBarHeight);
                     Assert.IsTrue(itemY <= window.TitleBarHeight + 14.0,
@@ -490,7 +490,7 @@ namespace Fluence.Wpf.Tests
                 MainWindow window = CreateShownMainWindow();
                 try
                 {
-                    NavigationView nav = FindByName<NavigationView>(window, "DemoNav");
+                    NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
                     Assert.IsNotNull(nav, "DemoNav must exist.");
                     window.ExtendsContentIntoTitleBar = false;
                     nav.IsPaneToggleButtonVisible = true;
@@ -498,29 +498,29 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
-                    nav.ApplyTemplate();
+                    _ = nav.ApplyTemplate();
                     nav.IsBackEnabled = true;
                     nav.IsBackButtonVisible = true;
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
-                    WpfButton internalBack = nav.Template.FindName(NavigationView.PartBackButton, nav) as WpfButton;
-                    WpfButton internalToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as WpfButton;
+                    WpfButton? internalBack = nav.Template.FindName(NavigationView.PartBackButton, nav) as WpfButton;
+                    WpfButton? internalToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as WpfButton;
                     Assert.IsNotNull(internalBack, "Internal NavigationView back button should exist.");
                     Assert.IsNotNull(internalToggle, "Internal NavigationView pane toggle should exist.");
                     Assert.AreEqual(Visibility.Visible, internalBack.Visibility,
                         "Non-extended mode should use the NavigationView back button.");
                     Assert.AreEqual(Visibility.Visible, internalToggle.Visibility,
                         "Non-extended mode should use the NavigationView pane toggle.");
-                    Assert.IsTrue(GetVisualX(internalBack, window) < GetVisualX(internalToggle, window),
+                    Assert.IsTrue((GetVisualX(internalBack, window) ?? double.MaxValue) < (GetVisualX(internalToggle, window) ?? double.MaxValue),
                         "Internal back button should be the first glyph in the pane chrome row.");
-                    Assert.AreEqual(GetVisualY(internalBack, window), GetVisualY(internalToggle, window), 1.0,
+                    Assert.AreEqual(GetVisualY(internalBack, window) ?? double.MaxValue, GetVisualY(internalToggle, window) ?? double.MaxValue, 1.0,
                         "Internal back and pane toggle should be arranged in a horizontal row.");
 
-                    NavigationViewItem firstItem = nav.Items.Count > 0 ? nav.Items[0] as NavigationViewItem : null;
+                    NavigationViewItem? firstItem = nav.Items.Count > 0 ? nav.Items[0] as NavigationViewItem : null;
                     Assert.IsNotNull(firstItem, "DemoNav should contain a first navigation item.");
-                    Assert.IsTrue(GetVisualY(firstItem, window) > GetVisualY(internalBack, window) + internalBack.ActualHeight - 0.5,
+                    Assert.IsTrue((GetVisualY(firstItem, window) ?? double.MinValue) > (GetVisualY(internalBack, window) ?? double.MinValue) + internalBack.ActualHeight - 0.5,
                         "Navigation items should start below the non-extended pane chrome row.");
                 }
                 finally
@@ -550,10 +550,10 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
-                    TitleBar shellTitleBar = FindByName<TitleBar>(window, "ShellTitleBar");
+                    TitleBar? shellTitleBar = FindByName<TitleBar>(window, "ShellTitleBar");
                     Assert.IsNotNull(shellTitleBar, "Extended title bar should use the shared TitleBar control.");
-                    ContentPresenter titleIcon = FindByName<ContentPresenter>(shellTitleBar, "PART_IconPresenter");
-                    WpfTextBlock titleText = FindByName<WpfTextBlock>(shellTitleBar, "PART_TitleText");
+                    ContentPresenter? titleIcon = FindByName<ContentPresenter>(shellTitleBar, "PART_IconPresenter");
+                    WpfTextBlock? titleText = FindByName<WpfTextBlock>(shellTitleBar, "PART_TitleText");
                     Assert.IsNotNull(titleIcon, "Extended title bar icon should exist.");
                     Assert.IsNotNull(titleText, "Extended title bar title should exist.");
                     Assert.AreEqual(Visibility.Visible, titleIcon.Visibility,
@@ -588,9 +588,9 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
-                    TitleBar shellTitleBar = FindByName<TitleBar>(window, "ShellTitleBar");
+                    TitleBar? shellTitleBar = FindByName<TitleBar>(window, "ShellTitleBar");
                     Assert.IsNotNull(shellTitleBar, "Extended title bar should use the shared TitleBar control.");
-                    WpfTextBlock titleText = FindByName<WpfTextBlock>(shellTitleBar, "PART_TitleText");
+                    WpfTextBlock? titleText = FindByName<WpfTextBlock>(shellTitleBar, "PART_TitleText");
                     Assert.IsNotNull(titleText, "Extended title bar title should exist.");
                     Assert.AreEqual(Visibility.Collapsed, titleText.Visibility,
                         "Setup should hide title text while the search collision exists.");
@@ -602,13 +602,13 @@ namespace Fluence.Wpf.Tests
                     Drain(window.Dispatcher);
 
                     titleText = FindByName<WpfTextBlock>(shellTitleBar, "PART_TitleText");
-                    Fluence.Wpf.Controls.TextBox search = FindByName<Fluence.Wpf.Controls.TextBox>(window, "NavSearchBox");
+                    Controls.TextBox? search = FindByName<Controls.TextBox>(window, "NavSearchBox");
                     Assert.IsNotNull(search, "Demo search box must be present.");
-                    Assert.AreEqual(Visibility.Visible, titleText.Visibility,
+                    Assert.AreEqual(Visibility.Visible, titleText?.Visibility,
                         "Title text should return when it can fit without touching the search box.");
-                    Assert.AreEqual("Fluence.Wpf", titleText.Text,
+                    Assert.AreEqual("Fluence.Wpf", titleText?.Text,
                         "The visible title should use the current user title.");
-                    Assert.IsTrue(GetVisualX(titleText, window) + titleText.ActualWidth + 12.0 <= GetVisualX(search, window),
+                    Assert.IsTrue(GetVisualX(titleText, window) + titleText?.ActualWidth + 12.0 <= GetVisualX(search, window),
                         "Visible title text should keep the search clearance gap.");
                 }
                 finally
@@ -627,21 +627,21 @@ namespace Fluence.Wpf.Tests
                 MainWindow window = CreateShownMainWindow();
                 try
                 {
-                    Fluence.Wpf.Controls.TextBox search = FindByName<Fluence.Wpf.Controls.TextBox>(window, "NavSearchBox");
+                    Controls.TextBox? search = FindByName<Controls.TextBox>(window, "NavSearchBox");
                     Assert.IsNotNull(search, "Demo search box must be present.");
 
-                    double initialX = GetVisualX(search, window);
+                    double? initialX = GetVisualX(search, window);
 
                     window.SetUserShowIcon(false, window.Icon);
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
-                    Assert.AreEqual(initialX, GetVisualX(search, window), 1.0,
+                    Assert.AreEqual(initialX ?? double.MaxValue, GetVisualX(search, window) ?? double.MaxValue, 1.0,
                         "Search should not shift when the demo hides the icon.");
 
                     window.SetUserShowTitle(false, window.Title);
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
-                    Assert.AreEqual(initialX, GetVisualX(search, window), 1.0,
+                    Assert.AreEqual(initialX ?? double.MaxValue, GetVisualX(search, window) ?? double.MaxValue, 1.0,
                         "Search should not shift when the demo hides the title.");
 
                     window.IsMinimizeButtonVisible = Visibility.Collapsed;
@@ -649,7 +649,7 @@ namespace Fluence.Wpf.Tests
                     window.IsCloseButtonVisible = Visibility.Collapsed;
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
-                    Assert.AreEqual(initialX, GetVisualX(search, window), 1.0,
+                    Assert.AreEqual(initialX ?? double.MaxValue, GetVisualX(search, window) ?? double.MaxValue, 1.0,
                         "Search should not shift when caption buttons are collapsed.");
                 }
                 finally
@@ -665,7 +665,7 @@ namespace Fluence.Wpf.Tests
             RunOnSta(delegate
             {
                 EnsureTheme();
-                var sample = new DemoSampleControl
+                DemoSampleControl sample = new()
                 {
                     Title = "Snippet",
                     XamlSource = "<ui:Button Content=\"Save\" />",
@@ -676,7 +676,7 @@ namespace Fluence.Wpf.Tests
                 Window window = CreateHostWindow(sample);
                 try
                 {
-                    FluenceExpander expander = FindByName<FluenceExpander>(sample, "SourceExpander");
+                    FluenceExpander? expander = FindByName<FluenceExpander>(sample, "SourceExpander");
                     Assert.IsNotNull(expander, "Inline source expander must exist.");
                     Assert.IsFalse(expander.IsExpanded, "Source starts collapsed.");
 
@@ -684,13 +684,13 @@ namespace Fluence.Wpf.Tests
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
 
-                    TabView tabs = FindByName<TabView>(sample, "SourceTabs");
+                    TabView? tabs = FindByName<TabView>(sample, "SourceTabs");
                     Assert.IsNotNull(tabs, "Expanded source creates a TabView.");
                     Assert.AreEqual(2, tabs.Items.Count, "XAML plus C# source should create two tabs.");
                     AssertSourceTab(tabs, "XAML", sample.XamlSource);
                     AssertSourceTab(tabs, "C# Code-behind", sample.CSharpSource);
 
-                    Card sampleCard = FindByName<Card>(sample, "SampleCard");
+                    Card? sampleCard = FindByName<Card>(sample, "SampleCard");
                     Assert.IsNotNull(sampleCard, "Sample host should expose the sample card.");
                     Assert.AreEqual(new CornerRadius(8, 8, 0, 0), sampleCard.CornerRadius,
                         "Sample card should square off its bottom corners so source attaches.");
@@ -698,7 +698,7 @@ namespace Fluence.Wpf.Tests
                         "Source expander should square off its top corners so it joins the card.");
                     Assert.AreEqual(new Thickness(1, 0, 1, 1), expander.BorderThickness,
                         "Source expander should share the card seam without a duplicate top stroke.");
-                    Assert.AreEqual(GetVisualY(sampleCard, window) + sampleCard.ActualHeight, GetVisualY(expander, window), 0.5,
+                    Assert.AreEqual((GetVisualY(sampleCard, window) ?? double.MinValue) + sampleCard.ActualHeight, GetVisualY(expander, window) ?? double.MinValue, 0.5,
                         "Source expander should be attached directly below the sample card.");
                 }
                 finally
@@ -714,23 +714,23 @@ namespace Fluence.Wpf.Tests
             RunOnSta(delegate
             {
                 EnsureTheme();
-                var host = new System.Windows.Controls.StackPanel();
-                var cardContent = new System.Windows.Controls.StackPanel();
-                cardContent.Children.Add(new WpfTextBlock { Text = "Visible sample" });
-                var sourceLink = new WpfButton
+                System.Windows.Controls.StackPanel host = new();
+                System.Windows.Controls.StackPanel cardContent = new();
+                _ = cardContent.Children.Add(new WpfTextBlock { Text = "Visible sample" });
+                WpfButton sourceLink = new()
                 {
                     Name = "InlineSourceLink",
                     HorizontalAlignment = HorizontalAlignment.Right,
                     Content = "Source"
                 };
-                cardContent.Children.Add(sourceLink);
-                var card = new Card
+                _ = cardContent.Children.Add(sourceLink);
+                Card card = new()
                 {
                     Margin = new Thickness(0, 0, 0, 16),
                     Padding = new Thickness(16),
                     Content = cardContent
                 };
-                host.Children.Add(card);
+                _ = host.Children.Add(card);
 
                 DemoSampleControl sample = DemoSampleControl.ReplaceSourceLink(
                     sourceLink,
@@ -747,11 +747,11 @@ namespace Fluence.Wpf.Tests
                     Assert.IsFalse(cardContent.Children.Contains(sourceLink),
                         "The old source-link button should be removed from the sample body.");
 
-                    FluenceExpander expander = FindByName<FluenceExpander>(sample, "SourceExpander");
-                    Card sampleCard = FindByName<Card>(sample, "SampleCard");
+                    FluenceExpander? expander = FindByName<FluenceExpander>(sample, "SourceExpander");
+                    Card? sampleCard = FindByName<Card>(sample, "SampleCard");
                     Assert.IsNotNull(expander);
                     Assert.IsNotNull(sampleCard);
-                    Assert.AreEqual(GetVisualY(sampleCard, window) + sampleCard.ActualHeight, GetVisualY(expander, window), 0.5,
+                    Assert.AreEqual((GetVisualY(sampleCard, window) ?? double.MinValue) + sampleCard.ActualHeight, GetVisualY(expander, window) ?? double.MinValue, 0.5,
                         "Source expander should be attached directly below the replaced card body.");
                 }
                 finally
@@ -767,7 +767,7 @@ namespace Fluence.Wpf.Tests
             RunOnSta(delegate
             {
                 EnsureTheme();
-                var sample = new DemoSampleControl
+                DemoSampleControl sample = new()
                 {
                     Title = "Snippet",
                     XamlSource = "<ui:ToggleSwitch IsChecked=\"True\" />"
@@ -776,13 +776,13 @@ namespace Fluence.Wpf.Tests
                 Window window = CreateHostWindow(sample);
                 try
                 {
-                    FluenceExpander expander = FindByName<FluenceExpander>(sample, "SourceExpander");
-                    expander.IsExpanded = true;
+                    FluenceExpander? expander = FindByName<FluenceExpander>(sample, "SourceExpander");
+                    _ = (expander?.IsExpanded = true);
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
 
-                    TabView tabs = FindByName<TabView>(sample, "SourceTabs");
-                    Assert.AreEqual(1, tabs.Items.Count, "XAML-only samples should not show an empty C# tab.");
+                    TabView? tabs = FindByName<TabView>(sample, "SourceTabs");
+                    Assert.AreEqual(1, tabs?.Items.Count, "XAML-only samples should not show an empty C# tab.");
                     AssertSourceTab(tabs, "XAML", sample.XamlSource);
                 }
                 finally
@@ -809,7 +809,7 @@ namespace Fluence.Wpf.Tests
                         Drain(window.Dispatcher);
 
                         object content = GetSelectedPageContent(window);
-                        var root = content as DependencyObject;
+                        DependencyObject? root = content as DependencyObject;
                         Assert.IsNotNull(root, "Page content must be visual for tag: " + expectation.Tag);
 
                         bool found = false;
@@ -838,17 +838,17 @@ namespace Fluence.Wpf.Tests
             RunOnSta(delegate
             {
                 EnsureTheme();
-                var page = new GalleryWindowPage();
+                GalleryWindowPage page = new();
                 Window window = CreateHostWindow(page);
                 try
                 {
-                    var backdrop = FindByName<System.Windows.Controls.ComboBox>(page, "BackdropCombo");
-                    var accentRow = FindByName<UniformGrid>(page, "AccentSwatchRow");
-                    var minimize = FindByName<System.Windows.Controls.ComboBox>(page, "MinimizeVisibilityCombo");
-                    var maximize = FindByName<System.Windows.Controls.ComboBox>(page, "MaximizeVisibilityCombo");
-                    var close = FindByName<System.Windows.Controls.ComboBox>(page, "CloseVisibilityCombo");
-                    var showIcon = FindByName<FrameworkElement>(page, "ShowWindowIconToggle");
-                    var showTitle = FindByName<FrameworkElement>(page, "ShowWindowTitleToggle");
+                    System.Windows.Controls.ComboBox? backdrop = FindByName<System.Windows.Controls.ComboBox>(page, "BackdropCombo");
+                    UniformGrid? accentRow = FindByName<UniformGrid>(page, "AccentSwatchRow");
+                    System.Windows.Controls.ComboBox? minimize = FindByName<System.Windows.Controls.ComboBox>(page, "MinimizeVisibilityCombo");
+                    System.Windows.Controls.ComboBox? maximize = FindByName<System.Windows.Controls.ComboBox>(page, "MaximizeVisibilityCombo");
+                    System.Windows.Controls.ComboBox? close = FindByName<System.Windows.Controls.ComboBox>(page, "CloseVisibilityCombo");
+                    FrameworkElement? showIcon = FindByName<FrameworkElement>(page, "ShowWindowIconToggle");
+                    FrameworkElement? showTitle = FindByName<FrameworkElement>(page, "ShowWindowTitleToggle");
 
                     Assert.IsNotNull(backdrop, "Backdrop picker should live in the theme card.");
                     Assert.IsNotNull(accentRow, "Accent swatches should use a named single-row host.");
@@ -858,15 +858,15 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(showIcon, "Show Icon toggle should exist.");
                     Assert.IsNotNull(showTitle, "Show Title toggle should exist.");
                     Assert.AreEqual(7, accentRow.Children.Count, "The Window page accent picker should expose seven logo accent swatches.");
-                    Assert.AreEqual(GetVisualY(accentRow.Children[0] as FrameworkElement, window), GetVisualY(accentRow.Children[6] as FrameworkElement, window), 1.0,
+                    Assert.AreEqual(GetVisualY(accentRow.Children[0] as FrameworkElement, window) ?? double.MaxValue, GetVisualY(accentRow.Children[6] as FrameworkElement, window) ?? double.MaxValue, 1.0,
                         "All accent swatches should fit on one row.");
-                    Assert.AreEqual(GetVisualY(minimize, window), GetVisualY(maximize, window), 1.0,
+                    Assert.AreEqual(GetVisualY(minimize, window) ?? double.MaxValue, GetVisualY(maximize, window) ?? double.MaxValue, 1.0,
                         "Minimize and Maximize caption controls should be on the same row.");
-                    Assert.AreEqual(GetVisualY(minimize, window), GetVisualY(close, window), 1.0,
+                    Assert.AreEqual(GetVisualY(minimize, window) ?? double.MaxValue, GetVisualY(close, window) ?? double.MaxValue, 1.0,
                         "Close should be on the same row as the other caption controls.");
-                    Assert.AreEqual(GetVisualY(showIcon, window), GetVisualY(showTitle, window), 1.0,
+                    Assert.AreEqual(GetVisualY(showIcon, window) ?? double.MaxValue, GetVisualY(showTitle, window) ?? double.MaxValue, 1.0,
                         "Show Icon and Show Title should share their own row.");
-                    Assert.IsTrue(GetVisualY(showIcon, window) > GetVisualY(minimize, window),
+                    Assert.IsTrue((GetVisualY(showIcon, window) ?? double.MinValue) > (GetVisualY(minimize, window) ?? double.MinValue),
                         "Show Icon and Show Title should be arranged below the caption-button row.");
                     Assert.IsNull(FindByName<FrameworkElement>(page, "TitleBarChromeSourceLink"),
                         "The TitleBar Chrome section should be removed from the Window page.");
@@ -884,15 +884,15 @@ namespace Fluence.Wpf.Tests
             RunOnSta(delegate
             {
                 EnsureTheme();
-                var page = new GalleryWindowPage();
+                GalleryWindowPage page = new();
                 Window window = CreateHostWindow(page);
                 try
                 {
-                    var accentRow = FindByName<UniformGrid>(page, "AccentSwatchRow");
+                    UniformGrid? accentRow = FindByName<UniformGrid>(page, "AccentSwatchRow");
                     Assert.IsNotNull(accentRow, "Accent swatches should use a named single-row host.");
 
                     string[] expected =
-                    {
+                    [
                         "#E80000",
                         "#F58809",
                         "#F5E70C",
@@ -900,19 +900,19 @@ namespace Fluence.Wpf.Tests
                         "#09C4DE",
                         "#AA04DE",
                         "#FF00E8"
-                    };
+                    ];
 
                     Assert.AreEqual(expected.Length, accentRow.Children.Count,
                         "The Window page accent picker should expose the seven rainbow swatches.");
 
                     for (int i = 0; i < expected.Length; i++)
                     {
-                        var swatch = accentRow.Children[i] as FrameworkElement;
+                        FrameworkElement? swatch = accentRow.Children[i] as FrameworkElement;
                         Assert.IsNotNull(swatch, "Each accent swatch should be a FrameworkElement.");
                         Assert.AreEqual(expected[i], swatch.Tag as string,
                             "The Window page swatches should stay in rainbow order.");
 
-                        var converted = ColorConverter.ConvertFromString(expected[i]);
+                        object converted = ColorConverter.ConvertFromString(expected[i]);
                         Assert.IsInstanceOfType(converted, typeof(Color), "Swatch Tag should be a valid color: " + expected[i]);
                     }
                 }
@@ -931,11 +931,11 @@ namespace Fluence.Wpf.Tests
             RunOnSta(delegate
             {
                 EnsureTheme();
-                var page = new GalleryAccessibilityPage();
+                GalleryAccessibilityPage page = new();
                 Window window = CreateHostWindow(page);
                 try
                 {
-                    Grid primary = FindByName<Grid>(page, "KeyboardSupportPrimaryControls");
+                    Grid? primary = FindByName<Grid>(page, "KeyboardSupportPrimaryControls");
                     Assert.IsNotNull(primary, "Accessibility keyboard sample should use a named alignment grid.");
                     Assert.AreEqual(4, primary.ColumnDefinitions.Count,
                         "Primary keyboard sample should have four equal columns.");
@@ -944,42 +944,40 @@ namespace Fluence.Wpf.Tests
                     Assert.AreEqual(8, primary.Children.Count,
                         "Primary keyboard sample should contain four controls per row.");
 
-                    AssertGridCell(primary, delegate(UIElement child)
+                    AssertGridCell(primary, delegate (UIElement child)
                     {
-                        var button = child as Fluence.Wpf.Controls.Button;
-                        return button != null && string.Equals(button.Content as string, "Button 1", StringComparison.Ordinal);
+                        return child is Controls.Button button && string.Equals(button.Content as string, "Button 1", StringComparison.Ordinal);
                     }, 0, 0, "Button 1");
-                    AssertGridCell(primary, delegate(UIElement child)
+                    AssertGridCell(primary, delegate (UIElement child)
                     {
-                        var button = child as Fluence.Wpf.Controls.Button;
-                        return button != null && string.Equals(button.Content as string, "Button 2", StringComparison.Ordinal);
+                        return child is Controls.Button button && string.Equals(button.Content as string, "Button 2", StringComparison.Ordinal);
                     }, 0, 1, "Button 2");
-                    AssertGridCell(primary, delegate(UIElement child)
+                    AssertGridCell(primary, delegate (UIElement child)
                     {
-                        return child is Fluence.Wpf.Controls.TextBox;
+                        return child is Controls.TextBox;
                     }, 0, 2, "TextBox");
-                    AssertGridCell(primary, delegate(UIElement child)
+                    AssertGridCell(primary, delegate (UIElement child)
                     {
-                        return child is Fluence.Wpf.Controls.ComboBox;
+                        return child is Controls.ComboBox;
                     }, 0, 3, "ComboBox");
-                    AssertGridCell(primary, delegate(UIElement child)
+                    AssertGridCell(primary, delegate (UIElement child)
                     {
-                        return child is Fluence.Wpf.Controls.CheckBox;
+                        return child is Controls.CheckBox;
                     }, 1, 0, "CheckBox");
-                    AssertGridCell(primary, delegate(UIElement child)
+                    AssertGridCell(primary, delegate (UIElement child)
                     {
                         return child is ToggleSwitch;
                     }, 1, 1, "ToggleSwitch");
-                    AssertGridCell(primary, delegate(UIElement child)
+                    AssertGridCell(primary, delegate (UIElement child)
                     {
-                        return child is Fluence.Wpf.Controls.Slider;
+                        return child is Controls.Slider;
                     }, 1, 2, "Slider");
-                    AssertGridCell(primary, delegate(UIElement child)
+                    AssertGridCell(primary, delegate (UIElement child)
                     {
                         return child is HyperlinkButton;
                     }, 1, 3, "HyperlinkButton");
 
-                    Grid tabOrder = FindByName<Grid>(page, "KeyboardSupportExplicitOrderControls");
+                    Grid? tabOrder = FindByName<Grid>(page, "KeyboardSupportExplicitOrderControls");
                     Assert.IsNotNull(tabOrder, "Explicit tab order sample should use an alignment grid.");
                     Assert.AreEqual(3, tabOrder.ColumnDefinitions.Count,
                         "Explicit tab order buttons should line up in equal columns.");
@@ -999,15 +997,15 @@ namespace Fluence.Wpf.Tests
             RunOnSta(delegate
             {
                 EnsureTheme();
-                var page = new GalleryGlyphsPage();
+                GalleryGlyphsPage page = new();
                 Window window = CreateHostWindow(page);
                 try
                 {
-                    FluenceListView list = FindByName<FluenceListView>(page, "IconCatalogList");
+                    FluenceListView? list = FindByName<FluenceListView>(page, "IconCatalogList");
                     Assert.IsNotNull(list, "Icon catalog list must exist.");
                     Assert.IsTrue(list.Items.Count > 100, "Icon catalog must load enough rows to exercise virtualization.");
 
-                    ScrollViewer viewer = FindVisualChild<ScrollViewer>(list);
+                    ScrollViewer? viewer = FindVisualChild<ScrollViewer>(list);
                     Assert.IsNotNull(viewer, "Icon catalog list must own a ScrollViewer.");
                     Assert.IsTrue(viewer.ViewportHeight > 0, "Icon catalog needs a bounded viewport height.");
                     Assert.IsTrue(viewer.ExtentHeight > viewer.ViewportHeight, "Icon catalog should have a scrollable extent.");
@@ -1032,14 +1030,17 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        private static void AssertSourceTab(TabView tabs, string expectedHeader, string expectedSource)
+        private static void AssertSourceTab(TabView? tabs, string expectedHeader, string expectedSource)
         {
+            if (tabs is null)
+            {
+                return;
+            }
             foreach (object item in tabs.Items)
             {
-                TabViewItem tab = item as TabViewItem;
-                if (tab != null && string.Equals(tab.Header as string, expectedHeader, StringComparison.Ordinal))
+                if (item is TabViewItem tab && string.Equals(tab.Header as string, expectedHeader, StringComparison.Ordinal))
                 {
-                    WpfButton copy = FindByName<WpfButton>(tab.Content as DependencyObject, "CopySourceButton");
+                    WpfButton? copy = FindByName<WpfButton>(tab.Content as DependencyObject, "CopySourceButton");
                     Assert.IsNotNull(copy, "Source tab should expose a copy button: " + expectedHeader);
                     Assert.AreEqual(expectedSource, copy.Tag as string, "Copy button should keep the in-memory source text.");
                     return;
@@ -1051,17 +1052,17 @@ namespace Fluence.Wpf.Tests
 
         private static void EnsureTheme()
         {
-            Application application = WpfTestSta.EnsureApplication();
+            Application? application = WpfTestSta.EnsureApplication();
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
-            application.Resources.MergedDictionaries.Clear();
+            application?.Resources.MergedDictionaries.Clear();
             ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
 
-            var demoShared = new ResourceDictionary
+            ResourceDictionary demoShared = new()
             {
                 Source = new Uri("/Fluence.Wpf.Demo;component/Resources/DemoSharedStyles.xaml", UriKind.Relative)
             };
-            application.Resources.MergedDictionaries.Add(demoShared);
+            application?.Resources.MergedDictionaries.Add(demoShared);
         }
 
         private static void AssertProjectUsesIcon(string projectDirectory, string projectFile, string iconPath)
@@ -1089,7 +1090,7 @@ namespace Fluence.Wpf.Tests
 
         private static MainWindow CreateShownMainWindow()
         {
-            var window = new MainWindow
+            MainWindow window = new()
             {
                 Left = -20000,
                 Top = -20000,
@@ -1107,7 +1108,7 @@ namespace Fluence.Wpf.Tests
 
         private static Window CreateHostWindow(UIElement content)
         {
-            var window = new Window
+            Window window = new()
             {
                 Left = -20000,
                 Top = -20000,
@@ -1126,51 +1127,36 @@ namespace Fluence.Wpf.Tests
 
         private static object GetSelectedPageContent(MainWindow window)
         {
-            NavigationView nav = FindByName<NavigationView>(window, "DemoNav");
+            NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
             Assert.IsNotNull(nav, "DemoNav must exist.");
 
             Assert.IsNotNull(nav.SelectedItem as NavigationViewItem, "A NavigationViewItem should be selected.");
             return nav.Content;
         }
 
-        private static double GetVisualX(FrameworkElement element, Visual ancestor)
+        private static double? GetVisualX(FrameworkElement? element, Visual ancestor)
         {
-            return element.TransformToAncestor(ancestor).Transform(new Point(0, 0)).X;
+            return element?.TransformToAncestor(ancestor).Transform(new Point(0, 0)).X;
         }
 
-        private static double GetVisualY(FrameworkElement element, Visual ancestor)
+        private static double? GetVisualY(FrameworkElement? element, Visual ancestor)
         {
-            return element.TransformToAncestor(ancestor).Transform(new Point(0, 0)).Y;
+            return element?.TransformToAncestor(ancestor).Transform(new Point(0, 0)).Y;
         }
 
-        private static double GetVisualCenterX(FrameworkElement element, Visual ancestor)
+        private static double? GetVisualCenterX(FrameworkElement element, Visual ancestor)
         {
             return GetVisualX(element, ancestor) + (element.ActualWidth / 2.0);
         }
 
-        private static double GetVisualCenterY(FrameworkElement element, Visual ancestor)
+        private static double? GetVisualCenterY(FrameworkElement element, Visual ancestor)
         {
             return GetVisualY(element, ancestor) + (element.ActualHeight / 2.0);
         }
 
-        private static T GetFirstVisiblePanelChild<T>(Panel panel)
-            where T : FrameworkElement
-        {
-            foreach (UIElement child in panel.Children)
-            {
-                T typed = child as T;
-                if (typed != null && typed.Visibility == Visibility.Visible)
-                {
-                    return typed;
-                }
-            }
-
-            return null;
-        }
-
         private static void Drain(Dispatcher dispatcher)
         {
-            dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
+            _ = dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
         }
 
         private static void AssertGridCell(Grid grid, Predicate<UIElement> match, int expectedRow, int expectedColumn, string name)
@@ -1188,14 +1174,12 @@ namespace Fluence.Wpf.Tests
             Assert.Fail("Expected control was not found in the grid: " + name);
         }
 
-        private static T FindByName<T>(DependencyObject root, string name)
+        private static T? FindByName<T>(DependencyObject? root, string name)
             where T : FrameworkElement
         {
-            FrameworkElement element = root as FrameworkElement;
-            if (element != null)
+            if (root is FrameworkElement element)
             {
-                T named = element.FindName(name) as T;
-                if (named != null)
+                if (element.FindName(name) is T named)
                 {
                     return named;
                 }
@@ -1212,17 +1196,17 @@ namespace Fluence.Wpf.Tests
             return null;
         }
 
-        private static IEnumerable<T> FindAllVisualChildren<T>(DependencyObject root)
+        private static IEnumerable<T> FindAllVisualChildren<T>(DependencyObject? root)
             where T : DependencyObject
         {
-            var visited = new HashSet<DependencyObject>();
+            HashSet<DependencyObject> visited = [];
             foreach (T result in FindAllVisualChildren<T>(root, visited))
             {
                 yield return result;
             }
         }
 
-        private static IEnumerable<T> FindAllVisualChildren<T>(DependencyObject root, HashSet<DependencyObject> visited)
+        private static IEnumerable<T> FindAllVisualChildren<T>(DependencyObject? root, HashSet<DependencyObject> visited)
             where T : DependencyObject
         {
             if (root == null)
@@ -1235,15 +1219,14 @@ namespace Fluence.Wpf.Tests
                 yield break;
             }
 
-            visited.Add(root);
+            _ = visited.Add(root);
 
-            T current = root as T;
-            if (current != null)
+            if (root is T current)
             {
                 yield return current;
             }
 
-            int visualCount = 0;
+            int visualCount;
             try
             {
                 visualCount = VisualTreeHelper.GetChildrenCount(root);
@@ -1264,8 +1247,7 @@ namespace Fluence.Wpf.Tests
 
             foreach (object logicalChild in LogicalTreeHelper.GetChildren(root))
             {
-                DependencyObject logical = logicalChild as DependencyObject;
-                if (logical == null)
+                if (logicalChild is not DependencyObject logical)
                 {
                     continue;
                 }
@@ -1277,15 +1259,10 @@ namespace Fluence.Wpf.Tests
             }
         }
 
-        private static T FindVisualChild<T>(DependencyObject root)
+        private static T? FindVisualChild<T>(DependencyObject root)
             where T : DependencyObject
         {
-            foreach (T item in FindAllVisualChildren<T>(root))
-            {
-                return item;
-            }
-
-            return null;
+            return FindAllVisualChildren<T>(root).FirstOrDefault();
         }
 
         private static int CountVisualChildren<T>(DependencyObject root)
@@ -1300,17 +1277,11 @@ namespace Fluence.Wpf.Tests
             return count;
         }
 
-        private sealed class DemoPageExpectation
+        private sealed class DemoPageExpectation(string tag, Type pageType)
         {
-            public DemoPageExpectation(string tag, Type pageType)
-            {
-                Tag = tag;
-                PageType = pageType;
-            }
+            public string Tag { get; private set; } = tag;
 
-            public string Tag { get; private set; }
-
-            public Type PageType { get; private set; }
+            public Type PageType { get; private set; } = pageType;
         }
     }
 }

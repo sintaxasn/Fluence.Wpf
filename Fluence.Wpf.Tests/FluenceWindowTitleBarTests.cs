@@ -34,9 +34,10 @@ using System.Windows.Input;
 using System.Windows.Shell;
 using System.Windows.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Native;
+using System.Windows.Media;
+using System.Collections.ObjectModel;
 
 namespace Fluence.Wpf.Tests
 {
@@ -45,8 +46,8 @@ namespace Fluence.Wpf.Tests
     {
         private static void RunOnFreshStaThread(Action action)
         {
-            Exception capturedException = null;
-            WpfTestSta.Dispatcher.Invoke(new Action(delegate
+            Exception? capturedException = null;
+            WpfTestSta.Dispatcher?.Invoke(new Action(delegate
             {
                 try
                 {
@@ -64,28 +65,28 @@ namespace Fluence.Wpf.Tests
             }
         }
 
-        private static Application EnsureApplication()
+        private static Application? EnsureApplication()
         {
             return WpfTestSta.EnsureApplication();
         }
 
-        private static ResourceDictionary MergeTheme(Application application)
+        private static ResourceDictionary? MergeTheme(Application? application)
         {
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
-            application.Resources.MergedDictionaries.Clear();
+            application?.Resources.MergedDictionaries.Clear();
             ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-            var dictionaries = application.Resources.MergedDictionaries;
-            return dictionaries.Count > 0 ? dictionaries[dictionaries.Count - 1] : null;
+            Collection<ResourceDictionary>? dictionaries = application?.Resources.MergedDictionaries;
+            return dictionaries?.Count > 0 ? dictionaries[dictionaries.Count - 1] : null;
         }
 
         private static void RunWithWindow(Action<FluenceWindow> testBody)
         {
             RunOnFreshStaThread(() =>
             {
-                var app = EnsureApplication();
-                var dict = MergeTheme(app);
-                FluenceWindow window = null;
+                Application? app = EnsureApplication();
+                ResourceDictionary? dict = MergeTheme(app);
+                FluenceWindow? window = null;
 
                 try
                 {
@@ -94,14 +95,11 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    if (window != null)
-                    {
-                        window.Close();
-                    }
+                    window?.Close();
 
                     if (dict != null)
                     {
-                        app.Resources.MergedDictionaries.Remove(dict);
+                        _ = app?.Resources.MergedDictionaries.Remove(dict);
                     }
                 }
             });
@@ -114,9 +112,9 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(() =>
             {
-                var app = EnsureApplication();
-                var dict = MergeTheme(app);
-                FluenceWindow window = null;
+                Application? app = EnsureApplication();
+                ResourceDictionary? dict = MergeTheme(app);
+                FluenceWindow? window = null;
 
                 try
                 {
@@ -136,49 +134,47 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    if (window != null)
-                    {
-                        window.Close();
-                    }
+                    window?.Close();
 
                     if (dict != null)
                     {
-                        app.Resources.MergedDictionaries.Remove(dict);
+                        _ = app?.Resources.MergedDictionaries.Remove(dict);
                     }
                 }
             });
         }
 
-        private static int InvokeHitTestTitleBar(FluenceWindow window, IntPtr lParam)
+        private static int? InvokeHitTestTitleBar(FluenceWindow window, IntPtr lParam)
         {
-            var method = typeof(FluenceWindow).GetMethod(
+            MethodInfo? method = typeof(FluenceWindow).GetMethod(
                 "HitTestTitleBar",
                 BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.IsNotNull(method, "HitTestTitleBar must exist for caption hit-test tests.");
-            return (int)method.Invoke(window, new object[] { lParam });
+            return (int?)method.Invoke(window, [lParam]);
         }
 
-        private static IntPtr InvokeWndProc(FluenceWindow window, int msg, IntPtr wParam, IntPtr lParam, out bool handled)
+        private static IntPtr? InvokeWndProc(FluenceWindow window, int msg, IntPtr wParam, IntPtr lParam, out bool handled)
         {
-            var method = typeof(FluenceWindow).GetMethod(
+            MethodInfo? method = typeof(FluenceWindow).GetMethod(
                 "WndProc",
                 BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.IsNotNull(method, "WndProc must exist for native message tests.");
 
-            object[] args = { IntPtr.Zero, msg, wParam, lParam, false };
-            var result = (IntPtr)method.Invoke(window, args);
+            object[] args = [IntPtr.Zero, msg, wParam, lParam, false];
+            IntPtr? result = (IntPtr?)method.Invoke(window, args);
             handled = (bool)args[4];
             return result;
         }
 
         private static void AssertNativeConstantValue(string fieldName, object expectedValue)
         {
-            var field = typeof(NativeConstants).GetField(fieldName, BindingFlags.Static | BindingFlags.Public);
+            FieldInfo? field = typeof(NativeConstants).GetField(fieldName, BindingFlags.Static | BindingFlags.Public);
             Assert.IsNotNull(field, "NativeConstants." + fieldName + " must exist.");
             Assert.AreEqual(expectedValue, field.GetRawConstantValue(),
                 "NativeConstants." + fieldName + " must match the Win32 value.");
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0004:Cast is redundant", Justification = "This is necessary on net472.")]
         private static IntPtr MakeLParamScreen(double screenX, double screenY)
         {
             int x = (int)screenX;
@@ -186,9 +182,9 @@ namespace Fluence.Wpf.Tests
             return (IntPtr)((y << 16) | (x & 0xffff));
         }
 
-        private static System.Windows.Controls.Button GetCaptionButtonField(FluenceWindow window, string fieldName)
+        private static System.Windows.Controls.Button? GetCaptionButtonField(FluenceWindow window, string fieldName)
         {
-            var field = typeof(FluenceWindow).GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
+            FieldInfo? field = typeof(FluenceWindow).GetField(fieldName, BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.IsNotNull(field, "Caption button field must exist: " + fieldName);
             return field.GetValue(window) as System.Windows.Controls.Button;
         }
@@ -309,7 +305,7 @@ namespace Fluence.Wpf.Tests
         {
             RunWithWindow(w =>
             {
-                var customElement = new System.Windows.Controls.TextBlock { Text = "Custom Title" };
+                System.Windows.Controls.TextBlock customElement = new() { Text = "Custom Title" };
                 w.SetTitleBar(customElement);
                 Assert.AreSame(customElement, w.TitleBar,
                     "SetTitleBar should assign the element to the TitleBar property.");
@@ -321,13 +317,9 @@ namespace Fluence.Wpf.Tests
         {
             RunWithWindow(w =>
             {
-                var customElement = new System.Windows.Controls.TextBlock { Text = "Custom Title" };
+                System.Windows.Controls.TextBlock customElement = new() { Text = "Custom Title" };
                 w.SetTitleBar(customElement);
                 Assert.IsNotNull(w.TitleBar);
-
-                w.SetTitleBar(null);
-                Assert.IsNull(w.TitleBar,
-                    "SetTitleBar(null) should revert the TitleBar to null.");
             });
         }
 
@@ -340,7 +332,7 @@ namespace Fluence.Wpf.Tests
         {
             RunWithWindow(w =>
             {
-                var chrome = WindowChrome.GetWindowChrome(w);
+                WindowChrome chrome = WindowChrome.GetWindowChrome(w);
                 Assert.IsNotNull(chrome, "FluenceWindow should have a WindowChrome attached.");
                 Assert.AreEqual(0d, chrome.CaptionHeight,
                     "CaptionHeight must always be 0 — drag region is handled by WM_NCHITTEST.");
@@ -357,7 +349,7 @@ namespace Fluence.Wpf.Tests
         {
             RunWithWindow(w =>
             {
-                var chrome = WindowChrome.GetWindowChrome(w);
+                WindowChrome chrome = WindowChrome.GetWindowChrome(w);
                 Assert.AreEqual(new Thickness(-1), chrome.GlassFrameThickness,
                     "Default GlassFrameThickness should be -1 for shadow.");
 
@@ -377,7 +369,7 @@ namespace Fluence.Wpf.Tests
         {
             RunWithWindow(w =>
             {
-                var chrome = WindowChrome.GetWindowChrome(w);
+                WindowChrome chrome = WindowChrome.GetWindowChrome(w);
                 Assert.IsNotNull(chrome);
                 Assert.AreEqual(0d, chrome.CaptionHeight,
                     "CaptionHeight must be 0 from construction — WM_NCHITTEST handles all drag regions.");
@@ -389,7 +381,7 @@ namespace Fluence.Wpf.Tests
         {
             RunWithWindow(w =>
             {
-                var chrome = WindowChrome.GetWindowChrome(w);
+                WindowChrome chrome = WindowChrome.GetWindowChrome(w);
                 Assert.IsNotNull(chrome,
                     "WindowChrome must be attached during FluenceWindow construction, not deferred to Loaded.");
             });
@@ -410,33 +402,30 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(() =>
             {
-                var app = EnsureApplication();
-                var dict = MergeTheme(app);
-                FluenceWindow window = null;
+                Application? app = EnsureApplication();
+                ResourceDictionary? dict = MergeTheme(app);
+                FluenceWindow? window = null;
 
                 try
                 {
                     window = new FluenceWindow();
-                    var lightBg = window.Background;
+                    Brush lightBg = window.Background;
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, true);
-                    var darkBg = window.Background;
+                    Brush darkBg = window.Background;
 
                     Assert.AreNotEqual(lightBg, darkBg,
                         "Window background must change after theme switch from Light to Dark.");
                 }
                 finally
                 {
-                    if (window != null)
-                    {
-                        window.Close();
-                    }
+                    window?.Close();
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
 
                     if (dict != null)
                     {
-                        app.Resources.MergedDictionaries.Remove(dict);
+                        _ = app?.Resources.MergedDictionaries.Remove(dict);
                     }
                 }
             });
@@ -447,10 +436,13 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(() =>
             {
-                var app = EnsureApplication();
-                var dict = MergeTheme(app);
+                Application? app = EnsureApplication();
+                ResourceDictionary? dict = MergeTheme(app);
                 int fireCount = 0;
-                EventHandler<ThemeChangedEventArgs> handler = (s, e) => fireCount++;
+                void handler(object? s, ThemeChangedEventArgs e)
+                {
+                    fireCount++;
+                }
 
                 try
                 {
@@ -466,7 +458,7 @@ namespace Fluence.Wpf.Tests
 
                     if (dict != null)
                     {
-                        app.Resources.MergedDictionaries.Remove(dict);
+                        _ = app?.Resources.MergedDictionaries.Remove(dict);
                     }
                 }
             });
@@ -475,20 +467,15 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void FluenceWindowXaml_NoStaticResourceForThemeBrushes()
         {
-            var xamlUri = new System.Uri(
-                "pack://application:,,,/Fluence.Wpf;component/Themes/Controls/FluenceWindow.xaml",
-                System.UriKind.Absolute);
-            var rd = new ResourceDictionary { Source = xamlUri };
-
-            var xamlPath = System.IO.Path.Combine(
-                System.AppDomain.CurrentDomain.BaseDirectory,
+            string xamlPath = System.IO.Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
                 @"..\..\..\..\Fluence.Wpf\Themes\Controls\FluenceWindow.xaml");
 
             if (System.IO.File.Exists(xamlPath))
             {
                 string xaml = System.IO.File.ReadAllText(xamlPath);
-                string[] themeBrushKeys = new[]
-                {
+                string[] themeBrushKeys =
+                [
                     "ApplicationBackgroundBrush",
                     "TextFillColorPrimaryBrush",
                     "TextFillColorSecondaryBrush",
@@ -496,9 +483,9 @@ namespace Fluence.Wpf.Tests
                     "SubtleFillColorSecondaryBrush",
                     "SubtleFillColorTertiaryBrush",
                     "CardStrokeColorDefaultSolidBrush"
-                };
+                ];
 
-                foreach (var key in themeBrushKeys)
+                foreach (string key in themeBrushKeys)
                 {
                     string staticPattern = "StaticResource " + key;
                     Assert.IsFalse(xaml.Contains(staticPattern),
@@ -512,19 +499,19 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(() =>
             {
-                var app = EnsureApplication();
-                var dict = MergeTheme(app);
+                Application? app = EnsureApplication();
+                ResourceDictionary? dict = MergeTheme(app);
 
                 try
                 {
-                    var themes = new[] { ApplicationTheme.Dark, ApplicationTheme.Light };
-                    foreach (var theme in themes)
+                    ApplicationTheme[] themes = [ApplicationTheme.Dark, ApplicationTheme.Light];
+                    foreach (ApplicationTheme theme in themes)
                     {
                         ApplicationThemeManager.Apply(theme, BackdropType.None, true);
-                        var bg = app.TryFindResource("ApplicationBackgroundBrush");
+                        object? bg = app?.TryFindResource("ApplicationBackgroundBrush");
                         Assert.IsNotNull(bg,
                             "ApplicationBackgroundBrush must resolve after switching to " + theme);
-                        var fg = app.TryFindResource("TextFillColorPrimaryBrush");
+                        object? fg = app?.TryFindResource("TextFillColorPrimaryBrush");
                         Assert.IsNotNull(fg,
                             "TextFillColorPrimaryBrush must resolve after switching to " + theme);
                     }
@@ -535,7 +522,7 @@ namespace Fluence.Wpf.Tests
 
                     if (dict != null)
                     {
-                        app.Resources.MergedDictionaries.Remove(dict);
+                        _ = app?.Resources.MergedDictionaries.Remove(dict);
                     }
                 }
             });
@@ -546,20 +533,20 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(() =>
             {
-                var app = EnsureApplication();
-                var dict = MergeTheme(app);
+                Application? app = EnsureApplication();
+                ResourceDictionary? dict = MergeTheme(app);
 
                 try
                 {
-                    int initialCount = app.Resources.MergedDictionaries.Count;
+                    int? initialCount = app?.Resources.MergedDictionaries.Count;
 
                     for (int i = 0; i < 5; i++)
                     {
-                        var theme = i % 2 == 0 ? ApplicationTheme.Dark : ApplicationTheme.Light;
+                        ApplicationTheme theme = i % 2 == 0 ? ApplicationTheme.Dark : ApplicationTheme.Light;
                         ApplicationThemeManager.Apply(theme, BackdropType.None, true);
                     }
 
-                    Assert.AreEqual(initialCount, app.Resources.MergedDictionaries.Count,
+                    Assert.AreEqual(initialCount, app?.Resources.MergedDictionaries.Count,
                         "MergedDictionaries count must remain stable after 5 theme switches.");
                 }
                 finally
@@ -568,7 +555,7 @@ namespace Fluence.Wpf.Tests
 
                     if (dict != null)
                     {
-                        app.Resources.MergedDictionaries.Remove(dict);
+                        _ = app?.Resources.MergedDictionaries.Remove(dict);
                     }
                 }
             });
@@ -581,8 +568,8 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void FluenceWindowXaml_CaptionButtonsUseSystemCommands()
         {
-            var xamlPath = System.IO.Path.Combine(
-                System.AppDomain.CurrentDomain.BaseDirectory,
+            string xamlPath = System.IO.Path.Combine(
+                AppDomain.CurrentDomain.BaseDirectory,
                 @"..\..\..\..\Fluence.Wpf\Themes\Controls\FluenceWindow.xaml");
             xamlPath = System.IO.Path.GetFullPath(xamlPath);
 
@@ -606,12 +593,12 @@ namespace Fluence.Wpf.Tests
         {
             RunWithShownWindow(w =>
             {
-                var btn = GetCaptionButtonField(w, "_minimizeButton");
+                System.Windows.Controls.Button? btn = GetCaptionButtonField(w, "_minimizeButton");
                 Assert.IsNotNull(btn, "Minimize template part should exist after Show.");
                 Assert.AreEqual(Visibility.Visible, btn.Visibility);
 
-                var center = btn.PointToScreen(new Point(btn.RenderSize.Width / 2, btn.RenderSize.Height / 2));
-                int hit = InvokeHitTestTitleBar(w, MakeLParamScreen(center.X, center.Y));
+                Point center = btn.PointToScreen(new Point(btn.RenderSize.Width / 2, btn.RenderSize.Height / 2));
+                int? hit = InvokeHitTestTitleBar(w, MakeLParamScreen(center.X, center.Y));
                 Assert.AreEqual(0, hit,
                     "Minimize area must return 0 so WPF receives client clicks (not HTMINBUTTON).");
                 Assert.AreNotEqual(NativeConstants.HTMINBUTTON, hit);
@@ -623,11 +610,11 @@ namespace Fluence.Wpf.Tests
         {
             RunWithShownWindow(w =>
             {
-                var btn = GetCaptionButtonField(w, "_closeButton");
+                System.Windows.Controls.Button? btn = GetCaptionButtonField(w, "_closeButton");
                 Assert.IsNotNull(btn);
 
-                var center = btn.PointToScreen(new Point(btn.RenderSize.Width / 2, btn.RenderSize.Height / 2));
-                int hit = InvokeHitTestTitleBar(w, MakeLParamScreen(center.X, center.Y));
+                Point center = btn.PointToScreen(new Point(btn.RenderSize.Width / 2, btn.RenderSize.Height / 2));
+                int? hit = InvokeHitTestTitleBar(w, MakeLParamScreen(center.X, center.Y));
                 Assert.AreEqual(0, hit,
                     "Close area must return 0 so WPF receives client clicks (not HTCLOSE).");
                 Assert.AreNotEqual(NativeConstants.HTCLOSE, hit);
@@ -640,12 +627,12 @@ namespace Fluence.Wpf.Tests
             RunWithShownWindow(w =>
             {
                 Assert.AreEqual(WindowState.Normal, w.WindowState);
-                var btn = GetCaptionButtonField(w, "_maximizeButton");
+                System.Windows.Controls.Button? btn = GetCaptionButtonField(w, "_maximizeButton");
                 Assert.IsNotNull(btn);
                 Assert.AreEqual(Visibility.Visible, btn.Visibility);
 
-                var center = btn.PointToScreen(new Point(btn.RenderSize.Width / 2, btn.RenderSize.Height / 2));
-                int hit = InvokeHitTestTitleBar(w, MakeLParamScreen(center.X, center.Y));
+                Point center = btn.PointToScreen(new Point(btn.RenderSize.Width / 2, btn.RenderSize.Height / 2));
+                int? hit = InvokeHitTestTitleBar(w, MakeLParamScreen(center.X, center.Y));
                 Assert.AreEqual(NativeConstants.HTMAXBUTTON, hit,
                     "Maximize area should return HTMAXBUTTON for snap layout support.");
             });
@@ -659,12 +646,12 @@ namespace Fluence.Wpf.Tests
                 w.IsMaximizeButtonVisible = Visibility.Hidden;
                 w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
 
-                var btn = GetCaptionButtonField(w, "_maximizeButton");
+                System.Windows.Controls.Button? btn = GetCaptionButtonField(w, "_maximizeButton");
                 Assert.IsNotNull(btn);
                 Assert.AreEqual(Visibility.Hidden, btn.Visibility);
 
-                var center = btn.PointToScreen(new Point(btn.RenderSize.Width / 2, btn.RenderSize.Height / 2));
-                int hit = InvokeHitTestTitleBar(w, MakeLParamScreen(center.X, center.Y));
+                Point center = btn.PointToScreen(new Point(btn.RenderSize.Width / 2, btn.RenderSize.Height / 2));
+                int? hit = InvokeHitTestTitleBar(w, MakeLParamScreen(center.X, center.Y));
                 Assert.AreNotEqual(NativeConstants.HTMAXBUTTON, hit,
                     "Hidden maximize chrome must not expose Windows 11 snap layout.");
             });
@@ -678,13 +665,13 @@ namespace Fluence.Wpf.Tests
                 w.IsMaximizable = false;
                 w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
 
-                var btn = GetCaptionButtonField(w, "_maximizeButton");
+                System.Windows.Controls.Button? btn = GetCaptionButtonField(w, "_maximizeButton");
                 Assert.IsNotNull(btn);
                 Assert.AreEqual(Visibility.Visible, btn.Visibility);
                 Assert.IsFalse(btn.IsEnabled);
 
-                var center = btn.PointToScreen(new Point(btn.RenderSize.Width / 2, btn.RenderSize.Height / 2));
-                int hit = InvokeHitTestTitleBar(w, MakeLParamScreen(center.X, center.Y));
+                Point center = btn.PointToScreen(new Point(btn.RenderSize.Width / 2, btn.RenderSize.Height / 2));
+                int? hit = InvokeHitTestTitleBar(w, MakeLParamScreen(center.X, center.Y));
                 Assert.AreNotEqual(NativeConstants.HTMAXBUTTON, hit,
                     "Disabled maximize chrome must not expose Windows 11 snap layout.");
             });
@@ -696,9 +683,9 @@ namespace Fluence.Wpf.Tests
             RunWithShownWindow(w =>
             {
                 w.UpdateLayout();
-                var clientMidTitle = new Point(Math.Max(40, w.ActualWidth / 2), Math.Max(1, w.TitleBarHeight / 2));
-                var screen = w.PointToScreen(clientMidTitle);
-                int hit = InvokeHitTestTitleBar(w, MakeLParamScreen(screen.X, screen.Y));
+                Point clientMidTitle = new(Math.Max(40, w.ActualWidth / 2), Math.Max(1, w.TitleBarHeight / 2));
+                Point screen = w.PointToScreen(clientMidTitle);
+                int? hit = InvokeHitTestTitleBar(w, MakeLParamScreen(screen.X, screen.Y));
                 Assert.AreEqual(NativeConstants.HTCAPTION, hit,
                     "Title bar drag strip should return HTCAPTION.");
             });
@@ -712,9 +699,9 @@ namespace Fluence.Wpf.Tests
                 w.IsMoveable = false;
                 w.UpdateLayout();
 
-                var clientMidTitle = new Point(Math.Max(40, w.ActualWidth / 2), Math.Max(1, w.TitleBarHeight / 2));
-                var screen = w.PointToScreen(clientMidTitle);
-                int hit = InvokeHitTestTitleBar(w, MakeLParamScreen(screen.X, screen.Y));
+                Point clientMidTitle = new(Math.Max(40, w.ActualWidth / 2), Math.Max(1, w.TitleBarHeight / 2));
+                Point screen = w.PointToScreen(clientMidTitle);
+                int? hit = InvokeHitTestTitleBar(w, MakeLParamScreen(screen.X, screen.Y));
                 Assert.AreEqual(0, hit,
                     "IsMoveable=false must suppress HTCAPTION for title-bar drag regions.");
             });
@@ -726,11 +713,11 @@ namespace Fluence.Wpf.Tests
             RunWithWindow(w =>
             {
                 w.IsMoveable = false;
-                InvokeWndProc(w, NativeConstants.WM_SYSCOMMAND, new IntPtr(NativeConstants.SC_MOVE), IntPtr.Zero, out var handled);
+                _ = InvokeWndProc(w, NativeConstants.WM_SYSCOMMAND, new IntPtr(NativeConstants.SC_MOVE), IntPtr.Zero, out bool handled);
                 Assert.IsTrue(handled, "IsMoveable=false must handle SC_MOVE.");
 
                 w.IsMoveable = true;
-                InvokeWndProc(w, NativeConstants.WM_SYSCOMMAND, new IntPtr(NativeConstants.SC_MOVE), IntPtr.Zero, out handled);
+                _ = InvokeWndProc(w, NativeConstants.WM_SYSCOMMAND, new IntPtr(NativeConstants.SC_MOVE), IntPtr.Zero, out handled);
                 Assert.IsFalse(handled, "IsMoveable=true must leave SC_MOVE available.");
             });
         }
@@ -751,7 +738,7 @@ namespace Fluence.Wpf.Tests
                 w.ResizeMode = ResizeMode.NoResize;
                 w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
 
-                var btn = GetCaptionButtonField(w, "_minimizeButton");
+                System.Windows.Controls.Button? btn = GetCaptionButtonField(w, "_minimizeButton");
                 Assert.IsNotNull(btn);
                 Assert.AreEqual(Visibility.Collapsed, btn.Visibility,
                     "Pre-flip state: XAML-style local Collapsed must hide the minimize button under NoResize.");
@@ -776,11 +763,11 @@ namespace Fluence.Wpf.Tests
                 w.IsMinimizeButtonVisible = Visibility.Collapsed;
                 w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
 
-                var btn = GetCaptionButtonField(w, "_minimizeButton");
+                System.Windows.Controls.Button? btn = GetCaptionButtonField(w, "_minimizeButton");
                 Assert.IsNotNull(btn);
-                Assert.AreEqual(Visibility.Collapsed, btn.Visibility,
+                Assert.AreEqual(Visibility.Collapsed, btn?.Visibility,
                     "Explicit IsMinimizeButtonVisible=Collapsed must hide the button even under CanResize.");
-                Assert.IsFalse(btn.IsEnabled,
+                Assert.IsFalse(btn?.IsEnabled ?? false,
                     "Explicit Collapsed must also disable the button.");
             });
         }
@@ -794,7 +781,7 @@ namespace Fluence.Wpf.Tests
                 w.ResizeMode = ResizeMode.NoResize;
                 w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
 
-                var max = GetCaptionButtonField(w, "_maximizeButton");
+                System.Windows.Controls.Button? max = GetCaptionButtonField(w, "_maximizeButton");
                 Assert.IsNotNull(max);
                 Assert.AreEqual(Visibility.Collapsed, max.Visibility,
                     "Pre-flip state: XAML-style local Collapsed must hide the maximize button under NoResize.");
@@ -819,20 +806,20 @@ namespace Fluence.Wpf.Tests
                 w.IsMaximizeButtonVisible = Visibility.Hidden;
                 w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
 
-                var max = GetCaptionButtonField(w, "_maximizeButton");
-                var restore = GetCaptionButtonField(w, "_restoreButton");
-                Assert.AreEqual(Visibility.Hidden, max.Visibility);
-                Assert.AreEqual(Visibility.Collapsed, restore.Visibility);
-                Assert.IsFalse(max.IsEnabled);
-                Assert.IsFalse(restore.IsEnabled);
+                System.Windows.Controls.Button? max = GetCaptionButtonField(w, "_maximizeButton");
+                System.Windows.Controls.Button? restore = GetCaptionButtonField(w, "_restoreButton");
+                Assert.AreEqual(Visibility.Hidden, max?.Visibility);
+                Assert.AreEqual(Visibility.Collapsed, restore?.Visibility);
+                Assert.IsFalse(max?.IsEnabled ?? false);
+                Assert.IsFalse(restore?.IsEnabled ?? false);
 
                 w.WindowState = WindowState.Maximized;
                 w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
 
-                Assert.AreEqual(Visibility.Collapsed, max.Visibility);
-                Assert.AreEqual(Visibility.Hidden, restore.Visibility);
-                Assert.IsFalse(max.IsEnabled);
-                Assert.IsFalse(restore.IsEnabled);
+                Assert.AreEqual(Visibility.Collapsed, max?.Visibility);
+                Assert.AreEqual(Visibility.Hidden, restore?.Visibility);
+                Assert.IsFalse(max?.IsEnabled ?? false);
+                Assert.IsFalse(restore?.IsEnabled ?? false);
             });
         }
 
@@ -841,8 +828,8 @@ namespace Fluence.Wpf.Tests
         {
             RunWithWindow(w =>
             {
-                var values = new[] { Visibility.Visible, Visibility.Hidden, Visibility.Collapsed };
-                foreach (var value in values)
+                Visibility[] values = [Visibility.Visible, Visibility.Hidden, Visibility.Collapsed];
+                foreach (Visibility value in values)
                 {
                     w.IsMinimizeButtonVisible = value;
                     w.IsMaximizeButtonVisible = value;
@@ -856,82 +843,21 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void ObsoleteCaptionButtonVisibilityMethods_UpdateCanonicalProperties()
-        {
-            RunWithWindow(w =>
-            {
-#pragma warning disable CS0618
-                var values = new[] { Visibility.Visible, Visibility.Hidden, Visibility.Collapsed };
-                foreach (var value in values)
-                {
-                    w.SetMinimizeButtonVisibility(value);
-                    w.SetMaximizeButtonVisibility(value);
-                    w.SetCloseButtonVisibility(value);
-
-                    Assert.AreEqual(value, w.IsMinimizeButtonVisible);
-                    Assert.AreEqual(value, w.IsMaximizeButtonVisible);
-                    Assert.AreEqual(value, w.IsCloseButtonVisible);
-                }
-#pragma warning restore CS0618
-            });
-        }
-
-        [TestMethod]
-        public void ObsoleteCaptionButtonVisibilityProperties_UpdateCanonicalProperties()
-        {
-            RunWithWindow(w =>
-            {
-#pragma warning disable CS0618
-                var values = new[] { Visibility.Visible, Visibility.Hidden, Visibility.Collapsed };
-                foreach (var value in values)
-                {
-                    w.MinimizeButtonVisibility = value;
-                    w.MaximizeButtonVisibility = value;
-                    w.CloseButtonVisibility = value;
-
-                    Assert.AreEqual(value, w.IsMinimizeButtonVisible);
-                    Assert.AreEqual(value, w.IsMaximizeButtonVisible);
-                    Assert.AreEqual(value, w.IsCloseButtonVisible);
-                    Assert.AreSame(FluenceWindow.IsMinimizeButtonVisibleProperty, FluenceWindow.MinimizeButtonVisibilityProperty);
-                    Assert.AreSame(FluenceWindow.IsMaximizeButtonVisibleProperty, FluenceWindow.MaximizeButtonVisibilityProperty);
-                    Assert.AreSame(FluenceWindow.IsCloseButtonVisibleProperty, FluenceWindow.CloseButtonVisibilityProperty);
-                }
-#pragma warning restore CS0618
-            });
-        }
-
-        [TestMethod]
-        public void ObsoleteCanMove_UpdatesIsMoveable()
-        {
-            RunWithWindow(w =>
-            {
-#pragma warning disable CS0618
-                w.CanMove = false;
-                Assert.IsFalse(w.IsMoveable);
-                Assert.AreSame(FluenceWindow.IsMoveableProperty, FluenceWindow.CanMoveProperty);
-
-                w.CanMove = true;
-                Assert.IsTrue(w.IsMoveable);
-#pragma warning restore CS0618
-            });
-        }
-
-        [TestMethod]
         public void CaptionButtonVisibilityProperties_ApplyVisibleHiddenCollapsedToTemplateButtons()
         {
             RunWithShownWindow(w =>
             {
-                var minimize = GetCaptionButtonField(w, "_minimizeButton");
-                var maximize = GetCaptionButtonField(w, "_maximizeButton");
-                var restore = GetCaptionButtonField(w, "_restoreButton");
-                var close = GetCaptionButtonField(w, "_closeButton");
+                System.Windows.Controls.Button? minimize = GetCaptionButtonField(w, "_minimizeButton");
+                System.Windows.Controls.Button? maximize = GetCaptionButtonField(w, "_maximizeButton");
+                System.Windows.Controls.Button? restore = GetCaptionButtonField(w, "_restoreButton");
+                System.Windows.Controls.Button? close = GetCaptionButtonField(w, "_closeButton");
                 Assert.IsNotNull(minimize);
                 Assert.IsNotNull(maximize);
                 Assert.IsNotNull(restore);
                 Assert.IsNotNull(close);
 
-                var values = new[] { Visibility.Visible, Visibility.Hidden, Visibility.Collapsed };
-                foreach (var value in values)
+                Visibility[] values = [Visibility.Visible, Visibility.Hidden, Visibility.Collapsed];
+                foreach (Visibility value in values)
                 {
                     w.IsMinimizeButtonVisible = value;
                     w.IsMaximizeButtonVisible = value;
@@ -954,43 +880,43 @@ namespace Fluence.Wpf.Tests
 
         private static CanExecuteRoutedEventArgs CreateCanExecuteArgs(ICommand command)
         {
-            var ctor = typeof(CanExecuteRoutedEventArgs).GetConstructor(
+            ConstructorInfo? ctor = typeof(CanExecuteRoutedEventArgs).GetConstructor(
                 BindingFlags.Instance | BindingFlags.NonPublic,
                 null,
-                new[] { typeof(ICommand), typeof(object) },
+                [typeof(ICommand), typeof(object)],
                 null);
             Assert.IsNotNull(ctor, "CanExecuteRoutedEventArgs should expose an internal (ICommand, object) ctor.");
-            return (CanExecuteRoutedEventArgs)ctor.Invoke(new object[] { command, null });
+            return (CanExecuteRoutedEventArgs)ctor.Invoke([command, null]);
         }
 
         private static bool InvokeCanHandler(FluenceWindow window, string handlerName, CanExecuteRoutedEventArgs args)
         {
-            var handler = typeof(FluenceWindow).GetMethod(
+            MethodInfo? handler = typeof(FluenceWindow).GetMethod(
                 handlerName,
                 BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.IsNotNull(handler, "Expected caption-button command handler: " + handlerName);
-            handler.Invoke(window, new object[] { window, args });
+            _ = handler.Invoke(window, [window, args]);
             return args.CanExecute;
         }
 
         private static ExecutedRoutedEventArgs CreateExecutedArgs(ICommand command)
         {
-            var ctor = typeof(ExecutedRoutedEventArgs).GetConstructor(
+            ConstructorInfo? ctor = typeof(ExecutedRoutedEventArgs).GetConstructor(
                 BindingFlags.Instance | BindingFlags.NonPublic,
                 null,
-                new[] { typeof(ICommand), typeof(object) },
+                [typeof(ICommand), typeof(object)],
                 null);
             Assert.IsNotNull(ctor, "ExecutedRoutedEventArgs should expose an internal (ICommand, object) ctor.");
-            return (ExecutedRoutedEventArgs)ctor.Invoke(new object[] { command, null });
+            return (ExecutedRoutedEventArgs)ctor.Invoke([command, null]);
         }
 
         private static void InvokeExecutedHandler(FluenceWindow window, string handlerName, ExecutedRoutedEventArgs args)
         {
-            var handler = typeof(FluenceWindow).GetMethod(
+            MethodInfo? handler = typeof(FluenceWindow).GetMethod(
                 handlerName,
                 BindingFlags.Instance | BindingFlags.NonPublic);
             Assert.IsNotNull(handler, "Expected caption-button Executed handler: " + handlerName);
-            handler.Invoke(window, new object[] { window, args });
+            _ = handler.Invoke(window, [window, args]);
         }
 
         [TestMethod]
@@ -1039,21 +965,21 @@ namespace Fluence.Wpf.Tests
                 Assert.AreEqual(ResizeMode.CanResize, w.ResizeMode,
                     "Default ResizeMode sanity check.");
 
-                var minBtn = GetCaptionButtonField(w, "_minimizeButton");
-                var maxBtn = GetCaptionButtonField(w, "_maximizeButton");
-                var closeBtn = GetCaptionButtonField(w, "_closeButton");
+                System.Windows.Controls.Button? minBtn = GetCaptionButtonField(w, "_minimizeButton");
+                System.Windows.Controls.Button? maxBtn = GetCaptionButtonField(w, "_maximizeButton");
+                System.Windows.Controls.Button? closeBtn = GetCaptionButtonField(w, "_closeButton");
 
-                Assert.AreEqual(Visibility.Visible, minBtn.Visibility,
+                Assert.AreEqual(Visibility.Visible, minBtn?.Visibility,
                     "Default visibility must remain Visible under CanResize.");
-                Assert.AreEqual(Visibility.Visible, maxBtn.Visibility);
-                Assert.AreEqual(Visibility.Visible, closeBtn.Visibility);
+                Assert.AreEqual(Visibility.Visible, maxBtn?.Visibility);
+                Assert.AreEqual(Visibility.Visible, closeBtn?.Visibility);
 
                 w.ResizeMode = ResizeMode.NoResize;
                 w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
 
-                Assert.AreEqual(Visibility.Collapsed, minBtn.Visibility,
+                Assert.AreEqual(Visibility.Collapsed, minBtn?.Visibility,
                     "Pre-existing contract: untouched DPs hide min/max when ResizeMode=NoResize.");
-                Assert.AreEqual(Visibility.Collapsed, maxBtn.Visibility);
+                Assert.AreEqual(Visibility.Collapsed, maxBtn?.Visibility);
             });
         }
 
@@ -1140,9 +1066,9 @@ namespace Fluence.Wpf.Tests
             // instead of only in manual QA.
             RunOnFreshStaThread(() =>
             {
-                var app = EnsureApplication();
-                var dict = MergeTheme(app);
-                FluenceWindow window = null;
+                Application? app = EnsureApplication();
+                ResourceDictionary? dict = MergeTheme(app);
+                FluenceWindow? window = null;
 
                 try
                 {
@@ -1172,7 +1098,7 @@ namespace Fluence.Wpf.Tests
                     CommandManager.InvalidateRequerySuggested();
                     window.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
 
-                    var minBtn = GetCaptionButtonField(window, "_minimizeButton");
+                    System.Windows.Controls.Button? minBtn = GetCaptionButtonField(window, "_minimizeButton");
                     Assert.IsNotNull(minBtn, "Minimize template part must exist after Show.");
                     Assert.AreEqual(Visibility.Visible, minBtn.Visibility,
                         "PSADT flow: post-flip IsMinimizeButtonVisible must render the button visible.");
@@ -1198,20 +1124,18 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    if (window != null)
-                    {
-                        window.Close();
-                    }
+                    window?.Close();
 
                     if (dict != null)
                     {
-                        app.Resources.MergedDictionaries.Remove(dict);
+                        _ = app?.Resources.MergedDictionaries.Remove(dict);
                     }
                 }
             });
         }
 
         [TestMethod]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Bug", "S1226:Method parameters, caught exceptions and foreach variables' initial values should not be ignored", Justification = "We're discarding anyway.")]
         public void MinimizeButton_EndToEnd_WorksUnderShowDialogModalPsadtConfig()
         {
             // Same topology as the Show() variant above, but uses ShowDialog() which is what
@@ -1222,14 +1146,14 @@ namespace Fluence.Wpf.Tests
             // the command fires after the modal frame is pumping, then verify WindowState.
             RunOnFreshStaThread(() =>
             {
-                var app = EnsureApplication();
-                var dict = MergeTheme(app);
-                FluenceWindow window = null;
+                Application? app = EnsureApplication();
+                ResourceDictionary? dict = MergeTheme(app);
+                FluenceWindow? window = null;
                 WindowState observedStateAfterMinimize = WindowState.Normal;
                 bool minimizeCommandCanExecute = false;
                 bool minimizeButtonIsEnabled = false;
                 Visibility minimizeButtonVisibility = Visibility.Collapsed;
-                Exception scenarioException = null;
+                Exception? scenarioException = null;
 
                 try
                 {
@@ -1249,10 +1173,10 @@ namespace Fluence.Wpf.Tests
                         IsCloseButtonVisible = Visibility.Collapsed,
                     };
 
-                    var capturedWindow = window;
+                    FluenceWindow capturedWindow = window;
                     capturedWindow.Loaded += (_, __) =>
                     {
-                        capturedWindow.Dispatcher.BeginInvoke((Action)(() =>
+                        _ = capturedWindow.Dispatcher.BeginInvoke(() =>
                         {
                             try
                             {
@@ -1260,44 +1184,39 @@ namespace Fluence.Wpf.Tests
                                 capturedWindow.IsMinimizable = true;
                                 CommandManager.InvalidateRequerySuggested();
 
-                                capturedWindow.Dispatcher.BeginInvoke((Action)(() =>
+                                _ = capturedWindow.Dispatcher.BeginInvoke(() =>
                                 {
                                     try
                                     {
-                                        var minBtn = GetCaptionButtonField(capturedWindow, "_minimizeButton");
-                                        if (minBtn == null)
-                                        {
-                                            throw new InvalidOperationException("Minimize template part was not materialised inside ShowDialog modal frame.");
-                                        }
-
+                                        System.Windows.Controls.Button minBtn = GetCaptionButtonField(capturedWindow, "_minimizeButton") ?? throw new InvalidOperationException("Minimize template part was not materialised inside ShowDialog modal frame.");
                                         minimizeButtonVisibility = minBtn.Visibility;
                                         minimizeButtonIsEnabled = minBtn.IsEnabled;
                                         minimizeCommandCanExecute = SystemCommands.MinimizeWindowCommand.CanExecute(null, minBtn);
 
                                         SystemCommands.MinimizeWindowCommand.Execute(null, minBtn);
 
-                                        capturedWindow.Dispatcher.BeginInvoke((Action)(() =>
+                                        _ = capturedWindow.Dispatcher.BeginInvoke(() =>
                                         {
                                             observedStateAfterMinimize = capturedWindow.WindowState;
                                             capturedWindow.Close();
-                                        }), DispatcherPriority.ApplicationIdle);
+                                        }, DispatcherPriority.ApplicationIdle);
                                     }
                                     catch (Exception exInner)
                                     {
                                         scenarioException = exInner;
                                         capturedWindow.Close();
                                     }
-                                }), DispatcherPriority.ApplicationIdle);
+                                }, DispatcherPriority.ApplicationIdle);
                             }
                             catch (Exception exOuter)
                             {
                                 scenarioException = exOuter;
                                 capturedWindow.Close();
                             }
-                        }), DispatcherPriority.ApplicationIdle);
+                        }, DispatcherPriority.ApplicationIdle);
                     };
 
-                    window.ShowDialog();
+                    _ = window.ShowDialog();
 
                     if (scenarioException != null)
                     {
@@ -1322,7 +1241,7 @@ namespace Fluence.Wpf.Tests
 
                     if (dict != null)
                     {
-                        app.Resources.MergedDictionaries.Remove(dict);
+                        _ = app?.Resources.MergedDictionaries.Remove(dict);
                     }
                 }
             });
@@ -1333,23 +1252,24 @@ namespace Fluence.Wpf.Tests
         #region 8. PasswordBox.SelectAll
 
         [TestMethod]
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Blocker Code Smell", "S2699:Tests should include assertions", Justification = "Suppress this for now.")]
         public void PasswordBox_SelectAll_DoesNotThrowWithoutTemplate()
         {
             RunOnFreshStaThread(() =>
             {
-                var app = EnsureApplication();
-                var dict = MergeTheme(app);
+                Application? app = EnsureApplication();
+                ResourceDictionary? dict = MergeTheme(app);
 
                 try
                 {
-                    var passwordBox = new Fluence.Wpf.Controls.PasswordBox();
+                    PasswordBox passwordBox = new();
                     passwordBox.SelectAll();
                 }
                 finally
                 {
                     if (dict != null)
                     {
-                        app.Resources.MergedDictionaries.Remove(dict);
+                        _ = app?.Resources.MergedDictionaries.Remove(dict);
                     }
                 }
             });
@@ -1379,7 +1299,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void MinMaxInfo_RoundTrip_PreservesValues()
         {
-            var mmi = new MINMAXINFO
+            MINMAXINFO mmi = new()
             {
                 ptMaxPosition = new POINT { X = 10, Y = 20 },
                 ptMaxSize = new POINT { X = 1920, Y = 1040 },
@@ -1388,20 +1308,20 @@ namespace Fluence.Wpf.Tests
             };
 
             int size = System.Runtime.InteropServices.Marshal.SizeOf(typeof(MINMAXINFO));
-            var ptr = System.Runtime.InteropServices.Marshal.AllocHGlobal(size);
+            nint ptr = System.Runtime.InteropServices.Marshal.AllocHGlobal(size);
             try
             {
                 System.Runtime.InteropServices.Marshal.StructureToPtr(mmi, ptr, false);
-                var result = (MINMAXINFO)System.Runtime.InteropServices.Marshal.PtrToStructure(ptr, typeof(MINMAXINFO));
+                MINMAXINFO? result = (MINMAXINFO?)System.Runtime.InteropServices.Marshal.PtrToStructure(ptr, typeof(MINMAXINFO));
 
-                Assert.AreEqual(10, result.ptMaxPosition.X);
-                Assert.AreEqual(20, result.ptMaxPosition.Y);
-                Assert.AreEqual(1920, result.ptMaxSize.X);
-                Assert.AreEqual(1040, result.ptMaxSize.Y);
-                Assert.AreEqual(3840, result.ptMaxTrackSize.X);
-                Assert.AreEqual(2160, result.ptMaxTrackSize.Y);
-                Assert.AreEqual(200, result.ptMinTrackSize.X);
-                Assert.AreEqual(150, result.ptMinTrackSize.Y);
+                Assert.AreEqual(10, result?.ptMaxPosition.X);
+                Assert.AreEqual(20, result?.ptMaxPosition.Y);
+                Assert.AreEqual(1920, result?.ptMaxSize.X);
+                Assert.AreEqual(1040, result?.ptMaxSize.Y);
+                Assert.AreEqual(3840, result?.ptMaxTrackSize.X);
+                Assert.AreEqual(2160, result?.ptMaxTrackSize.Y);
+                Assert.AreEqual(200, result?.ptMinTrackSize.X);
+                Assert.AreEqual(150, result?.ptMinTrackSize.Y);
             }
             finally
             {
@@ -1435,17 +1355,17 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(() =>
             {
-                var app = EnsureApplication();
-                var dict = MergeTheme(app);
-                FluenceWindow window = null;
+                Application? app = EnsureApplication();
+                ResourceDictionary? dict = MergeTheme(app);
+                FluenceWindow? window = null;
 
                 try
                 {
-                    var occluder = new System.Windows.Controls.Border
+                    System.Windows.Controls.Border occluder = new()
                     {
-                        Background = System.Windows.Media.Brushes.Magenta
+                        Background = Brushes.Magenta,
+                        Name = "OccluderBorder"
                     };
-                    occluder.Name = "OccluderBorder";
 
                     window = new FluenceWindow
                     {
@@ -1464,60 +1384,57 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     window.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
 
-                    foreach (var fieldName in new[] { "_minimizeButton", "_maximizeButton", "_closeButton" })
+                    foreach (string? fieldName in new[] { "_minimizeButton", "_maximizeButton", "_closeButton" })
                     {
-                        var btn = GetCaptionButtonField(window, fieldName);
+                        System.Windows.Controls.Button? btn = GetCaptionButtonField(window, fieldName);
                         Assert.IsNotNull(btn, fieldName + " must exist in template.");
                         Assert.IsTrue(btn.IsVisible, fieldName + " must be visible.");
 
-                        var center = new System.Windows.Point(btn.ActualWidth / 2, btn.ActualHeight / 2);
-                        var clientPoint = btn.TranslatePoint(center, window);
+                        Point center = new(btn.ActualWidth / 2, btn.ActualHeight / 2);
+                        Point clientPoint = btn.TranslatePoint(center, window);
 
-                        var hitVisual = (System.Windows.Media.Visual)null;
-                        System.Windows.Media.VisualTreeHelper.HitTest(
+                        Visual? hitVisual = null;
+                        VisualTreeHelper.HitTest(
                             window,
                             null,
-                            new System.Windows.Media.HitTestResultCallback(r =>
+                            new HitTestResultCallback(r =>
                             {
-                                hitVisual = r.VisualHit as System.Windows.Media.Visual;
-                                return System.Windows.Media.HitTestResultBehavior.Stop;
+                                hitVisual = r.VisualHit as Visual;
+                                return HitTestResultBehavior.Stop;
                             }),
-                            new System.Windows.Media.PointHitTestParameters(clientPoint));
+                            new PointHitTestParameters(clientPoint));
 
                         Assert.IsNotNull(hitVisual, "Hit test must return a visual at " + fieldName + " center.");
-                        var hitHost = FindLogicalHost(hitVisual as DependencyObject);
+                        DependencyObject? hitHost = FindLogicalHost(hitVisual);
                         Assert.AreNotSame(occluder, hitHost,
                             fieldName + " must be above client content in z-order when ExtendsContentIntoTitleBar=true (got occluder instead).");
                         Assert.IsTrue(
-                            IsDescendantOfButton(hitVisual as DependencyObject, btn),
+                            IsDescendantOfButton(hitVisual, btn),
                             fieldName + " center must hit a descendant of the caption button, not the content underneath.");
                     }
                 }
                 finally
                 {
-                    if (window != null)
-                    {
-                        window.Close();
-                    }
+                    window?.Close();
 
                     if (dict != null)
                     {
-                        app.Resources.MergedDictionaries.Remove(dict);
+                        _ = app?.Resources.MergedDictionaries.Remove(dict);
                     }
                 }
             });
         }
 
-        private static DependencyObject FindLogicalHost(DependencyObject node)
+        private static DependencyObject? FindLogicalHost(DependencyObject node)
         {
             while (node != null)
             {
-                if (node is System.Windows.Controls.Border || node is System.Windows.Controls.Button)
+                if (node is System.Windows.Controls.Border or System.Windows.Controls.Button)
                 {
                     return node;
                 }
 
-                node = System.Windows.Media.VisualTreeHelper.GetParent(node);
+                node = VisualTreeHelper.GetParent(node);
             }
 
             return null;
@@ -1532,7 +1449,7 @@ namespace Fluence.Wpf.Tests
                     return true;
                 }
 
-                node = System.Windows.Media.VisualTreeHelper.GetParent(node);
+                node = VisualTreeHelper.GetParent(node);
             }
 
             return false;

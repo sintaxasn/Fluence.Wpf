@@ -31,9 +31,9 @@ using System.Runtime.ExceptionServices;
 using System.Windows;
 using System.Windows.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf;
 using FluenceListView = Fluence.Wpf.Controls.ListView;
 using WpfListViewItem = System.Windows.Controls.ListViewItem;
+using System.Collections.ObjectModel;
 
 namespace Fluence.Wpf.Tests
 {
@@ -42,8 +42,8 @@ namespace Fluence.Wpf.Tests
     {
         private static void RunOnFreshStaThread(Action action)
         {
-            Exception capturedException = null;
-            WpfTestSta.Dispatcher.Invoke(new Action(delegate
+            Exception? capturedException = null;
+            WpfTestSta.Dispatcher?.Invoke(new Action(delegate
             {
                 try
                 {
@@ -61,32 +61,32 @@ namespace Fluence.Wpf.Tests
             }
         }
 
-        private static Application EnsureApplication()
+        private static Application? EnsureApplication()
         {
             return WpfTestSta.EnsureApplication();
         }
 
-        private static ResourceDictionary MergeGenericDictionary(Application application)
+        private static ResourceDictionary? MergeGenericDictionary(Application? application)
         {
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
-            application.Resources.MergedDictionaries.Clear();
+            application?.Resources.MergedDictionaries.Clear();
             ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-            var dictionaries = application.Resources.MergedDictionaries;
-            var genericDictionary = dictionaries.Count > 0 ? dictionaries[dictionaries.Count - 1] : null;
+            Collection<ResourceDictionary>? dictionaries = application?.Resources.MergedDictionaries;
+            ResourceDictionary? genericDictionary = dictionaries?.Count > 0 ? dictionaries[dictionaries.Count - 1] : null;
 
-            var demoShared = new ResourceDictionary
+            ResourceDictionary demoShared = new()
             {
                 Source = new Uri("/Fluence.Wpf.Demo;component/Resources/DemoSharedStyles.xaml", UriKind.Relative)
             };
-            application.Resources.MergedDictionaries.Add(demoShared);
+            application?.Resources.MergedDictionaries.Add(demoShared);
 
             return genericDictionary;
         }
 
         private static void DrainDispatcher(Dispatcher dispatcher)
         {
-            dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
+            _ = dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
         }
 
         [TestMethod]
@@ -94,7 +94,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(() =>
             {
-                var lv = new FluenceListView();
+                FluenceListView lv = new();
                 Assert.IsTrue(lv.IsItemSelectable);
             });
         }
@@ -104,13 +104,13 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-                var window = new Window();
-                var lv = new FluenceListView { Width = 260, Height = 120 };
-                lv.Items.Add("a");
-                lv.Items.Add("b");
+                Window window = new();
+                FluenceListView lv = new() { Width = 260, Height = 120 };
+                _ = lv.Items.Add("a");
+                _ = lv.Items.Add("b");
 
                 try
                 {
@@ -131,7 +131,7 @@ namespace Fluence.Wpf.Tests
                     window.Close();
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -142,17 +142,17 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-                var window = new Window();
-                var lv = new FluenceListView
+                Window window = new();
+                FluenceListView lv = new()
                 {
                     Width = 260,
                     Height = 120,
                     IsItemSelectable = false
                 };
-                lv.Items.Add("a");
+                _ = lv.Items.Add("a");
 
                 try
                 {
@@ -170,7 +170,7 @@ namespace Fluence.Wpf.Tests
                     window.Close();
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -181,17 +181,17 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-                var window = new Window();
-                var lv = new FluenceListView
+                Window window = new();
+                FluenceListView lv = new()
                 {
                     Width = 260,
                     Height = 120,
                     IsItemSelectable = false
                 };
-                lv.Items.Add("a");
+                _ = lv.Items.Add("a");
 
                 try
                 {
@@ -200,7 +200,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var container = lv.ItemContainerGenerator.ContainerFromIndex(0) as WpfListViewItem;
+                    WpfListViewItem? container = lv.ItemContainerGenerator.ContainerFromIndex(0) as WpfListViewItem;
                     Assert.IsNotNull(container, "Item container should be generated.");
                     Assert.IsFalse(container.Focusable);
                     Assert.IsFalse(FluenceListView.GetParentIsItemSelectable(container));
@@ -210,7 +210,7 @@ namespace Fluence.Wpf.Tests
                     window.Close();
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -221,17 +221,17 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(() =>
             {
-                var application = EnsureApplication();
-                var genericDictionary = MergeGenericDictionary(application);
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-                var window = new Window();
-                var lv = new FluenceListView
+                Window window = new();
+                FluenceListView lv = new()
                 {
                     Width = 260,
                     Height = 120,
                     IsItemSelectable = true
                 };
-                lv.Items.Add("a");
+                _ = lv.Items.Add("a");
 
                 try
                 {
@@ -240,7 +240,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    var container = lv.ItemContainerGenerator.ContainerFromIndex(0) as WpfListViewItem;
+                    WpfListViewItem? container = lv.ItemContainerGenerator.ContainerFromIndex(0) as WpfListViewItem;
                     Assert.IsNotNull(container);
                     Assert.IsTrue(container.Focusable);
                     Assert.IsTrue(FluenceListView.GetParentIsItemSelectable(container));
@@ -250,7 +250,7 @@ namespace Fluence.Wpf.Tests
                     window.Close();
                     if (genericDictionary != null)
                     {
-                        application.Resources.MergedDictionaries.Remove(genericDictionary);
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
                 }
             });
@@ -261,7 +261,7 @@ namespace Fluence.Wpf.Tests
         {
             RunOnFreshStaThread(() =>
             {
-                var lv = new FluenceListView { IsItemSelectable = false, ItemAnimationsEnabled = true };
+                FluenceListView lv = new() { IsItemSelectable = false, ItemAnimationsEnabled = true };
                 Assert.IsFalse(lv.IsItemSelectable);
                 Assert.IsTrue(lv.ItemAnimationsEnabled);
 

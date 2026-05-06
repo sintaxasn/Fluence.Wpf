@@ -29,7 +29,6 @@
 using System.Windows;
 using System.Windows.Media;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf;
 
 namespace Fluence.Wpf.Tests
 {
@@ -41,7 +40,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                WpfTestSta.EnsureApplication();
+                _ = WpfTestSta.EnsureApplication();
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
                 Application.Current.Resources.MergedDictionaries.Clear();
@@ -53,26 +52,26 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var app = Application.Current;
+                Application app = Application.Current;
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
                 ApplicationAccentColorManager.ApplySystemAccent();
 
-                Assert.AreNotEqual(default(Color), ApplicationAccentColorManager.SystemAccentColor,
+                Assert.AreNotEqual(default, ApplicationAccentColorManager.SystemAccentColor,
                     "SystemAccentColor should not be default");
-                Assert.AreNotEqual(default(Color), ApplicationAccentColorManager.SystemAccentColorLight1,
+                Assert.AreNotEqual(default, ApplicationAccentColorManager.SystemAccentColorLight1,
                     "SystemAccentColorLight1 should not be default");
-                Assert.AreNotEqual(default(Color), ApplicationAccentColorManager.SystemAccentColorLight2,
+                Assert.AreNotEqual(default, ApplicationAccentColorManager.SystemAccentColorLight2,
                     "SystemAccentColorLight2 should not be default");
-                Assert.AreNotEqual(default(Color), ApplicationAccentColorManager.SystemAccentColorLight3,
+                Assert.AreNotEqual(default, ApplicationAccentColorManager.SystemAccentColorLight3,
                     "SystemAccentColorLight3 should not be default");
-                Assert.AreNotEqual(default(Color), ApplicationAccentColorManager.SystemAccentColorDark1,
+                Assert.AreNotEqual(default, ApplicationAccentColorManager.SystemAccentColorDark1,
                     "SystemAccentColorDark1 should not be default");
-                Assert.AreNotEqual(default(Color), ApplicationAccentColorManager.SystemAccentColorDark2,
+                Assert.AreNotEqual(default, ApplicationAccentColorManager.SystemAccentColorDark2,
                     "SystemAccentColorDark2 should not be default");
-                Assert.AreNotEqual(default(Color), ApplicationAccentColorManager.SystemAccentColorDark3,
+                Assert.AreNotEqual(default, ApplicationAccentColorManager.SystemAccentColorDark3,
                     "SystemAccentColorDark3 should not be default");
 
-                var accentResource = app.Resources["SystemAccentColor"];
+                object accentResource = app.Resources["SystemAccentColor"];
                 Assert.IsNotNull(accentResource, "SystemAccentColor resource should be set");
             });
         }
@@ -84,7 +83,7 @@ namespace Fluence.Wpf.Tests
             {
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
 
-                var customColor = Color.FromRgb(0xFF, 0x88, 0x00);
+                Color customColor = Color.FromRgb(0xFF, 0x88, 0x00);
                 ApplicationAccentColorManager.ApplyCustomAccent(customColor);
 
                 Assert.AreEqual(customColor, ApplicationAccentColorManager.SystemAccentColor,
@@ -106,14 +105,14 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(() =>
             {
-                var customColor = Color.FromRgb(0x00, 0x78, 0xD4);
+                Color customColor = Color.FromRgb(0x00, 0x78, 0xD4);
                 ApplicationAccentColorManager.ApplyCustomAccent(customColor);
 
                 ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, true);
-                var darkPrimary = ApplicationAccentColorManager.SystemAccentColorPrimary;
+                Color darkPrimary = ApplicationAccentColorManager.SystemAccentColorPrimary;
 
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
-                var lightPrimary = ApplicationAccentColorManager.SystemAccentColorPrimary;
+                Color lightPrimary = ApplicationAccentColorManager.SystemAccentColorPrimary;
 
                 Assert.AreNotEqual(darkPrimary, lightPrimary,
                     "Primary accent should differ between Dark and Light themes");
@@ -134,7 +133,7 @@ namespace Fluence.Wpf.Tests
 
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
 
-                var expected = Color.FromRgb(0x4C, 0xC2, 0xFF);
+                Color expected = Color.FromRgb(0x4C, 0xC2, 0xFF);
                 Assert.AreEqual(expected, ApplicationAccentColorManager.SystemAccentColorLight2,
                     "Default Windows blue Light2 must match the Windows accent palette.");
                 Assert.AreEqual(expected, ApplicationAccentColorManager.SystemAccentColorPrimary,
@@ -153,7 +152,7 @@ namespace Fluence.Wpf.Tests
 
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
 
-                var expected = Color.FromRgb(0x00, 0x67, 0xC0);
+                Color expected = Color.FromRgb(0x00, 0x67, 0xC0);
                 Assert.AreEqual(expected, ApplicationAccentColorManager.SystemAccentColorDark1,
                     "Default Windows blue Dark1 must match the Windows accent palette.");
                 Assert.AreEqual(expected, ApplicationAccentColorManager.SystemAccentColorPrimary,
@@ -165,14 +164,14 @@ namespace Fluence.Wpf.Tests
 
         private static void AssertColorResource(string key, Color expected)
         {
-            var actual = Application.Current.Resources[key] as Color?;
+            Color? actual = Application.Current.Resources[key] as Color?;
             Assert.IsNotNull(actual, key + " should resolve.");
             Assert.AreEqual(expected, actual.Value, key + " should use the expected color.");
         }
 
         private static void AssertBrushResource(string key, Color expected)
         {
-            var brush = Application.Current.Resources[key] as SolidColorBrush;
+            SolidColorBrush? brush = Application.Current.Resources[key] as SolidColorBrush;
             Assert.IsNotNull(brush, key + " should resolve.");
             Assert.AreEqual(expected, brush.Color, key + " should use the expected brush color.");
         }
