@@ -222,11 +222,11 @@ namespace Fluence.Wpf
         /// Replaces the Brushes dictionary with a freshly loaded copy, then promotes
         /// every brush key into top-level <see cref="Application.Resources"/>.
         /// This is necessary because <c>DynamicResource</c> bindings on
-        /// <see cref="System.Windows.Freezable"/> properties (e.g. <c>SolidColorBrush.Color</c>)
+        /// <see cref="Freezable"/> properties (e.g. <c>SolidColorBrush.Color</c>)
         /// do not reliably re-evaluate when the target Color resource changes in a
         /// different scope after a dictionary swap.
         /// </summary>
-        private static void ReloadAndPromoteBrushes(System.Collections.ObjectModel.Collection<ResourceDictionary> dictionaries)
+        private static void ReloadAndPromoteBrushes(Collection<ResourceDictionary> dictionaries)
         {
             if (SlotBrushes >= dictionaries.Count)
             {

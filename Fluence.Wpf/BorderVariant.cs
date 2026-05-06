@@ -28,7 +28,7 @@
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// Predefined visual preset for <see cref="Fluence.Wpf.Controls.Border"/>.
+    /// Predefined visual preset for <see cref="Controls.Border"/>.
     /// </summary>
     public enum BorderVariant
     {

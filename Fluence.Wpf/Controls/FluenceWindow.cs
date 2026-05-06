@@ -605,7 +605,7 @@ namespace Fluence.Wpf.Controls
                 CommandManager.InvalidateRequerySuggested();
             }
 
-            if (e.Property == Window.WindowStateProperty)
+            if (e.Property == WindowStateProperty)
             {
                 UpdateCaptionButtons();
             }
@@ -1168,7 +1168,7 @@ namespace Fluence.Wpf.Controls
             if (_snapHoveredButton != null)
             {
                 _snapHoveredButton.Background = Brushes.Transparent;
-                _snapHoveredButton.ClearValue(System.Windows.Controls.Control.ForegroundProperty);
+                _snapHoveredButton.ClearValue(ForegroundProperty);
                 _snapHoveredButton = null;
             }
         }

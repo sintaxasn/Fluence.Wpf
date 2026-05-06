@@ -317,7 +317,7 @@ namespace Fluence.Wpf.Controls
         private bool IsSelectedIndexExplicitlySet()
         {
             ValueSource source = DependencyPropertyHelper.GetValueSource(
-                this, Selector.SelectedIndexProperty);
+                this, SelectedIndexProperty);
             return source.BaseValueSource != BaseValueSource.Default;
         }
 

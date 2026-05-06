@@ -295,7 +295,7 @@ namespace Fluence.Wpf.Controls
         private static void OnCustomContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TitleBar titleBar = (TitleBar)d;
-            if (titleBar.Content == null || object.Equals(titleBar.Content, e.OldValue))
+            if (titleBar.Content == null || Equals(titleBar.Content, e.OldValue))
             {
                 titleBar.Content = e.NewValue;
             }

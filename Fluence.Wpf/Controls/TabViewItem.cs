@@ -68,7 +68,7 @@ namespace Fluence.Wpf.Controls
         public static readonly RoutedEvent CloseRequestedEvent = EventManager.RegisterRoutedEvent(
             nameof(CloseRequested),
             RoutingStrategy.Bubble,
-            typeof(System.Windows.RoutedEventHandler),
+            typeof(RoutedEventHandler),
             typeof(TabViewItem));
 
         static TabViewItem()
@@ -90,7 +90,7 @@ namespace Fluence.Wpf.Controls
 
         /// <summary>
         /// Gets or sets the icon shown at the leading edge of the tab header.
-        /// Accepts any element (typically a <see cref="FontIcon"/> or <see cref="System.Windows.Controls.Image"/>).
+        /// Accepts any element (typically a <see cref="FontIcon"/> or <see cref="Image"/>).
         /// </summary>
         public object Icon
         {
@@ -102,7 +102,7 @@ namespace Fluence.Wpf.Controls
         /// Raised when the user clicks the per-tab close button. The parent <see cref="TabView"/>
         /// aggregates this into <see cref="TabView.TabCloseRequested"/> for convenience.
         /// </summary>
-        public event System.Windows.RoutedEventHandler CloseRequested
+        public event RoutedEventHandler CloseRequested
         {
             add => AddHandler(CloseRequestedEvent, value);
             remove => RemoveHandler(CloseRequestedEvent, value);

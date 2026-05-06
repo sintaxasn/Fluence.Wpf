@@ -626,17 +626,17 @@ namespace Fluence.Wpf.Controls
             }
         }
 
-        private void OnRevealButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void OnRevealButtonDown(object sender, MouseButtonEventArgs e)
         {
             IsPasswordRevealed = true;
         }
 
-        private void OnRevealButtonUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        private void OnRevealButtonUp(object sender, MouseButtonEventArgs e)
         {
             IsPasswordRevealed = false;
         }
 
-        private void OnRevealButtonLeave(object sender, System.Windows.Input.MouseEventArgs e)
+        private void OnRevealButtonLeave(object sender, MouseEventArgs e)
         {
             IsPasswordRevealed = false;
         }

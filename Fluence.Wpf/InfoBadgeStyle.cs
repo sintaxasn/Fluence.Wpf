@@ -28,7 +28,7 @@
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// Visual severity style for <see cref="Fluence.Wpf.Controls.InfoBadge"/>.
+    /// Visual severity style for <see cref="Controls.InfoBadge"/>.
     /// </summary>
     public enum InfoBadgeStyle
     {

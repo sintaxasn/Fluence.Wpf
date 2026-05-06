@@ -28,7 +28,7 @@
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// Visual style variant for <see cref="Fluence.Wpf.Controls.Card"/>.
+    /// Visual style variant for <see cref="Controls.Card"/>.
     /// </summary>
     public enum CardVariant
     {

@@ -28,7 +28,7 @@
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// Display mode for <see cref="Fluence.Wpf.Controls.ProgressBar"/>.
+    /// Display mode for <see cref="Controls.ProgressBar"/>.
     /// </summary>
     public enum ProgressBarMode
     {

@@ -28,7 +28,7 @@
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// DWM backdrop material applied to a <see cref="Fluence.Wpf.Controls.FluenceWindow"/> non-client area on Windows 11.
+    /// DWM backdrop material applied to a <see cref="Controls.FluenceWindow"/> non-client area on Windows 11.
     /// </summary>
     public enum BackdropType
     {

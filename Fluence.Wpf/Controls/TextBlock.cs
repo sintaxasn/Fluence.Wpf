@@ -79,10 +79,10 @@ namespace Fluence.Wpf.Controls
         public static readonly DependencyProperty TextWrappingProperty =
             DependencyProperty.Register(
                 nameof(TextWrapping),
-                typeof(System.Windows.TextWrapping),
+                typeof(TextWrapping),
                 typeof(TextBlock),
                 new FrameworkPropertyMetadata(
-                    System.Windows.TextWrapping.NoWrap,
+                    TextWrapping.NoWrap,
                     FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender,
                     OnTextWrappingPropertyChanged));
 
@@ -92,10 +92,10 @@ namespace Fluence.Wpf.Controls
         public static readonly DependencyProperty TextTrimmingProperty =
             DependencyProperty.Register(
                 nameof(TextTrimming),
-                typeof(System.Windows.TextTrimming),
+                typeof(TextTrimming),
                 typeof(TextBlock),
                 new FrameworkPropertyMetadata(
-                    System.Windows.TextTrimming.None,
+                    TextTrimming.None,
                     FrameworkPropertyMetadataOptions.AffectsRender,
                     OnTextTrimmingPropertyChanged));
 
@@ -120,18 +120,18 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Gets or sets how text wraps within the inner <see cref="System.Windows.Controls.TextBlock"/>.
         /// </summary>
-        public System.Windows.TextWrapping TextWrapping
+        public TextWrapping TextWrapping
         {
-            get => (System.Windows.TextWrapping)GetValue(TextWrappingProperty);
+            get => (TextWrapping)GetValue(TextWrappingProperty);
             set => SetValue(TextWrappingProperty, value);
         }
 
         /// <summary>
         /// Gets or sets how text is trimmed when it overflows the layout area.
         /// </summary>
-        public System.Windows.TextTrimming TextTrimming
+        public TextTrimming TextTrimming
         {
-            get => (System.Windows.TextTrimming)GetValue(TextTrimmingProperty);
+            get => (TextTrimming)GetValue(TextTrimmingProperty);
             set => SetValue(TextTrimmingProperty, value);
         }
 

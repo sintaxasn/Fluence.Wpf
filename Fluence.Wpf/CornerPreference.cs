@@ -28,7 +28,7 @@
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// Rounded corner preference for top-level windows (DWM), used with <see cref="Fluence.Wpf.Controls.FluenceWindow"/>.
+    /// Rounded corner preference for top-level windows (DWM), used with <see cref="Controls.FluenceWindow"/>.
     /// </summary>
     public enum CornerPreference
     {

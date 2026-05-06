@@ -36,7 +36,7 @@ using Fluence.Wpf.Automation;
 namespace Fluence.Wpf.Controls
 {
     /// <summary>
-    /// A button that combines a primary action (<see cref="System.Windows.Controls.Primitives.ButtonBase.Click"/> /
+    /// A button that combines a primary action (<see cref="ButtonBase.Click"/> /
     /// <see cref="Command"/>) on its left half with a secondary "chevron" half that opens a flyout popup
     /// containing arbitrary WPF content. The canonical WinUI 3 SplitButton pattern.
     /// </summary>

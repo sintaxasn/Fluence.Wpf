@@ -28,7 +28,7 @@
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// Controls how tab item widths are distributed inside a <see cref="Fluence.Wpf.Controls.TabView"/>.
+    /// Controls how tab item widths are distributed inside a <see cref="Controls.TabView"/>.
     /// </summary>
     public enum TabViewWidthMode
     {

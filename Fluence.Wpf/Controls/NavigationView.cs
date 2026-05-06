@@ -371,12 +371,12 @@ namespace Fluence.Wpf.Controls
             object fromContainer = ItemContainerGenerator.ItemFromContainer(navItem);
             if (fromContainer != DependencyProperty.UnsetValue && fromContainer != null)
             {
-                if (!object.ReferenceEquals(SelectedItem, fromContainer))
+                if (!ReferenceEquals(SelectedItem, fromContainer))
                 {
                     SelectedItem = fromContainer;
                 }
             }
-            else if (!object.ReferenceEquals(SelectedItem, navItem))
+            else if (!ReferenceEquals(SelectedItem, navItem))
             {
                 SelectedItem = navItem;
             }
@@ -484,7 +484,7 @@ namespace Fluence.Wpf.Controls
 
             if (_backButton != null)
             {
-                _backButton.BeginAnimation(UIElement.VisibilityProperty, null);
+                _backButton.BeginAnimation(VisibilityProperty, null);
                 _backButton.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
             }
         }
@@ -753,7 +753,7 @@ namespace Fluence.Wpf.Controls
 
                 translate.BeginAnimation(axisProperty, null);
                 scale.BeginAnimation(scaleProperty, null);
-                _selectionIndicator.BeginAnimation(UIElement.OpacityProperty, null);
+                _selectionIndicator.BeginAnimation(OpacityProperty, null);
 
                 if (topMode)
                 {
@@ -797,7 +797,7 @@ namespace Fluence.Wpf.Controls
 
                     translate.BeginAnimation(axisProperty, null);
                     scale.BeginAnimation(scaleProperty, null);
-                    _selectionIndicator.BeginAnimation(UIElement.OpacityProperty, null);
+                    _selectionIndicator.BeginAnimation(OpacityProperty, null);
 
                     translate.X = toPosition.X;
                     translate.Y = toPosition.Y;
@@ -809,13 +809,13 @@ namespace Fluence.Wpf.Controls
 
                 translate.BeginAnimation(axisProperty, arriveAxisAnimation, HandoffBehavior.SnapshotAndReplace);
                 scale.BeginAnimation(scaleProperty, arriveScaleAnimation, HandoffBehavior.SnapshotAndReplace);
-                _selectionIndicator.BeginAnimation(UIElement.OpacityProperty, arriveOpacityAnimation, HandoffBehavior.SnapshotAndReplace);
+                _selectionIndicator.BeginAnimation(OpacityProperty, arriveOpacityAnimation, HandoffBehavior.SnapshotAndReplace);
             };
 
             _indicatorPositioned = true;
             translate.BeginAnimation(axisProperty, departAxisAnimation, HandoffBehavior.SnapshotAndReplace);
             scale.BeginAnimation(scaleProperty, departScaleAnimation, HandoffBehavior.SnapshotAndReplace);
-            _selectionIndicator.BeginAnimation(UIElement.OpacityProperty, departOpacityAnimation, HandoffBehavior.SnapshotAndReplace);
+            _selectionIndicator.BeginAnimation(OpacityProperty, departOpacityAnimation, HandoffBehavior.SnapshotAndReplace);
         }
 
         private Point CalculateDepartPosition(
@@ -935,7 +935,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            _selectionIndicator.BeginAnimation(UIElement.OpacityProperty, null);
+            _selectionIndicator.BeginAnimation(OpacityProperty, null);
             if (_selectionIndicator.RenderTransform is TransformGroup group && group.Children.Count >= 2)
             {
                 if (group.Children[0] is ScaleTransform scale && !scale.IsFrozen)
@@ -962,7 +962,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            _selectionIndicator.BeginAnimation(UIElement.OpacityProperty, null);
+            _selectionIndicator.BeginAnimation(OpacityProperty, null);
 
             TransformGroup? group = _selectionIndicator.RenderTransform as TransformGroup;
             bool needsReplacement = group == null
