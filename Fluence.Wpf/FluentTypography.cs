@@ -76,6 +76,6 @@ namespace Fluence.Wpf
         /// <summary>
         /// Display text: 68px, SemiBold.
         /// </summary>
-        Display = 8
+        Display = 8,
     }
 }

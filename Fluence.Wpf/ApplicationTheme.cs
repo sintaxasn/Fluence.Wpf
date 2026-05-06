@@ -37,17 +37,20 @@ namespace Fluence.Wpf
         /// Light surfaces and text colors.
         /// </summary>
         Light = 0,
+
         /// <summary>
         /// Dark surfaces and text colors.
         /// </summary>
         Dark = 1,
+
         /// <summary>
         /// High contrast theme for accessibility.
         /// </summary>
         HighContrast = 2,
+
         /// <summary>
         /// Follow Windows app theme setting (resolved to Light or Dark at runtime).
         /// </summary>
-        Auto = 3
+        Auto = 3,
     }
 }

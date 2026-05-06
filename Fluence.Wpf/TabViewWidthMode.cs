@@ -48,25 +48,4 @@ namespace Fluence.Wpf
         /// </summary>
         Compact = 2,
     }
-
-    /// <summary>
-    /// Controls when the per-tab close button is shown.
-    /// </summary>
-    public enum TabViewCloseButtonOverlayMode
-    {
-        /// <summary>
-        /// The close button is shown on the selected tab and on hovered unselected tabs.
-        /// </summary>
-        Auto = 0,
-
-        /// <summary>
-        /// The close button is shown only when the tab is hovered.
-        /// </summary>
-        OnPointerOver = 1,
-
-        /// <summary>
-        /// The close button is always visible on every tab.
-        /// </summary>
-        Always = 2,
-    }
 }

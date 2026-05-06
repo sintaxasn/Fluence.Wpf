@@ -46,6 +46,6 @@ namespace Fluence.Wpf
         /// <summary>
         /// Subtle appearance with transparent rest state.
         /// </summary>
-        Subtle = 2
+        Subtle = 2,
     }
 }

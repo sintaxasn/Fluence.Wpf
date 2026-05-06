@@ -47,6 +47,6 @@ namespace Fluence.Wpf
         /// A compact vertical pane that starts collapsed (icons only, 48px) and
         /// expands as an overlay without pushing content.
         /// </summary>
-        LeftCompact
+        LeftCompact,
     }
 }

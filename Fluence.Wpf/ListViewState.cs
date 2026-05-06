@@ -41,6 +41,6 @@ namespace Fluence.Wpf
         /// <summary>
         /// Grid view with items arranged in a grid.
         /// </summary>
-        GridView = 1
+        GridView = 1,
     }
 }

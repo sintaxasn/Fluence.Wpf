@@ -37,17 +37,20 @@ namespace Fluence.Wpf
         /// OS default rounding.
         /// </summary>
         Default = 0,
+
         /// <summary>
         /// Sharp corners.
         /// </summary>
         DoNotRound = 1,
+
         /// <summary>
         /// Large radius.
         /// </summary>
         Round = 2,
+
         /// <summary>
         /// Smaller radius.
         /// </summary>
-        RoundSmall = 3
+        RoundSmall = 3,
     }
 }

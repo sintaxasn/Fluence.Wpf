@@ -37,21 +37,25 @@ namespace Fluence.Wpf
         /// Determinate progress between minimum and maximum.
         /// </summary>
         Standard,
+
         /// <summary>
         /// Indeterminate animation when value is unknown.
         /// </summary>
         Indeterminate,
+
         /// <summary>
         /// Segmented step progress display.
         /// </summary>
         StepProgress,
+
         /// <summary>
         /// Error state with critical-severity fill color.
         /// </summary>
         Error,
+
         /// <summary>
         /// Paused state with caution-severity fill color.
         /// </summary>
-        Paused
+        Paused,
     }
 }

@@ -37,21 +37,25 @@ namespace Fluence.Wpf
         /// No Mica/Acrylic; standard solid backdrop.
         /// </summary>
         None = 0,
+
         /// <summary>
         /// Let the library pick the best supported backdrop for the OS version.
         /// </summary>
         Auto = 1,
+
         /// <summary>
         /// Mica (layered tint over wallpaper).
         /// </summary>
         Mica = 2,
+
         /// <summary>
         /// Acrylic blur.
         /// </summary>
         Acrylic = 3,
+
         /// <summary>
         /// Tabbed Mica for tabbed window groups (Windows 11).
         /// </summary>
-        Tabbed = 4
+        Tabbed = 4,
     }
 }

@@ -29,18 +29,23 @@
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// Specifies the placement of an element relative to content.
+    /// Controls when the per-tab close button is shown.
     /// </summary>
-    public enum ElementPlacement
+    public enum TabViewCloseButtonOverlayMode
     {
         /// <summary>
-        /// Element is placed to the left of the content.
+        /// The close button is shown on the selected tab and on hovered unselected tabs.
         /// </summary>
-        Left = 0,
+        Auto = 0,
 
         /// <summary>
-        /// Element is placed to the right of the content.
+        /// The close button is shown only when the tab is hovered.
         /// </summary>
-        Right = 1,
+        OnPointerOver = 1,
+
+        /// <summary>
+        /// The close button is always visible on every tab.
+        /// </summary>
+        Always = 2,
     }
 }

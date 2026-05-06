@@ -41,32 +41,6 @@ namespace Fluence.Wpf
     /// </summary>
     public static class ApplicationThemeManager
     {
-        private const string AssemblyComponent = "Fluence.Wpf;component";
-        private const string PackBase = "pack://application:,,,/" + AssemblyComponent + "/";
-
-        /*
-         * Stable merge order in Application.Current.Resources.MergedDictionaries:
-         *   [0] Theme Colors   - Theme.{Light|Dark|HighContrast}.xaml  (SWAPPED on theme change)
-         *   [1] Accent          - Accent.xaml                           (loaded once, keys updated in-place)
-         *   [2] Brushes         - Brushes.xaml                          (reloaded on non-HC theme swaps)
-         *   [3] Typography      - Typography.xaml                       (loaded once, never replaced)
-         *   [4] Generic         - Generic.xaml                          (loaded once, never replaced)
-         *
-         * For HighContrast, the theme dict at [0] contains both Color keys (static fallbacks)
-         * and Brush keys (with live SystemColor DynamicResource bindings). These brush keys
-         * override the equivalent keys from Brushes.xaml at [2] because we place them
-         * directly into Application.Resources AFTER merging, ensuring correct precedence.
-         */
-        private const int SlotTheme = 0;
-        private const int SlotAccent = 1;
-        private const int SlotBrushes = 2;
-        private const int SlotTypography = 3;
-        private const int SlotGeneric = 4;
-
-        private static bool _isInitialized;
-        private static bool _isApplying;
-        private static System.Collections.Generic.List<object>? _promotedHighContrastBrushKeys;
-
         /// <summary>
         /// Gets the currently requested theme (may be <see cref="ApplicationTheme.Auto"/>).
         /// </summary>
@@ -105,15 +79,12 @@ namespace Fluence.Wpf
             {
                 return;
             }
-
             _isApplying = true;
-
             try
             {
                 ApplicationTheme resolvedTheme = ResolveTheme(theme);
                 CurrentTheme = theme;
                 CurrentBackdrop = backdrop;
-
                 if (!_isInitialized)
                 {
                     InitializeDictionaries(resolvedTheme);
@@ -122,7 +93,6 @@ namespace Fluence.Wpf
                 {
                     SwapThemeColors(resolvedTheme);
                 }
-
                 if (updateAccent)
                 {
                     ApplicationAccentColorManager.UpdateThemeAdaptiveColors(resolvedTheme);
@@ -131,7 +101,6 @@ namespace Fluence.Wpf
                 {
                     ApplicationAccentColorManager.UpdateThemeDependentColors(resolvedTheme);
                 }
-
                 OnChanged(resolvedTheme);
             }
             finally
@@ -166,9 +135,7 @@ namespace Fluence.Wpf
             {
                 return;
             }
-
             Collection<ResourceDictionary> dictionaries = Application.Current.Resources.MergedDictionaries;
-
             ResourceDictionary themeDict = LoadDictionary(GetThemeColorUri(resolvedTheme));
             ResourceDictionary accentDict = LoadDictionary(PackBase + "Themes/Accent/Accent.xaml");
             ResourceDictionary brushesDict = LoadDictionary(PackBase + "Themes/Brushes/Brushes.xaml");
@@ -183,10 +150,8 @@ namespace Fluence.Wpf
             dictionaries.Insert(SlotBrushes, brushesDict);
             dictionaries.Insert(SlotTypography, typographyDict);
             dictionaries.Insert(SlotGeneric, genericDict);
-
             PromoteThemeColors(resolvedTheme);
             EnsureAcrylicNoiseBrush();
-
             _isInitialized = true;
         }
 
@@ -196,16 +161,12 @@ namespace Fluence.Wpf
             {
                 return;
             }
-
             Collection<ResourceDictionary> dictionaries = Application.Current.Resources.MergedDictionaries;
-
             if (SlotTheme < dictionaries.Count)
             {
                 dictionaries[SlotTheme] = LoadDictionary(GetThemeColorUri(resolvedTheme));
             }
-
             PromoteThemeColors(resolvedTheme);
-
             if (resolvedTheme != ApplicationTheme.HighContrast)
             {
                 // Leaving High Contrast must restore normal brush precedence. Reloading the
@@ -213,7 +174,6 @@ namespace Fluence.Wpf
                 // newly-promoted color keys.
                 ReloadAndPromoteBrushes(dictionaries);
             }
-
             EnsureAcrylicNoiseBrush();
         }
 
@@ -231,10 +191,8 @@ namespace Fluence.Wpf
             {
                 return;
             }
-
             ResourceDictionary freshBrushes = LoadDictionary(PackBase + "Themes/Brushes/Brushes.xaml");
             dictionaries[SlotBrushes] = freshBrushes;
-
             ResourceDictionary resources = Application.Current.Resources;
             foreach (object? key in freshBrushes.Keys)
             {
@@ -256,25 +214,9 @@ namespace Fluence.Wpf
             {
                 return;
             }
-
             ResourceDictionary resources = Application.Current.Resources;
             ResourceDictionary themeDict = resources.MergedDictionaries[SlotTheme];
-
-            if (resolvedTheme == ApplicationTheme.HighContrast)
-            {
-                _promotedHighContrastBrushKeys = [];
-
-                foreach (object? key in themeDict.Keys)
-                {
-                    resources[key] = themeDict[key];
-
-                    if (key is string keyStr && keyStr.EndsWith("Brush"))
-                    {
-                        _promotedHighContrastBrushKeys.Add(key);
-                    }
-                }
-            }
-            else
+            if (resolvedTheme != ApplicationTheme.HighContrast)
             {
                 if (_promotedHighContrastBrushKeys != null)
                 {
@@ -284,10 +226,21 @@ namespace Fluence.Wpf
                     }
                     _promotedHighContrastBrushKeys = null;
                 }
-
                 foreach (object? key in themeDict.Keys)
                 {
                     resources[key] = themeDict[key];
+                }
+            }
+            else
+            {
+                _promotedHighContrastBrushKeys = [];
+                foreach (object? key in themeDict.Keys)
+                {
+                    resources[key] = themeDict[key];
+                    if (key is string keyStr && keyStr.EndsWith("Brush"))
+                    {
+                        _promotedHighContrastBrushKeys.Add(key);
+                    }
                 }
             }
         }
@@ -315,16 +268,7 @@ namespace Fluence.Wpf
 
         private static void EnsureAcrylicNoiseBrush()
         {
-            if (Application.Current == null)
-            {
-                return;
-            }
-
-            const string key = "AcrylicNoiseBrush";
-            if (Application.Current.Resources[key] == null)
-            {
-                Application.Current.Resources[key] = AcrylicNoiseHelper.GetNoiseBrush();
-            }
+            _ = (Application.Current?.Resources["AcrylicNoiseBrush"] ??= AcrylicNoiseHelper.GetNoiseBrush());
         }
 
         private static void OnChanged(ApplicationTheme resolvedTheme)
@@ -336,13 +280,32 @@ namespace Fluence.Wpf
             }
         }
 
-        internal static void ResetForTesting()
-        {
-            _isInitialized = false;
-            CurrentTheme = ApplicationTheme.Auto;
-            CurrentBackdrop = BackdropType.Auto;
-            _isApplying = false;
-            _promotedHighContrastBrushKeys = null;
-        }
+        // The assembly component name is used in pack URIs to load resource dictionaries.
+        private const string AssemblyComponent = "Fluence.Wpf;component";
+        private const string PackBase = "pack://application:,,,/" + AssemblyComponent + "/";
+
+        /*
+         * Stable merge order in Application.Current.Resources.MergedDictionaries:
+         *   [0] Theme Colors   - Theme.{Light|Dark|HighContrast}.xaml  (SWAPPED on theme change)
+         *   [1] Accent         - Accent.xaml                           (loaded once, keys updated in-place)
+         *   [2] Brushes        - Brushes.xaml                          (reloaded on non-HC theme swaps)
+         *   [3] Typography     - Typography.xaml                       (loaded once, never replaced)
+         *   [4] Generic        - Generic.xaml                          (loaded once, never replaced)
+         *
+         * For HighContrast, the theme dict at [0] contains both Color keys (static fallbacks)
+         * and Brush keys (with live SystemColor DynamicResource bindings). These brush keys
+         * override the equivalent keys from Brushes.xaml at [2] because we place them
+         * directly into Application.Resources AFTER merging, ensuring correct precedence.
+         */
+        private const int SlotTheme = 0;
+        private const int SlotAccent = 1;
+        private const int SlotBrushes = 2;
+        private const int SlotTypography = 3;
+        private const int SlotGeneric = 4;
+
+        // Flags to prevent re-entrant calls to Apply() and to track whether the initial load has completed.
+        private static bool _isInitialized;
+        private static bool _isApplying;
+        private static System.Collections.Generic.List<object>? _promotedHighContrastBrushKeys;
     }
 }

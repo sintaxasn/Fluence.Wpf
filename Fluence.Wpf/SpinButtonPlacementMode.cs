@@ -46,6 +46,6 @@ namespace Fluence.Wpf
         /// <summary>
         /// Spin buttons are always visible.
         /// </summary>
-        Inline = 2
+        Inline = 2,
     }
 }
