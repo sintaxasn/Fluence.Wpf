@@ -42,6 +42,12 @@ namespace Fluence.Wpf.Controls
             DependencyProperty.Register(nameof(CornerRadius), typeof(CornerRadius), typeof(ListBox),
                 new FrameworkPropertyMetadata(new CornerRadius(4)));
 
+        /// <summary>
+        /// Initializes static members of the ListBox class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the ListBox control uses its specific default
+        /// style by overriding the DefaultStyleKeyProperty metadata. This affects the appearance of all ListBox
+        /// instances unless a different style is explicitly applied.</remarks>
         static ListBox()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(ListBox),

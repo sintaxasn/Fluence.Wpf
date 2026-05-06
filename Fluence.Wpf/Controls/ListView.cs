@@ -40,9 +40,16 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     public class ListView : System.Windows.Controls.ListView
     {
+        // Animation durations for item insertions and removals.
         private static readonly Duration InsertDuration = new(TimeSpan.FromMilliseconds(250));
         private static readonly Duration RemoveDuration = new(TimeSpan.FromMilliseconds(200));
 
+        /// <summary>
+        /// Initializes static members of the ListView class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the ListView control uses its own default style
+        /// as defined in the application's resources. This is important for proper theming and appearance in WPF
+        /// applications.</remarks>
         static ListView()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -192,14 +199,113 @@ namespace Fluence.Wpf.Controls
             set => SetValue(IsItemSelectableProperty, value);
         }
 
-        private bool _suppressSelectionChange;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="ListView"/> class and wires the loaded event for default group styling.
         /// </summary>
         public ListView()
         {
             Loaded += OnListViewLoaded;
+        }
+
+        /// <summary>
+        /// Animates out the item and then calls the provided callback.
+        /// </summary>
+        public void AnimateRemove(object item, Action onCompleted)
+        {
+            if (!ItemAnimationsEnabled)
+            {
+                RemoveItem(item);
+                onCompleted?.Invoke();
+                return;
+            }
+            if (ItemContainerGenerator.ContainerFromItem(item) is not UIElement container)
+            {
+                RemoveItem(item);
+                onCompleted?.Invoke();
+                return;
+            }
+
+            if (container.RenderTransform is not TranslateTransform)
+            {
+                container.RenderTransform = new TranslateTransform();
+            }
+            DoubleAnimation opacityAnim = new(container.Opacity, 0, RemoveDuration)
+            {
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
+            };
+            DoubleAnimation slideAnim = new(0, -12, RemoveDuration)
+            {
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
+            };
+            opacityAnim.Completed += (s, e) =>
+            {
+                RemoveItem(item);
+                onCompleted?.Invoke();
+            };
+            container.BeginAnimation(OpacityProperty, opacityAnim);
+            container.RenderTransform.BeginAnimation(TranslateTransform.YProperty, slideAnim);
+        }
+
+        /// <inheritdoc />
+        protected override void OnSelectionChanged(SelectionChangedEventArgs e)
+        {
+            if (!IsItemSelectable && !_suppressSelectionChange)
+            {
+                _suppressSelectionChange = true;
+                try
+                {
+                    UnselectAll();
+                }
+                finally
+                {
+                    _suppressSelectionChange = false;
+                }
+                return;
+            }
+            base.OnSelectionChanged(e);
+        }
+
+        /// <inheritdoc />
+        protected override DependencyObject GetContainerForItemOverride()
+        {
+            return new ListViewItem();
+        }
+
+        /// <inheritdoc />
+        protected override bool IsItemItsOwnContainerOverride(object item)
+        {
+            return item is ListViewItem;
+        }
+
+        /// <inheritdoc />
+        protected override void PrepareContainerForItemOverride(DependencyObject element, object item)
+        {
+            base.PrepareContainerForItemOverride(element, item);
+            SetParentIsItemSelectable(element, IsItemSelectable);
+            if (element is UIElement ui)
+            {
+                ui.Focusable = IsItemSelectable;
+            }
+            if (!ItemAnimationsEnabled || !IsLoaded)
+            {
+                return;
+            }
+            if (element is not UIElement container)
+            {
+                return;
+            }
+
+            container.RenderTransform = new TranslateTransform(0, 12); container.Opacity = 0;
+            DoubleAnimation opacityAnim = new(0, 1, InsertDuration)
+            {
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+            };
+            DoubleAnimation slideAnim = new(12, 0, InsertDuration)
+            {
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+            };
+            container.BeginAnimation(OpacityProperty, opacityAnim);
+            container.RenderTransform.BeginAnimation(TranslateTransform.YProperty, slideAnim);
         }
 
         private static void OnIsItemSelectableChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -217,7 +323,6 @@ namespace Fluence.Wpf.Controls
                     listView._suppressSelectionChange = false;
                 }
             }
-
             listView.UpdateItemContainersFocusable();
         }
 
@@ -238,27 +343,6 @@ namespace Fluence.Wpf.Controls
             }
         }
 
-        /// <inheritdoc />
-        protected override void OnSelectionChanged(SelectionChangedEventArgs e)
-        {
-            if (!IsItemSelectable && !_suppressSelectionChange)
-            {
-                _suppressSelectionChange = true;
-                try
-                {
-                    UnselectAll();
-                }
-                finally
-                {
-                    _suppressSelectionChange = false;
-                }
-
-                return;
-            }
-
-            base.OnSelectionChanged(e);
-        }
-
         private void OnListViewLoaded(object sender, RoutedEventArgs e)
         {
             EnsureDefaultGroupStyle();
@@ -270,106 +354,10 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
             if (TryFindResource("ListViewGroupItemStyle") is Style style)
             {
                 GroupStyle.Add(new GroupStyle { ContainerStyle = style });
             }
-        }
-
-        /// <inheritdoc />
-        protected override DependencyObject GetContainerForItemOverride()
-        {
-            return new ListViewItem();
-        }
-
-        /// <inheritdoc />
-        protected override bool IsItemItsOwnContainerOverride(object item)
-        {
-            return item is ListViewItem;
-        }
-
-        /// <inheritdoc />
-        protected override void PrepareContainerForItemOverride(DependencyObject element, object item)
-        {
-            base.PrepareContainerForItemOverride(element, item);
-
-            SetParentIsItemSelectable(element, IsItemSelectable);
-
-            if (element is UIElement ui)
-            {
-                ui.Focusable = IsItemSelectable;
-            }
-
-            if (!ItemAnimationsEnabled || !IsLoaded)
-            {
-                return;
-            }
-
-            if (element is not UIElement container)
-            {
-                return;
-            }
-
-            container.Opacity = 0;
-            container.RenderTransform = new TranslateTransform(0, 12);
-
-            DoubleAnimation opacityAnim = new(0, 1, InsertDuration)
-            {
-                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
-            };
-            DoubleAnimation slideAnim = new(12, 0, InsertDuration)
-            {
-                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
-            };
-
-            container.BeginAnimation(OpacityProperty, opacityAnim);
-            container.RenderTransform.BeginAnimation(TranslateTransform.YProperty, slideAnim);
-        }
-
-        /// <summary>
-        /// Animates out the item and then calls the provided callback.
-        /// </summary>
-        public void AnimateRemove(object item, Action onCompleted)
-        {
-            if (!ItemAnimationsEnabled)
-            {
-                RemoveItem(item);
-                onCompleted?.Invoke();
-
-                return;
-            }
-
-            if (ItemContainerGenerator.ContainerFromItem(item) is not UIElement container)
-            {
-                RemoveItem(item);
-                onCompleted?.Invoke();
-
-                return;
-            }
-
-            if (container.RenderTransform is not TranslateTransform)
-            {
-                container.RenderTransform = new TranslateTransform();
-            }
-
-            DoubleAnimation opacityAnim = new(container.Opacity, 0, RemoveDuration)
-            {
-                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
-            };
-            DoubleAnimation slideAnim = new(0, -12, RemoveDuration)
-            {
-                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn }
-            };
-
-            opacityAnim.Completed += (s, e) =>
-            {
-                RemoveItem(item);
-                onCompleted?.Invoke();
-            };
-
-            container.BeginAnimation(OpacityProperty, opacityAnim);
-            container.RenderTransform.BeginAnimation(TranslateTransform.YProperty, slideAnim);
         }
 
         private void RemoveItem(object item)
@@ -379,8 +367,15 @@ namespace Fluence.Wpf.Controls
                 list.Remove(item);
                 return;
             }
-
             Items.Remove(item);
         }
+
+        /// <summary>
+        /// Indicates whether selection change events should be suppressed.
+        /// </summary>
+        /// <remarks>When set to true, selection change notifications are temporarily disabled. This is
+        /// typically used to prevent event handlers from responding to programmatic changes that should not trigger
+        /// selection logic.</remarks>
+        private bool _suppressSelectionChange;
     }
 }
