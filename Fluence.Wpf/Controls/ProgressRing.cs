@@ -792,8 +792,8 @@ namespace Fluence.Wpf.Controls
         {
             double angleRad = angle * Math.PI / 180.0;
             return new Point(
-                center + radius * Math.Sin(angleRad),
-                center - radius * Math.Cos(angleRad));
+                center + (radius * Math.Sin(angleRad)),
+                center - (radius * Math.Cos(angleRad)));
         }
     }
 }

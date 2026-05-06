@@ -595,7 +595,7 @@ namespace Fluence.Wpf.Controls
 
                 if (topMode)
                 {
-                    return new Point(itemPos.X + (item.ActualWidth - _selectionIndicator.Width) / 2.0, 0.0);
+                    return new Point(itemPos.X + ((item.ActualWidth - _selectionIndicator.Width) / 2.0), 0.0);
                 }
 
                 double x = itemPos.X + NavigationItemOuterHorizontalMargin;
@@ -604,7 +604,7 @@ namespace Fluence.Wpf.Controls
                     x += NavigationItemChildIndicatorOffset;
                 }
 
-                return new Point(x, itemPos.Y + (item.ActualHeight - _selectionIndicator.Height) / 2.0);
+                return new Point(x, itemPos.Y + ((item.ActualHeight - _selectionIndicator.Height) / 2.0));
             }
             catch
             {

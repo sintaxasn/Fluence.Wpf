@@ -92,7 +92,7 @@ namespace Fluence.Wpf.Helpers
             value = Math.Max(0, Math.Min(1, value));
 
             double c = value * saturation;
-            double x = c * (1 - Math.Abs((hue / 60) % 2 - 1));
+            double x = c * (1 - Math.Abs((hue / 60 % 2) - 1));
             double m = value - c;
 
             double r, g, b;
@@ -219,7 +219,7 @@ namespace Fluence.Wpf.Helpers
         /// </summary>
         public static bool ShouldUseWhiteText(Color color)
         {
-            return (5 * color.G + 2 * color.R + color.B) <= 1024;
+            return ((5 * color.G) + (2 * color.R) + color.B) <= 1024;
         }
 
         /// <summary>
@@ -231,9 +231,9 @@ namespace Fluence.Wpf.Helpers
             double scaled = intensity * 255.0 / 100.0;
             double inv = 255.0 - scaled;
 
-            byte r = (byte)Math.Round((c1.R * scaled + c2.R * inv) / 255.0);
-            byte g = (byte)Math.Round((c1.G * scaled + c2.G * inv) / 255.0);
-            byte b = (byte)Math.Round((c1.B * scaled + c2.B * inv) / 255.0);
+            byte r = (byte)Math.Round(((c1.R * scaled) + (c2.R * inv)) / 255.0);
+            byte g = (byte)Math.Round(((c1.G * scaled) + (c2.G * inv)) / 255.0);
+            byte b = (byte)Math.Round(((c1.B * scaled) + (c2.B * inv)) / 255.0);
 
             return Color.FromRgb(r, g, b);
         }
@@ -262,15 +262,15 @@ namespace Fluence.Wpf.Helpers
 
                 if (max == r)
                 {
-                    h = (g - b) / d + (g < b ? 6 : 0);
+                    h = ((g - b) / d) + (g < b ? 6 : 0);
                 }
                 else if (max == g)
                 {
-                    h = (b - r) / d + 2;
+                    h = ((b - r) / d) + 2;
                 }
                 else
                 {
-                    h = (r - g) / d + 4;
+                    h = ((r - g) / d) + 4;
                 }
 
                 h /= 6.0;
@@ -291,11 +291,11 @@ namespace Fluence.Wpf.Helpers
             }
             else
             {
-                double q = l < 0.5 ? l * (1 + s) : l + s - l * s;
-                double p = 2 * l - q;
-                r = HueToChannel(p, q, h + 1.0 / 3.0);
+                double q = l < 0.5 ? l * (1 + s) : l + s - (l * s);
+                double p = (2 * l) - q;
+                r = HueToChannel(p, q, h + (1.0 / 3.0));
                 g = HueToChannel(p, q, h);
-                b = HueToChannel(p, q, h - 1.0 / 3.0);
+                b = HueToChannel(p, q, h - (1.0 / 3.0));
             }
 
             return Color.FromRgb(
@@ -318,7 +318,7 @@ namespace Fluence.Wpf.Helpers
 
             if (t < 1.0 / 6.0)
             {
-                return p + (q - p) * 6 * t;
+                return p + ((q - p) * 6 * t);
             }
 
             if (t < 1.0 / 2.0)
@@ -328,7 +328,7 @@ namespace Fluence.Wpf.Helpers
 
             if (t < 2.0 / 3.0)
             {
-                return p + (q - p) * (2.0 / 3.0 - t) * 6;
+                return p + ((q - p) * ((2.0 / 3.0) - t) * 6);
             }
 
             return p;
