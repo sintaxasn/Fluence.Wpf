@@ -27,8 +27,9 @@
  */
 
 using System.Windows;
+using Fluence.Wpf.Controls;
 
-namespace Fluence.Wpf.Controls
+namespace Fluence.Wpf
 {
     /// <summary>
     /// Event data for <see cref="TabView.TabCloseRequested"/> and <see cref="TabViewItem.CloseRequested"/>.

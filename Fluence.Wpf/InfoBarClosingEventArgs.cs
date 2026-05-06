@@ -26,9 +26,10 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Controls;
 using System;
 
-namespace Fluence.Wpf.Controls
+namespace Fluence.Wpf
 {
     /// <summary>
     /// Provides data for the <see cref="InfoBar.Closing"/> event.

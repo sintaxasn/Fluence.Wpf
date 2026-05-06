@@ -27,11 +27,28 @@
  */
 
 using System;
+using Fluence.Wpf.Controls;
 
-namespace Fluence.Wpf.Controls
+namespace Fluence.Wpf
 {
     /// <summary>
-    /// Provides data for the <see cref="NavigationView.BackRequested"/> event.
+    /// Event data for <see cref="NumberBox.ValueChanged"/>.
     /// </summary>
-    public class NavigationViewBackRequestedEventArgs : EventArgs;
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="NumberBoxValueChangedEventArgs"/> class.
+    /// </remarks>
+    /// <param name="oldValue">The previous value.</param>
+    /// <param name="newValue">The new value.</param>
+    public sealed class NumberBoxValueChangedEventArgs(double oldValue, double newValue) : EventArgs
+    {
+        /// <summary>
+        /// Gets the previous value.
+        /// </summary>
+        public double OldValue { get; } = oldValue;
+
+        /// <summary>
+        /// Gets the new value.
+        /// </summary>
+        public double NewValue { get; } = newValue;
+    }
 }

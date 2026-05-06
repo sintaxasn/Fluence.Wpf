@@ -27,27 +27,34 @@
  */
 
 using System;
+using Fluence.Wpf.Controls;
 
-namespace Fluence.Wpf.Controls
+namespace Fluence.Wpf
 {
     /// <summary>
-    /// Event data for <see cref="NumberBox.ValueChanged"/>.
+    /// Provides data for the <see cref="NavigationView.ItemInvoked"/> event.
     /// </summary>
     /// <remarks>
-    /// Initializes a new instance of the <see cref="NumberBoxValueChangedEventArgs"/> class.
+    /// Initializes a new instance of the <see cref="NavigationViewItemInvokedEventArgs"/> class.
     /// </remarks>
-    /// <param name="oldValue">The previous value.</param>
-    /// <param name="newValue">The new value.</param>
-    public sealed class NumberBoxValueChangedEventArgs(double oldValue, double newValue) : EventArgs
+    /// <param name="invokedItem">The data item that was invoked.</param>
+    /// <param name="invokedItemContainer">The navigation item container that was invoked.</param>
+    /// <param name="isSettingsInvoked">A value indicating whether the settings entry was invoked.</param>
+    public class NavigationViewItemInvokedEventArgs(object invokedItem, NavigationViewItem invokedItemContainer, bool isSettingsInvoked) : EventArgs
     {
         /// <summary>
-        /// Gets the previous value.
+        /// Gets the data item that was invoked.
         /// </summary>
-        public double OldValue { get; } = oldValue;
+        public object InvokedItem { get; private set; } = invokedItem;
 
         /// <summary>
-        /// Gets the new value.
+        /// Gets the navigation item container that was invoked.
         /// </summary>
-        public double NewValue { get; } = newValue;
+        public NavigationViewItem InvokedItemContainer { get; private set; } = invokedItemContainer;
+
+        /// <summary>
+        /// Gets a value indicating whether the settings entry was invoked.
+        /// </summary>
+        public bool IsSettingsInvoked { get; private set; } = isSettingsInvoked;
     }
 }
