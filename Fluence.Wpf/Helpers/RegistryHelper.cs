@@ -38,13 +38,10 @@ namespace Fluence.Wpf.Helpers
         {
             try
             {
-                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(NativeConstants.PersonalizeRegistryPath))
+                using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.PersonalizeRegistryPath);
+                if (key?.GetValue(NativeConstants.AppsUseLightTheme) is int intValue)
                 {
-                    object? value = key?.GetValue(NativeConstants.AppsUseLightTheme);
-                    if (value is int intValue)
-                    {
-                        return intValue != 0;
-                    }
+                    return intValue != 0;
                 }
             }
             catch
@@ -58,13 +55,10 @@ namespace Fluence.Wpf.Helpers
         {
             try
             {
-                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(NativeConstants.PersonalizeRegistryPath))
+                using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.PersonalizeRegistryPath);
+                if (key?.GetValue(NativeConstants.SystemUsesLightTheme) is int intValue)
                 {
-                    object? value = key?.GetValue(NativeConstants.SystemUsesLightTheme);
-                    if (value is int intValue)
-                    {
-                        return intValue != 0;
-                    }
+                    return intValue != 0;
                 }
             }
             catch
@@ -78,13 +72,10 @@ namespace Fluence.Wpf.Helpers
         {
             try
             {
-                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath))
+                using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath);
+                if (key?.GetValue(NativeConstants.ColorPrevalence) is int intValue)
                 {
-                    object? value = key?.GetValue(NativeConstants.ColorPrevalence);
-                    if (value is int intValue)
-                    {
-                        return intValue != 0;
-                    }
+                    return intValue != 0;
                 }
             }
             catch
@@ -100,23 +91,20 @@ namespace Fluence.Wpf.Helpers
 
             try
             {
-                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(NativeConstants.AccentRegistryPath))
+                using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.AccentRegistryPath);
+                if (key?.GetValue(NativeConstants.AccentPalette) is byte[] bytes && bytes.Length >= 32)
                 {
-                    object? value = key?.GetValue(NativeConstants.AccentPalette);
-                    if (value is byte[] bytes && bytes.Length >= 32)
+                    palette = new Color[8];
+                    for (int i = 0; i < 8; i++)
                     {
-                        palette = new Color[8];
-                        for (int i = 0; i < 8; i++)
-                        {
-                            int offset = i * 4;
-                            byte r = bytes[offset];
-                            byte g = bytes[offset + 1];
-                            byte b = bytes[offset + 2];
-                            byte a = bytes[offset + 3];
-                            palette[i] = Color.FromArgb(a == 0 ? (byte)255 : a, r, g, b);
-                        }
-                        return true;
+                        int offset = i * 4;
+                        byte r = bytes[offset];
+                        byte g = bytes[offset + 1];
+                        byte b = bytes[offset + 2];
+                        byte a = bytes[offset + 3];
+                        palette[i] = Color.FromArgb(a == 0 ? (byte)255 : a, r, g, b);
                     }
+                    return true;
                 }
             }
             catch
@@ -130,18 +118,15 @@ namespace Fluence.Wpf.Helpers
         {
             try
             {
-                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(NativeConstants.AccentRegistryPath))
+                using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.AccentRegistryPath);
+                if (key?.GetValue(NativeConstants.AccentColor) is int intValue)
                 {
-                    object? value = key?.GetValue(NativeConstants.AccentColor);
-                    if (value is int intValue)
-                    {
-                        uint color = unchecked((uint)intValue);
-                        byte a = (byte)((color >> 24) & 0xFF);
-                        byte b = (byte)((color >> 16) & 0xFF);
-                        byte g = (byte)((color >> 8) & 0xFF);
-                        byte r = (byte)(color & 0xFF);
-                        return Color.FromArgb(a == 0 ? (byte)255 : a, r, g, b);
-                    }
+                    uint color = unchecked((uint)intValue);
+                    byte a = (byte)((color >> 24) & 0xFF);
+                    byte b = (byte)((color >> 16) & 0xFF);
+                    byte g = (byte)((color >> 8) & 0xFF);
+                    byte r = (byte)(color & 0xFF);
+                    return Color.FromArgb(a == 0 ? (byte)255 : a, r, g, b);
                 }
             }
             catch
@@ -164,19 +149,16 @@ namespace Fluence.Wpf.Helpers
             color = default;
             try
             {
-                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath))
+                using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath);
+                if (key?.GetValue(NativeConstants.AccentColor) is int intValue)
                 {
-                    object? value = key?.GetValue(NativeConstants.AccentColor);
-                    if (value is int intValue)
-                    {
-                        uint raw = unchecked((uint)intValue);
-                        byte a = (byte)((raw >> 24) & 0xFF);
-                        byte b = (byte)((raw >> 16) & 0xFF);
-                        byte g = (byte)((raw >> 8) & 0xFF);
-                        byte r = (byte)(raw & 0xFF);
-                        color = Color.FromArgb(a == 0 ? (byte)255 : a, r, g, b);
-                        return true;
-                    }
+                    uint raw = unchecked((uint)intValue);
+                    byte a = (byte)((raw >> 24) & 0xFF);
+                    byte b = (byte)((raw >> 16) & 0xFF);
+                    byte g = (byte)((raw >> 8) & 0xFF);
+                    byte r = (byte)(raw & 0xFF);
+                    color = Color.FromArgb(a == 0 ? (byte)255 : a, r, g, b);
+                    return true;
                 }
             }
             catch
@@ -194,19 +176,16 @@ namespace Fluence.Wpf.Helpers
             color = default;
             try
             {
-                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath))
+                using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath);
+                if (key?.GetValue(NativeConstants.AccentColorInactive) is int intValue)
                 {
-                    object? value = key?.GetValue(NativeConstants.AccentColorInactive);
-                    if (value is int intValue)
-                    {
-                        uint raw = unchecked((uint)intValue);
-                        byte a = (byte)((raw >> 24) & 0xFF);
-                        byte b = (byte)((raw >> 16) & 0xFF);
-                        byte g = (byte)((raw >> 8) & 0xFF);
-                        byte r = (byte)(raw & 0xFF);
-                        color = Color.FromArgb(a == 0 ? (byte)255 : a, r, g, b);
-                        return true;
-                    }
+                    uint raw = unchecked((uint)intValue);
+                    byte a = (byte)((raw >> 24) & 0xFF);
+                    byte b = (byte)((raw >> 16) & 0xFF);
+                    byte g = (byte)((raw >> 8) & 0xFF);
+                    byte r = (byte)(raw & 0xFF);
+                    color = Color.FromArgb(a == 0 ? (byte)255 : a, r, g, b);
+                    return true;
                 }
             }
             catch
@@ -225,27 +204,17 @@ namespace Fluence.Wpf.Helpers
             balance = 0;
             try
             {
-                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath))
+                using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath);
+                if (key?.GetValue(NativeConstants.ColorizationColor) is int colorInt && key?.GetValue(NativeConstants.ColorizationColorBalance) is int balanceInt)
                 {
-                    if (key == null)
-                    {
-                        return false;
-                    }
-
-                    object colorVal = key.GetValue(NativeConstants.ColorizationColor);
-                    object balanceVal = key.GetValue(NativeConstants.ColorizationColorBalance);
-
-                    if (colorVal is int colorInt && balanceVal is int balanceInt)
-                    {
-                        uint raw = unchecked((uint)colorInt);
-                        byte a = (byte)((raw >> 24) & 0xFF);
-                        byte r = (byte)((raw >> 16) & 0xFF);
-                        byte g = (byte)((raw >> 8) & 0xFF);
-                        byte b = (byte)(raw & 0xFF);
-                        colorizationColor = Color.FromArgb(a == 0 ? (byte)255 : a, r, g, b);
-                        balance = balanceInt;
-                        return true;
-                    }
+                    uint raw = unchecked((uint)colorInt);
+                    byte a = (byte)((raw >> 24) & 0xFF);
+                    byte r = (byte)((raw >> 16) & 0xFF);
+                    byte g = (byte)((raw >> 8) & 0xFF);
+                    byte b = (byte)(raw & 0xFF);
+                    colorizationColor = Color.FromArgb(a == 0 ? (byte)255 : a, r, g, b);
+                    balance = balanceInt;
+                    return true;
                 }
             }
             catch
