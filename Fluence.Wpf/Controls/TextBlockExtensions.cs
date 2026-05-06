@@ -38,6 +38,7 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     public static class TextBlockExtensions
     {
+        // Style keys for typography styles defined in the resource dictionaries.
         private const string CaptionTextBlockStyleKey = "CaptionTextBlockStyle";
         private const string BodyTextBlockStyleKey = "BodyTextBlockStyle";
         private const string BodyStrongTextBlockStyleKey = "BodyStrongTextBlockStyle";
@@ -81,7 +82,6 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
             FluentTypography typography = (FluentTypography)e.NewValue;
             ApplyTypography(textBlock, typography);
         }
@@ -92,7 +92,6 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
             textBlock.SetResourceReference(FrameworkElement.StyleProperty, styleKey);
         }
 
@@ -152,7 +151,6 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
             textBlock.TextTrimming = (TextTrimming)e.NewValue;
         }
 
@@ -196,7 +194,6 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
             if ((bool)e.NewValue)
             {
                 if (textBlock.IsLoaded)
@@ -223,7 +220,6 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
             if (VisualTreeHelper.GetParent(textBlock) is not Panel parent)
             {
                 return;
@@ -236,12 +232,10 @@ namespace Fluence.Wpf.Controls
             }
 
             parent.Children.RemoveAt(index);
-
             Grid grid = new();
             textBlock.Opacity = 0;
             textBlock.IsHitTestVisible = false;
             _ = grid.Children.Add(textBlock);
-
             System.Windows.Controls.TextBox overlay = new()
             {
                 Background = Brushes.Transparent,
@@ -260,18 +254,15 @@ namespace Fluence.Wpf.Controls
                 CaretBrush = textBlock.Foreground,
                 SelectionBrush = SystemColors.HighlightBrush
             };
-
             TextOptions.SetTextFormattingMode(overlay, TextOptions.GetTextFormattingMode(textBlock));
             TextOptions.SetTextRenderingMode(overlay, TextOptions.GetTextRenderingMode(textBlock));
             TextOptions.SetTextHintingMode(overlay, TextOptions.GetTextHintingMode(textBlock));
-
             _ = overlay.SetBinding(System.Windows.Controls.TextBox.TextProperty, new Binding
             {
                 Path = new PropertyPath(System.Windows.Controls.TextBlock.TextProperty),
                 Source = textBlock,
                 Mode = BindingMode.OneWay
             });
-
             _ = grid.Children.Add(overlay);
             parent.Children.Insert(index, grid);
         }

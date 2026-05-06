@@ -37,10 +37,15 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = PART_TextBlock, Type = typeof(System.Windows.Controls.TextBlock))]
     public class TextBlock : ContentControl
     {
+        // The name of the TextBlock part in the control template.
         private const string PART_TextBlock = "PART_TextBlock";
 
-        private System.Windows.Controls.TextBlock? _partTextBlock;
-
+        /// <summary>
+        /// Initializes static members of the TextBlock class.
+        /// </summary>
+        /// <remarks>This static constructor overrides the default style key property metadata to
+        /// associate the TextBlock type with its default style. This ensures that the correct style is applied to all
+        /// instances of TextBlock.</remarks>
         static TextBlock()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -156,11 +161,18 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
             _partTextBlock.Text = Text ?? string.Empty;
             TextBlockExtensions.SetTypography(_partTextBlock, Typography);
             _partTextBlock.TextWrapping = TextWrapping;
             _partTextBlock.TextTrimming = TextTrimming;
         }
+
+        /// <summary>
+        /// Represents the underlying TextBlock control used for displaying text content.
+        /// </summary>
+        /// <remarks>This field is typically used internally to reference the template part associated
+        /// with text display in a custom control. It may be null if the template has not been applied or does not
+        /// contain a TextBlock with the expected part name.</remarks>
+        private System.Windows.Controls.TextBlock? _partTextBlock;
     }
 }

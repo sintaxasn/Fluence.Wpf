@@ -37,8 +37,8 @@ namespace Fluence.Wpf.Controls
     /// <summary>
     /// A Fluent Design shell title bar with navigation buttons, icon, title text, and header/content slots.
     /// </summary>
-    [TemplatePart(Name = "PART_BackButton", Type = typeof(WpfButton))]
-    [TemplatePart(Name = "PART_PaneToggleButton", Type = typeof(WpfButton))]
+    [TemplatePart(Name = PART_BackButton, Type = typeof(WpfButton))]
+    [TemplatePart(Name = PART_PaneToggleButton, Type = typeof(WpfButton))]
     [TemplatePart(Name = "PART_IconPresenter", Type = typeof(ContentPresenter))]
     [TemplatePart(Name = "PART_TitleText", Type = typeof(TextBlock))]
     [TemplatePart(Name = "PART_SubtitleText", Type = typeof(TextBlock))]
@@ -47,10 +47,9 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = "PART_RightHeaderPresenter", Type = typeof(ContentPresenter))]
     public class TitleBar : ContentControl
     {
+        // Template part names.
         private const string PART_BackButton = "PART_BackButton";
         private const string PART_PaneToggleButton = "PART_PaneToggleButton";
-        private WpfButton? _backButton;
-        private WpfButton? _paneToggleButton;
 
         /// <summary>
         /// Identifies the <see cref="Title"/> dependency property.
@@ -143,6 +142,12 @@ namespace Fluence.Wpf.Controls
             DependencyProperty.Register(nameof(PaneToggleCommandParameter), typeof(object), typeof(TitleBar),
                 new FrameworkPropertyMetadata(null, OnPaneToggleCommandParameterChanged));
 
+        /// <summary>
+        /// Initializes static members of the TitleBar class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the TitleBar control uses its custom style by
+        /// default. It is called automatically before any static members are accessed or any instances are
+        /// created.</remarks>
         static TitleBar()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(TitleBar),
@@ -280,18 +285,12 @@ namespace Fluence.Wpf.Controls
         public override void OnApplyTemplate()
         {
             _backButton?.Click -= OnBackButtonClick;
-
             _paneToggleButton?.Click -= OnPaneToggleButtonClick;
-
             base.OnApplyTemplate();
-
             _backButton = GetTemplateChild(PART_BackButton) as WpfButton;
             _paneToggleButton = GetTemplateChild(PART_PaneToggleButton) as WpfButton;
-
             _backButton?.Click += OnBackButtonClick;
-
             _paneToggleButton?.Click += OnPaneToggleButtonClick;
-
             UpdateBackButtonCommandState();
             UpdatePaneToggleButtonCommandState();
         }
@@ -300,7 +299,6 @@ namespace Fluence.Wpf.Controls
         protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
         {
             base.OnPropertyChanged(e);
-
             if (e.Property == IsEnabledProperty)
             {
                 UpdateBackButtonCommandState();
@@ -377,7 +375,6 @@ namespace Fluence.Wpf.Controls
             {
                 OnBackRequested(EventArgs.Empty);
             }
-
             UpdateBackButtonCommandState();
         }
 
@@ -387,7 +384,6 @@ namespace Fluence.Wpf.Controls
             {
                 OnPaneToggleRequested(EventArgs.Empty);
             }
-
             UpdatePaneToggleButtonCommandState();
         }
 
@@ -407,12 +403,10 @@ namespace Fluence.Wpf.Controls
             {
                 return true;
             }
-
             if (!command.CanExecute(parameter))
             {
                 return false;
             }
-
             command.Execute(parameter);
             return true;
         }
@@ -431,5 +425,15 @@ namespace Fluence.Wpf.Controls
         {
             command?.CanExecuteChanged -= handler;
         }
+
+        /// <summary>
+        /// Represents the back button control in the WPF user interface.
+        /// </summary>
+        private WpfButton? _backButton;
+
+        /// <summary>
+        /// Represents the toggle button control used to show or hide a pane in the WPF user interface.
+        /// </summary>
+        private WpfButton? _paneToggleButton;
     }
 }

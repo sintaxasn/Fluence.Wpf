@@ -37,6 +37,12 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     public class Separator : System.Windows.Controls.Separator
     {
+        /// <summary>
+        /// Initializes static members of the Separator class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the Separator control uses its default style as
+        /// defined in the application's resource dictionaries. This is necessary for the control to be styled correctly
+        /// in WPF applications.</remarks>
         static Separator()
         {
             DefaultStyleKeyProperty.OverrideMetadata(

@@ -47,14 +47,17 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = PART_Popup, Type = typeof(Popup))]
     public class SplitButton : ContentControl, ICommandSource
     {
+        // Template part names.
         private const string PART_PrimaryButton = "PART_PrimaryButton";
         private const string PART_SecondaryButton = "PART_SecondaryButton";
         private const string PART_Popup = "PART_Popup";
 
-        private System.Windows.Controls.Button? _primaryButton;
-        private System.Windows.Controls.Primitives.ToggleButton? _secondaryButton;
-        private Popup? _popup;
-
+        /// <summary>
+        /// Initializes static members of the SplitButton class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the SplitButton control uses its custom style by
+        /// associating the control with its default style key. This enables the control to be styled appropriately in
+        /// XAML themes.</remarks>
         static SplitButton()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -293,21 +296,16 @@ namespace Fluence.Wpf.Controls
             DetachPrimaryHandler();
             DetachSecondaryHandler();
             DetachPopupHandler();
-
             base.OnApplyTemplate();
-
             _primaryButton = GetTemplateChild(PART_PrimaryButton) as System.Windows.Controls.Button;
             _secondaryButton = GetTemplateChild(PART_SecondaryButton) as System.Windows.Controls.Primitives.ToggleButton;
             _popup = GetTemplateChild(PART_Popup) as Popup;
-
             _primaryButton?.Click += OnPrimaryButtonClick;
-
             if (_secondaryButton != null)
             {
                 _secondaryButton.Checked += OnSecondaryButtonChecked;
                 _secondaryButton.Unchecked += OnSecondaryButtonUnchecked;
             }
-
             if (_popup != null)
             {
                 _popup.StaysOpen = false;
@@ -321,7 +319,6 @@ namespace Fluence.Wpf.Controls
         {
             // Primary half: raise Click and invoke Command.
             RaiseEvent(new RoutedEventArgs(ClickEvent, this));
-
             ICommand command = Command;
             if (command == null)
             {
@@ -330,7 +327,6 @@ namespace Fluence.Wpf.Controls
 
             object parameter = CommandParameter;
             IInputElement target = CommandTarget;
-
             if (command is RoutedCommand routedCommand)
             {
                 if (routedCommand.CanExecute(parameter, target))
@@ -347,14 +343,12 @@ namespace Fluence.Wpf.Controls
         private void OnSecondaryButtonChecked(object sender, RoutedEventArgs e)
         {
             _ = (_popup?.IsOpen = true);
-
             SetValue(IsFlyoutOpenPropertyKey, true);
         }
 
         private void OnSecondaryButtonUnchecked(object sender, RoutedEventArgs e)
         {
             _ = (_popup?.IsOpen = false);
-
             SetValue(IsFlyoutOpenPropertyKey, false);
         }
 
@@ -392,5 +386,21 @@ namespace Fluence.Wpf.Controls
             _popup?.Closed -= OnPopupClosed;
             _popup = null;
         }
+
+        /// <summary>
+        /// Represents the primary button control associated with the current context.
+        /// </summary>
+        private System.Windows.Controls.Button? _primaryButton;
+
+        /// <summary>
+        /// Represents the secondary toggle button control associated with this instance.
+        /// </summary>
+        private System.Windows.Controls.Primitives.ToggleButton? _secondaryButton;
+
+        /// <summary>
+        /// Represents the backing field for a Popup instance. This field holds a reference to the associated Popup, or
+        /// null if no Popup is currently assigned.
+        /// </summary>
+        private Popup? _popup;
     }
 }

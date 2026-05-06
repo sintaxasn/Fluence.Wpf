@@ -35,6 +35,12 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     public class ToggleButton : System.Windows.Controls.Primitives.ToggleButton
     {
+        /// <summary>
+        /// Initializes static members of the ToggleButton class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the ToggleButton control uses its own style by
+        /// default, rather than inheriting the style from its base class. This is important for custom control theming
+        /// in WPF.</remarks>
         static ToggleButton()
         {
             DefaultStyleKeyProperty.OverrideMetadata(

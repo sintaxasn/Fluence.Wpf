@@ -40,9 +40,8 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = PartCloseButton, Type = typeof(ButtonBase))]
     public class TabViewItem : TabItem
     {
+        // Template part names.
         private const string PartCloseButton = "PART_CloseButton";
-
-        private ButtonBase? _closeButton;
 
         /// <summary>
         /// Identifies the <see cref="IsClosable"/> dependency property.
@@ -73,6 +72,11 @@ namespace Fluence.Wpf.Controls
             typeof(RoutedEventHandler),
             typeof(TabViewItem));
 
+        /// <summary>
+        /// Initializes static members of the TabViewItem class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that TabViewItem uses its own style by default,
+        /// allowing custom styling and theming through XAML resources.</remarks>
         static TabViewItem()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -115,18 +119,19 @@ namespace Fluence.Wpf.Controls
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-
             _closeButton?.Click -= OnCloseButtonClick;
-
             _closeButton = GetTemplateChild(PartCloseButton) as ButtonBase;
-
             _closeButton?.Click += OnCloseButtonClick;
         }
 
         private void OnCloseButtonClick(object sender, RoutedEventArgs e)
         {
-            object data = DataContext ?? this;
-            RaiseEvent(new TabViewTabCloseRequestedEventArgs(CloseRequestedEvent, this, this, data));
+            RaiseEvent(new TabViewTabCloseRequestedEventArgs(CloseRequestedEvent, this, this, DataContext ?? this));
         }
+
+        /// <summary>
+        /// Represents the close button control associated with the current context.
+        /// </summary>
+        private ButtonBase? _closeButton;
     }
 }

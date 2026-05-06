@@ -37,6 +37,12 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     public class TreeView : System.Windows.Controls.TreeView
     {
+        /// <summary>
+        /// Initializes static members of the TreeView class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the TreeView control uses its own style by
+        /// default, rather than inheriting the style from its base class. This is important for custom control theming
+        /// in WPF.</remarks>
         static TreeView()
         {
             DefaultStyleKeyProperty.OverrideMetadata(

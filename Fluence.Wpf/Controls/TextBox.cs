@@ -43,6 +43,7 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = PART_HelperText, Type = typeof(System.Windows.Controls.TextBlock))]
     public class TextBox : System.Windows.Controls.TextBox
     {
+        // Template part names.
         private const string PART_ContentHost = "PART_ContentHost";
         private const string PART_ClearButton = "PART_ClearButton";
         private const string PART_CharacterCounter = "PART_CharacterCounter";
@@ -50,8 +51,12 @@ namespace Fluence.Wpf.Controls
         private const string PART_ValidationIcon = "PART_ValidationIcon";
         private const string PART_HelperText = "PART_HelperText";
 
-        private System.Windows.Controls.Button? _clearButton;
-
+        /// <summary>
+        /// Initializes static members of the TextBox class and overrides the default style metadata for the control.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the TextBox control uses its own style by
+        /// default, rather than inheriting the style from its base class. This is important for proper theming and
+        /// appearance in WPF applications.</remarks>
         static TextBox()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -264,12 +269,9 @@ namespace Fluence.Wpf.Controls
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-
             _clearButton?.Click -= OnClearButtonClick;
-
             _clearButton = GetTemplateChild(PART_ClearButton) as System.Windows.Controls.Button;
             _clearButton?.Click += OnClearButtonClick;
-
             UpdateCharacterCounter();
             UpdateHelperText();
         }
@@ -286,13 +288,11 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
             if (MaxLength <= 0)
             {
                 counter.Visibility = Visibility.Collapsed;
                 return;
             }
-
             counter.Visibility = Visibility.Visible;
             counter.Text = string.Format(CultureInfo.CurrentCulture, "{0}/{1}", Text != null ? Text.Length : 0, MaxLength);
         }
@@ -334,7 +334,6 @@ namespace Fluence.Wpf.Controls
                             break;
                     }
                 }
-
                 switch (ValidationState)
                 {
                     case ValidationState.Success:
@@ -351,15 +350,17 @@ namespace Fluence.Wpf.Controls
                     default:
                         break;
                 }
-
                 return;
             }
-
             _ = (icon?.Visibility = Visibility.Collapsed);
-
             helper.Text = HelperText;
             helper.Visibility = string.IsNullOrWhiteSpace(HelperText) ? Visibility.Collapsed : Visibility.Visible;
             helper.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "TextFillColorSecondaryBrush");
         }
+
+        /// <summary>
+        /// Represents a reference to the clear button control.
+        /// </summary>
+        private System.Windows.Controls.Button? _clearButton;
     }
 }

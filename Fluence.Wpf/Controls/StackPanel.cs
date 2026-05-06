@@ -63,15 +63,12 @@ namespace Fluence.Wpf.Controls
             double spacing = Spacing;
             UIElementCollection children = InternalChildren;
             int count = children.Count;
-
             if (count == 0)
             {
-                return new Size(0, 0);
+                return new(0, 0);
             }
 
-            double totalMain = 0;
-            double maxCross = 0;
-
+            double totalMain = 0; double maxCross = 0;
             if (orientation == Orientation.Vertical)
             {
                 double remainingHeight = constraint.Height;
@@ -83,19 +80,17 @@ namespace Fluence.Wpf.Controls
                         continue;
                     }
 
-                    child.Measure(new Size(constraint.Width, remainingHeight));
+                    child.Measure(new(constraint.Width, remainingHeight));
                     Size size = child.DesiredSize;
                     totalMain += size.Height;
                     if (i < count - 1)
                     {
                         totalMain += spacing;
                     }
-
                     remainingHeight = Math.Max(0, remainingHeight - size.Height - (i < count - 1 ? spacing : 0));
                     maxCross = Math.Max(maxCross, size.Width);
                 }
-
-                return new Size(maxCross, totalMain);
+                return new(maxCross, totalMain);
             }
 
             double remainingWidth = constraint.Width;
@@ -114,12 +109,10 @@ namespace Fluence.Wpf.Controls
                 {
                     totalMain += spacing;
                 }
-
                 remainingWidth = Math.Max(0, remainingWidth - size.Width - (i < count - 1 ? spacing : 0));
                 maxCross = Math.Max(maxCross, size.Height);
             }
-
-            return new Size(totalMain, maxCross);
+            return new(totalMain, maxCross);
         }
 
         /// <inheritdoc />
@@ -129,7 +122,6 @@ namespace Fluence.Wpf.Controls
             double spacing = Spacing;
             UIElementCollection children = InternalChildren;
             int count = children.Count;
-
             if (orientation == Orientation.Vertical)
             {
                 double y = 0.0;
@@ -149,7 +141,6 @@ namespace Fluence.Wpf.Controls
                         y += spacing;
                     }
                 }
-
                 return arrangeSize;
             }
 
@@ -170,7 +161,6 @@ namespace Fluence.Wpf.Controls
                     x += spacing;
                 }
             }
-
             return arrangeSize;
         }
     }
