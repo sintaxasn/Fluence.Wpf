@@ -47,9 +47,11 @@ namespace Fluence.Wpf.Controls
     [TemplateVisualState(GroupName = "EditableFocusedStates", Name = "EditableUnfocused")]
     public class ComboBox : System.Windows.Controls.ComboBox
     {
-        private const string PART_Popup = "PART_Popup";
+        // Template part names.
         private const string PART_DropdownBorder = "PART_DropdownBorder";
+        private const string PART_Popup = "PART_Popup";
 
+        // Read-only dependency properties for selected content and text.
         private static readonly DependencyPropertyKey SelectedContentPropertyKey =
             DependencyProperty.RegisterReadOnly(
                 nameof(SelectedContent),
@@ -76,6 +78,12 @@ namespace Fluence.Wpf.Controls
         public static readonly DependencyProperty SelectedTextProperty =
             SelectedTextPropertyKey.DependencyProperty;
 
+        /// <summary>
+        /// Initializes static members of the ComboBox class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the ComboBox control uses its specific default
+        /// style as defined in the application's theme or resource dictionaries. This is necessary for proper rendering
+        /// and theming of the control in WPF applications.</remarks>
         static ComboBox()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -199,9 +207,6 @@ namespace Fluence.Wpf.Controls
             private set => SetValue(IsDropDownOpenedUpwardPropertyKey, value);
         }
 
-        private Popup? _popup;
-        private bool _isAutoSelecting;
-
         /// <inheritdoc />
         public override void OnApplyTemplate()
         {
@@ -209,7 +214,6 @@ namespace Fluence.Wpf.Controls
             _popup = GetTemplateChild(PART_Popup) as Popup;
             UpdateSelectedContent();
             UpdateFocusState(false);
-
             if (SelectedIndex == -1 && Items.Count > 0 && !IsSelectedIndexExplicitlySet())
             {
                 _ = Dispatcher.BeginInvoke(TryAutoSelectFirstItem, DispatcherPriority.Loaded);
@@ -270,49 +274,32 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateDropDownDirection()
         {
-            if (_popup == null)
+            if (_popup is null || PresentationSource.FromVisual(this) is not PresentationSource source || source.CompositionTarget is null)
             {
                 return;
             }
-
-            PresentationSource source = PresentationSource.FromVisual(this);
-            if (source == null || source.CompositionTarget == null)
-            {
-                return;
-            }
-
-            Point bottomEdge = PointToScreen(new Point(0, ActualHeight));
-            Point topEdge = PointToScreen(new Point(0, 0));
-
             double dpiY = source.CompositionTarget.TransformToDevice.M22;
             double maxHeightPx = (MaxDropDownHeight > 0 ? MaxDropDownHeight : 480) * dpiY;
+            Point bottomEdge = PointToScreen(new Point(0, ActualHeight));
+            Point topEdge = PointToScreen(new Point(0, 0));
             double workBottom = SystemParameters.WorkArea.Bottom * dpiY;
             double workTop = SystemParameters.WorkArea.Top * dpiY;
-
             double spaceBelow = workBottom - bottomEdge.Y;
             double spaceAbove = topEdge.Y - workTop;
-
             bool openUpward = spaceBelow < maxHeightPx && spaceAbove > spaceBelow;
-
             IsDropDownOpenedUpward = openUpward;
             _popup.Placement = openUpward ? PlacementMode.Top : PlacementMode.Bottom;
         }
 
         private bool IsSelectedIndexExplicitlySet()
         {
-            ValueSource source = DependencyPropertyHelper.GetValueSource(
-                this, SelectedIndexProperty);
+            ValueSource source = DependencyPropertyHelper.GetValueSource(this, SelectedIndexProperty);
             return source.BaseValueSource != BaseValueSource.Default;
         }
 
         private void TryAutoSelectFirstItem()
         {
-            if (_isAutoSelecting || SelectedIndex != -1 || Items.Count == 0)
-            {
-                return;
-            }
-
-            if (!IsSelectedIndexExplicitlySet())
+            if (!_isAutoSelecting && SelectedIndex == -1 && Items.Count > 0 && !IsSelectedIndexExplicitlySet())
             {
                 _isAutoSelecting = true;
                 try
@@ -335,9 +322,20 @@ namespace Fluence.Wpf.Controls
                 SelectedText = comboBoxItem.Content?.ToString() ?? string.Empty;
                 return;
             }
-
             SelectedContent = item;
             SelectedText = item?.ToString() ?? string.Empty;
         }
+
+        /// <summary>
+        /// Represents the backing field for a Popup instance, which may be null if no popup is currently associated.
+        /// </summary>
+        /// <remarks>This field is typically used internally to store a reference to a Popup control. It
+        /// is not intended for direct access outside the containing class.</remarks>
+        private Popup? _popup;
+
+        /// <summary>
+        /// Indicates whether the auto-selection process is currently active.
+        /// </summary>
+        private bool _isAutoSelecting;
     }
 }

@@ -35,6 +35,12 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     public class CheckBox : System.Windows.Controls.CheckBox
     {
+        /// <summary>
+        /// Initializes static members of the CheckBox class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the CheckBox control uses its own style by
+        /// default, rather than inheriting the style from its base class. This is important for custom control theming
+        /// and styling in WPF applications.</remarks>
         static CheckBox()
         {
             DefaultStyleKeyProperty.OverrideMetadata(

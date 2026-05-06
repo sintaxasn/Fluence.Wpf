@@ -38,9 +38,12 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     public class Button : System.Windows.Controls.Button
     {
-        private ContentPresenter? _mainContentPresenter;
-        private bool _hasAutomaticToolTip;
-
+        /// <summary>
+        /// Initializes static members of the Button class and overrides the default style metadata for the control.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the Button control uses its own style by
+        /// default, rather than inheriting the style from its base class. This is important for custom control
+        /// development in WPF, as it allows the control to be styled appropriately when used in XAML.</remarks>
         static Button()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -128,12 +131,9 @@ namespace Fluence.Wpf.Controls
         public override void OnApplyTemplate()
         {
             _mainContentPresenter?.SizeChanged -= OnMainContentPresenterSizeChanged;
-
             base.OnApplyTemplate();
-
             _mainContentPresenter = GetTemplateChild("MainContentPresenter") as ContentPresenter;
             _mainContentPresenter?.SizeChanged += OnMainContentPresenterSizeChanged;
-
             UpdateTruncationToolTip();
         }
 
@@ -155,24 +155,20 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
             if (Content is not string text || string.IsNullOrWhiteSpace(text))
             {
                 ClearAutomaticToolTip();
                 return;
             }
-
             if (_mainContentPresenter == null)
             {
                 return;
             }
-
             if (FindVisualChild<System.Windows.Controls.TextBlock>(_mainContentPresenter) is not System.Windows.Controls.TextBlock textBlock)
             {
                 ClearAutomaticToolTip();
                 return;
             }
-
             FormattedText formattedText = new(
                 text,
                 CultureInfo.CurrentCulture,
@@ -207,7 +203,6 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
             _hasAutomaticToolTip = false;
             ClearValue(ToolTipProperty);
         }
@@ -218,7 +213,6 @@ namespace Fluence.Wpf.Controls
             {
                 return null;
             }
-
             int childCount = VisualTreeHelper.GetChildrenCount(parent);
             for (int i = 0; i < childCount; i++)
             {
@@ -233,8 +227,17 @@ namespace Fluence.Wpf.Controls
                     return descendant;
                 }
             }
-
             return null;
         }
+
+        /// <summary>
+        /// Represents the main content presenter used to display content within the control.
+        /// </summary>
+        private ContentPresenter? _mainContentPresenter;
+
+        /// <summary>
+        /// Indicates whether an automatic tooltip is enabled.
+        /// </summary>
+        private bool _hasAutomaticToolTip;
     }
 }

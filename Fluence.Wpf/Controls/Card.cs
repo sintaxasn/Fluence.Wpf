@@ -38,6 +38,12 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     public class Card : ContentControl
     {
+        /// <summary>
+        /// Initializes static members of the Card class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the Card control uses its custom style by
+        /// default. It is called automatically before any static members are accessed or any instances are
+        /// created.</remarks>
         static Card()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -244,12 +250,7 @@ namespace Fluence.Wpf.Controls
         protected override void OnKeyDown(KeyEventArgs e)
         {
             base.OnKeyDown(e);
-            if (!IsClickable || !IsEnabled)
-            {
-                return;
-            }
-
-            if (e.Key is Key.Enter or Key.Space)
+            if (IsClickable && IsEnabled && e.Key is Key.Enter or Key.Space)
             {
                 IsPressed = true;
                 e.Handled = true;
@@ -260,12 +261,7 @@ namespace Fluence.Wpf.Controls
         protected override void OnKeyUp(KeyEventArgs e)
         {
             base.OnKeyUp(e);
-            if (!IsClickable || !IsEnabled)
-            {
-                return;
-            }
-
-            if (e.Key is Key.Enter or Key.Space)
+            if (IsClickable && IsEnabled && e.Key is Key.Enter or Key.Space)
             {
                 bool wasPressed = IsPressed;
                 IsPressed = false;
@@ -273,7 +269,6 @@ namespace Fluence.Wpf.Controls
                 {
                     RaiseEvent(new RoutedEventArgs(ClickEvent, this));
                 }
-
                 e.Handled = true;
             }
         }
@@ -282,13 +277,11 @@ namespace Fluence.Wpf.Controls
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonDown(e);
-            if (!IsClickable || !IsEnabled)
+            if (IsClickable && IsEnabled)
             {
-                return;
+                IsPressed = true;
+                _ = CaptureMouse();
             }
-
-            IsPressed = true;
-            _ = CaptureMouse();
         }
 
         /// <inheritdoc />
@@ -301,7 +294,6 @@ namespace Fluence.Wpf.Controls
                 IsPressed = false;
                 ReleaseMouseCapture();
             }
-
             if (wasPressed && IsClickable && IsEnabled)
             {
                 RaiseEvent(new RoutedEventArgs(ClickEvent, this));
