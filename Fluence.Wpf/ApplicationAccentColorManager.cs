@@ -403,25 +403,13 @@ namespace Fluence.Wpf
 
             if (colorPrevalence)
             {
-                if (RegistryHelper.TryGetDwmAccentColor(out Color dwmAccent))
-                {
-                    _titleBarActiveColor = dwmAccent;
-                }
-                else
-                {
-                    _titleBarActiveColor = _systemAccentColor;
-                }
+                _titleBarActiveColor = !RegistryHelper.TryGetDwmAccentColor(out Color dwmAccent)
+                    ? _systemAccentColor
+                    : dwmAccent;
 
-                if (RegistryHelper.TryGetDwmAccentColorInactive(out Color inactive))
-                {
-                    _titleBarInactiveColor = inactive;
-                }
-                else
-                {
-                    _titleBarInactiveColor = isDark
-                        ? Color.FromRgb(0x2B, 0x2B, 0x2B)
-                        : Color.FromRgb(0xFF, 0xFF, 0xFF);
-                }
+                _titleBarInactiveColor = !RegistryHelper.TryGetDwmAccentColorInactive(out Color inactive)
+                    ? isDark ? Color.FromRgb(0x2B, 0x2B, 0x2B) : Color.FromRgb(0xFF, 0xFF, 0xFF)
+                    : inactive;
             }
             else
             {
@@ -433,25 +421,9 @@ namespace Fluence.Wpf
                     : Color.FromRgb(0xFF, 0xFF, 0xFF);
             }
 
-            bool isWin11 = Environment.OSVersion.Version.Build >= 22000;
-            if (isWin11)
-            {
-                _windowBorderColor = _titleBarActiveColor;
-            }
-            else
-            {
-                if (RegistryHelper.TryGetColorizationBalance(out Color colorizationColor, out int balance))
-                {
-                    _windowBorderColor = HsvColorHelper.BlendColors(
-                        colorizationColor,
-                        Color.FromRgb(0xD9, 0xD9, 0xD9),
-                        balance);
-                }
-                else
-                {
-                    _windowBorderColor = _titleBarActiveColor;
-                }
-            }
+            _windowBorderColor = Environment.OSVersion.Version.Build < 22000 && RegistryHelper.TryGetColorizationBalance(out Color colorizationColor, out int balance)
+                ? HsvColorHelper.BlendColors(colorizationColor, Color.FromRgb(0xD9, 0xD9, 0xD9), balance)
+                : _titleBarActiveColor;
 
             resources["TitleBarActiveColor"] = _titleBarActiveColor;
             resources["TitleBarInactiveColor"] = _titleBarInactiveColor;

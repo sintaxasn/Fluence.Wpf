@@ -225,42 +225,17 @@ namespace Fluence.Wpf.Native
         // window styles, so it cannot be silently gated the way WM_SYSCOMMAND can.
         public static bool MinimizeWindowNative(IntPtr hwnd)
         {
-            if (hwnd == IntPtr.Zero)
-            {
-                return false;
-            }
-
-            if (IsIconic(hwnd))
-            {
-                return true;
-            }
-
-            return ShowWindow(hwnd, SW_MINIMIZE);
+            return hwnd != IntPtr.Zero && (IsIconic(hwnd) || ShowWindow(hwnd, SW_MINIMIZE));
         }
 
         public static bool MaximizeWindowNative(IntPtr hwnd)
         {
-            if (hwnd == IntPtr.Zero)
-            {
-                return false;
-            }
-
-            if (IsZoomed(hwnd))
-            {
-                return true;
-            }
-
-            return ShowWindow(hwnd, SW_MAXIMIZE);
+            return hwnd != IntPtr.Zero && (IsZoomed(hwnd) || ShowWindow(hwnd, SW_MAXIMIZE));
         }
 
         public static bool RestoreWindowNative(IntPtr hwnd)
         {
-            if (hwnd == IntPtr.Zero)
-            {
-                return false;
-            }
-
-            return ShowWindow(hwnd, SW_RESTORE);
+            return hwnd != IntPtr.Zero && ShowWindow(hwnd, SW_RESTORE);
         }
 
         public static bool RoundWindowCorner(IntPtr hwnd)
@@ -277,12 +252,9 @@ namespace Fluence.Wpf.Native
             };
 
             int result = RtlGetVersion(ref versionInfo);
-            if (result != 0)
-            {
-                throw new InvalidOperationException("RtlGetVersion failed.");
-            }
-
-            return new Version(
+            return result != 0
+                ? throw new InvalidOperationException("RtlGetVersion failed.")
+                : new Version(
                 versionInfo.MajorVersion,
                 versionInfo.MinorVersion,
                 versionInfo.BuildNumber,

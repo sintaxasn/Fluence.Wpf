@@ -30,12 +30,9 @@ namespace Fluence.Wpf.Automation
         /// <inheritdoc />
         public override object GetPattern(PatternInterface patternInterface)
         {
-            if (patternInterface == PatternInterface.ExpandCollapse)
-            {
-                return this;
-            }
-
-            return base.GetPattern(patternInterface);
+            return patternInterface != PatternInterface.ExpandCollapse
+                ? base.GetPattern(patternInterface)
+                : this;
         }
 
         ExpandCollapseState IExpandCollapseProvider.ExpandCollapseState => DropDownButton.IsChecked == true

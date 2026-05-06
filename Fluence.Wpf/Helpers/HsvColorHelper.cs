@@ -56,18 +56,7 @@ namespace Fluence.Wpf.Helpers
 
             if (delta > 0)
             {
-                if (max == r)
-                {
-                    hue = 60 * (((g - b) / delta) % 6);
-                }
-                else if (max == g)
-                {
-                    hue = 60 * (((b - r) / delta) + 2);
-                }
-                else
-                {
-                    hue = 60 * (((r - g) / delta) + 4);
-                }
+                hue = max == r ? 60 * ((g - b) / delta % 6) : max == g ? 60 * (((b - r) / delta) + 2) : 60 * (((r - g) / delta) + 4);
 
                 if (hue < 0)
                 {
@@ -260,18 +249,7 @@ namespace Fluence.Wpf.Helpers
                 double d = max - min;
                 s = l > 0.5 ? d / (2.0 - max - min) : d / (max + min);
 
-                if (max == r)
-                {
-                    h = ((g - b) / d) + (g < b ? 6 : 0);
-                }
-                else if (max == g)
-                {
-                    h = ((b - r) / d) + 2;
-                }
-                else
-                {
-                    h = ((r - g) / d) + 4;
-                }
+                h = max == r ? ((g - b) / d) + (g < b ? 6 : 0) : max == g ? ((b - r) / d) + 2 : ((r - g) / d) + 4;
 
                 h /= 6.0;
             }
@@ -316,22 +294,7 @@ namespace Fluence.Wpf.Helpers
                 t -= 1;
             }
 
-            if (t < 1.0 / 6.0)
-            {
-                return p + ((q - p) * 6 * t);
-            }
-
-            if (t < 1.0 / 2.0)
-            {
-                return q;
-            }
-
-            if (t < 2.0 / 3.0)
-            {
-                return p + ((q - p) * ((2.0 / 3.0) - t) * 6);
-            }
-
-            return p;
+            return t < 1.0 / 6.0 ? p + ((q - p) * 6 * t) : t < 1.0 / 2.0 ? q : t < 2.0 / 3.0 ? p + ((q - p) * ((2.0 / 3.0) - t) * 6) : p;
         }
 
         /// <summary>

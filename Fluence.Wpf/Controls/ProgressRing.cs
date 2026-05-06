@@ -437,20 +437,7 @@ namespace Fluence.Wpf.Controls
         private static object CoerceRingValue(DependencyObject d, object baseValue)
         {
             ProgressRing ring = (ProgressRing)d;
-            double v = (double)baseValue;
-            double min = ring.Minimum;
-            double max = ring.Maximum;
-            if (v < min)
-            {
-                return min;
-            }
-
-            if (v > max)
-            {
-                return max;
-            }
-
-            return baseValue;
+            return Math.Min(Math.Max((double)baseValue, ring.Minimum), ring.Maximum);
         }
 
         private static void OnMinMaxPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -614,12 +601,7 @@ namespace Fluence.Wpf.Controls
         private double ComputeFraction()
         {
             double range = Maximum - Minimum;
-            if (range <= 0)
-            {
-                return 0;
-            }
-
-            return Math.Max(0, Math.Min(1, (Value - Minimum) / range));
+            return range > 0 ? Math.Max(0, Math.Min(1, (Value - Minimum) / range)) : 0;
         }
 
         // ──────────────────────────────────────────────────────────────────────

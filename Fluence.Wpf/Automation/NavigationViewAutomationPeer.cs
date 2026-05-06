@@ -29,12 +29,9 @@ namespace Fluence.Wpf.Automation
         /// <inheritdoc />
         public override object GetPattern(PatternInterface patternInterface)
         {
-            if (patternInterface == PatternInterface.Selection)
-            {
-                return this;
-            }
-
-            return base.GetPattern(patternInterface);
+            return patternInterface != PatternInterface.Selection
+                ? base.GetPattern(patternInterface)
+                : this;
         }
 
         bool ISelectionProvider.CanSelectMultiple => false;
@@ -44,23 +41,9 @@ namespace Fluence.Wpf.Automation
         IRawElementProviderSimple[] ISelectionProvider.GetSelection()
         {
             object selected = NavigationView.SelectedItem;
-            if (selected == null)
-            {
-                return [];
-            }
-
-            if (NavigationView.ItemContainerGenerator.ContainerFromItem(selected) is not NavigationViewItem container)
-            {
-                return [];
-            }
-
-            AutomationPeer peer = CreatePeerForElement(container);
-            if (peer == null)
-            {
-                return [];
-            }
-
-            return [ProviderFromPeer(peer)];
+            return selected is not null && NavigationView.ItemContainerGenerator.ContainerFromItem(selected) is NavigationViewItem container
+                ? [ProviderFromPeer(CreatePeerForElement(container))]
+                : [];
         }
     }
 }

@@ -135,14 +135,9 @@ namespace Fluence.Wpf.Controls
 
         public static Thickness GetResizeBorderThickness(WindowState windowState, ResizeMode resizeMode)
         {
-            if (windowState == WindowState.Maximized ||
-                resizeMode == ResizeMode.NoResize ||
-                resizeMode == ResizeMode.CanMinimize)
-            {
-                return new Thickness(0);
-            }
-
-            return new Thickness(4);
+            return windowState == WindowState.Maximized || resizeMode == ResizeMode.NoResize || resizeMode == ResizeMode.CanMinimize
+                ? new Thickness(0)
+                : new Thickness(4);
         }
 
         public static FramePlan BuildFramePlan(
@@ -155,15 +150,9 @@ namespace Fluence.Wpf.Controls
             Thickness templateBorderThickness = windowState == WindowState.Maximized
                 ? new Thickness(0)
                 : new Thickness(2);
-            string templateBorderBrushResourceKey;
-            if (isActive && isAccentBorderEnabled)
-            {
-                templateBorderBrushResourceKey = "SystemAccentColorBrush";
-            }
-            else
-            {
-                templateBorderBrushResourceKey = "CardStrokeColorDefaultSolidBrush";
-            }
+            string templateBorderBrushResourceKey = !isActive || !isAccentBorderEnabled
+                ? "CardStrokeColorDefaultSolidBrush"
+                : "SystemAccentColorBrush";
             int dwmBorderColor = NativeConstants.DWMWA_COLOR_DEFAULT;
 
             if (capabilities.SupportsBorderColor && isActive && isAccentBorderEnabled)
@@ -176,44 +165,18 @@ namespace Fluence.Wpf.Controls
 
         public static BackdropType ResolveEffectiveBackdrop(BackdropType requestedBackdrop, WindowCapabilities capabilities)
         {
-            if (requestedBackdrop == BackdropType.Auto)
+            return requestedBackdrop switch
             {
-                if (capabilities.SupportsSystemBackdropType || capabilities.SupportsMicaEffect)
-                {
-                    return BackdropType.Mica;
-                }
-
-                return BackdropType.None;
-            }
-
-            if (requestedBackdrop == BackdropType.None)
-            {
-                return BackdropType.None;
-            }
-
-            if (requestedBackdrop == BackdropType.Mica)
-            {
-                return capabilities.SupportsSystemBackdropType || capabilities.SupportsMicaEffect
+                BackdropType.Auto or BackdropType.Mica => capabilities.SupportsSystemBackdropType || capabilities.SupportsMicaEffect
                     ? BackdropType.Mica
-                    : BackdropType.None;
-            }
+                    : BackdropType.None,
 
-            if (requestedBackdrop is BackdropType.Acrylic or BackdropType.Tabbed)
-            {
-                if (capabilities.SupportsSystemBackdropType)
-                {
-                    return requestedBackdrop;
-                }
+                BackdropType.Acrylic or BackdropType.Tabbed => !capabilities.SupportsSystemBackdropType
+                    ? capabilities.SupportsMicaEffect ? BackdropType.Mica : BackdropType.None
+                    : requestedBackdrop,
 
-                if (capabilities.SupportsMicaEffect)
-                {
-                    return BackdropType.Mica;
-                }
-
-                return BackdropType.None;
-            }
-
-            return requestedBackdrop;
+                BackdropType.None or _ => requestedBackdrop
+            };
         }
 
         public static BackdropPlan BuildBackdropPlan(
@@ -225,40 +188,11 @@ namespace Fluence.Wpf.Controls
             BackdropType effectiveBackdrop = ResolveEffectiveBackdrop(requestedBackdrop, capabilities);
             bool isDark = resolvedTheme == ApplicationTheme.Dark;
 
-            if (effectiveBackdrop == BackdropType.None)
-            {
-                return new BackdropPlan(
-                    effectiveBackdrop,
-                    false,
-                    fallbackBackgroundColor,
-                    NativeConstants.DWMWA_COLOR_DEFAULT,
-                    capabilities.SupportsSystemBackdropType ? NativeConstants.DWMSBT_NONE : null,
-                    false,
-                    isDark);
-            }
-
-            if (effectiveBackdrop == BackdropType.Mica &&
-                !capabilities.SupportsSystemBackdropType &&
-                capabilities.SupportsMicaEffect)
-            {
-                return new BackdropPlan(
-                    effectiveBackdrop,
-                    true,
-                    Colors.Transparent,
-                    NativeConstants.DWMWA_COLOR_NONE,
-                    null,
-                    true,
-                    isDark);
-            }
-
-            return new BackdropPlan(
-                effectiveBackdrop,
-                true,
-                Colors.Transparent,
-                NativeConstants.DWMWA_COLOR_NONE,
-                MapSystemBackdropType(effectiveBackdrop),
-                false,
-                isDark);
+            return effectiveBackdrop == BackdropType.None
+                ? new BackdropPlan(effectiveBackdrop, false, fallbackBackgroundColor, NativeConstants.DWMWA_COLOR_DEFAULT, capabilities.SupportsSystemBackdropType ? NativeConstants.DWMSBT_NONE : null, false, resolvedTheme == ApplicationTheme.Dark)
+                : effectiveBackdrop != BackdropType.Mica || capabilities.SupportsSystemBackdropType || !capabilities.SupportsMicaEffect
+                ? new BackdropPlan(effectiveBackdrop, true, Colors.Transparent, NativeConstants.DWMWA_COLOR_NONE, MapSystemBackdropType(effectiveBackdrop), false, isDark)
+                : new BackdropPlan(effectiveBackdrop, true, Colors.Transparent, NativeConstants.DWMWA_COLOR_NONE, null, true, isDark);
         }
 
         public static int GetCornerPreference(CornerPreference preference)

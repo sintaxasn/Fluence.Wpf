@@ -95,19 +95,8 @@ namespace Fluence.Wpf.Controls
 
         private static object CoerceValue(DependencyObject d, object baseValue)
         {
-            RatingControl ctrl = (RatingControl)d;
             double v = (double)baseValue;
-            if (v < 0.0)
-            {
-                return 0.0;
-            }
-
-            if (v > ctrl.MaxRating)
-            {
-                return (double)ctrl.MaxRating;
-            }
-
-            return v;
+            return v > 0 ? Math.Min(v, ((RatingControl)d).MaxRating) : 0;
         }
 
         // -----------------------------------------------------------------------

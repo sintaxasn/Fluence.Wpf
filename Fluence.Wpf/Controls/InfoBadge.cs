@@ -109,14 +109,9 @@ namespace Fluence.Wpf.Controls
         private static void OnIconSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             InfoBadge badge = (InfoBadge)d;
-            if (e.NewValue != null)
-            {
-                badge.Content = e.NewValue;
-            }
-            else
-            {
-                badge.Content = badge.Value >= 0 ? badge.Value.ToString(CultureInfo.CurrentCulture) : null;
-            }
+            badge.Content = e.NewValue ?? (badge.Value >= 0
+                ? badge.Value.ToString(CultureInfo.CurrentCulture)
+                : null);
 
             badge.UpdateDisplayKindState();
         }
@@ -136,20 +131,7 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateDisplayKindState(bool useTransitions = true)
         {
-            string state;
-            if (IconSource != null)
-            {
-                state = "Icon";
-            }
-            else if (Value >= 0)
-            {
-                state = "Value";
-            }
-            else
-            {
-                state = "Dot";
-            }
-
+            string state = IconSource != null ? "Icon" : Value >= 0 ? "Value" : "Dot";
             _ = VisualStateManager.GoToState(this, state, useTransitions);
         }
     }

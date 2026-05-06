@@ -26,14 +26,10 @@ namespace Fluence.Wpf.Automation
         /// <inheritdoc />
         protected override string GetNameCore()
         {
-            InfoBar infoBar = (InfoBar)Owner;
-            string title = infoBar.Title;
-            if (!string.IsNullOrEmpty(title))
-            {
-                return title;
-            }
-
-            return base.GetNameCore();
+            string title = ((InfoBar)Owner).Title;
+            return string.IsNullOrWhiteSpace(title)
+                ? base.GetNameCore()
+                : title;
         }
     }
 }

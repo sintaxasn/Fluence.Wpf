@@ -143,17 +143,9 @@ namespace Fluence.Wpf
 
         internal static ApplicationTheme ResolveTheme(ApplicationTheme theme)
         {
-            if (theme == ApplicationTheme.Auto)
-            {
-                if (RegistryHelper.IsHighContrastEnabled())
-                {
-                    return ApplicationTheme.HighContrast;
-                }
-
-                return RegistryHelper.GetAppsUseLightTheme() ? ApplicationTheme.Light : ApplicationTheme.Dark;
-            }
-
-            return theme;
+            return theme == ApplicationTheme.Auto
+                ? !RegistryHelper.IsHighContrastEnabled() ? !RegistryHelper.GetAppsUseLightTheme() ? ApplicationTheme.Dark : ApplicationTheme.Light : ApplicationTheme.HighContrast
+                : theme;
         }
 
         internal static ApplicationTheme GetResolvedTheme()

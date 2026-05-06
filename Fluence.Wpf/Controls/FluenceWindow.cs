@@ -1133,12 +1133,7 @@ namespace Fluence.Wpf.Controls
             // If a custom-content child marked with IsHitTestVisibleInChrome=True is under the
             // cursor (e.g. a search TextBox or ToggleSwitch in the TitleBar content area), return
             // HTCLIENT so Windows passes the click to WPF rather than treating it as a drag.
-            if (IsOverInteractiveContent(point))
-            {
-                return 0;
-            }
-
-            return IsMoveable ? NativeConstants.HTCAPTION : 0;
+            return !IsOverInteractiveContent(point) && IsMoveable ? NativeConstants.HTCAPTION : 0;
         }
 
         private void SetSnapHover(System.Windows.Controls.Button button)
@@ -1215,18 +1210,11 @@ namespace Fluence.Wpf.Controls
         private static Color GetFallbackBackgroundColor()
         {
             ApplicationTheme resolvedTheme = ApplicationThemeManager.GetResolvedTheme();
-
-            if (resolvedTheme == ApplicationTheme.Dark)
-            {
-                return Color.FromRgb(0x20, 0x20, 0x20);
-            }
-
-            if (resolvedTheme == ApplicationTheme.HighContrast)
-            {
-                return SystemColors.WindowColor;
-            }
-
-            return Color.FromRgb(0xFA, 0xFA, 0xFA);
+            return resolvedTheme == ApplicationTheme.Dark
+                ? Color.FromRgb(0x20, 0x20, 0x20)
+                : resolvedTheme == ApplicationTheme.HighContrast
+                ? SystemColors.WindowColor
+                : Color.FromRgb(0xFA, 0xFA, 0xFA);
         }
 
         #region Command Handlers

@@ -29,12 +29,9 @@ namespace Fluence.Wpf.Automation
         /// <inheritdoc />
         public override object GetPattern(PatternInterface patternInterface)
         {
-            if (patternInterface == PatternInterface.RangeValue)
-            {
-                return this;
-            }
-
-            return base.GetPattern(patternInterface);
+            return patternInterface != PatternInterface.RangeValue
+                ? base.GetPattern(patternInterface)
+                : this;
         }
 
         double IRangeValueProvider.Value => NumberBox.Value;

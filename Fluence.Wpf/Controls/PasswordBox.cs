@@ -575,20 +575,11 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateStrengthMeter()
         {
-            string brushKey;
-            if (PasswordStrength <= 1)
-            {
-                brushKey = "SystemFillColorCriticalBrush";
-            }
-            else if (PasswordStrength == 2)
-            {
-                brushKey = "SystemFillColorCautionBrush";
-            }
-            else
-            {
-                brushKey = "SystemFillColorSuccessBrush";
-            }
-
+            string brushKey = PasswordStrength <= 1
+                ? "SystemFillColorCriticalBrush"
+                : PasswordStrength == 2
+                ? "SystemFillColorCautionBrush"
+                : "SystemFillColorSuccessBrush";
             for (int i = 0; i < 4; i++)
             {
                 if (GetTemplateChild("PART_StrengthSegment" + i) is not System.Windows.Controls.Border segment)

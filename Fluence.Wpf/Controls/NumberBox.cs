@@ -531,17 +531,7 @@ namespace Fluence.Wpf.Controls
                 max = t;
             }
 
-            if (value < min)
-            {
-                return min;
-            }
-
-            if (value > max)
-            {
-                return max;
-            }
-
-            return value;
+            return Math.Min(Math.Max(value, min), max);
         }
     }
 }

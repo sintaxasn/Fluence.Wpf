@@ -311,14 +311,7 @@ namespace Fluence.Wpf.Controls
             _paneScrollViewer = GetTemplateChild(PartPaneItemsScrollViewer) as ScrollViewer;
             _selectionIndicator = GetTemplateChild(PartSelectionIndicator) as FrameworkElement;
 
-            if (_selectionIndicator != null)
-            {
-                _indicatorHost = VisualTreeHelper.GetParent(_selectionIndicator) as FrameworkElement;
-            }
-            else
-            {
-                _indicatorHost = null;
-            }
+            _indicatorHost = _selectionIndicator != null ? VisualTreeHelper.GetParent(_selectionIndicator) as FrameworkElement : null;
 
             _indicatorPositioned = false;
             StopAnimation();
@@ -614,19 +607,7 @@ namespace Fluence.Wpf.Controls
 
         private bool ShouldIndentSelectionIndicator(NavigationViewItem item, bool topMode)
         {
-            if (topMode || item == null || !item.IsChildItem)
-            {
-                return false;
-            }
-
-            if (!IsPaneOpen
-                && (PaneDisplayMode == NavigationViewPaneDisplayMode.Left
-                    || PaneDisplayMode == NavigationViewPaneDisplayMode.LeftCompact))
-            {
-                return false;
-            }
-
-            return true;
+            return !topMode && item != null && item.IsChildItem && (IsPaneOpen || (PaneDisplayMode != NavigationViewPaneDisplayMode.Left && PaneDisplayMode != NavigationViewPaneDisplayMode.LeftCompact));
         }
 
         private Point GetCurrentIndicatorPosition()
@@ -959,14 +940,11 @@ namespace Fluence.Wpf.Controls
             translate.BeginAnimation(TranslateTransform.YProperty, null);
         }
 
-        private NavigationViewItem ResolveNavigationViewItem(object item)
+        private NavigationViewItem? ResolveNavigationViewItem(object item)
         {
-            if (item is NavigationViewItem nvi)
-            {
-                return nvi;
-            }
-
-            return ItemContainerGenerator.ContainerFromItem(item) as NavigationViewItem;
+            return item is not NavigationViewItem nvi
+                ? ItemContainerGenerator.ContainerFromItem(item) as NavigationViewItem
+                : nvi;
         }
 
         internal void SelectItemFromContainer(NavigationViewItem navItem)

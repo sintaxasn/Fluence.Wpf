@@ -30,27 +30,14 @@ namespace Fluence.Wpf.Automation
         /// <inheritdoc />
         public override object GetPattern(PatternInterface patternInterface)
         {
-            if (patternInterface == PatternInterface.Toggle)
-            {
-                return this;
-            }
-
-            return base.GetPattern(patternInterface);
+            return patternInterface != PatternInterface.Toggle
+                ? base.GetPattern(patternInterface)
+                : this;
         }
 
-        ToggleState IToggleProvider.ToggleState
-        {
-            get
-            {
-                bool? isChecked = ToggleSwitch.IsChecked;
-                if (isChecked == true)
-                {
-                    return ToggleState.On;
-                }
-
-                return isChecked == false ? ToggleState.Off : ToggleState.Indeterminate;
-            }
-        }
+        ToggleState IToggleProvider.ToggleState => ToggleSwitch.IsChecked is bool isChecked
+            ? !isChecked ? ToggleState.Off : ToggleState.On
+            : ToggleState.Indeterminate;
 
         void IToggleProvider.Toggle()
         {

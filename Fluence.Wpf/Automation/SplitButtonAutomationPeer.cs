@@ -60,17 +60,9 @@ namespace Fluence.Wpf.Automation
         /// <inheritdoc />
         public override object GetPattern(PatternInterface patternInterface)
         {
-            if (patternInterface == PatternInterface.Invoke)
-            {
-                return this;
-            }
-
-            if (patternInterface == PatternInterface.ExpandCollapse)
-            {
-                return this;
-            }
-
-            return base.GetPattern(patternInterface);
+            return patternInterface is not (PatternInterface.Invoke or PatternInterface.ExpandCollapse)
+                ? base.GetPattern(patternInterface)
+                : this;
         }
 
         void IInvokeProvider.Invoke()
