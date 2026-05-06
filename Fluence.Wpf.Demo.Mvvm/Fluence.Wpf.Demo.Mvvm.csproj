@@ -3,14 +3,11 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
-    <LangVersion>latest</LangVersion>
     <Nullable>disable</Nullable>
     <UseWPF>true</UseWPF>
     <RootNamespace>Fluence.Wpf.Demo.Mvvm</RootNamespace>
     <AssemblyName>Fluence.Wpf.Demo.Mvvm</AssemblyName>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningLevel>4</WarningLevel>
     <ApplicationIcon>Resources\fluence-wpf-appicon-256.ico</ApplicationIcon>
   </PropertyGroup>
 

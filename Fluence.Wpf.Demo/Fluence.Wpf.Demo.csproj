@@ -3,14 +3,10 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFrameworks>net472;net10.0-windows10.0.26100.0</TargetFrameworks>
-    <LangVersion Condition="'$(TargetFramework)' == 'net472'">7.3</LangVersion>
-    <LangVersion Condition="$(TargetFramework.StartsWith('net10'))">latest</LangVersion>
     <UseWPF>true</UseWPF>
     <RootNamespace>Fluence.Wpf.Demo</RootNamespace>
     <AssemblyName>Fluence.Wpf.Demo</AssemblyName>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <WarningLevel>4</WarningLevel>
     <ApplicationIcon>Resources\fluence-wpf-appicon-256.ico</ApplicationIcon>
   </PropertyGroup>
 
