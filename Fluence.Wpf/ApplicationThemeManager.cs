@@ -63,16 +63,14 @@ namespace Fluence.Wpf
         private const int SlotGeneric = 4;
 
         private static bool _isInitialized;
-        private static ApplicationTheme _currentTheme = ApplicationTheme.Auto;
-        private static BackdropType _currentBackdrop = BackdropType.Auto;
         private static bool _isApplying;
         private static System.Collections.Generic.List<object> _promotedHighContrastBrushKeys;
 
         /// <summary>Gets the currently requested theme (may be <see cref="ApplicationTheme.Auto"/>).</summary>
-        public static ApplicationTheme CurrentTheme => _currentTheme;
+        public static ApplicationTheme CurrentTheme { get; private set; } = ApplicationTheme.Auto;
 
         /// <summary>Gets the currently requested backdrop type.</summary>
-        public static BackdropType CurrentBackdrop => _currentBackdrop;
+        public static BackdropType CurrentBackdrop { get; private set; } = BackdropType.Auto;
 
         /// <summary>
         /// Gets a value indicating whether the Windows system (window-chrome) color mode is currently Dark.
@@ -106,8 +104,8 @@ namespace Fluence.Wpf
             try
             {
                 ApplicationTheme resolvedTheme = ResolveTheme(theme);
-                _currentTheme = theme;
-                _currentBackdrop = backdrop;
+                CurrentTheme = theme;
+                CurrentBackdrop = backdrop;
 
                 if (!_isInitialized)
                 {
@@ -138,7 +136,7 @@ namespace Fluence.Wpf
         /// <summary>Re-applies with <see cref="ApplicationTheme.Auto"/> to pick up system changes.</summary>
         public static void ApplySystemTheme()
         {
-            Apply(ApplicationTheme.Auto, _currentBackdrop, true);
+            Apply(ApplicationTheme.Auto, CurrentBackdrop, true);
         }
 
         internal static ApplicationTheme ResolveTheme(ApplicationTheme theme)
@@ -150,7 +148,7 @@ namespace Fluence.Wpf
 
         internal static ApplicationTheme GetResolvedTheme()
         {
-            return ResolveTheme(_currentTheme);
+            return ResolveTheme(CurrentTheme);
         }
 
         private static void InitializeDictionaries(ApplicationTheme resolvedTheme)
@@ -333,8 +331,8 @@ namespace Fluence.Wpf
         internal static void ResetForTesting()
         {
             _isInitialized = false;
-            _currentTheme = ApplicationTheme.Auto;
-            _currentBackdrop = BackdropType.Auto;
+            CurrentTheme = ApplicationTheme.Auto;
+            CurrentBackdrop = BackdropType.Auto;
             _isApplying = false;
             _promotedHighContrastBrushKeys = null;
         }

@@ -32,36 +32,33 @@ namespace Fluence.Wpf.Helpers
 {
     internal static class OsVersionHelper
     {
-        private static readonly Version _osVersion;
-        private static readonly int _osBuild;
-
         static OsVersionHelper()
         {
             try
             {
-                _osVersion = NativeMethods.GetRealOsVersion();
+                OsVersion = NativeMethods.GetRealOsVersion();
             }
             catch
             {
-                _osVersion = Environment.OSVersion.Version;
+                OsVersion = Environment.OSVersion.Version;
             }
 
-            _osBuild = _osVersion.Build;
+            OsBuild = OsVersion.Build;
         }
 
-        public static Version OsVersion => _osVersion;
+        public static Version OsVersion { get; }
 
-        public static int OsBuild => _osBuild;
+        public static int OsBuild { get; }
 
-        public static bool IsWindows10 => _osBuild >= 10240;
+        public static bool IsWindows10 => OsBuild >= 10240;
 
-        public static bool IsWindows10_1809 => _osBuild >= 17763;
+        public static bool IsWindows10_1809 => OsBuild >= 17763;
 
-        public static bool IsWindows11 => _osBuild >= 22000;
+        public static bool IsWindows11 => OsBuild >= 22000;
 
-        public static bool IsWindows11_22H2 => _osBuild >= 22621;
+        public static bool IsWindows11_22H2 => OsBuild >= 22621;
 
-        public static bool IsWindows11_23H2 => _osBuild >= 22631;
+        public static bool IsWindows11_23H2 => OsBuild >= 22631;
 
         public static bool SupportsBackdrop => IsWindows11;
 
