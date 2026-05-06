@@ -30,6 +30,7 @@ using System;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Threading;
 
 namespace Fluence.Wpf.Controls
 {
@@ -44,6 +45,7 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = PART_IndeterminateTranslate2, Type = typeof(TranslateTransform))]
     public class ProgressBar : System.Windows.Controls.ProgressBar
     {
+        // Template part names for internal elements of the control template.
         private const string PART_Track = "PART_Track";
         private const string PART_Fill = "PART_Fill";
         private const string PART_IndeterminateBar = "PART_IndeterminateBar";
@@ -51,13 +53,12 @@ namespace Fluence.Wpf.Controls
         private const string PART_IndeterminateTranslate = "PART_IndeterminateTranslate";
         private const string PART_IndeterminateTranslate2 = "PART_IndeterminateTranslate2";
 
-        private System.Windows.Controls.Border? _track;
-        private System.Windows.Controls.Border? _fill;
-        private System.Windows.Controls.Border? _indeterminateBar;
-        private System.Windows.Controls.Border? _indeterminateBar2;
-        private TranslateTransform? _indeterminateTranslate;
-        private TranslateTransform? _indeterminateTranslate2;
-
+        /// <summary>
+        /// Initializes static members of the ProgressBar class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the ProgressBar control uses its custom style by
+        /// default. It is called automatically before any static members are accessed or any instances are
+        /// created.</remarks>
         static ProgressBar()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -187,50 +188,19 @@ namespace Fluence.Wpf.Controls
             SizeChanged += OnSizeChanged;
         }
 
-        private static void OnLayoutPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ProgressBar bar = (ProgressBar)d;
-            bar.UpdateFillWidth(false);
-            bar.RefreshIndeterminateLayout();
-        }
-
-        private static void OnAnimatedLayoutPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ProgressBar bar = (ProgressBar)d;
-            bar.UpdateFillWidth();
-            bar.RefreshIndeterminateLayout();
-        }
-
-        private static void OnProgressModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ProgressBar bar = (ProgressBar)d;
-            bar.ApplyProgressMode();
-        }
-
-        private void OnSizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            UpdateFillWidth(false);
-            RefreshIndeterminateLayout();
-        }
-
         /// <inheritdoc />
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-
             StopIndeterminate();
-
             _track?.SizeChanged -= OnSizeChanged;
-
             _track = GetTemplateChild(PART_Track) as System.Windows.Controls.Border;
             _fill = GetTemplateChild(PART_Fill) as System.Windows.Controls.Border;
             _indeterminateBar = GetTemplateChild(PART_IndeterminateBar) as System.Windows.Controls.Border;
             _indeterminateBar2 = GetTemplateChild(PART_IndeterminateBar2) as System.Windows.Controls.Border;
             _indeterminateTranslate = GetTemplateChild(PART_IndeterminateTranslate) as TranslateTransform;
             _indeterminateTranslate2 = GetTemplateChild(PART_IndeterminateTranslate2) as TranslateTransform;
-
             _track?.SizeChanged += OnSizeChanged;
-
             ApplyProgressMode();
             UpdateFillWidth(false);
             RefreshIndeterminateLayout();
@@ -257,35 +227,56 @@ namespace Fluence.Wpf.Controls
             UpdateFillWidth(false);
         }
 
+        private static void OnLayoutPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ProgressBar bar = (ProgressBar)d;
+            bar.UpdateFillWidth(false);
+            bar.RefreshIndeterminateLayout();
+        }
+
+        private static void OnAnimatedLayoutPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ProgressBar bar = (ProgressBar)d;
+            bar.UpdateFillWidth();
+            bar.RefreshIndeterminateLayout();
+        }
+
+        private static void OnProgressModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ProgressBar bar = (ProgressBar)d;
+            bar.ApplyProgressMode();
+        }
+
+        private void OnSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            UpdateFillWidth(false);
+            RefreshIndeterminateLayout();
+        }
+
         private void ApplyProgressMode()
         {
             if (_fill == null || _indeterminateBar == null)
             {
                 return;
             }
-
-            if (ProgressMode == ProgressBarMode.Indeterminate)
+            if (ProgressMode != ProgressBarMode.Indeterminate)
+            {
+                // PART_Track can report 0 width during template application. Queue one
+                // layout-priority update so determinate fills render correctly after the
+                // first measure/arrange pass.
+                StopIndeterminate();
+                _fill.Visibility = Visibility.Visible;
+                _indeterminateBar.Visibility = Visibility.Collapsed;
+                _ = (_indeterminateBar2?.Visibility = Visibility.Collapsed);
+                ApplyFillBrushForMode();
+                _ = Dispatcher.BeginInvoke(() => UpdateFillWidth(false), DispatcherPriority.Loaded);
+            }
+            else
             {
                 _fill.Visibility = Visibility.Collapsed;
                 _indeterminateBar.Visibility = Visibility.Visible;
                 _ = (_indeterminateBar2?.Visibility = Visibility.Visible);
                 RefreshIndeterminateLayout();
-            }
-            else
-            {
-                StopIndeterminate();
-                _fill.Visibility = Visibility.Visible;
-                _indeterminateBar.Visibility = Visibility.Collapsed;
-                _ = (_indeterminateBar2?.Visibility = Visibility.Collapsed);
-
-                ApplyFillBrushForMode();
-
-                // PART_Track can report 0 width during template application. Queue one
-                // layout-priority update so determinate fills render correctly after the
-                // first measure/arrange pass.
-                _ = Dispatcher.BeginInvoke(
-                    new Action(() => UpdateFillWidth(false)),
-                    System.Windows.Threading.DispatcherPriority.Loaded);
             }
         }
 
@@ -295,7 +286,6 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
             switch (ProgressMode)
             {
                 case ProgressBarMode.Error:
@@ -322,23 +312,19 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
             double trackWidth = _track.ActualWidth;
             if (trackWidth <= 0 || double.IsNaN(trackWidth))
             {
                 return;
             }
-
             _indeterminateBar.Width = trackWidth * 0.4;
             _ = (_indeterminateBar2?.Width = trackWidth * 0.55);
-
             StartIndeterminate(trackWidth);
         }
 
         private void StartIndeterminate(double trackWidth)
         {
             StopIndeterminate();
-
             if (_indeterminateTranslate == null || _indeterminateBar == null)
             {
                 return;
@@ -347,34 +333,16 @@ namespace Fluence.Wpf.Controls
             // WinUI 3 canonical timing: both bars on a 2.0 s repeat cycle.
             // Bar 1 travels 0 to 1.5 s then holds; bar 2 is delayed 0.75 s.
             // (Authority: WinUI_XAML/Controls/ProgressBar.xaml Indeterminate VSM)
-            StartTranslateAnimation(
-                _indeterminateTranslate,
-                -_indeterminateBar.Width,
-                trackWidth,
-                TimeSpan.FromSeconds(2.0),
-                TimeSpan.Zero);
-
+            StartTranslateAnimation(_indeterminateTranslate, -_indeterminateBar.Width, trackWidth, TimeSpan.FromSeconds(2.0), TimeSpan.Zero);
             if (_indeterminateTranslate2 != null && _indeterminateBar2 != null)
             {
-                StartTranslateAnimation(
-                    _indeterminateTranslate2,
-                    -_indeterminateBar2.Width,
-                    trackWidth,
-                    TimeSpan.FromSeconds(2.0),
-                    TimeSpan.FromMilliseconds(750));
+                StartTranslateAnimation(_indeterminateTranslate2, -_indeterminateBar2.Width, trackWidth, TimeSpan.FromSeconds(2.0), TimeSpan.FromMilliseconds(750));
             }
         }
 
-        private static void StartTranslateAnimation(
-            TranslateTransform target,
-            double from,
-            double to,
-            TimeSpan duration,
-            TimeSpan beginTime)
+        private static void StartTranslateAnimation(TranslateTransform target, double from, double to, TimeSpan duration, TimeSpan beginTime)
         {
-            target.X = from;
-
-            DoubleAnimation animation = new()
+            target.X = from; target.BeginAnimation(TranslateTransform.XProperty, new DoubleAnimation
             {
                 From = from,
                 To = to,
@@ -382,9 +350,7 @@ namespace Fluence.Wpf.Controls
                 BeginTime = beginTime,
                 RepeatBehavior = RepeatBehavior.Forever,
                 EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut }
-            };
-
-            target.BeginAnimation(TranslateTransform.XProperty, animation, HandoffBehavior.SnapshotAndReplace);
+            }, HandoffBehavior.SnapshotAndReplace);
         }
 
         private void StopIndeterminate()
@@ -394,7 +360,6 @@ namespace Fluence.Wpf.Controls
                 _indeterminateTranslate.BeginAnimation(TranslateTransform.XProperty, null);
                 _indeterminateTranslate.X = 0;
             }
-
             if (_indeterminateTranslate2 != null)
             {
                 _indeterminateTranslate2.BeginAnimation(TranslateTransform.XProperty, null);
@@ -416,24 +381,23 @@ namespace Fluence.Wpf.Controls
             }
 
             double ratio;
-            if (ProgressMode == ProgressBarMode.StepProgress && Steps > 0)
+            if (ProgressMode != ProgressBarMode.StepProgress || Steps <= 0)
             {
-                int step = Math.Max(0, Math.Min(CurrentStep, Steps));
-                ratio = step / (double)Steps;
-            }
-            else
-            {
-                double min = Minimum;
-                double max = Maximum;
-                if (Math.Abs(max - min) < double.Epsilon)
-                {
-                    ratio = 0;
-                }
-                else
+                double min = Minimum; double max = Maximum;
+                if (Math.Abs(max - min) >= double.Epsilon)
                 {
                     ratio = (Value - min) / (max - min);
                     ratio = Math.Max(0, Math.Min(1, ratio));
                 }
+                else
+                {
+                    ratio = 0;
+                }
+            }
+            else
+            {
+                int step = Math.Max(0, Math.Min(CurrentStep, Steps));
+                ratio = step / (double)Steps;
             }
 
             double targetWidth = trackWidth * ratio;
@@ -449,19 +413,46 @@ namespace Fluence.Wpf.Controls
             {
                 fromWidth = _fill.Width;
             }
-
-            _fill.BeginAnimation(WidthProperty, null);
-            _fill.Width = targetWidth;
-
-            DoubleAnimation animation = new()
+            _fill.BeginAnimation(WidthProperty, null); _fill.Width = targetWidth;
+            _fill.BeginAnimation(WidthProperty, new DoubleAnimation
             {
                 From = fromWidth,
                 To = targetWidth,
                 Duration = TimeSpan.FromMilliseconds(280),
                 EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
-            };
-
-            _fill.BeginAnimation(WidthProperty, animation, HandoffBehavior.SnapshotAndReplace);
+            }, HandoffBehavior.SnapshotAndReplace);
         }
+
+        /// <summary>
+        /// Represents the track element of the control, typically used to display the background or progress area.
+        /// </summary>
+        /// <remarks>This field is intended for internal use within the control's implementation and is
+        /// not intended to be accessed directly by consumers of the API.</remarks>
+        private System.Windows.Controls.Border? _track;
+
+        /// <summary>
+        /// Represents the fill border element used within the control.
+        /// </summary>
+        private System.Windows.Controls.Border? _fill;
+
+        /// <summary>
+        /// Represents the border control used to display the indeterminate progress bar.
+        /// </summary>
+        private System.Windows.Controls.Border? _indeterminateBar;
+
+        /// <summary>
+        /// Represents the secondary indeterminate progress bar control.
+        /// </summary>
+        private System.Windows.Controls.Border? _indeterminateBar2;
+
+        /// <summary>
+        /// Represents the translate transform used for indeterminate animation states.
+        /// </summary>
+        private TranslateTransform? _indeterminateTranslate;
+
+        /// <summary>
+        /// Represents the secondary translate transform used for indeterminate animation states.
+        /// </summary>
+        private TranslateTransform? _indeterminateTranslate2;
     }
 }

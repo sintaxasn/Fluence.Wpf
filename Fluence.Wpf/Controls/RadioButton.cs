@@ -36,6 +36,12 @@ namespace Fluence.Wpf.Controls
     /// <remarks>Inspired by WInUI's RadioButton.</remarks>
     public class RadioButton : System.Windows.Controls.RadioButton
     {
+        /// <summary>
+        /// Initializes static members of the RadioButton class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the RadioButton control uses its default style
+        /// as defined in the application's theme or resource dictionaries. This is typically required for custom
+        /// controls to apply their visual appearance correctly.</remarks>
         static RadioButton()
         {
             DefaultStyleKeyProperty.OverrideMetadata(

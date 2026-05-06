@@ -61,30 +61,28 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = PART_DeterminateArc, Type = typeof(Path))]
     public class ProgressRing : Control
     {
+        // Template part names.
         private const string PART_IndeterminateArc = "PART_IndeterminateArc";
         private const string PART_DeterminateArc = "PART_DeterminateArc";
+
+        // Indeterminate animation keyframe values.
         private const double IndeterminateStartAngleDefault = -720.0;
         private const double IndeterminateMinimumSweepAngle = 0.0;
         private const double IndeterminatePausedStartAngle = 0.0;
         private const double IndeterminatePausedSweepAngle = 50.0;
         private const double FullCircleLimit = 359.99;
 
+        // Animation parameters.
         private static readonly Duration IndeterminateAnimationDuration = new(TimeSpan.FromMilliseconds(4000));
         private static readonly Duration DeterminateAnimationDuration = new(TimeSpan.FromMilliseconds(200));
         private static readonly IEasingFunction DeterminateAnimationEasing = new CubicEase { EasingMode = EasingMode.EaseInOut };
 
-        private Path? _arcPath;
-        private Path? _indeterminateArcPath;
-        private bool _isIndeterminateAnimationRunning;
-
-        // Reusable geometry objects — mutated in place each render to avoid per-frame allocation.
-        private ArcSegment? _indeterminateArcSegment;
-        private PathFigure? _indeterminateFigure;
-        private PathGeometry? _indeterminateGeometry;
-        private ArcSegment? _determinateArcSegment;
-        private PathFigure? _determinateFigure;
-        private PathGeometry? _determinateGeometry;
-
+        /// <summary>
+        /// Initializes static members of the ProgressRing class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the ProgressRing control uses its custom style
+        /// by default. It is called automatically before any static members are accessed or any instances are
+        /// created.</remarks>
         static ProgressRing()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -100,10 +98,6 @@ namespace Fluence.Wpf.Controls
             Loaded += OnLoaded;
             Unloaded += OnUnloaded;
         }
-
-        // ──────────────────────────────────────────────────────────────────────
-        // Public dependency properties
-        // ──────────────────────────────────────────────────────────────────────
 
         /// <summary>
         /// Identifies the <see cref="IsActive"/> dependency property.
@@ -239,11 +233,6 @@ namespace Fluence.Wpf.Controls
             set => SetValue(ProgressStateProperty, value);
         }
 
-        // ──────────────────────────────────────────────────────────────────────
-        // Read-only template-settings dependency properties
-        // (mirror WinUI's ProgressRingTemplateSettings.EllipseDiameter / EllipseOffset)
-        // ──────────────────────────────────────────────────────────────────────
-
         private static readonly DependencyPropertyKey EllipseDiameterPropertyKey =
             DependencyProperty.RegisterReadOnly(
                 nameof(EllipseDiameter),
@@ -282,9 +271,60 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public Thickness EllipseOffset => (Thickness)GetValue(EllipseOffsetProperty);
 
-        // ──────────────────────────────────────────────────────────────────────
-        // Determinate animated-fraction (private DP drives the arc geometry)
-        // ──────────────────────────────────────────────────────────────────────
+        /// <inheritdoc />
+        public override void OnApplyTemplate()
+        {
+            // Recreate geometry objects so mutations target the current template's path elements.
+            base.OnApplyTemplate();
+            _indeterminateArcPath = GetTemplateChild(PART_IndeterminateArc) as Path;
+            _arcPath = GetTemplateChild(PART_DeterminateArc) as Path;
+            _indeterminateArcSegment = new ArcSegment { SweepDirection = SweepDirection.Clockwise };
+            _indeterminateFigure = new PathFigure { IsClosed = false };
+            _indeterminateFigure.Segments.Add(_indeterminateArcSegment);
+            _indeterminateGeometry = new PathGeometry();
+            _indeterminateGeometry.Figures.Add(_indeterminateFigure);
+            _determinateArcSegment = new ArcSegment { SweepDirection = SweepDirection.Clockwise };
+            _determinateFigure = new PathFigure { IsClosed = false };
+            _determinateFigure.Segments.Add(_determinateArcSegment);
+            _determinateGeometry = new PathGeometry();
+            _determinateGeometry.Figures.Add(_determinateFigure);
+            UpdateTemplateSettings();
+            if (!IsIndeterminate)
+            {
+                // Force rendering: AnimatedFraction may already equal the target value
+                // (set before the template applied), in which case the property-changed
+                // callback never fires and the arc would stay blank.
+                double fraction = ComputeFraction();
+                AnimatedFraction = fraction;
+                RenderDeterminateArc(fraction);
+            }
+            else
+            {
+                RenderIndeterminateArc();
+            }
+            UpdateIndeterminateAnimationState();
+        }
+
+        /// <inheritdoc />
+        protected override AutomationPeer OnCreateAutomationPeer()
+        {
+            return new ProgressRingAutomationPeer(this);
+        }
+
+        /// <inheritdoc />
+        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
+        {
+            base.OnRenderSizeChanged(sizeInfo);
+            UpdateTemplateSettings();
+            if (!IsIndeterminate)
+            {
+                RenderDeterminateArc(AnimatedFraction);
+            }
+            else
+            {
+                RenderIndeterminateArc();
+            }
+        }
 
         private static readonly DependencyProperty AnimatedFractionProperty =
             DependencyProperty.Register(
@@ -303,10 +343,6 @@ namespace Fluence.Wpf.Controls
         {
             ((ProgressRing)d).RenderDeterminateArc((double)e.NewValue);
         }
-
-        // ──────────────────────────────────────────────────────────────────────
-        // Indeterminate animated angles (private DPs drive the caterpillar arc)
-        // ──────────────────────────────────────────────────────────────────────
 
         private static readonly DependencyProperty IndeterminateStartAngleProperty =
             DependencyProperty.Register(
@@ -339,79 +375,6 @@ namespace Fluence.Wpf.Controls
             ((ProgressRing)d).RenderIndeterminateArc();
         }
 
-        // ──────────────────────────────────────────────────────────────────────
-        // Automation
-        // ──────────────────────────────────────────────────────────────────────
-
-        /// <inheritdoc />
-        protected override AutomationPeer OnCreateAutomationPeer()
-        {
-            return new ProgressRingAutomationPeer(this);
-        }
-
-        // ──────────────────────────────────────────────────────────────────────
-        // Template wiring
-        // ──────────────────────────────────────────────────────────────────────
-
-        /// <inheritdoc />
-        public override void OnApplyTemplate()
-        {
-            base.OnApplyTemplate();
-
-            _indeterminateArcPath = GetTemplateChild(PART_IndeterminateArc) as Path;
-            _arcPath = GetTemplateChild(PART_DeterminateArc) as Path;
-
-            // Recreate geometry objects so mutations target the current template's path elements.
-            _indeterminateArcSegment = new ArcSegment { SweepDirection = SweepDirection.Clockwise };
-            _indeterminateFigure = new PathFigure { IsClosed = false };
-            _indeterminateFigure.Segments.Add(_indeterminateArcSegment);
-            _indeterminateGeometry = new PathGeometry();
-            _indeterminateGeometry.Figures.Add(_indeterminateFigure);
-
-            _determinateArcSegment = new ArcSegment { SweepDirection = SweepDirection.Clockwise };
-            _determinateFigure = new PathFigure { IsClosed = false };
-            _determinateFigure.Segments.Add(_determinateArcSegment);
-            _determinateGeometry = new PathGeometry();
-            _determinateGeometry.Figures.Add(_determinateFigure);
-
-            UpdateTemplateSettings();
-
-            if (IsIndeterminate)
-            {
-                RenderIndeterminateArc();
-            }
-            else
-            {
-                // Force rendering: AnimatedFraction may already equal the target value
-                // (set before the template applied), in which case the property-changed
-                // callback never fires and the arc would stay blank.
-                double fraction = ComputeFraction();
-                AnimatedFraction = fraction;
-                RenderDeterminateArc(fraction);
-            }
-
-            UpdateIndeterminateAnimationState();
-        }
-
-        /// <inheritdoc />
-        protected override void OnRenderSizeChanged(SizeChangedInfo sizeInfo)
-        {
-            base.OnRenderSizeChanged(sizeInfo);
-            UpdateTemplateSettings();
-            if (IsIndeterminate)
-            {
-                RenderIndeterminateArc();
-            }
-            else
-            {
-                RenderDeterminateArc(AnimatedFraction);
-            }
-        }
-
-        // ──────────────────────────────────────────────────────────────────────
-        // Indeterminate / determinate mode switch
-        // ──────────────────────────────────────────────────────────────────────
-
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             UpdateIndeterminateAnimationState();
@@ -438,14 +401,12 @@ namespace Fluence.Wpf.Controls
                 // caterpillar arc when the control is active.
                 ring.BeginAnimation(AnimatedFractionProperty, null);
                 _ = (ring._arcPath?.Data = null);
-
                 ring.UpdateIndeterminateAnimationState();
             }
             else
             {
-                ring.StopIndeterminateAnimation();
-
                 // Switching to determinate: render arc to the current value (no transition tween).
+                ring.StopIndeterminateAnimation();
                 ring.AnimatedFraction = ring.ComputeFraction();
                 ring.RenderDeterminateArc(ring.AnimatedFraction);
             }
@@ -455,13 +416,13 @@ namespace Fluence.Wpf.Controls
         {
             ProgressRing ring = (ProgressRing)d;
             ring.UpdateIndeterminateAnimationState();
-            if (ring.IsIndeterminate)
+            if (!ring.IsIndeterminate)
             {
-                ring.RenderIndeterminateArc();
+                ring.RenderDeterminateArc(ring.AnimatedFraction);
             }
             else
             {
-                ring.RenderDeterminateArc(ring.AnimatedFraction);
+                ring.RenderIndeterminateArc();
             }
         }
 
@@ -486,17 +447,19 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            double targetFraction = ring.ComputeFraction();
-
             // No tween before the template has applied — OnApplyTemplate will render the
             // initial frame synchronously.  Tweening here would race with the layout pass
             // and leave the arc blank when the dispatcher drains mid-animation.
+            double targetFraction = ring.ComputeFraction();
             if (ring._arcPath == null)
             {
                 ring.AnimatedFraction = targetFraction;
                 return;
             }
 
+            // FillBehavior.Stop keeps the private DP from being held by the animation
+            // clock after completion; the completion handler commits the final value so
+            // the next tween starts from the rendered arc position.
             DoubleAnimation animation = new()
             {
                 From = ring.AnimatedFraction,
@@ -505,9 +468,6 @@ namespace Fluence.Wpf.Controls
                 EasingFunction = DeterminateAnimationEasing,
                 FillBehavior = FillBehavior.Stop
             };
-            // FillBehavior.Stop keeps the private DP from being held by the animation
-            // clock after completion; the completion handler commits the final value so
-            // the next tween starts from the rendered arc position.
             animation.Completed += (s, args) => ring.AnimatedFraction = targetFraction;
             ring.BeginAnimation(AnimatedFractionProperty, animation);
         }
@@ -515,29 +475,21 @@ namespace Fluence.Wpf.Controls
         private static void OnStrokeThicknessChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ProgressRing ring = (ProgressRing)d;
-            if (ring.IsIndeterminate)
+            if (!ring.IsIndeterminate)
             {
-                ring.RenderIndeterminateArc();
+                ring.RenderDeterminateArc(ring.AnimatedFraction);
             }
             else
             {
-                ring.RenderDeterminateArc(ring.AnimatedFraction);
+                ring.RenderIndeterminateArc();
             }
         }
 
         private void UpdateIndeterminateAnimationState()
         {
-            if (IsLoaded && IsActive && IsIndeterminate && ProgressState != ProgressRingState.Paused)
+            if (!IsLoaded || !IsActive || !IsIndeterminate || ProgressState == ProgressRingState.Paused)
             {
-                StartIndeterminateAnimation();
-            }
-            else
-            {
-                bool shouldRenderPausedFrame =
-                    IsLoaded &&
-                    IsActive &&
-                    IsIndeterminate &&
-                    ProgressState == ProgressRingState.Paused;
+                bool shouldRenderPausedFrame = IsLoaded && IsActive && IsIndeterminate && ProgressState == ProgressRingState.Paused;
                 StopIndeterminateAnimation();
                 if (shouldRenderPausedFrame)
                 {
@@ -545,6 +497,10 @@ namespace Fluence.Wpf.Controls
                     IndeterminateSweepAngle = IndeterminatePausedSweepAngle;
                     RenderIndeterminateArc();
                 }
+            }
+            else
+            {
+                StartIndeterminateAnimation();
             }
         }
 
@@ -554,17 +510,14 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
             if (_isIndeterminateAnimationRunning)
             {
                 RenderIndeterminateArc();
                 return;
             }
-
             _isIndeterminateAnimationRunning = true;
             IndeterminateStartAngle = IndeterminateStartAngleDefault;
             IndeterminateSweepAngle = IndeterminateMinimumSweepAngle;
-
             BeginAnimation(IndeterminateStartAngleProperty, CreateIndeterminateStartAnimation());
             BeginAnimation(IndeterminateSweepAngleProperty, CreateIndeterminateSweepAnimation());
             RenderIndeterminateArc();
@@ -575,10 +528,8 @@ namespace Fluence.Wpf.Controls
             BeginAnimation(IndeterminateStartAngleProperty, null);
             BeginAnimation(IndeterminateSweepAngleProperty, null);
             _isIndeterminateAnimationRunning = false;
-
             IndeterminateStartAngle = IndeterminateStartAngleDefault;
             IndeterminateSweepAngle = IndeterminateMinimumSweepAngle;
-
             _ = (_indeterminateArcPath?.Data = null);
         }
 
@@ -589,7 +540,6 @@ namespace Fluence.Wpf.Controls
                 Duration = IndeterminateAnimationDuration,
                 RepeatBehavior = RepeatBehavior.Forever
             };
-
             AddLinearKeyFrame(animation, -720.0, 0.0);
             AddLinearKeyFrame(animation, -540.0, 0.125);
             AddLinearKeyFrame(animation, -360.0, 0.25);
@@ -599,7 +549,6 @@ namespace Fluence.Wpf.Controls
             AddLinearKeyFrame(animation, 360.0, 0.75);
             AddLinearKeyFrame(animation, 540.0, 0.875);
             AddLinearKeyFrame(animation, 720.0, 1.0);
-
             return animation;
         }
 
@@ -610,7 +559,6 @@ namespace Fluence.Wpf.Controls
                 Duration = IndeterminateAnimationDuration,
                 RepeatBehavior = RepeatBehavior.Forever
             };
-
             AddLinearKeyFrame(animation, 0.0, 0.0);
             AddLinearKeyFrame(animation, 50.0, 0.125);
             AddLinearKeyFrame(animation, 100.0, 0.25);
@@ -620,7 +568,6 @@ namespace Fluence.Wpf.Controls
             AddLinearKeyFrame(animation, 100.0, 0.75);
             AddLinearKeyFrame(animation, 50.0, 0.875);
             AddLinearKeyFrame(animation, 0.0, 1.0);
-
             return animation;
         }
 
@@ -635,10 +582,6 @@ namespace Fluence.Wpf.Controls
             return range > 0 ? Math.Max(0, Math.Min(1, (Value - Minimum) / range)) : 0;
         }
 
-        // ──────────────────────────────────────────────────────────────────────
-        // Template-settings computation
-        // ──────────────────────────────────────────────────────────────────────
-
         private void UpdateTemplateSettings()
         {
             double width = ActualWidth;
@@ -646,7 +589,6 @@ namespace Fluence.Wpf.Controls
             {
                 width = Width;
             }
-
             if (double.IsNaN(width) || width <= 0)
             {
                 return;
@@ -656,14 +598,9 @@ namespace Fluence.Wpf.Controls
             // microsoft-ui-xaml-main/src/controls/dev/ProgressRing/ProgressRing.cpp::ApplyTemplateSettings.
             double diameter = (width * 0.1) + (width <= 40.0 ? 1.0 : 0.0);
             double anchor = (width * 0.5) - diameter;
-
             SetValue(EllipseDiameterPropertyKey, diameter);
             SetValue(EllipseOffsetPropertyKey, new Thickness(0, anchor, 0, 0));
         }
-
-        // ──────────────────────────────────────────────────────────────────────
-        // Arc rendering
-        // ──────────────────────────────────────────────────────────────────────
 
         private void RenderIndeterminateArc()
         {
@@ -671,13 +608,11 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
             if (!IsActive || !IsIndeterminate)
             {
                 _indeterminateArcPath.Data = null;
                 return;
             }
-
             RenderArc(_indeterminateArcPath, IndeterminateStartAngle, IndeterminateSweepAngle, false, 0);
         }
 
@@ -695,13 +630,11 @@ namespace Fluence.Wpf.Controls
                 _arcPath.Data = null;
                 return;
             }
-
             if (fraction <= 0)
             {
                 _arcPath.Data = null;
                 return;
             }
-
             RenderArc(_arcPath, 0, fraction * 360.0, true, fraction);
         }
 
@@ -720,12 +653,10 @@ namespace Fluence.Wpf.Controls
                         {
                             return;
                         }
-
                         RenderDeterminateArc(deferredFraction);
                     }
                     LayoutUpdated += handler;
                 }
-
                 return;
             }
 
@@ -736,14 +667,10 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            Point startPoint = GetArcPoint(center, radius, startAngle);
-            Point endPoint = GetArcPoint(center, radius, startAngle + angle);
-
             // Select the pre-allocated geometry set for this path and mutate in place.
             PathFigure? figure;
             ArcSegment? segment;
             PathGeometry? geometry;
-
             if (ReferenceEquals(path, _indeterminateArcPath))
             {
                 figure = _indeterminateFigure;
@@ -756,7 +683,8 @@ namespace Fluence.Wpf.Controls
                 segment = _determinateArcSegment;
                 geometry = _determinateGeometry;
             }
-
+            Point startPoint = GetArcPoint(center, radius, startAngle);
+            Point endPoint = GetArcPoint(center, radius, startAngle + angle);
             _ = (figure?.StartPoint = startPoint);
             if (segment is not null)
             {
@@ -794,7 +722,6 @@ namespace Fluence.Wpf.Controls
                 isLayoutSizeUnavailable = false;
                 return false;
             }
-
             center = size / 2.0;
             isLayoutSizeUnavailable = false;
             return true;
@@ -803,9 +730,69 @@ namespace Fluence.Wpf.Controls
         private static Point GetArcPoint(double center, double radius, double angle)
         {
             double angleRad = angle * Math.PI / 180.0;
-            return new Point(
-                center + (radius * Math.Sin(angleRad)),
-                center - (radius * Math.Cos(angleRad)));
+            return new(center + (radius * Math.Sin(angleRad)), center - (radius * Math.Cos(angleRad)));
         }
+
+        /// <summary>
+        /// Represents the path geometry for the arc, or null if no arc is defined.
+        /// </summary>
+        private Path? _arcPath;
+
+        /// <summary>
+        /// Represents the path used to render the indeterminate arc, or null if the arc is not currently defined.
+        /// </summary>
+        /// <remarks>This field is typically used internally to manage the visual representation of an
+        /// indeterminate progress indicator. It may be null when the arc is not visible or has not been
+        /// initialized.</remarks>
+        private Path? _indeterminateArcPath;
+
+        /// <summary>
+        /// Indicates whether the indeterminate animation is currently running.
+        /// </summary>
+        private bool _isIndeterminateAnimationRunning;
+
+        /// <summary>
+        /// Represents the arc segment used to render the indeterminate progress indicator, or null if the segment is
+        /// not defined.
+        /// </summary>
+        /// <remarks>This field is typically used internally to manage the visual state of an
+        /// indeterminate progress control. It may be null if the arc segment has not been initialized or is not
+        /// currently displayed.</remarks>
+        private ArcSegment? _indeterminateArcSegment;
+
+        /// <summary>
+        /// Represents the path figure used to display the indeterminate state of a progress indicator or animation.
+        /// </summary>
+        /// <remarks>This field is typically used internally to cache or construct the visual
+        /// representation for an indeterminate progress state. It may be null if the indeterminate state is not
+        /// currently active or has not been initialized.</remarks>
+        private PathFigure? _indeterminateFigure;
+
+        /// <summary>
+        /// Represents the geometry used to render the indeterminate state of a visual element.
+        /// </summary>
+        private PathGeometry? _indeterminateGeometry;
+
+        /// <summary>
+        /// Represents the arc segment used to render the determinate portion of the progress indicator.
+        /// </summary>
+        /// <remarks>This field is typically used internally to track the current state of the determinate
+        /// arc in a progress visualization. It may be null if the determinate arc has not been initialized or is not
+        /// currently displayed.</remarks>
+        private ArcSegment? _determinateArcSegment;
+
+        /// <summary>
+        /// Represents the PathFigure used for rendering the determinate state of the progress indicator.
+        /// </summary>
+        /// <remarks>This field is intended for internal use to manage the visual representation of the
+        /// determinate progress. It may be null if the determinate state is not currently displayed.</remarks>
+        private PathFigure? _determinateFigure;
+
+        /// <summary>
+        /// Represents the geometry used to render the determinate state of the progress indicator.
+        /// </summary>
+        /// <remarks>This field holds the path geometry for the determinate visual representation. It is
+        /// typically set or updated when the progress value changes.</remarks>
+        private PathGeometry? _determinateGeometry;
     }
 }

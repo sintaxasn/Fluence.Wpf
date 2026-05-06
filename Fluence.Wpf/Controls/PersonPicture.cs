@@ -56,17 +56,20 @@ namespace Fluence.Wpf.Controls
     [TemplateVisualState(GroupName = GroupBadgeStates, Name = StateBadgeWithoutImageSource)]
     public class PersonPicture : Control
     {
+        // Template part names.
         private const string PART_InitialsText = "PART_InitialsText";
         private const string PART_ImageEllipse = "PART_ImageEllipse";
         private const string PART_BadgeGrid = "PART_BadgeGrid";
         private const string PART_BadgeText = "PART_BadgeText";
 
+        // Visual state names.
         private const string GroupCommonStates = "CommonStates";
         private const string StatePhoto = "Photo";
         private const string StateInitials = "Initials";
         private const string StateNoPhotoOrInitials = "NoPhotoOrInitials";
         private const string StateGroup = "Group";
 
+        // Badge visual states: when badge is shown with or without an image source, to adjust badge styling as needed.
         private const string GroupBadgeStates = "BadgeStates";
         private const string StateNoBadge = "NoBadge";
         private const string StateBadgeWithoutImageSource = "BadgeWithoutImageSource";
@@ -76,25 +79,19 @@ namespace Fluence.Wpf.Controls
         private const string GlyphPeople = "\uE716";
         private static readonly char[] InitialsSeparators = [' ', '\t'];
 
-        private WpfTextBlock? _initialsText;
-        private Ellipse? _imageEllipse;
-        private WpfGrid? _badgeGrid;
-        private WpfTextBlock? _badgeText;
-
-        // -----------------------------------------------------------------------
-        // Static constructor
-        // -----------------------------------------------------------------------
-
+        /// <summary>
+        /// Initializes static members of the PersonPicture class and overrides the default style key to associate the
+        /// control with its style.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the PersonPicture control uses the correct
+        /// default style as defined in the application's resources. This is necessary for custom controls to apply
+        /// their styles properly in WPF.</remarks>
         static PersonPicture()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
                 typeof(PersonPicture),
                 new FrameworkPropertyMetadata(typeof(PersonPicture)));
         }
-
-        // -----------------------------------------------------------------------
-        // DisplayName DP
-        // -----------------------------------------------------------------------
 
         /// <summary>
         /// Identifies the <see cref="DisplayName"/> dependency property.
@@ -116,15 +113,6 @@ namespace Fluence.Wpf.Controls
             set => SetValue(DisplayNameProperty, value);
         }
 
-        private static void OnDisplayNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ((PersonPicture)d).UpdateVisualState();
-        }
-
-        // -----------------------------------------------------------------------
-        // Initials DP
-        // -----------------------------------------------------------------------
-
         /// <summary>
         /// Identifies the <see cref="Initials"/> dependency property.
         /// </summary>
@@ -145,15 +133,6 @@ namespace Fluence.Wpf.Controls
             set => SetValue(InitialsProperty, value);
         }
 
-        private static void OnInitialsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ((PersonPicture)d).UpdateVisualState();
-        }
-
-        // -----------------------------------------------------------------------
-        // ProfilePicture DP
-        // -----------------------------------------------------------------------
-
         /// <summary>
         /// Identifies the <see cref="ProfilePicture"/> dependency property.
         /// </summary>
@@ -172,15 +151,6 @@ namespace Fluence.Wpf.Controls
             get => (ImageSource)GetValue(ProfilePictureProperty);
             set => SetValue(ProfilePictureProperty, value);
         }
-
-        private static void OnProfilePictureChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ((PersonPicture)d).UpdateVisualState();
-        }
-
-        // -----------------------------------------------------------------------
-        // IsGroup DP
-        // -----------------------------------------------------------------------
 
         /// <summary>
         /// Identifies the <see cref="IsGroup"/> dependency property.
@@ -202,15 +172,6 @@ namespace Fluence.Wpf.Controls
             set => SetValue(IsGroupProperty, value);
         }
 
-        private static void OnIsGroupChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ((PersonPicture)d).UpdateVisualState();
-        }
-
-        // -----------------------------------------------------------------------
-        // BadgeNumber DP
-        // -----------------------------------------------------------------------
-
         /// <summary>
         /// Identifies the <see cref="BadgeNumber"/> dependency property.
         /// </summary>
@@ -230,10 +191,6 @@ namespace Fluence.Wpf.Controls
             get => (int)GetValue(BadgeNumberProperty);
             set => SetValue(BadgeNumberProperty, value);
         }
-
-        // -----------------------------------------------------------------------
-        // BadgeGlyph DP
-        // -----------------------------------------------------------------------
 
         /// <summary>
         /// Identifies the <see cref="BadgeGlyph"/> dependency property.
@@ -256,15 +213,6 @@ namespace Fluence.Wpf.Controls
             set => SetValue(BadgeGlyphProperty, value);
         }
 
-        private static void OnBadgeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ((PersonPicture)d).UpdateBadge();
-        }
-
-        // -----------------------------------------------------------------------
-        // Template
-        // -----------------------------------------------------------------------
-
         /// <inheritdoc />
         public override void OnApplyTemplate()
         {
@@ -273,14 +221,34 @@ namespace Fluence.Wpf.Controls
             _imageEllipse = GetTemplateChild(PART_ImageEllipse) as Ellipse;
             _badgeGrid = GetTemplateChild(PART_BadgeGrid) as WpfGrid;
             _badgeText = GetTemplateChild(PART_BadgeText) as WpfTextBlock;
-
             UpdateVisualState(useTransitions: false);
             UpdateBadge();
         }
 
-        // -----------------------------------------------------------------------
-        // Internal helpers
-        // -----------------------------------------------------------------------
+        private static void OnDisplayNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((PersonPicture)d).UpdateVisualState();
+        }
+
+        private static void OnInitialsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((PersonPicture)d).UpdateVisualState();
+        }
+
+        private static void OnProfilePictureChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((PersonPicture)d).UpdateVisualState();
+        }
+
+        private static void OnIsGroupChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((PersonPicture)d).UpdateVisualState();
+        }
+
+        private static void OnBadgeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((PersonPicture)d).UpdateBadge();
+        }
 
         private void UpdateVisualState(bool useTransitions = true)
         {
@@ -295,7 +263,6 @@ namespace Fluence.Wpf.Controls
                 _ = VisualStateManager.GoToState(this, StateGroup, useTransitions);
                 return;
             }
-
             if (ProfilePicture != null)
             {
                 // Photo state: fill the image ellipse
@@ -304,7 +271,6 @@ namespace Fluence.Wpf.Controls
                 _ = VisualStateManager.GoToState(this, StatePhoto, useTransitions);
                 return;
             }
-
             if (GetInitials() is string initials)
             {
                 // Initials state
@@ -330,7 +296,6 @@ namespace Fluence.Wpf.Controls
         {
             bool hasBadge = !string.IsNullOrWhiteSpace(BadgeGlyph) || BadgeNumber > 0;
             _ = (_badgeGrid?.Visibility = hasBadge ? Visibility.Visible : Visibility.Collapsed);
-
             if (_badgeText != null)
             {
                 if (!string.IsNullOrWhiteSpace(BadgeGlyph))
@@ -350,7 +315,6 @@ namespace Fluence.Wpf.Controls
                     _badgeText.Text = string.Empty;
                 }
             }
-
             _ = VisualStateManager.GoToState(this, hasBadge ? StateBadgeWithoutImageSource : StateNoBadge, true);
         }
 
@@ -370,5 +334,25 @@ namespace Fluence.Wpf.Controls
                 ? parts[0][0].ToString().ToUpperInvariant()
                 : null;
         }
+
+        /// <summary>
+        /// Represents the WPF TextBlock control used to display user initials.
+        /// </summary>
+        private WpfTextBlock? _initialsText;
+
+        /// <summary>
+        /// Represents the ellipse shape used to display an image, or null if no ellipse is assigned.
+        /// </summary>
+        private Ellipse? _imageEllipse;
+
+        /// <summary>
+        /// Represents the WPF grid used to display the badge, or null if no badge grid is present.
+        /// </summary>
+        private WpfGrid? _badgeGrid;
+
+        /// <summary>
+        /// Represents the text block used to display a badge in the WPF user interface.
+        /// </summary>
+        private WpfTextBlock? _badgeText;
     }
 }

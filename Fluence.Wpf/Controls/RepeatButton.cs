@@ -35,6 +35,12 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     public class RepeatButton : System.Windows.Controls.Primitives.RepeatButton
     {
+        /// <summary>
+        /// Initializes static members of the RepeatButton class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the RepeatButton control uses its default style
+        /// as defined in the application's resource dictionaries. This is required for proper theming and styling
+        /// support in WPF custom controls.</remarks>
         static RepeatButton()
         {
             DefaultStyleKeyProperty.OverrideMetadata(

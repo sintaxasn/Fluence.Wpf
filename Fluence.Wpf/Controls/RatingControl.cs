@@ -48,27 +48,23 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = PART_Caption, Type = typeof(WpfTextBlock))]
     public class RatingControl : Control
     {
+        // Template part names.
         private const string PART_StarsPanel = "PART_StarsPanel";
         private const string PART_Caption = "PART_Caption";
 
-        private WpfStackPanel? _starsPanel;
-        private WpfTextBlock? _captionText;
-        private int _hoverIndex = -1; // 1-based; -1 = no hover
-
-        // -----------------------------------------------------------------------
-        // Static constructor
-        // -----------------------------------------------------------------------
-
+        /// <summary>
+        /// Initializes static members of the RatingControl class and overrides the default style key to associate the
+        /// control with its style.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the RatingControl uses the correct default style
+        /// as defined in the application's resources. This is necessary for custom controls to apply their visual
+        /// appearance properly.</remarks>
         static RatingControl()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
                 typeof(RatingControl),
                 new FrameworkPropertyMetadata(typeof(RatingControl)));
         }
-
-        // -----------------------------------------------------------------------
-        // Value DP
-        // -----------------------------------------------------------------------
 
         /// <summary>
         /// Identifies the <see cref="Value"/> dependency property.
@@ -93,21 +89,6 @@ namespace Fluence.Wpf.Controls
             set => SetValue(ValueProperty, value);
         }
 
-        private static void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ((RatingControl)d).RefreshStars();
-        }
-
-        private static object CoerceValue(DependencyObject d, object baseValue)
-        {
-            double v = (double)baseValue;
-            return v > 0 ? Math.Min(v, ((RatingControl)d).MaxRating) : 0;
-        }
-
-        // -----------------------------------------------------------------------
-        // MaxRating DP
-        // -----------------------------------------------------------------------
-
         /// <summary>
         /// Identifies the <see cref="MaxRating"/> dependency property.
         /// </summary>
@@ -126,18 +107,6 @@ namespace Fluence.Wpf.Controls
             get => (int)GetValue(MaxRatingProperty);
             set => SetValue(MaxRatingProperty, value);
         }
-
-        private static void OnMaxRatingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            RatingControl ctrl = (RatingControl)d;
-            // Re-coerce Value in case it now exceeds the new MaxRating.
-            ctrl.CoerceValue(ValueProperty);
-            ctrl.BuildAndRefreshStars();
-        }
-
-        // -----------------------------------------------------------------------
-        // IsReadOnly DP
-        // -----------------------------------------------------------------------
 
         /// <summary>
         /// Identifies the <see cref="IsReadOnly"/> dependency property.
@@ -159,15 +128,6 @@ namespace Fluence.Wpf.Controls
             set => SetValue(IsReadOnlyProperty, value);
         }
 
-        private static void OnIsReadOnlyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ((RatingControl)d).RefreshStars();
-        }
-
-        // -----------------------------------------------------------------------
-        // Caption DP
-        // -----------------------------------------------------------------------
-
         /// <summary>
         /// Identifies the <see cref="Caption"/> dependency property.
         /// </summary>
@@ -187,15 +147,6 @@ namespace Fluence.Wpf.Controls
             set => SetValue(CaptionProperty, value);
         }
 
-        private static void OnCaptionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ((RatingControl)d).UpdateCaption();
-        }
-
-        // -----------------------------------------------------------------------
-        // Template
-        // -----------------------------------------------------------------------
-
         /// <inheritdoc />
         public override void OnApplyTemplate()
         {
@@ -208,9 +159,34 @@ namespace Fluence.Wpf.Controls
             UpdateCaption();
         }
 
-        // -----------------------------------------------------------------------
-        // Internal helpers
-        // -----------------------------------------------------------------------
+        private static void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((RatingControl)d).RefreshStars();
+        }
+
+        private static object CoerceValue(DependencyObject d, object baseValue)
+        {
+            double v = (double)baseValue;
+            return v > 0 ? Math.Min(v, ((RatingControl)d).MaxRating) : 0;
+        }
+
+        private static void OnMaxRatingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            // Re-coerce Value in case it now exceeds the new MaxRating.
+            RatingControl ctrl = (RatingControl)d;
+            ctrl.CoerceValue(ValueProperty);
+            ctrl.BuildAndRefreshStars();
+        }
+
+        private static void OnIsReadOnlyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((RatingControl)d).RefreshStars();
+        }
+
+        private static void OnCaptionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((RatingControl)d).UpdateCaption();
+        }
 
         private void OnIsEnabledChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
@@ -224,9 +200,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            _hoverIndex = -1;
-            _starsPanel.Children.Clear();
-
+            _starsPanel.Children.Clear(); _hoverIndex = -1;
             int count = Math.Max(1, MaxRating);
             for (int i = 1; i <= count; i++)
             {
@@ -241,20 +215,16 @@ namespace Fluence.Wpf.Controls
                 TextOptions.SetTextFormattingMode(star, TextFormattingMode.Display);
                 TextOptions.SetTextRenderingMode(star, TextRenderingMode.ClearType);
                 TextOptions.SetTextHintingMode(star, TextHintingMode.Fixed);
-
                 if (i < count)
                 {
                     star.Margin = new Thickness(0, 0, 4, 0);
                 }
-
                 int capturedIndex = i;
                 star.MouseEnter += (s, e) => OnStarMouseEnter(capturedIndex);
                 star.MouseLeave += (s, e) => OnStarMouseLeave();
                 star.MouseLeftButtonDown += (s, e) => OnStarClick(capturedIndex);
-
                 _ = _starsPanel.Children.Add(star);
             }
-
             RefreshStars();
         }
 
@@ -264,7 +234,6 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
             _hoverIndex = index;
             RefreshStars();
         }
@@ -281,6 +250,7 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
+
             // Clicking the already-set star clears the rating (WinUI 3 IsClearEnabled behaviour).
             double newValue = ((int)Math.Round(Value) == index) ? 0.0 : index;
             SetCurrentValue(ValueProperty, newValue);
@@ -294,7 +264,6 @@ namespace Fluence.Wpf.Controls
             }
 
             int displayCount = _hoverIndex > 0 ? _hoverIndex : (int)Math.Round(Value);
-
             for (int i = 0; i < _starsPanel.Children.Count; i++)
             {
                 if (_starsPanel.Children[i] is not WpfTextBlock star)
@@ -304,7 +273,6 @@ namespace Fluence.Wpf.Controls
 
                 bool filled = (i + 1) <= displayCount;
                 star.Text = filled ? "\uE735" : "\uE734"; // StarFilled / StarEmpty
-
                 if (!IsEnabled)
                 {
                     star.SetResourceReference(WpfTextBlock.ForegroundProperty, "TextFillColorDisabledBrush");
@@ -317,7 +285,6 @@ namespace Fluence.Wpf.Controls
                 {
                     star.SetResourceReference(WpfTextBlock.ForegroundProperty, "TextFillColorSecondaryBrush");
                 }
-
                 star.Cursor = (IsReadOnly || !IsEnabled) ? null : Cursors.Hand;
             }
         }
@@ -328,10 +295,25 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
             string text = Caption ?? string.Empty;
             _captionText.Text = text;
             _captionText.Visibility = string.IsNullOrWhiteSpace(text) ? Visibility.Collapsed : Visibility.Visible;
         }
+
+        /// <summary>
+        /// Represents the panel that displays the star rating elements in the WPF user interface.
+        /// </summary>
+        private WpfStackPanel? _starsPanel;
+
+        /// <summary>
+        /// Represents the text block used to display the caption in the WPF user interface.
+        /// </summary>
+        private WpfTextBlock? _captionText;
+
+        /// <summary>
+        /// Represents the index of the currently hovered item. A value of -1 indicates that no item is hovered.
+        /// </summary>
+        /// <remarks>The index is 1-based. Set to -1 when there is no hovered item.</remarks>
+        private int _hoverIndex = -1; // 1-based; -1 = no hover
     }
 }
