@@ -156,7 +156,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            if (Content is not string text || string.IsNullOrEmpty(text))
+            if (Content is not string text || string.IsNullOrWhiteSpace(text))
             {
                 ClearAutomaticToolTip();
                 return;

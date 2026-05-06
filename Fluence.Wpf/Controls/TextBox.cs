@@ -306,9 +306,9 @@ namespace Fluence.Wpf.Controls
 
             if (ValidationState != ValidationState.None)
             {
-                string message = !string.IsNullOrEmpty(ValidationMessage) ? ValidationMessage : HelperText;
+                string message = !string.IsNullOrWhiteSpace(ValidationMessage) ? ValidationMessage : HelperText;
                 helper.Text = message;
-                helper.Visibility = string.IsNullOrEmpty(message) ? Visibility.Collapsed : Visibility.Visible;
+                helper.Visibility = string.IsNullOrWhiteSpace(message) ? Visibility.Collapsed : Visibility.Visible;
                 if (icon != null)
                 {
                     icon.Visibility = helper.Visibility;
@@ -357,7 +357,7 @@ namespace Fluence.Wpf.Controls
             _ = (icon?.Visibility = Visibility.Collapsed);
 
             helper.Text = HelperText;
-            helper.Visibility = string.IsNullOrEmpty(HelperText) ? Visibility.Collapsed : Visibility.Visible;
+            helper.Visibility = string.IsNullOrWhiteSpace(HelperText) ? Visibility.Collapsed : Visibility.Visible;
             helper.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "TextFillColorSecondaryBrush");
         }
     }

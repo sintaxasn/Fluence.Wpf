@@ -316,7 +316,7 @@ namespace Fluence.Wpf.Controls
 
             string text = Caption ?? string.Empty;
             _captionText.Text = text;
-            _captionText.Visibility = string.IsNullOrEmpty(text) ? Visibility.Collapsed : Visibility.Visible;
+            _captionText.Visibility = string.IsNullOrWhiteSpace(text) ? Visibility.Collapsed : Visibility.Visible;
         }
     }
 }

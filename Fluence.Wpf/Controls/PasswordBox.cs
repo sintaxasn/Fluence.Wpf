@@ -477,7 +477,7 @@ namespace Fluence.Wpf.Controls
 
         private static int ComputePasswordStrength(string password)
         {
-            if (string.IsNullOrEmpty(password))
+            if (password.Length == 0)
             {
                 return 0;
             }

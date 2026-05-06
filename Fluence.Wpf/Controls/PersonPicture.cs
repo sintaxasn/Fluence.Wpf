@@ -290,8 +290,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            string initials = GetInitials();
-            if (!string.IsNullOrEmpty(initials))
+            if (GetInitials() is string initials)
             {
                 // Initials state
                 if (_initialsText != null)
@@ -314,12 +313,12 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateBadge()
         {
-            bool hasBadge = !string.IsNullOrEmpty(BadgeGlyph) || BadgeNumber > 0;
+            bool hasBadge = !string.IsNullOrWhiteSpace(BadgeGlyph) || BadgeNumber > 0;
             _ = (_badgeGrid?.Visibility = hasBadge ? Visibility.Visible : Visibility.Collapsed);
 
             if (_badgeText != null)
             {
-                if (!string.IsNullOrEmpty(BadgeGlyph))
+                if (!string.IsNullOrWhiteSpace(BadgeGlyph))
                 {
                     _badgeText.Text = BadgeGlyph;
                     _badgeText.FontFamily = new FontFamily("Segoe Fluent Icons");
@@ -340,10 +339,10 @@ namespace Fluence.Wpf.Controls
             _ = VisualStateManager.GoToState(this, hasBadge ? StateBadgeWithoutImageSource : StateNoBadge, true);
         }
 
-        private string GetInitials()
+        private string? GetInitials()
         {
             // Explicit initials take precedence.
-            if (!string.IsNullOrEmpty(Initials))
+            if (!string.IsNullOrWhiteSpace(Initials))
             {
                 return Initials.Length > 2 ? Initials.Substring(0, 2).ToUpperInvariant() : Initials.ToUpperInvariant();
             }
@@ -354,7 +353,7 @@ namespace Fluence.Wpf.Controls
                 ? (parts[0][0].ToString() + parts[parts.Length - 1][0].ToString()).ToUpperInvariant()
                 : parts.Length == 1
                 ? parts[0][0].ToString().ToUpperInvariant()
-                : string.Empty;
+                : null;
         }
     }
 }
