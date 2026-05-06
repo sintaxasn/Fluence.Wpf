@@ -275,7 +275,7 @@ namespace Fluence.Wpf.Demo.Pages.Typography
         private static void CopyStyleKey_Click(object sender, RoutedEventArgs e)
         {
             string? styleKey = sender is Fluent.Button button ? button.Tag as string : null;
-            if (string.IsNullOrEmpty(styleKey))
+            if (string.IsNullOrWhiteSpace(styleKey))
             {
                 return;
             }

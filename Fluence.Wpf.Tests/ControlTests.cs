@@ -213,7 +213,7 @@ namespace Fluence.Wpf.Tests
 
         private static T? FindVisualChildByName<T>(DependencyObject root, string name) where T : FrameworkElement
         {
-            if (root == null || string.IsNullOrEmpty(name))
+            if (root == null || string.IsNullOrWhiteSpace(name))
             {
                 return null;
             }

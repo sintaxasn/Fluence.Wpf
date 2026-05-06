@@ -404,7 +404,7 @@ namespace Fluence.Wpf.Demo.Pages.Menus
         private static void SetTextFromTag(TextBlock label, string prefix, object sender)
         {
             string? action = sender is FrameworkElement element ? element.Tag as string : null;
-            label.Text = string.Format(CultureInfo.CurrentCulture, "{0}: {1}", prefix, string.IsNullOrEmpty(action) ? "None" : action);
+            label.Text = string.Format(CultureInfo.CurrentCulture, "{0}: {1}", prefix, string.IsNullOrWhiteSpace(action) ? "None" : action);
         }
     }
 }

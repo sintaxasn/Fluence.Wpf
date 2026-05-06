@@ -184,7 +184,7 @@ namespace Fluence.Wpf.Demo
                 return;
             }
 
-            if (NavSearchBox != null && !string.IsNullOrEmpty(NavSearchBox.Text))
+            if (NavSearchBox != null && !string.IsNullOrWhiteSpace(NavSearchBox.Text))
             {
                 NavSearchBox.Text = string.Empty;
             }
@@ -508,7 +508,7 @@ namespace Fluence.Wpf.Demo
             ShowIcon = !extendedTitleBar && _userShowIcon;
             ShowTitle = !extendedTitleBar && _userShowTitle;
             Icon = _userIcon;
-            if (_userShowTitle && !string.IsNullOrEmpty(_userTitle))
+            if (_userShowTitle && !string.IsNullOrWhiteSpace(_userTitle))
             {
                 Title = _userTitle;
             }
@@ -614,7 +614,7 @@ namespace Fluence.Wpf.Demo
                 }
 
                 string desiredTitle = _userShowTitle ? (_userTitle ?? string.Empty) : string.Empty;
-                if (string.IsNullOrEmpty(desiredTitle))
+                if (string.IsNullOrWhiteSpace(desiredTitle))
                 {
                     ShellTitleBar.Title = string.Empty;
                     return;

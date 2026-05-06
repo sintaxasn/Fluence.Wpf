@@ -266,7 +266,7 @@ namespace Fluence.Wpf.Demo.Pages.Trees
             }
 
             string parentPath = BuildPath(parent);
-            return string.IsNullOrEmpty(parentPath)
+            return string.IsNullOrWhiteSpace(parentPath)
                 ? header
                 : string.Format(CultureInfo.CurrentCulture, "{0} / {1}", parentPath, header);
         }

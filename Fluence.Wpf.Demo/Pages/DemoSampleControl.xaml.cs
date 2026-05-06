@@ -226,9 +226,9 @@ namespace Fluence.Wpf.Demo.Pages
                 return;
             }
 
-            TitleTextBlock.Visibility = string.IsNullOrEmpty(Title) ? Visibility.Collapsed : Visibility.Visible;
-            DescriptionTextBlock.Visibility = string.IsNullOrEmpty(Description) ? Visibility.Collapsed : Visibility.Visible;
-            HeaderPanel.Visibility = string.IsNullOrEmpty(Title) && string.IsNullOrEmpty(Description)
+            TitleTextBlock.Visibility = string.IsNullOrWhiteSpace(Title) ? Visibility.Collapsed : Visibility.Visible;
+            DescriptionTextBlock.Visibility = string.IsNullOrWhiteSpace(Description) ? Visibility.Collapsed : Visibility.Visible;
+            HeaderPanel.Visibility = string.IsNullOrWhiteSpace(Title) && string.IsNullOrWhiteSpace(Description)
                 ? Visibility.Collapsed
                 : Visibility.Visible;
         }
@@ -344,7 +344,7 @@ namespace Fluence.Wpf.Demo.Pages
         private void OnCopySourceButtonClick(object sender, RoutedEventArgs e)
         {
             string? source = sender is FrameworkElement element ? element.Tag as string : null;
-            if (!string.IsNullOrEmpty(source))
+            if (!string.IsNullOrWhiteSpace(source))
             {
                 Clipboard.SetText(source);
             }
@@ -538,7 +538,7 @@ namespace Fluence.Wpf.Demo.Pages
 
         private static void AddRun(Paragraph paragraph, string text, string resourceKey)
         {
-            if (string.IsNullOrEmpty(text))
+            if (string.IsNullOrWhiteSpace(text))
             {
                 return;
             }
