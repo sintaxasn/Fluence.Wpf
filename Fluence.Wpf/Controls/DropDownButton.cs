@@ -40,7 +40,7 @@ namespace Fluence.Wpf.Controls
     {
         private const string PART_Popup = "PART_Popup";
 
-        private Popup _popup;
+        private Popup? _popup;
 
         static DropDownButton()
         {
@@ -173,7 +173,7 @@ namespace Fluence.Wpf.Controls
             popup.Closed += OnPopupClosed;
         }
 
-        private void OnPopupClosed(object sender, System.EventArgs e)
+        private void OnPopupClosed(object? sender, System.EventArgs e)
         {
             IsChecked = false;
         }

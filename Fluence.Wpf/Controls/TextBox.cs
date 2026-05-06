@@ -49,7 +49,7 @@ namespace Fluence.Wpf.Controls
         private const string PART_ValidationIcon = "PART_ValidationIcon";
         private const string PART_HelperText = "PART_HelperText";
 
-        private System.Windows.Controls.Button _clearButton;
+        private System.Windows.Controls.Button? _clearButton;
 
         static TextBox()
         {

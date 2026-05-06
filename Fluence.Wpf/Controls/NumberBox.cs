@@ -79,9 +79,9 @@ namespace Fluence.Wpf.Controls
         private const string PartUpButton = "PART_UpButton";
         private const string PartDownButton = "PART_DownButton";
 
-        private System.Windows.Controls.TextBox _partTextBox;
-        private System.Windows.Controls.Primitives.RepeatButton _partUpButton;
-        private System.Windows.Controls.Primitives.RepeatButton _partDownButton;
+        private System.Windows.Controls.TextBox? _partTextBox;
+        private System.Windows.Controls.Primitives.RepeatButton? _partUpButton;
+        private System.Windows.Controls.Primitives.RepeatButton? _partDownButton;
         private bool _suppressTextSync;
 
         static NumberBox()
@@ -211,7 +211,7 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Occurs when <see cref="Value"/> changes after coercion.
         /// </summary>
-        public event EventHandler<NumberBoxValueChangedEventArgs> ValueChanged;
+        public event EventHandler<NumberBoxValueChangedEventArgs>? ValueChanged;
 
         /// <summary>
         /// Gets or sets the numeric value.

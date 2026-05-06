@@ -64,7 +64,7 @@ namespace Fluence.Wpf
 
         private static bool _isInitialized;
         private static bool _isApplying;
-        private static System.Collections.Generic.List<object> _promotedHighContrastBrushKeys;
+        private static System.Collections.Generic.List<object>? _promotedHighContrastBrushKeys;
 
         /// <summary>Gets the currently requested theme (may be <see cref="ApplicationTheme.Auto"/>).</summary>
         public static ApplicationTheme CurrentTheme { get; private set; } = ApplicationTheme.Auto;
@@ -85,7 +85,7 @@ namespace Fluence.Wpf
         public static bool IsAppInDarkMode => !RegistryHelper.GetAppsUseLightTheme();
 
         /// <summary>Raised after a theme or accent change has been applied.</summary>
-        public static event EventHandler<ThemeChangedEventArgs> Changed;
+        public static event EventHandler<ThemeChangedEventArgs>? Changed;
 
         /// <summary>
         /// Initialize the theme system and apply the specified theme.
@@ -320,11 +320,10 @@ namespace Fluence.Wpf
 
         private static void OnChanged(ApplicationTheme resolvedTheme)
         {
-            EventHandler<ThemeChangedEventArgs> handler = Changed;
-            if (handler != null)
+            if (Changed != null)
             {
                 Color accent = ApplicationAccentColorManager.SystemAccentColor;
-                handler(null, new ThemeChangedEventArgs(resolvedTheme, accent));
+                Changed(null, new ThemeChangedEventArgs(resolvedTheme, accent));
             }
         }
 

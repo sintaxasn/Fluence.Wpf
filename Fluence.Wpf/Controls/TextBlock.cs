@@ -38,7 +38,7 @@ namespace Fluence.Wpf.Controls
     {
         private const string PART_TextBlock = "PART_TextBlock";
 
-        private System.Windows.Controls.TextBlock _partTextBlock;
+        private System.Windows.Controls.TextBlock? _partTextBlock;
 
         static TextBlock()
         {

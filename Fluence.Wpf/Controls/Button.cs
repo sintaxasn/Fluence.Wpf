@@ -38,7 +38,7 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     public class Button : System.Windows.Controls.Button
     {
-        private ContentPresenter _mainContentPresenter;
+        private ContentPresenter? _mainContentPresenter;
         private bool _hasAutomaticToolTip;
 
         static Button()
@@ -156,8 +156,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            string? text = Content as string;
-            if (string.IsNullOrEmpty(text))
+            if (Content is not string text || string.IsNullOrEmpty(text))
             {
                 ClearAutomaticToolTip();
                 return;
@@ -168,8 +167,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            System.Windows.Controls.TextBlock textBlock = FindVisualChild<System.Windows.Controls.TextBlock>(_mainContentPresenter);
-            if (textBlock == null)
+            if (FindVisualChild<System.Windows.Controls.TextBlock>(_mainContentPresenter) is not System.Windows.Controls.TextBlock textBlock)
             {
                 ClearAutomaticToolTip();
                 return;
@@ -223,7 +221,7 @@ namespace Fluence.Wpf.Controls
             ClearValue(ToolTipProperty);
         }
 
-        private static T FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
+        private static T? FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
         {
             if (parent == null)
             {
@@ -239,8 +237,7 @@ namespace Fluence.Wpf.Controls
                     return match;
                 }
 
-                T descendant = FindVisualChild<T>(child);
-                if (descendant != null)
+                if (FindVisualChild<T>(child) is T descendant)
                 {
                     return descendant;
                 }

@@ -72,17 +72,17 @@ namespace Fluence.Wpf.Controls
         private static readonly Duration DeterminateAnimationDuration = new(TimeSpan.FromMilliseconds(200));
         private static readonly IEasingFunction DeterminateAnimationEasing = new CubicEase { EasingMode = EasingMode.EaseInOut };
 
-        private Path _arcPath;
-        private Path _indeterminateArcPath;
+        private Path? _arcPath;
+        private Path? _indeterminateArcPath;
         private bool _isIndeterminateAnimationRunning;
 
         // Reusable geometry objects — mutated in place each render to avoid per-frame allocation.
-        private ArcSegment _indeterminateArcSegment;
-        private PathFigure _indeterminateFigure;
-        private PathGeometry _indeterminateGeometry;
-        private ArcSegment _determinateArcSegment;
-        private PathFigure _determinateFigure;
-        private PathGeometry _determinateGeometry;
+        private ArcSegment? _indeterminateArcSegment;
+        private PathFigure? _indeterminateFigure;
+        private PathGeometry? _indeterminateGeometry;
+        private ArcSegment? _determinateArcSegment;
+        private PathFigure? _determinateFigure;
+        private PathGeometry? _determinateGeometry;
 
         static ProgressRing()
         {
@@ -682,7 +682,7 @@ namespace Fluence.Wpf.Controls
                 if (deferForLayout && isLayoutSizeUnavailable)
                 {
                     // Defer determinate first render until the initial layout pass provides a size.
-                    void handler(object sender, EventArgs e)
+                    void handler(object? sender, EventArgs e)
                     {
                         LayoutUpdated -= handler;
                         if (!IsActive || IsIndeterminate)
@@ -709,9 +709,9 @@ namespace Fluence.Wpf.Controls
             Point endPoint = GetArcPoint(center, radius, startAngle + angle);
 
             // Select the pre-allocated geometry set for this path and mutate in place.
-            PathFigure figure;
-            ArcSegment segment;
-            PathGeometry geometry;
+            PathFigure? figure;
+            ArcSegment? segment;
+            PathGeometry? geometry;
 
             if (ReferenceEquals(path, _indeterminateArcPath))
             {
@@ -726,10 +726,13 @@ namespace Fluence.Wpf.Controls
                 geometry = _determinateGeometry;
             }
 
-            figure.StartPoint = startPoint;
-            segment.Point = endPoint;
-            segment.Size = new Size(radius, radius);
-            segment.IsLargeArc = angle > 180;
+            _ = (figure?.StartPoint = startPoint);
+            if (segment is not null)
+            {
+                segment.Point = endPoint;
+                segment.Size = new Size(radius, radius);
+                segment.IsLargeArc = angle > 180;
+            }
 
             if (!ReferenceEquals(path.Data, geometry))
             {

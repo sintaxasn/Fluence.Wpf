@@ -62,12 +62,12 @@ namespace Fluence.Wpf.Controls
         private const string PART_RestoreButton = FluenceWindowTemplateParts.PART_RestoreButton;
         private const string PART_CloseButton = FluenceWindowTemplateParts.PART_CloseButton;
 
-        private System.Windows.Controls.Button _minimizeButton;
-        private System.Windows.Controls.Button _maximizeButton;
-        private System.Windows.Controls.Button _restoreButton;
-        private System.Windows.Controls.Button _closeButton;
-        private HwndSource _hwndSource;
-        private System.Windows.Controls.Button _snapHoveredButton;
+        private System.Windows.Controls.Button? _minimizeButton;
+        private System.Windows.Controls.Button? _maximizeButton;
+        private System.Windows.Controls.Button? _restoreButton;
+        private System.Windows.Controls.Button? _closeButton;
+        private HwndSource? _hwndSource;
+        private System.Windows.Controls.Button? _snapHoveredButton;
 
         /// <summary>
         /// Converts a value to <c>true</c> when it is not null; used by caption button visibility bindings.
@@ -657,7 +657,7 @@ namespace Fluence.Wpf.Controls
             base.OnClosed(e);
         }
 
-        private void OnThemeChanged(object sender, ThemeChangedEventArgs e)
+        private void OnThemeChanged(object? sender, ThemeChangedEventArgs e)
         {
             if (!Dispatcher.CheckAccess())
             {
@@ -673,7 +673,7 @@ namespace Fluence.Wpf.Controls
             ApplyFrame();
         }
 
-        private void OnAccentColorChanged(object sender, EventArgs e)
+        private void OnAccentColorChanged(object? sender, EventArgs e)
         {
             if (!Dispatcher.CheckAccess())
             {
@@ -966,8 +966,7 @@ namespace Fluence.Wpf.Controls
                 int result = HitTestTitleBar(lParam);
                 if (result == NativeConstants.HTMAXBUTTON)
                 {
-                    System.Windows.Controls.Button btn = WindowState == WindowState.Maximized ? _restoreButton : _maximizeButton;
-                    SetSnapHover(btn);
+                    SetSnapHover(WindowState == WindowState.Maximized ? _restoreButton : _maximizeButton);
                 }
                 else
                 {
@@ -1136,7 +1135,7 @@ namespace Fluence.Wpf.Controls
             return !IsOverInteractiveContent(point) && IsMoveable ? NativeConstants.HTCAPTION : 0;
         }
 
-        private void SetSnapHover(System.Windows.Controls.Button button)
+        private void SetSnapHover(System.Windows.Controls.Button? button)
         {
             if (_snapHoveredButton == button)
             {

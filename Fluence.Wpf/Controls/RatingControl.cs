@@ -50,8 +50,8 @@ namespace Fluence.Wpf.Controls
         private const string PART_StarsPanel = "PART_StarsPanel";
         private const string PART_Caption = "PART_Caption";
 
-        private WpfStackPanel _starsPanel;
-        private WpfTextBlock _captionText;
+        private WpfStackPanel? _starsPanel;
+        private WpfTextBlock? _captionText;
         private int _hoverIndex = -1; // 1-based; -1 = no hover
 
         // -----------------------------------------------------------------------

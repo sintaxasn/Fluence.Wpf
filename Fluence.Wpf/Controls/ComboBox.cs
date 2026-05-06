@@ -198,7 +198,7 @@ namespace Fluence.Wpf.Controls
             private set => SetValue(IsDropDownOpenedUpwardPropertyKey, value);
         }
 
-        private Popup _popup;
+        private Popup? _popup;
         private bool _isAutoSelecting;
 
         /// <inheritdoc />

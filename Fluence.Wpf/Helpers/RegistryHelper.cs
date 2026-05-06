@@ -85,7 +85,7 @@ namespace Fluence.Wpf.Helpers
             return false;
         }
 
-        public static bool TryGetAccentPalette(out Color[] palette)
+        public static bool TryGetAccentPalette(out Color[]? palette)
         {
             palette = null;
 

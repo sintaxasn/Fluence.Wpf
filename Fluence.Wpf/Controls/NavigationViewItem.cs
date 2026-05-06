@@ -192,14 +192,9 @@ namespace Fluence.Wpf.Controls
             ApplyDefaultFontIconSize(e.NewValue as FontIcon);
         }
 
-        private static void ApplyDefaultFontIconSize(FontIcon icon)
+        private static void ApplyDefaultFontIconSize(FontIcon? icon)
         {
-            if (icon == null)
-            {
-                return;
-            }
-
-            if (icon.ReadLocalValue(FontIcon.IconFontSizeProperty) == DependencyProperty.UnsetValue)
+            if (icon?.ReadLocalValue(FontIcon.IconFontSizeProperty) == DependencyProperty.UnsetValue)
             {
                 icon.SetCurrentValue(FontIcon.IconFontSizeProperty, 20.0);
             }

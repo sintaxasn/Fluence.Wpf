@@ -69,10 +69,10 @@ namespace Fluence.Wpf.Controls
         private const double NavigationItemOuterHorizontalMargin = 4.0;
         private const double NavigationItemChildIndicatorOffset = 44.0;
 
-        private System.Windows.Controls.Button _backButton;
-        private System.Windows.Controls.Button _paneToggleButton;
-        private FrameworkElement _selectionIndicator;
-        private FrameworkElement _indicatorHost;
+        private System.Windows.Controls.Button? _backButton;
+        private System.Windows.Controls.Button? _paneToggleButton;
+        private FrameworkElement? _selectionIndicator;
+        private FrameworkElement? _indicatorHost;
         private int _indicatorAnimationGeneration;
         private bool _indicatorPositioned;
 
@@ -191,22 +191,22 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Occurs when a navigation item is invoked before selection changes.
         /// </summary>
-        public event EventHandler<NavigationViewItemInvokedEventArgs> ItemInvoked;
+        public event EventHandler<NavigationViewItemInvokedEventArgs>? ItemInvoked;
 
         /// <summary>
         /// Occurs when the back button is invoked.
         /// </summary>
-        public event EventHandler<NavigationViewBackRequestedEventArgs> BackRequested;
+        public event EventHandler<NavigationViewBackRequestedEventArgs>? BackRequested;
 
         /// <summary>
         /// Occurs when the pane is opening (expanded in left mode).
         /// </summary>
-        public event EventHandler PaneOpening;
+        public event EventHandler? PaneOpening;
 
         /// <summary>
         /// Occurs when the pane has closed (collapsed in left mode).
         /// </summary>
-        public event EventHandler PaneClosed;
+        public event EventHandler? PaneClosed;
 
         /// <summary>Gets or sets whether the pane is shown on the left or across the top.</summary>
         public NavigationViewPaneDisplayMode PaneDisplayMode
@@ -320,12 +320,9 @@ namespace Fluence.Wpf.Controls
         /// <inheritdoc />
         protected override void OnSelectionChanged(SelectionChangedEventArgs e)
         {
-            NavigationViewItem previousItem = null;
-            if (e.RemovedItems != null && e.RemovedItems.Count > 0)
-            {
-                previousItem = ResolveNavigationViewItem(e.RemovedItems[0]);
-            }
-
+            NavigationViewItem? previousItem = e.RemovedItems.Count > 0
+                ? ResolveNavigationViewItem(e.RemovedItems[0])
+                : null;
             base.OnSelectionChanged(e);
             _ = Dispatcher.BeginInvoke(new Action(() => PositionIndicator(true, previousItem)), DispatcherPriority.Loaded);
         }
@@ -339,8 +336,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            NavigationViewItem navItem = FindNavigationViewItem(e.NewFocus as DependencyObject);
-            if (navItem == null)
+            if (FindNavigationViewItem(e.NewFocus as DependencyObject) is not NavigationViewItem navItem)
             {
                 return;
             }
@@ -410,15 +406,6 @@ namespace Fluence.Wpf.Controls
         internal void RaiseBackRequestedForTesting()
         {
             OnBackButtonClick(this, new RoutedEventArgs());
-        }
-
-        /// <summary>
-        /// Returns the shared selection indicator element from the current template, if resolved.
-        /// Used by unit tests.
-        /// </summary>
-        internal FrameworkElement GetSelectionIndicatorForTesting()
-        {
-            return _selectionIndicator;
         }
 
         internal void InvokeItem(NavigationViewItem item)
@@ -536,7 +523,7 @@ namespace Fluence.Wpf.Controls
             PositionIndicator(animate, null);
         }
 
-        private void PositionIndicator(bool animate, NavigationViewItem previousItem)
+        private void PositionIndicator(bool animate, NavigationViewItem? previousItem)
         {
             if (_selectionIndicator == null || _indicatorHost == null)
             {
@@ -554,8 +541,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            NavigationViewItem nvi = ResolveNavigationViewItem(SelectedItem);
-            if (nvi == null || !nvi.IsVisible || nvi.ActualHeight == 0)
+            if (ResolveNavigationViewItem(SelectedItem) is not NavigationViewItem nvi || !nvi.IsVisible || nvi.ActualHeight == 0)
             {
                 HideIndicator();
                 return;
@@ -646,7 +632,7 @@ namespace Fluence.Wpf.Controls
             Point fromPosition,
             Point toPosition,
             bool topMode,
-            NavigationViewItem previousItem,
+            NavigationViewItem? previousItem,
             NavigationViewItem targetItem)
         {
             StopAnimation();
@@ -769,7 +755,7 @@ namespace Fluence.Wpf.Controls
 
         private Point CalculateDepartPosition(
             Point fromPosition,
-            NavigationViewItem previousItem,
+            NavigationViewItem? previousItem,
             bool topMode,
             double direction)
         {
@@ -938,7 +924,7 @@ namespace Fluence.Wpf.Controls
             translate.BeginAnimation(TranslateTransform.YProperty, null);
         }
 
-        private NavigationViewItem? ResolveNavigationViewItem(object item)
+        private NavigationViewItem? ResolveNavigationViewItem(object? item)
         {
             return item is not NavigationViewItem nvi
                 ? ItemContainerGenerator.ContainerFromItem(item) as NavigationViewItem
@@ -965,9 +951,9 @@ namespace Fluence.Wpf.Controls
             return (data != DependencyProperty.UnsetValue && data != null) ? data : navItem;
         }
 
-        private static NavigationViewItem FindNavigationViewItem(DependencyObject focused)
+        private static NavigationViewItem? FindNavigationViewItem(DependencyObject? focused)
         {
-            DependencyObject current = focused;
+            DependencyObject? current = focused;
             while (current != null)
             {
                 if (current is NavigationViewItem asItem)

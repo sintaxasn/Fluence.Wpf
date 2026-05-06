@@ -72,7 +72,7 @@ namespace Fluence.Wpf
         /// <summary>
         /// Occurs after accent ramp colors and application resources have been updated.
         /// </summary>
-        public static event EventHandler<EventArgs> AccentColorChanged;
+        public static event EventHandler<EventArgs>? AccentColorChanged;
 
         static ApplicationAccentColorManager()
         {
@@ -151,7 +151,7 @@ namespace Fluence.Wpf
         {
             _useSystemAccent = true;
 
-            if (RegistryHelper.TryGetAccentPalette(out Color[] palette))
+            if (RegistryHelper.TryGetAccentPalette(out Color[]? palette) && palette is not null)
             {
                 _systemAccentColorLight3 = palette[0];
                 _systemAccentColorLight2 = palette[1];

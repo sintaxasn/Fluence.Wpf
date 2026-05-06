@@ -48,8 +48,8 @@ namespace Fluence.Wpf.Controls
     {
         private const string PART_BackButton = "PART_BackButton";
         private const string PART_PaneToggleButton = "PART_PaneToggleButton";
-        private WpfButton _backButton;
-        private WpfButton _paneToggleButton;
+        private WpfButton? _backButton;
+        private WpfButton? _paneToggleButton;
 
         /// <summary>Identifies the <see cref="Title"/> dependency property.</summary>
         public static readonly DependencyProperty TitleProperty =
@@ -123,10 +123,10 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>Occurs when the back button is invoked after command execution has been processed.</summary>
-        public event EventHandler BackRequested;
+        public event EventHandler? BackRequested;
 
         /// <summary>Occurs when the pane toggle button is invoked after command execution has been processed.</summary>
-        public event EventHandler PaneToggleRequested;
+        public event EventHandler? PaneToggleRequested;
 
         /// <summary>Gets or sets the title text.</summary>
         public string Title
@@ -300,12 +300,12 @@ namespace Fluence.Wpf.Controls
             ((TitleBar)d).UpdatePaneToggleButtonCommandState();
         }
 
-        private void OnBackCommandCanExecuteChanged(object sender, EventArgs e)
+        private void OnBackCommandCanExecuteChanged(object? sender, EventArgs e)
         {
             UpdateBackButtonCommandState();
         }
 
-        private void OnPaneToggleCommandCanExecuteChanged(object sender, EventArgs e)
+        private void OnPaneToggleCommandCanExecuteChanged(object? sender, EventArgs e)
         {
             UpdatePaneToggleButtonCommandState();
         }
@@ -361,12 +361,12 @@ namespace Fluence.Wpf.Controls
             return command == null || command.CanExecute(parameter);
         }
 
-        private static void SubscribeCommand(ICommand command, EventHandler handler)
+        private static void SubscribeCommand(ICommand? command, EventHandler handler)
         {
             command?.CanExecuteChanged += handler;
         }
 
-        private static void UnsubscribeCommand(ICommand command, EventHandler handler)
+        private static void UnsubscribeCommand(ICommand? command, EventHandler handler)
         {
             command?.CanExecuteChanged -= handler;
         }

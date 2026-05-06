@@ -50,12 +50,12 @@ namespace Fluence.Wpf.Controls
         private const string PART_IndeterminateTranslate = "PART_IndeterminateTranslate";
         private const string PART_IndeterminateTranslate2 = "PART_IndeterminateTranslate2";
 
-        private System.Windows.Controls.Border _track;
-        private System.Windows.Controls.Border _fill;
-        private System.Windows.Controls.Border _indeterminateBar;
-        private System.Windows.Controls.Border _indeterminateBar2;
-        private TranslateTransform _indeterminateTranslate;
-        private TranslateTransform _indeterminateTranslate2;
+        private System.Windows.Controls.Border? _track;
+        private System.Windows.Controls.Border? _fill;
+        private System.Windows.Controls.Border? _indeterminateBar;
+        private System.Windows.Controls.Border? _indeterminateBar2;
+        private TranslateTransform? _indeterminateTranslate;
+        private TranslateTransform? _indeterminateTranslate2;
 
         static ProgressBar()
         {

@@ -45,7 +45,7 @@ namespace Fluence.Wpf.Controls
     {
         private const string PART_CloseButton = "PART_CloseButton";
 
-        private System.Windows.Controls.Button _closeButton;
+        private System.Windows.Controls.Button? _closeButton;
 
         static InfoBar()
         {
@@ -229,12 +229,12 @@ namespace Fluence.Wpf.Controls
         /// Occurs before the info bar closes. Set <see cref="InfoBarClosingEventArgs.Cancel"/>
         /// to <see langword="true"/> to prevent closing.
         /// </summary>
-        public event EventHandler<InfoBarClosingEventArgs> Closing;
+        public event EventHandler<InfoBarClosingEventArgs>? Closing;
 
         /// <summary>
         /// Occurs after the info bar has closed.
         /// </summary>
-        public event EventHandler Closed;
+        public event EventHandler? Closed;
 
         /// <inheritdoc />
         protected override AutomationPeer OnCreateAutomationPeer()

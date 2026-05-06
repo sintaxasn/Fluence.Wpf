@@ -106,8 +106,7 @@ namespace Fluence.Wpf
 
             lock (_lock)
             {
-                WatchedWindow watched = FindWatchedWindow(window);
-                if (watched == null)
+                if (FindWatchedWindow(window) is not WatchedWindow watched)
                 {
                     return;
                 }
@@ -119,7 +118,7 @@ namespace Fluence.Wpf
             }
         }
 
-        private static void OnWindowSourceInitialized(object sender, EventArgs e)
+        private static void OnWindowSourceInitialized(object? sender, EventArgs e)
         {
             if (sender is not Window window)
             {
@@ -130,8 +129,7 @@ namespace Fluence.Wpf
 
             lock (_lock)
             {
-                WatchedWindow watched = FindWatchedWindow(window);
-                if (watched != null)
+                if (FindWatchedWindow(window) is WatchedWindow watched)
                 {
                     AttachHook(watched);
                 }
@@ -176,7 +174,7 @@ namespace Fluence.Wpf
             watched.HwndSource = null;
         }
 
-        private static WatchedWindow FindWatchedWindow(Window window)
+        private static WatchedWindow? FindWatchedWindow(Window window)
         {
             for (int i = 0; i < _watchedWindows.Count; i++)
             {
@@ -231,7 +229,7 @@ namespace Fluence.Wpf
         private class WatchedWindow(Window window)
         {
             public Window Window { get; private set; } = window;
-            public HwndSource HwndSource { get; set; }
+            public HwndSource? HwndSource { get; set; }
             public bool IsHooked { get; set; }
         }
     }

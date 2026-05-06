@@ -34,7 +34,7 @@ namespace Fluence.Wpf.Helpers
 {
     internal static class AcrylicNoiseHelper
     {
-        private static ImageBrush _cachedBrush;
+        private static ImageBrush? _cachedBrush;
 
         /// <summary>
         /// Returns a frozen, tiled ImageBrush containing a 128x128 procedural

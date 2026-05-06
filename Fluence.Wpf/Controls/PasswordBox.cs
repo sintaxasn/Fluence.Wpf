@@ -55,11 +55,11 @@ namespace Fluence.Wpf.Controls
         private static readonly Regex SymbolPasswordRegexFallback = new(SymbolPasswordPattern, RegexOptions.CultureInvariant);
 #endif
 
-        private System.Windows.Controls.PasswordBox _passwordBox;
-        private System.Windows.Controls.TextBox _revealTextBox;
-        private System.Windows.Controls.Button _revealButton;
+        private System.Windows.Controls.PasswordBox? _passwordBox;
+        private System.Windows.Controls.TextBox? _revealTextBox;
+        private System.Windows.Controls.Button? _revealButton;
         private bool _isUpdatingPassword;
-        private DispatcherTimer _capsPollTimer;
+        private DispatcherTimer? _capsPollTimer;
         private readonly EventHandler _capsPollTick;
 
         static PasswordBox()
@@ -77,7 +77,7 @@ namespace Fluence.Wpf.Controls
             _capsPollTick = OnCapsPollTick;
         }
 
-        private void OnCapsPollTick(object sender, EventArgs e)
+        private void OnCapsPollTick(object? sender, EventArgs e)
         {
             UpdateCapsLockIndicator();
         }
@@ -113,7 +113,7 @@ namespace Fluence.Wpf.Controls
             try
             {
                 _ = (control._passwordBox?.Password = (string)e.NewValue ?? string.Empty);
-                _ = (control._revealTextBox?.Text = (string)e.NewValue ?? string.Empty);
+                _ = (control._revealTextBox?.Text = (string?)e.NewValue ?? string.Empty);
             }
             finally
             {

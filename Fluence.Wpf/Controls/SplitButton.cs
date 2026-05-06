@@ -49,9 +49,9 @@ namespace Fluence.Wpf.Controls
         private const string PART_SecondaryButton = "PART_SecondaryButton";
         private const string PART_Popup = "PART_Popup";
 
-        private System.Windows.Controls.Button _primaryButton;
-        private System.Windows.Controls.Primitives.ToggleButton _secondaryButton;
-        private Popup _popup;
+        private System.Windows.Controls.Button? _primaryButton;
+        private System.Windows.Controls.Primitives.ToggleButton? _secondaryButton;
+        private Popup? _popup;
 
         static SplitButton()
         {
@@ -355,7 +355,7 @@ namespace Fluence.Wpf.Controls
             SetValue(IsFlyoutOpenPropertyKey, false);
         }
 
-        private void OnPopupClosed(object sender, EventArgs e)
+        private void OnPopupClosed(object? sender, EventArgs e)
         {
             // External click (StaysOpen=false) closed the popup; sync the secondary toggle.
             if (_secondaryButton != null && _secondaryButton.IsChecked == true)

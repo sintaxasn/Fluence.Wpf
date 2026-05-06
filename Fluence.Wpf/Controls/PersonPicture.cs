@@ -75,10 +75,10 @@ namespace Fluence.Wpf.Controls
         private const string GlyphPeople = "\uE716";
         private static readonly char[] InitialsSeparators = [' ', '\t'];
 
-        private WpfTextBlock _initialsText;
-        private Ellipse _imageEllipse;
-        private WpfGrid _badgeGrid;
-        private WpfTextBlock _badgeText;
+        private WpfTextBlock? _initialsText;
+        private Ellipse? _imageEllipse;
+        private WpfGrid? _badgeGrid;
+        private WpfTextBlock? _badgeText;
 
         // -----------------------------------------------------------------------
         // Static constructor

@@ -67,10 +67,10 @@ namespace Fluence.Wpf.Controls
 
         private const double ScrollAmount = 200.0;
 
-        private ButtonBase _addTabButton;
-        private RepeatButton _scrollBackButton;
-        private RepeatButton _scrollForwardButton;
-        private ScrollViewer _tabContentScroller;
+        private ButtonBase? _addTabButton;
+        private RepeatButton? _scrollBackButton;
+        private RepeatButton? _scrollForwardButton;
+        private ScrollViewer? _tabContentScroller;
 
         /// <summary>
         /// Identifies the <see cref="IsAddTabButtonVisible"/> dependency property.

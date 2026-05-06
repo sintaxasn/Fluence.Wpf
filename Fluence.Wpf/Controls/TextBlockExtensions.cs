@@ -87,8 +87,7 @@ namespace Fluence.Wpf.Controls
 
         private static void ApplyTypography(System.Windows.Controls.TextBlock textBlock, FluentTypography typography)
         {
-            string styleKey = GetTypographyStyleKey(typography);
-            if (styleKey == null)
+            if (GetTypographyStyleKey(typography) is not string styleKey)
             {
                 return;
             }
@@ -96,7 +95,7 @@ namespace Fluence.Wpf.Controls
             textBlock.SetResourceReference(FrameworkElement.StyleProperty, styleKey);
         }
 
-        private static string GetTypographyStyleKey(FluentTypography typography)
+        private static string? GetTypographyStyleKey(FluentTypography typography)
         {
             return typography switch
             {

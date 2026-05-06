@@ -40,7 +40,7 @@ namespace Fluence.Wpf.Controls
     {
         private const string PartCloseButton = "PART_CloseButton";
 
-        private ButtonBase _closeButton;
+        private ButtonBase? _closeButton;
 
         /// <summary>
         /// Identifies the <see cref="IsClosable"/> dependency property.
