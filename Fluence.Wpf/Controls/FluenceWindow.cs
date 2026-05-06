@@ -1169,17 +1169,10 @@ namespace Fluence.Wpf.Controls
                 return false;
             }
 
-            try
-            {
-                Point topLeft = element.TranslatePoint(new Point(0, 0), this);
-                Size size = element.RenderSize;
-                Rect rect = new(topLeft, size);
-                return rect.Contains(windowPoint);
-            }
-            catch
-            {
-                return false;
-            }
+            Point topLeft = element.TranslatePoint(new Point(0, 0), this);
+            Size size = element.RenderSize;
+            Rect rect = new(topLeft, size);
+            return rect.Contains(windowPoint);
         }
 
         /// <summary>
