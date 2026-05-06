@@ -82,18 +82,16 @@ namespace Fluence.Wpf.Controls
             int count = children.Count;
             if (count == 0)
             {
-                return new Size(0, 0);
+                return new(0, 0);
             }
 
             Size available = availableSize;
             bool lastFill = LastChildFill;
             int lastIndex = lastFill ? count - 1 : count;
-
             double maxWidth = 0;
             double maxHeight = 0;
             double accumulatedWidth = 0;
             double accumulatedHeight = 0;
-
             for (int i = 0; i < lastIndex; i++)
             {
                 UIElement child = children[i];
@@ -124,10 +122,8 @@ namespace Fluence.Wpf.Controls
                         break;
                 }
             }
-
             maxWidth = Math.Max(maxWidth, accumulatedWidth);
             maxHeight = Math.Max(maxHeight, accumulatedHeight);
-
             if (lastFill && count > 0)
             {
                 UIElement child = children[count - 1];
@@ -139,8 +135,7 @@ namespace Fluence.Wpf.Controls
                     maxHeight = Math.Max(maxHeight, accumulatedHeight + desired.Height);
                 }
             }
-
-            return new Size(maxWidth, maxHeight);
+            return new(maxWidth, maxHeight);
         }
 
         /// <inheritdoc />
@@ -156,7 +151,6 @@ namespace Fluence.Wpf.Controls
             Rect remaining = new(0, 0, finalSize.Width, finalSize.Height);
             bool lastFill = LastChildFill;
             int lastIndex = lastFill ? count - 1 : count;
-
             for (int i = 0; i < lastIndex; i++)
             {
                 UIElement child = children[i];
@@ -167,7 +161,6 @@ namespace Fluence.Wpf.Controls
 
                 Dock dock = System.Windows.Controls.DockPanel.GetDock(child);
                 Size desired = child.DesiredSize;
-
                 switch (dock)
                 {
                     case Dock.Left:
@@ -200,18 +193,15 @@ namespace Fluence.Wpf.Controls
                             remaining.Height = Math.Max(0, remaining.Height - height - Spacing);
                             break;
                         }
-
                     default:
                         break;
                 }
             }
-
             if (lastFill && count > 0)
             {
                 UIElement child = children[count - 1];
                 child?.Arrange(remaining);
             }
-
             return finalSize;
         }
     }

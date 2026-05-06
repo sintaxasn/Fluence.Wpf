@@ -39,10 +39,15 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = PART_Popup, Type = typeof(Popup))]
     public class DropDownButton : ToggleButton
     {
+        // Template part names.
         private const string PART_Popup = "PART_Popup";
 
-        private Popup? _popup;
-
+        /// <summary>
+        /// Initializes static members of the DropDownButton class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the DropDownButton control uses its own default
+        /// style by associating the control with its style metadata. This is required for custom controls to apply
+        /// their styles correctly in WPF.</remarks>
         static DropDownButton()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -141,9 +146,7 @@ namespace Fluence.Wpf.Controls
         {
             _popup?.Closed -= OnPopupClosed;
             _popup = null;
-
             base.OnApplyTemplate();
-
             _popup = GetTemplateChild(PART_Popup) as Popup;
             if (_popup != null)
             {
@@ -178,5 +181,10 @@ namespace Fluence.Wpf.Controls
         {
             IsChecked = false;
         }
+
+        /// <summary>
+        /// Represents the underlying popup control instance, or null if no popup is currently associated.
+        /// </summary>
+        private Popup? _popup;
     }
 }

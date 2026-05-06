@@ -40,41 +40,36 @@ using Fluence.Wpf.Native;
 
 namespace Fluence.Wpf.Controls
 {
-    internal static class FluenceWindowTemplateParts
-    {
-        internal const string PART_MinimizeButton = "PART_MinimizeButton";
-        internal const string PART_MaximizeButton = "PART_MaximizeButton";
-        internal const string PART_RestoreButton = "PART_RestoreButton";
-        internal const string PART_CloseButton = "PART_CloseButton";
-    }
-
     /// <summary>
     /// A window with Windows 11 Fluent Design chrome, backdrop support, and custom caption buttons.
     /// </summary>
-    [TemplatePart(Name = FluenceWindowTemplateParts.PART_MinimizeButton, Type = typeof(System.Windows.Controls.Button))]
-    [TemplatePart(Name = FluenceWindowTemplateParts.PART_MaximizeButton, Type = typeof(System.Windows.Controls.Button))]
-    [TemplatePart(Name = FluenceWindowTemplateParts.PART_RestoreButton, Type = typeof(System.Windows.Controls.Button))]
-    [TemplatePart(Name = FluenceWindowTemplateParts.PART_CloseButton, Type = typeof(System.Windows.Controls.Button))]
+    [TemplatePart(Name = PART_MinimizeButton, Type = typeof(System.Windows.Controls.Button))]
+    [TemplatePart(Name = PART_MaximizeButton, Type = typeof(System.Windows.Controls.Button))]
+    [TemplatePart(Name = PART_RestoreButton, Type = typeof(System.Windows.Controls.Button))]
+    [TemplatePart(Name = PART_CloseButton, Type = typeof(System.Windows.Controls.Button))]
     public class FluenceWindow : Window
     {
-        private const double DefaultTitleBarHeight = 68d;
-        private const string PART_MinimizeButton = FluenceWindowTemplateParts.PART_MinimizeButton;
-        private const string PART_MaximizeButton = FluenceWindowTemplateParts.PART_MaximizeButton;
-        private const string PART_RestoreButton = FluenceWindowTemplateParts.PART_RestoreButton;
-        private const string PART_CloseButton = FluenceWindowTemplateParts.PART_CloseButton;
+        // Template part names.
+        private const string PART_MinimizeButton = "PART_MinimizeButton";
+        private const string PART_MaximizeButton = "PART_MaximizeButton";
+        private const string PART_RestoreButton = "PART_RestoreButton";
+        private const string PART_CloseButton = "PART_CloseButton";
 
-        private System.Windows.Controls.Button? _minimizeButton;
-        private System.Windows.Controls.Button? _maximizeButton;
-        private System.Windows.Controls.Button? _restoreButton;
-        private System.Windows.Controls.Button? _closeButton;
-        private HwndSource? _hwndSource;
-        private System.Windows.Controls.Button? _snapHoveredButton;
+        // Default title bar height is 48 for regular and 32 for compact, but we use 68 here to
+        // provide extra space for the caption buttons and avoid clipping on smaller screens.
+        private const double DefaultTitleBarHeight = 68d;
 
         /// <summary>
         /// Converts a value to <c>true</c> when it is not null; used by caption button visibility bindings.
         /// </summary>
         public static readonly IValueConverter IsNotNullConverter = new IsNotNullValueConverter();
 
+        /// <summary>
+        /// Provides a value converter that determines whether a given value is not null.
+        /// </summary>
+        /// <remarks>This converter is typically used in data binding scenarios to convert an object
+        /// reference to a Boolean value indicating whether the object is not null. The ConvertBack method is not
+        /// supported and will throw a NotSupportedException if called.</remarks>
         private class IsNotNullValueConverter : IValueConverter
         {
             public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -470,9 +465,12 @@ namespace Fluence.Wpf.Controls
 
         #endregion
 
-        private readonly WindowChrome _windowChrome;
-        private IntPtr _handle;
-
+        /// <summary>
+        /// Initializes static members of the FluenceWindow class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the FluenceWindow control uses its custom style
+        /// by default. It is called automatically before any static members are accessed or any instances are
+        /// created.</remarks>
         static FluenceWindow()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -491,12 +489,10 @@ namespace Fluence.Wpf.Controls
                 Source = new Uri("pack://application:,,,/Fluence.Wpf;component/Themes/Controls/FluenceWindow.xaml", UriKind.Absolute)
             };
             Style = resourceDictionary[typeof(FluenceWindow)] as Style;
-
             _ = CommandBindings.Add(new CommandBinding(SystemCommands.CloseWindowCommand, OnCloseWindow));
             _ = CommandBindings.Add(new CommandBinding(SystemCommands.MaximizeWindowCommand, OnMaximizeWindow, OnCanResizeWindow));
             _ = CommandBindings.Add(new CommandBinding(SystemCommands.MinimizeWindowCommand, OnMinimizeWindow, OnCanMinimizeWindow));
             _ = CommandBindings.Add(new CommandBinding(SystemCommands.RestoreWindowCommand, OnRestoreWindow, OnCanResizeWindow));
-
             _windowChrome = WindowPolicy.CreateWindowChrome(TitleBarHeight);
             SetValue(WindowChrome.WindowChromeProperty, _windowChrome);
             UpdateWindowChrome();
@@ -545,9 +541,9 @@ namespace Fluence.Wpf.Controls
         /// <inheritdoc />
         public override void OnApplyTemplate()
         {
-            base.OnApplyTemplate();
             // Be tolerant of incomplete design-time templates: missing caption parts should
             // disable only caption-button behavior rather than failing the whole window.
+            base.OnApplyTemplate();
             _minimizeButton = GetTemplateChild(PART_MinimizeButton) as System.Windows.Controls.Button;
             _maximizeButton = GetTemplateChild(PART_MaximizeButton) as System.Windows.Controls.Button;
             _restoreButton = GetTemplateChild(PART_RestoreButton) as System.Windows.Controls.Button;
@@ -562,7 +558,6 @@ namespace Fluence.Wpf.Controls
             _handle = new WindowInteropHelper(this).EnsureHandle();
             _hwndSource = HwndSource.FromHwnd(_handle);
             _hwndSource?.AddHook(WndProc);
-
             UpdateWindowChrome();
             ApplyWindowShell();
             SystemThemeWatcher.Watch(this);
@@ -596,14 +591,12 @@ namespace Fluence.Wpf.Controls
         protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
         {
             base.OnPropertyChanged(e);
-
             if (e.Property == ResizeModeProperty)
             {
                 UpdateShellMetrics();
                 UpdateCaptionButtons();
                 CommandManager.InvalidateRequerySuggested();
             }
-
             if (e.Property == WindowStateProperty)
             {
                 UpdateCaptionButtons();
@@ -655,7 +648,6 @@ namespace Fluence.Wpf.Controls
             ApplicationAccentColorManager.AccentColorChanged -= OnAccentColorChanged;
             _hwndSource?.RemoveHook(WndProc);
             _hwndSource = null;
-
             base.OnClosed(e);
         }
 
@@ -670,7 +662,6 @@ namespace Fluence.Wpf.Controls
                 }));
                 return;
             }
-
             ApplyBackdrop();
             ApplyFrame();
         }
@@ -682,7 +673,6 @@ namespace Fluence.Wpf.Controls
                 _ = Dispatcher.BeginInvoke(new Action(ApplyFrame));
                 return;
             }
-
             ApplyFrame();
         }
 
@@ -706,16 +696,14 @@ namespace Fluence.Wpf.Controls
 
         private void ApplyWindowShell()
         {
-            if (_handle == IntPtr.Zero)
+            if (_handle != IntPtr.Zero)
             {
-                return;
+                HideNativeCaptionButtons();
+                UpdateShellMetrics();
+                ApplyBackdrop();
+                ApplyCornerPreference();
+                ApplyFrame();
             }
-
-            HideNativeCaptionButtons();
-            UpdateShellMetrics();
-            ApplyBackdrop();
-            ApplyCornerPreference();
-            ApplyFrame();
         }
 
         private void HideNativeCaptionButtons()
@@ -749,7 +737,6 @@ namespace Fluence.Wpf.Controls
                 GetFallbackBackgroundColor());
 
             Background = new SolidColorBrush(plan.BackgroundColor);
-
             if (_handle == IntPtr.Zero)
             {
                 return;
@@ -759,16 +746,13 @@ namespace Fluence.Wpf.Controls
             {
                 _ = NativeMethods.SetCaptionColor(_handle, plan.CaptionColor);
             }
-
             _ = NativeMethods.SetImmersiveDarkMode(_handle, plan.UseImmersiveDarkMode);
-
             if (capabilities.SupportsSystemBackdropType)
             {
                 _ = NativeMethods.SetSystemBackdropType(
                     _handle,
                     plan.SystemBackdropType ?? NativeConstants.DWMSBT_AUTO);
             }
-
             if (capabilities.SupportsMicaEffect)
             {
                 _ = NativeMethods.SetMicaEffect(_handle, plan.UseLegacyMicaEffect);
@@ -786,7 +770,6 @@ namespace Fluence.Wpf.Controls
                 ApplicationAccentColorManager.SystemAccentColor);
 
             BorderBrush = TryFindResource(plan.TemplateBorderBrushResourceKey) as Brush ?? Brushes.Transparent;
-
             if (_handle != IntPtr.Zero && capabilities.SupportsBorderColor)
             {
                 _ = NativeMethods.SetBorderColor(_handle, plan.DwmBorderColor);
@@ -795,32 +778,24 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateCaptionButtons()
         {
-            if (_minimizeButton == null ||
-                _maximizeButton == null ||
-                _restoreButton == null ||
-                _closeButton == null)
+            if (_minimizeButton is null || _maximizeButton is null || _restoreButton is null || _closeButton is null)
             {
                 return;
             }
 
-            CaptionButtonChrome.GetMinimizeChrome(
-                ResizeMode,
-                out Visibility minimizeVisibility,
-                out bool minimizeEnabled);
             // When the user has explicitly set IsMinimizeButtonVisible (e.g. to re-enable the
             // button under ResizeMode=NoResize), that value wins over the ResizeMode-derived
             // baseline. Otherwise we keep the chrome defaults.
+            CaptionButtonChrome.GetMinimizeChrome(ResizeMode, out Visibility minimizeVisibility, out bool minimizeEnabled);
             if (IsCaptionChromeOverrideExplicit(IsMinimizeButtonVisibleProperty))
             {
                 minimizeVisibility = IsMinimizeButtonVisible;
                 minimizeEnabled = minimizeVisibility == Visibility.Visible;
             }
-
             if (!IsMinimizable)
             {
                 minimizeEnabled = false;
             }
-
             _minimizeButton.Visibility = minimizeVisibility;
             _minimizeButton.IsEnabled = minimizeEnabled;
 
@@ -838,35 +813,28 @@ namespace Fluence.Wpf.Controls
                 maxEn = explicitlyVisible && WindowState != WindowState.Maximized;
                 restEn = explicitlyVisible && WindowState == WindowState.Maximized;
             }
-
             if (!IsMaximizable)
             {
                 maxEn = false;
                 restEn = false;
             }
-
             _maximizeButton.Visibility = maxVis;
             _restoreButton.Visibility = restVis;
             _maximizeButton.IsEnabled = maxEn;
             _restoreButton.IsEnabled = restEn;
 
-            CaptionButtonChrome.GetCloseChrome(
-                out Visibility closeVisibility,
-                out bool closeEnabled);
+            CaptionButtonChrome.GetCloseChrome(out Visibility closeVisibility, out bool closeEnabled);
             if (IsCaptionChromeOverrideExplicit(IsCloseButtonVisibleProperty))
             {
                 closeVisibility = IsCloseButtonVisible;
                 closeEnabled = closeVisibility == Visibility.Visible;
             }
-
             if (!IsClosable)
             {
                 closeEnabled = false;
             }
-
             _closeButton.Visibility = closeVisibility;
             _closeButton.IsEnabled = closeEnabled;
-
             UpdateCaptionButtonSlots(minimizeVisibility, maxVis, restVis, closeVisibility);
         }
 
@@ -876,19 +844,15 @@ namespace Fluence.Wpf.Controls
             Visibility restoreVisibility,
             Visibility closeVisibility)
         {
-            bool closeOccupiesSlot = closeVisibility != Visibility.Collapsed;
-            bool maximizeOccupiesSlot =
-                maximizeVisibility != Visibility.Collapsed ||
-                restoreVisibility != Visibility.Collapsed;
+            bool maximizeOccupiesSlot = maximizeVisibility != Visibility.Collapsed || restoreVisibility != Visibility.Collapsed;
             bool minimizeOccupiesSlot = minimizeVisibility != Visibility.Collapsed;
-
-            int nextSlot = 2;
+            bool closeOccupiesSlot = closeVisibility != Visibility.Collapsed;
             Grid.SetColumn(_closeButton, 2);
+            int nextSlot = 2;
             if (closeOccupiesSlot)
             {
                 nextSlot = 1;
             }
-
             int maximizeSlot = maximizeOccupiesSlot ? nextSlot : 1;
             Grid.SetColumn(_maximizeButton, maximizeSlot);
             Grid.SetColumn(_restoreButton, maximizeSlot);
@@ -896,7 +860,6 @@ namespace Fluence.Wpf.Controls
             {
                 nextSlot--;
             }
-
             if (minimizeOccupiesSlot)
             {
                 Grid.SetColumn(_minimizeButton, Math.Max(0, nextSlot));
@@ -915,14 +878,12 @@ namespace Fluence.Wpf.Controls
                 restoreVisibility = WindowState == WindowState.Maximized ? Visibility.Visible : Visibility.Collapsed;
                 return;
             }
-
             if (visibility == Visibility.Hidden)
             {
                 maximizeVisibility = WindowState == WindowState.Maximized ? Visibility.Collapsed : Visibility.Hidden;
                 restoreVisibility = WindowState == WindowState.Maximized ? Visibility.Hidden : Visibility.Collapsed;
                 return;
             }
-
             maximizeVisibility = Visibility.Collapsed;
             restoreVisibility = Visibility.Collapsed;
         }
@@ -934,8 +895,7 @@ namespace Fluence.Wpf.Controls
         private bool IsCaptionChromeOverrideExplicit(DependencyProperty dp)
         {
             ValueSource source = DependencyPropertyHelper.GetValueSource(this, dp);
-            return source.BaseValueSource is not BaseValueSource.Default and
-                   not BaseValueSource.Inherited;
+            return source.BaseValueSource is not BaseValueSource.Default and not BaseValueSource.Inherited;
         }
 
         private void ApplyCornerPreference()
@@ -950,7 +910,6 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
             _ = NativeMethods.SetWindowCornerPreference(_handle, WindowPolicy.GetCornerPreference(CornerStyle));
         }
 
@@ -974,7 +933,6 @@ namespace Fluence.Wpf.Controls
                 {
                     ClearSnapHover();
                 }
-
                 if (result != 0)
                 {
                     handled = true;
@@ -985,9 +943,7 @@ namespace Fluence.Wpf.Controls
             {
                 ClearSnapHover();
             }
-            else if (msg == NativeConstants.WM_SYSCOMMAND &&
-                (wParam.ToInt64() & 0xFFF0L) == NativeConstants.SC_MOVE &&
-                !IsMoveable)
+            else if (msg == NativeConstants.WM_SYSCOMMAND && (wParam.ToInt64() & 0xFFF0L) == NativeConstants.SC_MOVE && !IsMoveable)
             {
                 handled = true;
             }
@@ -1001,7 +957,6 @@ namespace Fluence.Wpf.Controls
                     {
                         RECT rcWork = monitorInfo.rcWork;
                         RECT rcMonitor = monitorInfo.rcMonitor;
-
                         MINMAXINFO mmi = Marshal.PtrToStructure<MINMAXINFO>(lParam);
                         mmi.ptMaxPosition.X = rcWork.Left - rcMonitor.Left;
                         mmi.ptMaxPosition.Y = rcWork.Top - rcMonitor.Top;
@@ -1028,7 +983,6 @@ namespace Fluence.Wpf.Controls
                                 }
                                 mmi.ptMaxTrackSize.X = maxWidthPx;
                             }
-
                             if (!double.IsPositiveInfinity(MaxHeight))
                             {
                                 int maxHeightPx = (int)(MaxHeight * dpiY);
@@ -1049,7 +1003,6 @@ namespace Fluence.Wpf.Controls
                                 mmi.ptMinTrackSize.X = minWidthPx;
                             }
                         }
-
                         if (MinHeight > 0)
                         {
                             int minHeightPx = (int)Math.Ceiling(MinHeight * dpiY);
@@ -1058,41 +1011,31 @@ namespace Fluence.Wpf.Controls
                                 mmi.ptMinTrackSize.Y = minHeightPx;
                             }
                         }
-
                         Marshal.StructureToPtr(mmi, lParam, false);
                         handled = true;
                     }
                 }
             }
-            else if (msg == NativeConstants.WM_NCLBUTTONUP)
+            else if (msg == NativeConstants.WM_NCLBUTTONUP && wParam.ToInt32() == NativeConstants.HTMAXBUTTON)
             {
-                if (wParam.ToInt32() == NativeConstants.HTMAXBUTTON)
+                ClearSnapHover();
+                if (ResizeMode is ResizeMode.CanResize or ResizeMode.CanResizeWithGrip)
                 {
-                    ClearSnapHover();
-                    if (ResizeMode is ResizeMode.CanResize or ResizeMode.CanResizeWithGrip)
+                    if (WindowState == WindowState.Maximized)
                     {
-                        if (WindowState == WindowState.Maximized)
+                        if (_restoreButton != null && _restoreButton.Visibility == Visibility.Visible && _restoreButton.IsEnabled)
                         {
-                            if (_restoreButton != null && _restoreButton.Visibility == Visibility.Visible &&
-                                _restoreButton.IsEnabled)
-                            {
-                                handled = true;
-                                SystemCommands.RestoreWindow(this);
-                            }
+                            handled = true;
+                            SystemCommands.RestoreWindow(this);
                         }
-                        else
-                        {
-                            if (_maximizeButton != null && _maximizeButton.Visibility == Visibility.Visible &&
-                                _maximizeButton.IsEnabled)
-                            {
-                                handled = true;
-                                SystemCommands.MaximizeWindow(this);
-                            }
-                        }
+                    }
+                    else if (_maximizeButton != null && _maximizeButton.Visibility == Visibility.Visible && _maximizeButton.IsEnabled)
+                    {
+                        handled = true;
+                        SystemCommands.MaximizeWindow(this);
                     }
                 }
             }
-
             return IntPtr.Zero;
         }
 
@@ -1100,9 +1043,7 @@ namespace Fluence.Wpf.Controls
         {
             int x = (short)(lParam.ToInt64() & 0xFFFF);
             int y = (short)((lParam.ToInt64() >> 16) & 0xFFFF);
-
-            Point point = PointFromScreen(new Point(x, y));
-
+            Point point = PointFromScreen(new(x, y));
             if (point.Y < 0 || point.Y > TitleBarHeight)
             {
                 return 0;
@@ -1114,7 +1055,6 @@ namespace Fluence.Wpf.Controls
             {
                 return NativeConstants.HTMAXBUTTON;
             }
-
             if (_restoreButton != null && _restoreButton.Visibility == Visibility.Visible &&
                 _restoreButton.IsEnabled &&
                 IsOverElement(_restoreButton, point))
@@ -1169,7 +1109,6 @@ namespace Fluence.Wpf.Controls
             {
                 return false;
             }
-
             Point topLeft = element.TranslatePoint(new Point(0, 0), this);
             Size size = element.RenderSize;
             Rect rect = new(topLeft, size);
@@ -1192,10 +1131,8 @@ namespace Fluence.Wpf.Controls
                 {
                     return true;
                 }
-
                 hit = VisualTreeHelper.GetParent(hit);
             }
-
             return false;
         }
 
@@ -1287,5 +1224,52 @@ namespace Fluence.Wpf.Controls
         }
 
         #endregion
+
+        /// <summary>
+        /// Provides access to the WindowChrome instance used to customize the appearance and behavior of a window's
+        /// non-client area.
+        /// </summary>
+        /// <remarks>WindowChrome enables advanced customization of window borders, title bars, and other
+        /// non-client elements in WPF applications. This field is typically used to apply or modify custom window
+        /// chrome settings.</remarks>
+        private readonly WindowChrome _windowChrome;
+
+        /// <summary>
+        /// Represents the native handle associated with the underlying resource.
+        /// </summary>
+        private IntPtr _handle;
+
+        /// <summary>
+        /// Represents the minimize button control for the window.
+        /// </summary>
+        private System.Windows.Controls.Button? _minimizeButton;
+
+        /// <summary>
+        /// Represents the button control used to maximize the window.
+        /// </summary>
+        private System.Windows.Controls.Button? _maximizeButton;
+
+        /// <summary>
+        /// Represents the restore button control in the user interface.
+        /// </summary>
+        private System.Windows.Controls.Button? _restoreButton;
+
+        /// <summary>
+        /// Represents a reference to the close button control, or null if the button is not initialized.
+        /// </summary>
+        private System.Windows.Controls.Button? _closeButton;
+
+        /// <summary>
+        /// Represents the underlying window source for interoperation with Win32 APIs.
+        /// </summary>
+        /// <remarks>This field holds a reference to the HwndSource object associated with the window,
+        /// enabling advanced scenarios such as message handling or custom window procedures. It may be null if the
+        /// window has not been initialized or has been disposed.</remarks>
+        private HwndSource? _hwndSource;
+
+        /// <summary>
+        /// Represents the button control that is currently being hovered over for snap operations.
+        /// </summary>
+        private System.Windows.Controls.Button? _snapHoveredButton;
     }
 }

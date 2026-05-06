@@ -41,9 +41,15 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = PART_Rotate, Type = typeof(RotateTransform))]
     public class FontIcon : Control
     {
+        // Template part names.
         private const string PART_Mirror = "PART_Mirror";
         private const string PART_Rotate = "PART_Rotate";
 
+        /// <summary>
+        /// Initializes static members of the FontIcon class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the FontIcon control uses its own style by
+        /// default. This is necessary for custom controls to apply their styles correctly in WPF.</remarks>
         static FontIcon()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -127,15 +133,6 @@ namespace Fluence.Wpf.Controls
             set => SetValue(RotationProperty, value);
         }
 
-        private static void OnRotationChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            FontIcon icon = (FontIcon)d;
-            if (icon.GetTemplateChild(PART_Rotate) is RotateTransform rotate)
-            {
-                rotate.Angle = (double)e.NewValue;
-            }
-        }
-
         /// <summary>
         /// Identifies the <see cref="MirroredWhenRightToLeft"/> dependency property.
         /// </summary>
@@ -154,11 +151,6 @@ namespace Fluence.Wpf.Controls
         {
             get => (bool)GetValue(MirroredWhenRightToLeftProperty);
             set => SetValue(MirroredWhenRightToLeftProperty, value);
-        }
-
-        private static void OnMirroredWhenRightToLeftChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ((FontIcon)d).ApplyMirrorState();
         }
 
         /// <summary>
@@ -199,12 +191,6 @@ namespace Fluence.Wpf.Controls
             set => SetValue(IsSpinningProperty, value);
         }
 
-        private static void OnIsSpinningChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            FontIcon icon = (FontIcon)d;
-            icon.ApplySpinState();
-        }
-
         /// <inheritdoc />
         public override void OnApplyTemplate()
         {
@@ -228,6 +214,26 @@ namespace Fluence.Wpf.Controls
             {
                 ApplyMirrorState();
             }
+        }
+
+        private static void OnRotationChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            FontIcon icon = (FontIcon)d;
+            if (icon.GetTemplateChild(PART_Rotate) is RotateTransform rotate)
+            {
+                rotate.Angle = (double)e.NewValue;
+            }
+        }
+
+        private static void OnMirroredWhenRightToLeftChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            ((FontIcon)d).ApplyMirrorState();
+        }
+
+        private static void OnIsSpinningChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            FontIcon icon = (FontIcon)d;
+            icon.ApplySpinState();
         }
 
         private void ApplyMirrorState()
