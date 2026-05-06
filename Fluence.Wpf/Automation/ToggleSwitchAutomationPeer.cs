@@ -39,8 +39,6 @@ namespace Fluence.Wpf.Automation
     /// <remarks>Initializes a new instance.</remarks>
     public class ToggleSwitchAutomationPeer(ToggleSwitch owner) : FrameworkElementAutomationPeer(owner), IToggleProvider
     {
-        private ToggleSwitch ToggleSwitch => (ToggleSwitch)Owner;
-
         /// <inheritdoc />
         protected override string GetClassNameCore()
         {
@@ -72,5 +70,10 @@ namespace Fluence.Wpf.Automation
             bool? current = ToggleSwitch.IsChecked;
             ToggleSwitch.IsChecked = current != true;
         }
+
+        /// <summary>
+        /// Gets the associated ToggleSwitch control that owns this element.
+        /// </summary>
+        private ToggleSwitch ToggleSwitch => (ToggleSwitch)Owner;
     }
 }

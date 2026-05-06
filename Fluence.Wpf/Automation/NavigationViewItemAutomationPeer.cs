@@ -39,8 +39,6 @@ namespace Fluence.Wpf.Automation
     /// <remarks>Initializes a new instance.</remarks>
     public class NavigationViewItemAutomationPeer(NavigationViewItem owner) : FrameworkElementAutomationPeer(owner), ISelectionItemProvider, IInvokeProvider
     {
-        private NavigationViewItem NavigationViewItem => (NavigationViewItem)Owner;
-
         /// <inheritdoc />
         protected override string GetClassNameCore()
         {
@@ -65,10 +63,9 @@ namespace Fluence.Wpf.Automation
         public virtual bool IsSelected => NavigationViewItem.IsSelected;
 
         /// <inheritdoc />
-        public virtual IRawElementProviderSimple? SelectionContainer =>
-            ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) is NavigationView nav
-                ? ProviderFromPeer(CreatePeerForElement(nav))
-                : null;
+        public virtual IRawElementProviderSimple? SelectionContainer => ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) is NavigationView nav
+            ? ProviderFromPeer(CreatePeerForElement(nav))
+            : null;
 
         /// <inheritdoc />
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1716:Identifiers should not match keywords")]
@@ -99,5 +96,10 @@ namespace Fluence.Wpf.Automation
                 nav.InvokeItem(NavigationViewItem);
             }
         }
+
+        /// <summary>
+        /// Gets the associated NavigationViewItem that owns this instance.
+        /// </summary>
+        private NavigationViewItem NavigationViewItem => (NavigationViewItem)Owner;
     }
 }

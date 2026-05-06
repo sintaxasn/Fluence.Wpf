@@ -38,8 +38,6 @@ namespace Fluence.Wpf.Automation
     /// <remarks>Initializes a new instance.</remarks>
     public class ProgressRingAutomationPeer(ProgressRing owner) : FrameworkElementAutomationPeer(owner), IRangeValueProvider
     {
-        private ProgressRing ProgressRing => (ProgressRing)Owner;
-
         /// <inheritdoc />
         protected override string GetClassNameCore()
         {
@@ -82,5 +80,10 @@ namespace Fluence.Wpf.Automation
         public virtual void SetValue(double value)
         {
         }
+
+        /// <summary>
+        /// Gets the associated ProgressRing control instance.
+        /// </summary>
+        private ProgressRing ProgressRing => (ProgressRing)Owner;
     }
 }

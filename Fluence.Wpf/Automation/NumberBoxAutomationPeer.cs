@@ -38,8 +38,6 @@ namespace Fluence.Wpf.Automation
     /// <remarks>Initializes a new instance.</remarks>
     public class NumberBoxAutomationPeer(NumberBox owner) : FrameworkElementAutomationPeer(owner), IRangeValueProvider
     {
-        private NumberBox NumberBox => (NumberBox)Owner;
-
         /// <inheritdoc />
         protected override string GetClassNameCore()
         {
@@ -83,5 +81,10 @@ namespace Fluence.Wpf.Automation
         {
             NumberBox.Value = value;
         }
+
+        /// <summary>
+        /// Gets the associated NumberBox control that owns this instance.
+        /// </summary>
+        private NumberBox NumberBox => (NumberBox)Owner;
     }
 }

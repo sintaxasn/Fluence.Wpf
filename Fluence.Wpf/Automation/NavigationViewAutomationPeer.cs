@@ -38,8 +38,6 @@ namespace Fluence.Wpf.Automation
     /// <remarks>Initializes a new instance.</remarks>
     public class NavigationViewAutomationPeer(NavigationView owner) : FrameworkElementAutomationPeer(owner), ISelectionProvider
     {
-        private NavigationView NavigationView => (NavigationView)Owner;
-
         /// <inheritdoc />
         protected override string GetClassNameCore()
         {
@@ -74,5 +72,10 @@ namespace Fluence.Wpf.Automation
                 ? [ProviderFromPeer(CreatePeerForElement(container))]
                 : [];
         }
+
+        /// <summary>
+        /// Gets the associated NavigationView instance for the current owner.
+        /// </summary>
+        private NavigationView NavigationView => (NavigationView)Owner;
     }
 }

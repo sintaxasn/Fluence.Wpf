@@ -42,8 +42,6 @@ namespace Fluence.Wpf.Automation
     /// <remarks>Initializes a new instance.</remarks>
     public class SplitButtonAutomationPeer(SplitButton owner) : FrameworkElementAutomationPeer(owner), IInvokeProvider, IExpandCollapseProvider
     {
-        private SplitButton SplitButton => (SplitButton)Owner;
-
         /// <inheritdoc />
         protected override string GetClassNameCore()
         {
@@ -77,8 +75,9 @@ namespace Fluence.Wpf.Automation
             // visual tree see no-op behavior; with a template applied, the overridden
             // PropertyChanged wiring flips the popup via the secondary button.
             SplitButton thisButton = SplitButton;
-            System.Windows.Controls.Primitives.ToggleButton? toggle = thisButton.Template == null ? null
-                : thisButton.Template.FindName("PART_SecondaryButton", thisButton) as System.Windows.Controls.Primitives.ToggleButton;
+            System.Windows.Controls.Primitives.ToggleButton? toggle = thisButton.Template is not null
+                ? thisButton.Template.FindName("PART_SecondaryButton", thisButton) as System.Windows.Controls.Primitives.ToggleButton
+                : null;
             _ = (toggle?.IsChecked = true);
         }
 
@@ -86,8 +85,9 @@ namespace Fluence.Wpf.Automation
         public virtual void Collapse()
         {
             SplitButton thisButton = SplitButton;
-            System.Windows.Controls.Primitives.ToggleButton? toggle = thisButton.Template == null ? null
-                : thisButton.Template.FindName("PART_SecondaryButton", thisButton) as System.Windows.Controls.Primitives.ToggleButton;
+            System.Windows.Controls.Primitives.ToggleButton? toggle = thisButton.Template is not null
+                ? thisButton.Template.FindName("PART_SecondaryButton", thisButton) as System.Windows.Controls.Primitives.ToggleButton
+                : null;
             _ = (toggle?.IsChecked = false);
         }
 
@@ -96,20 +96,16 @@ namespace Fluence.Wpf.Automation
         {
             // Route Invoke to the primary half by raising SplitButton.Click and executing Command.
             SplitButton button = SplitButton;
-            ICommand command = button.Command;
-
             button.RaiseEvent(new RoutedEventArgs(SplitButton.ClickEvent, button));
-
-            if (command == null)
+            if (button.Command is not ICommand command)
             {
                 return;
             }
 
             object parameter = button.CommandParameter;
-            IInputElement target = button.CommandTarget;
-
             if (command is RoutedCommand routedCommand)
             {
+                IInputElement target = button.CommandTarget;
                 if (routedCommand.CanExecute(parameter, target))
                 {
                     routedCommand.Execute(parameter, target);
@@ -120,5 +116,10 @@ namespace Fluence.Wpf.Automation
                 command.Execute(parameter);
             }
         }
+
+        /// <summary>
+        /// Gets the associated SplitButton control that owns this element.
+        /// </summary>
+        private SplitButton SplitButton => (SplitButton)Owner;
     }
 }

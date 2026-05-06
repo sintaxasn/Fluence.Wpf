@@ -39,8 +39,6 @@ namespace Fluence.Wpf.Automation
     /// <remarks>Initializes a new instance.</remarks>
     public class DropDownButtonAutomationPeer(DropDownButton owner) : FrameworkElementAutomationPeer(owner), IExpandCollapseProvider
     {
-        private DropDownButton DropDownButton => (DropDownButton)Owner;
-
         /// <inheritdoc />
         protected override string GetClassNameCore()
         {
@@ -77,5 +75,10 @@ namespace Fluence.Wpf.Automation
         {
             DropDownButton.IsChecked = false;
         }
+
+        /// <summary>
+        /// Gets the associated drop-down button for this element.
+        /// </summary>
+        private DropDownButton DropDownButton => (DropDownButton)Owner;
     }
 }
