@@ -196,24 +196,6 @@ namespace Fluence.Wpf.Controls
                 new PropertyMetadata(Visibility.Visible, OnCaptionButtonChromeOverrideChanged));
 
         /// <summary>
-        /// Identifies the <see cref="MinimizeButtonVisibility"/> dependency property.
-        /// </summary>
-        [Obsolete("Use IsMinimizeButtonVisibleProperty instead.")]
-        public static readonly DependencyProperty MinimizeButtonVisibilityProperty = IsMinimizeButtonVisibleProperty;
-
-        /// <summary>
-        /// Identifies the <see cref="MaximizeButtonVisibility"/> dependency property.
-        /// </summary>
-        [Obsolete("Use IsMaximizeButtonVisibleProperty instead.")]
-        public static readonly DependencyProperty MaximizeButtonVisibilityProperty = IsMaximizeButtonVisibleProperty;
-
-        /// <summary>
-        /// Identifies the <see cref="CloseButtonVisibility"/> dependency property.
-        /// </summary>
-        [Obsolete("Use IsCloseButtonVisibleProperty instead.")]
-        public static readonly DependencyProperty CloseButtonVisibilityProperty = IsCloseButtonVisibleProperty;
-
-        /// <summary>
         /// Identifies the <see cref="IsMinimizable"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty IsMinimizableProperty =
@@ -252,13 +234,6 @@ namespace Fluence.Wpf.Controls
                 typeof(bool),
                 typeof(FluenceWindow),
                 new PropertyMetadata(true));
-
-        /// <summary>
-        /// Identifies the <see cref="CanMove"/> dependency property.
-        /// </summary>
-        [Obsolete("Use IsMoveableProperty instead.")]
-        public static readonly DependencyProperty CanMoveProperty = IsMoveableProperty;
-
 
         /// <summary>
         /// Identifies the <see cref="HasShadow"/> dependency property.
@@ -376,36 +351,6 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Gets or sets the visibility of the minimize button.
-        /// </summary>
-        [Obsolete("Use IsMinimizeButtonVisible instead.")]
-        public Visibility MinimizeButtonVisibility
-        {
-            get => IsMinimizeButtonVisible;
-            set => IsMinimizeButtonVisible = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the visibility of the maximize button.
-        /// </summary>
-        [Obsolete("Use IsMaximizeButtonVisible instead.")]
-        public Visibility MaximizeButtonVisibility
-        {
-            get => IsMaximizeButtonVisible;
-            set => IsMaximizeButtonVisible = value;
-        }
-
-        /// <summary>
-        /// Gets or sets the visibility of the close button.
-        /// </summary>
-        [Obsolete("Use IsCloseButtonVisible instead.")]
-        public Visibility CloseButtonVisibility
-        {
-            get => IsCloseButtonVisible;
-            set => IsCloseButtonVisible = value;
-        }
-
-        /// <summary>
         /// Gets or sets whether the minimize button is enabled.
         /// When false, the button is visible but grayed out.
         /// </summary>
@@ -442,16 +387,6 @@ namespace Fluence.Wpf.Controls
         {
             get => (bool)GetValue(IsMoveableProperty);
             set => SetValue(IsMoveableProperty, value);
-        }
-
-        /// <summary>
-        /// Gets or sets whether the window can be moved by title-bar dragging or the system move command.
-        /// </summary>
-        [Obsolete("Use IsMoveable instead.")]
-        public bool CanMove
-        {
-            get => IsMoveable;
-            set => IsMoveable = value;
         }
 
         /// <summary>
@@ -509,33 +444,6 @@ namespace Fluence.Wpf.Controls
         public void SetTitleBar(UIElement titleBar)
         {
             TitleBar = titleBar;
-        }
-
-        /// <summary>
-        /// Sets the minimize button visibility.
-        /// </summary>
-        [Obsolete("Use IsMinimizeButtonVisible instead.")]
-        public void SetMinimizeButtonVisibility(Visibility visibility)
-        {
-            IsMinimizeButtonVisible = visibility;
-        }
-
-        /// <summary>
-        /// Sets the maximize/restore button visibility.
-        /// </summary>
-        [Obsolete("Use IsMaximizeButtonVisible instead.")]
-        public void SetMaximizeButtonVisibility(Visibility visibility)
-        {
-            IsMaximizeButtonVisible = visibility;
-        }
-
-        /// <summary>
-        /// Sets the close button visibility.
-        /// </summary>
-        [Obsolete("Use IsCloseButtonVisible instead.")]
-        public void SetCloseButtonVisibility(Visibility visibility)
-        {
-            IsCloseButtonVisible = visibility;
         }
 
         /// <inheritdoc />
