@@ -36,6 +36,7 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Shell;
+using Fluence.Wpf.Helpers;
 using Fluence.Wpf.Native;
 
 namespace Fluence.Wpf.Controls
