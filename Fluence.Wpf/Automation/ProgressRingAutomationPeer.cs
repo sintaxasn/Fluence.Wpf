@@ -32,19 +32,26 @@ namespace Fluence.Wpf.Automation
                 : this;
         }
 
-        double IRangeValueProvider.Value => ProgressRing.Value;
+        /// <inheritdoc />
+        public virtual double Value => ProgressRing.Value;
 
-        double IRangeValueProvider.Minimum => ProgressRing.Minimum;
+        /// <inheritdoc />
+        public virtual double Minimum => ProgressRing.Minimum;
 
-        double IRangeValueProvider.Maximum => ProgressRing.Maximum;
+        /// <inheritdoc />
+        public virtual double Maximum => ProgressRing.Maximum;
 
-        double IRangeValueProvider.SmallChange => 1;
+        /// <inheritdoc />
+        public virtual double SmallChange => 1;
 
-        double IRangeValueProvider.LargeChange => 10;
+        /// <inheritdoc />
+        public virtual double LargeChange => 10;
 
-        bool IRangeValueProvider.IsReadOnly => true;
+        /// <inheritdoc />
+        public virtual bool IsReadOnly => true;
 
-        void IRangeValueProvider.SetValue(double value)
+        /// <inheritdoc />
+        public virtual void SetValue(double value)
         {
         }
     }

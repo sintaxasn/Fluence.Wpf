@@ -32,11 +32,14 @@ namespace Fluence.Wpf.Automation
                 : this;
         }
 
-        bool ISelectionProvider.CanSelectMultiple => false;
+        /// <inheritdoc />
+        public virtual bool CanSelectMultiple => false;
 
-        bool ISelectionProvider.IsSelectionRequired => false;
+        /// <inheritdoc />
+        public virtual bool IsSelectionRequired => false;
 
-        IRawElementProviderSimple[] ISelectionProvider.GetSelection()
+        /// <inheritdoc />
+        public virtual IRawElementProviderSimple[] GetSelection()
         {
             object selected = NavigationView.SelectedItem;
             return selected is not null && NavigationView.ItemContainerGenerator.ContainerFromItem(selected) is NavigationViewItem container

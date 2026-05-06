@@ -32,19 +32,26 @@ namespace Fluence.Wpf.Automation
                 : this;
         }
 
-        double IRangeValueProvider.Value => NumberBox.Value;
+        /// <inheritdoc />
+        public virtual double Value => NumberBox.Value;
 
-        double IRangeValueProvider.Minimum => NumberBox.Minimum;
+        /// <inheritdoc />
+        public virtual double Minimum => NumberBox.Minimum;
 
-        double IRangeValueProvider.Maximum => NumberBox.Maximum;
+        /// <inheritdoc />
+        public virtual double Maximum => NumberBox.Maximum;
 
-        double IRangeValueProvider.SmallChange => NumberBox.SmallChange;
+        /// <inheritdoc />
+        public virtual double SmallChange => NumberBox.SmallChange;
 
-        double IRangeValueProvider.LargeChange => NumberBox.SmallChange;
+        /// <inheritdoc />
+        public virtual double LargeChange => NumberBox.SmallChange;
 
-        bool IRangeValueProvider.IsReadOnly => !NumberBox.IsEnabled;
+        /// <inheritdoc />
+        public virtual bool IsReadOnly => !NumberBox.IsEnabled;
 
-        void IRangeValueProvider.SetValue(double value)
+        /// <inheritdoc />
+        public virtual void SetValue(double value)
         {
             NumberBox.Value = value;
         }

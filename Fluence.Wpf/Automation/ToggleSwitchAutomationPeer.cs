@@ -33,11 +33,13 @@ namespace Fluence.Wpf.Automation
                 : this;
         }
 
-        ToggleState IToggleProvider.ToggleState => ToggleSwitch.IsChecked is bool isChecked
+        /// <inheritdoc />
+        public virtual ToggleState ToggleState => ToggleSwitch.IsChecked is bool isChecked
             ? !isChecked ? ToggleState.Off : ToggleState.On
             : ToggleState.Indeterminate;
 
-        void IToggleProvider.Toggle()
+        /// <inheritdoc />
+        public virtual void Toggle()
         {
             bool? current = ToggleSwitch.IsChecked;
             ToggleSwitch.IsChecked = current != true;

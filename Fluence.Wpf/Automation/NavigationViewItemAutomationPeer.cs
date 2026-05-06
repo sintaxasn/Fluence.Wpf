@@ -60,13 +60,18 @@ namespace Fluence.Wpf.Automation
                 : this;
         }
 
-        bool ISelectionItemProvider.IsSelected => NavigationViewItem.IsSelected;
+        /// <inheritdoc />
+        public virtual bool IsSelected => NavigationViewItem.IsSelected;
 
-        IRawElementProviderSimple? ISelectionItemProvider.SelectionContainer => ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) is NavigationView nav
-            ? ProviderFromPeer(CreatePeerForElement(nav))
-            : null;
+        /// <inheritdoc />
+        public virtual IRawElementProviderSimple? SelectionContainer =>
+            ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) is NavigationView nav
+                ? ProviderFromPeer(CreatePeerForElement(nav))
+                : null;
 
-        void ISelectionItemProvider.Select()
+        /// <inheritdoc />
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1716:Identifiers should not match keywords")]
+        public virtual void Select()
         {
             if (ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) is NavigationView nav)
             {
@@ -74,16 +79,19 @@ namespace Fluence.Wpf.Automation
             }
         }
 
-        void ISelectionItemProvider.AddToSelection()
+        /// <inheritdoc />
+        public virtual void AddToSelection()
         {
-            ((ISelectionItemProvider)this).Select();
+            Select();
         }
 
-        void ISelectionItemProvider.RemoveFromSelection()
+        /// <inheritdoc />
+        public virtual void RemoveFromSelection()
         {
         }
 
-        void IInvokeProvider.Invoke()
+        /// <inheritdoc />
+        public virtual void Invoke()
         {
             if (ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) is NavigationView nav)
             {

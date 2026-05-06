@@ -33,16 +33,19 @@ namespace Fluence.Wpf.Automation
                 : this;
         }
 
-        ExpandCollapseState IExpandCollapseProvider.ExpandCollapseState => DropDownButton.IsChecked == true
-                    ? ExpandCollapseState.Expanded
-                    : ExpandCollapseState.Collapsed;
+        /// <inheritdoc />
+        public virtual ExpandCollapseState ExpandCollapseState => DropDownButton.IsChecked == true
+            ? ExpandCollapseState.Expanded
+            : ExpandCollapseState.Collapsed;
 
-        void IExpandCollapseProvider.Expand()
+        /// <inheritdoc />
+        public virtual void Expand()
         {
             DropDownButton.IsChecked = true;
         }
 
-        void IExpandCollapseProvider.Collapse()
+        /// <inheritdoc />
+        public virtual void Collapse()
         {
             DropDownButton.IsChecked = false;
         }

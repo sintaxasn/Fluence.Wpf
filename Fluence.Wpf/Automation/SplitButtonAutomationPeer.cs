@@ -63,7 +63,35 @@ namespace Fluence.Wpf.Automation
                 : this;
         }
 
-        void IInvokeProvider.Invoke()
+        /// <inheritdoc />
+        public virtual ExpandCollapseState ExpandCollapseState => SplitButton.IsFlyoutOpen
+            ? ExpandCollapseState.Expanded
+            : ExpandCollapseState.Collapsed;
+
+        /// <inheritdoc />
+        public virtual void Expand()
+        {
+            // The read-only IsFlyoutOpen reflects the secondary ToggleButton, which is
+            // part of the template. Automation clients opening a SplitButton without a
+            // visual tree see no-op behavior; with a template applied, the overridden
+            // PropertyChanged wiring flips the popup via the secondary button.
+            SplitButton thisButton = SplitButton;
+            System.Windows.Controls.Primitives.ToggleButton? toggle = thisButton.Template == null ? null
+                : thisButton.Template.FindName("PART_SecondaryButton", thisButton) as System.Windows.Controls.Primitives.ToggleButton;
+            _ = (toggle?.IsChecked = true);
+        }
+
+        /// <inheritdoc />
+        public virtual void Collapse()
+        {
+            SplitButton thisButton = SplitButton;
+            System.Windows.Controls.Primitives.ToggleButton? toggle = thisButton.Template == null ? null
+                : thisButton.Template.FindName("PART_SecondaryButton", thisButton) as System.Windows.Controls.Primitives.ToggleButton;
+            _ = (toggle?.IsChecked = false);
+        }
+
+        /// <inheritdoc />
+        public virtual void Invoke()
         {
             // Route Invoke to the primary half by raising SplitButton.Click and executing Command.
             SplitButton button = SplitButton;
@@ -90,30 +118,6 @@ namespace Fluence.Wpf.Automation
             {
                 command.Execute(parameter);
             }
-        }
-
-        ExpandCollapseState IExpandCollapseProvider.ExpandCollapseState => SplitButton.IsFlyoutOpen
-                    ? ExpandCollapseState.Expanded
-                    : ExpandCollapseState.Collapsed;
-
-        void IExpandCollapseProvider.Expand()
-        {
-            // The read-only IsFlyoutOpen reflects the secondary ToggleButton, which is
-            // part of the template. Automation clients opening a SplitButton without a
-            // visual tree see no-op behavior; with a template applied, the overridden
-            // PropertyChanged wiring flips the popup via the secondary button.
-            SplitButton thisButton = SplitButton;
-            System.Windows.Controls.Primitives.ToggleButton? toggle = thisButton.Template == null ? null
-                : thisButton.Template.FindName("PART_SecondaryButton", thisButton) as System.Windows.Controls.Primitives.ToggleButton;
-            _ = (toggle?.IsChecked = true);
-        }
-
-        void IExpandCollapseProvider.Collapse()
-        {
-            SplitButton thisButton = SplitButton;
-            System.Windows.Controls.Primitives.ToggleButton? toggle = thisButton.Template == null ? null
-                : thisButton.Template.FindName("PART_SecondaryButton", thisButton) as System.Windows.Controls.Primitives.ToggleButton;
-            _ = (toggle?.IsChecked = false);
         }
     }
 }
