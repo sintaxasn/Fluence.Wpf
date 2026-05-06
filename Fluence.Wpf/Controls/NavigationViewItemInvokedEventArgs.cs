@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,37 +32,31 @@ namespace Fluence.Wpf.Controls
     /// <summary>
     /// Provides data for the <see cref="NavigationView.ItemInvoked"/> event.
     /// </summary>
-    public class NavigationViewItemInvokedEventArgs : EventArgs
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="NavigationViewItemInvokedEventArgs"/> class.
+    /// </remarks>
+    /// <param name="invokedItem">The data item that was invoked.</param>
+    /// <param name="invokedItemContainer">The navigation item container that was invoked.</param>
+    /// <param name="isSettingsInvoked">A value indicating whether the settings entry was invoked.</param>
+    public class NavigationViewItemInvokedEventArgs(
+        object invokedItem,
+        NavigationViewItem invokedItemContainer,
+        bool isSettingsInvoked) : EventArgs
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NavigationViewItemInvokedEventArgs"/> class.
-        /// </summary>
-        /// <param name="invokedItem">The data item that was invoked.</param>
-        /// <param name="invokedItemContainer">The navigation item container that was invoked.</param>
-        /// <param name="isSettingsInvoked">A value indicating whether the settings entry was invoked.</param>
-        public NavigationViewItemInvokedEventArgs(
-            object invokedItem,
-            NavigationViewItem invokedItemContainer,
-            bool isSettingsInvoked)
-        {
-            InvokedItem = invokedItem;
-            InvokedItemContainer = invokedItemContainer;
-            IsSettingsInvoked = isSettingsInvoked;
-        }
 
         /// <summary>
         /// Gets the data item that was invoked.
         /// </summary>
-        public object InvokedItem { get; private set; }
+        public object InvokedItem { get; private set; } = invokedItem;
 
         /// <summary>
         /// Gets the navigation item container that was invoked.
         /// </summary>
-        public NavigationViewItem InvokedItemContainer { get; private set; }
+        public NavigationViewItem InvokedItemContainer { get; private set; } = invokedItemContainer;
 
         /// <summary>
         /// Gets a value indicating whether the settings entry was invoked.
         /// </summary>
-        public bool IsSettingsInvoked { get; private set; }
+        public bool IsSettingsInvoked { get; private set; } = isSettingsInvoked;
     }
 }

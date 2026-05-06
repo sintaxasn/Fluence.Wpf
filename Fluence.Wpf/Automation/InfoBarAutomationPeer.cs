@@ -6,10 +6,9 @@ namespace Fluence.Wpf.Automation
     /// <summary>
     /// Exposes <see cref="InfoBar"/> to UI Automation as a status bar element.
     /// </summary>
-    public class InfoBarAutomationPeer : FrameworkElementAutomationPeer
+    /// <remarks>Initializes a new instance.</remarks>
+    public class InfoBarAutomationPeer(InfoBar owner) : FrameworkElementAutomationPeer(owner)
     {
-        /// <summary>Initializes a new instance.</summary>
-        public InfoBarAutomationPeer(InfoBar owner) : base(owner) { }
 
         /// <inheritdoc />
         protected override string GetClassNameCore()

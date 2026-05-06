@@ -7,11 +7,9 @@ namespace Fluence.Wpf.Automation
     /// <summary>
     /// Exposes <see cref="NavigationView"/> to UI Automation as a selection list.
     /// </summary>
-    public class NavigationViewAutomationPeer : FrameworkElementAutomationPeer, ISelectionProvider
+    /// <remarks>Initializes a new instance.</remarks>
+    public class NavigationViewAutomationPeer(NavigationView owner) : FrameworkElementAutomationPeer(owner), ISelectionProvider
     {
-        /// <summary>Initializes a new instance.</summary>
-        public NavigationViewAutomationPeer(NavigationView owner) : base(owner) { }
-
         private NavigationView NavigationView => (NavigationView)Owner;
 
         /// <inheritdoc />

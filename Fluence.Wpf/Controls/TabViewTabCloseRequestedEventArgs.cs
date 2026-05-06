@@ -32,30 +32,24 @@ namespace Fluence.Wpf.Controls
     /// <summary>
     /// Event data for <see cref="TabView.TabCloseRequested"/> and <see cref="TabViewItem.CloseRequested"/>.
     /// </summary>
-    public class TabViewTabCloseRequestedEventArgs : RoutedEventArgs
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="TabViewTabCloseRequestedEventArgs"/> class.
+    /// </remarks>
+    /// <param name="routedEvent">The routed event being raised.</param>
+    /// <param name="source">The element raising the event.</param>
+    /// <param name="tab">The <see cref="TabViewItem"/> the user has asked to close.</param>
+    /// <param name="item">The bound data item, or the <see cref="TabViewItem"/> itself if no data was bound.</param>
+    public class TabViewTabCloseRequestedEventArgs(RoutedEvent routedEvent, object source, TabViewItem tab, object item) : RoutedEventArgs(routedEvent, source)
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TabViewTabCloseRequestedEventArgs"/> class.
-        /// </summary>
-        /// <param name="routedEvent">The routed event being raised.</param>
-        /// <param name="source">The element raising the event.</param>
-        /// <param name="tab">The <see cref="TabViewItem"/> the user has asked to close.</param>
-        /// <param name="item">The bound data item, or the <see cref="TabViewItem"/> itself if no data was bound.</param>
-        public TabViewTabCloseRequestedEventArgs(RoutedEvent routedEvent, object source, TabViewItem tab, object item)
-            : base(routedEvent, source)
-        {
-            Tab = tab;
-            Item = item;
-        }
 
         /// <summary>
         /// Gets the tab container the user asked to close.
         /// </summary>
-        public TabViewItem Tab { get; }
+        public TabViewItem Tab { get; } = tab;
 
         /// <summary>
         /// Gets the data item bound to <see cref="Tab"/>, or the tab itself when items are declared inline.
         /// </summary>
-        public object Item { get; }
+        public object Item { get; } = item;
     }
 }

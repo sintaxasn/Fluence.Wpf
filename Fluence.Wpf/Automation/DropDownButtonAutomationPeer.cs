@@ -8,11 +8,9 @@ namespace Fluence.Wpf.Automation
     /// <summary>
     /// Exposes <see cref="DropDownButton"/> to UI Automation with the ExpandCollapse pattern.
     /// </summary>
-    public class DropDownButtonAutomationPeer : FrameworkElementAutomationPeer, IExpandCollapseProvider
+    /// <remarks>Initializes a new instance.</remarks>
+    public class DropDownButtonAutomationPeer(DropDownButton owner) : FrameworkElementAutomationPeer(owner), IExpandCollapseProvider
     {
-        /// <summary>Initializes a new instance.</summary>
-        public DropDownButtonAutomationPeer(DropDownButton owner) : base(owner) { }
-
         private DropDownButton DropDownButton => (DropDownButton)Owner;
 
         /// <inheritdoc />

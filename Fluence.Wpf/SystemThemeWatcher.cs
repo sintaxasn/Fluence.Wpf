@@ -228,14 +228,9 @@ namespace Fluence.Wpf
             }));
         }
 
-        private class WatchedWindow
+        private class WatchedWindow(Window window)
         {
-            public WatchedWindow(Window window)
-            {
-                Window = window;
-            }
-
-            public Window Window { get; private set; }
+            public Window Window { get; private set; } = window;
             public HwndSource HwndSource { get; set; }
             public bool IsHooked { get; set; }
         }

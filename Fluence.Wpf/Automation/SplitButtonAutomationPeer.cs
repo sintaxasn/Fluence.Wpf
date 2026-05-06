@@ -38,11 +38,9 @@ namespace Fluence.Wpf.Automation
     /// Exposes <see cref="SplitButton"/> to UI Automation with the Invoke pattern
     /// (primary half) and the ExpandCollapse pattern (flyout half).
     /// </summary>
-    public class SplitButtonAutomationPeer : FrameworkElementAutomationPeer, IInvokeProvider, IExpandCollapseProvider
+    /// <remarks>Initializes a new instance.</remarks>
+    public class SplitButtonAutomationPeer(SplitButton owner) : FrameworkElementAutomationPeer(owner), IInvokeProvider, IExpandCollapseProvider
     {
-        /// <summary>Initializes a new instance.</summary>
-        public SplitButtonAutomationPeer(SplitButton owner) : base(owner) { }
-
         private SplitButton SplitButton => (SplitButton)Owner;
 
         /// <inheritdoc />
@@ -104,17 +102,17 @@ namespace Fluence.Wpf.Automation
             // part of the template. Automation clients opening a SplitButton without a
             // visual tree see no-op behavior; with a template applied, the overridden
             // PropertyChanged wiring flips the popup via the secondary button.
-            SplitButton owner = SplitButton;
-            System.Windows.Controls.Primitives.ToggleButton? toggle = owner.Template == null ? null
-                : owner.Template.FindName("PART_SecondaryButton", owner) as System.Windows.Controls.Primitives.ToggleButton;
+            SplitButton thisButton = SplitButton;
+            System.Windows.Controls.Primitives.ToggleButton? toggle = thisButton.Template == null ? null
+                : thisButton.Template.FindName("PART_SecondaryButton", thisButton) as System.Windows.Controls.Primitives.ToggleButton;
             _ = (toggle?.IsChecked = true);
         }
 
         void IExpandCollapseProvider.Collapse()
         {
-            SplitButton owner = SplitButton;
-            System.Windows.Controls.Primitives.ToggleButton? toggle = owner.Template == null ? null
-                : owner.Template.FindName("PART_SecondaryButton", owner) as System.Windows.Controls.Primitives.ToggleButton;
+            SplitButton thisButton = SplitButton;
+            System.Windows.Controls.Primitives.ToggleButton? toggle = thisButton.Template == null ? null
+                : thisButton.Template.FindName("PART_SecondaryButton", thisButton) as System.Windows.Controls.Primitives.ToggleButton;
             _ = (toggle?.IsChecked = false);
         }
     }

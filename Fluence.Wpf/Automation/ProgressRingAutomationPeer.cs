@@ -7,11 +7,9 @@ namespace Fluence.Wpf.Automation
     /// <summary>
     /// Exposes <see cref="ProgressRing"/> to UI Automation as a progress indicator.
     /// </summary>
-    public class ProgressRingAutomationPeer : FrameworkElementAutomationPeer, IRangeValueProvider
+    /// <remarks>Initializes a new instance.</remarks>
+    public class ProgressRingAutomationPeer(ProgressRing owner) : FrameworkElementAutomationPeer(owner), IRangeValueProvider
     {
-        /// <summary>Initializes a new instance.</summary>
-        public ProgressRingAutomationPeer(ProgressRing owner) : base(owner) { }
-
         private ProgressRing ProgressRing => (ProgressRing)Owner;
 
         /// <inheritdoc />

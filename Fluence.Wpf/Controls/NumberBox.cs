@@ -49,28 +49,22 @@ namespace Fluence.Wpf.Controls
     /// <summary>
     /// Event data for <see cref="NumberBox.ValueChanged"/>.
     /// </summary>
-    public sealed class NumberBoxValueChangedEventArgs : EventArgs
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="NumberBoxValueChangedEventArgs"/> class.
+    /// </remarks>
+    /// <param name="oldValue">The previous value.</param>
+    /// <param name="newValue">The new value.</param>
+    public sealed class NumberBoxValueChangedEventArgs(double oldValue, double newValue) : EventArgs
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="NumberBoxValueChangedEventArgs"/> class.
-        /// </summary>
-        /// <param name="oldValue">The previous value.</param>
-        /// <param name="newValue">The new value.</param>
-        public NumberBoxValueChangedEventArgs(double oldValue, double newValue)
-        {
-            OldValue = oldValue;
-            NewValue = newValue;
-        }
-
         /// <summary>
         /// Gets the previous value.
         /// </summary>
-        public double OldValue { get; }
+        public double OldValue { get; } = oldValue;
 
         /// <summary>
         /// Gets the new value.
         /// </summary>
-        public double NewValue { get; }
+        public double NewValue { get; } = newValue;
     }
 
     /// <summary>

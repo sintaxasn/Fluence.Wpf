@@ -33,31 +33,22 @@ using Fluence.Wpf.Native;
 
 namespace Fluence.Wpf.Controls
 {
-    internal sealed class WindowCapabilities
+    internal sealed class WindowCapabilities(
+        bool supportsSystemBackdropType,
+        bool supportsMicaEffect,
+        bool supportsRoundedCorners,
+        bool supportsCaptionColor,
+        bool supportsBorderColor = false)
     {
-        public WindowCapabilities(
-            bool supportsSystemBackdropType,
-            bool supportsMicaEffect,
-            bool supportsRoundedCorners,
-            bool supportsCaptionColor,
-            bool supportsBorderColor = false)
-        {
-            SupportsSystemBackdropType = supportsSystemBackdropType;
-            SupportsMicaEffect = supportsMicaEffect;
-            SupportsRoundedCorners = supportsRoundedCorners;
-            SupportsCaptionColor = supportsCaptionColor;
-            SupportsBorderColor = supportsBorderColor;
-        }
+        public bool SupportsSystemBackdropType { get; private set; } = supportsSystemBackdropType;
 
-        public bool SupportsSystemBackdropType { get; private set; }
+        public bool SupportsMicaEffect { get; private set; } = supportsMicaEffect;
 
-        public bool SupportsMicaEffect { get; private set; }
+        public bool SupportsRoundedCorners { get; private set; } = supportsRoundedCorners;
 
-        public bool SupportsRoundedCorners { get; private set; }
+        public bool SupportsCaptionColor { get; private set; } = supportsCaptionColor;
 
-        public bool SupportsCaptionColor { get; private set; }
-
-        public bool SupportsBorderColor { get; private set; }
+        public bool SupportsBorderColor { get; private set; } = supportsBorderColor;
 
         public static WindowCapabilities Current => new(
                     OsVersionHelper.SupportsSystemBackdropType,
@@ -67,55 +58,37 @@ namespace Fluence.Wpf.Controls
                     OsVersionHelper.SupportsBorderColor);
     }
 
-    internal sealed class BackdropPlan
+    internal sealed class BackdropPlan(
+        BackdropType effectiveBackdrop,
+        bool useTransparentBackground,
+        Color backgroundColor,
+        int captionColor,
+        int? systemBackdropType,
+        bool useLegacyMicaEffect,
+        bool useImmersiveDarkMode)
     {
-        public BackdropPlan(
-            BackdropType effectiveBackdrop,
-            bool useTransparentBackground,
-            Color backgroundColor,
-            int captionColor,
-            int? systemBackdropType,
-            bool useLegacyMicaEffect,
-            bool useImmersiveDarkMode)
-        {
-            EffectiveBackdrop = effectiveBackdrop;
-            UseTransparentBackground = useTransparentBackground;
-            BackgroundColor = backgroundColor;
-            CaptionColor = captionColor;
-            SystemBackdropType = systemBackdropType;
-            UseLegacyMicaEffect = useLegacyMicaEffect;
-            UseImmersiveDarkMode = useImmersiveDarkMode;
-        }
+        public BackdropType EffectiveBackdrop { get; private set; } = effectiveBackdrop;
 
-        public BackdropType EffectiveBackdrop { get; private set; }
+        public bool UseTransparentBackground { get; private set; } = useTransparentBackground;
 
-        public bool UseTransparentBackground { get; private set; }
+        public Color BackgroundColor { get; private set; } = backgroundColor;
 
-        public Color BackgroundColor { get; private set; }
+        public int CaptionColor { get; private set; } = captionColor;
 
-        public int CaptionColor { get; private set; }
+        public int? SystemBackdropType { get; private set; } = systemBackdropType;
 
-        public int? SystemBackdropType { get; private set; }
+        public bool UseLegacyMicaEffect { get; private set; } = useLegacyMicaEffect;
 
-        public bool UseLegacyMicaEffect { get; private set; }
-
-        public bool UseImmersiveDarkMode { get; private set; }
+        public bool UseImmersiveDarkMode { get; private set; } = useImmersiveDarkMode;
     }
 
-    internal sealed class FramePlan
+    internal sealed class FramePlan(Thickness templateBorderThickness, string templateBorderBrushResourceKey, int dwmBorderColor)
     {
-        public FramePlan(Thickness templateBorderThickness, string templateBorderBrushResourceKey, int dwmBorderColor)
-        {
-            TemplateBorderThickness = templateBorderThickness;
-            TemplateBorderBrushResourceKey = templateBorderBrushResourceKey;
-            DwmBorderColor = dwmBorderColor;
-        }
+        public Thickness TemplateBorderThickness { get; private set; } = templateBorderThickness;
 
-        public Thickness TemplateBorderThickness { get; private set; }
+        public string TemplateBorderBrushResourceKey { get; private set; } = templateBorderBrushResourceKey;
 
-        public string TemplateBorderBrushResourceKey { get; private set; }
-
-        public int DwmBorderColor { get; private set; }
+        public int DwmBorderColor { get; private set; } = dwmBorderColor;
     }
 
     internal static class WindowPolicy
