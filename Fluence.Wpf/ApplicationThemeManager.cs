@@ -280,6 +280,15 @@ namespace Fluence.Wpf
             }
         }
 
+        internal static void ResetForTesting()
+        {
+            _isInitialized = false;
+            CurrentTheme = ApplicationTheme.Auto;
+            CurrentBackdrop = BackdropType.Auto;
+            _isApplying = false;
+            _promotedHighContrastBrushKeys = null;
+        }
+
         // The assembly component name is used in pack URIs to load resource dictionaries.
         private const string AssemblyComponent = "Fluence.Wpf;component";
         private const string PackBase = "pack://application:,,,/" + AssemblyComponent + "/";

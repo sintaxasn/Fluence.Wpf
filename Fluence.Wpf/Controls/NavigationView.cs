@@ -448,6 +448,15 @@ namespace Fluence.Wpf.Controls
             OnBackButtonClick(this, new RoutedEventArgs());
         }
 
+        /// <summary>
+        /// Returns the shared selection indicator element from the current template, if resolved.
+        /// Used by unit tests.
+        /// </summary>
+        internal FrameworkElement? GetSelectionIndicatorForTesting()
+        {
+            return _selectionIndicator;
+        }
+
         internal void InvokeItem(NavigationViewItem item)
         {
             if (item == null || !item.IsEnabled)

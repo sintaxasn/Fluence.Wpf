@@ -210,7 +210,7 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Animates out the item and then calls the provided callback.
         /// </summary>
-        public void AnimateRemove(object item, Action onCompleted)
+        public void AnimateRemove(object item, Action? onCompleted)
         {
             if (!ItemAnimationsEnabled)
             {
