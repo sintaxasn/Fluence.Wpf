@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -231,6 +232,7 @@ namespace Fluence.Wpf.Controls
         /// Occurs when a clickable card is activated by a mouse left-button release
         /// that began with a press inside the card bounds.
         /// </summary>
+        [SuppressMessage("Design", "S3908", Justification = "RoutedEventHandler is required by WPF's routed event infrastructure.")]
         public event RoutedEventHandler Click
         {
             add => AddHandler(ClickEvent, value);

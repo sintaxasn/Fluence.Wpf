@@ -25,6 +25,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
+using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -102,6 +103,7 @@ namespace Fluence.Wpf.Controls
         /// Raised when the user clicks the per-tab close button. The parent <see cref="TabView"/>
         /// aggregates this into <see cref="TabView.TabCloseRequested"/> for convenience.
         /// </summary>
+        [SuppressMessage("Design", "S3908", Justification = "RoutedEventHandler is required by WPF's routed event infrastructure.")]
         public event RoutedEventHandler CloseRequested
         {
             add => AddHandler(CloseRequestedEvent, value);

@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Controls;
@@ -75,6 +76,7 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Raised when the primary half of the split button is clicked.
         /// </summary>
+        [SuppressMessage("Design", "S3908", Justification = "RoutedEventHandler is required by WPF's routed event infrastructure.")]
         public event RoutedEventHandler Click
         {
             add => AddHandler(ClickEvent, value);

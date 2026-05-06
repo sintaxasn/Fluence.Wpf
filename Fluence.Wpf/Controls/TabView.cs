@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -167,6 +168,7 @@ namespace Fluence.Wpf.Controls
         /// Raised when the user clicks the add-tab (+) button. Consumers typically insert a new item
         /// into their items collection and optionally select it.
         /// </summary>
+        [SuppressMessage("Design", "S3908", Justification = "RoutedEventHandler is required by WPF's routed event infrastructure.")]
         public event RoutedEventHandler AddTabButtonClick
         {
             add => AddHandler(AddTabButtonClickEvent, value);
@@ -177,6 +179,7 @@ namespace Fluence.Wpf.Controls
         /// Raised when the user clicks the close (×) button of a <see cref="TabViewItem"/>. The event
         /// args include the container and the bound item; consumers decide whether to remove it.
         /// </summary>
+        [SuppressMessage("Design", "S3908", Justification = "RoutedEventHandler is required by WPF's routed event infrastructure.")]
         public event RoutedEventHandler TabCloseRequested
         {
             add => AddHandler(TabCloseRequestedEvent, value);
