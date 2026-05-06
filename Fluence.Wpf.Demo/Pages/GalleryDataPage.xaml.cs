@@ -33,7 +33,6 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryDataPage : UserControl
     {
-
         private const string ListViewItemsXamlSource = @"<UserControl
     x:Class=""Fluence.Wpf.Demo.Pages.Data.ListViewItems""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""

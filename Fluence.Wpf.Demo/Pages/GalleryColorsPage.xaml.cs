@@ -32,7 +32,6 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryColorsPage : UserControl
     {
-
         private const string ColorSamplesXamlSource = @"<UserControl
     x:Class=""Fluence.Wpf.Demo.Pages.Colors.ColorSamples""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""

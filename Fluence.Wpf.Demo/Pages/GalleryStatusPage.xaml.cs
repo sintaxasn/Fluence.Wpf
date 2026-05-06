@@ -37,7 +37,6 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryStatusPage : UserControl
     {
-
         private const string ProgressBarValueXamlSource = @"<UserControl
     x:Class=""Fluence.Wpf.Demo.Pages.Status.ProgressBarValue""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""

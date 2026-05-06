@@ -39,7 +39,6 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryWindowPage : UserControl
     {
-
         private const string ThemeAndAccentXamlSource = @"<UserControl
     x:Class=""Fluence.Wpf.Demo.Pages.Window.ThemeAndAccent""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""

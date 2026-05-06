@@ -35,7 +35,6 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryFormsPage : UserControl
     {
-
         private const string SignInFormXamlSource = @"<UserControl
     x:Class=""Fluence.Wpf.Demo.Pages.Forms.SignInForm""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""

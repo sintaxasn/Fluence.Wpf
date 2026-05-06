@@ -32,7 +32,6 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryButtonsPage : UserControl
     {
-
         private const string ButtonAppearancesXamlSource = @"<UserControl
     x:Class=""Fluence.Wpf.Demo.Pages.Buttons.ButtonAppearances""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""

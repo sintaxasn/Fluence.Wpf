@@ -40,7 +40,6 @@ namespace Fluence.Wpf.Demo.Pages
     /// </summary>
     public partial class GalleryDataBindingPage : UserControl
     {
-
         private const string ObservableCollectionListViewXamlSource = @"<UserControl
     x:Class=""Fluence.Wpf.Demo.Pages.DataBinding.ObservableCollectionListView""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""

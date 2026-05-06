@@ -38,7 +38,6 @@ namespace Fluence.Wpf.Demo.Pages
     /// </summary>
     public partial class GalleryAccessibilityPage : UserControl
     {
-
         private const string FocusAndTabOrderXamlSource = @"<UserControl
     x:Class=""Fluence.Wpf.Demo.Pages.Accessibility.FocusAndTabOrder""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""

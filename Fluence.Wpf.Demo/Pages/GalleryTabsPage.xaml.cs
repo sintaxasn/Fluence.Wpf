@@ -35,7 +35,6 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryTabsPage : UserControl
     {
-
         private const string TabControlBasicsXamlSource = @"<UserControl
     x:Class=""Fluence.Wpf.Demo.Pages.Tabs.TabControlBasics""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""

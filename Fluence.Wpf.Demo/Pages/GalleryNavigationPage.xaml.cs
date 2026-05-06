@@ -37,7 +37,6 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryNavigationPage : UserControl
     {
-
         private const string LeftNavigationViewXamlSource = @"<UserControl
     x:Class=""Fluence.Wpf.Demo.Pages.Navigation.LeftNavigationView""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""

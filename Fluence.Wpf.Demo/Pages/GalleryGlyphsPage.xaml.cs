@@ -39,7 +39,6 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryGlyphsPage : UserControl
     {
-
         private const string IconCatalogXamlSource = @"<UserControl
     x:Class=""Fluence.Wpf.Demo.Pages.Glyphs.IconCatalog""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""

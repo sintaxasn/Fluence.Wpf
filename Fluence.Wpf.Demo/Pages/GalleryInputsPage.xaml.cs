@@ -33,7 +33,6 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryInputsPage : UserControl
     {
-
         private const string TextBoxInputXamlSource = @"<UserControl
     x:Class=""Fluence.Wpf.Demo.Pages.Inputs.TextBoxInput""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""

@@ -34,7 +34,6 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GallerySelectionPage : UserControl
     {
-
         private const string CheckBoxStatesXamlSource = @"<UserControl
     x:Class=""Fluence.Wpf.Demo.Pages.Selection.CheckBoxStates""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""

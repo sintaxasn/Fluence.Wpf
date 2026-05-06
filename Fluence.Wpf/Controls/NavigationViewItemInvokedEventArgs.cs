@@ -44,7 +44,6 @@ namespace Fluence.Wpf.Controls
         NavigationViewItem invokedItemContainer,
         bool isSettingsInvoked) : EventArgs
     {
-
         /// <summary>
         /// Gets the data item that was invoked.
         /// </summary>

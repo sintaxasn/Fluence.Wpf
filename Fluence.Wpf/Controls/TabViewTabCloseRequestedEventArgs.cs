@@ -42,7 +42,6 @@ namespace Fluence.Wpf.Controls
     /// <param name="item">The bound data item, or the <see cref="TabViewItem"/> itself if no data was bound.</param>
     public class TabViewTabCloseRequestedEventArgs(RoutedEvent routedEvent, object source, TabViewItem tab, object item) : RoutedEventArgs(routedEvent, source)
     {
-
         /// <summary>
         /// Gets the tab container the user asked to close.
         /// </summary>

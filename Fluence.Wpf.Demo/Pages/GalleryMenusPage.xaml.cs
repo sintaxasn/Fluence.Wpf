@@ -34,7 +34,6 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryMenusPage : UserControl
     {
-
         private const string MenuBarXamlSource = @"<UserControl
     x:Class=""Fluence.Wpf.Demo.Pages.Menus.MenuBar""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""

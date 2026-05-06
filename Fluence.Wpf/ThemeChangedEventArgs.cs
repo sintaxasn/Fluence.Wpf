@@ -44,7 +44,6 @@ namespace Fluence.Wpf
     /// <param name="accentColor">The accent color applied with the theme.</param>
     public class ThemeChangedEventArgs(ApplicationTheme theme, Color accentColor) : EventArgs
     {
-
         /// <summary>
         /// Gets the resolved theme (Light, Dark, HighContrast, or logical Auto resolved to a concrete theme).
         /// </summary>

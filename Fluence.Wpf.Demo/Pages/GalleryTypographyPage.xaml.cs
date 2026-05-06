@@ -37,7 +37,6 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryTypographyPage : UserControl
     {
-
         private const string TypographyTableXamlSource = @"<UserControl
     x:Class=""Fluence.Wpf.Demo.Pages.Typography.TypographyTable""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
