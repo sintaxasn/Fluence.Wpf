@@ -71,7 +71,7 @@ namespace Fluence.Wpf.Controls
                 new FrameworkPropertyMetadata(
                     FluentTypography.Body,
                     FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender,
-                    OnTypographyPropertyChanged));
+                    OnTextPropertyChanged));
 
         /// <summary>
         /// Identifies the <see cref="TextWrapping"/> dependency property.
@@ -84,7 +84,7 @@ namespace Fluence.Wpf.Controls
                 new FrameworkPropertyMetadata(
                     TextWrapping.NoWrap,
                     FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender,
-                    OnTextWrappingPropertyChanged));
+                    OnTextPropertyChanged));
 
         /// <summary>
         /// Identifies the <see cref="TextTrimming"/> dependency property.
@@ -97,7 +97,7 @@ namespace Fluence.Wpf.Controls
                 new FrameworkPropertyMetadata(
                     TextTrimming.None,
                     FrameworkPropertyMetadataOptions.AffectsRender,
-                    OnTextTrimmingPropertyChanged));
+                    OnTextPropertyChanged));
 
         /// <summary>
         /// Gets or sets the text displayed by the inner <see cref="System.Windows.Controls.TextBlock"/>.
@@ -144,24 +144,6 @@ namespace Fluence.Wpf.Controls
         }
 
         private static void OnTextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            TextBlock control = (TextBlock)d;
-            control.SyncPartTextBlock();
-        }
-
-        private static void OnTypographyPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            TextBlock control = (TextBlock)d;
-            control.SyncPartTextBlock();
-        }
-
-        private static void OnTextWrappingPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            TextBlock control = (TextBlock)d;
-            control.SyncPartTextBlock();
-        }
-
-        private static void OnTextTrimmingPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TextBlock control = (TextBlock)d;
             control.SyncPartTextBlock();

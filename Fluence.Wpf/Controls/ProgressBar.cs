@@ -219,7 +219,7 @@ namespace Fluence.Wpf.Controls
 
             StopIndeterminate();
 
-            _track?.SizeChanged -= OnTrackSizeChanged;
+            _track?.SizeChanged -= OnSizeChanged;
 
             _track = GetTemplateChild(PART_Track) as System.Windows.Controls.Border;
             _fill = GetTemplateChild(PART_Fill) as System.Windows.Controls.Border;
@@ -228,15 +228,9 @@ namespace Fluence.Wpf.Controls
             _indeterminateTranslate = GetTemplateChild(PART_IndeterminateTranslate) as TranslateTransform;
             _indeterminateTranslate2 = GetTemplateChild(PART_IndeterminateTranslate2) as TranslateTransform;
 
-            _track?.SizeChanged += OnTrackSizeChanged;
+            _track?.SizeChanged += OnSizeChanged;
 
             ApplyProgressMode();
-            UpdateFillWidth(false);
-            RefreshIndeterminateLayout();
-        }
-
-        private void OnTrackSizeChanged(object sender, SizeChangedEventArgs e)
-        {
             UpdateFillWidth(false);
             RefreshIndeterminateLayout();
         }
