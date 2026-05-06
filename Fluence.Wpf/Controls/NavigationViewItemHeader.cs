@@ -37,6 +37,13 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     public class NavigationViewItemHeader : ContentControl
     {
+        /// <summary>
+        /// Initializes static members of the NavigationViewItemHeader class and overrides default style and focus
+        /// behavior.
+        /// </summary>
+        /// <remarks>This static constructor sets the default style key and marks the control as not
+        /// focusable by default. These overrides ensure that NavigationViewItemHeader uses its custom style and cannot
+        /// receive keyboard focus.</remarks>
         static NavigationViewItemHeader()
         {
             DefaultStyleKeyProperty.OverrideMetadata(

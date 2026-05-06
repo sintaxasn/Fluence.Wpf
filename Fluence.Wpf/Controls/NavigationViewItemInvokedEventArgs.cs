@@ -39,10 +39,7 @@ namespace Fluence.Wpf.Controls
     /// <param name="invokedItem">The data item that was invoked.</param>
     /// <param name="invokedItemContainer">The navigation item container that was invoked.</param>
     /// <param name="isSettingsInvoked">A value indicating whether the settings entry was invoked.</param>
-    public class NavigationViewItemInvokedEventArgs(
-        object invokedItem,
-        NavigationViewItem invokedItemContainer,
-        bool isSettingsInvoked) : EventArgs
+    public class NavigationViewItemInvokedEventArgs(object invokedItem, NavigationViewItem invokedItemContainer, bool isSettingsInvoked) : EventArgs
     {
         /// <summary>
         /// Gets the data item that was invoked.

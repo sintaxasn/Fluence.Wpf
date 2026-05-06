@@ -33,7 +33,5 @@ namespace Fluence.Wpf.Controls
     /// <summary>
     /// Provides data for the <see cref="NavigationView.BackRequested"/> event.
     /// </summary>
-    public class NavigationViewBackRequestedEventArgs : EventArgs
-    {
-    }
+    public class NavigationViewBackRequestedEventArgs : EventArgs;
 }

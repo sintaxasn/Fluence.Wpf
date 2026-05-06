@@ -26,32 +26,28 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System.Windows;
-using System.Windows.Controls;
+using System;
 
 namespace Fluence.Wpf.Controls
 {
     /// <summary>
-    /// A divider line element for use inside a <see cref="NavigationView"/> pane.
-    /// Not selectable -- passes through the item container generator unmodified.
+    /// Event data for <see cref="NumberBox.ValueChanged"/>.
     /// </summary>
-    public class NavigationViewItemSeparator : Control
+    /// <remarks>
+    /// Initializes a new instance of the <see cref="NumberBoxValueChangedEventArgs"/> class.
+    /// </remarks>
+    /// <param name="oldValue">The previous value.</param>
+    /// <param name="newValue">The new value.</param>
+    public sealed class NumberBoxValueChangedEventArgs(double oldValue, double newValue) : EventArgs
     {
         /// <summary>
-        /// Initializes static members of the NavigationViewItemSeparator class and overrides default property metadata.
+        /// Gets the previous value.
         /// </summary>
-        /// <remarks>This static constructor sets the default style key and marks the control as not
-        /// focusable by default. These overrides ensure that the NavigationViewItemSeparator is styled and behaves
-        /// appropriately within the navigation view control hierarchy.</remarks>
-        static NavigationViewItemSeparator()
-        {
-            DefaultStyleKeyProperty.OverrideMetadata(
-                typeof(NavigationViewItemSeparator),
-                new FrameworkPropertyMetadata(typeof(NavigationViewItemSeparator)));
+        public double OldValue { get; } = oldValue;
 
-            FocusableProperty.OverrideMetadata(
-                typeof(NavigationViewItemSeparator),
-                new FrameworkPropertyMetadata(false));
-        }
+        /// <summary>
+        /// Gets the new value.
+        /// </summary>
+        public double NewValue { get; } = newValue;
     }
 }

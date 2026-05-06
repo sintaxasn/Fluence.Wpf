@@ -40,6 +40,11 @@ namespace Fluence.Wpf.Controls
     /// <remarks>Inspired by WinUI3's NavigationView.</remarks>
     public class NavigationViewItem : ListBoxItem
     {
+        /// <summary>
+        /// Identifies the read-only IsPressed dependency property key for the NavigationViewItem control.
+        /// </summary>
+        /// <remarks>This key is used internally to set the value of the IsPressed property. Consumers
+        /// should use the IsPressed property for reading the value.</remarks>
         private static readonly DependencyPropertyKey IsPressedPropertyKey = DependencyProperty.RegisterReadOnly(
             "IsPressed",
             typeof(bool),
@@ -78,6 +83,12 @@ namespace Fluence.Wpf.Controls
             typeof(NavigationViewItem),
             new FrameworkPropertyMetadata(false));
 
+        /// <summary>
+        /// Initializes static members of the NavigationViewItem class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the NavigationViewItem control uses its own
+        /// style by default, as defined in the application's resource dictionaries. This is necessary for proper
+        /// theming and templating in WPF custom controls.</remarks>
         static NavigationViewItem()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -121,16 +132,12 @@ namespace Fluence.Wpf.Controls
         /// <inheritdoc />
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            if ((e.Key == Key.Enter || e.Key == Key.Space) && IsEnabled)
+            if ((e.Key == Key.Enter || e.Key == Key.Space) && IsEnabled && ItemsControl.ItemsControlFromItemContainer(this) is NavigationView nav)
             {
-                if (ItemsControl.ItemsControlFromItemContainer(this) is NavigationView nav)
-                {
-                    nav.InvokeItem(this);
-                    e.Handled = true;
-                    return;
-                }
+                nav.InvokeItem(this);
+                e.Handled = true;
+                return;
             }
-
             base.OnKeyDown(e);
         }
 
@@ -157,7 +164,6 @@ namespace Fluence.Wpf.Controls
             {
                 SetValue(IsPressedPropertyKey, false);
             }
-
             base.OnMouseLeave(e);
         }
 
@@ -180,13 +186,11 @@ namespace Fluence.Wpf.Controls
                 base.OnPreviewMouseLeftButtonDown(e);
                 return;
             }
-
             if (ItemsControl.ItemsControlFromItemContainer(this) is not NavigationView nav)
             {
                 base.OnPreviewMouseLeftButtonDown(e);
                 return;
             }
-
             nav.InvokeItem(this);
             _ = Focus();
             e.Handled = true;

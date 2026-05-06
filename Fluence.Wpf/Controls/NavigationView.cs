@@ -77,15 +77,9 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public const string PartSelectionIndicator = "PART_SelectionIndicator";
 
+        // Margins and offsets used in indicator positioning calculations
         private const double NavigationItemOuterHorizontalMargin = 4.0;
         private const double NavigationItemChildIndicatorOffset = 44.0;
-
-        private System.Windows.Controls.Button? _backButton;
-        private System.Windows.Controls.Button? _paneToggleButton;
-        private FrameworkElement? _selectionIndicator;
-        private FrameworkElement? _indicatorHost;
-        private int _indicatorAnimationGeneration;
-        private bool _indicatorPositioned;
 
         /// <summary>
         /// Identifies the <see cref="PaneDisplayMode"/> dependency property.
@@ -200,6 +194,12 @@ namespace Fluence.Wpf.Controls
             typeof(NavigationView),
             new PropertyMetadata(null));
 
+        /// <summary>
+        /// Initializes static members of the NavigationView class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the NavigationView control uses its own default
+        /// style by associating it with the appropriate style key. This is necessary for custom controls to apply their
+        /// styles correctly in XAML-based applications.</remarks>
         static NavigationView()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -213,14 +213,6 @@ namespace Fluence.Wpf.Controls
         public NavigationView()
         {
             Unloaded += OnUnloaded;
-        }
-
-        private void OnUnloaded(object sender, RoutedEventArgs e)
-        {
-            StopAnimation();
-            _selectionIndicator = null;
-            _indicatorHost = null;
-            _indicatorPositioned = false;
         }
 
         /// <summary>
@@ -355,21 +347,14 @@ namespace Fluence.Wpf.Controls
         public override void OnApplyTemplate()
         {
             _backButton?.Click -= OnBackButtonClick;
-
             _paneToggleButton?.Click -= OnPaneToggleButtonClick;
-
             base.OnApplyTemplate();
-
             _backButton = GetTemplateChild(PartBackButton) as System.Windows.Controls.Button;
             _backButton?.Click += OnBackButtonClick;
-
             _paneToggleButton = GetTemplateChild(PartPaneToggleButton) as System.Windows.Controls.Button;
             _paneToggleButton?.Click += OnPaneToggleButtonClick;
-
             _selectionIndicator = GetTemplateChild(PartSelectionIndicator) as FrameworkElement;
-
             _indicatorHost = _selectionIndicator != null ? VisualTreeHelper.GetParent(_selectionIndicator) as FrameworkElement : null;
-
             _indicatorPositioned = false;
             StopAnimation();
             UpdateBackButtonState(false);
@@ -394,7 +379,6 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
             if (FindNavigationViewItem(e.NewFocus as DependencyObject) is not NavigationViewItem navItem)
             {
                 return;
@@ -423,9 +407,7 @@ namespace Fluence.Wpf.Controls
         /// <inheritdoc />
         protected override bool IsItemItsOwnContainerOverride(object item)
         {
-            return item is NavigationViewItem
-                or NavigationViewItemHeader
-                or NavigationViewItemSeparator;
+            return item is NavigationViewItem or NavigationViewItemHeader or NavigationViewItemSeparator;
         }
 
         /// <inheritdoc />
@@ -455,7 +437,6 @@ namespace Fluence.Wpf.Controls
                 navItem.Selected -= OnNavigationViewItemSelected;
                 navItem.Loaded -= OnNavigationViewItemLoaded;
             }
-
             base.ClearContainerForItemOverride(element, item);
         }
 
@@ -473,11 +454,17 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
             object invokedItem = GetDataFromContainer(item);
             ItemInvoked?.Invoke(this, new NavigationViewItemInvokedEventArgs(invokedItem, item, false));
-
             SelectItemFromContainer(item);
+        }
+
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            StopAnimation();
+            _selectionIndicator = null;
+            _indicatorHost = null;
+            _indicatorPositioned = false;
         }
 
         private static void OnIsBackButtonVisibleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -500,7 +487,6 @@ namespace Fluence.Wpf.Controls
             bool isVisible = IsBackButtonVisible && IsBackEnabled;
             string stateName = isVisible ? "BackButtonVisible" : "BackButtonCollapsed";
             _ = VisualStateManager.GoToState(this, stateName, useTransitions);
-
             if (_backButton != null)
             {
                 _backButton.BeginAnimation(VisibilityProperty, null);
@@ -524,7 +510,6 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
             SelectItemFromContainer(navItem);
         }
 
@@ -548,7 +533,6 @@ namespace Fluence.Wpf.Controls
             {
                 nav.PaneClosed?.Invoke(nav, EventArgs.Empty);
             }
-
             nav._indicatorPositioned = false;
             nav.ScheduleIndicatorPosition(false);
         }
@@ -557,12 +541,10 @@ namespace Fluence.Wpf.Controls
         {
             NavigationView nav = (NavigationView)d;
             NavigationViewPaneDisplayMode newMode = (NavigationViewPaneDisplayMode)e.NewValue;
-
             if (newMode == NavigationViewPaneDisplayMode.LeftCompact)
             {
                 nav.SetCurrentValue(IsPaneOpenProperty, false);
             }
-
             nav._indicatorPositioned = false;
             nav.ScheduleIndicatorPosition(false);
         }
@@ -588,18 +570,15 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
             if (!IsLoaded)
             {
                 return;
             }
-
             if (SelectedItem == null)
             {
                 HideIndicator();
                 return;
             }
-
             if (ResolveNavigationViewItem(SelectedItem) is not NavigationViewItem nvi || !nvi.IsVisible || nvi.ActualHeight is 0)
             {
                 HideIndicator();
@@ -608,7 +587,6 @@ namespace Fluence.Wpf.Controls
 
             bool topMode = PaneDisplayMode == NavigationViewPaneDisplayMode.Top;
             Point targetPosition = CalculateIndicatorPosition(nvi, topMode);
-
             if (!animate || !_indicatorPositioned)
             {
                 SnapIndicator(targetPosition);
@@ -632,7 +610,6 @@ namespace Fluence.Wpf.Controls
             {
                 GeneralTransform transform = item.TransformToAncestor(_indicatorHost);
                 Point itemPos = transform.Transform(new Point(0, 0));
-
                 if (topMode)
                 {
                     return new Point(itemPos.X + ((item.ActualWidth - _selectionIndicator.Width) / 2.0), 0.0);
@@ -643,7 +620,6 @@ namespace Fluence.Wpf.Controls
                 {
                     x += NavigationItemChildIndicatorOffset;
                 }
-
                 return new Point(x, itemPos.Y + ((item.ActualHeight - _selectionIndicator.Height) / 2.0));
             }
             catch (Exception ex) when (ex.Message is not null)
@@ -659,15 +635,9 @@ namespace Fluence.Wpf.Controls
 
         private Point GetCurrentIndicatorPosition()
         {
-            if (_selectionIndicator?.RenderTransform is TransformGroup group && group.Children.Count >= 2)
-            {
-                if (group.Children[1] is TranslateTransform translate)
-                {
-                    return new Point(translate.X, translate.Y);
-                }
-            }
-
-            return new Point(0, 0);
+            return _selectionIndicator?.RenderTransform is TransformGroup group && group.Children.Count >= 2 && group.Children[1] is TranslateTransform translate
+                ? new Point(translate.X, translate.Y)
+                : new Point(0, 0);
         }
 
         /// <summary>
@@ -679,9 +649,7 @@ namespace Fluence.Wpf.Controls
             {
                 throw new InvalidOperationException("Selection indicator template part is missing.");
             }
-            StopAnimation();
-            EnsureMutableTransform();
-
+            StopAnimation(); EnsureMutableTransform();
             TransformGroup group = (TransformGroup)_selectionIndicator.RenderTransform;
             ScaleTransform scale = (ScaleTransform)group.Children[0];
             TranslateTransform translate = (TranslateTransform)group.Children[1];
@@ -706,9 +674,7 @@ namespace Fluence.Wpf.Controls
             {
                 throw new InvalidOperationException("Selection indicator template part is missing.");
             }
-            StopAnimation();
-            EnsureMutableTransform();
-
+            StopAnimation(); EnsureMutableTransform();
             TransformGroup group = (TransformGroup)_selectionIndicator.RenderTransform;
             ScaleTransform scale = (ScaleTransform)group.Children[0];
             TranslateTransform translate = (TranslateTransform)group.Children[1];
@@ -756,11 +722,9 @@ namespace Fluence.Wpf.Controls
                 {
                     return;
                 }
-
                 translate.BeginAnimation(axisProperty, null);
                 scale.BeginAnimation(scaleProperty, null);
                 _selectionIndicator.BeginAnimation(OpacityProperty, null);
-
                 if (topMode)
                 {
                     translate.X = arriveStartPosition.X;
@@ -775,7 +739,6 @@ namespace Fluence.Wpf.Controls
                     scale.ScaleX = 1.0;
                     scale.ScaleY = 0.72;
                 }
-
                 _selectionIndicator.Opacity = 0.0;
 
                 DoubleAnimation arriveAxisAnimation = new(arriveStartAxis, toAxis, arriveDuration)
@@ -812,12 +775,10 @@ namespace Fluence.Wpf.Controls
                     _selectionIndicator.Opacity = 1.0;
                     _indicatorPositioned = true;
                 };
-
                 translate.BeginAnimation(axisProperty, arriveAxisAnimation, HandoffBehavior.SnapshotAndReplace);
                 scale.BeginAnimation(scaleProperty, arriveScaleAnimation, HandoffBehavior.SnapshotAndReplace);
                 _selectionIndicator.BeginAnimation(OpacityProperty, arriveOpacityAnimation, HandoffBehavior.SnapshotAndReplace);
             };
-
             _indicatorPositioned = true;
             translate.BeginAnimation(axisProperty, departAxisAnimation, HandoffBehavior.SnapshotAndReplace);
             scale.BeginAnimation(scaleProperty, departScaleAnimation, HandoffBehavior.SnapshotAndReplace);
@@ -847,7 +808,6 @@ namespace Fluence.Wpf.Controls
                         return new Point(x, fromPosition.Y);
                     }
                 }
-
                 return new Point(x, fromPosition.Y);
             }
 
@@ -865,7 +825,6 @@ namespace Fluence.Wpf.Controls
                     return new Point(fromPosition.X, y);
                 }
             }
-
             return new Point(fromPosition.X, y);
         }
 
@@ -910,7 +869,6 @@ namespace Fluence.Wpf.Controls
                     return new Point(toPosition.X, y);
                 }
             }
-
             return new Point(toPosition.X, y);
         }
 
@@ -925,7 +883,6 @@ namespace Fluence.Wpf.Controls
             {
                 return actual;
             }
-
             double explicitLength = topMode ? _selectionIndicator.Width : _selectionIndicator.Height;
             return explicitLength > 0 ? explicitLength : 16.0;
         }
@@ -934,7 +891,6 @@ namespace Fluence.Wpf.Controls
         {
             StopAnimation();
             _ = (_selectionIndicator?.Opacity = 0);
-
             _indicatorPositioned = false;
         }
 
@@ -954,7 +910,6 @@ namespace Fluence.Wpf.Controls
                     scale.BeginAnimation(ScaleTransform.ScaleXProperty, null);
                     scale.BeginAnimation(ScaleTransform.ScaleYProperty, null);
                 }
-
                 if (group.Children[1] is TranslateTransform translate && !translate.IsFrozen)
                 {
                     translate.BeginAnimation(TranslateTransform.XProperty, null);
@@ -974,7 +929,6 @@ namespace Fluence.Wpf.Controls
             }
 
             _selectionIndicator.BeginAnimation(OpacityProperty, null);
-
             if (_selectionIndicator.RenderTransform as TransformGroup is not TransformGroup group || group.IsFrozen || group.Children.Count < 2 || group.Children[0] is not ScaleTransform s || group.Children[1] is not TranslateTransform t || s.IsFrozen || t.IsFrozen)
             {
                 TransformGroup newGroup = new();
@@ -983,10 +937,8 @@ namespace Fluence.Wpf.Controls
                 _selectionIndicator.RenderTransform = newGroup;
                 return;
             }
-
             ScaleTransform scale = (ScaleTransform)group.Children[0];
             TranslateTransform translate = (TranslateTransform)group.Children[1];
-
             scale.BeginAnimation(ScaleTransform.ScaleXProperty, null);
             scale.BeginAnimation(ScaleTransform.ScaleYProperty, null);
             translate.BeginAnimation(TranslateTransform.XProperty, null);
@@ -1006,7 +958,6 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
             object data = GetDataFromContainer(navItem);
             if (!ReferenceEquals(SelectedItem, data))
             {
@@ -1029,11 +980,42 @@ namespace Fluence.Wpf.Controls
                 {
                     return asItem;
                 }
-
                 current = VisualTreeHelper.GetParent(current);
             }
-
             return null;
         }
+
+        /// <summary>
+        /// Represents a reference to the back navigation button control.
+        /// </summary>
+        private System.Windows.Controls.Button? _backButton;
+
+        /// <summary>
+        /// Represents the toggle button control used to show or hide a pane within the user interface.
+        /// </summary>
+        private System.Windows.Controls.Button? _paneToggleButton;
+
+        /// <summary>
+        /// Represents the visual element used to indicate the current selection within the user interface.
+        /// </summary>
+        private FrameworkElement? _selectionIndicator;
+
+        /// <summary>
+        /// Represents the host element for displaying an indicator within the user interface.
+        /// </summary>
+        private FrameworkElement? _indicatorHost;
+
+        /// <summary>
+        /// Stores the current generation or version of the indicator animation.
+        /// </summary>
+        /// <remarks>This field is typically used to track changes or updates to the animation state,
+        /// allowing the system to determine if a new animation sequence should be started or if the current one remains
+        /// valid.</remarks>
+        private int _indicatorAnimationGeneration;
+
+        /// <summary>
+        /// Indicates whether the indicator has been positioned.
+        /// </summary>
+        private bool _indicatorPositioned;
     }
 }

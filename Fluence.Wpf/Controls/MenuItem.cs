@@ -37,6 +37,12 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     public class MenuItem : System.Windows.Controls.MenuItem
     {
+        /// <summary>
+        /// Initializes static members of the MenuItem class and overrides the default style metadata for the control.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the MenuItem control uses its own style by
+        /// default, rather than inheriting the style from its base class. This is important for proper theming and
+        /// appearance in WPF applications.</remarks>
         static MenuItem()
         {
             DefaultStyleKeyProperty.OverrideMetadata(

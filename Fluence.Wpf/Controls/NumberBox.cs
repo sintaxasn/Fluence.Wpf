@@ -48,27 +48,6 @@ using Fluence.Wpf.Automation;
 namespace Fluence.Wpf.Controls
 {
     /// <summary>
-    /// Event data for <see cref="NumberBox.ValueChanged"/>.
-    /// </summary>
-    /// <remarks>
-    /// Initializes a new instance of the <see cref="NumberBoxValueChangedEventArgs"/> class.
-    /// </remarks>
-    /// <param name="oldValue">The previous value.</param>
-    /// <param name="newValue">The new value.</param>
-    public sealed class NumberBoxValueChangedEventArgs(double oldValue, double newValue) : EventArgs
-    {
-        /// <summary>
-        /// Gets the previous value.
-        /// </summary>
-        public double OldValue { get; } = oldValue;
-
-        /// <summary>
-        /// Gets the new value.
-        /// </summary>
-        public double NewValue { get; } = newValue;
-    }
-
-    /// <summary>
     /// A numeric input control with optional spin buttons and min/max clamping.
     /// </summary>
     [TemplatePart(Name = PartTextBox, Type = typeof(System.Windows.Controls.TextBox))]
@@ -76,15 +55,17 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = PartDownButton, Type = typeof(System.Windows.Controls.Primitives.RepeatButton))]
     public class NumberBox : Control
     {
+        // Template part names. These must match the names used in the default control template.
         private const string PartTextBox = "PART_TextBox";
         private const string PartUpButton = "PART_UpButton";
         private const string PartDownButton = "PART_DownButton";
 
-        private System.Windows.Controls.TextBox? _partTextBox;
-        private System.Windows.Controls.Primitives.RepeatButton? _partUpButton;
-        private System.Windows.Controls.Primitives.RepeatButton? _partDownButton;
-        private bool _suppressTextSync;
-
+        /// <summary>
+        /// Initializes static members of the NumberBox class and overrides the default style metadata.
+        /// </summary>
+        /// <remarks>This static constructor ensures that the NumberBox control uses its custom style by
+        /// associating the DefaultStyleKey with the NumberBox type. This enables the control to apply its default
+        /// template as defined in themes or resource dictionaries.</remarks>
         static NumberBox()
         {
             DefaultStyleKeyProperty.OverrideMetadata(
@@ -319,19 +300,15 @@ namespace Fluence.Wpf.Controls
         /// <returns><c>true</c> if a number was parsed and applied; otherwise <c>false</c>.</returns>
         public bool TryParseText()
         {
-            string s = Text;
-            s ??= string.Empty;
-
+            string s = Text ?? string.Empty;
             if (AcceptsExpression)
             {
                 s = s.Trim();
             }
-
             if (!double.TryParse(s, NumberStyles.Any, CultureInfo.CurrentCulture, out double parsed))
             {
                 return false;
             }
-
             Value = parsed;
             return true;
         }
@@ -392,31 +369,23 @@ namespace Fluence.Wpf.Controls
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-
             if (_partTextBox != null)
             {
                 _partTextBox.KeyDown -= OnPartTextBoxKeyDown;
                 _partTextBox.LostKeyboardFocus -= OnPartTextBoxLostKeyboardFocus;
             }
-
             _partUpButton?.Click -= OnPartUpButtonClick;
-
             _partDownButton?.Click -= OnPartDownButtonClick;
-
             _partTextBox = GetTemplateChild(PartTextBox) as System.Windows.Controls.TextBox;
             _partUpButton = GetTemplateChild(PartUpButton) as System.Windows.Controls.Primitives.RepeatButton;
             _partDownButton = GetTemplateChild(PartDownButton) as System.Windows.Controls.Primitives.RepeatButton;
-
             if (_partTextBox != null)
             {
                 _partTextBox.KeyDown += OnPartTextBoxKeyDown;
                 _partTextBox.LostKeyboardFocus += OnPartTextBoxLostKeyboardFocus;
             }
-
             _partUpButton?.Click += OnPartUpButtonClick;
-
             _partDownButton?.Click += OnPartDownButtonClick;
-
             UpdateTextFromValue();
         }
 
@@ -428,7 +397,6 @@ namespace Fluence.Wpf.Controls
             {
                 return baseValue;
             }
-
             double clamped = box.ClampValue(v);
             return double.IsNaN(clamped) ? baseValue : clamped;
         }
@@ -454,7 +422,6 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-
             if (box._partTextBox != null && !string.Equals(box._partTextBox.Text, box.Text, StringComparison.Ordinal))
             {
                 box._partTextBox.Text = box.Text ?? string.Empty;
@@ -523,8 +490,36 @@ namespace Fluence.Wpf.Controls
             {
                 (max, min) = (min, max);
             }
-
             return Math.Min(Math.Max(value, min), max);
         }
+
+        /// <summary>
+        /// Represents the TextBox control associated with this part.
+        /// </summary>
+        private System.Windows.Controls.TextBox? _partTextBox;
+
+        /// <summary>
+        /// Represents the up button part of the control, typically used to increment a value or scroll upward.
+        /// </summary>
+        /// <remarks>This field is usually assigned by the control template and may be null if the
+        /// template does not define an up button part. It is intended for internal use within the control to handle
+        /// user interactions related to increasing values or scrolling.</remarks>
+        private System.Windows.Controls.Primitives.RepeatButton? _partUpButton;
+
+        /// <summary>
+        /// Represents the down button part of the control template, typically used to decrease a value or scroll
+        /// downward.
+        /// </summary>
+        /// <remarks>This field is usually assigned when the control template is applied and may be null
+        /// if the template part is not present. It is intended for internal use within custom controls that utilize a
+        /// RepeatButton for decrementing actions.</remarks>
+        private System.Windows.Controls.Primitives.RepeatButton? _partDownButton;
+
+        /// <summary>
+        /// Indicates whether text synchronization events should be suppressed.
+        /// </summary>
+        /// <remarks>When set to true, changes to the text will not trigger synchronization logic. This is
+        /// typically used to prevent recursive or unwanted updates during programmatic changes.</remarks>
+        private bool _suppressTextSync;
     }
 }
