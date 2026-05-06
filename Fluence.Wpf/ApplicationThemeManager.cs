@@ -67,10 +67,14 @@ namespace Fluence.Wpf
         private static bool _isApplying;
         private static System.Collections.Generic.List<object>? _promotedHighContrastBrushKeys;
 
-        /// <summary>Gets the currently requested theme (may be <see cref="ApplicationTheme.Auto"/>).</summary>
+        /// <summary>
+        /// Gets the currently requested theme (may be <see cref="ApplicationTheme.Auto"/>).
+        /// </summary>
         public static ApplicationTheme CurrentTheme { get; private set; } = ApplicationTheme.Auto;
 
-        /// <summary>Gets the currently requested backdrop type.</summary>
+        /// <summary>
+        /// Gets the currently requested backdrop type.
+        /// </summary>
         public static BackdropType CurrentBackdrop { get; private set; } = BackdropType.Auto;
 
         /// <summary>
@@ -85,7 +89,9 @@ namespace Fluence.Wpf
         /// </summary>
         public static bool IsAppInDarkMode => !RegistryHelper.GetAppsUseLightTheme();
 
-        /// <summary>Raised after a theme or accent change has been applied.</summary>
+        /// <summary>
+        /// Raised after a theme or accent change has been applied.
+        /// </summary>
         public static event EventHandler<ThemeChangedEventArgs>? Changed;
 
         /// <summary>
@@ -134,7 +140,9 @@ namespace Fluence.Wpf
             }
         }
 
-        /// <summary>Re-applies with <see cref="ApplicationTheme.Auto"/> to pick up system changes.</summary>
+        /// <summary>
+        /// Re-applies with <see cref="ApplicationTheme.Auto"/> to pick up system changes.
+        /// </summary>
         public static void ApplySystemTheme()
         {
             Apply(ApplicationTheme.Auto, CurrentBackdrop);

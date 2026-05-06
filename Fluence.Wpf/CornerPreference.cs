@@ -33,13 +33,21 @@ namespace Fluence.Wpf
     /// </summary>
     public enum CornerPreference
     {
-        /// <summary>OS default rounding.</summary>
+        /// <summary>
+        /// OS default rounding.
+        /// </summary>
         Default = 0,
-        /// <summary>Sharp corners.</summary>
+        /// <summary>
+        /// Sharp corners.
+        /// </summary>
         DoNotRound = 1,
-        /// <summary>Large radius.</summary>
+        /// <summary>
+        /// Large radius.
+        /// </summary>
         Round = 2,
-        /// <summary>Smaller radius.</summary>
+        /// <summary>
+        /// Smaller radius.
+        /// </summary>
         RoundSmall = 3
     }
 }

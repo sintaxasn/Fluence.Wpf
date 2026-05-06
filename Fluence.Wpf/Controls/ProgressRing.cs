@@ -105,7 +105,9 @@ namespace Fluence.Wpf.Controls
         // Public dependency properties
         // ──────────────────────────────────────────────────────────────────────
 
-        /// <summary>Identifies the <see cref="IsActive"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="IsActive"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty IsActiveProperty =
             DependencyProperty.Register(
                 nameof(IsActive),
@@ -113,14 +115,18 @@ namespace Fluence.Wpf.Controls
                 typeof(ProgressRing),
                 new FrameworkPropertyMetadata(true, OnIsActiveChanged));
 
-        /// <summary>Gets or sets whether the progress ring is active and visible.</summary>
+        /// <summary>
+        /// Gets or sets whether the progress ring is active and visible.
+        /// </summary>
         public bool IsActive
         {
             get => (bool)GetValue(IsActiveProperty);
             set => SetValue(IsActiveProperty, value);
         }
 
-        /// <summary>Identifies the <see cref="IsIndeterminate"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="IsIndeterminate"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty IsIndeterminateProperty =
             DependencyProperty.Register(
                 nameof(IsIndeterminate),
@@ -128,14 +134,18 @@ namespace Fluence.Wpf.Controls
                 typeof(ProgressRing),
                 new FrameworkPropertyMetadata(true, OnIsIndeterminateChanged));
 
-        /// <summary>Gets or sets whether the ring operates in indeterminate (spinning) mode.</summary>
+        /// <summary>
+        /// Gets or sets whether the ring operates in indeterminate (spinning) mode.
+        /// </summary>
         public bool IsIndeterminate
         {
             get => (bool)GetValue(IsIndeterminateProperty);
             set => SetValue(IsIndeterminateProperty, value);
         }
 
-        /// <summary>Identifies the <see cref="Value"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="Value"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty ValueProperty =
             DependencyProperty.Register(
                 nameof(Value),
@@ -143,14 +153,18 @@ namespace Fluence.Wpf.Controls
                 typeof(ProgressRing),
                 new FrameworkPropertyMetadata(0.0, OnRangePropertyChanged, CoerceRingValue));
 
-        /// <summary>Gets or sets the current progress value in determinate mode.</summary>
+        /// <summary>
+        /// Gets or sets the current progress value in determinate mode.
+        /// </summary>
         public double Value
         {
             get => (double)GetValue(ValueProperty);
             set => SetValue(ValueProperty, value);
         }
 
-        /// <summary>Identifies the <see cref="Minimum"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="Minimum"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty MinimumProperty =
             DependencyProperty.Register(
                 nameof(Minimum),
@@ -158,14 +172,18 @@ namespace Fluence.Wpf.Controls
                 typeof(ProgressRing),
                 new FrameworkPropertyMetadata(0.0, OnMinMaxPropertyChanged));
 
-        /// <summary>Gets or sets the minimum value.</summary>
+        /// <summary>
+        /// Gets or sets the minimum value.
+        /// </summary>
         public double Minimum
         {
             get => (double)GetValue(MinimumProperty);
             set => SetValue(MinimumProperty, value);
         }
 
-        /// <summary>Identifies the <see cref="Maximum"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="Maximum"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty MaximumProperty =
             DependencyProperty.Register(
                 nameof(Maximum),
@@ -173,14 +191,18 @@ namespace Fluence.Wpf.Controls
                 typeof(ProgressRing),
                 new FrameworkPropertyMetadata(100.0, OnMinMaxPropertyChanged));
 
-        /// <summary>Gets or sets the maximum value.</summary>
+        /// <summary>
+        /// Gets or sets the maximum value.
+        /// </summary>
         public double Maximum
         {
             get => (double)GetValue(MaximumProperty);
             set => SetValue(MaximumProperty, value);
         }
 
-        /// <summary>Identifies the <see cref="StrokeThickness"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="StrokeThickness"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty StrokeThicknessProperty =
             DependencyProperty.Register(
                 nameof(StrokeThickness),
@@ -188,7 +210,9 @@ namespace Fluence.Wpf.Controls
                 typeof(ProgressRing),
                 new FrameworkPropertyMetadata(4.0, OnStrokeThicknessChanged));
 
-        /// <summary>Gets or sets the thickness of the progress arc stroke.</summary>
+        /// <summary>
+        /// Gets or sets the thickness of the progress arc stroke.
+        /// </summary>
         /// <remarks>Applies to both determinate and indeterminate arc visuals in the default template.</remarks>
         public double StrokeThickness
         {
@@ -196,7 +220,9 @@ namespace Fluence.Wpf.Controls
             set => SetValue(StrokeThicknessProperty, value);
         }
 
-        /// <summary>Identifies the <see cref="ProgressState"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="ProgressState"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty ProgressStateProperty =
             DependencyProperty.Register(
                 nameof(ProgressState),
@@ -225,7 +251,9 @@ namespace Fluence.Wpf.Controls
                 typeof(ProgressRing),
                 new FrameworkPropertyMetadata(0.0));
 
-        /// <summary>Identifies the read-only <see cref="EllipseDiameter"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the read-only <see cref="EllipseDiameter"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty EllipseDiameterProperty = EllipseDiameterPropertyKey.DependencyProperty;
 
         /// <summary>
@@ -242,7 +270,9 @@ namespace Fluence.Wpf.Controls
                 typeof(ProgressRing),
                 new FrameworkPropertyMetadata(default(Thickness)));
 
-        /// <summary>Identifies the read-only <see cref="EllipseOffset"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the read-only <see cref="EllipseOffset"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty EllipseOffsetProperty = EllipseOffsetPropertyKey.DependencyProperty;
 
         /// <summary>

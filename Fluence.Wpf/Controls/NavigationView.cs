@@ -52,19 +52,29 @@ namespace Fluence.Wpf.Controls
     [TemplateVisualState(GroupName = "BackButtonStates", Name = "BackButtonCollapsed")]
     public class NavigationView : Selector
     {
-        /// <summary>Name of the back button template part.</summary>
+        /// <summary>
+        /// Name of the back button template part.
+        /// </summary>
         public const string PartBackButton = "PART_BackButton";
 
-        /// <summary>Name of the main content presenter template part.</summary>
+        /// <summary>
+        /// Name of the main content presenter template part.
+        /// </summary>
         public const string PartContentPresenter = "PART_ContentPresenter";
 
-        /// <summary>Name of the scroll viewer that hosts pane items.</summary>
+        /// <summary>
+        /// Name of the scroll viewer that hosts pane items.
+        /// </summary>
         public const string PartPaneItemsScrollViewer = "PART_PaneItemsScrollViewer";
 
-        /// <summary>Name of the pane collapse/expand toggle button.</summary>
+        /// <summary>
+        /// Name of the pane collapse/expand toggle button.
+        /// </summary>
         public const string PartPaneToggleButton = "PART_PaneToggleButton";
 
-        /// <summary>Name of the shared selection indicator element.</summary>
+        /// <summary>
+        /// Name of the shared selection indicator element.
+        /// </summary>
         public const string PartSelectionIndicator = "PART_SelectionIndicator";
 
         private const double NavigationItemOuterHorizontalMargin = 4.0;
@@ -77,7 +87,9 @@ namespace Fluence.Wpf.Controls
         private int _indicatorAnimationGeneration;
         private bool _indicatorPositioned;
 
-        /// <summary>Identifies the <see cref="PaneDisplayMode"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="PaneDisplayMode"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty PaneDisplayModeProperty = DependencyProperty.Register(
             "PaneDisplayMode",
             typeof(NavigationViewPaneDisplayMode),
@@ -87,63 +99,81 @@ namespace Fluence.Wpf.Controls
                 FrameworkPropertyMetadataOptions.AffectsMeasure,
                 OnPaneDisplayModeChanged));
 
-        /// <summary>Identifies the <see cref="SelectionFollowsFocus"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="SelectionFollowsFocus"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty SelectionFollowsFocusProperty = DependencyProperty.Register(
             "SelectionFollowsFocus",
             typeof(bool),
             typeof(NavigationView),
             new PropertyMetadata(false));
 
-        /// <summary>Identifies the <see cref="IsBackButtonVisible"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="IsBackButtonVisible"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty IsBackButtonVisibleProperty = DependencyProperty.Register(
             "IsBackButtonVisible",
             typeof(bool),
             typeof(NavigationView),
             new PropertyMetadata(false, OnIsBackButtonVisibleChanged));
 
-        /// <summary>Identifies the <see cref="IsBackEnabled"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="IsBackEnabled"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty IsBackEnabledProperty = DependencyProperty.Register(
             "IsBackEnabled",
             typeof(bool),
             typeof(NavigationView),
             new PropertyMetadata(true, OnIsBackEnabledChanged));
 
-        /// <summary>Identifies the <see cref="IsPaneToggleButtonVisible"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="IsPaneToggleButtonVisible"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty IsPaneToggleButtonVisibleProperty = DependencyProperty.Register(
             "IsPaneToggleButtonVisible",
             typeof(bool),
             typeof(NavigationView),
             new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsMeasure));
 
-        /// <summary>Identifies the <see cref="Header"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="Header"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty HeaderProperty = DependencyProperty.Register(
             "Header",
             typeof(object),
             typeof(NavigationView),
             new PropertyMetadata(null));
 
-        /// <summary>Identifies the <see cref="HeaderTemplate"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="HeaderTemplate"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty HeaderTemplateProperty = DependencyProperty.Register(
             "HeaderTemplate",
             typeof(DataTemplate),
             typeof(NavigationView),
             new PropertyMetadata(null));
 
-        /// <summary>Identifies the <see cref="PaneHeader"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="PaneHeader"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty PaneHeaderProperty = DependencyProperty.Register(
             "PaneHeader",
             typeof(object),
             typeof(NavigationView),
             new PropertyMetadata(null));
 
-        /// <summary>Identifies the <see cref="PaneFooter"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="PaneFooter"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty PaneFooterProperty = DependencyProperty.Register(
             "PaneFooter",
             typeof(object),
             typeof(NavigationView),
             new PropertyMetadata(null));
 
-        /// <summary>Identifies the <see cref="ContentBackground"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="ContentBackground"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty ContentBackgroundProperty = DependencyProperty.Register(
             "ContentBackground",
             typeof(Brush),
@@ -152,14 +182,18 @@ namespace Fluence.Wpf.Controls
                 null,
                 FrameworkPropertyMetadataOptions.AffectsRender));
 
-        /// <summary>Identifies the <see cref="IsPaneOpen"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="IsPaneOpen"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty IsPaneOpenProperty = DependencyProperty.Register(
             "IsPaneOpen",
             typeof(bool),
             typeof(NavigationView),
             new FrameworkPropertyMetadata(true, OnIsPaneOpenChanged));
 
-        /// <summary>Identifies the <see cref="Content"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="Content"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty ContentProperty = DependencyProperty.Register(
             "Content",
             typeof(object),
@@ -209,84 +243,108 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public event EventHandler? PaneClosed;
 
-        /// <summary>Gets or sets whether the pane is shown on the left or across the top.</summary>
+        /// <summary>
+        /// Gets or sets whether the pane is shown on the left or across the top.
+        /// </summary>
         public NavigationViewPaneDisplayMode PaneDisplayMode
         {
             get => (NavigationViewPaneDisplayMode)GetValue(PaneDisplayModeProperty);
             set => SetValue(PaneDisplayModeProperty, value);
         }
 
-        /// <summary>Gets or sets whether keyboard focus on an item selects it immediately.</summary>
+        /// <summary>
+        /// Gets or sets whether keyboard focus on an item selects it immediately.
+        /// </summary>
         public bool SelectionFollowsFocus
         {
             get => (bool)GetValue(SelectionFollowsFocusProperty);
             set => SetValue(SelectionFollowsFocusProperty, value);
         }
 
-        /// <summary>Gets or sets whether the back button is shown.</summary>
+        /// <summary>
+        /// Gets or sets whether the back button is shown.
+        /// </summary>
         public bool IsBackButtonVisible
         {
             get => (bool)GetValue(IsBackButtonVisibleProperty);
             set => SetValue(IsBackButtonVisibleProperty, value);
         }
 
-        /// <summary>Gets or sets whether the back button can be invoked.</summary>
+        /// <summary>
+        /// Gets or sets whether the back button can be invoked.
+        /// </summary>
         public bool IsBackEnabled
         {
             get => (bool)GetValue(IsBackEnabledProperty);
             set => SetValue(IsBackEnabledProperty, value);
         }
 
-        /// <summary>Gets or sets whether the pane collapse/expand toggle button is shown in left pane modes.</summary>
+        /// <summary>
+        /// Gets or sets whether the pane collapse/expand toggle button is shown in left pane modes.
+        /// </summary>
         public bool IsPaneToggleButtonVisible
         {
             get => (bool)GetValue(IsPaneToggleButtonVisibleProperty);
             set => SetValue(IsPaneToggleButtonVisibleProperty, value);
         }
 
-        /// <summary>Gets or sets header content displayed beside the navigation chrome.</summary>
+        /// <summary>
+        /// Gets or sets header content displayed beside the navigation chrome.
+        /// </summary>
         public object Header
         {
             get => GetValue(HeaderProperty);
             set => SetValue(HeaderProperty, value);
         }
 
-        /// <summary>Gets or sets the DataTemplate used to display the <see cref="Header"/>.</summary>
+        /// <summary>
+        /// Gets or sets the DataTemplate used to display the <see cref="Header"/>.
+        /// </summary>
         public DataTemplate HeaderTemplate
         {
             get => (DataTemplate)GetValue(HeaderTemplateProperty);
             set => SetValue(HeaderTemplateProperty, value);
         }
 
-        /// <summary>Gets or sets content at the start of the pane chrome (title area).</summary>
+        /// <summary>
+        /// Gets or sets content at the start of the pane chrome (title area).
+        /// </summary>
         public object PaneHeader
         {
             get => GetValue(PaneHeaderProperty);
             set => SetValue(PaneHeaderProperty, value);
         }
 
-        /// <summary>Gets or sets content at the end of the pane (footer).</summary>
+        /// <summary>
+        /// Gets or sets content at the end of the pane (footer).
+        /// </summary>
         public object PaneFooter
         {
             get => GetValue(PaneFooterProperty);
             set => SetValue(PaneFooterProperty, value);
         }
 
-        /// <summary>Gets or sets the background brush for the content area.</summary>
+        /// <summary>
+        /// Gets or sets the background brush for the content area.
+        /// </summary>
         public Brush ContentBackground
         {
             get => (Brush)GetValue(ContentBackgroundProperty);
             set => SetValue(ContentBackgroundProperty, value);
         }
 
-        /// <summary>Gets or sets whether the left pane is expanded.</summary>
+        /// <summary>
+        /// Gets or sets whether the left pane is expanded.
+        /// </summary>
         public bool IsPaneOpen
         {
             get => (bool)GetValue(IsPaneOpenProperty);
             set => SetValue(IsPaneOpenProperty, value);
         }
 
-        /// <summary>Gets or sets the content hosted in the main area.</summary>
+        /// <summary>
+        /// Gets or sets the content hosted in the main area.
+        /// </summary>
         public object Content
         {
             get => GetValue(ContentProperty);

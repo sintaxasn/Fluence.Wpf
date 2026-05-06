@@ -136,13 +136,19 @@ namespace Fluence.Wpf
         /// </summary>
         public static bool IsAccentColorOnTitleBarsEnabled => RegistryHelper.GetColorPrevalence();
 
-        /// <summary>Gets the active titlebar color (from DWM AccentColor or default gray).</summary>
+        /// <summary>
+        /// Gets the active titlebar color (from DWM AccentColor or default gray).
+        /// </summary>
         public static Color TitleBarActiveColor => _titleBarActiveColor;
 
-        /// <summary>Gets the inactive titlebar color (from DWM AccentColorInactive or default gray).</summary>
+        /// <summary>
+        /// Gets the inactive titlebar color (from DWM AccentColorInactive or default gray).
+        /// </summary>
         public static Color TitleBarInactiveColor => _titleBarInactiveColor;
 
-        /// <summary>Gets the window border color (titlebar active on Win11, blended on Win10).</summary>
+        /// <summary>
+        /// Gets the window border color (titlebar active on Win11, blended on Win10).
+        /// </summary>
         public static Color WindowBorderColor => _windowBorderColor;
 
         /// <summary>

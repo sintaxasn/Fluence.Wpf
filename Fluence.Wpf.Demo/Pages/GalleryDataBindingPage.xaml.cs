@@ -35,7 +35,9 @@ using System.Windows.Input;
 
 namespace Fluence.Wpf.Demo.Pages
 {
-    /// <summary>Gallery page demonstrating ObservableCollection binding and ListView SelectionMode variants.</summary>
+    /// <summary>
+    /// Gallery page demonstrating ObservableCollection binding and ListView SelectionMode variants.
+    /// </summary>
     public partial class GalleryDataBindingPage : UserControl
     {
 
@@ -400,7 +402,9 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
 private readonly ObservableCollection<DemoItem> _items = new ObservableCollection<DemoItem>();
         private readonly ObservableCollection<DemoItem> _templateItems = new ObservableCollection<DemoItem>();
 
-        /// <summary>Initializes a new instance of <see cref="GalleryDataBindingPage"/>.</summary>
+        /// <summary>
+        /// Initializes a new instance of <see cref="GalleryDataBindingPage"/>.
+        /// </summary>
         public GalleryDataBindingPage()
         {
             InitializeComponent();
@@ -545,13 +549,19 @@ private readonly ObservableCollection<DemoItem> _items = new ObservableCollectio
         }
     }
 
-    /// <summary>Simple view-model item for the bound list demo.</summary>
+    /// <summary>
+    /// Simple view-model item for the bound list demo.
+    /// </summary>
     public sealed class DemoItem
     {
-        /// <summary>Gets or sets the display name.</summary>
+        /// <summary>
+        /// Gets or sets the display name.
+        /// </summary>
         public string Name { get; set; }
 
-        /// <summary>Gets or sets the time the item was added (formatted string).</summary>
+        /// <summary>
+        /// Gets or sets the time the item was added (formatted string).
+        /// </summary>
         public string AddedAt { get; set; }
     }
 }

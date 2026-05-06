@@ -49,7 +49,9 @@ namespace Fluence.Wpf.Controls
                 new FrameworkPropertyMetadata(typeof(InfoBadge)));
         }
 
-        /// <summary>Identifies the <see cref="Value"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="Value"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty ValueProperty =
             DependencyProperty.Register(
                 nameof(Value),
@@ -66,7 +68,9 @@ namespace Fluence.Wpf.Controls
             set => SetValue(ValueProperty, value);
         }
 
-        /// <summary>Identifies the <see cref="BadgeStyle"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="BadgeStyle"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty BadgeStyleProperty =
             DependencyProperty.Register(
                 nameof(BadgeStyle),
@@ -83,7 +87,9 @@ namespace Fluence.Wpf.Controls
             set => SetValue(BadgeStyleProperty, value);
         }
 
-        /// <summary>Identifies the <see cref="IconSource"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="IconSource"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty IconSourceProperty =
             DependencyProperty.Register(
                 nameof(IconSource),

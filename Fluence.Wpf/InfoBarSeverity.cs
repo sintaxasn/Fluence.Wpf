@@ -33,13 +33,21 @@ namespace Fluence.Wpf
     /// </summary>
     public enum InfoBarSeverity
     {
-        /// <summary>Informational message requiring attention.</summary>
+        /// <summary>
+        /// Informational message requiring attention.
+        /// </summary>
         Informational,
-        /// <summary>Operation completed successfully.</summary>
+        /// <summary>
+        /// Operation completed successfully.
+        /// </summary>
         Success,
-        /// <summary>A non-critical warning condition.</summary>
+        /// <summary>
+        /// A non-critical warning condition.
+        /// </summary>
         Warning,
-        /// <summary>A critical error condition.</summary>
+        /// <summary>
+        /// A critical error condition.
+        /// </summary>
         Error
     }
 }

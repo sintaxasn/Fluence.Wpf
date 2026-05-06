@@ -46,7 +46,9 @@ namespace Fluence.Wpf.Controls
             typeof(NavigationViewItem),
             new FrameworkPropertyMetadata(false));
 
-        /// <summary>Identifies the read-only <see cref="IsPressed"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the read-only <see cref="IsPressed"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty IsPressedProperty = IsPressedPropertyKey.DependencyProperty;
 
         /// <summary>
@@ -111,7 +113,9 @@ namespace Fluence.Wpf.Controls
             set => SetValue(IsChildItemProperty, value);
         }
 
-        /// <summary>Gets whether the item is currently being pressed by a pointer.</summary>
+        /// <summary>
+        /// Gets whether the item is currently being pressed by a pointer.
+        /// </summary>
         public bool IsPressed => (bool)GetValue(IsPressedProperty);
 
         /// <inheritdoc />

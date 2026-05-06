@@ -84,7 +84,9 @@ namespace Fluence.Wpf.Demo.Mvvm.ViewModels
         // Derived / computed properties
         // ---------------------------------------------------------------
 
-        /// <summary>Human-readable task completion summary shown in the footer.</summary>
+        /// <summary>
+        /// Human-readable task completion summary shown in the footer.
+        /// </summary>
         public string StatusText
         {
             get
@@ -95,7 +97,9 @@ namespace Fluence.Wpf.Demo.Mvvm.ViewModels
             }
         }
 
-        /// <summary>Progress bar value 0-100 based on completion ratio.</summary>
+        /// <summary>
+        /// Progress bar value 0-100 based on completion ratio.
+        /// </summary>
         public double ProgressValue =>
             _allTasks.Count == 0
                 ? 0
@@ -140,7 +144,9 @@ namespace Fluence.Wpf.Demo.Mvvm.ViewModels
             Refresh();
         }
 
-        /// <summary>Removes all completed tasks at once.</summary>
+        /// <summary>
+        /// Removes all completed tasks at once.
+        /// </summary>
         [RelayCommand]
         private void ClearCompleted()
         {

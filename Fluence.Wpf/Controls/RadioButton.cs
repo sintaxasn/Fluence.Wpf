@@ -30,7 +30,9 @@ using System.Windows;
 
 namespace Fluence.Wpf.Controls
 {
-    /// <summary>A Fluent Design styled radio button with optional description text.</summary>
+    /// <summary>
+    /// A Fluent Design styled radio button with optional description text.
+    /// </summary>
     /// <remarks>Inspired by WInUI's RadioButton.</remarks>
     public class RadioButton : System.Windows.Controls.RadioButton
     {

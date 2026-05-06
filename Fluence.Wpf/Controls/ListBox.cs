@@ -35,7 +35,9 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     public class ListBox : System.Windows.Controls.ListBox
     {
-        /// <summary>Identifies the <see cref="CornerRadius"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="CornerRadius"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty CornerRadiusProperty =
             DependencyProperty.Register(nameof(CornerRadius), typeof(CornerRadius), typeof(ListBox),
                 new FrameworkPropertyMetadata(new CornerRadius(4)));
@@ -46,7 +48,9 @@ namespace Fluence.Wpf.Controls
                 new FrameworkPropertyMetadata(typeof(ListBox)));
         }
 
-        /// <summary>Gets or sets the corner radius of the ListBox border.</summary>
+        /// <summary>
+        /// Gets or sets the corner radius of the ListBox border.
+        /// </summary>
         public CornerRadius CornerRadius
         {
             get => (CornerRadius)GetValue(CornerRadiusProperty);

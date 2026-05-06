@@ -32,7 +32,9 @@ using Fluence.Wpf.Automation;
 
 namespace Fluence.Wpf.Controls
 {
-    /// <summary>A toggle switch control with On/Off content.</summary>
+    /// <summary>
+    /// A toggle switch control with On/Off content.
+    /// </summary>
     /// <remarks>Inspired by WInUI's ToggleSwitch.</remarks>
     public class ToggleSwitch : System.Windows.Controls.Primitives.ToggleButton
     {

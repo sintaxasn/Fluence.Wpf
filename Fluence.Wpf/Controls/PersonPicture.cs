@@ -96,7 +96,9 @@ namespace Fluence.Wpf.Controls
         // DisplayName DP
         // -----------------------------------------------------------------------
 
-        /// <summary>Identifies the <see cref="DisplayName"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="DisplayName"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty DisplayNameProperty =
             DependencyProperty.Register(
                 nameof(DisplayName),
@@ -123,7 +125,9 @@ namespace Fluence.Wpf.Controls
         // Initials DP
         // -----------------------------------------------------------------------
 
-        /// <summary>Identifies the <see cref="Initials"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="Initials"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty InitialsProperty =
             DependencyProperty.Register(
                 nameof(Initials),
@@ -150,7 +154,9 @@ namespace Fluence.Wpf.Controls
         // ProfilePicture DP
         // -----------------------------------------------------------------------
 
-        /// <summary>Identifies the <see cref="ProfilePicture"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="ProfilePicture"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty ProfilePictureProperty =
             DependencyProperty.Register(
                 nameof(ProfilePicture),
@@ -158,7 +164,9 @@ namespace Fluence.Wpf.Controls
                 typeof(PersonPicture),
                 new FrameworkPropertyMetadata(null, OnProfilePictureChanged));
 
-        /// <summary>Gets or sets the profile photo image source.</summary>
+        /// <summary>
+        /// Gets or sets the profile photo image source.
+        /// </summary>
         public ImageSource ProfilePicture
         {
             get => (ImageSource)GetValue(ProfilePictureProperty);
@@ -174,7 +182,9 @@ namespace Fluence.Wpf.Controls
         // IsGroup DP
         // -----------------------------------------------------------------------
 
-        /// <summary>Identifies the <see cref="IsGroup"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="IsGroup"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty IsGroupProperty =
             DependencyProperty.Register(
                 nameof(IsGroup),
@@ -201,7 +211,9 @@ namespace Fluence.Wpf.Controls
         // BadgeNumber DP
         // -----------------------------------------------------------------------
 
-        /// <summary>Identifies the <see cref="BadgeNumber"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="BadgeNumber"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty BadgeNumberProperty =
             DependencyProperty.Register(
                 nameof(BadgeNumber),
@@ -223,7 +235,9 @@ namespace Fluence.Wpf.Controls
         // BadgeGlyph DP
         // -----------------------------------------------------------------------
 
-        /// <summary>Identifies the <see cref="BadgeGlyph"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="BadgeGlyph"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty BadgeGlyphProperty =
             DependencyProperty.Register(
                 nameof(BadgeGlyph),

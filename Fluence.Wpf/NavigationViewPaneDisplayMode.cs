@@ -33,10 +33,14 @@ namespace Fluence.Wpf
     /// </summary>
     public enum NavigationViewPaneDisplayMode
     {
-        /// <summary>A vertical pane on the left side of the control.</summary>
+        /// <summary>
+        /// A vertical pane on the left side of the control.
+        /// </summary>
         Left,
 
-        /// <summary>A horizontal pane across the top of the control.</summary>
+        /// <summary>
+        /// A horizontal pane across the top of the control.
+        /// </summary>
         Top,
 
         /// <summary>

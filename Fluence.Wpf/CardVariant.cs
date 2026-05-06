@@ -33,13 +33,21 @@ namespace Fluence.Wpf
     /// </summary>
     public enum CardVariant
     {
-        /// <summary>Default card elevation and stroke.</summary>
+        /// <summary>
+        /// Default card elevation and stroke.
+        /// </summary>
         Default,
-        /// <summary>Outlined card with transparent fill.</summary>
+        /// <summary>
+        /// Outlined card with transparent fill.
+        /// </summary>
         Outlined,
-        /// <summary>Solid filled card surface.</summary>
+        /// <summary>
+        /// Solid filled card surface.
+        /// </summary>
         Filled,
-        /// <summary>Low-contrast subtle card surface.</summary>
+        /// <summary>
+        /// Low-contrast subtle card surface.
+        /// </summary>
         Subtle
     }
 }

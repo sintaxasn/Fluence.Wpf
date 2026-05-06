@@ -36,7 +36,9 @@ namespace Fluence.Wpf.Demo.Mvvm.ViewModels
     /// </summary>
     public partial class TaskItemViewModel : ObservableObject
     {
-        /// <summary>The task description text.</summary>
+        /// <summary>
+        /// The task description text.
+        /// </summary>
         [ObservableProperty]
         private string _title;
 
@@ -47,7 +49,9 @@ namespace Fluence.Wpf.Demo.Mvvm.ViewModels
         [ObservableProperty]
         private bool _isCompleted;
 
-        /// <summary>Initializes a new task with the given title.</summary>
+        /// <summary>
+        /// Initializes a new task with the given title.
+        /// </summary>
         public TaskItemViewModel(string title)
         {
             _title = title;

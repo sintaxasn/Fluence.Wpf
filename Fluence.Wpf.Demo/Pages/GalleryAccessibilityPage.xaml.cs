@@ -33,7 +33,9 @@ using System.Windows.Media;
 
 namespace Fluence.Wpf.Demo.Pages
 {
-    /// <summary>Gallery page demonstrating accessibility features: focus rings, tab order, HC brush mapping, and RTL layout.</summary>
+    /// <summary>
+    /// Gallery page demonstrating accessibility features: focus rings, tab order, HC brush mapping, and RTL layout.
+    /// </summary>
     public partial class GalleryAccessibilityPage : UserControl
     {
 
@@ -436,7 +438,9 @@ namespace Fluence.Wpf.Demo.Pages.Accessibility
             new string[] { "SolidBackgroundFillColorBaseBrush",   "Window"        },
         };
 
-        /// <summary>Initializes a new instance of <see cref="GalleryAccessibilityPage"/>.</summary>
+        /// <summary>
+        /// Initializes a new instance of <see cref="GalleryAccessibilityPage"/>.
+        /// </summary>
         public GalleryAccessibilityPage()
         {
             InitializeComponent();
@@ -483,16 +487,24 @@ namespace Fluence.Wpf.Demo.Pages.Accessibility
         }
     }
 
-    /// <summary>Row model for the High Contrast brush mapping table.</summary>
+    /// <summary>
+    /// Row model for the High Contrast brush mapping table.
+    /// </summary>
     public sealed class HcBrushEntry
     {
-        /// <summary>Gets or sets the Fluence resource key (e.g. <c>TextFillColorPrimaryBrush</c>).</summary>
+        /// <summary>
+        /// Gets or sets the Fluence resource key (e.g. <c>TextFillColorPrimaryBrush</c>).
+        /// </summary>
         public string Key { get; set; }
 
-        /// <summary>Gets or sets the Windows HC system colour name (e.g. <c>WindowText</c>).</summary>
+        /// <summary>
+        /// Gets or sets the Windows HC system colour name (e.g. <c>WindowText</c>).
+        /// </summary>
         public string HcMapping { get; set; }
 
-        /// <summary>Gets or sets the live brush resolved from the current theme dictionary.</summary>
+        /// <summary>
+        /// Gets or sets the live brush resolved from the current theme dictionary.
+        /// </summary>
         public Brush Brush { get; set; }
     }
 }

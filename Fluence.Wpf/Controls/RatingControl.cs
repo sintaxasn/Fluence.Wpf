@@ -70,7 +70,9 @@ namespace Fluence.Wpf.Controls
         // Value DP
         // -----------------------------------------------------------------------
 
-        /// <summary>Identifies the <see cref="Value"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="Value"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty ValueProperty =
             DependencyProperty.Register(
                 nameof(Value),
@@ -82,7 +84,9 @@ namespace Fluence.Wpf.Controls
                     OnValueChanged,
                     CoerceValue));
 
-        /// <summary>Gets or sets the current rating value (0 to <see cref="MaxRating"/>).</summary>
+        /// <summary>
+        /// Gets or sets the current rating value (0 to <see cref="MaxRating"/>).
+        /// </summary>
         public double Value
         {
             get => (double)GetValue(ValueProperty);
@@ -104,7 +108,9 @@ namespace Fluence.Wpf.Controls
         // MaxRating DP
         // -----------------------------------------------------------------------
 
-        /// <summary>Identifies the <see cref="MaxRating"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="MaxRating"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty MaxRatingProperty =
             DependencyProperty.Register(
                 nameof(MaxRating),
@@ -112,7 +118,9 @@ namespace Fluence.Wpf.Controls
                 typeof(RatingControl),
                 new FrameworkPropertyMetadata(5, OnMaxRatingChanged));
 
-        /// <summary>Gets or sets the maximum number of stars displayed. Default is 5.</summary>
+        /// <summary>
+        /// Gets or sets the maximum number of stars displayed. Default is 5.
+        /// </summary>
         public int MaxRating
         {
             get => (int)GetValue(MaxRatingProperty);
@@ -131,7 +139,9 @@ namespace Fluence.Wpf.Controls
         // IsReadOnly DP
         // -----------------------------------------------------------------------
 
-        /// <summary>Identifies the <see cref="IsReadOnly"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="IsReadOnly"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty IsReadOnlyProperty =
             DependencyProperty.Register(
                 nameof(IsReadOnly),
@@ -158,7 +168,9 @@ namespace Fluence.Wpf.Controls
         // Caption DP
         // -----------------------------------------------------------------------
 
-        /// <summary>Identifies the <see cref="Caption"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="Caption"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty CaptionProperty =
             DependencyProperty.Register(
                 nameof(Caption),
@@ -166,7 +178,9 @@ namespace Fluence.Wpf.Controls
                 typeof(RatingControl),
                 new FrameworkPropertyMetadata(string.Empty, OnCaptionChanged));
 
-        /// <summary>Gets or sets the optional caption text shown after the stars.</summary>
+        /// <summary>
+        /// Gets or sets the optional caption text shown after the stars.
+        /// </summary>
         public string Caption
         {
             get => (string)GetValue(CaptionProperty);
