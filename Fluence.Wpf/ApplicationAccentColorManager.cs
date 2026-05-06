@@ -311,21 +311,12 @@ namespace Fluence.Wpf
 
         private static Color GetAccentFromDwm()
         {
-            try
-            {
-                NativeMethods.DwmGetColorizationParameters(out DWMCOLORIZATIONPARAMS parameters);
-
-                uint color = parameters.clrColor;
-                byte r = (byte)((color >> 16) & 0xFF);
-                byte g = (byte)((color >> 8) & 0xFF);
-                byte b = (byte)(color & 0xFF);
-
-                return Color.FromRgb(r, g, b);
-            }
-            catch
-            {
-                return RegistryHelper.GetAccentColor();
-            }
+            NativeMethods.DwmGetColorizationParameters(out DWMCOLORIZATIONPARAMS parameters);
+            uint color = parameters.clrColor;
+            byte r = (byte)((color >> 16) & 0xFF);
+            byte g = (byte)((color >> 8) & 0xFF);
+            byte b = (byte)(color & 0xFF);
+            return Color.FromRgb(r, g, b);
         }
 
         private static void UpdateResources()
