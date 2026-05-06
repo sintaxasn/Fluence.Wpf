@@ -46,21 +46,21 @@ namespace Fluence.Wpf.Automation
             object selected = NavigationView.SelectedItem;
             if (selected == null)
             {
-                return System.Array.Empty<IRawElementProviderSimple>();
+                return [];
             }
 
             if (NavigationView.ItemContainerGenerator.ContainerFromItem(selected) is not NavigationViewItem container)
             {
-                return System.Array.Empty<IRawElementProviderSimple>();
+                return [];
             }
 
             AutomationPeer peer = CreatePeerForElement(container);
             if (peer == null)
             {
-                return System.Array.Empty<IRawElementProviderSimple>();
+                return [];
             }
 
-            return new[] { ProviderFromPeer(peer) };
+            return [ProviderFromPeer(peer)];
         }
     }
 }

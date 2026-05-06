@@ -263,7 +263,7 @@ namespace Fluence.Wpf
 
             if (resolvedTheme == ApplicationTheme.HighContrast)
             {
-                _promotedHighContrastBrushKeys = new System.Collections.Generic.List<object>();
+                _promotedHighContrastBrushKeys = [];
 
                 foreach (object? key in themeDict.Keys)
                 {

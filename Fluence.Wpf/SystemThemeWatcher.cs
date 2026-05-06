@@ -44,7 +44,7 @@ namespace Fluence.Wpf
     /// </remarks>
     public static class SystemThemeWatcher
     {
-        private static readonly List<WatchedWindow> _watchedWindows = new();
+        private static readonly List<WatchedWindow> _watchedWindows = [];
         private static readonly object _lock = new();
         private static long _lastUpdateTick;
         private const long DebounceIntervalTicks = 1000000;

@@ -73,7 +73,7 @@ namespace Fluence.Wpf.Controls
         // Segoe Fluent Icons glyphs for placeholder states.
         private const string GlyphContact = "\uE77B";
         private const string GlyphPeople = "\uE716";
-        private static readonly char[] InitialsSeparators = { ' ', '\t' };
+        private static readonly char[] InitialsSeparators = [' ', '\t'];
 
         private WpfTextBlock _initialsText;
         private Ellipse _imageEllipse;
