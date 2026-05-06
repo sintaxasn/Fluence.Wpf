@@ -47,7 +47,7 @@ namespace Fluence.Wpf
         private static readonly List<WatchedWindow> _watchedWindows = [];
         private static readonly object _lock = new();
         private static long _lastUpdateTick;
-        private const long DebounceIntervalTicks = 1000000;
+        private const long DebounceIntervalTicks = 1_000_000;
 
         /// <summary>
         /// Begins watching the specified window for system theme and accent changes.

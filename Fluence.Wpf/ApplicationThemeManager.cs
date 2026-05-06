@@ -136,7 +136,7 @@ namespace Fluence.Wpf
         /// <summary>Re-applies with <see cref="ApplicationTheme.Auto"/> to pick up system changes.</summary>
         public static void ApplySystemTheme()
         {
-            Apply(ApplicationTheme.Auto, CurrentBackdrop, true);
+            Apply(ApplicationTheme.Auto, CurrentBackdrop);
         }
 
         internal static ApplicationTheme ResolveTheme(ApplicationTheme theme)

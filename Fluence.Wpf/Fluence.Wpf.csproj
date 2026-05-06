@@ -9,7 +9,7 @@
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <WarningLevel>4</WarningLevel>
-    <NoWarn>$(NoWarn);VSTHRD001</NoWarn>
+    <NoWarn>$(NoWarn);IDE0330;VSTHRD001</NoWarn>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Fluence.Wpf.xml</DocumentationFile>
     <Description>Windows 11 Fluent Design controls and theming for WPF (.NET Framework 4.7.2 and .NET 10)</Description>
     <Authors>Dan Cunningham</Authors>

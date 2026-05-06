@@ -83,7 +83,7 @@ namespace Fluence.Wpf.Controls
 
             public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
             {
-                throw new NotImplementedException();
+                throw new NotSupportedException();
             }
         }
 
@@ -482,6 +482,7 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Initializes a new instance of the <see cref="FluenceWindow"/> class, loads the default style, and wires theme and accent updates.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1075:URIs should not be hardcoded", Justification = "This is an internal resource URI.")]
         public FluenceWindow()
         {
             ResourceDictionary resourceDictionary = new()
@@ -496,7 +497,7 @@ namespace Fluence.Wpf.Controls
             _ = CommandBindings.Add(new CommandBinding(SystemCommands.RestoreWindowCommand, OnRestoreWindow, OnCanResizeWindow));
 
             _windowChrome = WindowPolicy.CreateWindowChrome(TitleBarHeight);
-            WindowChrome.SetWindowChrome(this, _windowChrome);
+            SetValue(WindowChrome.WindowChromeProperty, _windowChrome);
             UpdateWindowChrome();
             UpdateShellMetrics();
             ApplicationThemeManager.Changed += OnThemeChanged;
