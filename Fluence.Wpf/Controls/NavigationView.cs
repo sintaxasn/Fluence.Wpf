@@ -771,8 +771,9 @@ namespace Fluence.Wpf.Controls
                         Point itemPos = transform.Transform(new Point(0, 0));
                         x = direction > 0 ? itemPos.X + previousItem.ActualWidth : itemPos.X - length;
                     }
-                    catch
+                    catch (Exception ex) when (ex.Message is not null)
                     {
+                        return new Point(x, fromPosition.Y);
                     }
                 }
 
@@ -788,8 +789,9 @@ namespace Fluence.Wpf.Controls
                     Point itemPos = transform.Transform(new Point(0, 0));
                     y = direction > 0 ? itemPos.Y + previousItem.ActualHeight : itemPos.Y - length;
                 }
-                catch
+                catch (Exception ex) when (ex.Message is not null)
                 {
+                    return new Point(fromPosition.X, y);
                 }
             }
 
@@ -814,8 +816,9 @@ namespace Fluence.Wpf.Controls
                         Point itemPos = transform.Transform(new Point(0, 0));
                         x = direction > 0 ? itemPos.X - length : itemPos.X + targetItem.ActualWidth;
                     }
-                    catch
+                    catch (Exception ex) when (ex.Message is not null)
                     {
+                        return new Point(x, toPosition.Y);
                     }
                 }
 
@@ -831,8 +834,9 @@ namespace Fluence.Wpf.Controls
                     Point itemPos = transform.Transform(new Point(0, 0));
                     y = direction > 0 ? itemPos.Y - length : itemPos.Y + targetItem.ActualHeight;
                 }
-                catch
+                catch (Exception ex) when (ex.Message is not null)
                 {
+                    return new Point(toPosition.X, y);
                 }
             }
 
