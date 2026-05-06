@@ -127,18 +127,12 @@ namespace Fluence.Wpf.Controls
         /// <inheritdoc />
         public override void OnApplyTemplate()
         {
-            if (_mainContentPresenter != null)
-            {
-                _mainContentPresenter.SizeChanged -= OnMainContentPresenterSizeChanged;
-            }
+            _mainContentPresenter?.SizeChanged -= OnMainContentPresenterSizeChanged;
 
             base.OnApplyTemplate();
 
             _mainContentPresenter = GetTemplateChild("MainContentPresenter") as ContentPresenter;
-            if (_mainContentPresenter != null)
-            {
-                _mainContentPresenter.SizeChanged += OnMainContentPresenterSizeChanged;
-            }
+            _mainContentPresenter?.SizeChanged += OnMainContentPresenterSizeChanged;
 
             UpdateTruncationToolTip();
         }

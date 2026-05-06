@@ -297,10 +297,7 @@ namespace Fluence.Wpf.Controls
             _secondaryButton = GetTemplateChild(PART_SecondaryButton) as System.Windows.Controls.Primitives.ToggleButton;
             _popup = GetTemplateChild(PART_Popup) as Popup;
 
-            if (_primaryButton != null)
-            {
-                _primaryButton.Click += OnPrimaryButtonClick;
-            }
+            _primaryButton?.Click += OnPrimaryButtonClick;
 
             if (_secondaryButton != null)
             {
@@ -346,20 +343,14 @@ namespace Fluence.Wpf.Controls
 
         private void OnSecondaryButtonChecked(object sender, RoutedEventArgs e)
         {
-            if (_popup != null)
-            {
-                _popup.IsOpen = true;
-            }
+            _popup?.IsOpen = true;
 
             SetValue(IsFlyoutOpenPropertyKey, true);
         }
 
         private void OnSecondaryButtonUnchecked(object sender, RoutedEventArgs e)
         {
-            if (_popup != null)
-            {
-                _popup.IsOpen = false;
-            }
+            _popup?.IsOpen = false;
 
             SetValue(IsFlyoutOpenPropertyKey, false);
         }
@@ -379,11 +370,8 @@ namespace Fluence.Wpf.Controls
 
         private void DetachPrimaryHandler()
         {
-            if (_primaryButton != null)
-            {
-                _primaryButton.Click -= OnPrimaryButtonClick;
-                _primaryButton = null;
-            }
+            _primaryButton?.Click -= OnPrimaryButtonClick;
+            _primaryButton = null;
         }
 
         private void DetachSecondaryHandler()
@@ -398,11 +386,8 @@ namespace Fluence.Wpf.Controls
 
         private void DetachPopupHandler()
         {
-            if (_popup != null)
-            {
-                _popup.Closed -= OnPopupClosed;
-                _popup = null;
-            }
+            _popup?.Closed -= OnPopupClosed;
+            _popup = null;
         }
     }
 }

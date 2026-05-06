@@ -203,10 +203,7 @@ namespace Fluence.Wpf.Controls
             if (lastFill && count > 0)
             {
                 UIElement child = children[count - 1];
-                if (child != null)
-                {
-                    child.Arrange(remaining);
-                }
+                child?.Arrange(remaining);
             }
 
             return finalSize;

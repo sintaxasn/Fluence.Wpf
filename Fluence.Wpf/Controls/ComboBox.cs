@@ -230,10 +230,7 @@ namespace Fluence.Wpf.Controls
         {
             base.OnDropDownClosed(e);
             IsDropDownOpenedUpward = false;
-            if (_popup != null)
-            {
-                _popup.Placement = PlacementMode.Bottom;
-            }
+            _popup?.Placement = PlacementMode.Bottom;
         }
 
         /// <inheritdoc />
@@ -307,10 +304,7 @@ namespace Fluence.Wpf.Controls
             catch
             {
                 IsDropDownOpenedUpward = false;
-                if (_popup != null)
-                {
-                    _popup.Placement = PlacementMode.Bottom;
-                }
+                _popup?.Placement = PlacementMode.Bottom;
             }
         }
 

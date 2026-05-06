@@ -229,30 +229,18 @@ namespace Fluence.Wpf.Controls
         /// <inheritdoc />
         public override void OnApplyTemplate()
         {
-            if (_backButton != null)
-            {
-                _backButton.Click -= OnBackButtonClick;
-            }
+            _backButton?.Click -= OnBackButtonClick;
 
-            if (_paneToggleButton != null)
-            {
-                _paneToggleButton.Click -= OnPaneToggleButtonClick;
-            }
+            _paneToggleButton?.Click -= OnPaneToggleButtonClick;
 
             base.OnApplyTemplate();
 
             _backButton = GetTemplateChild(PART_BackButton) as WpfButton;
             _paneToggleButton = GetTemplateChild(PART_PaneToggleButton) as WpfButton;
 
-            if (_backButton != null)
-            {
-                _backButton.Click += OnBackButtonClick;
-            }
+            _backButton?.Click += OnBackButtonClick;
 
-            if (_paneToggleButton != null)
-            {
-                _paneToggleButton.Click += OnPaneToggleButtonClick;
-            }
+            _paneToggleButton?.Click += OnPaneToggleButtonClick;
 
             UpdateBackButtonCommandState();
             UpdatePaneToggleButtonCommandState();
@@ -359,18 +347,12 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateBackButtonCommandState()
         {
-            if (_backButton != null)
-            {
-                _backButton.IsEnabled = IsEnabled && CanExecuteCommand(BackCommand, BackCommandParameter);
-            }
+            _backButton?.IsEnabled = IsEnabled && CanExecuteCommand(BackCommand, BackCommandParameter);
         }
 
         private void UpdatePaneToggleButtonCommandState()
         {
-            if (_paneToggleButton != null)
-            {
-                _paneToggleButton.IsEnabled = IsEnabled && CanExecuteCommand(PaneToggleCommand, PaneToggleCommandParameter);
-            }
+            _paneToggleButton?.IsEnabled = IsEnabled && CanExecuteCommand(PaneToggleCommand, PaneToggleCommandParameter);
         }
 
         private static bool TryExecuteCommand(ICommand command, object parameter)
@@ -396,18 +378,12 @@ namespace Fluence.Wpf.Controls
 
         private static void SubscribeCommand(ICommand command, EventHandler handler)
         {
-            if (command != null)
-            {
-                command.CanExecuteChanged += handler;
-            }
+            command?.CanExecuteChanged += handler;
         }
 
         private static void UnsubscribeCommand(ICommand command, EventHandler handler)
         {
-            if (command != null)
-            {
-                command.CanExecuteChanged -= handler;
-            }
+            command?.CanExecuteChanged -= handler;
         }
     }
 }

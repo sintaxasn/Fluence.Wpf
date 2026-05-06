@@ -138,11 +138,8 @@ namespace Fluence.Wpf.Controls
         /// <inheritdoc />
         public override void OnApplyTemplate()
         {
-            if (_popup != null)
-            {
-                _popup.Closed -= OnPopupClosed;
-                _popup = null;
-            }
+            _popup?.Closed -= OnPopupClosed;
+            _popup = null;
 
             base.OnApplyTemplate();
 

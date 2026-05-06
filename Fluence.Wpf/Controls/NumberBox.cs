@@ -325,10 +325,7 @@ namespace Fluence.Wpf.Controls
         public bool TryParseText()
         {
             string s = Text;
-            if (s == null)
-            {
-                s = string.Empty;
-            }
+            s ??= string.Empty;
 
             double parsed;
             if (AcceptsExpression)
@@ -412,15 +409,9 @@ namespace Fluence.Wpf.Controls
                 _partTextBox.LostKeyboardFocus -= OnPartTextBoxLostKeyboardFocus;
             }
 
-            if (_partUpButton != null)
-            {
-                _partUpButton.Click -= OnPartUpButtonClick;
-            }
+            _partUpButton?.Click -= OnPartUpButtonClick;
 
-            if (_partDownButton != null)
-            {
-                _partDownButton.Click -= OnPartDownButtonClick;
-            }
+            _partDownButton?.Click -= OnPartDownButtonClick;
 
             _partTextBox = GetTemplateChild(PartTextBox) as System.Windows.Controls.TextBox;
             _partUpButton = GetTemplateChild(PartUpButton) as System.Windows.Controls.Primitives.RepeatButton;
@@ -432,15 +423,9 @@ namespace Fluence.Wpf.Controls
                 _partTextBox.LostKeyboardFocus += OnPartTextBoxLostKeyboardFocus;
             }
 
-            if (_partUpButton != null)
-            {
-                _partUpButton.Click += OnPartUpButtonClick;
-            }
+            _partUpButton?.Click += OnPartUpButtonClick;
 
-            if (_partDownButton != null)
-            {
-                _partDownButton.Click += OnPartDownButtonClick;
-            }
+            _partDownButton?.Click += OnPartDownButtonClick;
 
             UpdateTextFromValue();
         }
@@ -482,7 +467,7 @@ namespace Fluence.Wpf.Controls
 
             if (box._partTextBox != null && !string.Equals(box._partTextBox.Text, box.Text, StringComparison.Ordinal))
             {
-                box._partTextBox.Text = box.Text != null ? box.Text : string.Empty;
+                box._partTextBox.Text = box.Text ?? string.Empty;
             }
         }
 

@@ -191,45 +191,24 @@ namespace Fluence.Wpf.Controls
             // Templates can be replaced at runtime. Detach old part handlers before
             // reading the new template parts so repeated ApplyTemplate calls do not
             // accumulate event subscriptions.
-            if (_addTabButton != null)
-            {
-                _addTabButton.Click -= OnAddTabButtonClick;
-            }
+            _addTabButton?.Click -= OnAddTabButtonClick;
 
-            if (_scrollBackButton != null)
-            {
-                _scrollBackButton.Click -= OnScrollBackClick;
-            }
+            _scrollBackButton?.Click -= OnScrollBackClick;
 
-            if (_scrollForwardButton != null)
-            {
-                _scrollForwardButton.Click -= OnScrollForwardClick;
-            }
+            _scrollForwardButton?.Click -= OnScrollForwardClick;
 
-            if (_tabContentScroller != null)
-            {
-                _tabContentScroller.ScrollChanged -= OnTabScrollChanged;
-            }
+            _tabContentScroller?.ScrollChanged -= OnTabScrollChanged;
 
             _addTabButton = GetTemplateChild(PartAddTabButton) as ButtonBase;
             _scrollBackButton = GetTemplateChild(PartScrollBackButton) as RepeatButton;
             _scrollForwardButton = GetTemplateChild(PartScrollForwardButton) as RepeatButton;
             _tabContentScroller = GetTemplateChild(PartTabContentScroller) as ScrollViewer;
 
-            if (_addTabButton != null)
-            {
-                _addTabButton.Click += OnAddTabButtonClick;
-            }
+            _addTabButton?.Click += OnAddTabButtonClick;
 
-            if (_scrollBackButton != null)
-            {
-                _scrollBackButton.Click += OnScrollBackClick;
-            }
+            _scrollBackButton?.Click += OnScrollBackClick;
 
-            if (_scrollForwardButton != null)
-            {
-                _scrollForwardButton.Click += OnScrollForwardClick;
-            }
+            _scrollForwardButton?.Click += OnScrollForwardClick;
 
             if (_tabContentScroller != null)
             {
@@ -284,19 +263,13 @@ namespace Fluence.Wpf.Controls
             bool canScrollBack = _tabContentScroller.HorizontalOffset > 0;
             bool canScrollForward = _tabContentScroller.HorizontalOffset < _tabContentScroller.ScrollableWidth;
 
-            if (_scrollBackButton != null)
-            {
-                _scrollBackButton.Visibility = (hasOverflow && canScrollBack)
+            _scrollBackButton?.Visibility = (hasOverflow && canScrollBack)
                     ? Visibility.Visible
                     : Visibility.Collapsed;
-            }
 
-            if (_scrollForwardButton != null)
-            {
-                _scrollForwardButton.Visibility = (hasOverflow && canScrollForward)
+            _scrollForwardButton?.Visibility = (hasOverflow && canScrollForward)
                     ? Visibility.Visible
                     : Visibility.Collapsed;
-            }
         }
 
         private void OnChildCloseRequested(object sender, RoutedEventArgs e)

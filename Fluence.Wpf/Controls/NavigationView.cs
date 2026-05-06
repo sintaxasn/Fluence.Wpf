@@ -298,29 +298,17 @@ namespace Fluence.Wpf.Controls
         /// <inheritdoc />
         public override void OnApplyTemplate()
         {
-            if (_backButton != null)
-            {
-                _backButton.Click -= OnBackButtonClick;
-            }
+            _backButton?.Click -= OnBackButtonClick;
 
-            if (_paneToggleButton != null)
-            {
-                _paneToggleButton.Click -= OnPaneToggleButtonClick;
-            }
+            _paneToggleButton?.Click -= OnPaneToggleButtonClick;
 
             base.OnApplyTemplate();
 
             _backButton = GetTemplateChild(PartBackButton) as System.Windows.Controls.Button;
-            if (_backButton != null)
-            {
-                _backButton.Click += OnBackButtonClick;
-            }
+            _backButton?.Click += OnBackButtonClick;
 
             _paneToggleButton = GetTemplateChild(PartPaneToggleButton) as System.Windows.Controls.Button;
-            if (_paneToggleButton != null)
-            {
-                _paneToggleButton.Click += OnPaneToggleButtonClick;
-            }
+            _paneToggleButton?.Click += OnPaneToggleButtonClick;
 
             _paneScrollViewer = GetTemplateChild(PartPaneItemsScrollViewer) as ScrollViewer;
             _selectionIndicator = GetTemplateChild(PartSelectionIndicator) as FrameworkElement;
@@ -919,10 +907,7 @@ namespace Fluence.Wpf.Controls
         private void HideIndicator()
         {
             StopAnimation();
-            if (_selectionIndicator != null)
-            {
-                _selectionIndicator.Opacity = 0;
-            }
+            _selectionIndicator?.Opacity = 0;
 
             _indicatorPositioned = false;
         }

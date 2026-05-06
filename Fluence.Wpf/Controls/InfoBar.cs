@@ -245,18 +245,12 @@ namespace Fluence.Wpf.Controls
         /// <inheritdoc />
         public override void OnApplyTemplate()
         {
-            if (_closeButton != null)
-            {
-                _closeButton.Click -= OnCloseButtonClick;
-            }
+            _closeButton?.Click -= OnCloseButtonClick;
 
             base.OnApplyTemplate();
 
             _closeButton = GetTemplateChild(PART_CloseButton) as System.Windows.Controls.Button;
-            if (_closeButton != null)
-            {
-                _closeButton.Click += OnCloseButtonClick;
-            }
+            _closeButton?.Click += OnCloseButtonClick;
 
             UpdateSeverityState(false);
         }

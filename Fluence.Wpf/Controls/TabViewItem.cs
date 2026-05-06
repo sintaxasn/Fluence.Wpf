@@ -113,17 +113,11 @@ namespace Fluence.Wpf.Controls
         {
             base.OnApplyTemplate();
 
-            if (_closeButton != null)
-            {
-                _closeButton.Click -= OnCloseButtonClick;
-            }
+            _closeButton?.Click -= OnCloseButtonClick;
 
             _closeButton = GetTemplateChild(PartCloseButton) as ButtonBase;
 
-            if (_closeButton != null)
-            {
-                _closeButton.Click += OnCloseButtonClick;
-            }
+            _closeButton?.Click += OnCloseButtonClick;
         }
 
         private void OnCloseButtonClick(object sender, RoutedEventArgs e)

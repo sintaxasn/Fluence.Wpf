@@ -264,16 +264,10 @@ namespace Fluence.Wpf.Controls
         {
             base.OnApplyTemplate();
 
-            if (_clearButton != null)
-            {
-                _clearButton.Click -= OnClearButtonClick;
-            }
+            _clearButton?.Click -= OnClearButtonClick;
 
             _clearButton = GetTemplateChild(PART_ClearButton) as System.Windows.Controls.Button;
-            if (_clearButton != null)
-            {
-                _clearButton.Click += OnClearButtonClick;
-            }
+            _clearButton?.Click += OnClearButtonClick;
 
             UpdateCharacterCounter();
             UpdateHelperText();
@@ -354,10 +348,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            if (icon != null)
-            {
-                icon.Visibility = Visibility.Collapsed;
-            }
+            icon?.Visibility = Visibility.Collapsed;
 
             helper.Text = HelperText;
             helper.Visibility = string.IsNullOrEmpty(HelperText) ? Visibility.Collapsed : Visibility.Visible;

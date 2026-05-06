@@ -219,10 +219,7 @@ namespace Fluence.Wpf.Controls
 
             StopIndeterminate();
 
-            if (_track != null)
-            {
-                _track.SizeChanged -= OnTrackSizeChanged;
-            }
+            _track?.SizeChanged -= OnTrackSizeChanged;
 
             _track = GetTemplateChild(PART_Track) as System.Windows.Controls.Border;
             _fill = GetTemplateChild(PART_Fill) as System.Windows.Controls.Border;
@@ -231,10 +228,7 @@ namespace Fluence.Wpf.Controls
             _indeterminateTranslate = GetTemplateChild(PART_IndeterminateTranslate) as TranslateTransform;
             _indeterminateTranslate2 = GetTemplateChild(PART_IndeterminateTranslate2) as TranslateTransform;
 
-            if (_track != null)
-            {
-                _track.SizeChanged += OnTrackSizeChanged;
-            }
+            _track?.SizeChanged += OnTrackSizeChanged;
 
             ApplyProgressMode();
             UpdateFillWidth(false);
@@ -279,10 +273,7 @@ namespace Fluence.Wpf.Controls
             {
                 _fill.Visibility = Visibility.Collapsed;
                 _indeterminateBar.Visibility = Visibility.Visible;
-                if (_indeterminateBar2 != null)
-                {
-                    _indeterminateBar2.Visibility = Visibility.Visible;
-                }
+                _indeterminateBar2?.Visibility = Visibility.Visible;
                 RefreshIndeterminateLayout();
             }
             else
@@ -290,10 +281,7 @@ namespace Fluence.Wpf.Controls
                 StopIndeterminate();
                 _fill.Visibility = Visibility.Visible;
                 _indeterminateBar.Visibility = Visibility.Collapsed;
-                if (_indeterminateBar2 != null)
-                {
-                    _indeterminateBar2.Visibility = Visibility.Collapsed;
-                }
+                _indeterminateBar2?.Visibility = Visibility.Collapsed;
 
                 ApplyFillBrushForMode();
 
@@ -341,10 +329,7 @@ namespace Fluence.Wpf.Controls
             }
 
             _indeterminateBar.Width = trackWidth * 0.4;
-            if (_indeterminateBar2 != null)
-            {
-                _indeterminateBar2.Width = trackWidth * 0.55;
-            }
+            _indeterminateBar2?.Width = trackWidth * 0.55;
 
             StartIndeterminate(trackWidth);
         }

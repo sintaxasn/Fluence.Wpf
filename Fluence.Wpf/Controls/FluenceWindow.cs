@@ -559,10 +559,7 @@ namespace Fluence.Wpf.Controls
             base.OnSourceInitialized(e);
             _handle = new WindowInteropHelper(this).EnsureHandle();
             _hwndSource = HwndSource.FromHwnd(_handle);
-            if (_hwndSource != null)
-            {
-                _hwndSource.AddHook(WndProc);
-            }
+            _hwndSource?.AddHook(WndProc);
 
             UpdateWindowChrome();
             ApplyWindowShell();
@@ -654,11 +651,8 @@ namespace Fluence.Wpf.Controls
             SystemThemeWatcher.UnWatch(this);
             ApplicationThemeManager.Changed -= OnThemeChanged;
             ApplicationAccentColorManager.AccentColorChanged -= OnAccentColorChanged;
-            if (_hwndSource != null)
-            {
-                _hwndSource.RemoveHook(WndProc);
-                _hwndSource = null;
-            }
+            _hwndSource?.RemoveHook(WndProc);
+            _hwndSource = null;
 
             base.OnClosed(e);
         }
@@ -770,7 +764,7 @@ namespace Fluence.Wpf.Controls
             {
                 NativeMethods.SetSystemBackdropType(
                     _handle,
-                    plan.SystemBackdropType.HasValue ? plan.SystemBackdropType.Value : NativeConstants.DWMSBT_AUTO);
+                    plan.SystemBackdropType ?? NativeConstants.DWMSBT_AUTO);
             }
 
             if (capabilities.SupportsMicaEffect)
