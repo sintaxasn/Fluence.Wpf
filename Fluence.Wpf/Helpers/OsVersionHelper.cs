@@ -38,7 +38,7 @@ namespace Fluence.Wpf.Helpers
             {
                 OsVersion = NativeMethods.GetRealOsVersion();
             }
-            catch
+            catch (InvalidOperationException)
             {
                 OsVersion = Environment.OSVersion.Version;
             }
