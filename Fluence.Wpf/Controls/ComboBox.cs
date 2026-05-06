@@ -274,35 +274,27 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            try
+            PresentationSource source = PresentationSource.FromVisual(this);
+            if (source == null || source.CompositionTarget == null)
             {
-                PresentationSource source = PresentationSource.FromVisual(this);
-                if (source == null || source.CompositionTarget == null)
-                {
-                    return;
-                }
-
-                Point bottomEdge = PointToScreen(new Point(0, ActualHeight));
-                Point topEdge = PointToScreen(new Point(0, 0));
-
-                double dpiY = source.CompositionTarget.TransformToDevice.M22;
-                double maxHeightPx = (MaxDropDownHeight > 0 ? MaxDropDownHeight : 480) * dpiY;
-                double workBottom = SystemParameters.WorkArea.Bottom * dpiY;
-                double workTop = SystemParameters.WorkArea.Top * dpiY;
-
-                double spaceBelow = workBottom - bottomEdge.Y;
-                double spaceAbove = topEdge.Y - workTop;
-
-                bool openUpward = spaceBelow < maxHeightPx && spaceAbove > spaceBelow;
-
-                IsDropDownOpenedUpward = openUpward;
-                _popup.Placement = openUpward ? PlacementMode.Top : PlacementMode.Bottom;
+                return;
             }
-            catch
-            {
-                IsDropDownOpenedUpward = false;
-                _ = (_popup?.Placement = PlacementMode.Bottom);
-            }
+
+            Point bottomEdge = PointToScreen(new Point(0, ActualHeight));
+            Point topEdge = PointToScreen(new Point(0, 0));
+
+            double dpiY = source.CompositionTarget.TransformToDevice.M22;
+            double maxHeightPx = (MaxDropDownHeight > 0 ? MaxDropDownHeight : 480) * dpiY;
+            double workBottom = SystemParameters.WorkArea.Bottom * dpiY;
+            double workTop = SystemParameters.WorkArea.Top * dpiY;
+
+            double spaceBelow = workBottom - bottomEdge.Y;
+            double spaceAbove = topEdge.Y - workTop;
+
+            bool openUpward = spaceBelow < maxHeightPx && spaceAbove > spaceBelow;
+
+            IsDropDownOpenedUpward = openUpward;
+            _popup.Placement = openUpward ? PlacementMode.Top : PlacementMode.Bottom;
         }
 
         private bool IsSelectedIndexExplicitlySet()
