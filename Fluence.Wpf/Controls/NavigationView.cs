@@ -587,7 +587,7 @@ namespace Fluence.Wpf.Controls
 
                 return new Point(x, itemPos.Y + ((item.ActualHeight - _selectionIndicator.Height) / 2.0));
             }
-            catch
+            catch (Exception ex) when (ex.Message is not null)
             {
                 return new Point(0, 0);
             }
