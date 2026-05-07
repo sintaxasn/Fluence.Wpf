@@ -5,11 +5,7 @@
     xmlns:fluence="clr-namespace:Fluence.Wpf">
 
     <Style TargetType="{x:Type controls:ToggleButton}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource ControlElevationBorderBrush}" />
@@ -30,8 +26,7 @@
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
                         CornerRadius="{TemplateBinding CornerRadius}"
-                        RenderTransformOrigin="0.5,0.5"
-                        SnapsToDevicePixels="True">
+                        RenderTransformOrigin="0.5,0.5">
                         <Border.RenderTransform>
                             <ScaleTransform x:Name="PressScale" ScaleX="1" ScaleY="1" />
                         </Border.RenderTransform>

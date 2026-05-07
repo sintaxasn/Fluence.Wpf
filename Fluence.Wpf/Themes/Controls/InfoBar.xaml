@@ -13,14 +13,12 @@
                             Margin="-3"
                             BorderBrush="{DynamicResource FocusStrokeColorOuterBrush}"
                             BorderThickness="2"
-                            CornerRadius="{DynamicResource ControlCornerRadius}"
-                            SnapsToDevicePixels="True" />
+                            CornerRadius="{DynamicResource ControlCornerRadius}" />
                         <Border
                             Margin="-2"
                             BorderBrush="{DynamicResource FocusStrokeColorInnerBrush}"
                             BorderThickness="1"
-                            CornerRadius="3"
-                            SnapsToDevicePixels="True" />
+                            CornerRadius="3" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -28,11 +26,7 @@
     </Style>
 
     <Style TargetType="{x:Type controls:InfoBar}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Background" Value="{DynamicResource SystemFillColorAttentionBackgroundBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
@@ -54,8 +48,7 @@
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
                         ClipToBounds="False"
-                        CornerRadius="{TemplateBinding CornerRadius}"
-                        SnapsToDevicePixels="True">
+                        CornerRadius="{TemplateBinding CornerRadius}">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="3" />

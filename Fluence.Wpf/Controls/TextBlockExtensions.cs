@@ -254,9 +254,6 @@ namespace Fluence.Wpf.Controls
                 CaretBrush = textBlock.Foreground,
                 SelectionBrush = SystemColors.HighlightBrush
             };
-            TextOptions.SetTextFormattingMode(overlay, TextOptions.GetTextFormattingMode(textBlock));
-            TextOptions.SetTextRenderingMode(overlay, TextOptions.GetTextRenderingMode(textBlock));
-            TextOptions.SetTextHintingMode(overlay, TextOptions.GetTextHintingMode(textBlock));
             _ = overlay.SetBinding(System.Windows.Controls.TextBox.TextProperty, new Binding
             {
                 Path = new PropertyPath(System.Windows.Controls.TextBlock.TextProperty),

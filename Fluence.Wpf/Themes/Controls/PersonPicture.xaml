@@ -24,11 +24,7 @@
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="IsTabStop" Value="False" />
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Template">
             <Setter.Value>
@@ -49,7 +45,6 @@
                             FontSize="14"
                             FontWeight="{TemplateBinding FontWeight}"
                             Foreground="{TemplateBinding Foreground}"
-                            SnapsToDevicePixels="True"
                             Text="&#xE77B;" />
 
                         <!--  Photo ellipse — Fill set from code; Hidden by default.  -->
@@ -81,7 +76,6 @@
                                 FontSize="10"
                                 FontWeight="SemiBold"
                                 Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
-                                SnapsToDevicePixels="True"
                                 Text="" />
                         </Grid>
                         <VisualStateManager.VisualStateGroups>

@@ -18,8 +18,7 @@
                     Height="224"
                     MaxWidth="760"
                     HorizontalAlignment="Stretch"
-                    RenderOptions.BitmapScalingMode="HighQuality"
-                    SnapsToDevicePixels="True" />
+                    RenderOptions.BitmapScalingMode="HighQuality" />
                 <TextBlock
                     HorizontalAlignment="Center"
                     Margin="0,0,0,0"

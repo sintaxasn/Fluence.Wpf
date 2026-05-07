@@ -4,11 +4,7 @@
     xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
 
     <Style x:Key="ScrollBarTrackButtonStyle" TargetType="{x:Type RepeatButton}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Focusable" Value="False" />
         <Setter Property="IsTabStop" Value="False" />
@@ -23,17 +19,13 @@
     </Style>
 
     <Style x:Key="ScrollBarThumbStyle" TargetType="{x:Type Thumb}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="IsTabStop" Value="False" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
-                    <Grid SnapsToDevicePixels="True">
+                    <Grid>
                         <Border
                             x:Name="ThumbBorder"
                             Margin="1"
@@ -74,8 +66,7 @@
         <Grid
             x:Name="Root"
             Width="3"
-            Background="Transparent"
-            SnapsToDevicePixels="True">
+            Background="Transparent">
             <Border
                 x:Name="TrackBackground"
                 Margin="0"
@@ -238,8 +229,7 @@
         <Grid
             x:Name="Root"
             Height="3"
-            Background="Transparent"
-            SnapsToDevicePixels="True">
+            Background="Transparent">
             <Border
                 x:Name="TrackBackground"
                 Margin="0"
@@ -395,11 +385,7 @@
     </ControlTemplate>
 
     <Style x:Key="VerticalScrollBarStyle" TargetType="{x:Type ScrollBar}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Orientation" Value="Vertical" />
         <Setter Property="Width" Value="6" />
@@ -409,11 +395,7 @@
     </Style>
 
     <Style x:Key="HorizontalScrollBarStyle" TargetType="{x:Type ScrollBar}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Orientation" Value="Horizontal" />
         <Setter Property="Height" Value="6" />
@@ -423,11 +405,7 @@
     </Style>
 
     <Style x:Key="ScrollViewerStyle" TargetType="{x:Type ScrollViewer}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Focusable" Value="False" />
         <Setter Property="Background" Value="Transparent" />

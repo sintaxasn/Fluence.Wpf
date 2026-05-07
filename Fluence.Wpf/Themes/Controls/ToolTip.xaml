@@ -12,11 +12,7 @@
         is used instead, which is applied at the Popup window level without artifacts.
     -->
     <Style TargetType="{x:Type controls:ToolTip}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorTertiaryBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource SurfaceStrokeColorFlyoutBrush}" />
         <Setter Property="BorderThickness" Value="1" />
@@ -35,12 +31,10 @@
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
                         CornerRadius="{DynamicResource OverlayCornerRadius}"
-                        SnapsToDevicePixels="True"
                         UseLayoutRounding="True">
                         <ContentPresenter
                             HorizontalAlignment="Left"
                             VerticalAlignment="Top"
-                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                             TextElement.FontFamily="{TemplateBinding FontFamily}"
                             TextElement.FontSize="{TemplateBinding FontSize}"
                             TextElement.Foreground="{TemplateBinding Foreground}" />

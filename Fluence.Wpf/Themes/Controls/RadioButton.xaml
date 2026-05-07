@@ -31,11 +31,7 @@
     xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
 
     <Style TargetType="{x:Type controls:RadioButton}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
@@ -47,7 +43,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:RadioButton}">
-                    <Grid SnapsToDevicePixels="True">
+                    <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />

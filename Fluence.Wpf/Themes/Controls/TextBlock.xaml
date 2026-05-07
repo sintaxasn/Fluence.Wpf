@@ -4,11 +4,7 @@
                     xmlns:fluence="clr-namespace:Fluence.Wpf">
 
     <Style TargetType="{x:Type controls:TextBlock}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />

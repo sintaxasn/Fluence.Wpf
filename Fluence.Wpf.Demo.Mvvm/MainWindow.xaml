@@ -15,10 +15,6 @@
     d:DataContext="{d:DesignInstance vm:MainViewModel}"
     ExtendsContentIntoTitleBar="False"
     Icon="Resources/fluence-wpf-appicon-256.ico"
-    SnapsToDevicePixels="True"
-    TextOptions.TextFormattingMode="Display"
-    TextOptions.TextRenderingMode="ClearType"
-    TextOptions.TextHintingMode="Fixed"
     UseLayoutRounding="True"
     SystemBackdropType="Mica"
     CornerStyle="Round"
@@ -38,7 +34,6 @@
         </Grid.RowDefinitions>
 
         <!--  Row 0: Title  -->
-        <!--  Ideal formatting gives better subpixel hinting at large (28pt+) display sizes.  -->
         <TextBlock
             Grid.Row="0"
             Margin="0,0,0,16"
@@ -46,8 +41,7 @@
             FontSize="28"
             FontWeight="SemiBold"
             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-            Text="Task Manager"
-            TextOptions.TextFormattingMode="Ideal" />
+            Text="Task Manager" />
 
         <!--  Row 1: Filter RadioButtons  -->
         <StackPanel
@@ -85,8 +79,7 @@
                             Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                             BorderThickness="1"
-                            CornerRadius="{DynamicResource ControlCornerRadius}"
-                            SnapsToDevicePixels="True">
+                            CornerRadius="{DynamicResource ControlCornerRadius}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />

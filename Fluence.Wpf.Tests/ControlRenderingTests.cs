@@ -29,7 +29,6 @@
 using System;
 using System.Runtime.ExceptionServices;
 using System.Windows;
-using System.Windows.Media;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Fluence.Wpf.Controls;
 
@@ -79,20 +78,11 @@ namespace Fluence.Wpf.Tests
 
         private static void AssertCrispRenderingSetters(FrameworkElement element)
         {
-            Assert.IsTrue(element.SnapsToDevicePixels, "SnapsToDevicePixels should be true from default style.");
             Assert.IsTrue(element.UseLayoutRounding, "UseLayoutRounding should be true from default style.");
-            Assert.AreEqual(
-                TextFormattingMode.Display,
-                TextOptions.GetTextFormattingMode(element),
-                "TextFormattingMode should be Display.");
-            Assert.AreEqual(
-                TextRenderingMode.ClearType,
-                TextOptions.GetTextRenderingMode(element),
-                "TextRenderingMode should be ClearType.");
         }
 
         [TestMethod]
-        public void ThemedButton_HasCrispTextAndLayoutRoundingSetters()
+        public void ThemedButton_HasCrispLayoutRoundingSetters()
         {
             RunOnFreshStaThread(delegate
             {
@@ -106,7 +96,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void ThemedTextBox_HasCrispTextAndLayoutRoundingSetters()
+        public void ThemedTextBox_HasCrispLayoutRoundingSetters()
         {
             RunOnFreshStaThread(delegate
             {

@@ -4,11 +4,7 @@
     xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
 
     <Style x:Key="ComboBoxToggleStyle" TargetType="{x:Type ToggleButton}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Focusable" Value="False" />
         <Setter Property="Background" Value="Transparent" />
@@ -23,11 +19,7 @@
     </Style>
 
     <Style x:Key="ComboBoxItemStyle" TargetType="{x:Type ComboBoxItem}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Padding" Value="12,8" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -42,8 +34,7 @@
                     <Border
                         x:Name="OuterBorder"
                         Background="Transparent"
-                        CornerRadius="{DynamicResource ControlCornerRadius}"
-                        SnapsToDevicePixels="True">
+                        CornerRadius="{DynamicResource ControlCornerRadius}">
                         <Grid>
                             <ContentPresenter
                                 Margin="{TemplateBinding Padding}"
@@ -105,14 +96,12 @@
                             Margin="-3"
                             BorderBrush="{DynamicResource FocusStrokeColorOuterBrush}"
                             BorderThickness="2"
-                            CornerRadius="{DynamicResource ControlCornerRadius}"
-                            SnapsToDevicePixels="True" />
+                            CornerRadius="{DynamicResource ControlCornerRadius}" />
                         <Border
                             Margin="-2"
                             BorderBrush="{DynamicResource FocusStrokeColorInnerBrush}"
                             BorderThickness="1"
-                            CornerRadius="3"
-                            SnapsToDevicePixels="True" />
+                            CornerRadius="3" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -120,11 +109,7 @@
     </Style>
 
     <Style TargetType="{x:Type controls:ComboBox}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="FocusVisualStyle" Value="{StaticResource ComboBoxFocusVisual}" />
         <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
@@ -143,7 +128,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:ComboBox}">
-                    <Grid x:Name="TemplateRoot" SnapsToDevicePixels="True">
+                    <Grid x:Name="TemplateRoot">
                         <Grid>
                             <Border
                                 x:Name="MainBorder"
@@ -151,8 +136,7 @@
                                 Background="{TemplateBinding Background}"
                                 BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="{TemplateBinding CornerRadius}"
-                                SnapsToDevicePixels="True">
+                                CornerRadius="{TemplateBinding CornerRadius}">
                                 <Grid>
                                     <Grid
                                         x:Name="ContentLayer"
@@ -179,7 +163,6 @@
                                                 ContentStringFormat="{TemplateBinding SelectionBoxItemStringFormat}"
                                                 ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
                                                 IsHitTestVisible="False"
-                                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                                                 TextElement.FontFamily="{TemplateBinding FontFamily}"
                                                 TextElement.FontSize="{TemplateBinding FontSize}"
                                                 TextElement.Foreground="{TemplateBinding Foreground}" />
@@ -236,8 +219,7 @@
                                 BorderBrush="{DynamicResource SurfaceStrokeColorFlyoutBrush}"
                                 BorderThickness="1"
                                 CornerRadius="{TemplateBinding DropdownCornerRadius}"
-                                RenderTransformOrigin="0.5,0"
-                                SnapsToDevicePixels="True">
+                                RenderTransformOrigin="0.5,0">
                                 <Border.RenderTransform>
                                     <ScaleTransform x:Name="DropdownScale" ScaleX="1" ScaleY="1" />
                                 </Border.RenderTransform>
@@ -267,7 +249,7 @@
                                         HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
                                         Style="{DynamicResource ScrollViewerStyle}"
                                         VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}">
-                                        <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                        <ItemsPresenter KeyboardNavigation.DirectionalNavigation="Contained" />
                                     </ScrollViewer>
                                 </Grid>
                             </Border>

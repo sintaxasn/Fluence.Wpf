@@ -11,11 +11,7 @@
 
     <!--  Caption button style (minimize, maximize, restore)  -->
     <Style x:Key="WindowButtonStyle" TargetType="{x:Type Button}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Focusable" Value="False" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
@@ -32,7 +28,6 @@
                     <Grid
                         x:Name="RootGrid"
                         Background="{TemplateBinding Background}"
-                        SnapsToDevicePixels="True"
                         >
                         <ContentPresenter
                             x:Name="contentPresenter"
@@ -40,7 +35,6 @@
                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                             RecognizesAccessKey="True"
-                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                             />
                     </Grid>
                     <ControlTemplate.Triggers>
@@ -67,11 +61,7 @@
 
     <!--  Close button style — hover/pressed colors driven by caption-specific tokens.  -->
     <Style x:Key="WindowCloseButtonStyle" TargetType="{x:Type Button}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Focusable" Value="False" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
@@ -88,7 +78,6 @@
                     <Grid
                         x:Name="RootGrid"
                         Background="{TemplateBinding Background}"
-                        SnapsToDevicePixels="True"
                         >
                         <ContentPresenter
                             x:Name="contentPresenter"
@@ -96,7 +85,6 @@
                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                             RecognizesAccessKey="True"
-                            SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                             />
                     </Grid>
                     <ControlTemplate.Triggers>
@@ -133,10 +121,8 @@
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="ResizeMode" Value="CanResize" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="RenderOptions.ClearTypeHint" Value="Enabled" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:FluenceWindow}">

@@ -14,17 +14,13 @@
         <Setter Property="MinHeight" Value="32" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
         <Setter Property="DropdownCornerRadius" Value="{DynamicResource OverlayCornerRadius}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:DropDownButton}">
-                    <Grid SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}">
+                    <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
@@ -35,8 +31,7 @@
                             Grid.Row="0"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="{TemplateBinding CornerRadius}"
-                            SnapsToDevicePixels="True">
+                            CornerRadius="{TemplateBinding CornerRadius}">
                             <Grid>
                                 <Border
                                     x:Name="RestFill"
@@ -86,8 +81,7 @@
                                 Background="{DynamicResource SolidBackgroundFillColorQuarternaryBrush}"
                                 BorderBrush="{DynamicResource SurfaceStrokeColorFlyoutBrush}"
                                 BorderThickness="1"
-                                CornerRadius="{TemplateBinding DropdownCornerRadius}"
-                                SnapsToDevicePixels="True">
+                                CornerRadius="{TemplateBinding DropdownCornerRadius}">
                                 <!--
                                     No DropShadowEffect: WPF bitmap effects on a Border with CornerRadius
                                     always bleed into the transparent corner nooks, producing darker

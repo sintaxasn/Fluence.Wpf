@@ -16,11 +16,7 @@
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Template">
             <Setter.Value>
                 <!--
@@ -35,9 +31,8 @@
                         Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
-                        SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
                         UseLayoutRounding="{TemplateBinding UseLayoutRounding}">
-                        <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        <ItemsPresenter />
                     </Border>
                 </ControlTemplate>
             </Setter.Value>

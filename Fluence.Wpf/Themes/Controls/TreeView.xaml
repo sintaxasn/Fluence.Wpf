@@ -11,11 +11,7 @@
         MinHeight=32 per WinUI 3 TreeViewItemMinHeight=28 + WPF padding adjustment.
     -->
     <Style TargetType="{x:Type controls:TreeViewItem}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="FontSize" Value="14" />
@@ -40,8 +36,7 @@
                             Grid.Row="0"
                             MinHeight="{TemplateBinding MinHeight}"
                             Background="Transparent"
-                            CornerRadius="{DynamicResource ControlCornerRadius}"
-                            SnapsToDevicePixels="True">
+                            CornerRadius="{DynamicResource ControlCornerRadius}">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="28" />
@@ -69,7 +64,6 @@
                                                     FontSize="12"
                                                     Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                                     RenderTransformOrigin="0.5,0.5"
-                                                    SnapsToDevicePixels="True"
                                                     Text="&#xE76C;">
                                                     <TextBlock.RenderTransform>
                                                         <RotateTransform x:Name="ChevronRotate" Angle="0" />
@@ -119,8 +113,7 @@
                                     ContentSource="Header"
                                     TextElement.FontFamily="{TemplateBinding FontFamily}"
                                     TextElement.FontSize="{TemplateBinding FontSize}"
-                                    TextElement.Foreground="{TemplateBinding Foreground}"
-                                    SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                    TextElement.Foreground="{TemplateBinding Foreground}" />
                             </Grid>
                         </Border>
 
@@ -167,11 +160,7 @@
         ItemContainerStyle is NOT set here so that the default style lookup targets controls:TreeViewItem.
     -->
     <Style TargetType="{x:Type controls:TreeView}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Padding" Value="0" />
@@ -189,8 +178,7 @@
                         x:Name="OuterBorder"
                         Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}"
-                        SnapsToDevicePixels="True">
+                        BorderThickness="{TemplateBinding BorderThickness}">
                         <ScrollViewer
                             x:Name="PART_ScrollViewer"
                             CanContentScroll="False"
@@ -198,7 +186,7 @@
                             HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
                             PanningMode="{TemplateBinding ScrollViewer.PanningMode}"
                             VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}">
-                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                            <ItemsPresenter />
                         </ScrollViewer>
                     </Border>
                     <ControlTemplate.Triggers>

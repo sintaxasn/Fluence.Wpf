@@ -13,11 +13,7 @@
     ExtendsContentIntoTitleBar="True"
     Icon="Resources/fluence-wpf-appicon-256.ico"
     RenderOptions.BitmapScalingMode="HighQuality"
-    SnapsToDevicePixels="True"
     SystemBackdropType="Mica"
-    TextOptions.TextFormattingMode="Display"
-    TextOptions.TextHintingMode="Fixed"
-    TextOptions.TextRenderingMode="ClearType"
     TitleBarHeight="42"
     UseLayoutRounding="True"
     >

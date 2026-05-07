@@ -27,29 +27,11 @@
  */
 
 using System.Windows;
-using System.Windows.Media;
 
 namespace Fluence.Wpf.Demo.Mvvm
 {
     public partial class App : Application
     {
-        static App()
-        {
-            // Inherit on-screen ClearType text rendering from root Window downward.
-            const FrameworkPropertyMetadataOptions textOptionsMetadata = FrameworkPropertyMetadataOptions.AffectsMeasure |
-                FrameworkPropertyMetadataOptions.AffectsRender |
-                FrameworkPropertyMetadataOptions.Inherits;
-            TextOptions.TextFormattingModeProperty.OverrideMetadata(
-                typeof(Window),
-                new FrameworkPropertyMetadata(TextFormattingMode.Display, textOptionsMetadata));
-            TextOptions.TextRenderingModeProperty.OverrideMetadata(
-                typeof(Window),
-                new FrameworkPropertyMetadata(TextRenderingMode.ClearType, textOptionsMetadata));
-            TextOptions.TextHintingModeProperty.OverrideMetadata(
-                typeof(Window),
-                new FrameworkPropertyMetadata(TextHintingMode.Fixed, textOptionsMetadata));
-        }
-
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);

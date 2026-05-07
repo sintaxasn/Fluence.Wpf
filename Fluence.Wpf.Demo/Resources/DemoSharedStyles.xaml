@@ -52,7 +52,6 @@
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
                         CornerRadius="{TemplateBinding CornerRadius}"
-                        SnapsToDevicePixels="True"
                         UseLayoutRounding="True"
                         />
                 </ControlTemplate>
@@ -104,7 +103,6 @@
         Matches WinUI 3 AutoSuggestBox title-bar treatment.
     -->
     <Style x:Key="TitleBarSearchBoxStyle" TargetType="{x:Type ui:TextBox}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
         <Setter Property="BorderThickness" Value="0" />
@@ -124,7 +122,6 @@
                         x:Name="MainBorder"
                         Background="{TemplateBinding Background}"
                         CornerRadius="{TemplateBinding CornerRadius}"
-                        SnapsToDevicePixels="True"
                         >
                         <Grid>
                             <Grid.RowDefinitions>
@@ -216,7 +213,6 @@
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="Margin" Value="0,0,0,36" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
     </Style>
 
     <Style
@@ -228,7 +224,6 @@
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="Margin" Value="0,36,0,4" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
     </Style>
 
     <Style
@@ -335,7 +330,6 @@
         <Setter Property="CornerRadius" Value="4" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
-        <Setter Property="SnapsToDevicePixels" Value="True" />
     </Style>
 
     <!--  Swatch section header (category name inside the Colors tab)  -->
@@ -348,7 +342,6 @@
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="Margin" Value="0,0,0,4" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
     </Style>
 
     <!--  Swatch section description  -->

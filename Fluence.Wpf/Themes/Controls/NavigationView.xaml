@@ -35,11 +35,7 @@
 
     <!--  NavigationViewItemHeader  -->
     <Style TargetType="{x:Type controls:NavigationViewItemHeader}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Padding" Value="12,8,12,4" />
         <Setter Property="FontSize" Value="12" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
@@ -49,7 +45,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:NavigationViewItemHeader}">
-                    <Border Padding="{TemplateBinding Padding}" SnapsToDevicePixels="True">
+                    <Border Padding="{TemplateBinding Padding}">
                         <ContentPresenter
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
@@ -85,11 +81,7 @@
 
     <!--  NavigationViewItemSeparator  -->
     <Style TargetType="{x:Type controls:NavigationViewItemSeparator}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Height" Value="1" />
         <Setter Property="Margin" Value="12,4,0,4" />
         <Setter Property="IsTabStop" Value="False" />
@@ -99,7 +91,6 @@
                     <Border
                         Height="{TemplateBinding Height}"
                         Background="{DynamicResource DividerStrokeColorDefaultBrush}"
-                        SnapsToDevicePixels="True"
                         />
                 </ControlTemplate>
             </Setter.Value>
@@ -117,14 +108,12 @@
                             BorderBrush="{DynamicResource FocusStrokeColorOuterBrush}"
                             BorderThickness="2"
                             CornerRadius="{DynamicResource ControlCornerRadius}"
-                            SnapsToDevicePixels="True"
                             />
                         <Border
                             Margin="2"
                             BorderBrush="{DynamicResource FocusStrokeColorInnerBrush}"
                             BorderThickness="1"
                             CornerRadius="3"
-                            SnapsToDevicePixels="True"
                             />
                     </Grid>
                 </ControlTemplate>
@@ -134,11 +123,7 @@
 
     <!--  NavigationViewItem — single adaptive layout, no per-item indicator  -->
     <Style TargetType="{x:Type controls:NavigationViewItem}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="FocusVisualStyle" Value="{StaticResource NavigationViewItemFocusVisual}" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="Margin" Value="0" />
@@ -163,7 +148,6 @@
                         Margin="4,2,4,2"
                         Background="{TemplateBinding Background}"
                         CornerRadius="{DynamicResource ControlCornerRadius}"
-                        SnapsToDevicePixels="True"
                         >
                         <Grid MinHeight="32">
                             <Grid.ColumnDefinitions>
@@ -302,7 +286,6 @@
             x:Name="BackBorder"
             Background="Transparent"
             CornerRadius="{DynamicResource ControlCornerRadius}"
-            SnapsToDevicePixels="True"
             >
             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
         </Border>
@@ -321,7 +304,7 @@
 
     <!--  Left pane template  -->
     <ControlTemplate x:Key="NavigationViewLeftPaneTemplate" TargetType="{x:Type controls:NavigationView}">
-        <Border Background="{TemplateBinding Background}" SnapsToDevicePixels="True">
+        <Border Background="{TemplateBinding Background}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition x:Name="PaneColumn" Width="48" />
@@ -420,7 +403,6 @@
                                     IsHitTestVisible="False"
                                     Opacity="0"
                                     RenderTransformOrigin="0.5,0.5"
-                                    SnapsToDevicePixels="True"
                                     >
                                     <Border.RenderTransform>
                                         <TransformGroup>
@@ -578,7 +560,7 @@
 
     <!--  Left-compact pane template  -->
     <ControlTemplate x:Key="NavigationViewLeftCompactPaneTemplate" TargetType="{x:Type controls:NavigationView}">
-        <Border SnapsToDevicePixels="True">
+        <Border>
             <!--
                 Two-column inline layout: pane resizes between 48 and 280 and pushes content.
                 This mirrors WinUI 3 NavigationView / .NET 10 WPF NavigationView compact-left
@@ -682,7 +664,6 @@
                                     IsHitTestVisible="False"
                                     Opacity="0"
                                     RenderTransformOrigin="0.5,0.5"
-                                    SnapsToDevicePixels="True"
                                     >
                                     <Border.RenderTransform>
                                         <TransformGroup>
@@ -853,7 +834,6 @@
             BorderThickness="1"
             ClipToBounds="True"
             CornerRadius="{DynamicResource OverlayCornerRadius}"
-            SnapsToDevicePixels="True"
             >
             <Grid>
                 <Grid.RowDefinitions>
@@ -922,7 +902,6 @@
                                     IsHitTestVisible="False"
                                     Opacity="0"
                                     RenderTransformOrigin="0.5,0.5"
-                                    SnapsToDevicePixels="True"
                                     >
                                     <Border.RenderTransform>
                                         <TransformGroup>
@@ -978,11 +957,7 @@
 
     <!--  NavigationView default style  -->
     <Style TargetType="{x:Type controls:NavigationView}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="ContentBackground" Value="{DynamicResource NavigationViewContentBackgroundBrush}" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />

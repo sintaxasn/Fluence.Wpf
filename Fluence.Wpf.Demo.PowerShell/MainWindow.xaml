@@ -9,12 +9,10 @@
     MinHeight="740"
     ExtendsContentIntoTitleBar="False"
     SnapsToDevicePixels="True"
-    TextOptions.TextFormattingMode="Display"
-    TextOptions.TextRenderingMode="ClearType"
-    TextOptions.TextHintingMode="Fixed"
     UseLayoutRounding="True"
-    SystemBackdropType="Mica"
-    CornerStyle="Round">
+    WindowCorners="Round"
+    WindowBackdrop="Mica"
+    >
 
     <Grid Margin="24,20,24,20">
         <Grid.RowDefinitions>
@@ -135,17 +133,17 @@
                 <ui:Card Padding="16" Variant="Default">
                     <StackPanel>
                         <TextBlock
-                            Margin="0,0,0,12"
+                            Margin="16,4,16,4"
                             FontFamily="{DynamicResource FluentFontFamily}"
                             FontSize="18"
                             FontWeight="SemiBold"
                             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                             Text="Progress" />
-                        <ui:ProgressBar Margin="0,0,0,10" Maximum="100" Minimum="0" Value="68" />
+                        <ui:ProgressBar Margin="16,4,16,8" ProgressMode="Indeterminate" />
                         <StackPanel Orientation="Horizontal">
-                            <ui:ProgressRing Width="32" Height="32" IsActive="True" />
+                            <ui:ProgressRing Margin="16" HorizontalAlignment="Center" IsIndeterminate="True" />
                             <TextBlock
-                                Margin="12,6,0,0"
+                                Margin="16,4,16,4"
                                 FontFamily="{DynamicResource FluentFontFamily}"
                                 FontSize="14"
                                 Foreground="{DynamicResource TextFillColorSecondaryBrush}"

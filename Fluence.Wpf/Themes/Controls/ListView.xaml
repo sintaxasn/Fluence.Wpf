@@ -6,11 +6,7 @@
 
     <!--  Group header  -->
     <Style x:Key="ListViewGroupItemStyle" TargetType="{x:Type GroupItem}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="Margin" Value="0,0,0,8" />
         <Setter Property="Template">
@@ -40,11 +36,7 @@
 
     <!--  ListViewItem Style  -->
     <Style x:Key="ListViewItemStyle" TargetType="{x:Type ListViewItem}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="FontSize" Value="14" />
@@ -63,7 +55,6 @@
                         x:Name="OuterBorder"
                         Background="{TemplateBinding Background}"
                         CornerRadius="{DynamicResource ControlCornerRadius}"
-                        SnapsToDevicePixels="True"
                         >
                         <Grid>
                             <Border
@@ -190,11 +181,7 @@
 
     <!--  ListView Style  -->
     <Style TargetType="{x:Type controls:ListView}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
@@ -220,7 +207,6 @@
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
                         CornerRadius="{TemplateBinding CornerRadius}"
-                        SnapsToDevicePixels="True"
                         >
                         <Grid>
                             <controls:SmoothScrollViewer
@@ -231,7 +217,7 @@
                                 PanningMode="{TemplateBinding ScrollViewer.PanningMode}"
                                 VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
                                 >
-                                <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                <ItemsPresenter />
                             </controls:SmoothScrollViewer>
 
                             <ContentPresenter

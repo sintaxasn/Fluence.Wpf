@@ -10,11 +10,7 @@
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="Padding" Value="16" />
         <Setter Property="Focusable" Value="False" />
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="Template">
             <Setter.Value>
@@ -22,16 +18,14 @@
                     <Border
                         x:Name="OuterBorder"
                         Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-                        CornerRadius="{TemplateBinding CornerRadius}"
-                        SnapsToDevicePixels="True">
+                        CornerRadius="{TemplateBinding CornerRadius}">
                         <Border
                             x:Name="ShadowHost"
                             Background="Transparent"
                             CornerRadius="{TemplateBinding CornerRadius}">
                             <Border
                                 x:Name="CardRoot"
-                                CornerRadius="{TemplateBinding CornerRadius}"
-                                SnapsToDevicePixels="True">
+                                CornerRadius="{TemplateBinding CornerRadius}">
                                 <Grid>
                                     <Border
                                         x:Name="VariantBackground"
@@ -39,20 +33,17 @@
                                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                                         BorderThickness="1"
                                         CornerRadius="{TemplateBinding CornerRadius}"
-                                        SnapsToDevicePixels="True"
                                         UseLayoutRounding="True" />
                                     <Border
                                         x:Name="ClickHoverLayer"
                                         Background="{DynamicResource ControlFillColorSecondaryBrush}"
                                         CornerRadius="{TemplateBinding CornerRadius}"
-                                        Opacity="0"
-                                        SnapsToDevicePixels="True" />
+                                        Opacity="0" />
                                     <Border
                                         x:Name="ClickPressLayer"
                                         Background="{DynamicResource ControlFillColorTertiaryBrush}"
                                         CornerRadius="{TemplateBinding CornerRadius}"
-                                        Opacity="0"
-                                        SnapsToDevicePixels="True" />
+                                        Opacity="0" />
                                     <Grid Margin="{TemplateBinding Padding}">
                                         <Grid.RowDefinitions>
                                             <RowDefinition x:Name="HeaderRow" Height="Auto" />

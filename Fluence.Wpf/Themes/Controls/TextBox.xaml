@@ -8,11 +8,7 @@
     <StreamGeometry x:Key="ClearGlyph">M 10,0 L 12,2 L 7,7 L 12,12 L 10,14 L 5,9 L 0,14 L -2,12 L 3,7 L -2,2 L 0,0 L 5,5 Z</StreamGeometry>
 
     <Style TargetType="{x:Type controls:TextBox}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource TextControlElevationBorderBrush}" />
@@ -41,8 +37,7 @@
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="{TemplateBinding CornerRadius}"
-                            SnapsToDevicePixels="True">
+                            CornerRadius="{TemplateBinding CornerRadius}">
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="*" />

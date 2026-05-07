@@ -7,11 +7,7 @@
 
     <!--  TabViewItem: header with icon, content, close button  -->
     <Style TargetType="{x:Type controls:TabViewItem}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
         <Setter Property="FontSize" Value="14" />
@@ -28,8 +24,7 @@
                 <ControlTemplate TargetType="{x:Type controls:TabViewItem}">
                     <Grid
                         x:Name="Root"
-                        ClipToBounds="False"
-                        SnapsToDevicePixels="True">
+                        ClipToBounds="False">
                         <Border
                             x:Name="HoverBackground"
                             Background="{DynamicResource SubtleFillColorSecondaryBrush}"
@@ -87,8 +82,7 @@
                                         <Border
                                             x:Name="ButtonRoot"
                                             Background="{TemplateBinding Background}"
-                                            CornerRadius="{DynamicResource ControlCornerRadius}"
-                                            SnapsToDevicePixels="True">
+                                            CornerRadius="{DynamicResource ControlCornerRadius}">
                                             <Path
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
@@ -220,11 +214,7 @@
 
     <!--  TabView: horizontally scrollable strip + add button + content  -->
     <Style TargetType="{x:Type controls:TabView}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
@@ -233,7 +223,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:TabView}">
-                    <Grid KeyboardNavigation.TabNavigation="Local" SnapsToDevicePixels="True">
+                    <Grid KeyboardNavigation.TabNavigation="Local">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
@@ -272,8 +262,7 @@
                                         <Border
                                             x:Name="ScrollBackRoot"
                                             Background="{TemplateBinding Background}"
-                                            CornerRadius="{DynamicResource ControlCornerRadius}"
-                                            SnapsToDevicePixels="True">
+                                            CornerRadius="{DynamicResource ControlCornerRadius}">
                                             <TextBlock
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
@@ -336,8 +325,7 @@
                                         <Border
                                             x:Name="ScrollForwardRoot"
                                             Background="{TemplateBinding Background}"
-                                            CornerRadius="{DynamicResource ControlCornerRadius}"
-                                            SnapsToDevicePixels="True">
+                                            CornerRadius="{DynamicResource ControlCornerRadius}">
                                             <TextBlock
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
@@ -377,8 +365,7 @@
                                         <Border
                                             x:Name="AddButtonRoot"
                                             Background="{TemplateBinding Background}"
-                                            CornerRadius="{DynamicResource ControlCornerRadius}"
-                                            SnapsToDevicePixels="True">
+                                            CornerRadius="{DynamicResource ControlCornerRadius}">
                                             <Path
                                                 HorizontalAlignment="Center"
                                                 VerticalAlignment="Center"
@@ -414,8 +401,7 @@
                                 x:Name="PART_SelectedContentHost"
                                 HorizontalAlignment="Stretch"
                                 VerticalAlignment="Stretch"
-                                ContentSource="SelectedContent"
-                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                ContentSource="SelectedContent" />
                         </Border>
                     </Grid>
                 </ControlTemplate>

@@ -16,11 +16,7 @@
     <!--  ContextMenu container  -->
     <!--  ═══════════════════════════════════════════════════════════  -->
     <Style TargetType="{x:Type controls:ContextMenu}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorTertiaryBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource SurfaceStrokeColorFlyoutBrush}" />
         <Setter Property="BorderThickness" Value="1" />
@@ -38,7 +34,6 @@
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
                         CornerRadius="{DynamicResource OverlayCornerRadius}"
-                        SnapsToDevicePixels="True"
                         UseLayoutRounding="True">
                         <Grid Grid.IsSharedSizeScope="True">
                             <ItemsPresenter />
@@ -56,11 +51,7 @@
     <!--  appropriate visibility triggers.  -->
     <!--  ═══════════════════════════════════════════════════════════  -->
     <Style TargetType="{x:Type controls:MenuItem}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Background" Value="{DynamicResource SubtleFillColorTransparentBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
@@ -73,8 +64,7 @@
                         x:Name="Bd"
                         Margin="2,1"
                         Background="{TemplateBinding Background}"
-                        CornerRadius="{DynamicResource ControlCornerRadius}"
-                        SnapsToDevicePixels="True">
+                        CornerRadius="{DynamicResource ControlCornerRadius}">
                         <Grid MinHeight="32" Margin="4,0">
                             <Grid.ColumnDefinitions>
                                 <!--  Icon / checkmark — shared-size keeps all items aligned  -->
@@ -163,7 +153,6 @@
                                     BorderBrush="{DynamicResource SurfaceStrokeColorFlyoutBrush}"
                                     BorderThickness="1"
                                     CornerRadius="{DynamicResource OverlayCornerRadius}"
-                                    SnapsToDevicePixels="True"
                                     UseLayoutRounding="True">
                                     <Border.RenderTransform>
                                         <TranslateTransform x:Name="SubMenuTranslate" X="-8" />
@@ -240,7 +229,6 @@
     <!--  Separator  -->
     <!--  ═══════════════════════════════════════════════════════════  -->
     <Style TargetType="{x:Type Separator}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="Margin" Value="4,2" />
         <Setter Property="Height" Value="1" />
         <Setter Property="Background" Value="{DynamicResource DividerStrokeColorDefaultBrush}" />
@@ -250,8 +238,7 @@
                     <Border
                         Height="{TemplateBinding Height}"
                         Margin="{TemplateBinding Margin}"
-                        Background="{TemplateBinding Background}"
-                        SnapsToDevicePixels="True" />
+                        Background="{TemplateBinding Background}" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

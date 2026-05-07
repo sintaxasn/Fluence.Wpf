@@ -5,11 +5,7 @@
 
     <!--  ListBoxItem Style  -->
     <Style TargetType="{x:Type controls:ListBoxItem}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="FontSize" Value="14" />
@@ -27,8 +23,7 @@
                     <Border
                         x:Name="OuterBorder"
                         Background="{TemplateBinding Background}"
-                        CornerRadius="{DynamicResource ControlCornerRadius}"
-                        SnapsToDevicePixels="True">
+                        CornerRadius="{DynamicResource ControlCornerRadius}">
                         <Grid>
                             <Border
                                 x:Name="HoverOverlay"
@@ -91,11 +86,7 @@
 
     <!--  ListBox Style  -->
     <Style TargetType="{x:Type controls:ListBox}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
@@ -116,15 +107,14 @@
                         Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="{TemplateBinding CornerRadius}"
-                        SnapsToDevicePixels="True">
+                        CornerRadius="{TemplateBinding CornerRadius}">
                         <controls:SmoothScrollViewer
                             Padding="{TemplateBinding Padding}"
                             CanContentScroll="{TemplateBinding ScrollViewer.CanContentScroll}"
                             Focusable="False"
                             HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
                             VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}">
-                            <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                            <ItemsPresenter />
                         </controls:SmoothScrollViewer>
                     </Border>
                     <ControlTemplate.Triggers>

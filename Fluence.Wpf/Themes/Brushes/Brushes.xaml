@@ -209,14 +209,12 @@
                             Margin="-3"
                             BorderBrush="{DynamicResource FocusStrokeColorOuterBrush}"
                             BorderThickness="2"
-                            CornerRadius="4"
-                            SnapsToDevicePixels="True" />
+                            CornerRadius="4" />
                         <Border
                             Margin="-2"
                             BorderBrush="{DynamicResource FocusStrokeColorInnerBrush}"
                             BorderThickness="1"
-                            CornerRadius="4"
-                            SnapsToDevicePixels="True" />
+                            CornerRadius="4" />
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -236,7 +234,6 @@
                     <Rectangle
                         RadiusX="4"
                         RadiusY="4"
-                        SnapsToDevicePixels="True"
                         Stroke="{DynamicResource FocusStrokeColorOuterBrush}"
                         StrokeThickness="2" />
                 </ControlTemplate>

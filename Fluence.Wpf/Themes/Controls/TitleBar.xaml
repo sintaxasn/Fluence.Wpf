@@ -4,11 +4,7 @@
     xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
 
     <Style x:Key="TitleBarGlyphButtonStyle" TargetType="{x:Type Button}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Background" Value="{DynamicResource SubtleFillColorTransparentBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderThickness" Value="0" />
@@ -29,8 +25,7 @@
                     <Border
                         x:Name="ButtonRoot"
                         Background="{TemplateBinding Background}"
-                        CornerRadius="{DynamicResource ControlCornerRadius}"
-                        SnapsToDevicePixels="True">
+                        CornerRadius="{DynamicResource ControlCornerRadius}">
                         <TextBlock
                             x:Name="Glyph"
                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
@@ -60,11 +55,7 @@
     </Style>
 
     <Style TargetType="{x:Type controls:TitleBar}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Background" Value="{DynamicResource ControlFillColorTransparentBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
@@ -77,8 +68,7 @@
                     <Grid
                         x:Name="PART_LayoutRoot"
                         Height="{TemplateBinding Height}"
-                        Background="{TemplateBinding Background}"
-                        SnapsToDevicePixels="True">
+                        Background="{TemplateBinding Background}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition x:Name="LeftPaddingColumn" Width="2" />
                             <ColumnDefinition Width="Auto" />

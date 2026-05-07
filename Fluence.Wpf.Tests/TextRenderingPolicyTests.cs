@@ -27,46 +27,15 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Fluence.Wpf.Controls;
-using FluentButton = Fluence.Wpf.Controls.Button;
-using FluentCard = Fluence.Wpf.Controls.Card;
-using FluentCheckBox = Fluence.Wpf.Controls.CheckBox;
-using FluentComboBox = Fluence.Wpf.Controls.ComboBox;
-using FluentContextMenu = Fluence.Wpf.Controls.ContextMenu;
-using FluentDropDownButton = Fluence.Wpf.Controls.DropDownButton;
-using FluentExpander = Fluence.Wpf.Controls.Expander;
-using FluentHyperlinkButton = Fluence.Wpf.Controls.HyperlinkButton;
-using FluentInfoBadge = Fluence.Wpf.Controls.InfoBadge;
-using FluentInfoBar = Fluence.Wpf.Controls.InfoBar;
-using FluentListBox = Fluence.Wpf.Controls.ListBox;
-using FluentListBoxItem = Fluence.Wpf.Controls.ListBoxItem;
-using FluentListView = Fluence.Wpf.Controls.ListView;
-using FluentMenu = Fluence.Wpf.Controls.Menu;
-using FluentMenuItem = Fluence.Wpf.Controls.MenuItem;
-using FluentNavigationView = Fluence.Wpf.Controls.NavigationView;
-using FluentNavigationViewItem = Fluence.Wpf.Controls.NavigationViewItem;
-using FluentNavigationViewItemHeader = Fluence.Wpf.Controls.NavigationViewItemHeader;
-using FluentNumberBox = Fluence.Wpf.Controls.NumberBox;
-using FluentPasswordBox = Fluence.Wpf.Controls.PasswordBox;
-using FluentRadioButton = Fluence.Wpf.Controls.RadioButton;
-using FluentRepeatButton = Fluence.Wpf.Controls.RepeatButton;
-using FluentSplitButton = Fluence.Wpf.Controls.SplitButton;
-using FluentTabView = Fluence.Wpf.Controls.TabView;
-using FluentTabViewItem = Fluence.Wpf.Controls.TabViewItem;
-using FluentTextBlock = Fluence.Wpf.Controls.TextBlock;
-using FluentTextBox = Fluence.Wpf.Controls.TextBox;
-using FluentTitleBar = Fluence.Wpf.Controls.TitleBar;
-using FluentToggleButton = Fluence.Wpf.Controls.ToggleButton;
-using FluentToggleSwitch = Fluence.Wpf.Controls.ToggleSwitch;
-using FluentToolTip = Fluence.Wpf.Controls.ToolTip;
-using FluentTreeView = Fluence.Wpf.Controls.TreeView;
-using FluentTreeViewItem = Fluence.Wpf.Controls.TreeViewItem;
-using FluentWindow = Fluence.Wpf.Controls.FluenceWindow;
+using WpfBorder = System.Windows.Controls.Border;
 using WpfTextBlock = System.Windows.Controls.TextBlock;
 
 namespace Fluence.Wpf.Tests
@@ -75,301 +44,286 @@ namespace Fluence.Wpf.Tests
     public class TextRenderingPolicyTests
     {
         [TestMethod]
-        public void TextBearingControlStyles_UseDisplayClearTypeFixedHinting()
+        public void FluenceWindow_DefaultStyleOwnsCrispRootRenderingPolicy()
         {
             WpfTestSta.Invoke(() =>
             {
                 Application? application = WpfTestSta.EnsureApplication();
-                ApplicationThemeManager.ResetForTesting();
-                ApplicationAccentColorManager.ResetForTesting();
-                application?.Resources.Clear();
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
+                ResetApplication(application);
 
-                AssertStyleTextRenderingPolicy(application, typeof(FluentButton), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentHyperlinkButton), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentDropDownButton), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentSplitButton), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentRepeatButton), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentToggleButton), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentCheckBox), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentRadioButton), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentToggleSwitch), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentComboBox), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentNumberBox), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentTextBox), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentPasswordBox), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentTextBlock), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentCard), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentExpander), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentInfoBar), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentInfoBadge), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentListBox), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentListBoxItem), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentListView), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentNavigationView), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentNavigationViewItem), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentNavigationViewItemHeader), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentTabView), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentTabViewItem), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentTitleBar), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentTreeView), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentTreeViewItem), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentWindow), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentMenu), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentContextMenu), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentMenuItem), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(FluentToolTip), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(RatingControl), TextFormattingMode.Display);
-                AssertStyleTextRenderingPolicy(application, typeof(PersonPicture), TextFormattingMode.Display);
+                FluenceWindow window = new()
+                {
+                    Width = 320,
+                    Height = 240,
+                    Content = new Grid()
+                };
 
-                AssertTextBlockStyleRenderingPolicy(application, "ComboBoxItemStyle", TextFormattingMode.Display);
-                AssertTextBlockStyleRenderingPolicy(application, "ListViewGroupItemStyle", TextFormattingMode.Display);
-                AssertTextBlockStyleRenderingPolicy(application, "ListViewItemStyle", TextFormattingMode.Display);
-                AssertTextBlockStyleRenderingPolicy(application, "TabControlStyle", TextFormattingMode.Display);
-                AssertTextBlockStyleRenderingPolicy(application, "TabItemStyle", TextFormattingMode.Display);
+                try
+                {
+                    _ = window.ApplyTemplate();
+
+                    Assert.IsTrue(window.UseLayoutRounding, "FluenceWindow should enable layout rounding at the root.");
+                    Assert.IsTrue(window.SnapsToDevicePixels, "FluenceWindow should snap device pixels at the root.");
+                    Assert.AreEqual(
+                        ClearTypeHint.Enabled,
+                        RenderOptions.GetClearTypeHint(window),
+                        "FluenceWindow should enable ClearType only at the root subtree.");
+                }
+                finally
+                {
+                    window.Close();
+                }
             });
         }
 
         [TestMethod]
-        public void TextBearingControlStyles_UseFluentFontFamily()
+        public void FluenceWindow_ChildInheritsPixelAlignmentPolicy()
         {
             WpfTestSta.Invoke(() =>
             {
                 Application? application = WpfTestSta.EnsureApplication();
-                ApplicationThemeManager.ResetForTesting();
-                ApplicationAccentColorManager.ResetForTesting();
-                application?.Resources.Clear();
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
+                ResetApplication(application);
 
-                AssertStyleFontFamilyPolicy(application, typeof(FluentButton));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentHyperlinkButton));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentDropDownButton));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentSplitButton));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentRepeatButton));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentToggleButton));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentCheckBox));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentRadioButton));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentToggleSwitch));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentComboBox));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentNumberBox));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentTextBox));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentPasswordBox));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentTextBlock));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentCard));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentExpander));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentInfoBar));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentInfoBadge));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentListBox));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentListBoxItem));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentListView));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentNavigationView));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentNavigationViewItem));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentNavigationViewItemHeader));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentTabView));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentTabViewItem));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentTitleBar));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentTreeView));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentTreeViewItem));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentWindow));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentMenu));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentContextMenu));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentMenuItem));
-                AssertStyleFontFamilyPolicy(application, typeof(FluentToolTip));
-                AssertStyleFontFamilyPolicy(application, typeof(RatingControl));
-                AssertStyleFontFamilyPolicy(application, typeof(PersonPicture));
+                WpfBorder child = new();
+                FluenceWindow window = new()
+                {
+                    Width = 320,
+                    Height = 240,
+                    Content = child
+                };
 
-                AssertKeyedStyleFontFamilyPolicy(application, "ComboBoxItemStyle");
-                AssertKeyedStyleFontFamilyPolicy(application, "ListViewGroupItemStyle");
-                AssertKeyedStyleFontFamilyPolicy(application, "ListViewItemStyle");
-                AssertKeyedStyleFontFamilyPolicy(application, "TabControlStyle");
-                AssertKeyedStyleFontFamilyPolicy(application, "TabItemStyle");
+                try
+                {
+                    _ = window.ApplyTemplate();
+
+                    Assert.IsTrue(child.UseLayoutRounding, "Children should inherit root layout rounding.");
+                    Assert.IsTrue(child.SnapsToDevicePixels, "Children should inherit root device-pixel snapping.");
+                }
+                finally
+                {
+                    window.Close();
+                }
             });
         }
 
         [TestMethod]
-        public void TypographyTextBlockStyles_UseClearTypeFixedHinting()
+        public void ProductionSources_DoNotSetWpfTextOptionsRenderingPolicy()
+        {
+            string repoRoot = FindRepoRoot();
+            string[] productionRoots =
+            [
+                Path.Combine(repoRoot, "Fluence.Wpf"),
+                Path.Combine(repoRoot, "Fluence.Wpf.Demo"),
+                Path.Combine(repoRoot, "Fluence.Wpf.Demo.Mvvm")
+            ];
+
+            string textOptionsPrefix = "Text" + "Options.";
+            string[] bannedFragments =
+            [
+                textOptionsPrefix + "TextFormattingMode",
+                textOptionsPrefix + "TextRenderingMode",
+                textOptionsPrefix + "TextHintingMode",
+                textOptionsPrefix + "SetTextFormattingMode",
+                textOptionsPrefix + "SetTextRenderingMode",
+                textOptionsPrefix + "SetTextHintingMode",
+                textOptionsPrefix + "GetTextFormattingMode",
+                textOptionsPrefix + "GetTextRenderingMode",
+                textOptionsPrefix + "GetTextHintingMode"
+            ];
+
+            string[] offenders =
+            [
+                .. EnumerateProductionSources(productionRoots)
+                    .SelectMany(path => FindBannedFragments(path, bannedFragments))
+            ];
+
+            Assert.AreEqual(
+                0,
+                offenders.Length,
+                "Production sources should not set WPF TextOptions rendering policy: " + string.Join(Environment.NewLine, offenders));
+        }
+
+        [TestMethod]
+        public void ProductionSources_SetDevicePixelSnappingOnlyOnFluenceWindowRoot()
+        {
+            string repoRoot = FindRepoRoot();
+            string[] productionRoots =
+            [
+                Path.Combine(repoRoot, "Fluence.Wpf"),
+                Path.Combine(repoRoot, "Fluence.Wpf.Demo"),
+                Path.Combine(repoRoot, "Fluence.Wpf.Demo.Mvvm")
+            ];
+
+            string allowedPath = Path.Combine(
+                "Fluence.Wpf",
+                "Themes",
+                "Controls",
+                "FluenceWindow.xaml");
+            string[] offenders =
+            [
+                .. EnumerateProductionSources(productionRoots)
+                    .Where(path => !string.Equals(GetRepoRelativePath(path), allowedPath, StringComparison.OrdinalIgnoreCase))
+                    .Where(path => File.ReadAllText(path).IndexOf("SnapsToDevicePixels", StringComparison.Ordinal) >= 0)
+                    .Select(GetRepoRelativePath)
+            ];
+
+            Assert.AreEqual(
+                0,
+                offenders.Length,
+                "Only FluenceWindow should set SnapsToDevicePixels: " + string.Join(Environment.NewLine, offenders));
+        }
+
+        [TestMethod]
+        public void TypographyStyles_ApplyTypeRampMetrics()
         {
             WpfTestSta.Invoke(() =>
             {
                 Application? application = WpfTestSta.EnsureApplication();
-                ApplicationThemeManager.ResetForTesting();
-                ApplicationAccentColorManager.ResetForTesting();
-                application?.Resources.Clear();
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
+                ResetApplication(application);
 
-                AssertTextBlockStyleRenderingPolicy(application, "CaptionTextBlockStyle", TextFormattingMode.Display);
-                AssertTextBlockStyleRenderingPolicy(application, "BodyTextBlockStyle", TextFormattingMode.Display);
-                AssertTextBlockStyleRenderingPolicy(application, "BodyStrongTextBlockStyle", TextFormattingMode.Display);
-                AssertTextBlockStyleRenderingPolicy(application, "BodyLargeTextBlockStyle", TextFormattingMode.Display);
-                AssertTextBlockStyleRenderingPolicy(application, "SubtitleTextBlockStyle", TextFormattingMode.Ideal);
-                AssertTextBlockStyleRenderingPolicy(application, "TitleTextBlockStyle", TextFormattingMode.Ideal);
-                AssertTextBlockStyleRenderingPolicy(application, "TitleLargeTextBlockStyle", TextFormattingMode.Ideal);
-                AssertTextBlockStyleRenderingPolicy(application, "DisplayTextBlockStyle", TextFormattingMode.Ideal);
+                AssertTypographyMetrics(application, "CaptionTextBlockStyle", 12d, FontWeights.Regular, 16d);
+                AssertTypographyMetrics(application, "BodyTextBlockStyle", 14d, FontWeights.Regular, 20d);
+                AssertTypographyMetrics(application, "BodyStrongTextBlockStyle", 14d, FontWeights.SemiBold, 20d);
+                AssertTypographyMetrics(application, "BodyLargeTextBlockStyle", 18d, FontWeights.Regular, 24d);
+                AssertTypographyMetrics(application, "SubtitleTextBlockStyle", 20d, FontWeights.SemiBold, 28d);
+                AssertTypographyMetrics(application, "TitleTextBlockStyle", 28d, FontWeights.SemiBold, 36d);
+                AssertTypographyMetrics(application, "TitleLargeTextBlockStyle", 40d, FontWeights.SemiBold, 52d);
+                AssertTypographyMetrics(application, "DisplayTextBlockStyle", 68d, FontWeights.SemiBold, 92d);
             });
         }
 
         [TestMethod]
-        public void TextBlockExtensions_Typography_AppliesClearTypeRenderingPolicy()
+        public void TextBlockExtensions_Typography_AppliesTypeRampStyleOnly()
         {
             WpfTestSta.Invoke(() =>
             {
                 Application? application = WpfTestSta.EnsureApplication();
-                ApplicationThemeManager.ResetForTesting();
-                ApplicationAccentColorManager.ResetForTesting();
-                application?.Resources.Clear();
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
+                ResetApplication(application);
 
-                WpfTextBlock body = new();
-                TextBlockExtensions.SetTypography(body, FluentTypography.Body);
+                WpfTextBlock textBlock = new();
+                TextBlockExtensions.SetTypography(textBlock, FluentTypography.Title);
 
-                Assert.AreEqual(TextFormattingMode.Display, TextOptions.GetTextFormattingMode(body));
-                Assert.AreEqual(TextRenderingMode.ClearType, TextOptions.GetTextRenderingMode(body));
-                Assert.AreEqual(TextHintingMode.Fixed, TextOptions.GetTextHintingMode(body));
-
-                WpfTextBlock title = new();
-                TextBlockExtensions.SetTypography(title, FluentTypography.Title);
-
-                Assert.AreEqual(TextFormattingMode.Ideal, TextOptions.GetTextFormattingMode(title));
-                Assert.AreEqual(TextRenderingMode.ClearType, TextOptions.GetTextRenderingMode(title));
-                Assert.AreEqual(TextHintingMode.Fixed, TextOptions.GetTextHintingMode(title));
+                Assert.AreSame(
+                    application?.TryFindResource("TitleTextBlockStyle"),
+                    textBlock.Style,
+                    "Attached typography should use the named XAML style resource as its source of truth.");
+                Assert.AreEqual(28d, textBlock.FontSize, 0.01d);
+                Assert.AreEqual(FontWeights.SemiBold, textBlock.FontWeight);
+                Assert.AreEqual(36d, textBlock.LineHeight, 0.01d);
+                Assert.AreEqual(LineStackingStrategy.BlockLineHeight, textBlock.LineStackingStrategy);
             });
         }
 
         [TestMethod]
-        public void TextBlockExtensions_TypographyNone_DoesNotMutateExistingTextPolicy()
+        public void TextBlockExtensions_TypographyNone_DoesNotMutateExistingMetrics()
         {
             WpfTestSta.Invoke(() =>
             {
                 WpfTextBlock textBlock = new();
                 TextBlockExtensions.SetTypography(textBlock, FluentTypography.Body);
 
-                textBlock.FontFamily = new FontFamily("Arial");
+                FontFamily fontFamily = new("Arial");
+                textBlock.FontFamily = fontFamily;
                 textBlock.FontSize = 13;
                 textBlock.FontWeight = FontWeights.Bold;
                 textBlock.LineHeight = 17;
                 textBlock.LineStackingStrategy = LineStackingStrategy.MaxHeight;
-                TextOptions.SetTextFormattingMode(textBlock, TextFormattingMode.Ideal);
-                TextOptions.SetTextRenderingMode(textBlock, TextRenderingMode.Grayscale);
-                TextOptions.SetTextHintingMode(textBlock, TextHintingMode.Animated);
 
                 TextBlockExtensions.SetTypography(textBlock, FluentTypography.None);
 
-                Assert.AreEqual(new FontFamily("Arial"), textBlock.FontFamily);
+                Assert.AreEqual(fontFamily, textBlock.FontFamily);
                 Assert.AreEqual(13d, textBlock.FontSize, 0.01d);
                 Assert.AreEqual(FontWeights.Bold, textBlock.FontWeight);
                 Assert.AreEqual(17d, textBlock.LineHeight, 0.01d);
                 Assert.AreEqual(LineStackingStrategy.MaxHeight, textBlock.LineStackingStrategy);
-                Assert.AreEqual(TextFormattingMode.Ideal, TextOptions.GetTextFormattingMode(textBlock));
-                Assert.AreEqual(TextRenderingMode.Grayscale, TextOptions.GetTextRenderingMode(textBlock));
-                Assert.AreEqual(TextHintingMode.Animated, TextOptions.GetTextHintingMode(textBlock));
             });
         }
 
-        [TestMethod]
-        public void DemoAppSources_OverrideWindowTextRenderingMetadata()
+        private static void ResetApplication(Application? application)
         {
-            AssertDemoAppTextMetadataOverrides(Path.Combine("Fluence.Wpf.Demo", "App.xaml.cs"));
-            AssertDemoAppTextMetadataOverrides(Path.Combine("Fluence.Wpf.Demo.Mvvm", "App.xaml.cs"));
+            ApplicationThemeManager.ResetForTesting();
+            ApplicationAccentColorManager.ResetForTesting();
+            application?.Resources.Clear();
+            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
         }
 
-        private static void AssertStyleTextRenderingPolicy(Application? application, Type targetType, TextFormattingMode expectedFormattingMode)
-        {
-            Style? style = application?.TryFindResource(targetType) as Style;
-            Assert.IsNotNull(style, "Style should resolve for " + targetType.Name + ".");
-            AssertStyleSetterOrBasedOn(style, TextOptions.TextFormattingModeProperty, expectedFormattingMode, targetType.Name);
-            AssertStyleSetterOrBasedOn(style, TextOptions.TextRenderingModeProperty, TextRenderingMode.ClearType, targetType.Name);
-            AssertStyleSetterOrBasedOn(style, TextOptions.TextHintingModeProperty, TextHintingMode.Fixed, targetType.Name);
-        }
-
-        private static void AssertStyleFontFamilyPolicy(Application? application, Type targetType)
-        {
-            Style? style = application?.TryFindResource(targetType) as Style;
-            Assert.IsNotNull(style, "Style should resolve for " + targetType.Name + ".");
-            AssertStyleFluentFontFamilySetterOrBasedOn(style, targetType.Name);
-        }
-
-        private static void AssertKeyedStyleFontFamilyPolicy(Application? application, string styleKey)
+        private static void AssertTypographyMetrics(
+            Application? application,
+            string styleKey,
+            double expectedFontSize,
+            FontWeight expectedFontWeight,
+            double expectedLineHeight)
         {
             Style? style = application?.TryFindResource(styleKey) as Style;
             Assert.IsNotNull(style, styleKey + " should resolve.");
-            AssertStyleFluentFontFamilySetterOrBasedOn(style, styleKey);
-        }
 
-        private static void AssertTextBlockStyleRenderingPolicy(Application? application, string styleKey, TextFormattingMode expectedFormattingMode)
-        {
-            Style? style = application?.TryFindResource(styleKey) as Style;
-            Assert.IsNotNull(style, styleKey + " should resolve.");
-            // Named styles may inherit TextOptions via BasedOn; walk the full chain.
-            AssertStyleSetterOrBasedOn(style, TextOptions.TextFormattingModeProperty, expectedFormattingMode, styleKey);
-            AssertStyleSetterOrBasedOn(style, TextOptions.TextRenderingModeProperty, TextRenderingMode.ClearType, styleKey);
-            AssertStyleSetterOrBasedOn(style, TextOptions.TextHintingModeProperty, TextHintingMode.Fixed, styleKey);
-        }
-
-        private static void AssertStyleFluentFontFamilySetterOrBasedOn(Style style, string description)
-        {
-            Style current = style;
-            while (current is not null)
+            WpfTextBlock textBlock = new()
             {
-                foreach (SetterBase? setterBase in current.Setters)
+                Style = style
+            };
+
+            Assert.AreEqual(expectedFontSize, textBlock.FontSize, 0.01d, styleKey + " should set FontSize.");
+            Assert.AreEqual(expectedFontWeight, textBlock.FontWeight, styleKey + " should set FontWeight.");
+            Assert.AreEqual(expectedLineHeight, textBlock.LineHeight, 0.01d, styleKey + " should set LineHeight.");
+            Assert.AreEqual(
+                LineStackingStrategy.BlockLineHeight,
+                textBlock.LineStackingStrategy,
+                styleKey + " should set line-height stacking.");
+            Assert.IsNotNull(textBlock.Foreground, styleKey + " should resolve a foreground brush.");
+        }
+
+        private static IEnumerable<string> EnumerateProductionSources(IEnumerable<string> roots)
+        {
+            foreach (string root in roots)
+            {
+                foreach (string extension in new[] { "*.cs", "*.xaml" })
                 {
-                    if (setterBase is Setter setter && setter.Property == Control.FontFamilyProperty)
+                    foreach (string path in Directory.EnumerateFiles(root, extension, SearchOption.AllDirectories))
                     {
-                        Assert.IsTrue(IsFluentFontFamilySetterValue(setter.Value),
-                            description + " should set FontFamily from FluentFontFamily.");
-                        return;
+                        if (IsGeneratedOutputPath(path))
+                        {
+                            continue;
+                        }
+
+                        yield return path;
                     }
                 }
-
-                current = current.BasedOn;
             }
-
-            Assert.Fail(description + " should set FontFamily from FluentFontFamily (searched full BasedOn chain).");
         }
 
-        private static bool IsFluentFontFamilySetterValue(object value)
+        private static bool IsGeneratedOutputPath(string path)
         {
-            return value is DynamicResourceExtension dynamicResource
-                ? Equals(dynamicResource.ResourceKey, "FluentFontFamily")
-                : value is FontFamily fontFamily &&
-                fontFamily.Source.IndexOf("Segoe UI Variable", StringComparison.OrdinalIgnoreCase) >= 0;
+            string normalized = path.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+            string separator = Path.DirectorySeparatorChar.ToString();
+            return normalized.IndexOf(separator + "bin" + separator, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                normalized.IndexOf(separator + "obj" + separator, StringComparison.OrdinalIgnoreCase) >= 0;
         }
 
-        /// <summary>
-        /// Walks the <see cref="Style.BasedOn"/> chain looking for a setter that matches
-        /// <paramref name="property"/> with <paramref name="expectedValue"/>.  A style that
-        /// inherits the correct value through <c>BasedOn</c> satisfies the assertion.
-        /// </summary>
-        private static void AssertStyleSetterOrBasedOn(Style style, DependencyProperty property, object expectedValue, string description)
+        private static IEnumerable<string> FindBannedFragments(string path, IEnumerable<string> bannedFragments)
         {
-            Style current = style;
-            while (current is not null)
+            string source = File.ReadAllText(path);
+            foreach (string bannedFragment in bannedFragments)
             {
-                foreach (SetterBase? setterBase in current.Setters)
+                if (source.IndexOf(bannedFragment, StringComparison.Ordinal) >= 0)
                 {
-                    if (setterBase is Setter setter && setter.Property == property)
-                    {
-                        Assert.AreEqual(expectedValue, setter.Value, description + " should set " + property.Name + ".");
-                        return;
-                    }
+                    yield return GetRepoRelativePath(path) + ": " + bannedFragment;
                 }
-
-                current = current.BasedOn;
             }
-
-            Assert.Fail(description + " should set " + property.Name + " (searched full BasedOn chain).");
         }
 
-        private static void AssertDemoAppTextMetadataOverrides(string relativePath)
+        private static string GetRepoRelativePath(string path)
         {
-            string source = File.ReadAllText(Path.Combine(FindRepoRoot(), relativePath));
+            string root = FindRepoRoot();
+            if (path.StartsWith(root, StringComparison.OrdinalIgnoreCase))
+            {
+                int separatorLength = path.Length > root.Length &&
+                    (path[root.Length] == Path.DirectorySeparatorChar || path[root.Length] == Path.AltDirectorySeparatorChar)
+                    ? 1
+                    : 0;
+                return path.Substring(root.Length + separatorLength);
+            }
 
-            StringAssert.Contains(source, "TextOptions.TextFormattingModeProperty.OverrideMetadata(");
-            StringAssert.Contains(source, "new FrameworkPropertyMetadata(TextFormattingMode.Display, textOptionsMetadata)");
-            StringAssert.Contains(source, "TextOptions.TextRenderingModeProperty.OverrideMetadata(");
-            StringAssert.Contains(source, "new FrameworkPropertyMetadata(TextRenderingMode.ClearType, textOptionsMetadata)");
-            StringAssert.Contains(source, "TextOptions.TextHintingModeProperty.OverrideMetadata(");
-            StringAssert.Contains(source, "new FrameworkPropertyMetadata(TextHintingMode.Fixed, textOptionsMetadata)");
-            StringAssert.Contains(source, "FrameworkPropertyMetadataOptions.Inherits");
+            return path;
         }
 
         private static string FindRepoRoot()

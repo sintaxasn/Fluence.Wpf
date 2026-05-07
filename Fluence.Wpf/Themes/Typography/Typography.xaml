@@ -23,7 +23,7 @@
 
     <!--
         Implicit default TextBlock style.
-        Sets Fluent font + ClearType rendering for every TextBlock in the application.
+        Sets the Fluent font defaults for every TextBlock in the application.
         Does NOT set Foreground or LineHeight so template-inherited values are preserved.
         Named styles below use BasedOn="{StaticResource {x:Type TextBlock}}" and only
         override what differs from these defaults.
@@ -32,9 +32,6 @@
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontWeight" Value="Regular" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
     </Style>
 
     <!--  Caption - 12 / Regular / 16  -->
@@ -80,11 +77,6 @@
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
     </Style>
 
-    <!--
-        Subtitle and larger: switch to Ideal TextFormattingMode.
-        At 20pt+ Ideal uses vector metrics for smoother curves, matching DirectWrite behaviour.
-    -->
-
     <!--  Subtitle - 20 / SemiBold / 28  -->
     <Style
         x:Key="SubtitleTextBlockStyle"
@@ -95,7 +87,6 @@
         <Setter Property="LineHeight" Value="28" />
         <Setter Property="LineStackingStrategy" Value="BlockLineHeight" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
     </Style>
 
     <!--  Title - 28 / SemiBold / 36  -->
@@ -108,7 +99,6 @@
         <Setter Property="LineHeight" Value="36" />
         <Setter Property="LineStackingStrategy" Value="BlockLineHeight" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
     </Style>
 
     <!--  Title Large - 40 / SemiBold / 52  -->
@@ -121,7 +111,6 @@
         <Setter Property="LineHeight" Value="52" />
         <Setter Property="LineStackingStrategy" Value="BlockLineHeight" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
     </Style>
 
     <!--  Display - 68 / SemiBold / 92  -->
@@ -134,7 +123,6 @@
         <Setter Property="LineHeight" Value="92" />
         <Setter Property="LineStackingStrategy" Value="BlockLineHeight" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Ideal" />
     </Style>
 
 </ResourceDictionary>

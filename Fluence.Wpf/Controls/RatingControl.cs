@@ -209,12 +209,8 @@ namespace Fluence.Wpf.Controls
                     FontFamily = new FontFamily("Segoe Fluent Icons"),
                     FontSize = 20.0,
                     VerticalAlignment = VerticalAlignment.Center,
-                    SnapsToDevicePixels = true,
                     Text = "\uE734"
                 };
-                TextOptions.SetTextFormattingMode(star, TextFormattingMode.Display);
-                TextOptions.SetTextRenderingMode(star, TextRenderingMode.ClearType);
-                TextOptions.SetTextHintingMode(star, TextHintingMode.Fixed);
                 if (i < count)
                 {
                     star.Margin = new Thickness(0, 0, 4, 0);

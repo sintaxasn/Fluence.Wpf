@@ -4,11 +4,7 @@
     xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
 
     <Style x:Key="ExpanderHeaderToggleButton" TargetType="{x:Type ToggleButton}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
@@ -20,8 +16,7 @@
                     <Border
                         x:Name="HeaderBorder"
                         Background="{TemplateBinding Background}"
-                        CornerRadius="{DynamicResource ControlCornerRadius}"
-                        SnapsToDevicePixels="True">
+                        CornerRadius="{DynamicResource ControlCornerRadius}">
                         <Grid Margin="{TemplateBinding Padding}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -108,11 +103,7 @@
     </Style>
 
     <Style TargetType="{x:Type controls:Expander}">
-        <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="TextOptions.TextFormattingMode" Value="Display" />
-        <Setter Property="TextOptions.TextRenderingMode" Value="ClearType" />
-        <Setter Property="TextOptions.TextHintingMode" Value="Fixed" />
         <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
@@ -128,8 +119,7 @@
                         Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="{TemplateBinding CornerRadius}"
-                        SnapsToDevicePixels="True">
+                        CornerRadius="{TemplateBinding CornerRadius}">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition x:Name="Row0Def" Height="Auto" />
