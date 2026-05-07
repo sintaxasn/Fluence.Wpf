@@ -103,7 +103,7 @@ namespace Fluence.Wpf.Tests
                 }
             }));
 
-            if (capturedException != null)
+            if (capturedException is not null)
             {
                 ExceptionDispatchInfo.Capture(capturedException).Throw();
             }
@@ -140,7 +140,7 @@ namespace Fluence.Wpf.Tests
 
         private static T? FindVisualChild<T>(DependencyObject root) where T : DependencyObject
         {
-            if (root == null)
+            if (root is null)
             {
                 return null;
             }
@@ -165,7 +165,7 @@ namespace Fluence.Wpf.Tests
 
         private static IEnumerable<T> FindVisualChildren<T>(DependencyObject root) where T : DependencyObject
         {
-            if (root == null)
+            if (root is null)
             {
                 yield break;
             }
@@ -188,7 +188,7 @@ namespace Fluence.Wpf.Tests
 
         private static DependencyObject? FindVisualChildByTypeName(DependencyObject root, string typeName)
         {
-            if (root == null)
+            if (root is null)
             {
                 return null;
             }
@@ -202,7 +202,7 @@ namespace Fluence.Wpf.Tests
             for (int index = 0; index < childCount; index++)
             {
                 DependencyObject? found = FindVisualChildByTypeName(VisualTreeHelper.GetChild(root, index), typeName);
-                if (found != null)
+                if (found is not null)
                 {
                     return found;
                 }
@@ -213,7 +213,7 @@ namespace Fluence.Wpf.Tests
 
         private static T? FindVisualChildByName<T>(DependencyObject root, string name) where T : FrameworkElement
         {
-            if (root == null || string.IsNullOrWhiteSpace(name))
+            if (root is null || string.IsNullOrWhiteSpace(name))
             {
                 return null;
             }
@@ -230,7 +230,7 @@ namespace Fluence.Wpf.Tests
                 }
 
                 T? found = FindVisualChildByName<T>(VisualTreeHelper.GetChild(root, index), name);
-                if (found != null)
+                if (found is not null)
                 {
                     return found;
                 }
@@ -242,7 +242,7 @@ namespace Fluence.Wpf.Tests
         private static StackPanel? GetNavigationViewItemsHostPanel(Controls.NavigationView nav)
         {
             ItemsPresenter? presenter = FindVisualChild<ItemsPresenter>(nav);
-            if (presenter == null)
+            if (presenter is null)
             {
                 return null;
             }
@@ -687,7 +687,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    if (genericDictionary != null)
+                    if (genericDictionary is not null)
                     {
                         _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
@@ -2594,7 +2594,7 @@ namespace Fluence.Wpf.Tests
 
                     bool arcDataReady = WaitUntil(window.Dispatcher, 1000, delegate
                     {
-                        return indeterminateArc.Data != null;
+                        return indeterminateArc.Data is not null;
                     });
                     Assert.IsTrue(arcDataReady,
                         "PART_IndeterminateArc should have non-null Data for the caterpillar geometry.");
@@ -2657,11 +2657,11 @@ namespace Fluence.Wpf.Tests
             DrainDispatcher(dispatcher);
 
             Controls.NavigationViewItem? selected = nav.SelectedItem as Controls.NavigationViewItem;
-            string? selectedLabel = selected == null ? null : selected.Content as string;
-            string? selectedTag = selected == null ? null : selected.Tag as string;
+            string? selectedLabel = selected is null ? null : selected.Content as string;
+            string? selectedTag = selected is null ? null : selected.Tag as string;
             bool matchesRequest = string.Equals(selectedLabel, itemContent, StringComparison.OrdinalIgnoreCase) ||
-                (selectedTag != null && selectedTag.IndexOf(itemContent, StringComparison.OrdinalIgnoreCase) >= 0);
-            if (selected == null || nav.Content == null || !matchesRequest)
+                (selectedTag is not null && selectedTag.IndexOf(itemContent, StringComparison.OrdinalIgnoreCase) >= 0);
+            if (selected is null || nav.Content is null || !matchesRequest)
             {
                 Assert.Fail(string.Format("Navigation item '{0}' should exist.", itemContent));
             }
@@ -2680,8 +2680,8 @@ namespace Fluence.Wpf.Tests
             foreach (TextBlock textBlock in FindVisualChildren<TextBlock>(button))
             {
                 FontFamily fontFamily = textBlock.FontFamily;
-                if (fontFamily != null &&
-                    fontFamily.Source != null &&
+                if (fontFamily is not null &&
+                    fontFamily.Source is not null &&
                     fontFamily.Source.IndexOf("Segoe Fluent Icons", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     return textBlock;

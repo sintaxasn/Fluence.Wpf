@@ -299,12 +299,12 @@ namespace Fluence.Wpf.Demo.Pages.Inputs
 
         private void CharCountTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (CharCountLabel == null || CharCountTextBox == null)
+            if (CharCountLabel is null || CharCountTextBox is null)
             {
                 return;
             }
 
-            int len = CharCountTextBox.Text != null ? CharCountTextBox.Text.Length : 0;
+            int len = CharCountTextBox.Text is not null ? CharCountTextBox.Text.Length : 0;
             CharCountLabel.Text = string.Format(CultureInfo.CurrentCulture, "Characters: {0}", len);
         }
     }

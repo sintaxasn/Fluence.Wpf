@@ -148,7 +148,7 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
 
         private void AddItem_Click(object sender, RoutedEventArgs e)
         {
-            if (NewItemBox == null)
+            if (NewItemBox is null)
             {
                 return;
             }
@@ -177,7 +177,7 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
         private void RemoveItem_Click(object sender, RoutedEventArgs e)
         {
             var selected = BoundListView.SelectedItem as DataBindingSampleItem;
-            if (selected != null)
+            if (selected is not null)
             {
                 BoundListView.AnimateRemove(selected, UpdateCount);
             }
@@ -270,16 +270,16 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
 
         private void SelectionMode_Changed(object sender, RoutedEventArgs e)
         {
-            if (SelectionModeListView == null)
+            if (SelectionModeListView is null)
             {
                 return;
             }
 
-            if (MultipleModeRadio != null && MultipleModeRadio.IsChecked == true)
+            if (MultipleModeRadio is not null && MultipleModeRadio.IsChecked == true)
             {
                 SelectionModeListView.SelectionMode = SelectionMode.Multiple;
             }
-            else if (ExtendedModeRadio != null && ExtendedModeRadio.IsChecked == true)
+            else if (ExtendedModeRadio is not null && ExtendedModeRadio.IsChecked == true)
             {
                 SelectionModeListView.SelectionMode = SelectionMode.Extended;
             }
@@ -299,7 +299,7 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
 
         private void UpdateSelectionLabel()
         {
-            if (SelectionCountLabel == null || SelectionModeListView == null)
+            if (SelectionCountLabel is null || SelectionModeListView is null)
             {
                 return;
             }
@@ -433,7 +433,7 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
 
         private void AddItem_Click(object sender, RoutedEventArgs e)
         {
-            if (NewItemBox == null)
+            if (NewItemBox is null)
             {
                 return;
             }
@@ -461,7 +461,7 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
 
         private void RemoveItem_Click(object sender, RoutedEventArgs e)
         {
-            if (BoundListView == null)
+            if (BoundListView is null)
             {
                 return;
             }
@@ -497,7 +497,7 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
 
         private void SelectionMode_Changed(object sender, RoutedEventArgs e)
         {
-            if (SelectionModeListView == null)
+            if (SelectionModeListView is null)
             {
                 return;
             }
@@ -517,7 +517,7 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
 
         private void UpdateSelectionLabel()
         {
-            if (SelectionCountLabel == null || SelectionModeListView == null)
+            if (SelectionCountLabel is null || SelectionModeListView is null)
             {
                 return;
             }

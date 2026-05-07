@@ -37,7 +37,7 @@ namespace Fluence.Wpf.Helpers
     {
         internal static ImageBrush GetNoiseBrush()
         {
-            if (_cachedBrush != null)
+            if (_cachedBrush is not null)
             {
                 return _cachedBrush;
             }

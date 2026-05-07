@@ -182,7 +182,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    if (window != null)
+                    if (window is not null)
                     {
                         // Restore before close so the dispatcher does not leak a minimized window.
                         window.WindowState = WindowState.Normal;

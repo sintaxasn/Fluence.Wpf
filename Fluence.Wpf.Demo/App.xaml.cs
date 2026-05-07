@@ -139,7 +139,7 @@ namespace Fluence.Wpf.Demo
         private static T? FindVisualChildByName<T>(DependencyObject root, string name)
             where T : FrameworkElement
         {
-            if (root == null)
+            if (root is null)
             {
                 return null;
             }
@@ -153,7 +153,7 @@ namespace Fluence.Wpf.Demo
             for (int i = 0; i < childCount; i++)
             {
                 T? match = FindVisualChildByName<T>(VisualTreeHelper.GetChild(root, i), name);
-                if (match != null)
+                if (match is not null)
                 {
                     return match;
                 }
@@ -169,7 +169,7 @@ namespace Fluence.Wpf.Demo
 
         private static bool IsSmokeTest(string[] args)
         {
-            if (args == null)
+            if (args is null)
             {
                 return false;
             }

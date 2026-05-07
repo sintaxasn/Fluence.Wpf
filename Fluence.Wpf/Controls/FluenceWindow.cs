@@ -75,7 +75,7 @@ namespace Fluence.Wpf.Controls
         {
             public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
             {
-                return value != null;
+                return value is not null;
             }
 
             public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -873,7 +873,7 @@ namespace Fluence.Wpf.Controls
                         mmi.ptMaxSize.Y = rcWork.Height;
 
                         double dpiX = 1.0, dpiY = 1.0;
-                        if (_hwndSource != null && _hwndSource.CompositionTarget != null)
+                        if (_hwndSource is not null && _hwndSource.CompositionTarget is not null)
                         {
                             Matrix transform = _hwndSource.CompositionTarget.TransformToDevice;
                             dpiX = transform.M11;
@@ -932,13 +932,13 @@ namespace Fluence.Wpf.Controls
                 {
                     if (WindowState == WindowState.Maximized)
                     {
-                        if (_restoreButton != null && _restoreButton.Visibility == Visibility.Visible && _restoreButton.IsEnabled)
+                        if (_restoreButton is not null && _restoreButton.Visibility == Visibility.Visible && _restoreButton.IsEnabled)
                         {
                             handled = true;
                             SystemCommands.RestoreWindow(this);
                         }
                     }
-                    else if (_maximizeButton != null && _maximizeButton.Visibility == Visibility.Visible && _maximizeButton.IsEnabled)
+                    else if (_maximizeButton is not null && _maximizeButton.Visibility == Visibility.Visible && _maximizeButton.IsEnabled)
                     {
                         handled = true;
                         SystemCommands.MaximizeWindow(this);
@@ -959,13 +959,13 @@ namespace Fluence.Wpf.Controls
                 return 0;
             }
 
-            if (_maximizeButton != null && _maximizeButton.Visibility == Visibility.Visible &&
+            if (_maximizeButton is not null && _maximizeButton.Visibility == Visibility.Visible &&
                 _maximizeButton.IsEnabled &&
                 IsOverElement(_maximizeButton, point))
             {
                 return NativeConstants.HTMAXBUTTON;
             }
-            if (_restoreButton != null && _restoreButton.Visibility == Visibility.Visible &&
+            if (_restoreButton is not null && _restoreButton.Visibility == Visibility.Visible &&
                 _restoreButton.IsEnabled &&
                 IsOverElement(_restoreButton, point))
             {
@@ -973,9 +973,9 @@ namespace Fluence.Wpf.Controls
             }
 
             // Minimize and close: return 0 so hit falls through to client area; WPF Button + Command fire.
-            if ((_minimizeButton != null && _minimizeButton.Visibility == Visibility.Visible &&
+            if ((_minimizeButton is not null && _minimizeButton.Visibility == Visibility.Visible &&
                  IsOverElement(_minimizeButton, point)) ||
-                (_closeButton != null && _closeButton.Visibility == Visibility.Visible &&
+                (_closeButton is not null && _closeButton.Visibility == Visibility.Visible &&
                  IsOverElement(_closeButton, point)))
             {
                 return 0;
@@ -995,7 +995,7 @@ namespace Fluence.Wpf.Controls
             }
 
             ClearSnapHover();
-            if (button != null && button.IsEnabled)
+            if (button is not null && button.IsEnabled)
             {
                 button.Background = TryFindResource("ControlStrongFillColorDefaultBrush") as Brush ?? Brushes.Transparent;
                 button.Foreground = TryFindResource("TextFillColorInverseBrush") as Brush ?? Brushes.White;
@@ -1005,7 +1005,7 @@ namespace Fluence.Wpf.Controls
 
         private void ClearSnapHover()
         {
-            if (_snapHoveredButton != null)
+            if (_snapHoveredButton is not null)
             {
                 _snapHoveredButton.Background = Brushes.Transparent;
                 _snapHoveredButton.ClearValue(ForegroundProperty);
@@ -1015,7 +1015,7 @@ namespace Fluence.Wpf.Controls
 
         private bool IsOverElement(UIElement element, Point windowPoint)
         {
-            if (element == null || element.Visibility != Visibility.Visible)
+            if (element is null || element.Visibility != Visibility.Visible)
             {
                 return false;
             }
@@ -1035,7 +1035,7 @@ namespace Fluence.Wpf.Controls
         private bool IsOverInteractiveContent(Point windowPoint)
         {
             DependencyObject? hit = InputHitTest(windowPoint) as DependencyObject;
-            while (hit != null)
+            while (hit is not null)
             {
                 if (hit is IInputElement element && WindowChrome.GetIsHitTestVisibleInChrome(element))
                 {

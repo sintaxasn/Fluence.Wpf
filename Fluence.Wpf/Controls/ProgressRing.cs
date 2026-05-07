@@ -451,7 +451,7 @@ namespace Fluence.Wpf.Controls
             // initial frame synchronously.  Tweening here would race with the layout pass
             // and leave the arc blank when the dispatcher drains mid-animation.
             double targetFraction = ring.ComputeFraction();
-            if (ring._arcPath == null)
+            if (ring._arcPath is null)
             {
                 ring.AnimatedFraction = targetFraction;
                 return;
@@ -506,7 +506,7 @@ namespace Fluence.Wpf.Controls
 
         private void StartIndeterminateAnimation()
         {
-            if (_indeterminateArcPath == null)
+            if (_indeterminateArcPath is null)
             {
                 return;
             }
@@ -604,7 +604,7 @@ namespace Fluence.Wpf.Controls
 
         private void RenderIndeterminateArc()
         {
-            if (_indeterminateArcPath == null)
+            if (_indeterminateArcPath is null)
             {
                 return;
             }
@@ -618,7 +618,7 @@ namespace Fluence.Wpf.Controls
 
         private void RenderDeterminateArc(double fraction)
         {
-            if (_arcPath == null)
+            if (_arcPath is null)
             {
                 return;
             }

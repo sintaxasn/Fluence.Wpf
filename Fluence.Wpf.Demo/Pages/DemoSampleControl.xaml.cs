@@ -221,7 +221,7 @@ namespace Fluence.Wpf.Demo.Pages
 
         private void UpdateHeaderVisibility()
         {
-            if (TitleTextBlock == null || DescriptionTextBlock == null || HeaderPanel == null)
+            if (TitleTextBlock is null || DescriptionTextBlock is null || HeaderPanel is null)
             {
                 return;
             }
@@ -242,12 +242,12 @@ namespace Fluence.Wpf.Demo.Pages
 
         private void UpdateSampleContentVisibility()
         {
-            if (SampleCard == null || SourceExpander == null)
+            if (SampleCard is null || SourceExpander is null)
             {
                 return;
             }
 
-            if (SampleContent == null)
+            if (SampleContent is null)
             {
                 SampleCard.Visibility = Visibility.Collapsed;
                 SourceExpander.BorderThickness = new Thickness(1);
@@ -606,7 +606,7 @@ namespace Fluence.Wpf.Demo.Pages
 #if NET6_0_OR_GREATER
             ArgumentNullException.ThrowIfNull(placeholder);
 #else
-            if (placeholder == null)
+            if (placeholder is null)
             {
                 throw new ArgumentNullException(nameof(placeholder));
             }
@@ -622,7 +622,7 @@ namespace Fluence.Wpf.Demo.Pages
             };
 
             FluenceCard? hostCard = FindAncestorCard(placeholder);
-            if (hostCard != null && hostCard.Content is UIElement sampleContent)
+            if (hostCard is not null && hostCard.Content is UIElement sampleContent)
             {
                 sample.Margin = hostCard.Margin;
                 sample.VerticalAlignment = hostCard.VerticalAlignment;
@@ -675,7 +675,7 @@ namespace Fluence.Wpf.Demo.Pages
         private static FluenceCard? FindAncestorCard(FrameworkElement element)
         {
             DependencyObject? current = element;
-            while (current != null)
+            while (current is not null)
             {
                 if (current is FluenceCard card)
                 {

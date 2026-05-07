@@ -294,7 +294,7 @@ namespace Fluence.Wpf.Demo.Pages.Data
 
         private void AddListItem_Click(object sender, RoutedEventArgs e)
         {
-            if (EmptyStateListView == null)
+            if (EmptyStateListView is null)
             {
                 return;
             }
@@ -307,7 +307,7 @@ namespace Fluence.Wpf.Demo.Pages.Data
 
         private void RemoveListItem_Click(object sender, RoutedEventArgs e)
         {
-            if (EmptyStateListView == null || EmptyStateListView.Items.Count == 0)
+            if (EmptyStateListView is null || EmptyStateListView.Items.Count == 0)
             {
                 return;
             }

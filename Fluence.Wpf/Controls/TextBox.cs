@@ -294,7 +294,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
             counter.Visibility = Visibility.Visible;
-            counter.Text = string.Format(CultureInfo.CurrentCulture, "{0}/{1}", Text != null ? Text.Length : 0, MaxLength);
+            counter.Text = string.Format(CultureInfo.CurrentCulture, "{0}/{1}", Text is not null ? Text.Length : 0, MaxLength);
         }
 
         private void UpdateHelperText()
@@ -310,7 +310,7 @@ namespace Fluence.Wpf.Controls
                 string message = !string.IsNullOrWhiteSpace(ValidationMessage) ? ValidationMessage : HelperText;
                 helper.Text = message;
                 helper.Visibility = string.IsNullOrWhiteSpace(message) ? Visibility.Collapsed : Visibility.Visible;
-                if (icon != null)
+                if (icon is not null)
                 {
                     icon.Visibility = helper.Visibility;
                     switch (ValidationState)

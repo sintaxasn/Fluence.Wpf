@@ -123,7 +123,7 @@ namespace Fluence.Wpf.Demo.Pages.Glyphs
         {
             lock (IconRowsLock)
             {
-                if (cachedIconRows == null)
+                if (cachedIconRows is null)
                 {
                     List<IconCatalogItem> icons = LoadIconCatalog();
                     cachedIconCount = icons.Count;
@@ -203,7 +203,7 @@ namespace Fluence.Wpf.Demo.Pages.Glyphs
             using (StreamReader reader = new(info.Stream, Encoding.UTF8, true))
             {
                 string? line;
-                while ((line = reader.ReadLine()) != null)
+                while ((line = reader.ReadLine()) is not null)
                 {
                     if (line.Length == 0)
                     {

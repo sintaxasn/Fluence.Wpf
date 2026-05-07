@@ -75,7 +75,7 @@ namespace Fluence.Wpf.Controls
                 for (int i = 0; i < count; i++)
                 {
                     UIElement child = children[i];
-                    if (child == null)
+                    if (child is null)
                     {
                         continue;
                     }
@@ -97,7 +97,7 @@ namespace Fluence.Wpf.Controls
             for (int i = 0; i < count; i++)
             {
                 UIElement child = children[i];
-                if (child == null)
+                if (child is null)
                 {
                     continue;
                 }
@@ -128,7 +128,7 @@ namespace Fluence.Wpf.Controls
                 for (int i = 0; i < count; i++)
                 {
                     UIElement child = children[i];
-                    if (child == null)
+                    if (child is null)
                     {
                         continue;
                     }
@@ -148,7 +148,7 @@ namespace Fluence.Wpf.Controls
             for (int i = 0; i < count; i++)
             {
                 UIElement child = children[i];
-                if (child == null)
+                if (child is null)
                 {
                     continue;
                 }

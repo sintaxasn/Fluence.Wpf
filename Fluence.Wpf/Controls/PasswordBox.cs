@@ -270,7 +270,7 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public void SelectAll()
         {
-            if (IsPasswordRevealed && _revealTextBox != null)
+            if (IsPasswordRevealed && _revealTextBox is not null)
             {
                 _revealTextBox.SelectAll();
             }
@@ -291,21 +291,21 @@ namespace Fluence.Wpf.Controls
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            if (_passwordBox != null)
+            if (_passwordBox is not null)
             {
                 _passwordBox.PasswordChanged -= OnPasswordBoxPasswordChanged;
                 _passwordBox.GotKeyboardFocus -= OnInnerKeyboardFocusChanged;
                 _passwordBox.LostKeyboardFocus -= OnInnerKeyboardFocusChanged;
                 _passwordBox.PreviewKeyDown -= OnInnerPreviewKeyDown;
             }
-            if (_revealTextBox != null)
+            if (_revealTextBox is not null)
             {
                 _revealTextBox.TextChanged -= OnRevealTextBoxTextChanged;
                 _revealTextBox.GotKeyboardFocus -= OnInnerKeyboardFocusChanged;
                 _revealTextBox.LostKeyboardFocus -= OnInnerKeyboardFocusChanged;
                 _revealTextBox.PreviewKeyDown -= OnInnerPreviewKeyDown;
             }
-            if (_revealButton != null)
+            if (_revealButton is not null)
             {
                 _revealButton.PreviewMouseLeftButtonDown -= OnRevealButtonDown;
                 _revealButton.PreviewMouseLeftButtonUp -= OnRevealButtonUp;
@@ -316,29 +316,29 @@ namespace Fluence.Wpf.Controls
             _passwordBox = GetTemplateChild("PART_PasswordBox") as System.Windows.Controls.PasswordBox;
             _revealTextBox = GetTemplateChild("PART_RevealTextBox") as System.Windows.Controls.TextBox;
             _revealButton = GetTemplateChild("PART_RevealButton") as System.Windows.Controls.Button;
-            if (_passwordBox != null)
+            if (_passwordBox is not null)
             {
                 _passwordBox.PasswordChanged += OnPasswordBoxPasswordChanged;
                 _passwordBox.Password = Password ?? string.Empty;
             }
-            if (_revealTextBox != null)
+            if (_revealTextBox is not null)
             {
                 _revealTextBox.TextChanged += OnRevealTextBoxTextChanged;
                 _revealTextBox.Text = Password ?? string.Empty;
             }
-            if (_revealButton != null)
+            if (_revealButton is not null)
             {
                 _revealButton.PreviewMouseLeftButtonDown += OnRevealButtonDown;
                 _revealButton.PreviewMouseLeftButtonUp += OnRevealButtonUp;
                 _revealButton.MouseLeave += OnRevealButtonLeave;
             }
-            if (_passwordBox != null)
+            if (_passwordBox is not null)
             {
                 _passwordBox.GotKeyboardFocus += OnInnerKeyboardFocusChanged;
                 _passwordBox.LostKeyboardFocus += OnInnerKeyboardFocusChanged;
                 _passwordBox.PreviewKeyDown += OnInnerPreviewKeyDown;
             }
-            if (_revealTextBox != null)
+            if (_revealTextBox is not null)
             {
                 _revealTextBox.GotKeyboardFocus += OnInnerKeyboardFocusChanged;
                 _revealTextBox.LostKeyboardFocus += OnInnerKeyboardFocusChanged;
@@ -377,7 +377,7 @@ namespace Fluence.Wpf.Controls
 
         private void StartCapsPoll()
         {
-            if (_capsPollTimer != null)
+            if (_capsPollTimer is not null)
             {
                 return;
             }
@@ -388,7 +388,7 @@ namespace Fluence.Wpf.Controls
 
         private void StopCapsPoll()
         {
-            if (_capsPollTimer == null)
+            if (_capsPollTimer is null)
             {
                 return;
             }

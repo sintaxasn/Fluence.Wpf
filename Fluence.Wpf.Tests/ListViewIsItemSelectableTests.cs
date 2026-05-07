@@ -55,7 +55,7 @@ namespace Fluence.Wpf.Tests
                 }
             }));
 
-            if (capturedException != null)
+            if (capturedException is not null)
             {
                 ExceptionDispatchInfo.Capture(capturedException).Throw();
             }
@@ -129,7 +129,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    if (genericDictionary != null)
+                    if (genericDictionary is not null)
                     {
                         _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
@@ -168,7 +168,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    if (genericDictionary != null)
+                    if (genericDictionary is not null)
                     {
                         _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
@@ -208,7 +208,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    if (genericDictionary != null)
+                    if (genericDictionary is not null)
                     {
                         _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
@@ -248,7 +248,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    if (genericDictionary != null)
+                    if (genericDictionary is not null)
                     {
                         _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }

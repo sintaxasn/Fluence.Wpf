@@ -460,7 +460,7 @@ namespace Fluence.Wpf.Demo.Pages.Accessibility
 
         private void PopulateHcTable()
         {
-            if (HcMappingTable == null)
+            if (HcMappingTable is null)
             {
                 return;
             }
@@ -482,7 +482,7 @@ namespace Fluence.Wpf.Demo.Pages.Accessibility
 
         private void RtlToggle_Changed(object sender, RoutedEventArgs e)
         {
-            if (RtlDemoCard == null || RtlToggle == null)
+            if (RtlDemoCard is null || RtlToggle is null)
             {
                 return;
             }

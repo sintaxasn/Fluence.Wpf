@@ -112,17 +112,17 @@ namespace Fluence.Wpf.Demo.Pages.Status
 
         private void ProgressSlider_ValueChanged(object sender, System.Windows.RoutedPropertyChangedEventArgs<double> e)
         {
-            if (ProgressSlider == null)
+            if (ProgressSlider is null)
             {
                 return;
             }
 
-            if (SliderValueLabel != null)
+            if (SliderValueLabel is not null)
             {
                 SliderValueLabel.Text = string.Format(""Value: {0:0}"", ProgressSlider.Value);
             }
 
-            if (StandardProgressBar != null)
+            if (StandardProgressBar is not null)
             {
                 StandardProgressBar.Value = ProgressSlider.Value;
             }
@@ -173,7 +173,7 @@ namespace Fluence.Wpf.Demo.Pages.Status
 
         private void IndeterminateToggle_Toggled(object sender, RoutedEventArgs e)
         {
-            if (IndeterminateProgressBar == null || IndeterminateToggle == null)
+            if (IndeterminateProgressBar is null || IndeterminateToggle is null)
             {
                 return;
             }
@@ -237,7 +237,7 @@ namespace Fluence.Wpf.Demo.Pages.Status
         private void ProgressStep_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as FrameworkElement;
-            var tag = button != null && button.Tag != null ? button.Tag.ToString() : string.Empty;
+            var tag = button is not null && button.Tag is not null ? button.Tag.ToString() : string.Empty;
 
             if (string.Equals(tag, ""Next"", StringComparison.OrdinalIgnoreCase))
             {
@@ -390,7 +390,7 @@ namespace Fluence.Wpf.Demo.Pages.Status
 
         private void ProgressRingSlider_ValueChanged(object sender, System.Windows.RoutedPropertyChangedEventArgs<double> e)
         {
-            if (DeterminateProgressRing != null && ProgressRingSlider != null)
+            if (DeterminateProgressRing is not null && ProgressRingSlider is not null)
             {
                 DeterminateProgressRing.Value = ProgressRingSlider.Value;
             }
@@ -495,7 +495,7 @@ namespace Fluence.Wpf.Demo.Pages.Status
 
         private void IndeterminateToggle_Toggled(object? sender, RoutedEventArgs? e)
         {
-            if (!IsLoaded || IndeterminateProgressBar == null || IndeterminateToggle == null)
+            if (!IsLoaded || IndeterminateProgressBar is null || IndeterminateToggle is null)
             {
                 return;
             }
@@ -507,7 +507,7 @@ namespace Fluence.Wpf.Demo.Pages.Status
 
         private void ProgressSlider_ValueChanged(object? sender, RoutedPropertyChangedEventArgs<double>? e)
         {
-            if (ProgressSlider == null)
+            if (ProgressSlider is null)
             {
                 return;
             }
@@ -519,7 +519,7 @@ namespace Fluence.Wpf.Demo.Pages.Status
 
         private void ProgressRingSlider_ValueChanged(object? sender, RoutedPropertyChangedEventArgs<double>? e)
         {
-            if (DeterminateProgressRing != null && ProgressRingSlider != null)
+            if (DeterminateProgressRing is not null && ProgressRingSlider is not null)
             {
                 DeterminateProgressRing.Value = ProgressRingSlider.Value;
             }
@@ -527,7 +527,7 @@ namespace Fluence.Wpf.Demo.Pages.Status
 
         private void ProgressStep_Click(object sender, RoutedEventArgs e)
         {
-            if (StepProgressBar == null)
+            if (StepProgressBar is null)
             {
                 return;
             }

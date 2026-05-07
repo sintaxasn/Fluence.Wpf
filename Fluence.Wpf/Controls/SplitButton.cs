@@ -301,17 +301,17 @@ namespace Fluence.Wpf.Controls
             _secondaryButton = GetTemplateChild(PART_SecondaryButton) as System.Windows.Controls.Primitives.ToggleButton;
             _popup = GetTemplateChild(PART_Popup) as Popup;
             _primaryButton?.Click += OnPrimaryButtonClick;
-            if (_secondaryButton != null)
+            if (_secondaryButton is not null)
             {
                 _secondaryButton.Checked += OnSecondaryButtonChecked;
                 _secondaryButton.Unchecked += OnSecondaryButtonUnchecked;
             }
-            if (_popup != null)
+            if (_popup is not null)
             {
                 _popup.StaysOpen = false;
                 _popup.PlacementTarget = this;
                 _popup.Closed += OnPopupClosed;
-                _popup.IsOpen = _secondaryButton != null && _secondaryButton.IsChecked == true;
+                _popup.IsOpen = _secondaryButton is not null && _secondaryButton.IsChecked == true;
             }
         }
 
@@ -320,7 +320,7 @@ namespace Fluence.Wpf.Controls
             // Primary half: raise Click and invoke Command.
             RaiseEvent(new RoutedEventArgs(ClickEvent, this));
             ICommand command = Command;
-            if (command == null)
+            if (command is null)
             {
                 return;
             }
@@ -355,7 +355,7 @@ namespace Fluence.Wpf.Controls
         private void OnPopupClosed(object? sender, EventArgs e)
         {
             // External click (StaysOpen=false) closed the popup; sync the secondary toggle.
-            if (_secondaryButton != null && _secondaryButton.IsChecked == true)
+            if (_secondaryButton is not null && _secondaryButton.IsChecked == true)
             {
                 _secondaryButton.IsChecked = false;
             }
@@ -373,7 +373,7 @@ namespace Fluence.Wpf.Controls
 
         private void DetachSecondaryHandler()
         {
-            if (_secondaryButton != null)
+            if (_secondaryButton is not null)
             {
                 _secondaryButton.Checked -= OnSecondaryButtonChecked;
                 _secondaryButton.Unchecked -= OnSecondaryButtonUnchecked;

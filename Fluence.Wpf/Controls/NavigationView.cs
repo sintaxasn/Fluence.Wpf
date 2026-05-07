@@ -354,7 +354,7 @@ namespace Fluence.Wpf.Controls
             _paneToggleButton = GetTemplateChild(PartPaneToggleButton) as System.Windows.Controls.Button;
             _paneToggleButton?.Click += OnPaneToggleButtonClick;
             _selectionIndicator = GetTemplateChild(PartSelectionIndicator) as FrameworkElement;
-            _indicatorHost = _selectionIndicator != null ? VisualTreeHelper.GetParent(_selectionIndicator) as FrameworkElement : null;
+            _indicatorHost = _selectionIndicator is not null ? VisualTreeHelper.GetParent(_selectionIndicator) as FrameworkElement : null;
             _indicatorPositioned = false;
             StopAnimation();
             UpdateBackButtonState(false);
@@ -385,7 +385,7 @@ namespace Fluence.Wpf.Controls
             }
 
             object fromContainer = ItemContainerGenerator.ItemFromContainer(navItem);
-            if (fromContainer != DependencyProperty.UnsetValue && fromContainer != null)
+            if (fromContainer != DependencyProperty.UnsetValue && fromContainer is not null)
             {
                 if (!ReferenceEquals(SelectedItem, fromContainer))
                 {
@@ -459,7 +459,7 @@ namespace Fluence.Wpf.Controls
 
         internal void InvokeItem(NavigationViewItem item)
         {
-            if (item == null || !item.IsEnabled)
+            if (item is null || !item.IsEnabled)
             {
                 return;
             }
@@ -496,7 +496,7 @@ namespace Fluence.Wpf.Controls
             bool isVisible = IsBackButtonVisible && IsBackEnabled;
             string stateName = isVisible ? "BackButtonVisible" : "BackButtonCollapsed";
             _ = VisualStateManager.GoToState(this, stateName, useTransitions);
-            if (_backButton != null)
+            if (_backButton is not null)
             {
                 _backButton.BeginAnimation(VisibilityProperty, null);
                 _backButton.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
@@ -524,7 +524,7 @@ namespace Fluence.Wpf.Controls
 
         private void OnNavigationViewItemLoaded(object sender, RoutedEventArgs e)
         {
-            if (SelectedItem != null)
+            if (SelectedItem is not null)
             {
                 ScheduleIndicatorPosition(false);
             }
@@ -575,7 +575,7 @@ namespace Fluence.Wpf.Controls
 
         private void PositionIndicator(bool animate, NavigationViewItem? previousItem)
         {
-            if (_selectionIndicator == null || _indicatorHost == null)
+            if (_selectionIndicator is null || _indicatorHost is null)
             {
                 return;
             }
@@ -583,7 +583,7 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-            if (SelectedItem == null)
+            if (SelectedItem is null)
             {
                 HideIndicator();
                 return;
@@ -639,7 +639,7 @@ namespace Fluence.Wpf.Controls
 
         private bool ShouldIndentSelectionIndicator(NavigationViewItem item, bool topMode)
         {
-            return !topMode && item != null && item.IsChildItem && (IsPaneOpen || (PaneDisplayMode != NavigationViewPaneDisplayMode.Left && PaneDisplayMode != NavigationViewPaneDisplayMode.LeftCompact));
+            return !topMode && item is not null && item.IsChildItem && (IsPaneOpen || (PaneDisplayMode != NavigationViewPaneDisplayMode.Left && PaneDisplayMode != NavigationViewPaneDisplayMode.LeftCompact));
         }
 
         private Point GetCurrentIndicatorPosition()
@@ -804,7 +804,7 @@ namespace Fluence.Wpf.Controls
             if (topMode)
             {
                 double x = fromPosition.X + (direction * length);
-                if (previousItem != null && previousItem.IsVisible && previousItem.ActualWidth > 0)
+                if (previousItem is not null && previousItem.IsVisible && previousItem.ActualWidth > 0)
                 {
                     try
                     {
@@ -821,7 +821,7 @@ namespace Fluence.Wpf.Controls
             }
 
             double y = fromPosition.Y + (direction * length);
-            if (previousItem != null && previousItem.IsVisible && previousItem.ActualHeight > 0)
+            if (previousItem is not null && previousItem.IsVisible && previousItem.ActualHeight > 0)
             {
                 try
                 {
@@ -847,7 +847,7 @@ namespace Fluence.Wpf.Controls
             if (topMode)
             {
                 double x = toPosition.X - (direction * length);
-                if (targetItem != null && targetItem.IsVisible && targetItem.ActualWidth > 0)
+                if (targetItem is not null && targetItem.IsVisible && targetItem.ActualWidth > 0)
                 {
                     try
                     {
@@ -865,7 +865,7 @@ namespace Fluence.Wpf.Controls
             }
 
             double y = toPosition.Y - (direction * length);
-            if (targetItem != null && targetItem.IsVisible && targetItem.ActualHeight > 0)
+            if (targetItem is not null && targetItem.IsVisible && targetItem.ActualHeight > 0)
             {
                 try
                 {
@@ -906,7 +906,7 @@ namespace Fluence.Wpf.Controls
         private void StopAnimation()
         {
             _indicatorAnimationGeneration++;
-            if (_selectionIndicator == null)
+            if (_selectionIndicator is null)
             {
                 return;
             }
@@ -932,7 +932,7 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         private void EnsureMutableTransform()
         {
-            if (_selectionIndicator == null)
+            if (_selectionIndicator is null)
             {
                 return;
             }
@@ -963,7 +963,7 @@ namespace Fluence.Wpf.Controls
 
         internal void SelectItemFromContainer(NavigationViewItem navItem)
         {
-            if (navItem == null)
+            if (navItem is null)
             {
                 return;
             }
@@ -977,13 +977,13 @@ namespace Fluence.Wpf.Controls
         private object GetDataFromContainer(NavigationViewItem navItem)
         {
             object data = ItemContainerGenerator.ItemFromContainer(navItem);
-            return (data != DependencyProperty.UnsetValue && data != null) ? data : navItem;
+            return (data != DependencyProperty.UnsetValue && data is not null) ? data : navItem;
         }
 
         private static NavigationViewItem? FindNavigationViewItem(DependencyObject? focused)
         {
             DependencyObject? current = focused;
-            while (current != null)
+            while (current is not null)
             {
                 if (current is NavigationViewItem asItem)
                 {

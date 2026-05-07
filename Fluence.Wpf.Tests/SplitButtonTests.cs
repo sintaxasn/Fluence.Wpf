@@ -57,7 +57,7 @@ namespace Fluence.Wpf.Tests
                 }
             }));
 
-            if (capturedException != null)
+            if (capturedException is not null)
             {
                 ExceptionDispatchInfo.Capture(capturedException).Throw();
             }

@@ -49,13 +49,13 @@ namespace Fluence.Wpf
         /// <exception cref="ArgumentNullException"><paramref name="window"/> is <c>null</c>.</exception>
         public static void Watch(Window window)
         {
-            if (window == null)
+            if (window is null)
             {
                 throw new ArgumentNullException(nameof(window));
             }
             lock (_lock)
             {
-                if (FindWatchedWindow(window) != null)
+                if (FindWatchedWindow(window) is not null)
                 {
                     return;
                 }
@@ -81,7 +81,7 @@ namespace Fluence.Wpf
         /// <exception cref="ArgumentNullException"><paramref name="window"/> is <c>null</c>.</exception>
         public static void UnWatch(Window window)
         {
-            if (window == null)
+            if (window is null)
             {
                 throw new ArgumentNullException(nameof(window));
             }
@@ -127,7 +127,7 @@ namespace Fluence.Wpf
             }
 
             HwndSource source = HwndSource.FromHwnd(handle);
-            if (source == null)
+            if (source is null)
             {
                 return;
             }
@@ -138,7 +138,7 @@ namespace Fluence.Wpf
 
         private static void DetachHook(WatchedWindow watched)
         {
-            if (!watched.IsHooked || watched.HwndSource == null)
+            if (!watched.IsHooked || watched.HwndSource is null)
             {
                 return;
             }
@@ -178,7 +178,7 @@ namespace Fluence.Wpf
 
         private static void OnSystemThemeChanged()
         {
-            if (Application.Current == null)
+            if (Application.Current is null)
             {
                 return;
             }

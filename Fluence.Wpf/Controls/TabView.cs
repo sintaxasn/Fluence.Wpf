@@ -202,7 +202,7 @@ namespace Fluence.Wpf.Controls
             _addTabButton?.Click += OnAddTabButtonClick;
             _scrollBackButton?.Click += OnScrollBackClick;
             _scrollForwardButton?.Click += OnScrollForwardClick;
-            if (_tabContentScroller != null)
+            if (_tabContentScroller is not null)
             {
                 _tabContentScroller.ScrollChanged += OnTabScrollChanged;
                 UpdateScrollButtonVisibility();
@@ -243,7 +243,7 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateScrollButtonVisibility()
         {
-            if (_tabContentScroller == null)
+            if (_tabContentScroller is null)
             {
                 return;
             }

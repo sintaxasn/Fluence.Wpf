@@ -128,7 +128,7 @@ namespace Fluence.Wpf.Demo.Pages.Trees
         private void SelectionTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             var item = e.NewValue as FluenceTreeViewItem;
-            TreeSelectionLabel.Text = item == null
+            TreeSelectionLabel.Text = item is null
                 ? ""Selected: -""
                 : string.Format(""Selected: {0}"", BuildPath(item));
         }
@@ -137,7 +137,7 @@ namespace Fluence.Wpf.Demo.Pages.Trees
         {
             var header = item.Header as string ?? string.Empty;
             var parent = ItemsControl.ItemsControlFromItemContainer(item) as FluenceTreeViewItem;
-            if (parent == null)
+            if (parent is null)
             {
                 return header;
             }
@@ -213,7 +213,7 @@ namespace Fluence.Wpf.Demo.Pages.Trees
             foreach (var obj in items)
             {
                 var item = obj as FluenceTreeViewItem;
-                if (item == null)
+                if (item is null)
                 {
                     continue;
                 }
@@ -237,7 +237,7 @@ namespace Fluence.Wpf.Demo.Pages.Trees
 
         private void SelectionTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
-            if (TreeSelectionLabel == null)
+            if (TreeSelectionLabel is null)
             {
                 return;
             }
@@ -254,7 +254,7 @@ namespace Fluence.Wpf.Demo.Pages.Trees
 
         private static string BuildPath(FluenceTreeViewItem item)
         {
-            if (item == null)
+            if (item is null)
             {
                 return string.Empty;
             }
@@ -273,7 +273,7 @@ namespace Fluence.Wpf.Demo.Pages.Trees
 
         private void ExpandAll_Click(object sender, RoutedEventArgs e)
         {
-            if (ExpansionTreeView == null)
+            if (ExpansionTreeView is null)
             {
                 return;
             }
@@ -283,7 +283,7 @@ namespace Fluence.Wpf.Demo.Pages.Trees
 
         private void CollapseAll_Click(object sender, RoutedEventArgs e)
         {
-            if (ExpansionTreeView == null)
+            if (ExpansionTreeView is null)
             {
                 return;
             }

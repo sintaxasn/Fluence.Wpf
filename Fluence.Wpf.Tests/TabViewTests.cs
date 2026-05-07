@@ -60,7 +60,7 @@ namespace Fluence.Wpf.Tests
                 }
             }));
 
-            if (capturedException != null)
+            if (capturedException is not null)
             {
                 ExceptionDispatchInfo.Capture(capturedException).Throw();
             }
@@ -88,7 +88,7 @@ namespace Fluence.Wpf.Tests
 
         private static T? FindVisualChild<T>(DependencyObject root) where T : DependencyObject
         {
-            if (root == null)
+            if (root is null)
             {
                 return null;
             }
@@ -113,7 +113,7 @@ namespace Fluence.Wpf.Tests
 
         private static IEnumerable<T> FindVisualChildren<T>(DependencyObject root) where T : DependencyObject
         {
-            if (root == null)
+            if (root is null)
             {
                 yield break;
             }
@@ -136,7 +136,7 @@ namespace Fluence.Wpf.Tests
 
         private static T? FindVisualChildByName<T>(DependencyObject root, string name) where T : FrameworkElement
         {
-            if (root == null || string.IsNullOrWhiteSpace(name))
+            if (root is null || string.IsNullOrWhiteSpace(name))
             {
                 return null;
             }
@@ -153,7 +153,7 @@ namespace Fluence.Wpf.Tests
                 }
 
                 T? found = FindVisualChildByName<T>(VisualTreeHelper.GetChild(root, index), name);
-                if (found != null)
+                if (found is not null)
                 {
                     return found;
                 }
@@ -258,7 +258,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    if (genericDictionary != null)
+                    if (genericDictionary is not null)
                     {
                         _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
@@ -323,7 +323,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    if (genericDictionary != null)
+                    if (genericDictionary is not null)
                     {
                         _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
@@ -382,7 +382,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    if (genericDictionary != null)
+                    if (genericDictionary is not null)
                     {
                         _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
@@ -418,7 +418,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    if (genericDictionary != null)
+                    if (genericDictionary is not null)
                     {
                         _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
@@ -451,7 +451,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    if (genericDictionary != null)
+                    if (genericDictionary is not null)
                     {
                         _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
@@ -495,7 +495,7 @@ namespace Fluence.Wpf.Tests
                 finally
                 {
                     window.Close();
-                    if (genericDictionary != null)
+                    if (genericDictionary is not null)
                     {
                         _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }

@@ -59,7 +59,7 @@ namespace Fluence.Wpf.Tests
                 }
             }));
 
-            if (capturedException != null)
+            if (capturedException is not null)
             {
                 ExceptionDispatchInfo.Capture(capturedException).Throw();
             }
@@ -97,7 +97,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window?.Close();
 
-                    if (dict != null)
+                    if (dict is not null)
                     {
                         _ = app?.Resources.MergedDictionaries.Remove(dict);
                     }
@@ -136,7 +136,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window?.Close();
 
-                    if (dict != null)
+                    if (dict is not null)
                     {
                         _ = app?.Resources.MergedDictionaries.Remove(dict);
                     }
@@ -423,7 +423,7 @@ namespace Fluence.Wpf.Tests
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
 
-                    if (dict != null)
+                    if (dict is not null)
                     {
                         _ = app?.Resources.MergedDictionaries.Remove(dict);
                     }
@@ -456,7 +456,7 @@ namespace Fluence.Wpf.Tests
                     ApplicationThemeManager.Changed -= handler;
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
 
-                    if (dict != null)
+                    if (dict is not null)
                     {
                         _ = app?.Resources.MergedDictionaries.Remove(dict);
                     }
@@ -520,7 +520,7 @@ namespace Fluence.Wpf.Tests
                 {
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
 
-                    if (dict != null)
+                    if (dict is not null)
                     {
                         _ = app?.Resources.MergedDictionaries.Remove(dict);
                     }
@@ -553,7 +553,7 @@ namespace Fluence.Wpf.Tests
                 {
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
 
-                    if (dict != null)
+                    if (dict is not null)
                     {
                         _ = app?.Resources.MergedDictionaries.Remove(dict);
                     }
@@ -1126,7 +1126,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window?.Close();
 
-                    if (dict != null)
+                    if (dict is not null)
                     {
                         _ = app?.Resources.MergedDictionaries.Remove(dict);
                     }
@@ -1218,7 +1218,7 @@ namespace Fluence.Wpf.Tests
 
                     _ = window.ShowDialog();
 
-                    if (scenarioException != null)
+                    if (scenarioException is not null)
                     {
                         ExceptionDispatchInfo.Capture(scenarioException).Throw();
                     }
@@ -1234,12 +1234,12 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    if (window != null && window.IsVisible)
+                    if (window is not null && window.IsVisible)
                     {
                         window.Close();
                     }
 
-                    if (dict != null)
+                    if (dict is not null)
                     {
                         _ = app?.Resources.MergedDictionaries.Remove(dict);
                     }
@@ -1267,7 +1267,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    if (dict != null)
+                    if (dict is not null)
                     {
                         _ = app?.Resources.MergedDictionaries.Remove(dict);
                     }
@@ -1417,7 +1417,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window?.Close();
 
-                    if (dict != null)
+                    if (dict is not null)
                     {
                         _ = app?.Resources.MergedDictionaries.Remove(dict);
                     }
@@ -1427,7 +1427,7 @@ namespace Fluence.Wpf.Tests
 
         private static DependencyObject? FindLogicalHost(DependencyObject node)
         {
-            while (node != null)
+            while (node is not null)
             {
                 if (node is System.Windows.Controls.Border or System.Windows.Controls.Button)
                 {
@@ -1442,7 +1442,7 @@ namespace Fluence.Wpf.Tests
 
         private static bool IsDescendantOfButton(DependencyObject node, System.Windows.Controls.Button target)
         {
-            while (node != null)
+            while (node is not null)
             {
                 if (ReferenceEquals(node, target))
                 {

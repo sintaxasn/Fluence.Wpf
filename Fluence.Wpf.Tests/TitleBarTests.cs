@@ -199,13 +199,13 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    if (window != null)
+                    if (window is not null)
                     {
                         window.Content = null;
                         window.Close();
                     }
 
-                    if (genericDictionary != null)
+                    if (genericDictionary is not null)
                     {
                         _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                     }
@@ -243,7 +243,7 @@ namespace Fluence.Wpf.Tests
                 }
             }));
 
-            if (capturedException != null)
+            if (capturedException is not null)
             {
                 ExceptionDispatchInfo.Capture(capturedException).Throw();
             }

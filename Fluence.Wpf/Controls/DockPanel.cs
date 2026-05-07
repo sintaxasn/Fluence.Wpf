@@ -95,7 +95,7 @@ namespace Fluence.Wpf.Controls
             for (int i = 0; i < lastIndex; i++)
             {
                 UIElement child = children[i];
-                if (child == null)
+                if (child is null)
                 {
                     continue;
                 }
@@ -127,7 +127,7 @@ namespace Fluence.Wpf.Controls
             if (lastFill && count > 0)
             {
                 UIElement child = children[count - 1];
-                if (child != null)
+                if (child is not null)
                 {
                     child.Measure(available);
                     Size desired = child.DesiredSize;
@@ -154,7 +154,7 @@ namespace Fluence.Wpf.Controls
             for (int i = 0; i < lastIndex; i++)
             {
                 UIElement child = children[i];
-                if (child == null)
+                if (child is null)
                 {
                     continue;
                 }
