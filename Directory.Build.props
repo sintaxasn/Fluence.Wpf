@@ -59,11 +59,11 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <AdditionalFiles Include="$(SolutionDir)BannedSymbols.txt" />
+    <AdditionalFiles Include="$(MSBuildProjectDirectory)\..\BannedSymbols.txt" />
   </ItemGroup>
 
   <!-- Common embedded resource for license -->
   <ItemGroup>
-    <EmbeddedResource Include="$(SolutionDir)LICENSE" />
+    <EmbeddedResource Include="$(MSBuildProjectDirectory)\..\LICENSE" />
   </ItemGroup>
 </Project>
