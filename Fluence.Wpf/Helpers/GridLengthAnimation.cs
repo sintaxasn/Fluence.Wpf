@@ -126,7 +126,7 @@ namespace Fluence.Wpf.Helpers
             // from the property's current animated base value — this is what WPF does
             // for a DoubleAnimation with only To set, and is what keeps a reverse
             // collapse (280 -> 48) from snapping to 0 on the first frame.
-            if (animationClock == null)
+            if (animationClock is null)
             {
                 throw new ArgumentNullException(nameof(animationClock));
             }
@@ -143,7 +143,7 @@ namespace Fluence.Wpf.Helpers
                 fromValue = fromLength.Value;
             }
             double progress = animationClock.CurrentProgress ?? 0d;
-            if (EasingFunction != null)
+            if (EasingFunction is not null)
             {
                 progress = EasingFunction.Ease(progress);
             }

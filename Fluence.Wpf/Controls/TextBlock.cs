@@ -157,7 +157,7 @@ namespace Fluence.Wpf.Controls
 
         private void SyncPartTextBlock()
         {
-            if (_partTextBlock == null)
+            if (_partTextBlock is null)
             {
                 return;
             }

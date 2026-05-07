@@ -160,7 +160,7 @@ namespace Fluence.Wpf.Controls
                 ClearAutomaticToolTip();
                 return;
             }
-            if (_mainContentPresenter == null)
+            if (_mainContentPresenter is null)
             {
                 return;
             }
@@ -209,7 +209,7 @@ namespace Fluence.Wpf.Controls
 
         private static T? FindVisualChild<T>(DependencyObject parent) where T : DependencyObject
         {
-            if (parent == null)
+            if (parent is null)
             {
                 return null;
             }

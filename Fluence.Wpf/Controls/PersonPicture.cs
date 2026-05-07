@@ -255,7 +255,7 @@ namespace Fluence.Wpf.Controls
             if (IsGroup)
             {
                 // Group: show people glyph
-                if (_initialsText != null)
+                if (_initialsText is not null)
                 {
                     _initialsText.Text = GlyphPeople;
                     _initialsText.SetResourceReference(WpfTextBlock.FontFamilyProperty, "FluentFontFamily");
@@ -263,7 +263,7 @@ namespace Fluence.Wpf.Controls
                 _ = VisualStateManager.GoToState(this, StateGroup, useTransitions);
                 return;
             }
-            if (ProfilePicture != null)
+            if (ProfilePicture is not null)
             {
                 // Photo state: fill the image ellipse
                 _ = (_imageEllipse?.Fill = new ImageBrush(ProfilePicture) { Stretch = Stretch.UniformToFill });
@@ -274,7 +274,7 @@ namespace Fluence.Wpf.Controls
             if (GetInitials() is string initials)
             {
                 // Initials state
-                if (_initialsText != null)
+                if (_initialsText is not null)
                 {
                     _initialsText.Text = initials;
                     _initialsText.SetResourceReference(WpfTextBlock.FontFamilyProperty, "FluentFontFamily");
@@ -284,7 +284,7 @@ namespace Fluence.Wpf.Controls
             }
 
             // No photo or initials: show contact glyph (Segoe Fluent Icons U+E77B)
-            if (_initialsText != null)
+            if (_initialsText is not null)
             {
                 _initialsText.Text = GlyphContact;
                 _initialsText.FontFamily = new FontFamily("Segoe Fluent Icons");
@@ -296,7 +296,7 @@ namespace Fluence.Wpf.Controls
         {
             bool hasBadge = !string.IsNullOrWhiteSpace(BadgeGlyph) || BadgeNumber > 0;
             _ = (_badgeGrid?.Visibility = hasBadge ? Visibility.Visible : Visibility.Collapsed);
-            if (_badgeText != null)
+            if (_badgeText is not null)
             {
                 if (!string.IsNullOrWhiteSpace(BadgeGlyph))
                 {

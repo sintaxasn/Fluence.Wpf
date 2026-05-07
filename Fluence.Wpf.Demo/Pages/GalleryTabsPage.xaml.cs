@@ -277,7 +277,7 @@ namespace Fluence.Wpf.Demo.Pages.Tabs
         private void DemoTabView_TabCloseRequested(object sender, RoutedEventArgs e)
         {
             var args = e as TabViewTabCloseRequestedEventArgs;
-            if (args == null || args.Tab == null)
+            if (args is null || args.Tab is null)
             {
                 return;
             }
@@ -307,7 +307,7 @@ namespace Fluence.Wpf.Demo.Pages.Tabs
 
         private void DemoTabView_AddTabButtonClick(object sender, RoutedEventArgs e)
         {
-            if (DemoTabView == null)
+            if (DemoTabView is null)
             {
                 return;
             }
@@ -336,7 +336,7 @@ namespace Fluence.Wpf.Demo.Pages.Tabs
 
         private void DemoTabView_TabCloseRequested(object sender, RoutedEventArgs e)
         {
-            if (e is not TabViewTabCloseRequestedEventArgs args || DemoTabView == null || args.Tab == null)
+            if (e is not TabViewTabCloseRequestedEventArgs args || DemoTabView is null || args.Tab is null)
             {
                 return;
             }
@@ -347,7 +347,7 @@ namespace Fluence.Wpf.Demo.Pages.Tabs
 
         private void UpdateStatus()
         {
-            if (DemoTabViewStatus == null || DemoTabView == null)
+            if (DemoTabViewStatus is null || DemoTabView is null)
             {
                 return;
             }

@@ -195,7 +195,7 @@ namespace Fluence.Wpf.Controls
 
         private void BuildAndRefreshStars()
         {
-            if (_starsPanel == null)
+            if (_starsPanel is null)
             {
                 return;
             }
@@ -258,7 +258,7 @@ namespace Fluence.Wpf.Controls
 
         private void RefreshStars()
         {
-            if (_starsPanel == null)
+            if (_starsPanel is null)
             {
                 return;
             }
@@ -291,7 +291,7 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateCaption()
         {
-            if (_captionText == null)
+            if (_captionText is null)
             {
                 return;
             }

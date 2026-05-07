@@ -327,7 +327,7 @@ namespace Fluence.Wpf.Controls
         private static void OnCustomContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TitleBar titleBar = (TitleBar)d;
-            if (titleBar.Content == null || Equals(titleBar.Content, e.OldValue))
+            if (titleBar.Content is null || Equals(titleBar.Content, e.OldValue))
             {
                 titleBar.Content = e.NewValue;
             }
@@ -399,7 +399,7 @@ namespace Fluence.Wpf.Controls
 
         private static bool TryExecuteCommand(ICommand command, object parameter)
         {
-            if (command == null)
+            if (command is null)
             {
                 return true;
             }
@@ -413,7 +413,7 @@ namespace Fluence.Wpf.Controls
 
         private static bool CanExecuteCommand(ICommand command, object parameter)
         {
-            return command == null || command.CanExecute(parameter);
+            return command is null || command.CanExecute(parameter);
         }
 
         private static void SubscribeCommand(ICommand? command, EventHandler handler)

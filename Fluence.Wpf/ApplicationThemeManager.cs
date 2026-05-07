@@ -131,7 +131,7 @@ namespace Fluence.Wpf
 
         private static void InitializeDictionaries(ApplicationTheme resolvedTheme)
         {
-            if (Application.Current == null)
+            if (Application.Current is null)
             {
                 return;
             }
@@ -157,7 +157,7 @@ namespace Fluence.Wpf
 
         private static void SwapThemeColors(ApplicationTheme resolvedTheme)
         {
-            if (Application.Current == null)
+            if (Application.Current is null)
             {
                 return;
             }
@@ -210,7 +210,7 @@ namespace Fluence.Wpf
         /// </summary>
         private static void PromoteThemeColors(ApplicationTheme resolvedTheme)
         {
-            if (Application.Current == null)
+            if (Application.Current is null)
             {
                 return;
             }
@@ -218,7 +218,7 @@ namespace Fluence.Wpf
             ResourceDictionary themeDict = resources.MergedDictionaries[SlotTheme];
             if (resolvedTheme != ApplicationTheme.HighContrast)
             {
-                if (_promotedHighContrastBrushKeys != null)
+                if (_promotedHighContrastBrushKeys is not null)
                 {
                     foreach (object key in _promotedHighContrastBrushKeys)
                     {
@@ -273,7 +273,7 @@ namespace Fluence.Wpf
 
         private static void OnChanged(ApplicationTheme resolvedTheme)
         {
-            if (Changed != null)
+            if (Changed is not null)
             {
                 Color accent = ApplicationAccentColorManager.SystemAccentColor;
                 Changed(null, new ThemeChangedEventArgs(resolvedTheme, accent));

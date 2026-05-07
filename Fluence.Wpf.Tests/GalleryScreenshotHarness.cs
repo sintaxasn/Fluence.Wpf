@@ -85,7 +85,7 @@ namespace Fluence.Wpf.Tests
                 }
             }));
 
-            if (captured != null)
+            if (captured is not null)
             {
                 ExceptionDispatchInfo.Capture(captured).Throw();
             }
@@ -104,7 +104,7 @@ namespace Fluence.Wpf.Tests
         private static string FindRepoRoot()
         {
             DirectoryInfo? directory = new(AppContext.BaseDirectory);
-            while (directory != null)
+            while (directory is not null)
             {
                 if (File.Exists(Path.Combine(directory.FullName, "Fluence.Wpf.sln")))
                 {

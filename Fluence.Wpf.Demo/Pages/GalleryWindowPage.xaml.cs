@@ -204,7 +204,7 @@ namespace Fluence.Wpf.Demo.Pages.Window
             }
 
             var rb = sender as RadioButton;
-            if (rb == null)
+            if (rb is null)
             {
                 return;
             }
@@ -228,7 +228,7 @@ namespace Fluence.Wpf.Demo.Pages.Window
             }
 
             var host = System.Windows.Window.GetWindow(this) as Fluence.Wpf.Controls.FluenceWindow;
-            var backdrop = host != null ? host.SystemBackdropType : BackdropType.Mica;
+            var backdrop = host is not null ? host.SystemBackdropType : BackdropType.Mica;
             ApplicationThemeManager.Apply(theme, backdrop, true);
             ThemeStateLabel.Text = string.Format(""Current: {0}"", theme);
         }
@@ -241,7 +241,7 @@ namespace Fluence.Wpf.Demo.Pages.Window
             }
 
             var window = System.Windows.Window.GetWindow(this) as Fluence.Wpf.Controls.FluenceWindow;
-            if (window == null)
+            if (window is null)
             {
                 return;
             }
@@ -278,7 +278,7 @@ namespace Fluence.Wpf.Demo.Pages.Window
             }
 
             var host = System.Windows.Window.GetWindow(this);
-            if (host == null)
+            if (host is null)
             {
                 return;
             }
@@ -298,7 +298,7 @@ namespace Fluence.Wpf.Demo.Pages.Window
         private void AccentSwatch_Click(object sender, RoutedEventArgs e)
         {
             var button = sender as FrameworkElement;
-            var hex = button != null ? button.Tag as string : null;
+            var hex = button is not null ? button.Tag as string : null;
             if (string.IsNullOrEmpty(hex))
             {
                 return;
@@ -307,7 +307,7 @@ namespace Fluence.Wpf.Demo.Pages.Window
             try
             {
                 var converted = ColorConverter.ConvertFromString(hex);
-                if (converted != null)
+                if (converted is not null)
                 {
                     ApplicationAccentColorManager.ApplyCustomAccent((Color)converted);
                 }
@@ -442,7 +442,7 @@ namespace Fluence.Wpf.Demo.Pages.Window
             }
 
             var window = HostFluenceWindow;
-            if (window == null)
+            if (window is null)
             {
                 return;
             }
@@ -455,13 +455,13 @@ namespace Fluence.Wpf.Demo.Pages.Window
         private void WindowChromeToggle_Changed(object sender, RoutedEventArgs e)
         {
             var window = HostFluenceWindow;
-            if (window == null)
+            if (window is null)
             {
                 return;
             }
 
-            window.ShowIcon = ShowWindowIconToggle != null && ShowWindowIconToggle.IsChecked == true;
-            window.ShowTitle = ShowWindowTitleToggle != null && ShowWindowTitleToggle.IsChecked == true;
+            window.ShowIcon = ShowWindowIconToggle is not null && ShowWindowIconToggle.IsChecked == true;
+            window.ShowTitle = ShowWindowTitleToggle is not null && ShowWindowTitleToggle.IsChecked == true;
         }
 
         private static void ApplyCaptionVisibility(
@@ -469,8 +469,8 @@ namespace Fluence.Wpf.Demo.Pages.Window
             Action<Visibility> setVisibility,
             Action<bool> setEnabled)
         {
-            var item = combo != null ? combo.SelectedItem as ComboBoxItem : null;
-            var content = item != null ? item.Content as string : null;
+            var item = combo is not null ? combo.SelectedItem as ComboBoxItem : null;
+            var content = item is not null ? item.Content as string : null;
 
             if (string.Equals(content, ""Hidden"", StringComparison.Ordinal))
             {
@@ -538,7 +538,7 @@ namespace Fluence.Wpf.Demo.Pages.Window
         private void SyncBackdropComboFromWindow()
         {
             FluenceWindow? fw = HostFluenceWindow;
-            if (fw == null || BackdropCombo == null)
+            if (fw is null || BackdropCombo is null)
             {
                 return;
             }
@@ -580,7 +580,7 @@ namespace Fluence.Wpf.Demo.Pages.Window
                     ? ApplicationTheme.Dark
                     : ReferenceEquals(rb, ThemeHighContrast) ? ApplicationTheme.HighContrast : ApplicationTheme.Auto;
             FluenceWindow? fw = HostFluenceWindow;
-            BackdropType backdrop = fw != null ? fw.SystemBackdropType : BackdropType.Mica;
+            BackdropType backdrop = fw is not null ? fw.SystemBackdropType : BackdropType.Mica;
             ApplicationThemeManager.Apply(theme, backdrop);
             UpdateThemeStateLabel(ApplicationThemeManager.CurrentTheme);
         }
@@ -593,7 +593,7 @@ namespace Fluence.Wpf.Demo.Pages.Window
             }
 
             FluenceWindow? fw = HostFluenceWindow;
-            if (fw == null)
+            if (fw is null)
             {
                 return;
             }
@@ -612,7 +612,7 @@ namespace Fluence.Wpf.Demo.Pages.Window
 
         private void AccentSwatch_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is not FrameworkElement button || button.Tag == null)
+            if (sender is not FrameworkElement button || button.Tag is null)
             {
                 return;
             }
@@ -621,7 +621,7 @@ namespace Fluence.Wpf.Demo.Pages.Window
             try
             {
                 object converted = ColorConverter.ConvertFromString(hex);
-                if (converted != null)
+                if (converted is not null)
                 {
                     ApplicationAccentColorManager.ApplyCustomAccent((Color)converted);
                 }
@@ -645,7 +645,7 @@ namespace Fluence.Wpf.Demo.Pages.Window
             }
 
             FluenceWindow? host = HostFluenceWindow;
-            if (host == null)
+            if (host is null)
             {
                 return;
             }
@@ -670,7 +670,7 @@ namespace Fluence.Wpf.Demo.Pages.Window
             }
 
             FluenceWindow? fw = HostFluenceWindow;
-            if (fw == null)
+            if (fw is null)
             {
                 return;
             }
@@ -684,7 +684,7 @@ namespace Fluence.Wpf.Demo.Pages.Window
         private void WindowChromeToggle_Changed(object? sender, RoutedEventArgs? e)
         {
             FluenceWindow? fw = HostFluenceWindow;
-            if (fw == null)
+            if (fw is null)
             {
                 return;
             }
@@ -694,11 +694,11 @@ namespace Fluence.Wpf.Demo.Pages.Window
             // actual ShowIcon / ShowTitle DPs.
             MainWindow? main = fw as MainWindow;
 
-            if (ShowWindowTitleToggle != null)
+            if (ShowWindowTitleToggle is not null)
             {
                 bool show = ShowWindowTitleToggle.IsChecked == true;
                 string title = show ? MainWindow.GalleryWindowTitle : string.Empty;
-                if (main != null)
+                if (main is not null)
                 {
                     main.SetUserShowTitle(show, title);
                 }
@@ -709,13 +709,13 @@ namespace Fluence.Wpf.Demo.Pages.Window
                 }
             }
 
-            if (ShowWindowIconToggle != null)
+            if (ShowWindowIconToggle is not null)
             {
                 bool show = ShowWindowIconToggle.IsChecked == true;
                 ImageSource? icon = show
                     ? new BitmapImage(new Uri("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/fluence-wpf-appicon-256.ico"))
                     : null;
-                if (main != null)
+                if (main is not null)
                 {
                     main.SetUserShowIcon(show, icon);
                 }
@@ -729,7 +729,7 @@ namespace Fluence.Wpf.Demo.Pages.Window
 
         private void SyncThemeRadioButtons()
         {
-            if (ThemeLight == null)
+            if (ThemeLight is null)
             {
                 return;
             }
@@ -773,8 +773,8 @@ namespace Fluence.Wpf.Demo.Pages.Window
             Action<Visibility> setVisibility,
             Action<bool> setEnabled)
         {
-            ComboBoxItem? item = combo != null ? combo.SelectedItem as ComboBoxItem : null;
-            string? content = item != null ? item.Content as string : null;
+            ComboBoxItem? item = combo is not null ? combo.SelectedItem as ComboBoxItem : null;
+            string? content = item is not null ? item.Content as string : null;
 
             if (string.Equals(content, "Hidden", StringComparison.Ordinal))
             {

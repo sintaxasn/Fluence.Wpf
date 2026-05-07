@@ -87,7 +87,7 @@ namespace Fluence.Wpf.Tests
                 }
             }));
 
-            if (captured != null)
+            if (captured is not null)
             {
                 ExceptionDispatchInfo.Capture(captured).Throw();
             }
@@ -1209,7 +1209,7 @@ namespace Fluence.Wpf.Tests
         private static IEnumerable<T> FindAllVisualChildren<T>(DependencyObject? root, HashSet<DependencyObject> visited)
             where T : DependencyObject
         {
-            if (root == null)
+            if (root is null)
             {
                 yield break;
             }

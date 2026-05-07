@@ -349,7 +349,7 @@ namespace Fluence.Wpf.Controls
         protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
         {
             base.OnGotKeyboardFocus(e);
-            if (_partTextBox != null && !_partTextBox.IsKeyboardFocusWithin)
+            if (_partTextBox is not null && !_partTextBox.IsKeyboardFocusWithin)
             {
                 _ = _partTextBox.Focus();
             }
@@ -359,7 +359,7 @@ namespace Fluence.Wpf.Controls
         protected override void OnPreviewMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             base.OnPreviewMouseLeftButtonDown(e);
-            if (_partTextBox != null && !_partTextBox.IsKeyboardFocusWithin)
+            if (_partTextBox is not null && !_partTextBox.IsKeyboardFocusWithin)
             {
                 _ = _partTextBox.Focus();
             }
@@ -369,7 +369,7 @@ namespace Fluence.Wpf.Controls
         public override void OnApplyTemplate()
         {
             base.OnApplyTemplate();
-            if (_partTextBox != null)
+            if (_partTextBox is not null)
             {
                 _partTextBox.KeyDown -= OnPartTextBoxKeyDown;
                 _partTextBox.LostKeyboardFocus -= OnPartTextBoxLostKeyboardFocus;
@@ -379,7 +379,7 @@ namespace Fluence.Wpf.Controls
             _partTextBox = GetTemplateChild(PartTextBox) as System.Windows.Controls.TextBox;
             _partUpButton = GetTemplateChild(PartUpButton) as System.Windows.Controls.Primitives.RepeatButton;
             _partDownButton = GetTemplateChild(PartDownButton) as System.Windows.Controls.Primitives.RepeatButton;
-            if (_partTextBox != null)
+            if (_partTextBox is not null)
             {
                 _partTextBox.KeyDown += OnPartTextBoxKeyDown;
                 _partTextBox.LostKeyboardFocus += OnPartTextBoxLostKeyboardFocus;
@@ -422,7 +422,7 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-            if (box._partTextBox != null && !string.Equals(box._partTextBox.Text, box.Text, StringComparison.Ordinal))
+            if (box._partTextBox is not null && !string.Equals(box._partTextBox.Text, box.Text, StringComparison.Ordinal))
             {
                 box._partTextBox.Text = box.Text ?? string.Empty;
             }
@@ -471,7 +471,7 @@ namespace Fluence.Wpf.Controls
             try
             {
                 SetCurrentValue(TextProperty, formatted);
-                if (_partTextBox != null && !string.Equals(_partTextBox.Text, formatted, StringComparison.Ordinal))
+                if (_partTextBox is not null && !string.Equals(_partTextBox.Text, formatted, StringComparison.Ordinal))
                 {
                     _partTextBox.Text = formatted;
                 }

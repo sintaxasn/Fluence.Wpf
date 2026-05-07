@@ -204,7 +204,7 @@ namespace Fluence.Wpf.Demo.Pages.Forms
 
         private void SignInField_Changed(object? sender, RoutedEventArgs e)
         {
-            if (SignInButton == null || SignInEmailBox == null || SignInPasswordBox == null)
+            if (SignInButton is null || SignInEmailBox is null || SignInPasswordBox is null)
             {
                 return;
             }

@@ -217,14 +217,14 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
 
         private void UpdateBackState()
         {
-            var isBackEnabled = BackEnabledToggle != null && BackEnabledToggle.IsChecked == true;
+            var isBackEnabled = BackEnabledToggle is not null && BackEnabledToggle.IsChecked == true;
 
-            if (CompactNavigationDemo != null)
+            if (CompactNavigationDemo is not null)
             {
                 CompactNavigationDemo.IsBackEnabled = isBackEnabled;
             }
 
-            if (BackStatusLabel != null)
+            if (BackStatusLabel is not null)
             {
                 BackStatusLabel.Text = isBackEnabled
                     ? string.Format(""Back button enabled ({0} requests)"", _backRequestCount)
@@ -268,7 +268,7 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
 
         private static void SetNavigationDemoContent(NavigationView? nav, NavigationViewItem item)
         {
-            if (nav == null || item == null)
+            if (nav is null || item is null)
             {
                 return;
             }
@@ -337,7 +337,7 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
 
         private void UpdateBackState()
         {
-            bool isBackEnabled = BackEnabledToggle != null && BackEnabledToggle.IsChecked == true;
+            bool isBackEnabled = BackEnabledToggle is not null && BackEnabledToggle.IsChecked == true;
 
             _ = (CompactNavigationDemo?.IsBackEnabled = isBackEnabled);
 

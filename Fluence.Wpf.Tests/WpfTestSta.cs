@@ -48,7 +48,7 @@ namespace Fluence.Wpf.Tests
         {
             return Invoke(static () =>
             {
-                if (Application.Current == null)
+                if (Application.Current is null)
                 {
                     Application app = new()
                     {
@@ -74,7 +74,7 @@ namespace Fluence.Wpf.Tests
         {
             lock (LockObj)
             {
-                if (_dispatcher != null && _dispatcher.Thread.IsAlive)
+                if (_dispatcher is not null && _dispatcher.Thread.IsAlive)
                 {
                     return _dispatcher;
                 }

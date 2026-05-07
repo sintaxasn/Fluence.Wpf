@@ -62,7 +62,7 @@ namespace Fluence.Wpf.Tests
                 IList groups = VisualStateManager.GetVisualStateGroups(
                     FindVisualChild<Grid>(badge));
                 bool found = false;
-                if (groups != null)
+                if (groups is not null)
                 {
                     foreach (object? g in groups)
                     {
@@ -136,7 +136,7 @@ namespace Fluence.Wpf.Tests
 
                 IList groups = VisualStateManager.GetVisualStateGroups(FindVisualChild<Grid>(badge));
                 VisualStateGroup? dkg = null;
-                if (groups != null)
+                if (groups is not null)
                 {
                     foreach (object? g in groups)
                     {

@@ -308,7 +308,7 @@ namespace Fluence.Wpf.Tests
         private static void AssertStyleFluentFontFamilySetterOrBasedOn(Style style, string description)
         {
             Style current = style;
-            while (current != null)
+            while (current is not null)
             {
                 foreach (SetterBase? setterBase in current.Setters)
                 {
@@ -342,7 +342,7 @@ namespace Fluence.Wpf.Tests
         private static void AssertStyleSetterOrBasedOn(Style style, DependencyProperty property, object expectedValue, string description)
         {
             Style current = style;
-            while (current != null)
+            while (current is not null)
             {
                 foreach (SetterBase? setterBase in current.Setters)
                 {
@@ -375,7 +375,7 @@ namespace Fluence.Wpf.Tests
         private static string FindRepoRoot()
         {
             DirectoryInfo? directory = new(AppContext.BaseDirectory);
-            while (directory != null)
+            while (directory is not null)
             {
                 if (File.Exists(Path.Combine(directory.FullName, "Fluence.Wpf.sln")))
                 {

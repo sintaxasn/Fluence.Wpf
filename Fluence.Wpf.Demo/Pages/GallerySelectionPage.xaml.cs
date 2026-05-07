@@ -258,7 +258,7 @@ namespace Fluence.Wpf.Demo.Pages.Selection
 
         private void DefaultToggle_Changed(object? sender, RoutedEventArgs? e)
         {
-            if (ToggleStateLabel == null || DefaultToggle == null)
+            if (ToggleStateLabel is null || DefaultToggle is null)
             {
                 return;
             }
@@ -271,7 +271,7 @@ namespace Fluence.Wpf.Demo.Pages.Selection
 
         private void SelectionDemoCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ComboStateLabel == null || SelectionDemoCombo == null)
+            if (ComboStateLabel is null || SelectionDemoCombo is null)
             {
                 return;
             }

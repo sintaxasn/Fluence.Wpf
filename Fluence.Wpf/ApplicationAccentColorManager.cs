@@ -206,7 +206,7 @@ namespace Fluence.Wpf
 
         internal static void UpdateThemeDependentColors(ApplicationTheme resolvedTheme)
         {
-            if (Application.Current == null)
+            if (Application.Current is null)
             {
                 return;
             }
@@ -232,7 +232,7 @@ namespace Fluence.Wpf
 
         private static void UpdateTextOnAccentColors(ApplicationTheme resolvedTheme)
         {
-            if (Application.Current == null)
+            if (Application.Current is null)
             {
                 return;
             }
@@ -297,7 +297,7 @@ namespace Fluence.Wpf
 
         private static void UpdateResources()
         {
-            if (Application.Current == null)
+            if (Application.Current is null)
             {
                 return;
             }

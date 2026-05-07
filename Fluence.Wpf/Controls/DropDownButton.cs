@@ -148,7 +148,7 @@ namespace Fluence.Wpf.Controls
             _popup = null;
             base.OnApplyTemplate();
             _popup = GetTemplateChild(PART_Popup) as Popup;
-            if (_popup != null)
+            if (_popup is not null)
             {
                 _popup.PlacementTarget = this;
                 AttachPopupHandlers(_popup);
@@ -160,7 +160,7 @@ namespace Fluence.Wpf.Controls
         protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
         {
             base.OnPropertyChanged(e);
-            if (e.Property == IsCheckedProperty && _popup != null)
+            if (e.Property == IsCheckedProperty && _popup is not null)
             {
                 _popup.IsOpen = IsChecked == true;
             }

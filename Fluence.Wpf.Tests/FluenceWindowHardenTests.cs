@@ -52,7 +52,7 @@ namespace Fluence.Wpf.Tests
                 catch (Exception ex) { captured = ex; }
             }));
 
-            if (captured != null)
+            if (captured is not null)
             {
                 System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(captured).Throw();
             }

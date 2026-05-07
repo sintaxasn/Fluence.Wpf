@@ -69,7 +69,7 @@ namespace Fluence.Wpf.Tests
                     }
                 }
 
-                if (state != null)
+                if (state is not null)
                 {
                     break;
                 }

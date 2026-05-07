@@ -255,7 +255,7 @@ namespace Fluence.Wpf.Controls
 
         private void ApplyProgressMode()
         {
-            if (_fill == null || _indeterminateBar == null)
+            if (_fill is null || _indeterminateBar is null)
             {
                 return;
             }
@@ -282,7 +282,7 @@ namespace Fluence.Wpf.Controls
 
         private void ApplyFillBrushForMode()
         {
-            if (_fill == null)
+            if (_fill is null)
             {
                 return;
             }
@@ -308,7 +308,7 @@ namespace Fluence.Wpf.Controls
 
         private void RefreshIndeterminateLayout()
         {
-            if (_track == null || _indeterminateBar == null || ProgressMode != ProgressBarMode.Indeterminate)
+            if (_track is null || _indeterminateBar is null || ProgressMode != ProgressBarMode.Indeterminate)
             {
                 return;
             }
@@ -325,7 +325,7 @@ namespace Fluence.Wpf.Controls
         private void StartIndeterminate(double trackWidth)
         {
             StopIndeterminate();
-            if (_indeterminateTranslate == null || _indeterminateBar == null)
+            if (_indeterminateTranslate is null || _indeterminateBar is null)
             {
                 return;
             }
@@ -334,7 +334,7 @@ namespace Fluence.Wpf.Controls
             // Bar 1 travels 0 to 1.5 s then holds; bar 2 is delayed 0.75 s.
             // (Authority: WinUI_XAML/Controls/ProgressBar.xaml Indeterminate VSM)
             StartTranslateAnimation(_indeterminateTranslate, -_indeterminateBar.Width, trackWidth, TimeSpan.FromSeconds(2.0), TimeSpan.Zero);
-            if (_indeterminateTranslate2 != null && _indeterminateBar2 != null)
+            if (_indeterminateTranslate2 is not null && _indeterminateBar2 is not null)
             {
                 StartTranslateAnimation(_indeterminateTranslate2, -_indeterminateBar2.Width, trackWidth, TimeSpan.FromSeconds(2.0), TimeSpan.FromMilliseconds(750));
             }
@@ -355,12 +355,12 @@ namespace Fluence.Wpf.Controls
 
         private void StopIndeterminate()
         {
-            if (_indeterminateTranslate != null)
+            if (_indeterminateTranslate is not null)
             {
                 _indeterminateTranslate.BeginAnimation(TranslateTransform.XProperty, null);
                 _indeterminateTranslate.X = 0;
             }
-            if (_indeterminateTranslate2 != null)
+            if (_indeterminateTranslate2 is not null)
             {
                 _indeterminateTranslate2.BeginAnimation(TranslateTransform.XProperty, null);
                 _indeterminateTranslate2.X = 0;
@@ -369,7 +369,7 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateFillWidth(bool animate = true)
         {
-            if (_track == null || _fill == null || ProgressMode == ProgressBarMode.Indeterminate)
+            if (_track is null || _fill is null || ProgressMode == ProgressBarMode.Indeterminate)
             {
                 return;
             }

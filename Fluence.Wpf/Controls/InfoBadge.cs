@@ -140,7 +140,7 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateDisplayKindState(bool useTransitions = true)
         {
-            string state = IconSource != null ? "Icon" : Value >= 0 ? "Value" : "Dot";
+            string state = IconSource is not null ? "Icon" : Value >= 0 ? "Value" : "Dot";
             _ = VisualStateManager.GoToState(this, state, useTransitions);
         }
     }
