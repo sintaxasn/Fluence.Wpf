@@ -14,12 +14,12 @@ lastDtbSucceeded
 
 [properties]
 AssemblyName=Fluence.Wpf.Demo.Mvvm
-CommandLineArgsForDesignTimeEvaluation=-langversion:latest -define:TRACE
+CommandLineArgsForDesignTimeEvaluation=-langversion:latest -define:TRACE -doc:"obj\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Demo.Mvvm.xml"
 CompilerGeneratedFilesOutputPath=
 MaxSupportedLangVersion=14.0
 ProjectAssetsFile=<PATH>obj/project.assets.json
 RootNamespace=Fluence.Wpf.Demo.Mvvm
-RunAnalyzers=
+RunAnalyzers=true
 RunAnalyzersDuringLiveAnalysis=
 SolutionPath=<PATH>../Fluence.Wpf.sln
 TargetFrameworkIdentifier=.NETCoreApp
@@ -30,18 +30,20 @@ TemporaryDependencyNodeTargetIdentifier=net10.0-windows10.0.26100.0
 [commandLineArguments]
 /noconfig
 /unsafe-
-/checked-
-/nowarn:1701,1702,1701,1702,8002
+/checked+
+/nowarn:1701,1702,CS1591,VSTHRD001,1701,1702,8002
 /fullpaths
 /nostdlib+
+/platform:AnyCPU
 /errorreport:prompt
-/warn:4
+/warn:9999
+/doc:obj\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Demo.Mvvm.xml
 /define:TRACE;DEBUG;NET;NET10_0;NETCOREAPP;WINDOWS;WINDOWS10_0_26100_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NET9_0_OR_GREATER;NET10_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS10_0_26100_0_OR_GREATER;WINDOWS10_0_22621_0_OR_GREATER;WINDOWS10_0_22000_0_OR_GREATER;WINDOWS10_0_20348_0_OR_GREATER;WINDOWS10_0_19041_0_OR_GREATER;WINDOWS10_0_18362_0_OR_GREATER;WINDOWS10_0_17763_0_OR_GREATER;WINDOWS8_0_OR_GREATER;WINDOWS7_0_OR_GREATER
 /highentropyva+
 /nullable:disable
 /features:"InterceptorsNamespaces=;Microsoft.Extensions.Validation.Generated"
 /debug+
-/debug:portable
+/debug:full
 /filealign:512
 /optimize-
 /out:obj\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.Demo.Mvvm.dll
@@ -296,13 +298,36 @@ ViewModels/
 ../../.dotnet/sdk/10.0.203/Sdks/Microsoft.NET.Sdk/analyzers/
  Microsoft.CodeAnalysis.CSharp.NetAnalyzers.dll
  Microsoft.CodeAnalysis.NetAnalyzers.dll
+../../.dotnet/sdk/10.0.203/Sdks/Microsoft.NET.Sdk/codestyle/cs/
+ Microsoft.CodeAnalysis.CodeStyle.dll
+ Microsoft.CodeAnalysis.CodeStyle.Fixes.dll
+ Microsoft.CodeAnalysis.CSharp.CodeStyle.dll
+ Microsoft.CodeAnalysis.CSharp.CodeStyle.Fixes.dll
 <NUGET>/communitytoolkit.mvvm/8.4.0/analyzers/dotnet/roslyn4.12/cs/
  CommunityToolkit.Mvvm.CodeFixers.dll
  CommunityToolkit.Mvvm.SourceGenerators.dll
-<NUGET>/microsoft.windows.sdk.net.ref/10.0.26100.57/analyzers/dotnet/cs/WinRT.SourceGenerator.dll
+<NUGET>/microsoft.codeanalysis.bannedapianalyzers/3.3.4/analyzers/dotnet/cs/
+ Microsoft.CodeAnalysis.BannedApiAnalyzers.dll
+ Microsoft.CodeAnalysis.CSharp.BannedApiAnalyzers.dll
+<NUGET>/microsoft.visualstudio.threading.analyzers/17.14.15/analyzers/cs/
+ Microsoft.VisualStudio.Threading.Analyzers.CodeFixes.dll
+ Microsoft.VisualStudio.Threading.Analyzers.CSharp.dll
+ Microsoft.VisualStudio.Threading.Analyzers.dll
+<NUGET>/
+ microsoft.windows.sdk.net.ref/10.0.26100.57/analyzers/dotnet/cs/WinRT.SourceGenerator.dll
+ sonaranalyzer.csharp/10.16.0.128591/analyzers/SonarAnalyzer.CSharp.dll
 
 [analyzerConfigFiles]
 ../
  ../.dotnet/sdk/10.0.203/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_default.globalconfig
  .editorconfig
+<NUGET>/microsoft.extensions.staticanalysis/10.5.0/build/config/General.globalconfig
 obj/Debug/net10.0-windows10.0.26100.0/Fluence.Wpf.Demo.Mvvm.GeneratedMSBuildEditorConfig.editorconfig
+
+[additionalFiles]
+../BannedSymbols.txt
+<NUGET>/microsoft.visualstudio.threading.analyzers/17.14.15/buildTransitive/AdditionalFiles/
+ vs-threading.LegacyThreadSwitchingMembers.txt
+ vs-threading.MainThreadAssertingMethods.txt
+ vs-threading.MainThreadSwitchingMethods.txt
+ vs-threading.MembersRequiringMainThread.txt
