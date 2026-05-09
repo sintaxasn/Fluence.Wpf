@@ -1,27 +1,38 @@
-﻿# Fluence.Wpf.Demo.PowerShell
+﻿# Fluence.Wpf - PowerShell demos
 
-This folder contains a self-contained Windows PowerShell 5.1 host for the `net472` Fluence.Wpf DLL. It demonstrates loading WPF assemblies, loading `Fluence.Wpf.dll`, applying Fluence resources, parsing XAML with `XamlReader`, enabling `SystemThemeWatcher`, and showing a non-modal `FluenceWindow` while the dispatcher pumps events.
+Three standalone Windows PowerShell 5.1 scripts showing how to build Fluent-styled WPF UIs without writing C#.
 
-## What Lives Here
+## Requirements
 
-- `Fluence.Wpf.dll` - copied from the current `Fluence.Wpf/bin/Debug/net472` output.
-- `MainWindow.xaml` - the demo `FluenceWindow` and controls loaded at runtime.
-- `Show-FluenceDemo.ps1` - the Windows PowerShell 5.1/STA launcher with console logging and a `-SmokeTest` path.
+- Windows PowerShell 5.1 (built into Windows - `powershell.exe`, **not** `pwsh.exe`)
+- .NET SDK (for the optional auto-build step)
+- `Fluence.Wpf.dll` built for `net472` - the scripts build it automatically if missing
 
-## Run
+## Running a demo
 
-From the repository root:
+Open a terminal and run with the STA apartment flag:
 
-```powershell
-powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File .\Fluence.Wpf.Demo.PowerShell\Show-FluenceDemo.ps1
-```
+- powershell.exe -STA -File .\Show-ThemeDemo.ps1
+- powershell.exe -STA -File .\Show-ControlsDemo.ps1
+- powershell.exe -STA -File .\Show-ProgressDemo.ps1
 
-For a non-interactive load check:
+## What each demo shows
 
-```powershell
-powershell.exe -NoProfile -STA -ExecutionPolicy Bypass -File .\Fluence.Wpf.Demo.PowerShell\Show-FluenceDemo.ps1 -SmokeTest
-```
+| Script                  | Demonstrates                                                                                              |
+|-------------------------|-----------------------------------------------------------------------------------------------------------|
+| `Show-ThemeDemo.ps1`    | FluenceWindow + Mica backdrop, Light/Dark/Auto theme switching, accent colour cycling, SystemThemeWatcher |
+| `Show-ControlsDemo.ps1` | Button variants, ToggleSwitch, CheckBox, RadioButton, TextBox, NumberBox                                  |
+| `Show-ProgressDemo.ps1` | ProgressBar, ProgressRing, InfoBar with a PowerShell-wired click handler                                  |
 
-## Maintenance Notes
+## How it works
 
-Refresh `Fluence.Wpf.dll` after rebuilding the `net472` library if the PowerShell demo must reflect new library changes. Keep the launcher on Windows PowerShell 5.1 with `-STA`; WPF and `XamlReader` are not intended to run from a non-STA PowerShell host.
+Each script:
+
+1. Checks for `Fluence.Wpf.dll` at `..\Fluence.Wpf\bin\Release\net472\` - builds it with `dotnet build` if absent.
+2. Loads WPF assemblies via `Add-Type`.
+3. Calls `ApplicationThemeManager.Apply()` to seed Fluence resources.
+4. Parses an inline XAML here-string with `XamlReader::Parse()`.
+5. Wires event handlers directly in PowerShell.
+6. Calls `Window.Show()` and enters the WPF dispatcher loop.
+
+The window icon is loaded from `..\assets\fluence-wpf-appicon-256.ico` when present.
