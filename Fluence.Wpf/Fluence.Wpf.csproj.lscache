@@ -21,7 +21,7 @@ CompilerGeneratedFilesOutputPath=
 MaxSupportedLangVersion=14.0
 ProjectAssetsFile=<PATH>obj/project.assets.json
 RootNamespace=Fluence.Wpf
-RunAnalyzers=
+RunAnalyzers=true
 RunAnalyzersDuringLiveAnalysis=
 SolutionPath=<PATH>../Fluence.Wpf.sln
 TargetFrameworkIdentifier=.NETCoreApp
@@ -32,18 +32,20 @@ TemporaryDependencyNodeTargetIdentifier=net10.0-windows10.0.26100.0
 [commandLineArguments]
 /noconfig
 /unsafe-
-/checked-
-/nowarn:1701,1702,1701,1702,8002
+/checked+
+/nowarn:1701,1702,SYSLIB1045,IDE0330,S1244,VSTHRD001,1701,1702,8002
 /fullpaths
 /nostdlib+
+/platform:AnyCPU
 /errorreport:prompt
-/warn:4
+/warn:9999
 /doc:bin\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.xml
 /define:TRACE;DEBUG;NET;NET10_0;NETCOREAPP;WINDOWS;WINDOWS10_0_26100_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NET9_0_OR_GREATER;NET10_0_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS10_0_26100_0_OR_GREATER;WINDOWS10_0_22621_0_OR_GREATER;WINDOWS10_0_22000_0_OR_GREATER;WINDOWS10_0_20348_0_OR_GREATER;WINDOWS10_0_19041_0_OR_GREATER;WINDOWS10_0_18362_0_OR_GREATER;WINDOWS10_0_17763_0_OR_GREATER;WINDOWS8_0_OR_GREATER;WINDOWS7_0_OR_GREATER
 /highentropyva+
+/nullable:enable
 /features:"InterceptorsNamespaces=;Microsoft.Extensions.Validation.Generated"
 /debug+
-/debug:portable
+/debug:full
 /filealign:512
 /optimize-
 /out:obj\Debug\net10.0-windows10.0.26100.0\Fluence.Wpf.dll
@@ -57,6 +59,7 @@ TemporaryDependencyNodeTargetIdentifier=net10.0-windows10.0.26100.0
 
 [sourceFiles]
 ApplicationAccentColorManager.cs
+ApplicationTheme.cs
 ApplicationThemeManager.cs
 Automation/
  DropDownButtonAutomationPeer.cs
@@ -67,6 +70,10 @@ Automation/
  ProgressRingAutomationPeer.cs
  SplitButtonAutomationPeer.cs
  ToggleSwitchAutomationPeer.cs
+BackdropType.cs
+BorderVariant.cs
+CardVariant.cs
+ControlAppearance.cs
 Controls/
  Border.cs
  Button.cs
@@ -83,17 +90,14 @@ Controls/
  HyperlinkButton.cs
  InfoBadge.cs
  InfoBar.cs
- InfoBarClosingEventArgs.cs
  ListBox.cs
  ListBoxItem.cs
  ListView.cs
  Menu.cs
  MenuItem.cs
  NavigationView.cs
- NavigationViewBackRequestedEventArgs.cs
  NavigationViewItem.cs
  NavigationViewItemHeader.cs
- NavigationViewItemInvokedEventArgs.cs
  NavigationViewItemSeparator.cs
  NumberBox.cs
  PasswordBox.cs
@@ -110,7 +114,6 @@ Controls/
  StackPanel.cs
  TabView.cs
  TabViewItem.cs
- TabViewTabCloseRequestedEventArgs.cs
  TextBlock.cs
  TextBlockExtensions.cs
  TextBox.cs
@@ -121,41 +124,44 @@ Controls/
  TreeView.cs
  TreeViewItem.cs
  WindowPolicy.cs
-Enums/
- ApplicationTheme.cs
- BackdropType.cs
- BorderVariant.cs
- CardVariant.cs
- ControlAppearance.cs
- CornerPreference.cs
- ElementPlacement.cs
- FluentTypography.cs
- InfoBadgeStyle.cs
- InfoBarSeverity.cs
- ListViewState.cs
- NavigationViewPaneDisplayMode.cs
- ProgressBarMode.cs
- ProgressRingState.cs
- SpinButtonPlacementMode.cs
- TabViewWidthMode.cs
- ValidationState.cs
+CornerPreference.cs
+ElementPlacement.cs
+FluentTypography.cs
 Helpers/
  AcrylicNoiseHelper.cs
+ BackdropPlan.cs
+ FramePlan.cs
  GridLengthAnimation.cs
  HsvColorHelper.cs
  OsVersionHelper.cs
  RegistryHelper.cs
+ WindowCapabilities.cs
+InfoBadgeStyle.cs
+InfoBarClosingEventArgs.cs
+InfoBarSeverity.cs
+ListViewState.cs
 Native/
  NativeConstants.cs
  NativeMethods.cs
  NativeStructs.cs
+NavigationViewBackRequestedEventArgs.cs
+NavigationViewItemInvokedEventArgs.cs
+NavigationViewPaneDisplayMode.cs
+NumberBoxValueChangedEventArgs.cs
 obj/Debug/net10.0-windows10.0.26100.0/
  .NETCoreApp,Version=v10.0.AssemblyAttributes.cs
  Fluence.Wpf.AssemblyInfo.cs
  GeneratedInternalTypeHelper.g.cs
+ProgressBarMode.cs
+ProgressRingState.cs
 Properties/AssemblyInfo.cs
+SpinButtonPlacementMode.cs
 SystemThemeWatcher.cs
+TabViewCloseButtonOverlayMode.cs
+TabViewTabCloseRequestedEventArgs.cs
+TabViewWidthMode.cs
 ThemeChangedEventArgs.cs
+ValidationState.cs
 
 [metadataReferences]
 ../../.dotnet/packs/Microsoft.NETCore.App.Ref/10.0.7/ref/net10.0/
@@ -381,13 +387,36 @@ ThemeChangedEventArgs.cs
 ../../.dotnet/sdk/10.0.203/Sdks/Microsoft.NET.Sdk/analyzers/
  Microsoft.CodeAnalysis.CSharp.NetAnalyzers.dll
  Microsoft.CodeAnalysis.NetAnalyzers.dll
-<NUGET>/microsoft.windows.sdk.net.ref/10.0.26100.57/analyzers/dotnet/cs/WinRT.SourceGenerator.dll
+../../.dotnet/sdk/10.0.203/Sdks/Microsoft.NET.Sdk/codestyle/cs/
+ Microsoft.CodeAnalysis.CodeStyle.dll
+ Microsoft.CodeAnalysis.CodeStyle.Fixes.dll
+ Microsoft.CodeAnalysis.CSharp.CodeStyle.dll
+ Microsoft.CodeAnalysis.CSharp.CodeStyle.Fixes.dll
+<NUGET>/microsoft.codeanalysis.bannedapianalyzers/3.3.4/analyzers/dotnet/cs/
+ Microsoft.CodeAnalysis.BannedApiAnalyzers.dll
+ Microsoft.CodeAnalysis.CSharp.BannedApiAnalyzers.dll
+<NUGET>/microsoft.visualstudio.threading.analyzers/17.14.15/analyzers/cs/
+ Microsoft.VisualStudio.Threading.Analyzers.CodeFixes.dll
+ Microsoft.VisualStudio.Threading.Analyzers.CSharp.dll
+ Microsoft.VisualStudio.Threading.Analyzers.dll
+<NUGET>/
+ microsoft.windows.sdk.net.ref/10.0.26100.57/analyzers/dotnet/cs/WinRT.SourceGenerator.dll
+ sonaranalyzer.csharp/10.16.0.128591/analyzers/SonarAnalyzer.CSharp.dll
 
 [analyzerConfigFiles]
 ../
  ../.dotnet/sdk/10.0.203/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_default.globalconfig
  .editorconfig
+<NUGET>/microsoft.extensions.staticanalysis/10.5.0/build/config/General.globalconfig
 obj/Debug/net10.0-windows10.0.26100.0/Fluence.Wpf.GeneratedMSBuildEditorConfig.editorconfig
+
+[additionalFiles]
+../BannedSymbols.txt
+<NUGET>/microsoft.visualstudio.threading.analyzers/17.14.15/buildTransitive/AdditionalFiles/
+ vs-threading.LegacyThreadSwitchingMembers.txt
+ vs-threading.MainThreadAssertingMethods.txt
+ vs-threading.MainThreadSwitchingMethods.txt
+ vs-threading.MembersRequiringMainThread.txt
 
 ---
 
@@ -401,12 +430,12 @@ TargetFramework=net472
 
 [properties]
 AssemblyName=Fluence.Wpf
-CommandLineArgsForDesignTimeEvaluation=-langversion:7.3 -define:TRACE -doc:"bin\Debug\net472\Fluence.Wpf.xml"
+CommandLineArgsForDesignTimeEvaluation=-langversion:latest -define:TRACE -doc:"bin\Debug\net472\Fluence.Wpf.xml"
 CompilerGeneratedFilesOutputPath=
 MaxSupportedLangVersion=7.3
 ProjectAssetsFile=<PATH>obj/project.assets.json
 RootNamespace=Fluence.Wpf
-RunAnalyzers=
+RunAnalyzers=true
 RunAnalyzersDuringLiveAnalysis=
 SolutionPath=<PATH>../Fluence.Wpf.sln
 TargetFrameworkIdentifier=.NETFramework
@@ -417,17 +446,19 @@ TemporaryDependencyNodeTargetIdentifier=net472
 [commandLineArguments]
 /noconfig
 /unsafe-
-/checked-
-/nowarn:1701,1702,1701,1702
+/checked+
+/nowarn:1701,1702,SYSLIB1045,IDE0330,S1244,VSTHRD001,1701,1702
 /fullpaths
 /nostdlib+
+/platform:AnyCPU
 /errorreport:prompt
-/warn:4
+/warn:9999
 /doc:bin\Debug\net472\Fluence.Wpf.xml
 /define:TRACE;DEBUG;NETFRAMEWORK;NET472;NET30_OR_GREATER;NET35_OR_GREATER;NET40_OR_GREATER;NET45_OR_GREATER;NET451_OR_GREATER;NET452_OR_GREATER;NET46_OR_GREATER;NET461_OR_GREATER;NET462_OR_GREATER;NET47_OR_GREATER;NET471_OR_GREATER;NET472_OR_GREATER
 /highentropyva+
+/nullable:enable
 /debug+
-/debug:portable
+/debug:full
 /filealign:512
 /optimize-
 /out:obj\Debug\net472\Fluence.Wpf.dll
@@ -435,12 +466,14 @@ TemporaryDependencyNodeTargetIdentifier=net472
 /target:library
 /warnaserror+
 /utf8output
+/win32manifest:obj\Debug\net472\default.win32manifest
 /deterministic+
-/langversion:7.3
+/langversion:latest
 /warnaserror+:NU1605
 
 [sourceFiles]
 ApplicationAccentColorManager.cs
+ApplicationTheme.cs
 ApplicationThemeManager.cs
 Automation/
  DropDownButtonAutomationPeer.cs
@@ -451,6 +484,10 @@ Automation/
  ProgressRingAutomationPeer.cs
  SplitButtonAutomationPeer.cs
  ToggleSwitchAutomationPeer.cs
+BackdropType.cs
+BorderVariant.cs
+CardVariant.cs
+ControlAppearance.cs
 Controls/
  Border.cs
  Button.cs
@@ -467,17 +504,14 @@ Controls/
  HyperlinkButton.cs
  InfoBadge.cs
  InfoBar.cs
- InfoBarClosingEventArgs.cs
  ListBox.cs
  ListBoxItem.cs
  ListView.cs
  Menu.cs
  MenuItem.cs
  NavigationView.cs
- NavigationViewBackRequestedEventArgs.cs
  NavigationViewItem.cs
  NavigationViewItemHeader.cs
- NavigationViewItemInvokedEventArgs.cs
  NavigationViewItemSeparator.cs
  NumberBox.cs
  PasswordBox.cs
@@ -494,7 +528,6 @@ Controls/
  StackPanel.cs
  TabView.cs
  TabViewItem.cs
- TabViewTabCloseRequestedEventArgs.cs
  TextBlock.cs
  TextBlockExtensions.cs
  TextBox.cs
@@ -505,41 +538,44 @@ Controls/
  TreeView.cs
  TreeViewItem.cs
  WindowPolicy.cs
-Enums/
- ApplicationTheme.cs
- BackdropType.cs
- BorderVariant.cs
- CardVariant.cs
- ControlAppearance.cs
- CornerPreference.cs
- ElementPlacement.cs
- FluentTypography.cs
- InfoBadgeStyle.cs
- InfoBarSeverity.cs
- ListViewState.cs
- NavigationViewPaneDisplayMode.cs
- ProgressBarMode.cs
- ProgressRingState.cs
- SpinButtonPlacementMode.cs
- TabViewWidthMode.cs
- ValidationState.cs
+CornerPreference.cs
+ElementPlacement.cs
+FluentTypography.cs
 Helpers/
  AcrylicNoiseHelper.cs
+ BackdropPlan.cs
+ FramePlan.cs
  GridLengthAnimation.cs
  HsvColorHelper.cs
  OsVersionHelper.cs
  RegistryHelper.cs
+ WindowCapabilities.cs
+InfoBadgeStyle.cs
+InfoBarClosingEventArgs.cs
+InfoBarSeverity.cs
+ListViewState.cs
 Native/
  NativeConstants.cs
  NativeMethods.cs
  NativeStructs.cs
+NavigationViewBackRequestedEventArgs.cs
+NavigationViewItemInvokedEventArgs.cs
+NavigationViewPaneDisplayMode.cs
+NumberBoxValueChangedEventArgs.cs
 obj/Debug/net472/
  .NETFramework,Version=v4.7.2.AssemblyAttributes.cs
  Fluence.Wpf.AssemblyInfo.cs
  GeneratedInternalTypeHelper.g.cs
+ProgressBarMode.cs
+ProgressRingState.cs
 Properties/AssemblyInfo.cs
+SpinButtonPlacementMode.cs
 SystemThemeWatcher.cs
+TabViewCloseButtonOverlayMode.cs
+TabViewTabCloseRequestedEventArgs.cs
+TabViewWidthMode.cs
 ThemeChangedEventArgs.cs
+ValidationState.cs
 
 [metadataReferences]
 <NETFXREF>/v4.7.2/
@@ -563,6 +599,35 @@ ThemeChangedEventArgs.cs
  UIAutomationTypes.dll
  WindowsBase.dll
 
+[analyzerReferences]
+../../.dotnet/sdk/10.0.203/Sdks/Microsoft.NET.Sdk/analyzers/
+ Microsoft.CodeAnalysis.CSharp.NetAnalyzers.dll
+ Microsoft.CodeAnalysis.NetAnalyzers.dll
+../../.dotnet/sdk/10.0.203/Sdks/Microsoft.NET.Sdk/codestyle/cs/
+ Microsoft.CodeAnalysis.CodeStyle.dll
+ Microsoft.CodeAnalysis.CodeStyle.Fixes.dll
+ Microsoft.CodeAnalysis.CSharp.CodeStyle.dll
+ Microsoft.CodeAnalysis.CSharp.CodeStyle.Fixes.dll
+<NUGET>/microsoft.codeanalysis.bannedapianalyzers/3.3.4/analyzers/dotnet/cs/
+ Microsoft.CodeAnalysis.BannedApiAnalyzers.dll
+ Microsoft.CodeAnalysis.CSharp.BannedApiAnalyzers.dll
+<NUGET>/microsoft.visualstudio.threading.analyzers/17.14.15/analyzers/cs/
+ Microsoft.VisualStudio.Threading.Analyzers.CodeFixes.dll
+ Microsoft.VisualStudio.Threading.Analyzers.CSharp.dll
+ Microsoft.VisualStudio.Threading.Analyzers.dll
+<NUGET>/sonaranalyzer.csharp/10.16.0.128591/analyzers/SonarAnalyzer.CSharp.dll
+
 [analyzerConfigFiles]
-../.editorconfig
+../
+ ../.dotnet/sdk/10.0.203/Sdks/Microsoft.NET.Sdk/analyzers/build/config/analysislevel_10_default.globalconfig
+ .editorconfig
+<NUGET>/microsoft.extensions.staticanalysis/10.5.0/build/config/General.globalconfig
 obj/Debug/net472/Fluence.Wpf.GeneratedMSBuildEditorConfig.editorconfig
+
+[additionalFiles]
+../BannedSymbols.txt
+<NUGET>/microsoft.visualstudio.threading.analyzers/17.14.15/buildTransitive/AdditionalFiles/
+ vs-threading.LegacyThreadSwitchingMembers.txt
+ vs-threading.MainThreadAssertingMethods.txt
+ vs-threading.MainThreadSwitchingMethods.txt
+ vs-threading.MembersRequiringMainThread.txt

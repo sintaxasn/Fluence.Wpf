@@ -222,7 +222,7 @@ namespace Fluence.Wpf.Tests
         }
 
         // ---------------------------------------------------------------------------
-        // Full theme cycle — tokens survive all three theme transitions
+        // Full theme cycle - tokens survive all three theme transitions
         // ---------------------------------------------------------------------------
 
         [TestMethod]

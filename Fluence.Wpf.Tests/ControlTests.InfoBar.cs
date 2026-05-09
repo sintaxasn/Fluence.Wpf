@@ -80,7 +80,7 @@ namespace Fluence.Wpf.Tests
                 bool ok3 = VisualStateManager.GoToState(bar, "Warning", false);
                 bool ok4 = VisualStateManager.GoToState(bar, "Error", false);
 
-                Assert.IsTrue(ok1, "GoToState('Informational') must succeed — SeverityLevels VSM group must exist.");
+                Assert.IsTrue(ok1, "GoToState('Informational') must succeed - SeverityLevels VSM group must exist.");
                 Assert.IsTrue(ok2, "GoToState('Success') must succeed.");
                 Assert.IsTrue(ok3, "GoToState('Warning') must succeed.");
                 Assert.IsTrue(ok4, "GoToState('Error') must succeed.");
@@ -125,7 +125,7 @@ namespace Fluence.Wpf.Tests
                 Assert.IsNotNull(indicator, "IndicatorBar must exist.");
                 Brush brushBefore = indicator.Background;
 
-                // Change severity — trigger + GoToState must both fire
+                // Change severity - trigger + GoToState must both fire
                 bar.Severity = InfoBarSeverity.Error;
                 DrainDispatcher(w.Dispatcher);
 

@@ -6,7 +6,7 @@
     <!--
         Fluent Design ToolTip style.
         Authority: WinUI 3 ToolTip_themeresources.xaml (brush keys, font size, padding).
-        Note: DropShadowEffect is intentionally omitted on the inner Border — WPF bitmap
+        Note: DropShadowEffect is intentionally omitted on the inner Border - WPF bitmap
         effects on a Border with CornerRadius produce squared-off artifacts at the rounded
         corners in a Popup (see DropDownButton.xaml). System drop shadow (HasDropShadow=True)
         is used instead, which is applied at the Popup window level without artifacts.

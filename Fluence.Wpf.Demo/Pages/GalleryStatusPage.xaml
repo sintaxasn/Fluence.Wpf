@@ -1,4 +1,4 @@
-﻿<UserControl
+<UserControl
     x:Class="Fluence.Wpf.Demo.Pages.GalleryStatusPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -215,7 +215,7 @@
                             x:Name="IndeterminateProgressRingLabel"
                             Grid.Row="2"
                             Grid.Column="0"
-                            Margin="0,4,0,0"
+                            Margin="0,8,0,0"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             Style="{StaticResource StateLabelStyle}"
@@ -233,23 +233,24 @@
                             Maximum="100"
                             Minimum="0"
                             Value="50" />
-                        <ui:Slider
-                            x:Name="ProgressRingSlider"
+                        <ui:NumberBox
+                            x:Name="ProgressRingValueBox"
                             Grid.Row="1"
                             Grid.Column="1"
-                            Width="120"
+                            Width="132"
                             Margin="0,24,0,0"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             Maximum="100"
-                            Minimum="0"
-                            ValueChanged="ProgressRingSlider_ValueChanged"
-                            Value="50" />
+                            Minimum="1"
+                            SmallChange="1"
+                            SpinButtonPlacementMode="{x:Static uicore:SpinButtonPlacementMode.Inline}"
+                            Value="{Binding Value, ElementName=DeterminateProgressRing, Mode=TwoWay}" />
                         <TextBlock
                             x:Name="DeterminateProgressRingLabel"
                             Grid.Row="2"
                             Grid.Column="1"
-                            Margin="0,4,0,0"
+                            Margin="0,8,0,0"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             Style="{StaticResource StateLabelStyle}"
@@ -271,7 +272,7 @@
                         <TextBlock
                             Grid.Row="2"
                             Grid.Column="2"
-                            Margin="0,4,0,0"
+                            Margin="0,8,0,0"
                             HorizontalAlignment="Center"
                             Style="{StaticResource StateLabelStyle}"
                             Text="Paused" />
@@ -292,7 +293,7 @@
                         <TextBlock
                             Grid.Row="2"
                             Grid.Column="3"
-                            Margin="0,4,0,0"
+                            Margin="0,8,0,0"
                             HorizontalAlignment="Center"
                             Style="{StaticResource StateLabelStyle}"
                             Text="Error" />

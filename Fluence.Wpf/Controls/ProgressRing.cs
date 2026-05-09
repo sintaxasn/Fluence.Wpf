@@ -447,7 +447,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            // No tween before the template has applied — OnApplyTemplate will render the
+            // No tween before the template has applied - OnApplyTemplate will render the
             // initial frame synchronously.  Tweening here would race with the layout pass
             // and leave the arc blank when the dispatcher drains mid-animation.
             double targetFraction = ring.ComputeFraction();
@@ -624,7 +624,7 @@ namespace Fluence.Wpf.Controls
             }
 
             // Defensive guard: if we've flipped to indeterminate while a tween is in flight,
-            // the AnimatedFraction Completed callback can still arrive — drop it.
+            // the AnimatedFraction Completed callback can still arrive - drop it.
             if (IsIndeterminate)
             {
                 _arcPath.Data = null;

@@ -39,16 +39,16 @@ namespace Fluence.Wpf.Demo.Mvvm.ViewModels
     /// <summary>
     /// Root ViewModel for the Task Manager window. Demonstrates:
     /// <list type="bullet">
-    ///   <item><description><c>[ObservableProperty]</c> — backing fields with auto-notification</description></item>
-    ///   <item><description><c>[RelayCommand(CanExecute)]</c> — enabled/disabled command binding</description></item>
-    ///   <item><description><c>partial void OnXxxChanged</c> — source-generated change callbacks</description></item>
-    ///   <item><description><c>ObservableCollection</c> — live-updating list</description></item>
+    ///   <item><description><c>[ObservableProperty]</c> - backing fields with auto-notification</description></item>
+    ///   <item><description><c>[RelayCommand(CanExecute)]</c> - enabled/disabled command binding</description></item>
+    ///   <item><description><c>partial void OnXxxChanged</c> - source-generated change callbacks</description></item>
+    ///   <item><description><c>ObservableCollection</c> - live-updating list</description></item>
     ///   <item><description>Derived properties via <c>OnPropertyChanged</c></description></item>
     /// </list>
     /// </summary>
     public partial class MainViewModel : ObservableObject
     {
-        // The full unfiltered source list — never bound to directly.
+        // The full unfiltered source list - never bound to directly.
         private readonly ObservableCollection<TaskItemViewModel> _allTasks = [];
 
         // ---------------------------------------------------------------
@@ -74,7 +74,7 @@ namespace Fluence.Wpf.Demo.Mvvm.ViewModels
         /// which calls <see cref="Refresh"/>. <see cref="Refresh"/> itself raises
         /// <see cref="StatusText"/> and <see cref="ProgressValue"/> notifications after
         /// rebuilding <see cref="DisplayedTasks"/>, so the data is always current when
-        /// bindings re-read those properties. Do NOT add [NotifyPropertyChangedFor] here —
+        /// bindings re-read those properties. Do NOT add [NotifyPropertyChangedFor] here -
         /// that would fire the notifications before DisplayedTasks is rebuilt (stale read).
         /// </summary>
         [ObservableProperty]
@@ -109,7 +109,7 @@ namespace Fluence.Wpf.Demo.Mvvm.ViewModels
 
         /// <summary>
         /// Adds a new task from <see cref="NewTaskText"/>.
-        /// Disabled (grayed out) when the text box is blank — CanExecute is
+        /// Disabled (grayed out) when the text box is blank - CanExecute is
         /// re-evaluated every time <see cref="NewTaskText"/> changes via
         /// OnNewTaskTextChanged.
         /// </summary>
@@ -129,7 +129,7 @@ namespace Fluence.Wpf.Demo.Mvvm.ViewModels
             return !string.IsNullOrWhiteSpace(NewTaskText);
         }
 
-        // Source-generated partial callback — fires after NewTaskText setter runs.
+        // Source-generated partial callback - fires after NewTaskText setter runs.
         partial void OnNewTaskTextChanged(string value) =>
             AddCommand.NotifyCanExecuteChanged();
 
@@ -163,7 +163,7 @@ namespace Fluence.Wpf.Demo.Mvvm.ViewModels
         // Internal helpers
         // ---------------------------------------------------------------
 
-        // Source-generated partial callback — fires when ActiveFilter changes.
+        // Source-generated partial callback - fires when ActiveFilter changes.
         partial void OnActiveFilterChanged(FilterMode value) => Refresh();
 
         // Propagate IsCompleted change on any item → rebuild filter + derived props.

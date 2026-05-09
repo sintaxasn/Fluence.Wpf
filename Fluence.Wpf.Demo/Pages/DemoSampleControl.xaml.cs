@@ -538,7 +538,7 @@ namespace Fluence.Wpf.Demo.Pages
 
         private static void AddRun(Paragraph paragraph, string text, string resourceKey)
         {
-            if (string.IsNullOrWhiteSpace(text))
+            if (text.Length == 0)
             {
                 return;
             }

@@ -177,10 +177,10 @@
     </LinearGradientBrush>
 
     <!--  ═══════════════════════════════════════════════════════════════════════════  -->
-    <!--  Step 3.0 — Shared layout / shadow / focus tokens (WI-3 + WI-5A prerequisite)  -->
+    <!--  Step 3.0 - Shared layout / shadow / focus tokens (WI-3 + WI-5A prerequisite)  -->
     <!--  ═══════════════════════════════════════════════════════════════════════════  -->
 
-    <!--  Corner radius tokens — WinUI 3: ControlCornerRadius / OverlayCornerRadius / PopupCornerRadius  -->
+    <!--  Corner radius tokens - WinUI 3: ControlCornerRadius / OverlayCornerRadius / PopupCornerRadius  -->
     <CornerRadius x:Key="ControlCornerRadius">4</CornerRadius>
     <CornerRadius x:Key="OverlayCornerRadius">8</CornerRadius>
     <!--  PopupCornerRadius: alias for OverlayCornerRadius per .NET 10 WPF Variables.xaml (8,8,8,8).  -->
@@ -223,7 +223,7 @@
 
     <!--
         Collection-item focus visual: inset single-stroke Rectangle, no margin.
-        Used by ListBoxItem, ListViewItem, TreeViewItem — draws inside item bounds.
+        Used by ListBoxItem, ListViewItem, TreeViewItem - draws inside item bounds.
         Authority: .NET 10 WPF DefaultFocusVisualStyle.xaml (DefaultCollectionFocusVisualStyle).
         Uses FocusStrokeColorOuterBrush consistent with DefaultControlFocusVisualStyle above.
     -->

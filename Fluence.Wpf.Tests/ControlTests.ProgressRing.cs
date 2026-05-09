@@ -39,7 +39,7 @@ using Fluence.Wpf.Controls;
 namespace Fluence.Wpf.Tests
 {
     /// <summary>
-    /// Tests for the rewritten <see cref="ProgressRing"/> — arc-based indeterminate
+    /// Tests for the rewritten <see cref="ProgressRing"/> - arc-based indeterminate
     /// animation plus code-driven determinate arc.
     /// </summary>
     public partial class ControlTests
@@ -86,7 +86,7 @@ namespace Fluence.Wpf.Tests
         }
 
         // ──────────────────────────────────────────────────────────────────────
-        // Indeterminate template — caterpillar arc path
+        // Indeterminate template - caterpillar arc path
         // ──────────────────────────────────────────────────────────────────────
 
         [TestMethod]
@@ -118,7 +118,7 @@ namespace Fluence.Wpf.Tests
         }
 
         // ──────────────────────────────────────────────────────────────────────
-        // Template settings — diameter + offset match WinUI ProgressRingTemplateSettings
+        // Template settings - diameter + offset match WinUI ProgressRingTemplateSettings
         // diameter = (width × 0.1) + (width ≤ 40 ? 1 : 0)
         // anchor   = (width × 0.5) − diameter
         // ──────────────────────────────────────────────────────────────────────

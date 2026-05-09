@@ -57,7 +57,7 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                // Template applied — Border is the root of the template
+                // Template applied - Border is the root of the template
                 Border? border = FindVisualChild<Border>(sep);
                 Assert.IsNotNull(border, "Separator template must contain a Border.");
                 w.Close();

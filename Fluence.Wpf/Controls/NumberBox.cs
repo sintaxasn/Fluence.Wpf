@@ -42,7 +42,7 @@ using Fluence.Wpf.Automation;
 // Fluence subclass. The default NumberBox template instantiates the stock
 // WPF primitives, so `as RepeatButton` against the Fluence subclass silently
 // returns null and the spin-button Click handlers never get attached.
-// Using aliases do not work here either — C# enforces CS0576 when an alias
+// Using aliases do not work here either - C# enforces CS0576 when an alias
 // collides with a namespace member, so fully-qualified names are the only
 // option.
 namespace Fluence.Wpf.Controls

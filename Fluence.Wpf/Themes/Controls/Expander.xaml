@@ -62,7 +62,7 @@
                         <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="HeaderBorder" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
                         </Trigger>
-                        <!--  WI-3 B13: WinUI canonical chevron easing — ControlFastOutSlowIn (0.8,0,0,1), 167ms  -->
+                        <!--  WI-3 B13: WinUI canonical chevron easing - ControlFastOutSlowIn (0.8,0,0,1), 167ms  -->
                         <Trigger Property="IsChecked" Value="True">
                             <Trigger.EnterActions>
                                 <BeginStoryboard>

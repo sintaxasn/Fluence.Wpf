@@ -153,7 +153,7 @@
                                 </Button>
                             </Grid>
                         </Grid>
-                        <!--  WI-3 B14: SeverityLevels VSM group — WPF opacity-pulse approximation of WinUI instant VisualState.Setters  -->
+                        <!--  WI-3 B14: SeverityLevels VSM group - WPF opacity-pulse approximation of WinUI instant VisualState.Setters  -->
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="SeverityLevels">
                                 <VisualState x:Name="Informational">

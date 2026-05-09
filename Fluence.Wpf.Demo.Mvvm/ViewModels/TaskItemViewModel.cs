@@ -47,7 +47,7 @@ namespace Fluence.Wpf.Demo.Mvvm.ViewModels
 
         /// <summary>
         /// Whether the task is complete. Toggled via a CheckBox in the
-        /// DataTemplate — no code-behind required.
+        /// DataTemplate - no code-behind required.
         /// </summary>
         [ObservableProperty]
         private bool _isCompleted;

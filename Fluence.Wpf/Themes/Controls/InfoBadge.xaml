@@ -47,7 +47,7 @@
                             Visibility="Collapsed" />
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="DisplayKindStates">
-                                <!--  Dot: no value, no icon — show small circle, hide pill  -->
+                                <!--  Dot: no value, no icon - show small circle, hide pill  -->
                                 <VisualState x:Name="Dot">
                                     <Storyboard>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="BadgeBorder" Storyboard.TargetProperty="Visibility">

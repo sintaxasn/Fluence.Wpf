@@ -33,7 +33,7 @@
                             x:Name="PART_StarsPanel"
                             VerticalAlignment="Center"
                             Orientation="Horizontal" />
-                        <!--  Caption text — Collapsed when Caption is empty.  -->
+                        <!--  Caption text - Collapsed when Caption is empty.  -->
                         <TextBlock
                             x:Name="PART_Caption"
                             Margin="8,0,0,0"

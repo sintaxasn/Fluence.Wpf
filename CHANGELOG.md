@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **PowerShell demo** - replaced the monolithic `Show-FluenceDemo.ps1` with three self-contained demo scripts (`Show-ThemeDemo.ps1`, `Show-ControlsDemo.ps1`, `Show-ProgressDemo.ps1`). Each script auto-builds the DLL if absent, loads assets from `assets\`, and uses inline XAML.
+
 ### Added
 
 - **WinUI-style `NavigationView.ItemInvoked`** - item mouse, keyboard, and automation invocation now raises `ItemInvoked` before `SelectionChanged`, with `NavigationViewItemInvokedEventArgs` exposing the invoked data item, container, and settings flag.
@@ -36,6 +40,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Animation and demo polish** - restored animated `NavigationView` compact pane expansion/collapse, restored `ToggleSwitch` click/hold/drag knob motion, fixed initial scrollbar clipping in demo pages, preserved indentation in inline sample source rendering, switched the determinate `ProgressRing` demo to `NumberBox`, tightened Typography row spacing, and aligned TextBox validation helper content.
 - **Demo startup resource load order** - `Fluence.Wpf.Demo` now loads `DemoSharedStyles.xaml` after `ApplicationThemeManager.Apply`, preventing early implicit theme-dictionary lookup from crashing startup with missing control BAML resources.
 - **NavigationView title-bar alignment** - extended-title-bar demo chrome now uses the shared `TitleBar` control with 48 px rail slots so back/collapse glyphs align with left-mode item icons, title identity shifts right as glyphs appear, and non-extended left pane chrome uses a horizontal row above the item list without the previous extra spacer.
 - **FluenceWindow title-bar metrics** - `FluenceWindow.MinWidth` remains caller-controlled instead of setting a library default, and default `TitleBarHeight` remains 68 px; the demo shell uses a compact 42 px title bar, the `NavigationView` header reservation matches that 42 px chrome, and title text now returns whenever it has search-box clearance.

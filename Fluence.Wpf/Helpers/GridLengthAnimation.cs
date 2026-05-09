@@ -123,7 +123,7 @@ namespace Fluence.Wpf.Helpers
         public override object GetCurrentValue(object defaultOriginValue, object defaultDestinationValue, AnimationClock animationClock)
         {
             // If From is left at its Auto sentinel (the common "To-only" case), start
-            // from the property's current animated base value — this is what WPF does
+            // from the property's current animated base value - this is what WPF does
             // for a DoubleAnimation with only To set, and is what keeps a reverse
             // collapse (280 -> 48) from snapping to 0 on the first frame.
             if (animationClock is null)

@@ -108,7 +108,7 @@ namespace Fluence.Wpf.Tests
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                // Standard appearance — get divider color
+                // Standard appearance - get divider color
                 SplitButton btnStd = new() { Appearance = ControlAppearance.Standard, Content = "Std" };
                 Window wStd = new() { Content = btnStd, Width = 300, Height = 100 };
                 wStd.Show();
@@ -120,7 +120,7 @@ namespace Fluence.Wpf.Tests
                 Assert.IsNotNull(stdBrush, "Divider.Fill must be a SolidColorBrush in Standard mode.");
                 wStd.Close();
 
-                // Accent appearance — get divider color
+                // Accent appearance - get divider color
                 SplitButton btnAcc = new() { Appearance = ControlAppearance.Accent, Content = "Acc" };
                 Window wAcc = new() { Content = btnAcc, Width = 300, Height = 100 };
                 wAcc.Show();
@@ -135,7 +135,7 @@ namespace Fluence.Wpf.Tests
                     stdBrush.Color,
                     accBrush.Color,
                     "Divider color must differ between Standard (ControlStrokeColorDefaultBrush) "
-                    + "and Accent (ControlStrokeColorOnAccentSecondaryBrush) states — WI-3 B17.");
+                    + "and Accent (ControlStrokeColorOnAccentSecondaryBrush) states - WI-3 B17.");
                 wAcc.Close();
             });
         }

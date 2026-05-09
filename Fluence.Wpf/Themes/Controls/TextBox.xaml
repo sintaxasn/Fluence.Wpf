@@ -174,12 +174,12 @@
 
                         <StackPanel
                             Grid.Row="1"
-                            Margin="12,2,12,0"
+                            Margin="12,4,12,0"
                             Orientation="Horizontal">
                             <TextBlock
                                 x:Name="PART_ValidationIcon"
                                 Margin="0,0,6,0"
-                                VerticalAlignment="Top"
+                                VerticalAlignment="Center"
                                 FontFamily="Segoe Fluent Icons"
                                 FontSize="12"
                                 Visibility="Collapsed" />
@@ -188,6 +188,7 @@
                                 FontFamily="{TemplateBinding FontFamily}"
                                 FontSize="12"
                                 Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                VerticalAlignment="Center"
                                 TextWrapping="Wrap" />
                         </StackPanel>
                     </Grid>

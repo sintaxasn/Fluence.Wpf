@@ -30,7 +30,7 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
-                        <!--  Item header row — full-width hover/selection highlight  -->
+                        <!--  Item header row - full-width hover/selection highlight  -->
                         <Border
                             x:Name="ItemBorder"
                             Grid.Row="0"
@@ -117,7 +117,7 @@
                             </Grid>
                         </Border>
 
-                        <!--  Children — indented 20 px per tree level (standard WPF tree indent)  -->
+                        <!--  Children - indented 20 px per tree level (standard WPF tree indent)  -->
                         <ItemsPresenter
                             x:Name="ItemsHost"
                             Grid.Row="1"

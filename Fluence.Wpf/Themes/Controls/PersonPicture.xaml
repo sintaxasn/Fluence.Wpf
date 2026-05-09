@@ -36,7 +36,7 @@
                             Stroke="{TemplateBinding BorderBrush}"
                             StrokeThickness="{Binding BorderThickness.Left, RelativeSource={RelativeSource TemplatedParent}}" />
 
-                        <!--  Initials / placeholder glyph — code updates Text and FontFamily.  -->
+                        <!--  Initials / placeholder glyph - code updates Text and FontFamily.  -->
                         <TextBlock
                             x:Name="PART_InitialsText"
                             HorizontalAlignment="Center"
@@ -47,7 +47,7 @@
                             Foreground="{TemplateBinding Foreground}"
                             Text="&#xE77B;" />
 
-                        <!--  Photo ellipse — Fill set from code; Hidden by default.  -->
+                        <!--  Photo ellipse - Fill set from code; Hidden by default.  -->
                         <Ellipse x:Name="PART_ImageEllipse" Visibility="Hidden" />
 
                         <!--  Badge: bottom-right corner, AccentFillColorDefaultBrush background.  -->

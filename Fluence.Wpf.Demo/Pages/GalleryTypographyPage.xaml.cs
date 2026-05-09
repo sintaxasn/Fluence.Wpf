@@ -55,71 +55,71 @@ namespace Fluence.Wpf.Demo.Pages
         </Grid.RowDefinitions>
 
         <TextBlock
-            Margin=""24,0,16,16""
+            Margin=""24,0,16,12""
             Style=""{StaticResource BodyStrongTextBlockStyle}""
             Text=""Example"" />
         <TextBlock
             Grid.Column=""1""
-            Margin=""24,0,16,16""
+            Margin=""12,0,16,12""
             Style=""{StaticResource BodyStrongTextBlockStyle}""
             Text=""Variable Font"" />
         <TextBlock
             Grid.Column=""2""
-            Margin=""24,0,16,16""
+            Margin=""12,0,16,12""
             Style=""{StaticResource BodyStrongTextBlockStyle}""
             Text=""Size/Line height"" />
         <TextBlock
             Grid.Column=""3""
-            Margin=""24,0,16,16""
+            Margin=""12,0,16,12""
             Style=""{StaticResource BodyStrongTextBlockStyle}""
             Text=""Style"" />
 
         <TextBlock
             Grid.Row=""1""
-            Margin=""24,16""
+            Margin=""12,8,16,12""
             Style=""{StaticResource BodyTextBlockStyle}""
             Text=""Body"" />
         <TextBlock
             Grid.Row=""1""
             Grid.Column=""1""
-            Margin=""24,16""
+            Margin=""12,8,16,12""
             Style=""{StaticResource BodyTextBlockStyle}""
             Text=""Text, Regular"" />
         <TextBlock
             Grid.Row=""1""
             Grid.Column=""2""
-            Margin=""24,16""
+            Margin=""12,8,16,12""
             Style=""{StaticResource BodyTextBlockStyle}""
             Text=""14/20 epx"" />
         <TextBlock
             Grid.Row=""1""
             Grid.Column=""3""
-            Margin=""24,16""
+            Margin=""12,8,16,12""
             FontFamily=""Consolas""
             Style=""{StaticResource BodyTextBlockStyle}""
             Text=""BodyTextBlockStyle"" />
 
         <TextBlock
             Grid.Row=""2""
-            Margin=""24,16""
+            Margin=""12,8,16,12""
             Style=""{StaticResource TitleTextBlockStyle}""
             Text=""Title"" />
         <TextBlock
             Grid.Row=""2""
             Grid.Column=""1""
-            Margin=""24,16""
+            Margin=""12,8,16,12""
             Style=""{StaticResource BodyTextBlockStyle}""
             Text=""Display, SemiBold"" />
         <TextBlock
             Grid.Row=""2""
             Grid.Column=""2""
-            Margin=""24,16""
+            Margin=""12,8,16,12""
             Style=""{StaticResource BodyTextBlockStyle}""
             Text=""28/36 epx"" />
         <TextBlock
             Grid.Row=""2""
             Grid.Column=""3""
-            Margin=""24,16""
+            Margin=""12,8,16,24""
             FontFamily=""Consolas""
             Style=""{StaticResource BodyTextBlockStyle}""
             Text=""TitleTextBlockStyle"" />
@@ -183,7 +183,7 @@ namespace Fluence.Wpf.Demo.Pages.Typography
 
         private void AddHeader(int column, string text)
         {
-            TextBlock header = CreateTextBlock(text, "BodyStrongTextBlockStyle", new Thickness(24, 0, 16, 16));
+            TextBlock header = CreateTextBlock(text, "BodyStrongTextBlockStyle", new Thickness(24, 0, 16, 12));
             AddCell(header, 0, column);
         }
 
@@ -195,7 +195,7 @@ namespace Fluence.Wpf.Demo.Pages.Typography
                 {
                     CornerRadius = new CornerRadius(6),
                     IsHitTestVisible = false,
-                    Margin = new Thickness(0, 4, 0, 4)
+                    Margin = new Thickness(0, 2, 0, 2)
                 };
                 background.SetResourceReference(Border.BackgroundProperty, "SubtleFillColorSecondaryBrush");
                 Grid.SetRow(background, rowIndex);
@@ -203,10 +203,10 @@ namespace Fluence.Wpf.Demo.Pages.Typography
                 _ = TypographyTable.Children.Add(background);
             }
 
-            AddCell(CreateTextBlock(row.Example, row.StyleKey, new Thickness(24, 16, 16, 16)), rowIndex, 0);
-            AddCell(CreateTextBlock(row.VariableFont, "BodyTextBlockStyle", new Thickness(24, 16, 16, 16)), rowIndex, 1);
-            AddCell(CreateTextBlock(row.SizeAndLineHeight, "BodyTextBlockStyle", new Thickness(24, 16, 16, 16)), rowIndex, 2);
-            AddCell(CreateTextBlock(row.StyleKey, "BodyTextBlockStyle", new Thickness(24, 16, 16, 16)), rowIndex, 3);
+            AddCell(CreateTextBlock(row.Example, row.StyleKey, new Thickness(24, 8, 16, 12)), rowIndex, 0);
+            AddCell(CreateTextBlock(row.VariableFont, "BodyTextBlockStyle", new Thickness(12, 8, 16, 12)), rowIndex, 1);
+            AddCell(CreateTextBlock(row.SizeAndLineHeight, "BodyTextBlockStyle", new Thickness(12, 8, 16, 12)), rowIndex, 2);
+            AddCell(CreateTextBlock(row.StyleKey, "BodyTextBlockStyle", new Thickness(12, 8, 16, 12)), rowIndex, 3);
             AddCell(CreateCopyButton(row.StyleKey), rowIndex, 4);
         }
 
@@ -230,7 +230,7 @@ namespace Fluence.Wpf.Demo.Pages.Typography
                 Content = new Fluent.FontIcon { Glyph = CopyGlyph, IconFontSize = 16 },
                 Height = 36,
                 HorizontalAlignment = HorizontalAlignment.Center,
-                Margin = new Thickness(16, 8, 24, 8),
+                Margin = new Thickness(12, 4, 24, 12),
                 MinWidth = 40,
                 Padding = new Thickness(0),
                 Tag = styleKey,
