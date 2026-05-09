@@ -29,6 +29,7 @@
     <Color x:Key="ControlFillColorDefault">#FF000000</Color>
     <Color x:Key="ControlFillColorSecondary">#FF000000</Color>
     <Color x:Key="ControlFillColorTertiary">#FF000000</Color>
+    <Color x:Key="ControlFillColorQuarternary">#FF000000</Color>
     <Color x:Key="ControlFillColorDisabled">#FF000000</Color>
     <Color x:Key="ControlFillColorTransparent">#00000000</Color>
     <Color x:Key="ControlFillColorInputActive">#FF000000</Color>
@@ -92,6 +93,7 @@
     <!--  Card Background Fill Colors  -->
     <Color x:Key="CardBackgroundFillColorDefault">#FF000000</Color>
     <Color x:Key="CardBackgroundFillColorSecondary">#FF000000</Color>
+    <Color x:Key="CardBackgroundFillColorTertiary">#FF000000</Color>
 
     <!--  Smoke Fill Color  -->
     <Color x:Key="SmokeFillColorDefault">#FF000000</Color>
@@ -113,6 +115,8 @@
     <Color x:Key="SolidBackgroundFillColorSecondary">#FF000000</Color>
     <Color x:Key="SolidBackgroundFillColorTertiary">#FF000000</Color>
     <Color x:Key="SolidBackgroundFillColorQuarternary">#FF000000</Color>
+    <Color x:Key="SolidBackgroundFillColorQuinary">#FF000000</Color>
+    <Color x:Key="SolidBackgroundFillColorSenary">#FF000000</Color>
     <Color x:Key="SolidBackgroundFillColorTransparent">#00000000</Color>
     <Color x:Key="SolidBackgroundFillColorBaseAlt">#FF000000</Color>
 
@@ -202,6 +206,7 @@
     <SolidColorBrush x:Key="ControlFillColorDefaultBrush" Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" />
     <SolidColorBrush x:Key="ControlFillColorSecondaryBrush" Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" />
     <SolidColorBrush x:Key="ControlFillColorTertiaryBrush" Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" />
+    <SolidColorBrush x:Key="ControlFillColorQuarternaryBrush" Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" />
     <SolidColorBrush x:Key="ControlFillColorDisabledBrush" Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" />
     <SolidColorBrush x:Key="ControlFillColorTransparentBrush" Color="Transparent" />
     <SolidColorBrush x:Key="ControlFillColorInputActiveBrush" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
@@ -271,6 +276,7 @@
     <!--  Card Background Fill Colors  -->
     <SolidColorBrush x:Key="CardBackgroundFillColorDefaultBrush" Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" />
     <SolidColorBrush x:Key="CardBackgroundFillColorSecondaryBrush" Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" />
+    <SolidColorBrush x:Key="CardBackgroundFillColorTertiaryBrush" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
 
     <!--  Smoke Fill Color  -->
     <SolidColorBrush x:Key="SmokeFillColorDefaultBrush" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
@@ -292,6 +298,8 @@
     <SolidColorBrush x:Key="SolidBackgroundFillColorSecondaryBrush" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
     <SolidColorBrush x:Key="SolidBackgroundFillColorTertiaryBrush" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
     <SolidColorBrush x:Key="SolidBackgroundFillColorQuarternaryBrush" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
+    <SolidColorBrush x:Key="SolidBackgroundFillColorQuinaryBrush" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
+    <SolidColorBrush x:Key="SolidBackgroundFillColorSenaryBrush" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
     <SolidColorBrush x:Key="SolidBackgroundFillColorTransparentBrush" Color="Transparent" />
     <SolidColorBrush x:Key="SolidBackgroundFillColorBaseAltBrush" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
 

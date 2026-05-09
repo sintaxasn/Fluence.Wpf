@@ -76,7 +76,7 @@ namespace Fluence.Wpf.Demo.Pages
 
         <TextBlock
             Grid.Row=""1""
-            Margin=""12,8,16,8""
+            Margin=""24,8,16,8""
             Style=""{StaticResource BodyTextBlockStyle}""
             Text=""Body"" />
         <TextBlock
@@ -101,7 +101,7 @@ namespace Fluence.Wpf.Demo.Pages
 
         <TextBlock
             Grid.Row=""2""
-            Margin=""12,8,16,8""
+            Margin=""24,8,16,8""
             Style=""{StaticResource TitleTextBlockStyle}""
             Text=""Title"" />
         <TextBlock
@@ -203,7 +203,7 @@ namespace Fluence.Wpf.Demo.Pages.Typography
                 _ = TypographyTable.Children.Add(background);
             }
 
-            AddCell(CreateTextBlock(row.Example, row.StyleKey, new Thickness(12, 8, 16, 8)), rowIndex, 0);
+            AddCell(CreateTextBlock(row.Example, row.StyleKey, new Thickness(24, 8, 16, 8)), rowIndex, 0);
             AddCell(CreateTextBlock(row.VariableFont, "BodyTextBlockStyle", new Thickness(12, 8, 16, 8)), rowIndex, 1);
             AddCell(CreateTextBlock(row.SizeAndLineHeight, "BodyTextBlockStyle", new Thickness(12, 8, 16, 8)), rowIndex, 2);
             AddCell(CreateTextBlock(row.StyleKey, "BodyTextBlockStyle", new Thickness(12, 8, 16, 8)), rowIndex, 3);

@@ -2,10 +2,10 @@
 
 > Internal working document. Not part of the public `docs/` set per CLAUDE.md §10.
 
-**Status:** 21/21 complete — all items done  
-**Verified:** 2026-04-25 scan against HEAD  
-**Baseline (post WI-3):** net10 = 423 passed / net472 = 422 passed  
-**Authority:** WinUI 3 CommonStyles → in-tree precedent → .NET 10 WPF Themes  
+**Status:** 21/21 complete - all items done
+**Verified:** 2026-04-25 scan against HEAD
+**Baseline (post WI-3):** net10 = 423 passed / net472 = 422 passed
+**Authority:** WinUI 3 CommonStyles → in-tree precedent → .NET 10 WPF Themes
 
 Priority tiers: HIGH → must fix before release | MEDIUM → fix in this cycle | LOW → defer
 
@@ -13,20 +13,20 @@ Legend: ✅ done (verified in code) | ❌ pending | ⚠️ partial
 
 ---
 
-## Batch A — Quick visual fixes (S-size, single-file, ≤20 lines each)
+## Batch A - Quick visual fixes (S-size, single-file, ≤20 lines each)
 
-| # | Status | Control | Finding | WinUI 3 anchor | Severity | Size |
-|---|--------|---------|---------|----------------|----------|------|
-| 1 | ✅ | Button | Per-control focus visual is duplicated; replace with `{DynamicResource DefaultControlFocusVisualStyle}` | Button_themeresources.xaml | visual | S |
-| 2 | ✅ | CheckBox | Same focus-visual dedup as #1 | CheckBox_themeresources.xaml | visual | S |
-| 3 | ✅ | RadioButton | Same focus-visual dedup | RadioButton_themeresources.xaml | visual | S |
-| 4 | ✅ | ToggleButton | Same focus-visual dedup | ToggleButton_themeresources.xaml | visual | S |
-| 5 | ✅ | ComboBox | Popup border missing `CornerRadius="{DynamicResource OverlayCornerRadius}"` | ComboBox_themeresources.xaml | visual | S |
-| 6 | ✅ | DropDownButton | Popup border same CornerRadius gap | DropDownButton_themeresources.xaml | visual | S |
-| 7 | ✅ | NumberBox | Spinner button layout margin vs WinUI spec off by 2px (current: `Margin="0,1,0,1"` on SpinPanel) | NumberBox_themeresources.xaml | visual | S |
-| 8 | ✅ | HyperlinkButton | Missing `TextDecoration` on PointerOver (underline should appear) | HyperlinkButton_themeresources.xaml | visual | S |
-| 9 | ✅ | ProgressBar | Indeterminate timing: Fluence uses 1.2s; WinUI canonical is 2.0s/2.4s stagger | ProgressBar_themeresources.xaml | motion | S |
-| 10 | ✅ | InfoBadge | `DisplayKindStates` VSM group missing; uses triggers only | InfoBadge_themeresources.xaml | visual | S |
+| #  | Status | Control         | Finding                                                                                                  | WinUI 3 anchor                      | Severity | Size |
+|----|----|---|---|---|---|---|
+| 1  | ✅ | Button          | Per-control focus visual is duplicated; replace with `{DynamicResource DefaultControlFocusVisualStyle}` | Button_themeresources.xaml          | visual   | S    |
+| 2  | ✅      | CheckBox        | Same focus-visual dedup as #1                                                                           | CheckBox_themeresources.xaml        | visual   | S    |
+| 3  | ✅      | RadioButton     | Same focus-visual dedup                                                                                 | RadioButton_themeresources.xaml     | visual   | S    |
+| 4  | ✅      | ToggleButton    | Same focus-visual dedup                                                                                 | ToggleButton_themeresources.xaml    | visual   | S    |
+| 5  | ✅      | ComboBox        | Popup border missing `CornerRadius="{DynamicResource OverlayCornerRadius}"`                             | ComboBox_themeresources.xaml        | visual   | S    |
+| 6  | ✅      | DropDownButton  | Popup border same CornerRadius gap                                                                      | DropDownButton_themeresources.xaml  | visual   | S    |
+| 7  | ✅      | NumberBox       | Spinner button layout margin vs WinUI spec off by 2px (current: `Margin="0,1,0,1"` on SpinPanel)        | NumberBox_themeresources.xaml       | visual   | S    |
+| 8  | ✅      | HyperlinkButton | Missing `TextDecoration` on PointerOver (underline should appear)                                       | HyperlinkButton_themeresources.xaml | visual   | S    |
+| 9  | ✅      | ProgressBar     | Indeterminate timing: Fluence uses 1.2s; WinUI canonical is 2.0s/2.4s stagger                           | ProgressBar_themeresources.xaml     | motion   | S    |
+| 10 | ✅      | InfoBadge       | `DisplayKindStates` VSM group missing; uses triggers only                                               | InfoBadge_themeresources.xaml       | visual   | S    |
 
 ---
 

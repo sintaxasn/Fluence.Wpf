@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **Screenshot capture test policy** - `GalleryScreenshotHarness.CaptureBannerAcrossThemesAndScales` now runs during normal full test runs and regenerates `docs/screenshots/banner-{theme}-{scale}x.png` without requiring `FLUENCE_CAPTURE_SCREENSHOTS=1`.
+- **WinUI Gallery background parity** - aligned selection-control off states, ProgressBar tracks, ScrollBar rails/buttons, and demo sample chrome with WinUI CommonStyles and WinUI Gallery background roles.
 - **PowerShell demo** - replaced the monolithic `Show-FluenceDemo.ps1` with three self-contained demo scripts (`Show-ThemeDemo.ps1`, `Show-ControlsDemo.ps1`, `Show-ProgressDemo.ps1`). Each script auto-builds the DLL if absent, loads assets from `assets\`, and uses inline XAML.
 
 ### Added

@@ -45,10 +45,7 @@ namespace Fluence.Wpf.Demo.Pages
             <ColumnDefinition Width=""*"" />
         </Grid.ColumnDefinitions>
         <ui:ListView
-            Height=""230""
-            Background=""{DynamicResource CardBackgroundFillColorDefaultBrush}""
-            BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
-            BorderThickness=""1"">
+            Height=""230"">
             <ListViewItem Content=""Ana Bowman"" />
             <ListViewItem Content=""Shawn Hughes"" />
             <ListViewItem Content=""Oscar Ward"" />
@@ -57,10 +54,7 @@ namespace Fluence.Wpf.Demo.Pages
         </ui:ListView>
         <ui:ListView
             Grid.Column=""2""
-            Height=""230""
-            Background=""{DynamicResource CardBackgroundFillColorDefaultBrush}""
-            BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
-            BorderThickness=""1"">
+            Height=""230"">
             <ListViewItem>
                 <Grid Margin=""0,4"">
                     <Grid.ColumnDefinitions>

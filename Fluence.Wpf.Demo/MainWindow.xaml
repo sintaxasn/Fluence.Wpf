@@ -10,7 +10,7 @@
     MinWidth="698"
     MinHeight="520"
     CornerStyle="Round"
-    ExtendsContentIntoTitleBar="True"
+    ExtendsContentIntoTitleBar="False"
     Icon="Resources/fluence-wpf-appicon-256.ico"
     RenderOptions.BitmapScalingMode="HighQuality"
     SystemBackdropType="Mica"
@@ -29,8 +29,8 @@
             <ui:TextBox
                 x:Name="NavSearchBox"
                 Width="400"
-                HorizontalAlignment="Center"
                 Margin="0,4,0,0"
+                HorizontalAlignment="Center"
                 VerticalAlignment="Center"
                 LostKeyboardFocus="NavSearchBox_LostKeyboardFocus"
                 PlaceholderText="Search"
@@ -46,10 +46,10 @@
         x:Name="DemoNav"
         Background="Transparent"
         IsBackButtonVisible="True"
-        IsBackEnabled="False"
-        IsPaneOpen="False"
+        IsBackEnabled="True"
+        IsPaneOpen="True"
         IsPaneToggleButtonVisible="True"
-        PaneDisplayMode="Left"
+        PaneDisplayMode="Top"
         SelectedIndex="0"
         />
 </ui:FluenceWindow>

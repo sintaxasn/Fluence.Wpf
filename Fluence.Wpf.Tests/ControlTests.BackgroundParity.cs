@@ -1,0 +1,477 @@
+﻿/*
+ * Copyright 2026 Dan Cunningham
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+ * THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Media;
+using Fluence.Wpf.Demo.Pages;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using FluenceCard = Fluence.Wpf.Controls.Card;
+using FluenceCheckBox = Fluence.Wpf.Controls.CheckBox;
+using FluenceExpander = Fluence.Wpf.Controls.Expander;
+using FluenceProgressBar = Fluence.Wpf.Controls.ProgressBar;
+using FluenceRadioButton = Fluence.Wpf.Controls.RadioButton;
+using FluenceToggleSwitch = Fluence.Wpf.Controls.ToggleSwitch;
+using WpfBorder = System.Windows.Controls.Border;
+using WpfEllipse = System.Windows.Shapes.Ellipse;
+
+namespace Fluence.Wpf.Tests
+{
+    public partial class ControlTests
+    {
+        [TestMethod]
+        public void SelectionControls_OffStateBackgrounds_UseWinUiAltFillRoles()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                Application? application = EnsureApplication();
+                _ = MergeGenericDictionary(application);
+
+                FluenceCheckBox checkBox = new() { Content = "Check" };
+                FluenceRadioButton radioButton = new() { Content = "Radio" };
+                FluenceToggleSwitch toggleSwitch = new() { OffContent = "Off", OnContent = "On" };
+
+                StackPanel panel = new();
+                _ = panel.Children.Add(checkBox);
+                _ = panel.Children.Add(radioButton);
+                _ = panel.Children.Add(toggleSwitch);
+
+                Window window = new()
+                {
+                    Content = panel,
+                    Width = 320,
+                    Height = 180
+                };
+
+                try
+                {
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    _ = checkBox.ApplyTemplate();
+                    _ = radioButton.ApplyTemplate();
+                    _ = toggleSwitch.ApplyTemplate();
+
+                    WpfBorder? indicatorFill = FindVisualChildByName<WpfBorder>(checkBox, "IndicatorFill");
+                    WpfBorder? indicatorHover = FindVisualChildByName<WpfBorder>(checkBox, "IndicatorHover");
+                    WpfBorder? indicatorPressed = FindVisualChildByName<WpfBorder>(checkBox, "IndicatorPressed");
+                    Assert.IsNotNull(indicatorFill, "CheckBox template must expose IndicatorFill.");
+                    Assert.IsNotNull(indicatorHover, "CheckBox template must expose IndicatorHover.");
+                    Assert.IsNotNull(indicatorPressed, "CheckBox template must expose IndicatorPressed.");
+
+                    AssertBrushColor(indicatorFill.Background, "ControlAltFillColorSecondaryBrush",
+                        "Unchecked CheckBox fill should use the WinUI off-state rest token.");
+                    AssertBrushColor(indicatorHover.Background, "ControlAltFillColorTertiaryBrush",
+                        "Unchecked CheckBox hover fill should use the WinUI off-state hover token.");
+                    AssertBrushColor(indicatorPressed.Background, "ControlAltFillColorQuarternaryBrush",
+                        "Unchecked CheckBox pressed fill should use the WinUI off-state pressed token.");
+                    AssertBrushColor(indicatorPressed.BorderBrush, "ControlStrongStrokeColorDisabledBrush",
+                        "Unchecked CheckBox pressed stroke should use the WinUI pressed stroke token.");
+
+                    WpfEllipse? outerEllipse = FindVisualChildByName<WpfEllipse>(radioButton, "OuterEllipse");
+                    WpfEllipse? outerEllipseHover = FindVisualChildByName<WpfEllipse>(radioButton, "OuterEllipseHover");
+                    WpfEllipse? outerEllipsePressed = FindVisualChildByName<WpfEllipse>(radioButton, "OuterEllipsePressed");
+                    Assert.IsNotNull(outerEllipse, "RadioButton template must expose OuterEllipse.");
+                    Assert.IsNotNull(outerEllipseHover, "RadioButton template must expose OuterEllipseHover.");
+                    Assert.IsNotNull(outerEllipsePressed, "RadioButton template must expose OuterEllipsePressed.");
+
+                    AssertBrushColor(outerEllipse.Fill, "ControlAltFillColorSecondaryBrush",
+                        "Unchecked RadioButton fill should use the WinUI off-state rest token.");
+                    AssertBrushColor(outerEllipseHover.Fill, "ControlAltFillColorTertiaryBrush",
+                        "Unchecked RadioButton hover fill should use the WinUI off-state hover token.");
+                    AssertBrushColor(outerEllipsePressed.Fill, "ControlAltFillColorQuarternaryBrush",
+                        "Unchecked RadioButton pressed fill should use the WinUI off-state pressed token.");
+                    AssertBrushColor(outerEllipsePressed.Stroke, "ControlStrongStrokeColorDisabledBrush",
+                        "Unchecked RadioButton pressed stroke should use the WinUI pressed stroke token.");
+
+                    WpfBorder? trackOff = FindVisualChildByName<WpfBorder>(toggleSwitch, "TrackOff");
+                    WpfBorder? trackOffHover = FindVisualChildByName<WpfBorder>(toggleSwitch, "TrackOffHover");
+                    WpfBorder? trackOffPressed = FindVisualChildByName<WpfBorder>(toggleSwitch, "TrackOffPressed");
+                    Assert.IsNotNull(trackOff, "ToggleSwitch template must expose TrackOff.");
+                    Assert.IsNotNull(trackOffHover, "ToggleSwitch template must expose TrackOffHover.");
+                    Assert.IsNotNull(trackOffPressed, "ToggleSwitch template must expose TrackOffPressed.");
+
+                    AssertBrushColor(trackOff.Background, "ControlAltFillColorSecondaryBrush",
+                        "Unchecked ToggleSwitch track should use the WinUI off-state rest token.");
+                    AssertBrushColor(trackOff.BorderBrush, "ControlStrongStrokeColorDefaultBrush",
+                        "Unchecked ToggleSwitch track stroke should use the WinUI off-state stroke token.");
+                    AssertBrushColor(trackOffHover.Background, "ControlAltFillColorTertiaryBrush",
+                        "Unchecked ToggleSwitch hover track should use the WinUI off-state hover token.");
+                    AssertBrushColor(trackOffPressed.Background, "ControlAltFillColorQuarternaryBrush",
+                        "Unchecked ToggleSwitch pressed track should use the WinUI off-state pressed token.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [TestMethod]
+        public void ProgressBar_TrackBackground_UsesWinUiStrongStrokeRole()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                Application? application = EnsureApplication();
+                _ = MergeGenericDictionary(application);
+
+                FluenceProgressBar progressBar = new()
+                {
+                    Width = 240,
+                    Height = 24,
+                    Value = 40
+                };
+                Window window = new()
+                {
+                    Content = progressBar,
+                    Width = 300,
+                    Height = 120
+                };
+
+                try
+                {
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    _ = progressBar.ApplyTemplate();
+
+                    WpfBorder? track = FindVisualChildByName<WpfBorder>(progressBar, "PART_Track");
+                    Assert.IsNotNull(track, "ProgressBar template must expose PART_Track.");
+                    AssertBrushColor(track.Background, "ControlStrongStrokeColorDefaultBrush",
+                        "ProgressBar track should use the WinUI ProgressBarBackground role.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [TestMethod]
+        public void ScrollBar_RailBackground_UsesWinUiTrackFillRole()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                Application? application = EnsureApplication();
+                _ = MergeGenericDictionary(application);
+
+                ScrollBar scrollBar = new()
+                {
+                    Orientation = Orientation.Vertical,
+                    Style = application?.TryFindResource("VerticalScrollBarStyle") as Style,
+                    Minimum = 0,
+                    Maximum = 100,
+                    Value = 0,
+                    ViewportSize = 10,
+                    Width = 12,
+                    Height = 200
+                };
+                Window window = new()
+                {
+                    Content = scrollBar,
+                    Width = 60,
+                    Height = 300
+                };
+
+                try
+                {
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    _ = scrollBar.ApplyTemplate();
+
+                    WpfBorder? trackBackground = FindVisualChildByName<WpfBorder>(scrollBar, "TrackBackground");
+                    Assert.IsNotNull(trackBackground, "ScrollBar template must expose TrackBackground.");
+                    AssertBrushColor(trackBackground.Background, "ScrollBarTrackFillBrush",
+                        "ScrollBar rail should use the WinUI ScrollBarTrackFill role.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [TestMethod]
+        public void DemoSampleControl_Chrome_UsesWinUiGalleryBackgroundRoles()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                Application? application = EnsureApplication();
+                _ = MergeGenericDictionary(application);
+
+                DemoSampleControl sample = new()
+                {
+                    Title = "Sample",
+                    Description = "Description",
+                    SampleContent = new TextBlock { Text = "Body" },
+                    XamlSource = "<Grid />"
+                };
+                Window window = new()
+                {
+                    Content = sample,
+                    Width = 420,
+                    Height = 300
+                };
+
+                try
+                {
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    FluenceCard? sampleCard = sample.FindName("SampleCard") as FluenceCard;
+                    FluenceExpander? sourceExpander = sample.FindName("SourceExpander") as FluenceExpander;
+                    Assert.IsNotNull(sampleCard, "DemoSampleControl must expose SampleCard.");
+                    Assert.IsNotNull(sourceExpander, "DemoSampleControl must expose SourceExpander.");
+
+                    AssertBrushColor(sampleCard.Background, "SolidBackgroundFillColorBaseBrush",
+                        "Demo sample display should use the WinUI Gallery ControlExample display background.");
+                    AssertBrushColor(sourceExpander.Background, "CardBackgroundFillColorSecondaryBrush",
+                        "Demo source surface should use the WinUI Gallery source-code background.");
+                    Assert.AreEqual("Source code", sourceExpander.Header,
+                        "Demo source expander header should match the WinUI Gallery source label.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [TestMethod]
+        public void BackgroundParityBrushes_ResolveAcrossThemesAndDeterministicAccent()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                Application? application = EnsureApplication();
+                _ = MergeGenericDictionary(application);
+
+                string[] keys =
+                [
+                    "ControlAltFillColorSecondaryBrush",
+                    "ControlAltFillColorTertiaryBrush",
+                    "ControlAltFillColorQuarternaryBrush",
+                    "ControlAltFillColorDisabledBrush",
+                    "ControlFillColorQuarternaryBrush",
+                    "CardBackgroundFillColorTertiaryBrush",
+                    "SolidBackgroundFillColorQuinaryBrush",
+                    "SolidBackgroundFillColorSenaryBrush",
+                    "ScrollBarTrackFillBrush",
+                    "SolidBackgroundFillColorBaseBrush",
+                    "CardBackgroundFillColorSecondaryBrush",
+                    "AccentFillColorDefaultBrush"
+                ];
+
+                ApplicationTheme[] themes =
+                [
+                    ApplicationTheme.Light,
+                    ApplicationTheme.Dark,
+                    ApplicationTheme.HighContrast
+                ];
+
+                foreach (ApplicationTheme theme in themes)
+                {
+                    ApplicationThemeManager.Apply(theme, BackdropType.None, true);
+                    ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
+
+                    foreach (string key in keys)
+                    {
+                        Assert.IsNotNull(application?.TryFindResource(key),
+                            "Resource '" + key + "' must resolve under " + theme + " with deterministic accent #0078D4.");
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void XamlBackgroundAndFillLiterals_AreAllowListed()
+        {
+            string repoRoot = FindRepoRoot();
+            string[] roots =
+            [
+                Path.Combine(repoRoot, "Fluence.Wpf", "Themes", "Controls"),
+                Path.Combine(repoRoot, "Fluence.Wpf.Demo")
+            ];
+            List<string> violations = [];
+
+            foreach (string root in roots)
+            {
+                foreach (string path in Directory.EnumerateFiles(root, "*.xaml", SearchOption.AllDirectories))
+                {
+                    if (IsBackgroundLiteralAllowedPath(path))
+                    {
+                        continue;
+                    }
+
+                    string source = File.ReadAllText(path);
+                    CollectBackgroundLiteralViolations(source, path, "Background", violations);
+                    CollectBackgroundLiteralViolations(source, path, "Fill", violations);
+                }
+            }
+
+            Assert.AreEqual(0, violations.Count,
+                "Background/Fill literals must use theme resources unless intentionally allow-listed: " +
+                string.Join("; ", violations));
+        }
+
+        private static void CollectBackgroundLiteralViolations(
+            string source,
+            string path,
+            string attributeName,
+            List<string> violations)
+        {
+            string attributePrefix = attributeName + "=\"";
+            int searchIndex = 0;
+            while (searchIndex < source.Length)
+            {
+                int matchIndex = source.IndexOf(attributePrefix, searchIndex, StringComparison.Ordinal);
+                if (matchIndex < 0)
+                {
+                    break;
+                }
+
+                int valueStart = matchIndex + attributePrefix.Length;
+                int valueEnd = source.IndexOf('"', valueStart);
+                if (valueEnd < 0)
+                {
+                    break;
+                }
+
+                searchIndex = valueEnd + 1;
+                if (!IsWholeXamlAttribute(source, matchIndex))
+                {
+                    continue;
+                }
+
+                string value = source.Substring(valueStart, valueEnd - valueStart);
+                if (!IsLiteralBackgroundValue(value) || value.Equals("Transparent", StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                violations.Add(GetRepoRelativePath(path) + ": " + attributeName + "=\"" + value + "\"");
+            }
+        }
+
+        private static bool IsWholeXamlAttribute(string source, int attributeIndex)
+        {
+            if (attributeIndex == 0)
+            {
+                return true;
+            }
+
+            char previous = source[attributeIndex - 1];
+            return !char.IsLetterOrDigit(previous) && previous != '_' && previous != ':';
+        }
+
+        private static bool IsLiteralBackgroundValue(string value)
+        {
+            if (value.Length == 0)
+            {
+                return false;
+            }
+
+            if (value[0] == '#')
+            {
+                return true;
+            }
+
+            if (value[0] == '{')
+            {
+                return false;
+            }
+
+            foreach (char character in value)
+            {
+                if (!char.IsLetter(character))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static void AssertBrushColor(Brush? actualBrush, string resourceKey, string message)
+        {
+            SolidColorBrush? actual = actualBrush as SolidColorBrush;
+            Assert.IsNotNull(actual, message + " Actual brush must be a SolidColorBrush.");
+
+            SolidColorBrush? expected = Application.Current?.TryFindResource(resourceKey) as SolidColorBrush;
+            Assert.IsNotNull(expected, resourceKey + " must resolve.");
+
+            Assert.AreEqual(expected.Color, actual.Color, message);
+        }
+
+        private static bool IsBackgroundLiteralAllowedPath(string path)
+        {
+            string fileName = Path.GetFileName(path);
+            return fileName.Equals("fluence-wpf-banner-light.xaml", StringComparison.OrdinalIgnoreCase) ||
+                fileName.Equals("fluence-wpf-banner-dark.xaml", StringComparison.OrdinalIgnoreCase) ||
+                fileName.Equals("GalleryWindowPage.xaml", StringComparison.OrdinalIgnoreCase) ||
+                fileName.Equals("GalleryColorsPage.xaml", StringComparison.OrdinalIgnoreCase) ||
+                fileName.Equals("GalleryAccessibilityPage.xaml", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static string GetRepoRelativePath(string path)
+        {
+            string root = FindRepoRoot();
+            if (path.StartsWith(root, StringComparison.OrdinalIgnoreCase))
+            {
+                int separatorLength = path.Length > root.Length &&
+                    (path[root.Length] == Path.DirectorySeparatorChar || path[root.Length] == Path.AltDirectorySeparatorChar)
+                    ? 1
+                    : 0;
+                return path.Substring(root.Length + separatorLength);
+            }
+
+            return path;
+        }
+
+        private static string FindRepoRoot()
+        {
+            DirectoryInfo? directory = new(AppContext.BaseDirectory);
+            while (directory is not null)
+            {
+                if (File.Exists(Path.Combine(directory.FullName, "Fluence.Wpf.sln")))
+                {
+                    return directory.FullName;
+                }
+
+                directory = directory.Parent;
+            }
+
+            throw new InvalidOperationException(
+                "Could not locate Fluence.Wpf.sln ancestor directory from " + AppContext.BaseDirectory);
+        }
+    }
+}

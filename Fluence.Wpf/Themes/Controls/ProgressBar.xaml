@@ -17,7 +17,7 @@
                 <ControlTemplate TargetType="{x:Type controls:ProgressBar}">
                     <Grid>
                         <Border x:Name="PART_Track"
-                                Background="{DynamicResource ControlFillColorDefaultBrush}"
+                                Background="{DynamicResource ControlStrongStrokeColorDefaultBrush}"
                                 CornerRadius="{TemplateBinding CornerRadius}"
                                 ClipToBounds="True"
                                 Height="{TemplateBinding TrackHeight}"
@@ -57,7 +57,7 @@
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="PART_Track" Property="Background" Value="{DynamicResource ControlFillColorDisabledBrush}" />
+                            <Setter TargetName="PART_Track" Property="Background" Value="{DynamicResource ControlStrongStrokeColorDisabledBrush}" />
                             <Setter TargetName="PART_Fill" Property="Background" Value="{DynamicResource ControlFillColorDisabledBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>

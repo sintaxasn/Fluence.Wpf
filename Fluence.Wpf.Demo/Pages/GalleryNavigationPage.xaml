@@ -33,9 +33,7 @@
                 <StackPanel>
                     <Border
                         Height="320"
-                        Margin="0,0,0,12"
-                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                        BorderThickness="1">
+                        Margin="0,0,0,12">
                         <ui:NavigationView
                             x:Name="LeftNavigationDemo"
                             ItemInvoked="NavigationDemo_ItemInvoked"
@@ -83,9 +81,7 @@
                 <StackPanel>
                     <Border
                         Height="240"
-                        Margin="0,0,0,12"
-                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                        BorderThickness="1">
+                        Margin="0,0,0,12">
                         <ui:NavigationView
                             x:Name="TopNavigationDemo"
                             Header="Insights"

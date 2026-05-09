@@ -86,6 +86,16 @@
                                 Stroke="{DynamicResource ControlStrongStrokeColorDefaultBrush}"
                                 StrokeThickness="1" />
 
+                            <!--  Unchecked: pressed overlay  -->
+                            <Ellipse
+                                x:Name="OuterEllipsePressed"
+                                Width="20"
+                                Height="20"
+                                Fill="{DynamicResource ControlAltFillColorQuarternaryBrush}"
+                                Opacity="0"
+                                Stroke="{DynamicResource ControlStrongStrokeColorDisabledBrush}"
+                                StrokeThickness="1" />
+
                             <!--  Checked: accent fill  -->
                             <Ellipse
                                 x:Name="CheckedEllipse"
@@ -177,7 +187,7 @@
                                 <Condition Property="IsPressed" Value="True" />
                                 <Condition Property="IsChecked" Value="False" />
                             </MultiTrigger.Conditions>
-                            <Setter TargetName="OuterEllipseHover" Property="Opacity" Value="1" />
+                            <Setter TargetName="OuterEllipsePressed" Property="Opacity" Value="1" />
                             <Setter TargetName="IndicatorHost" Property="RenderTransform">
                                 <Setter.Value>
                                     <ScaleTransform ScaleX="0.9" ScaleY="0.9" />
@@ -189,6 +199,7 @@
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="OuterEllipse" Property="Opacity" Value="0" />
                             <Setter TargetName="OuterEllipseHover" Property="Opacity" Value="0" />
+                            <Setter TargetName="OuterEllipsePressed" Property="Opacity" Value="0" />
                             <Setter TargetName="CheckedEllipse" Property="Opacity" Value="1" />
                             <Trigger.EnterActions>
                                 <BeginStoryboard>
@@ -256,11 +267,15 @@
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                             <Setter TargetName="DescriptionText" Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
-                            <Setter TargetName="OuterEllipse" Property="Fill" Value="{DynamicResource ControlFillColorDisabledBrush}" />
+                            <Setter TargetName="OuterEllipse" Property="Fill" Value="{DynamicResource ControlAltFillColorDisabledBrush}" />
                             <Setter TargetName="OuterEllipse" Property="Stroke" Value="{DynamicResource ControlStrongStrokeColorDisabledBrush}" />
-                            <Setter TargetName="CheckedEllipse" Property="Fill" Value="{DynamicResource ControlFillColorDisabledBrush}" />
-                            <Setter TargetName="CheckedEllipseHover" Property="Fill" Value="{DynamicResource ControlFillColorDisabledBrush}" />
-                            <Setter TargetName="CheckedEllipsePressed" Property="Fill" Value="{DynamicResource ControlFillColorDisabledBrush}" />
+                            <Setter TargetName="OuterEllipseHover" Property="Fill" Value="{DynamicResource ControlAltFillColorDisabledBrush}" />
+                            <Setter TargetName="OuterEllipseHover" Property="Stroke" Value="{DynamicResource ControlStrongStrokeColorDisabledBrush}" />
+                            <Setter TargetName="OuterEllipsePressed" Property="Fill" Value="{DynamicResource ControlAltFillColorDisabledBrush}" />
+                            <Setter TargetName="OuterEllipsePressed" Property="Stroke" Value="{DynamicResource ControlStrongStrokeColorDisabledBrush}" />
+                            <Setter TargetName="CheckedEllipse" Property="Fill" Value="{DynamicResource AccentFillColorDisabledBrush}" />
+                            <Setter TargetName="CheckedEllipseHover" Property="Fill" Value="{DynamicResource AccentFillColorDisabledBrush}" />
+                            <Setter TargetName="CheckedEllipsePressed" Property="Fill" Value="{DynamicResource AccentFillColorDisabledBrush}" />
                             <Setter TargetName="InnerDot" Property="Fill" Value="{DynamicResource TextFillColorDisabledBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>

@@ -42,9 +42,7 @@ namespace Fluence.Wpf.Demo.Pages
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
     <Border
-        Height=""320""
-        BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
-        BorderThickness=""1"">
+        Height=""320"">
         <ui:NavigationView
             PaneDisplayMode=""Left"">
             <ui:NavigationView.PaneHeader>
@@ -94,9 +92,7 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
     <Border
-        Height=""240""
-        BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
-        BorderThickness=""1"">
+        Height=""240"">
         <ui:NavigationView
             Header=""Insights""
             PaneDisplayMode=""Top"">

@@ -446,13 +446,13 @@ STOP CONDITION: both working trees are "git-clean minus intended diff"; wait for
 <claude-mem-context>
 # Memory Context
 
-# [Fluence.Wpf] recent context, 2026-05-09 5:07pm EDT
+# [Fluence.Wpf] recent context, 2026-05-09 6:50pm EDT
 
 Legend: 🎯session 🔴bugfix 🟣feature 🔄refactor ✅change 🔵discovery ⚖️decision 🚨security_alert 🔐security_note
 Format: ID TIME TYPE TITLE
 Fetch details: get_observations([IDs]) | Search: mem-search skill
 
-Stats: 50 obs (21,317t read) | 276,610t work | 92% savings
+Stats: 50 obs (29,801t read) | 343,363t work | 91% savings
 
 ### May 8, 2026
 S72 User acknowledged that a pull request will be created once the remote session completes its planned work (May 8, 8:27 PM)
@@ -461,72 +461,73 @@ S73 Check if the PR is ready for Fluence.Wpf repository (May 8, 8:28 PM)
 S74 Implement fixes and improvements to WinUI/WPF controls: ToggleStatus button state switching, ValidationMessage/Icon positioning, Progress Ring/Bar accent color updates, InfoBar accent color updates, and review controls against WinUI 3 and WPFGallery references for improvement opportunities. (May 8, 9:24 PM)
 ### May 9, 2026
 S75 Fix ToggleStatus button state switching, adjust ValidationMessage/Icon positioning, fix paused Progress Ring and Progress Bar accent color updates, fix Infobar Informational accent color updates, and review controls in WinUI references and current implementation for improvements. (May 9, 2:08 PM)
-1585 2:32p 🔵 ProgressRing paused state rendering is correct; accent color issue same as ProgressBar (static brush binding)
-1586 " 🔵 ProgressRing template confirms paused/error state stroke binding issue - system colors do not update on accent change
-1587 2:33p 🔵 InfoBar severity state management is VisualStateManager-based; no accent color subscription detected
-1588 " 🔵 InfoBar Informational state uses system attention color, not accent color - user expectation mismatch
-1589 " 🔵 TextBox validation message and icon positioning controlled by template margin; code-behind does not adjust offset
-1590 " 🔵 TextBox validation message and icon margin identified; 2-3px downward adjustment needed
-1591 " 🔵 Comprehensive test suite exists for all four controls; tests validate current behavior, not fix requirements
-1592 " 🔵 ToggleSwitch test ToggleSwitch_DragInput_ExpandsThumbAndCommitsCheckedState reveals missing drag-to-opposite-side test case
-1593 3:11p 🔵 ProgressRingState Enum Structure
-S76 Fix four control issues in Fluence.Wpf: ToggleStatus button state not switching on release, ValidationMessage/Icon positioning, paused Progress Ring/Bar not updating to accent color, and InfoBar Informational colors not updating to accent color. Review WinUI 3 and WinUIGallery references for implementation guidance while respecting CLAUDE.md project doctrine. (May 9, 3:17 PM)
-1594 3:28p 🔵 AGENTS.md Loaded: WPF Control Library Architecture and Testing Standards
-1595 3:29p 🔵 Located Target Control Files for Issue Fixes
-1596 " 🔵 WinUI 3 Reference Source Available for Control Implementation Guidance
-1597 " 🔵 ToggleSwitch Implementation Reviewed: Click/Drag State Issues Identified
-1598 " 🔵 ToggleSwitch XAML Template Reviewed: Track/Thumb Composition and Animation Triggers
-1599 3:41p 🔵 ToggleSwitch, ProgressBar, ProgressRing, InfoBar, and TextBox control tests all passing
-1600 " 🔵 Control tests passing across modern .NET target framework (net10.0-windows)
-1601 " 🔵 Test failure in GalleryTypographyPage_TableUsesCompactRowSpacing across both frameworks
-1602 " 🔵 GalleryTypographyPage.xaml content is dynamically generated in code-behind
-1603 " 🔵 Typography table body cells created with Margin bottom=12 instead of 8
-1604 " 🔴 Fixed typography table cell bottom margins to use compact row spacing (8px instead of 12px)
-1605 " 🔴 GalleryTypographyPage_TableUsesCompactRowSpacing test now passes
-1606 " 🔵 Full test suite passes with typography margin fix applied
-1607 3:42p ✅ Multiple files modified across controls, tests, and demo pages
-1608 " 🔵 Smoke test execution completed successfully on net472 framework
-1609 " ✅ Work session scope: 438 insertions across 16 files addressing control fixes and improvements
-1610 " ✅ Control fixes implemented: ToggleSwitch state handling, accent color tracking, TextBox validation positioning
-1611 " 🔄 Demo gallery pages refactored: typography margins fixed and string validation improved
-1612 " ⚖️ Work plan marked complete: All control fixes, tests, and improvements delivered
-1613 3:43p 🔵 CHANGELOG.md documents extensive control fixes and improvements baseline for current session
-1614 " ✅ CHANGELOG.md updated to document four control fixes completed in current session
-1615 " ✅ CHANGELOG.md ProgressRingState documentation clarified for accent-based paused state
-1616 " 🔵 Work session complete: 17 files modified across controls, tests, demo pages, and documentation
-1617 " 🔵 Final diffstat: 440 insertions across 17 files documenting complete work scope
-1618 " 🔵 Screenshot capture test harness is opt-in and skipped by default in full test suite runs
-1619 3:52p 🔵 Multiple Control Files Modified for Fixes
-1620 " ✅ Screenshot Capture Test Policy Changed to Always Run
-1621 " 🔵 GalleryScreenshotHarness Test Passes Without Environment Variable Gate
-1622 " 🔵 Full Test Suite Passes with All Control Fixes Applied
-1623 3:53p 🔵 Screenshot Capture Directory Created During Test Run
-1624 " 🔵 All Six Documentation Banner Screenshots Generated Successfully
-1625 4:15p 🔵 User issues identified: radio button alignment, scrollbar styling, and WinUI parity
-1626 4:16p 🔵 RadioButton, ScrollBar, and TreeView theme/control files located
-1627 " 🔵 WinUI Gallery RadioButton and ScrollBar implementation patterns identified
-1628 " 🔵 RadioButton template structure and alignment analyzed
-1629 " 🔵 ScrollBar width/height and TreeView scrollbar styling architecture identified
-**1630** " 🔵 **TreeView ScrollViewer not applying Fluence scrollbar style—root cause identified**
-The root cause of the scrollbar styling issue is that the TreeView's ScrollViewer template element has no Style attribute. It should reference the ScrollViewerStyle resource to inherit the Fluence scrollbar theming. Currently, the ScrollViewer in TreeView uses WPF's default control template, which does not include the custom Fluence ScrollBar styles (VerticalScrollBarStyle/HorizontalScrollBarStyle) with the 6px→10px width animation on mouse hover. The NavigationView and other controls properly reference ScrollViewerStyle via explicit Style binding or DynamicResource, but TreeView does not. The fix requires adding Style="{DynamicResource ScrollViewerStyle}" to the ScrollViewer element in the TreeView template.
-~462t 🔍 4,851
+S76 Fix four control issues in Fluence.Wpf: ToggleStatus button state not switching on release, ValidationMessage/Icon positioning, paused Progress Ring/Bar not updating to accent color, and InfoBar Informational colors not updating to accent color. Review WinUI 3 and WinUIGallery references for implementation guidance while respecting CLAUDE.md project doctrine. (May 9, 3:11 PM)
+S77 Continue WinUI Gallery brush token parity verification for Fluence.Wpf control library - verify all control background colors match between WinUI Gallery reference and Fluence.Wpf demo app, identify deviations, and document custom brush usage (May 9, 5:10 PM)
+1705 5:35p 🔵 Fluence.Wpf.Demo Gallery*.xaml literal colors audit final: 7 hex accent colors + 24 named foreground literals (White/Black) in color/system swatches only
+1706 " 🔵 Fluence.Wpf.Demo Gallery*.xaml BorderBrush/Fill/Stroke audit: 100% DynamicResource, no literals
+1707 " 🔵 TabView.xaml uses SolidBackgroundFillColorTertiaryBrush/CardStrokeColorDefaultSolidBrush for selected tabs; TabControl uses ControlFillColorDefaultBrush for selected items
+1708 " 🔵 NavigationView.xaml uses AccentFillColorDefaultBrush for pane-level PART_SelectionIndicator; items use SubtleFillColor* overlays with no item-level indicator
+1709 5:36p 🔵 WinUIGallery ControlExample.xaml resource composition pattern: ThemeDictionaries page-local override with StaticResource and ThemeResource fallbacks
+1710 " 🔵 ContextMenu/Menu use SolidBackgroundFillColorTertiaryBrush and SurfaceStrokeColorFlyoutBrush for popup containers; MenuItems use SubtleFillColor* overlays
+1711 " 🔵 WinUIGallery SampleCodePresenter.xaml: code display harness using x:Bind for dynamic properties and ThemeResource for chrome
+1712 " 🔵 DropDownButton/SplitButton use SolidBackgroundFillColorQuarternaryBrush for flyout containers; SplitButton divider uses ControlStrokeColorOnAccentSecondaryBrush
+1713 " 🔵 WinUIGallery resource naming and pattern consistency: GalleryTileGridStyle and CardBackgroundFillColorSecondaryBrush used across 60+ design guidance and control pages
+1721 5:41p 🔵 Memory session references WinUI resource audit tasks and background parity mapping scope
+1722 " 🔵 User accessed WPF ResourceDictionary and Style management skill documentation
+1723 5:42p 🔵 Session memory captures prior multi-target migration, resource audit, and user workflow preferences
+1724 " 🔵 Inventory of WinUI CommonStyles theme resource files located
+1725 " 🔵 WinUIGallery application and sample resource files identified
+1726 " 🔵 Fluence.Wpf theme and gallery page structure mapped
+1727 " 🔵 WinUIGallery chrome resource definitions and theme-specific mappings identified
+1728 " 🔵 WinUI3 canonical background/fill token definitions and theme variant mappings in Common_themeresources_any.xaml
+1729 " 🔵 Fluence.Wpf background/fill token implementation matches WinUI3 canonical naming with DynamicResource and SystemColor fallbacks
+1730 5:43p 🔵 WinUIGallery App.xaml theme dictionary structure and resource aliasing pattern
+1731 " 🔵 WinUIGallery ControlExample.xaml sample chrome surface definitions with nested theme dictionaries
+1732 " 🔵 WinUIGallery Styles/Grid.xaml defines gallery grid and card styles using fill token brushes
+1733 " 🔵 WinUI3 Common_themeresources_any.xaml canonical token mappings across all three theme variants with complete Color and Brush definitions
+1734 " 🔵 Fluence.Wpf background/fill token inventory confirmed complete parity with WinUI3 canonical structure across all themes and files
+1735 " 🔵 WinUI3 reference files Common_themeresources.xaml and Common_themeresources_any.xaml compared; ApplicationPageBackgroundThemeBrush identified as standard app chrome alias
+1736 5:44p 🔵 Fluence.Wpf gallery and control implementations extensively use canonical background/fill tokens with active coverage in GalleryColorsPage and control templates
+1737 " 🔵 Fluence.Wpf HighContrast theme brush definitions confirmed complete with SystemColors static key bindings for accessibility
+1738 " 🔵 Fluence.Wpf.Demo DemoSampleControl.xaml gallery sample container structure confirmed using canonical background tokens
+1739 " 🔵 DemoSampleControl.xaml.cs source code viewer uses SolidBackgroundFillColorTertiaryBrush and canonical token SetResourceReference pattern
+1740 " 🔵 DemoSampleControl.xaml confirmed using SolidBackgroundFillColorBaseBrush for primary sample display surface
+1741 " 🔵 WinUI3 Common_themeresources.xaml baseline defines ApplicationPageBackgroundThemeBrush as app-level chrome anchor mapped to SolidBackgroundFillColorBase
+1742 " 🔵 WinUI3 CommonStyles AcrylicBackgroundFillColor and LayerOnMica/Acrylic tokens inventory across control-specific theme resource files
+1743 5:45p 🔵 WinUI3 Acrylic and Mica backdrop implementations with AcrylicBackgroundFillColorDefaultBackdrop system backdrop and MicaBackdrop control
+1744 " 🔵 WinUI3 AcrylicBrush_themeresources.xaml theme-specific acrylic brush definitions with tint colors, opacities, and fallback colors
+1745 5:47p 🔵 Fluence.Wpf Project Structure and Development Handbook
+1746 " ⚖️ Parity Audit Plan Initiated for WinUI and Fluence Control Surfaces
+1747 " ✅ Background/Fill Token Parity Audit Agent Dispatched
+1748 " ✅ Control Template Background/Fill/Stroke Parity Audit Agent Dispatched
+1749 " ✅ Demo Sample Chrome and Background Parity Audit Agent Dispatched
+1750 " 🔵 Fluence.Wpf Background/Fill Token Resource Inventory
+1751 " 🔵 Fluence.Wpf Test Harness and Helper Infrastructure
+1752 " 🔵 Fluence.Wpf Test Coverage of Theme Brushes and Resource Resolution
+1753 5:48p 🔵 Fluence.Wpf Light Theme Color Palette Structure
+1754 " 🔵 Fluence.Wpf Brush Resource Architecture and DynamicResource Pattern
+1755 " 🔵 WinUI 3 CommonStyles Control Background and Fill Token Mapping
+1756 " 🔵 WinUI 3 Control Background Token Patterns: ScrollBar, TextBox, ListViewItem, CheckBox
+**1757** " 🔵 **Fluence.Wpf CheckBox Control Template: Background and Fill Bindings**
+Fluence.Wpf CheckBox control template implements a WinUI 3-aligned pattern using ControlFill token family for unchecked states (Default → Secondary → Tertiary progression) and AccentFill token family for checked/indeterminate states (Default → Secondary → Tertiary progression). The template uses a layered overlay approach with opacity-based state transitions rather than direct property replacement, allowing smooth visual state changes. The indicator (checkbox square) binds its background and border to appropriate brushes via DynamicResource, enabling runtime theme reactivity. Disabled states map to the Disabled variant of each token family. This pattern aligns with WinUI 3 CommonStyles CheckBox_themeresources.xaml which defines identical token bindings (ControlAltFill for unchecked, AccentFill for checked). The template establishes Fluence.Wpf CheckBox as parity-aligned with WinUI 3 in background token selection, though detailed state bindings and brush references require comparison against WinUI control-specific themes.
+~608t 🔍 6,684
 
-**1631** " 🔵 **ScrollBar tests validate width transitions but TreeView may not trigger state changes**
-The tests validate that ScrollBar width transitions work correctly when the proper Fluence styles are applied. However, these tests all explicitly apply the style resources via app?.TryFindResource("StyleName"). The TreeView template creates a plain ScrollViewer without any Style attribute, so it never receives the ScrollViewerStyle that would wire up the custom VerticalScrollBarStyle and HorizontalScrollBarStyle. The VSM groups and width animations are defined in the templates, but they only activate when the styles are applied. TreeView's ScrollViewer silently uses WPF's default template instead, bypassing the entire Fluence scrollbar architecture. The missing piece is that TreeView needs to explicitly bind Style="{DynamicResource ScrollViewerStyle}" on its PART_ScrollViewer element.
-~518t 🔍 4,966
+**1758** 5:49p 🔵 **Fluence.Wpf RadioButton Control Template: Background and Fill Bindings**
+Fluence.Wpf RadioButton control template implements a WinUI 3-aligned pattern using ControlAltFill token family for unchecked states and AccentFill family for checked states. The outer ellipse binds to ControlAltFillColorSecondary (rest) with ControlAltFillColorTertiary overlay on hover/pressed. The checked state replaces the outer ellipse with an accent-filled ellipse (Default → Secondary → Tertiary progression) and animates an inner dot that expands from 0x0 to 8x8 pixels when checked, providing visual feedback. The inner dot color uses TextOnAccentFillColorPrimaryBrush, ensuring contrast against the accent background. Disabled state degrades all visuals to ControlFillColorDisabled and TextFillColorDisabled, respecting accessibility constraints. This pattern aligns with WinUI 3 RadioButton_themeresources.xaml which defines identical token bindings (ControlAltFill for unchecked backgrounds, ControlStrongFill for ring stroke). The animation-based state transitions and token bindings establish Fluence.Wpf RadioButton as parity-aligned with WinUI 3 in background token selection.
+~611t 🔍 6,595
 
-**1632** " 🔵 **TreeView tests do not validate ScrollViewer style application or scrollbar styling**
-The TreeView test suite validates template structure and visual features but never checks that the ScrollViewer inside TreeView actually applies the Fluence ScrollViewerStyle. The TreeView_DefaultStyle_Applies test only verifies that a ScrollViewer element exists in the visual tree—it doesn't validate that the scrollbars inherit the Fluence styling. This is a critical gap: the test passes even if the ScrollViewer is using the default WPF template without any Fluence customization. Similarly, TreeView_ThemeCycle_StyleRemainsApplied only checks presence, not styling. The lack of test coverage for scrollbar styling in TreeView corresponds to the real issue: the TreeView template creates a plain ScrollViewer with no Style attribute, so the custom Fluence scrollbar templates are never applied at runtime.
-~488t 🔍 5,377
+**1759** " 🔵 **Fluence.Wpf ToggleSwitch Control Template: Track and Thumb Token Bindings**
+Fluence.Wpf ToggleSwitch control template implements a WinUI 3-aligned pattern using ControlAltFill token family for off-state track (Secondary → Tertiary on hover) and AccentFill family for on-state track (Default → Secondary → Tertiary progression). The knob (thumb) animates from 12x12 to 14x14 pixels on hover, then squashes to 17x14 on press using ControlFastOutSlowIn easing curve over 83ms (WinUI ControlFasterAnimationDuration). The thumb fill uses TextFillColorSecondaryBrush when off and TextOnAccentFillColorPrimaryBrush when on, maintaining contrast. Disabled state applies ControlFillColorDisabledBrush (off) or AccentFillColorDisabledBrush (on) to the track with 40% thumb opacity. Content presentation switches between OffContent and OnContent based on IsChecked state. This pattern aligns with WinUI 3 ToggleSwitch_themeresources.xaml token bindings and establishes Fluence.Wpf ToggleSwitch as parity-aligned with WinUI 3 in background and fill token selection, animation timing, and content management.
+~626t 🔍 7,689
 
-**1633** 4:17p 🔵 **WinUI ScrollBar uses IndicatorMode property and ScrollingIndicatorStates VSM; Fluence uses Root Width animations**
-The scrollbar width/height discrepancy between Fluence and WinUI stems from architectural differences. Fluence animates the entire Root container grid Width/Height (6px→10px on mouse over), while WinUI adjusts the Thumb size and applies transform offsets instead of changing the container. WinUI's IndicatorMode property drives state changes through ScrollViewer's scrolling VSM group (not the ScrollBar's own group), and WinUI calculates when to apply indicator states via ScrollViewer logic. Fluence's simpler approach animates the container directly through ControlTemplate.Triggers on ScrollBar.IsMouseOver. The issue in TreeView is twofold: (1) TreeView's ScrollViewer doesn't apply ScrollViewerStyle, so custom ScrollBar styles never activate, and (2) even if they did, without explicit GoToState or IsMouseOver trigger elevation, the scrollbar width animations may not trigger in all contexts.
-~572t 🔍 15,876
+**1760** " 🔵 **Fluence.Wpf Button Control Template: Background and State Token Bindings**
+Fluence.Wpf Button control template implements a comprehensive WinUI 3-aligned appearance system with three variants: Default (ControlFill family), Accent (AccentFill family), and Subtle (transparent with optional fill). The Default appearance uses ControlFillColorDefault (rest) → ControlFillColorSecondary (hover) → ControlFillColorTertiary (pressed) progression, with Foreground text changing to TextFillColorSecondary when pressed. Accent appearance maps to AccentFillColorDefault → Secondary → Tertiary progression with TextOnAccentFill foreground variants. Subtle appearance uses transparent background with SubtleFillColor overlays (Secondary on hover, Tertiary on pressed). All pressed states trigger a scale animation (1.0 → 0.98 over 100ms) using ControlFastOutSlowIn easing for tactile feedback. Disabled state degrades to ControlFillColorDisabled (default/subtle) or AccentFillColorDisabled (accent) with reduced opacity. This multi-appearance pattern aligns with WinUI 3 button design and establishes Fluence.Wpf Button as parity-aligned in background token selection, state progression, and appearance variants.
+~791t 🔍 7,476
 
-**1634** " 🔵 **WinUI RadioButton uses Padding="8,6,0,0" with ContentPresenter VerticalAlignment="{TemplateBinding VerticalContentAlignment}"**
-WinUI's RadioButton architecture allows vertical alignment to be controlled via style binding (VerticalContentAlignment property), whereas Fluence hardcodes VerticalAlignment="Center" on the ContentPresenter. This makes Fluence's misalignment issue more fundamental—even if the style property is set, the template ignores it. WinUI's approach is more flexible and allows top/center/bottom alignment customization. The indicator dot behavior also differs: WinUI animates the outer glyph circle size (12→14px on hover), while Fluence animates an inner dot from 0→8px on check. Both have the same outer ellipse dimensions (20px), but the alignment mechanism is different. The Fluence RadioButton text alignment issue likely requires changing the ContentPresenter from hardcoded Center to either Top-aligned or using a bound property like WinUI does.
-~469t 🔍 6,247
+**1761** " 🔵 **WinUI 3 CheckBox Theme Resources: Comprehensive Token Structure**
+WinUI 3 CheckBox theme resources establish a granular token structure with separate keys for every visual element (foreground, background, border, check square stroke, check square fill, glyph) across all three check states (unchecked, checked, indeterminate) and all interaction states (default, pointer-over, pressed, disabled). The unchecked state uses ControlAltFill family for the check square (Secondary at rest, Tertiary on hover, Quaternary on press) while checked/indeterminate states use AccentFill family (Default → Secondary → Tertiary). Strokes follow a complementary pattern: ControlStrongStroke for unchecked, AccentFill for checked. The glyph (checkmark or dash) uses TextOnAccentFill colors to ensure contrast against accent backgrounds. This comprehensive token structure enables independent styling of every visual component per interaction state. Fluence.Wpf CheckBox currently binds the unchecked indicator fill to ControlFillColorDefaultBrush rather than ControlAltFillColorSecondaryBrush, indicating a potential parity gap that may warrant alignment depending on the visual intent and user expectations established in the current design.
+~676t 🔍 6,000
 
 
-Access 277k tokens of past work via get_observations([IDs]) or mem-search skill.
+Access 343k tokens of past work via get_observations([IDs]) or mem-search skill.
 </claude-mem-context>

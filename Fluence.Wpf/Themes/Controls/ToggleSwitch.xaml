@@ -99,7 +99,7 @@
                                 <Border
                                     x:Name="TrackOff"
                                     Background="{DynamicResource ControlAltFillColorSecondaryBrush}"
-                                    BorderBrush="{DynamicResource ControlStrongFillColorDefaultBrush}"
+                                    BorderBrush="{DynamicResource ControlStrongStrokeColorDefaultBrush}"
                                     BorderThickness="1"
                                     CornerRadius="10" />
 
@@ -107,7 +107,16 @@
                                 <Border
                                     x:Name="TrackOffHover"
                                     Background="{DynamicResource ControlAltFillColorTertiaryBrush}"
-                                    BorderBrush="{DynamicResource ControlStrongFillColorDefaultBrush}"
+                                    BorderBrush="{DynamicResource ControlStrongStrokeColorDefaultBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="10"
+                                    Opacity="0" />
+
+                                <!--  Off track: pressed  -->
+                                <Border
+                                    x:Name="TrackOffPressed"
+                                    Background="{DynamicResource ControlAltFillColorQuarternaryBrush}"
+                                    BorderBrush="{DynamicResource ControlStrongStrokeColorDefaultBrush}"
                                     BorderThickness="1"
                                     CornerRadius="10"
                                     Opacity="0" />
@@ -248,7 +257,7 @@
                                 <Condition Property="IsPressed" Value="True" />
                                 <Condition Property="IsChecked" Value="False" />
                             </MultiTrigger.Conditions>
-                            <Setter TargetName="TrackOffHover" Property="Opacity" Value="1" />
+                            <Setter TargetName="TrackOffPressed" Property="Opacity" Value="1" />
                             <Setter TargetName="SwitchThumb" Property="Width" Value="17" />
                             <Setter TargetName="SwitchThumb" Property="Height" Value="14" />
                         </MultiTrigger>
@@ -257,6 +266,7 @@
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="TrackOff" Property="Opacity" Value="0" />
                             <Setter TargetName="TrackOffHover" Property="Opacity" Value="0" />
+                            <Setter TargetName="TrackOffPressed" Property="Opacity" Value="0" />
                             <Setter TargetName="TrackOn" Property="Opacity" Value="1" />
                             <Setter TargetName="SwitchThumb" Property="Fill" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
                             <Setter TargetName="OffContentPresenter" Property="Visibility" Value="Collapsed" />
@@ -294,8 +304,10 @@
                                 <Condition Property="IsChecked" Value="False" />
                             </MultiTrigger.Conditions>
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
-                            <Setter TargetName="TrackOff" Property="Background" Value="{DynamicResource ControlFillColorDisabledBrush}" />
-                            <Setter TargetName="TrackOff" Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+                            <Setter TargetName="TrackOff" Property="Background" Value="{DynamicResource ControlAltFillColorDisabledBrush}" />
+                            <Setter TargetName="TrackOff" Property="BorderBrush" Value="{DynamicResource ControlStrongStrokeColorDisabledBrush}" />
+                            <Setter TargetName="TrackOffHover" Property="Background" Value="{DynamicResource ControlAltFillColorDisabledBrush}" />
+                            <Setter TargetName="TrackOffPressed" Property="Background" Value="{DynamicResource ControlAltFillColorDisabledBrush}" />
                             <Setter TargetName="SwitchThumb" Property="Fill" Value="{DynamicResource TextFillColorDisabledBrush}" />
                             <Setter TargetName="SwitchThumb" Property="Opacity" Value="0.4" />
                         </MultiTrigger>

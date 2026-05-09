@@ -50,10 +50,11 @@
             x:Name="SourceExpander"
             Grid.Row="1"
             Margin="0"
+            Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}"
             BorderThickness="1,0,1,1"
             CornerRadius="0,0,8,8"
             Expanded="SourceExpander_Expanded"
-            Header="Source">
+            Header="Source code">
             <fluence:TabView
                 x:Name="SourceTabs"
                 Margin="8,16,8,8"

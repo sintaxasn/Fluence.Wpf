@@ -39,21 +39,21 @@
                             <Grid>
                                 <Border
                                     x:Name="IndicatorFill"
-                                    Background="{DynamicResource ControlFillColorDefaultBrush}"
+                                    Background="{DynamicResource ControlAltFillColorSecondaryBrush}"
                                     BorderBrush="{DynamicResource ControlStrongStrokeColorDefaultBrush}"
                                     BorderThickness="1"
                                     CornerRadius="{TemplateBinding CornerRadius}" />
                                 <Border
                                     x:Name="IndicatorHover"
-                                    Background="{DynamicResource ControlFillColorSecondaryBrush}"
+                                    Background="{DynamicResource ControlAltFillColorTertiaryBrush}"
                                     BorderBrush="{DynamicResource ControlStrongStrokeColorDefaultBrush}"
                                     BorderThickness="1"
                                     CornerRadius="{TemplateBinding CornerRadius}"
                                     Opacity="0" />
                                 <Border
                                     x:Name="IndicatorPressed"
-                                    Background="{DynamicResource ControlFillColorTertiaryBrush}"
-                                    BorderBrush="{DynamicResource ControlStrongStrokeColorDefaultBrush}"
+                                    Background="{DynamicResource ControlAltFillColorQuarternaryBrush}"
+                                    BorderBrush="{DynamicResource ControlStrongStrokeColorDisabledBrush}"
                                     BorderThickness="1"
                                     CornerRadius="{TemplateBinding CornerRadius}"
                                     Opacity="0" />
@@ -263,7 +263,7 @@
                                 <Condition Property="IsEnabled" Value="False" />
                             </MultiTrigger.Conditions>
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
-                            <Setter TargetName="IndicatorFill" Property="Background" Value="{DynamicResource ControlFillColorDisabledBrush}" />
+                            <Setter TargetName="IndicatorFill" Property="Background" Value="{DynamicResource ControlAltFillColorDisabledBrush}" />
                             <Setter TargetName="IndicatorFill" Property="BorderBrush" Value="{DynamicResource ControlStrongStrokeColorDisabledBrush}" />
                         </MultiTrigger>
                     </ControlTemplate.Triggers>

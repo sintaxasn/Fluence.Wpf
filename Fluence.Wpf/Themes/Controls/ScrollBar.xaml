@@ -8,6 +8,7 @@
     <sys:Double x:Key="ScrollBarCompactThumbSize">8</sys:Double>
     <sys:Double x:Key="ScrollBarButtonArrowIconFontSize">8</sys:Double>
     <Thickness x:Key="ScrollViewerScrollBarMargin">1</Thickness>
+    <SolidColorBrush x:Key="ScrollBarTrackFillBrush" Color="{DynamicResource AcrylicBackgroundFillColorDefault}" />
 
     <Style x:Key="ScrollBarTrackButtonStyle" TargetType="{x:Type RepeatButton}">
         <Setter Property="UseLayoutRounding" Value="True" />
@@ -50,9 +51,12 @@
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
                             <Setter TargetName="ArrowGlyph" Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource ControlStrongFillColorDefaultBrush}" />
+                            <Setter TargetName="ArrowGlyph" Property="Foreground" Value="{DynamicResource TextFillColorInverseBrush}" />
                             <Setter TargetName="ArrowGlyph" Property="RenderTransform">
                                 <Setter.Value>
                                     <ScaleTransform ScaleX="0.875" ScaleY="0.875" />
@@ -121,7 +125,7 @@
             <Border
                 x:Name="TrackBackground"
                 Margin="0"
-                Background="{DynamicResource SubtleFillColorSecondaryBrush}"
+                Background="{DynamicResource ScrollBarTrackFillBrush}"
                 CornerRadius="3"
                 Opacity="0" />
             <Track
@@ -317,7 +321,7 @@
             <Border
                 x:Name="TrackBackground"
                 Margin="0"
-                Background="{DynamicResource SubtleFillColorSecondaryBrush}"
+                Background="{DynamicResource ScrollBarTrackFillBrush}"
                 CornerRadius="3"
                 Opacity="0" />
             <Track
