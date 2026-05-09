@@ -29,10 +29,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Runtime.ExceptionServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -43,9 +45,9 @@ using Fluence.Wpf.Demo;
 using Fluence.Wpf.Demo.Pages;
 using FluenceExpander = Fluence.Wpf.Controls.Expander;
 using FluenceListView = Fluence.Wpf.Controls.ListView;
+using WpfBorder = System.Windows.Controls.Border;
 using WpfTextBlock = System.Windows.Controls.TextBlock;
 using WpfButton = System.Windows.Controls.Button;
-using System.Linq;
 
 namespace Fluence.Wpf.Tests
 {
@@ -709,6 +711,45 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void DemoSampleControl_SourceRendererPreservesIndentation()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                DemoSampleControl sample = new()
+                {
+                    Title = "Snippet",
+                    XamlSource = "<Grid>\n    <TextBlock Text=\"Indented\" />\n</Grid>",
+                    CSharpSource = "private void Save()\n{\n    string value = \"Indented\";\n}",
+                    SampleContent = new WpfTextBlock { Text = "Visible sample" }
+                };
+
+                Window window = CreateHostWindow(sample);
+                try
+                {
+                    FluenceExpander? expander = FindByName<FluenceExpander>(sample, "SourceExpander");
+                    Assert.IsNotNull(expander, "Inline source expander must exist.");
+                    expander.IsExpanded = true;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    TabView? tabs = FindByName<TabView>(sample, "SourceTabs");
+                    string renderedXaml = GetSourceTabText(tabs, "XAML");
+                    string renderedCSharp = GetSourceTabText(tabs, "C# Code-behind");
+
+                    StringAssert.Contains(renderedXaml, "    <TextBlock",
+                        "Rendered XAML source should preserve leading indentation.");
+                    StringAssert.Contains(renderedCSharp, "    string value",
+                        "Rendered C# source should preserve leading indentation.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
         public void DemoSampleControl_ReplaceSourceLink_ReplacesOwningCard()
         {
             RunOnSta(delegate
@@ -824,6 +865,74 @@ namespace Fluence.Wpf.Tests
 
                         Assert.IsTrue(found, "Page must expose at least one inline XAML source sample: " + expectation.PageType.Name);
                     }
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void GalleryStatusPage_DeterminateProgressRingUsesNumberBoxBinding()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                GalleryStatusPage page = new();
+                Window window = CreateHostWindow(page);
+                try
+                {
+                    NumberBox? valueBox = FindByName<NumberBox>(page, "ProgressRingValueBox");
+                    ProgressRing? ring = FindByName<ProgressRing>(page, "DeterminateProgressRing");
+                    Assert.IsNotNull(valueBox, "Status page should expose the determinate ProgressRing NumberBox.");
+                    Assert.IsNotNull(ring, "Status page should expose the determinate ProgressRing.");
+
+                    Assert.AreEqual(1.0, valueBox.Minimum, 0.001, "ProgressRing NumberBox minimum should be 1.");
+                    Assert.AreEqual(100.0, valueBox.Maximum, 0.001, "ProgressRing NumberBox maximum should be 100.");
+                    Assert.AreEqual(50.0, valueBox.Value, 0.001, "ProgressRing NumberBox default should be 50.");
+                    Assert.AreEqual(50.0, ring.Value, 0.001, "ProgressRing should start from the NumberBox value.");
+
+                    valueBox.Value = 75;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.AreEqual(75.0, ring.Value, 0.001,
+                        "Determinate ProgressRing value should update from the NumberBox binding.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void GalleryTypographyPage_TableUsesCompactRowSpacing()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                GalleryTypographyPage page = new();
+                Window window = CreateHostWindow(page);
+                try
+                {
+                    Grid? table = FindByName<Grid>(page, "TypographyTable");
+                    Assert.IsNotNull(table, "Typography page should expose TypographyTable.");
+
+                    WpfTextBlock? firstBodyCell = table.Children
+                        .OfType<WpfTextBlock>()
+                        .FirstOrDefault(textBlock => Grid.GetRow(textBlock) == 1 && Grid.GetColumn(textBlock) == 0);
+                    Assert.IsNotNull(firstBodyCell, "Typography table should include a first body row cell.");
+                    Assert.AreEqual(new Thickness(24, 8, 16, 8), firstBodyCell.Margin,
+                        "Typography body cells should use reduced vertical row spacing.");
+
+                    WpfBorder? firstShadedRow = table.Children
+                        .OfType<WpfBorder>()
+                        .FirstOrDefault(border => Grid.GetRow(border) == 1);
+                    Assert.IsNotNull(firstShadedRow, "Typography table should include shaded row backgrounds.");
+                    Assert.AreEqual(new Thickness(0, 2, 0, 2), firstShadedRow.Margin,
+                        "Typography shaded row background should match the compact vertical spacing.");
                 }
                 finally
                 {
@@ -1048,6 +1157,24 @@ namespace Fluence.Wpf.Tests
             }
 
             Assert.Fail("Missing source tab: " + expectedHeader);
+        }
+
+        private static string GetSourceTabText(TabView? tabs, string expectedHeader)
+        {
+            Assert.IsNotNull(tabs, "Source tabs should exist.");
+            foreach (object item in tabs.Items)
+            {
+                if (item is TabViewItem tab && string.Equals(tab.Header as string, expectedHeader, StringComparison.Ordinal))
+                {
+                    RichTextBox? viewer = FindByName<RichTextBox>(tab.Content as DependencyObject, "SourceTextViewer");
+                    Assert.IsNotNull(viewer, "Source tab should expose a RichTextBox viewer: " + expectedHeader);
+                    TextRange textRange = new(viewer.Document.ContentStart, viewer.Document.ContentEnd);
+                    return textRange.Text;
+                }
+            }
+
+            Assert.Fail("Missing source tab: " + expectedHeader);
+            return string.Empty;
         }
 
         private static void EnsureTheme()

@@ -32,7 +32,7 @@
                             Fill="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
                     </Grid>
                     <ControlTemplate.Triggers>
-                        <!--  WI-3 B11: WinUI canonical thumb scale — hover 1.167, pressed 0.86, ControlFastOutSlowIn (0.8,0,0,1)  -->
+                        <!--  WI-3 B11: WinUI canonical thumb scale - hover 1.167, pressed 0.86, ControlFastOutSlowIn (0.8,0,0,1)  -->
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="ThumbEllipse" Property="Fill" Value="{DynamicResource AccentFillColorSecondaryBrush}" />
                             <Trigger.EnterActions>

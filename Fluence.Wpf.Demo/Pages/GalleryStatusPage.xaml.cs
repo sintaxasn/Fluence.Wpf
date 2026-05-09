@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -236,8 +236,8 @@ namespace Fluence.Wpf.Demo.Pages.Status
 
         private void ProgressStep_Click(object sender, RoutedEventArgs e)
         {
-            var button = sender as FrameworkElement;
-            var tag = button is not null && button.Tag is not null ? button.Tag.ToString() : string.Empty;
+            FrameworkElement? button = sender as FrameworkElement;
+            string tag = button is not null && button.Tag is not null ? button.Tag.ToString() : string.Empty;
 
             if (string.Equals(tag, ""Next"", StringComparison.OrdinalIgnoreCase))
             {
@@ -297,7 +297,7 @@ namespace Fluence.Wpf.Demo.Pages.Status
             x:Name=""IndeterminateProgressRingLabel""
             Grid.Row=""2""
             Grid.Column=""0""
-            Margin=""0,4,0,0""
+            Margin=""0,8,0,0""
             HorizontalAlignment=""Center""
             Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
             Text=""Indeterminate"" />
@@ -314,23 +314,24 @@ namespace Fluence.Wpf.Demo.Pages.Status
             Maximum=""100""
             Minimum=""0""
             Value=""50"" />
-        <ui:Slider
-            x:Name=""ProgressRingSlider""
+        <ui:NumberBox
+            x:Name=""ProgressRingValueBox""
             Grid.Row=""1""
             Grid.Column=""1""
-            Width=""120""
-            Margin=""0,12,0,0""
+            Width=""132""
+            Margin=""0,24,0,0""
             HorizontalAlignment=""Center""
             VerticalAlignment=""Center""
             Maximum=""100""
-            Minimum=""0""
-            ValueChanged=""ProgressRingSlider_ValueChanged""
-            Value=""50"" />
+            Minimum=""1""
+            SmallChange=""1""
+            SpinButtonPlacementMode=""{x:Static uicore:SpinButtonPlacementMode.Inline}""
+            Value=""{Binding Value, ElementName=DeterminateProgressRing, Mode=TwoWay}"" />
         <TextBlock
             x:Name=""DeterminateProgressRingLabel""
             Grid.Row=""2""
             Grid.Column=""1""
-            Margin=""0,4,0,0""
+            Margin=""0,8,0,0""
             HorizontalAlignment=""Center""
             Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
             Text=""Determinate"" />
@@ -348,7 +349,7 @@ namespace Fluence.Wpf.Demo.Pages.Status
         <TextBlock
             Grid.Row=""2""
             Grid.Column=""2""
-            Margin=""0,4,0,0""
+            Margin=""0,8,0,0""
             HorizontalAlignment=""Center""
             Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
             Text=""Paused"" />
@@ -369,7 +370,7 @@ namespace Fluence.Wpf.Demo.Pages.Status
         <TextBlock
             Grid.Row=""2""
             Grid.Column=""3""
-            Margin=""0,4,0,0""
+            Margin=""0,8,0,0""
             HorizontalAlignment=""Center""
             Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
             Text=""Error"" />
@@ -388,13 +389,6 @@ namespace Fluence.Wpf.Demo.Pages.Status
             InitializeComponent();
         }
 
-        private void ProgressRingSlider_ValueChanged(object sender, System.Windows.RoutedPropertyChangedEventArgs<double> e)
-        {
-            if (DeterminateProgressRing is not null && ProgressRingSlider is not null)
-            {
-                DeterminateProgressRing.Value = ProgressRingSlider.Value;
-            }
-        }
     }
 }
 ";
@@ -490,7 +484,6 @@ namespace Fluence.Wpf.Demo.Pages.Status
             Loaded -= GalleryStatusPage_Loaded;
             ProgressSlider_ValueChanged(null, null);
             IndeterminateToggle_Toggled(null, null);
-            ProgressRingSlider_ValueChanged(null, null);
         }
 
         private void IndeterminateToggle_Toggled(object? sender, RoutedEventArgs? e)
@@ -515,14 +508,6 @@ namespace Fluence.Wpf.Demo.Pages.Status
             _ = (SliderValueLabel?.Text = string.Format(CultureInfo.CurrentCulture, "Value: {0:0}", ProgressSlider.Value));
 
             _ = (StandardProgressBar?.Value = ProgressSlider.Value);
-        }
-
-        private void ProgressRingSlider_ValueChanged(object? sender, RoutedPropertyChangedEventArgs<double>? e)
-        {
-            if (DeterminateProgressRing is not null && ProgressRingSlider is not null)
-            {
-                DeterminateProgressRing.Value = ProgressRingSlider.Value;
-            }
         }
 
         private void ProgressStep_Click(object sender, RoutedEventArgs e)

@@ -44,11 +44,11 @@ namespace Fluence.Wpf.Tests
     /// Maintainer-driven harness that renders representative demo surfaces with
     /// <see cref="RenderTargetBitmap"/> and writes PNGs under
     /// <c>docs/screenshots/</c>. All tests here are <see cref="IgnoreAttribute"/>d by
-    /// default — remove the attribute (or run with
+    /// default - remove the attribute (or run with
     /// <c>--filter TestCategory=Screenshots</c>) to regenerate documentation images.
     /// </summary>
     /// <remarks>
-    /// Captures only the WPF visual tree — DWM Mica / Acrylic backdrops are composited
+    /// Captures only the WPF visual tree - DWM Mica / Acrylic backdrops are composited
     /// outside WPF and are not included in RenderTargetBitmap output. That is the
     /// intended behavior: the screenshots document control surfaces and theme resources,
     /// not DWM composition.

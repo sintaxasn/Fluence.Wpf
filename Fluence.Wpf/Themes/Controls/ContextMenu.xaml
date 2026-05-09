@@ -6,7 +6,7 @@
     <!--
         Fluent Design ContextMenu + MenuItem + Separator styles.
         Authority: WinUI 3 MenuFlyout_themeresources.xaml (brush keys, item heights, padding).
-        Note: No DropShadowEffect on the popup Border — WPF bitmap effects on a Border with
+        Note: No DropShadowEffect on the popup Border - WPF bitmap effects on a Border with
         CornerRadius produce artifacts in a Popup (see DropDownButton.xaml). System
         HasDropShadow (popup-level) is used instead.
         SharedSizeGroup "MenuIconCol" aligns icons across all items in a menu.
@@ -67,7 +67,7 @@
                         CornerRadius="{DynamicResource ControlCornerRadius}">
                         <Grid MinHeight="32" Margin="4,0">
                             <Grid.ColumnDefinitions>
-                                <!--  Icon / checkmark — shared-size keeps all items aligned  -->
+                                <!--  Icon / checkmark - shared-size keeps all items aligned  -->
                                 <ColumnDefinition Width="20" SharedSizeGroup="MenuIconCol" />
                                 <!--  Gap  -->
                                 <ColumnDefinition Width="8" />
@@ -202,7 +202,7 @@
                         <!--
                             TopLevelHeader: item is a direct child of Menu (horizontal bar).
                             Popup must open BELOW the item, not to the right.
-                            Authority: WPF Menu role model — TopLevelHeader owns a dropdown.
+                            Authority: WPF Menu role model - TopLevelHeader owns a dropdown.
                         -->
                         <Trigger Property="Role" Value="TopLevelHeader">
                             <Setter TargetName="PART_Popup" Property="Placement" Value="Bottom" />

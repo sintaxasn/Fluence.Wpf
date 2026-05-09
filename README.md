@@ -96,13 +96,13 @@ dotnet test Fluence.Wpf.sln -c Release
 
 ## Running the Demos
 
-**Gallery demo** — all controls, themes, backdrops, accent picker, and NavigationView modes:
+**Gallery demo** - all controls, themes, backdrops, accent picker, and NavigationView modes:
 
 ```powershell
 dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -c Release
 ```
 
-**MVVM Task Manager demo** — minimal `FluenceWindow` + CommunityToolkit.Mvvm example with zero code-behind:
+**MVVM Task Manager demo** - minimal `FluenceWindow` + CommunityToolkit.Mvvm example with zero code-behind:
 
 ```powershell
 dotnet run --project Fluence.Wpf.Demo.Mvvm/Fluence.Wpf.Demo.Mvvm.csproj

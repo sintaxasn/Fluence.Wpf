@@ -36,6 +36,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using Fluence.Wpf.Automation;
+using Fluence.Wpf.Helpers;
 
 namespace Fluence.Wpf.Controls
 {
@@ -48,6 +49,7 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = PartPaneItemsScrollViewer, Type = typeof(ScrollViewer))]
     [TemplatePart(Name = PartPaneToggleButton, Type = typeof(System.Windows.Controls.Button))]
     [TemplatePart(Name = PartSelectionIndicator, Type = typeof(FrameworkElement))]
+    [TemplatePart(Name = PartPaneColumn, Type = typeof(ColumnDefinition))]
     [TemplateVisualState(GroupName = "BackButtonStates", Name = "BackButtonVisible")]
     [TemplateVisualState(GroupName = "BackButtonStates", Name = "BackButtonCollapsed")]
     public class NavigationView : Selector
@@ -76,6 +78,12 @@ namespace Fluence.Wpf.Controls
         /// Name of the shared selection indicator element.
         /// </summary>
         public const string PartSelectionIndicator = "PART_SelectionIndicator";
+
+        private const string PartPaneColumn = "PaneColumn";
+        private const double PaneClosedWidth = 48.0;
+        private const double PaneClosedWithBackWidth = 96.0;
+        private const double PaneOpenWidth = 280.0;
+        private const double PaneAnimationMilliseconds = 167.0;
 
         // Margins and offsets used in indicator positioning calculations
         private const double NavigationItemOuterHorizontalMargin = 4.0;
@@ -109,7 +117,7 @@ namespace Fluence.Wpf.Controls
             "IsBackButtonVisible",
             typeof(bool),
             typeof(NavigationView),
-            new PropertyMetadata(false, OnIsBackButtonVisibleChanged));
+            new PropertyMetadata(false, OnBackButtonStateChanged));
 
         /// <summary>
         /// Identifies the <see cref="IsBackEnabled"/> dependency property.
@@ -118,7 +126,7 @@ namespace Fluence.Wpf.Controls
             "IsBackEnabled",
             typeof(bool),
             typeof(NavigationView),
-            new PropertyMetadata(true, OnIsBackEnabledChanged));
+            new PropertyMetadata(true, OnBackButtonStateChanged));
 
         /// <summary>
         /// Identifies the <see cref="IsPaneToggleButtonVisible"/> dependency property.
@@ -348,16 +356,19 @@ namespace Fluence.Wpf.Controls
         {
             _backButton?.Click -= OnBackButtonClick;
             _paneToggleButton?.Click -= OnPaneToggleButtonClick;
+            StopPaneColumnAnimation();
             base.OnApplyTemplate();
             _backButton = GetTemplateChild(PartBackButton) as System.Windows.Controls.Button;
             _backButton?.Click += OnBackButtonClick;
             _paneToggleButton = GetTemplateChild(PartPaneToggleButton) as System.Windows.Controls.Button;
             _paneToggleButton?.Click += OnPaneToggleButtonClick;
+            _paneColumn = GetTemplateChild(PartPaneColumn) as ColumnDefinition;
             _selectionIndicator = GetTemplateChild(PartSelectionIndicator) as FrameworkElement;
             _indicatorHost = _selectionIndicator is not null ? VisualTreeHelper.GetParent(_selectionIndicator) as FrameworkElement : null;
             _indicatorPositioned = false;
             StopAnimation();
             UpdateBackButtonState(false);
+            UpdatePaneColumnWidth(false);
             ScheduleIndicatorPosition(false);
         }
 
@@ -457,6 +468,11 @@ namespace Fluence.Wpf.Controls
             return _selectionIndicator;
         }
 
+        internal double GetPaneColumnWidthForTesting()
+        {
+            return _paneColumn?.Width.Value ?? double.NaN;
+        }
+
         internal void InvokeItem(NavigationViewItem item)
         {
             if (item is null || !item.IsEnabled)
@@ -471,19 +487,18 @@ namespace Fluence.Wpf.Controls
         private void OnUnloaded(object sender, RoutedEventArgs e)
         {
             StopAnimation();
+            StopPaneColumnAnimation();
+            _paneColumn = null;
             _selectionIndicator = null;
             _indicatorHost = null;
             _indicatorPositioned = false;
         }
 
-        private static void OnIsBackButtonVisibleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnBackButtonStateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            ((NavigationView)d).UpdateBackButtonState(true);
-        }
-
-        private static void OnIsBackEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            ((NavigationView)d).UpdateBackButtonState(true);
+            NavigationView nav = (NavigationView)d;
+            nav.UpdateBackButtonState(true);
+            nav.UpdatePaneColumnWidth(false);
         }
 
         /// <summary>
@@ -543,6 +558,7 @@ namespace Fluence.Wpf.Controls
                 nav.PaneClosed?.Invoke(nav, EventArgs.Empty);
             }
             nav._indicatorPositioned = false;
+            nav.UpdatePaneColumnWidth(true);
             nav.ScheduleIndicatorPosition(false);
         }
 
@@ -555,7 +571,80 @@ namespace Fluence.Wpf.Controls
                 nav.SetCurrentValue(IsPaneOpenProperty, false);
             }
             nav._indicatorPositioned = false;
+            nav.UpdatePaneColumnWidth(false);
             nav.ScheduleIndicatorPosition(false);
+        }
+
+        private void UpdatePaneColumnWidth(bool useAnimation)
+        {
+            if (_paneColumn is null)
+            {
+                return;
+            }
+
+            if (PaneDisplayMode is not NavigationViewPaneDisplayMode.Left and not NavigationViewPaneDisplayMode.LeftCompact)
+            {
+                StopPaneColumnAnimation();
+                return;
+            }
+
+            double targetWidth = IsPaneOpen ? PaneOpenWidth : GetClosedPaneWidth();
+            if (!useAnimation)
+            {
+                StopPaneColumnAnimation();
+                _paneColumn.Width = new GridLength(targetWidth);
+                return;
+            }
+
+            double currentWidth = GetCurrentPaneColumnWidth();
+            if (Math.Abs(currentWidth - targetWidth) <= 0.1)
+            {
+                StopPaneColumnAnimation();
+                _paneColumn.Width = new GridLength(targetWidth);
+                return;
+            }
+
+            ColumnDefinition paneColumn = _paneColumn;
+            int animationGeneration = ++_paneColumnAnimationGeneration;
+            GridLengthAnimation animation = new()
+            {
+                From = new GridLength(currentWidth),
+                To = new GridLength(targetWidth),
+                Duration = new Duration(TimeSpan.FromMilliseconds(PaneAnimationMilliseconds)),
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut },
+                FillBehavior = FillBehavior.Stop
+            };
+
+            animation.Completed += delegate
+            {
+                if (animationGeneration != _paneColumnAnimationGeneration || !ReferenceEquals(paneColumn, _paneColumn))
+                {
+                    return;
+                }
+
+                paneColumn.BeginAnimation(ColumnDefinition.WidthProperty, null);
+                paneColumn.Width = new GridLength(targetWidth);
+            };
+
+            paneColumn.BeginAnimation(ColumnDefinition.WidthProperty, animation, HandoffBehavior.SnapshotAndReplace);
+        }
+
+        private double GetCurrentPaneColumnWidth()
+        {
+            if (_paneColumn is null)
+            {
+                return GetClosedPaneWidth();
+            }
+
+            GridLength current = _paneColumn.Width;
+            return current.GridUnitType == GridUnitType.Pixel
+                ? current.Value
+                : GetClosedPaneWidth();
+        }
+
+        private double GetClosedPaneWidth()
+        {
+            return IsBackButtonVisible && IsBackEnabled ? PaneClosedWithBackWidth : PaneClosedWidth;
         }
 
         private void ScheduleIndicatorPosition(bool animate)
@@ -927,6 +1016,12 @@ namespace Fluence.Wpf.Controls
             }
         }
 
+        private void StopPaneColumnAnimation()
+        {
+            _paneColumnAnimationGeneration++;
+            _paneColumn?.BeginAnimation(ColumnDefinition.WidthProperty, null);
+        }
+
         /// <summary>
         /// Replaces frozen XAML-defined transforms with mutable instances.
         /// </summary>
@@ -1004,6 +1099,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         private System.Windows.Controls.Button? _paneToggleButton;
 
+        private ColumnDefinition? _paneColumn;
+
         /// <summary>
         /// Represents the visual element used to indicate the current selection within the user interface.
         /// </summary>
@@ -1021,6 +1118,8 @@ namespace Fluence.Wpf.Controls
         /// allowing the system to determine if a new animation sequence should be started or if the current one remains
         /// valid.</remarks>
         private int _indicatorAnimationGeneration;
+
+        private int _paneColumnAnimationGeneration;
 
         /// <summary>
         /// Indicates whether the indicator has been positioned.

@@ -166,7 +166,7 @@
     <Color x:Key="TextOnAccentFillColorSecondary">#FF000000</Color>
     <Color x:Key="TextOnAccentFillColorDisabled">#FF3FF23F</Color>
 
-    <!--  NavigationView content area (transparent — HC Window color via brush override below)  -->
+    <!--  NavigationView content area (transparent - HC Window color via brush override below)  -->
     <Color x:Key="NavigationViewContentBackground">#FF000000</Color>
 
     <!--  ================================================================  -->

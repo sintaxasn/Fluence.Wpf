@@ -64,7 +64,7 @@
                         <TextBlock
                             ui:TextBlockExtensions.Typography="Body"
                             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                            Text="Light, Dark, High Contrast, and Auto — follows the OS accent. Brushes map to WinUI 3 themeresource key names."
+                            Text="Light, Dark, High Contrast, and Auto - follows the OS accent. Brushes map to WinUI 3 themeresource key names."
                             TextWrapping="Wrap" />
                     </StackPanel>
                 </ui:Card>

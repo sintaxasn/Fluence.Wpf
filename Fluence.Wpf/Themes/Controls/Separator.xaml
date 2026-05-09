@@ -4,7 +4,7 @@
     xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
 
     <!--
-        Fluent Separator style — standalone content-area horizontal divider.
+        Fluent Separator style - standalone content-area horizontal divider.
         Authority: .NET 10 WPF PresentationFramework.Fluent/Styles/Separator.xaml.
         Uses DividerStrokeColorDefaultBrush (maps to DividerStrokeColorDefault color token).
         Height=1 is canonical WinUI 3 divider thickness.

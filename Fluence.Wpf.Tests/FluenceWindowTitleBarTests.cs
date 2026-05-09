@@ -335,7 +335,7 @@ namespace Fluence.Wpf.Tests
                 WindowChrome chrome = WindowChrome.GetWindowChrome(w);
                 Assert.IsNotNull(chrome, "FluenceWindow should have a WindowChrome attached.");
                 Assert.AreEqual(0d, chrome.CaptionHeight,
-                    "CaptionHeight must always be 0 — drag region is handled by WM_NCHITTEST.");
+                    "CaptionHeight must always be 0 - drag region is handled by WM_NCHITTEST.");
 
                 w.ExtendsContentIntoTitleBar = true;
 
@@ -362,7 +362,7 @@ namespace Fluence.Wpf.Tests
 
         #endregion
 
-        #region Bug Fix Tests — Title Bar Flash and Theme Switching
+        #region Bug Fix Tests - Title Bar Flash and Theme Switching
 
         [TestMethod]
         public void CaptionHeight_IsZero_EvenBeforeExtendsContentIntoTitleBar()
@@ -372,7 +372,7 @@ namespace Fluence.Wpf.Tests
                 WindowChrome chrome = WindowChrome.GetWindowChrome(w);
                 Assert.IsNotNull(chrome);
                 Assert.AreEqual(0d, chrome.CaptionHeight,
-                    "CaptionHeight must be 0 from construction — WM_NCHITTEST handles all drag regions.");
+                    "CaptionHeight must be 0 from construction - WM_NCHITTEST handles all drag regions.");
             });
         }
 
@@ -990,7 +990,7 @@ namespace Fluence.Wpf.Tests
             // HideNativeCaptionButtons → NativeMethods.HideAllWindowButtons, which strips
             // WS_SYSMENU on the native HWND. Without WS_SYSMENU (and the implicitly-disabled
             // WS_MINIMIZEBOX) DefWindowProc silently drops WM_SYSCOMMAND/SC_MINIMIZE, so
-            // SystemCommands.MinimizeWindow(this) would be a no-op — exactly the production
+            // SystemCommands.MinimizeWindow(this) would be a no-op - exactly the production
             // symptom that made the PSADT AllowMinimize caption button look clickable but
             // refuse to actually minimize. The Executed handler must bypass the sysmenu gate
             // by assigning WindowState directly so the transition always lands.
@@ -1141,7 +1141,7 @@ namespace Fluence.Wpf.Tests
             // Same topology as the Show() variant above, but uses ShowDialog() which is what
             // PSADT's DialogManager actually invokes (see DialogManager.ShowModalDialog -> dialog.ShowDialog()).
             // Modal WPF windows push a nested Dispatcher frame, disable their owner, and in the
-            // PSADT case are also Topmost — a combination that can mask bugs a Show() test misses.
+            // PSADT case are also Topmost - a combination that can mask bugs a Show() test misses.
             // We schedule the click via Dispatcher.BeginInvoke(ApplicationIdle) from Loaded so
             // the command fires after the modal frame is pumping, then verify WindowState.
             RunOnFreshStaThread(() =>
@@ -1339,17 +1339,17 @@ namespace Fluence.Wpf.Tests
 
         #endregion
 
-        #region WI-1 F4 — Caption buttons must remain hit-testable when ExtendsContentIntoTitleBar=true
+        #region WI-1 F4 - Caption buttons must remain hit-testable when ExtendsContentIntoTitleBar=true
 
         // When ExtendsContentIntoTitleBar=true, the content area moves into Grid.Row=0 (same row
         // as the title bar). Because WPF paints siblings in document order, whichever sibling is
         // declared last wins the top of the z-stack. The title bar grid (and its caption button
-        // panel) must therefore win — otherwise opaque client content covers min/max/close and
+        // panel) must therefore win - otherwise opaque client content covers min/max/close and
         // clicks are swallowed by the content, not the button.
         //
         // This test plants an opaque full-size Border as the window Content. If the title bar
         // grid is correctly on top, a hit-test at a caption-button center hits the button or one
-        // of its Path children — not the Border.
+        // of its Path children - not the Border.
         [TestMethod]
         public void CaptionButtons_AboveContent_WhenExtendsContentIntoTitleBar()
         {

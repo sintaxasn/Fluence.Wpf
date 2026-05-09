@@ -1980,9 +1980,13 @@ namespace Fluence.Wpf.Tests
                     AssertContentOffsetEventually(window, nav, presenter, 280.0, "Open state: content begins at 280.");
 
                     nav.IsPaneOpen = false;
+                    Assert.IsTrue(nav.GetPaneColumnWidthForTesting() > 48.0,
+                        "Closing LeftCompact should animate from the current expanded width instead of snapping immediately to 48.");
                     AssertContentOffsetEventually(window, nav, presenter, 48.0, "Closed state: content begins at 48 (push, not overlay).");
 
                     nav.IsPaneOpen = true;
+                    Assert.IsTrue(nav.GetPaneColumnWidthForTesting() < 280.0,
+                        "Opening LeftCompact should animate from the current compact width instead of snapping immediately to 280.");
                     AssertContentOffsetEventually(window, nav, presenter, 280.0, "Reopen state: content returns to 280.");
                 }
                 finally
@@ -2107,7 +2111,7 @@ namespace Fluence.Wpf.Tests
                     bool okVisible = VisualStateManager.GoToState(nav, "BackButtonVisible", false);
                     bool okCollapsed = VisualStateManager.GoToState(nav, "BackButtonCollapsed", false);
 
-                    Assert.IsTrue(okVisible, "GoToState('BackButtonVisible') must succeed — BackButtonStates VSM group required.");
+                    Assert.IsTrue(okVisible, "GoToState('BackButtonVisible') must succeed - BackButtonStates VSM group required.");
                     Assert.IsTrue(okCollapsed, "GoToState('BackButtonCollapsed') must succeed.");
                 }
                 finally
@@ -2314,7 +2318,7 @@ namespace Fluence.Wpf.Tests
 
         /// <summary>
         /// Asserts that <paramref name="brush"/> is null, Brushes.Transparent, or a
-        /// SolidColorBrush whose alpha channel is zero — i.e. effectively transparent.
+        /// SolidColorBrush whose alpha channel is zero - i.e. effectively transparent.
         /// </summary>
         private static void AssertBrushIsTransparentOrNull(Brush brush, string message)
         {

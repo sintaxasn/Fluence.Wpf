@@ -6,11 +6,11 @@
     <!--
         WinUI 3 SplitButton reference:
         https://github.com/microsoft/microsoft-ui-xaml/blob/main/src/controls/dev/CommonStyles/SplitButton.xaml
-        
+
         Two halves share a single outer outline:
         * Primary half  (left)  - fires Click / Command.
         * Secondary half (right) - ToggleButton that opens PART_Popup containing Flyout.
-        
+
         The halves are separated by a 1px divider stroke. Each half has its own fill
         Border so IsMouseOver / IsPressed tints apply per-half without leaking.
     -->
@@ -213,7 +213,7 @@
                         </Trigger>
 
                         <!--
-                            WI-3 B17: Accent appearance — divider must use
+                            WI-3 B17: Accent appearance - divider must use
                             ControlStrokeColorOnAccentSecondaryBrush instead of the default
                             ControlStrokeColorDefaultBrush. All per-half hover / press tints and
                             stroke colours also shift to the accent palette.

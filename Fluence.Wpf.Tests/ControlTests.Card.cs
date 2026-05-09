@@ -35,7 +35,7 @@ using WpfBorder = System.Windows.Controls.Border;
 namespace Fluence.Wpf.Tests
 {
     /// <summary>
-    /// WI-3 C21 tests: Card elevation shadow — Default variant has distinct drop shadow;
+    /// WI-3 C21 tests: Card elevation shadow - Default variant has distinct drop shadow;
     /// Subtle (and other flat variants) have no shadow.
     /// Authority: WinUI 3 card elevation pattern (LayerFillColorDefaultBrush elevation context).
     /// </summary>
@@ -153,7 +153,7 @@ namespace Fluence.Wpf.Tests
                 DropShadowEffect? shadow = outerBorder.Effect as DropShadowEffect;
                 Assert.IsNotNull(shadow, "Effect must be DropShadowEffect.");
 
-                // WI-3 C21: subtle elevation — soft blur, low opacity, downward direction
+                // WI-3 C21: subtle elevation - soft blur, low opacity, downward direction
                 Assert.IsTrue(shadow.BlurRadius is >= 4 and <= 16,
                     $"BlurRadius {shadow.BlurRadius} outside expected range [4,16].");
                 Assert.IsTrue(shadow.Opacity is > 0 and <= 0.2,

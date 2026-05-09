@@ -26,8 +26,13 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
 using System.Windows;
 using System.Windows.Automation.Peers;
+using System.Windows.Controls.Primitives;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Animation;
 using Fluence.Wpf.Automation;
 
 namespace Fluence.Wpf.Controls
@@ -35,9 +40,26 @@ namespace Fluence.Wpf.Controls
     /// <summary>
     /// A toggle switch control with On/Off content.
     /// </summary>
-    /// <remarks>Inspired by WInUI's ToggleSwitch.</remarks>
-    public class ToggleSwitch : System.Windows.Controls.Primitives.ToggleButton
+    /// <remarks>Inspired by WinUI's ToggleSwitch.</remarks>
+    [TemplatePart(Name = PartSwitchKnob, Type = typeof(FrameworkElement))]
+    [TemplatePart(Name = PartSwitchThumb, Type = typeof(FrameworkElement))]
+    [TemplatePart(Name = PartSwitchThumbInput, Type = typeof(Thumb))]
+    public class ToggleSwitch : ToggleButton
     {
+        private const string PartSwitchKnob = "SwitchKnob";
+        private const string PartSwitchThumb = "SwitchThumb";
+        private const string PartSwitchThumbInput = "PART_SwitchThumbInput";
+        private const double KnobOffOffset = 0.0;
+        private const double KnobOnOffset = 20.0;
+        private const double DragCommitOffset = 10.0;
+        private const double DragDistanceThreshold = 1.0;
+        private const double ThumbRestSize = 12.0;
+        private const double ThumbHoverSize = 14.0;
+        private const double ThumbPressedWidth = 17.0;
+        private const double ThumbPressedHeight = 14.0;
+        private const double ThumbSizeAnimationMilliseconds = 83.0;
+        private const double KnobAnimationMilliseconds = 167.0;
+
         /// <summary>
         /// Initializes static members of the ToggleSwitch class and overrides the default style metadata.
         /// </summary>
@@ -147,9 +169,276 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <inheritdoc />
+        public override void OnApplyTemplate()
+        {
+            if (_thumbInput is not null)
+            {
+                _thumbInput.PreviewMouseLeftButtonDown -= OnThumbPreviewMouseLeftButtonDown;
+                _thumbInput.PreviewMouseLeftButtonUp -= OnThumbPreviewMouseLeftButtonUp;
+                _thumbInput.DragStarted -= OnThumbDragStarted;
+                _thumbInput.DragDelta -= OnThumbDragDelta;
+                _thumbInput.DragCompleted -= OnThumbDragCompleted;
+                _thumbInput.LostMouseCapture -= OnThumbLostMouseCapture;
+            }
+
+            base.OnApplyTemplate();
+
+            _switchKnob = GetTemplateChild(PartSwitchKnob) as FrameworkElement;
+            _switchThumb = GetTemplateChild(PartSwitchThumb) as FrameworkElement;
+            _thumbInput = GetTemplateChild(PartSwitchThumbInput) as Thumb;
+            _knobTranslate = ResolveKnobTranslate();
+
+            if (_thumbInput is not null)
+            {
+                _thumbInput.PreviewMouseLeftButtonDown += OnThumbPreviewMouseLeftButtonDown;
+                _thumbInput.PreviewMouseLeftButtonUp += OnThumbPreviewMouseLeftButtonUp;
+                _thumbInput.DragStarted += OnThumbDragStarted;
+                _thumbInput.DragDelta += OnThumbDragDelta;
+                _thumbInput.DragCompleted += OnThumbDragCompleted;
+                _thumbInput.LostMouseCapture += OnThumbLostMouseCapture;
+            }
+
+            UpdateKnobPosition(false);
+        }
+
+        /// <inheritdoc />
         protected override AutomationPeer OnCreateAutomationPeer()
         {
             return new ToggleSwitchAutomationPeer(this);
         }
+
+        /// <inheritdoc />
+        protected override void OnChecked(RoutedEventArgs e)
+        {
+            base.OnChecked(e);
+            UpdateKnobPosition(true);
+        }
+
+        /// <inheritdoc />
+        protected override void OnUnchecked(RoutedEventArgs e)
+        {
+            base.OnUnchecked(e);
+            UpdateKnobPosition(true);
+        }
+
+        /// <inheritdoc />
+        protected override void OnIndeterminate(RoutedEventArgs e)
+        {
+            base.OnIndeterminate(e);
+            UpdateKnobPosition(true);
+        }
+
+        private TranslateTransform? ResolveKnobTranslate()
+        {
+            if (_switchKnob is null)
+            {
+                return null;
+            }
+
+            if (_switchKnob.RenderTransform is TranslateTransform transform && !transform.IsFrozen)
+            {
+                transform.BeginAnimation(TranslateTransform.XProperty, null);
+                return transform;
+            }
+
+            TranslateTransform mutableTransform = new();
+            _switchKnob.RenderTransform = mutableTransform;
+            return mutableTransform;
+        }
+
+        private void OnThumbPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            _pendingClick = true;
+            _dragStarted = false;
+            _dragDistance = 0.0;
+            AnimateThumbSize(ThumbPressedWidth, ThumbPressedHeight, false);
+        }
+
+        private void OnThumbPreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (!_pendingClick || _dragStarted)
+            {
+                return;
+            }
+
+            CompleteThumbInteraction(IsChecked != true);
+            e.Handled = true;
+        }
+
+        private void OnThumbDragStarted(object sender, DragStartedEventArgs e)
+        {
+            _pendingClick = true;
+            _dragStarted = true;
+            _dragDistance = 0.0;
+            AnimateThumbSize(ThumbPressedWidth, ThumbPressedHeight, false);
+            e.Handled = true;
+        }
+
+        private void OnThumbDragDelta(object sender, DragDeltaEventArgs e)
+        {
+            if (_knobTranslate is null)
+            {
+                return;
+            }
+
+            _dragDistance += Math.Abs(e.HorizontalChange);
+            SetKnobOffset(Clamp(_knobTranslate.X + e.HorizontalChange, KnobOffOffset, KnobOnOffset));
+            e.Handled = true;
+        }
+
+        private void OnThumbDragCompleted(object sender, DragCompletedEventArgs e)
+        {
+            if (!_pendingClick)
+            {
+                return;
+            }
+
+            bool nextChecked = _dragDistance <= DragDistanceThreshold
+                ? IsChecked != true
+                : (_knobTranslate?.X ?? KnobOffOffset) >= DragCommitOffset;
+            CompleteThumbInteraction(nextChecked);
+            e.Handled = true;
+        }
+
+        private void OnThumbLostMouseCapture(object sender, MouseEventArgs e)
+        {
+            if (!_pendingClick)
+            {
+                return;
+            }
+
+            _pendingClick = false;
+            _dragStarted = false;
+            _dragDistance = 0.0;
+            UpdateKnobPosition(true);
+            AnimateThumbSize(GetReleasedThumbSize(), GetReleasedThumbSize(), true);
+        }
+
+        private void CompleteThumbInteraction(bool nextChecked)
+        {
+            bool currentChecked = IsChecked == true;
+            _pendingClick = false;
+            _dragStarted = false;
+            _dragDistance = 0.0;
+
+            SetCurrentValue(IsCheckedProperty, nextChecked);
+            if (currentChecked == nextChecked)
+            {
+                UpdateKnobPosition(true);
+            }
+
+            AnimateThumbSize(GetReleasedThumbSize(), GetReleasedThumbSize(), true);
+        }
+
+        private void UpdateKnobPosition(bool useAnimation)
+        {
+            if (_knobTranslate is null)
+            {
+                return;
+            }
+
+            double targetOffset = IsChecked == true ? KnobOnOffset : KnobOffOffset;
+            if (!useAnimation)
+            {
+                SetKnobOffset(targetOffset);
+                return;
+            }
+
+            double currentOffset = _knobTranslate.X;
+            if (Math.Abs(currentOffset - targetOffset) <= 0.1)
+            {
+                SetKnobOffset(targetOffset);
+                return;
+            }
+
+            int animationGeneration = ++_knobAnimationGeneration;
+            DoubleAnimation animation = new(currentOffset, targetOffset, TimeSpan.FromMilliseconds(KnobAnimationMilliseconds))
+            {
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut },
+                FillBehavior = FillBehavior.Stop
+            };
+
+            animation.Completed += delegate
+            {
+                if (animationGeneration != _knobAnimationGeneration || _knobTranslate is null)
+                {
+                    return;
+                }
+
+                _knobTranslate.BeginAnimation(TranslateTransform.XProperty, null);
+                _knobTranslate.X = targetOffset;
+            };
+
+            _knobTranslate.BeginAnimation(TranslateTransform.XProperty, animation, HandoffBehavior.SnapshotAndReplace);
+        }
+
+        private void SetKnobOffset(double offset)
+        {
+            if (_knobTranslate is null)
+            {
+                return;
+            }
+
+            _knobAnimationGeneration++;
+            _knobTranslate.BeginAnimation(TranslateTransform.XProperty, null);
+            _knobTranslate.X = offset;
+        }
+
+        private void AnimateThumbSize(double width, double height, bool clearWhenCompleted)
+        {
+            if (_switchThumb is null)
+            {
+                return;
+            }
+
+            int animationGeneration = ++_thumbSizeAnimationGeneration;
+            DoubleAnimation widthAnimation = new(_switchThumb.Width, width, TimeSpan.FromMilliseconds(ThumbSizeAnimationMilliseconds))
+            {
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut },
+                FillBehavior = clearWhenCompleted ? FillBehavior.Stop : FillBehavior.HoldEnd
+            };
+            DoubleAnimation heightAnimation = new(_switchThumb.Height, height, TimeSpan.FromMilliseconds(ThumbSizeAnimationMilliseconds))
+            {
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut },
+                FillBehavior = clearWhenCompleted ? FillBehavior.Stop : FillBehavior.HoldEnd
+            };
+
+            if (clearWhenCompleted)
+            {
+                heightAnimation.Completed += delegate
+                {
+                    if (animationGeneration != _thumbSizeAnimationGeneration || _switchThumb is null)
+                    {
+                        return;
+                    }
+
+                    _switchThumb.BeginAnimation(FrameworkElement.WidthProperty, null);
+                    _switchThumb.BeginAnimation(FrameworkElement.HeightProperty, null);
+                };
+            }
+
+            _switchThumb.BeginAnimation(FrameworkElement.WidthProperty, widthAnimation, HandoffBehavior.SnapshotAndReplace);
+            _switchThumb.BeginAnimation(FrameworkElement.HeightProperty, heightAnimation, HandoffBehavior.SnapshotAndReplace);
+        }
+
+        private double GetReleasedThumbSize()
+        {
+            return IsMouseOver ? ThumbHoverSize : ThumbRestSize;
+        }
+
+        private static double Clamp(double value, double minimum, double maximum)
+        {
+            return value < minimum ? minimum : value > maximum ? maximum : value;
+        }
+
+        private FrameworkElement? _switchKnob;
+        private FrameworkElement? _switchThumb;
+        private Thumb? _thumbInput;
+        private TranslateTransform? _knobTranslate;
+        private bool _pendingClick;
+        private bool _dragStarted;
+        private double _dragDistance;
+        private int _knobAnimationGeneration;
+        private int _thumbSizeAnimationGeneration;
     }
 }

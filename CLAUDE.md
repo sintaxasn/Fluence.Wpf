@@ -45,8 +45,10 @@ XAML themes are under `Fluence.Wpf/Themes/` and are **not** a CLR namespace.
 
 Every `.cs` file in the library, demo, and tests starts with the BSD 3-Clause header used by any existing source file (e.g. `Fluence.Wpf/ApplicationThemeManager.cs` lines 1-27). Never delete, shorten, or paraphrase it.
 
+
 ### Language features
 
+- Avoid the use of em dash (—) or en dash (–) anywhere in documentation or comments.
 - All TFMs use `LangVersion=latest` (set in `Directory.Build.props`). Use modern C# features freely; verify any runtime API is available in `net472` before using it.
 - Do not guard blocks with `#if NET10_0_OR_GREATER` to gain runtime APIs not present in `net472`; instead apply §4.3 guidance.
 - Nullable reference types are **enabled** (`Nullable=enable` in `Directory.Build.props`). Library and test code must be nullable-clean — annotate parameters and returns with `?` only where genuinely nullable.
@@ -69,10 +71,10 @@ Every `.cs` file in the library, demo, and tests starts with the BSD 3-Clause he
 - SonarAnalyzer: `S103`, `S104`, `S107`, `S109`, `S1067`, `S1121`, `S1449`, `S1659`, `S3358`, `S3458`, `S3532`, `S3869`
 
 **Per-library suppressions** (in `Fluence.Wpf.csproj` `<NoWarn>`):
-- `SYSLIB1045` — regex source generator (not available on `net472`)
-- `IDE0330` — `using` alias preference (style override)
-- `S1244` — floating-point equality (necessary for pixel math)
-- `VSTHRD001` — task/thread analyzer (WPF dispatcher pattern conflict)
+- `SYSLIB1045` - regex source generator (not available on `net472`)
+- `IDE0330` - `using` alias preference (style override)
+- `S1244` - floating-point equality (necessary for pixel math)
+- `VSTHRD001` - task/thread analyzer (WPF dispatcher pattern conflict)
 
 Prefer `EventArgs.Empty`, `nameof(...)`, explicit `readonly`, and immutable helpers. **Never** use inline `#pragma warning disable` except in exceptional third-party interop cases.
 
@@ -81,7 +83,7 @@ Prefer `EventArgs.Empty`, `nameof(...)`, explicit `readonly`, and immutable help
 `EnforceCodeStyleInBuild=true` + `AnalysisLevel=latest-all` make the following patterns **mandatory** (violations are build errors):
 
 - **Explicit types over `var`**: `Color customColor = ...` not `var customColor = ...`. Exception: anonymous types have no explicit form.
-- **Target-typed `new()`**: `MainWindow mainWindow = new()` not `var mainWindow = new MainWindow()` — use when the type is clear from the declaration.
+- **Target-typed `new()`**: `MainWindow mainWindow = new()` not `var mainWindow = new MainWindow()` - use when the type is clear from the declaration.
 - **Discard ignored returns with `_`**: methods that return a value must have the return consumed or explicitly discarded. `_ = Dispatcher.BeginInvoke(...)`, `_ = list.ApplyTemplate()`.
 - **`default` not `default(T)`**: `Assert.AreNotEqual(default, value)` not `Assert.AreNotEqual(default(Color), value)`.
 - **`is not` for null pattern checks**: `if (x is not FrameworkElement fe) throw ...` instead of `x as T; if (x is null) throw ...`.

@@ -59,7 +59,7 @@
         </Setter>
     </Style>
 
-    <!--  Close button style — hover/pressed colors driven by caption-specific tokens.  -->
+    <!--  Close button style - hover/pressed colors driven by caption-specific tokens.  -->
     <Style x:Key="WindowCloseButtonStyle" TargetType="{x:Type Button}">
         <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="Focusable" Value="False" />
@@ -314,7 +314,7 @@
 
                         <!--
                             ExtendsContentIntoTitleBar: content fills entire window, title bar overlays.
-                            Hide WindowIcon and TitleText — the app is responsible for branding in its own TitleBar content.
+                            Hide WindowIcon and TitleText - the app is responsible for branding in its own TitleBar content.
                         -->
                         <Trigger Property="ExtendsContentIntoTitleBar" Value="True">
                             <Setter TargetName="ContentArea" Property="Grid.Row" Value="0" />

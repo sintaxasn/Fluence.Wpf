@@ -56,7 +56,7 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                // RootBorder is the template root — proves Fluence style applied.
+                // RootBorder is the template root - proves Fluence style applied.
                 Border? rootBorder = FindVisualChildByName<Border>(expander, "RootBorder");
                 Assert.IsNotNull(rootBorder, "RootBorder must exist in Expander template (Fluence style applied).");
                 w.Close();

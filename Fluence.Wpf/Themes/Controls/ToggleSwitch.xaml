@@ -1,9 +1,9 @@
 ﻿<!--
     Copyright 2026 Dan Cunningham
-    
+
     Redistribution and use in source and binary forms, with or without
     modification, are permitted provided that the following conditions are met:
-    
+
     1. Redistributions of source code must retain the above copyright notice,
     this list of conditions and the following disclaimer.
     2. Redistributions in binary form must reproduce the above copyright notice,
@@ -12,7 +12,7 @@
     3. Neither the name of the copyright holder nor the names of its contributors
     may be used to endorse or promote products derived from this software
     without specific prior written permission.
-    
+
     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
     AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
     IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -92,7 +92,8 @@
                                 x:Name="TrackHost"
                                 Grid.Column="0"
                                 Width="40"
-                                Height="20">
+                                Height="20"
+                                Background="Transparent">
 
                                 <!--  Off track: normal  -->
                                 <Border
@@ -132,19 +133,32 @@
                                     CornerRadius="10"
                                     Opacity="0" />
 
-                                <!--  Thumb: 12x12 circle at rest; grows on hover/pressed  -->
-                                <Ellipse
-                                    x:Name="SwitchThumb"
-                                    Width="12"
-                                    Height="12"
-                                    Margin="3,0,0,0"
+                                <Grid
+                                    x:Name="SwitchKnob"
+                                    Width="20"
+                                    Height="20"
                                     HorizontalAlignment="Left"
                                     VerticalAlignment="Center"
-                                    Fill="{DynamicResource TextFillColorSecondaryBrush}">
-                                    <Ellipse.RenderTransform>
-                                        <TranslateTransform X="0" />
-                                    </Ellipse.RenderTransform>
-                                </Ellipse>
+                                    RenderTransformOrigin="0.5,0.5">
+                                    <Grid.RenderTransform>
+                                        <TranslateTransform x:Name="SwitchKnobTranslate" X="0" />
+                                    </Grid.RenderTransform>
+
+                                    <!--  Thumb: 12x12 circle at rest; grows on hover/pressed/drag.  -->
+                                    <Ellipse
+                                        x:Name="SwitchThumb"
+                                        Width="12"
+                                        Height="12"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Fill="{DynamicResource TextFillColorSecondaryBrush}" />
+                                </Grid>
+
+                                <Thumb
+                                    x:Name="PART_SwitchThumbInput"
+                                    Background="Transparent"
+                                    Focusable="False"
+                                    Opacity="0" />
                             </Grid>
 
                             <!--  Off content (visible by default)  -->
@@ -178,7 +192,7 @@
                             <Setter TargetName="HeaderPresenter" Property="Visibility" Value="Collapsed" />
                         </Trigger>
 
-                        <!--  WI-3 B12: WinUI canonical knob easing — ControlFastOutSlowIn (0.8,0,0,1), ControlFasterAnimationDuration 83ms  -->
+                        <!--  WI-3 B12: WinUI canonical knob easing - ControlFastOutSlowIn (0.8,0,0,1), ControlFasterAnimationDuration 83ms  -->
                         <!--  Hover (any state): grow thumb 12->14  -->
                         <Trigger Property="IsMouseOver" Value="True">
                             <Trigger.EnterActions>
@@ -245,37 +259,8 @@
                             <Setter TargetName="TrackOffHover" Property="Opacity" Value="0" />
                             <Setter TargetName="TrackOn" Property="Opacity" Value="1" />
                             <Setter TargetName="SwitchThumb" Property="Fill" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
-                            <Setter TargetName="SwitchThumb" Property="RenderTransform">
-                                <Setter.Value>
-                                    <TranslateTransform X="20" />
-                                </Setter.Value>
-                            </Setter>
                             <Setter TargetName="OffContentPresenter" Property="Visibility" Value="Collapsed" />
                             <Setter TargetName="OnContentPresenter" Property="Visibility" Value="Visible" />
-                            <Trigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SwitchThumb" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)">
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
-                                                KeyTime="0:0:0.167"
-                                                Value="20" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.EnterActions>
-                            <Trigger.ExitActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SwitchThumb" Storyboard.TargetProperty="(UIElement.RenderTransform).(TranslateTransform.X)">
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
-                                                KeyTime="0:0:0.167"
-                                                Value="0" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </Trigger.ExitActions>
                         </Trigger>
 
                         <!--  Checked + Hover  -->

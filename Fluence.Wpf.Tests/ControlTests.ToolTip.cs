@@ -88,7 +88,7 @@ namespace Fluence.Wpf.Tests
                     Style = style
                 };
 
-                // FontSize and MaxWidth are ordinary DPs — they resolve via Style.Apply.
+                // FontSize and MaxWidth are ordinary DPs - they resolve via Style.Apply.
                 Assert.AreEqual(12.0, tt.FontSize, 0.01, "ToolTip.FontSize must be 12 per Fluent style.");
                 Assert.AreEqual(320.0, tt.MaxWidth, 0.01, "ToolTip.MaxWidth must be 320 per Fluent style.");
                 Assert.AreEqual(new Thickness(9, 6, 9, 8), tt.Padding, "ToolTip.Padding must be 9,6,9,8 per Fluent style.");

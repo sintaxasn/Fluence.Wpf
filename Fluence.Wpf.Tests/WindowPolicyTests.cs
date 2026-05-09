@@ -60,7 +60,7 @@ namespace Fluence.Wpf.Tests
                 borderColor);
         }
 
-        #region ResolveEffectiveBackdrop — capability matrix
+        #region ResolveEffectiveBackdrop - capability matrix
 
         [TestMethod]
         public void ResolveEffectiveBackdrop_Auto_Win11_22H2_ReturnsMica()
@@ -135,7 +135,7 @@ namespace Fluence.Wpf.Tests
                 Caps());
 
             Assert.AreEqual(BackdropType.None, effective,
-                "Explicit Mica on Windows 10 must downgrade to None — we never emit a DWM call the OS cannot satisfy.");
+                "Explicit Mica on Windows 10 must downgrade to None - we never emit a DWM call the OS cannot satisfy.");
         }
 
         [TestMethod]
@@ -201,7 +201,7 @@ namespace Fluence.Wpf.Tests
 
         #endregion
 
-        #region BuildBackdropPlan — None
+        #region BuildBackdropPlan - None
 
         [TestMethod]
         public void BuildBackdropPlan_None_UsesFallbackBackground_EmitsDwmsbtNone()
@@ -215,12 +215,12 @@ namespace Fluence.Wpf.Tests
 
             Assert.AreEqual(BackdropType.None, plan.EffectiveBackdrop);
             Assert.IsFalse(plan.UseTransparentBackground,
-                "None must paint a solid background — transparency would reveal the glass frame.");
+                "None must paint a solid background - transparency would reveal the glass frame.");
             Assert.AreEqual(fallback, plan.BackgroundColor);
             Assert.AreEqual(NativeConstants.DWMWA_COLOR_DEFAULT, plan.CaptionColor,
                 "None must leave the DWM caption color at its default (system-managed).");
             Assert.IsTrue(plan.SystemBackdropType.HasValue,
-                "On 22H2 DWM exposes DWMWA_SYSTEMBACKDROP_TYPE — None must emit DWMSBT_NONE to explicitly clear Mica/Acrylic.");
+                "On 22H2 DWM exposes DWMWA_SYSTEMBACKDROP_TYPE - None must emit DWMSBT_NONE to explicitly clear Mica/Acrylic.");
             Assert.AreEqual(NativeConstants.DWMSBT_NONE, plan.SystemBackdropType.Value);
             Assert.IsFalse(plan.UseLegacyMicaEffect);
         }
@@ -235,12 +235,12 @@ namespace Fluence.Wpf.Tests
                 Color.FromRgb(0xFA, 0xFA, 0xFA));
 
             Assert.IsFalse(plan.SystemBackdropType.HasValue,
-                "Windows 10 does not expose DWMWA_SYSTEMBACKDROP_TYPE — the plan must not attempt to set it.");
+                "Windows 10 does not expose DWMWA_SYSTEMBACKDROP_TYPE - the plan must not attempt to set it.");
         }
 
         #endregion
 
-        #region BuildBackdropPlan — Mica (legacy path on pre-22H2)
+        #region BuildBackdropPlan - Mica (legacy path on pre-22H2)
 
         [TestMethod]
         public void BuildBackdropPlan_Mica_LegacyPath_UsesDwmMicaEffect_NotSystemBackdrop()
@@ -258,7 +258,7 @@ namespace Fluence.Wpf.Tests
             Assert.AreEqual(NativeConstants.DWMWA_COLOR_NONE, plan.CaptionColor,
                 "Mica must force DWMWA_COLOR_NONE on the caption so the system backdrop shows through.");
             Assert.IsFalse(plan.SystemBackdropType.HasValue,
-                "Pre-22H2 must not emit DWMWA_SYSTEMBACKDROP_TYPE — only DWMWA_MICA_EFFECT is legal there.");
+                "Pre-22H2 must not emit DWMWA_SYSTEMBACKDROP_TYPE - only DWMWA_MICA_EFFECT is legal there.");
             Assert.IsTrue(plan.UseLegacyMicaEffect,
                 "Pre-22H2 Win11 must set the legacy DWMWA_MICA_EFFECT attribute.");
         }
@@ -283,7 +283,7 @@ namespace Fluence.Wpf.Tests
 
         #endregion
 
-        #region BuildBackdropPlan — Acrylic + Tabbed (SystemBackdropType mapping)
+        #region BuildBackdropPlan - Acrylic + Tabbed (SystemBackdropType mapping)
 
         [TestMethod]
         public void BuildBackdropPlan_Acrylic_Win22H2_MapsToTransientWindow()
@@ -315,7 +315,7 @@ namespace Fluence.Wpf.Tests
 
         #endregion
 
-        #region BuildBackdropPlan — Immersive dark flag
+        #region BuildBackdropPlan - Immersive dark flag
 
         [TestMethod]
         public void BuildBackdropPlan_DarkTheme_SetsImmersiveDarkMode()
@@ -344,7 +344,7 @@ namespace Fluence.Wpf.Tests
 
         #endregion
 
-        #region GetCornerPreference — enum → DWMWCP_* mapping
+        #region GetCornerPreference - enum → DWMWCP_* mapping
 
         [TestMethod]
         public void GetCornerPreference_Round_MapsToDwmwcpRound()
@@ -356,7 +356,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void GetCornerPreference_Default_MapsToDwmwcpRound()
         {
-            // FluenceWindow exposes CornerPreference.Default as "library default" — which in a
+            // FluenceWindow exposes CornerPreference.Default as "library default" - which in a
             // Fluent library means rounded on Win11. The policy normalises Default to Round.
             Assert.AreEqual(NativeConstants.DWMWCP_ROUND,
                 WindowPolicy.GetCornerPreference(CornerPreference.Default));
@@ -378,7 +378,7 @@ namespace Fluence.Wpf.Tests
 
         #endregion
 
-        #region CreateWindowChrome — canonical FluenceWindow chrome contract
+        #region CreateWindowChrome - canonical FluenceWindow chrome contract
 
         [TestMethod]
         public void CreateWindowChrome_CaptionHeight_IsPassedThrough()
@@ -401,7 +401,7 @@ namespace Fluence.Wpf.Tests
         {
             WindowChrome chrome = WindowPolicy.CreateWindowChrome(0d);
             Assert.AreEqual(new Thickness(4), chrome.ResizeBorderThickness,
-                "4dp resize border matches WinUI 3 / .NET 10 WPF FluentWindow — preserves the invisible hit-margin that lets users grab the edge.");
+                "4dp resize border matches WinUI 3 / .NET 10 WPF FluentWindow - preserves the invisible hit-margin that lets users grab the edge.");
         }
 
         [TestMethod]
@@ -425,12 +425,12 @@ namespace Fluence.Wpf.Tests
         {
             WindowChrome chrome = WindowPolicy.CreateWindowChrome(0d);
             Assert.AreEqual(new CornerRadius(0), chrome.CornerRadius,
-                "WindowChrome.CornerRadius must be 0 — rounded corners are driven by DWMWA_WINDOW_CORNER_PREFERENCE, not the WPF chrome (WPF-side rounding would clip DWM's Mica).");
+                "WindowChrome.CornerRadius must be 0 - rounded corners are driven by DWMWA_WINDOW_CORNER_PREFERENCE, not the WPF chrome (WPF-side rounding would clip DWM's Mica).");
         }
 
         #endregion
 
-        #region GetResizeBorderThickness — maximised / non-resize matrix
+        #region GetResizeBorderThickness - maximised / non-resize matrix
 
         [TestMethod]
         public void GetResizeBorderThickness_Normal_CanResize_Returns4()
@@ -451,7 +451,7 @@ namespace Fluence.Wpf.Tests
         {
             Thickness thickness = WindowPolicy.GetResizeBorderThickness(WindowState.Maximized, ResizeMode.CanResize);
             Assert.AreEqual(new Thickness(0), thickness,
-                "A maximised window has no resize handles — 4dp would bleed over the taskbar.");
+                "A maximised window has no resize handles - 4dp would bleed over the taskbar.");
         }
 
         [TestMethod]
@@ -459,7 +459,7 @@ namespace Fluence.Wpf.Tests
         {
             Thickness thickness = WindowPolicy.GetResizeBorderThickness(WindowState.Normal, ResizeMode.NoResize);
             Assert.AreEqual(new Thickness(0), thickness,
-                "ResizeMode.NoResize must emit a zero-thickness hit margin — PSADT fluent dialogs rely on this.");
+                "ResizeMode.NoResize must emit a zero-thickness hit margin - PSADT fluent dialogs rely on this.");
         }
 
         [TestMethod]
@@ -472,7 +472,7 @@ namespace Fluence.Wpf.Tests
 
         #endregion
 
-        #region BuildFramePlan — accent border selection
+        #region BuildFramePlan - accent border selection
 
         [TestMethod]
         public void BuildFramePlan_Normal_ActiveWithAccentBorder_UsesAccentKey()
@@ -502,7 +502,7 @@ namespace Fluence.Wpf.Tests
                 accentColor: Colors.Red);
 
             Assert.AreEqual("CardStrokeColorDefaultSolidBrush", plan.TemplateBorderBrushResourceKey,
-                "Inactive windows must revert to CardStrokeColorDefaultSolidBrush — the accent border is an activation cue.");
+                "Inactive windows must revert to CardStrokeColorDefaultSolidBrush - the accent border is an activation cue.");
         }
 
         [TestMethod]
@@ -516,7 +516,7 @@ namespace Fluence.Wpf.Tests
                 accentColor: Colors.Red);
 
             Assert.AreEqual(new Thickness(0), plan.TemplateBorderThickness,
-                "A maximised window must not paint a 2dp template border — it would clip against the taskbar / monitor edge.");
+                "A maximised window must not paint a 2dp template border - it would clip against the taskbar / monitor edge.");
         }
 
         [TestMethod]
@@ -530,18 +530,18 @@ namespace Fluence.Wpf.Tests
                 accentColor: Colors.Red);
 
             Assert.AreEqual(NativeConstants.DWMWA_COLOR_DEFAULT, plan.DwmBorderColor,
-                "Windows 10 does not expose DWMWA_BORDER_COLOR — the plan must keep the default sentinel rather than push an unsupported value.");
+                "Windows 10 does not expose DWMWA_BORDER_COLOR - the plan must keep the default sentinel rather than push an unsupported value.");
         }
 
         #endregion
 
-        #region WindowCapabilities.Current — sanity
+        #region WindowCapabilities.Current - sanity
 
         [TestMethod]
         public void WindowCapabilities_Current_NotNull()
         {
             WindowCapabilities caps = WindowCapabilities.Current;
-            Assert.IsNotNull(caps, "WindowCapabilities.Current must always resolve — it shields callers from OS-version probing.");
+            Assert.IsNotNull(caps, "WindowCapabilities.Current must always resolve - it shields callers from OS-version probing.");
         }
 
         #endregion

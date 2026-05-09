@@ -177,7 +177,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void TextBox_HelperAndValidationText_UsesTwoPixelTopMargin()
+        public void TextBox_HelperAndValidationText_UsesFourPixelTopMarginAndCenteredContent()
         {
             WpfTestSta.Invoke(() =>
             {
@@ -196,11 +196,17 @@ namespace Fluence.Wpf.Tests
 
                 WpfTextBlock? helper = FindVisualChildByName<WpfTextBlock>(tb, "PART_HelperText");
                 Assert.IsNotNull(helper, "TextBox template must expose PART_HelperText.");
+                WpfTextBlock? icon = FindVisualChildByName<WpfTextBlock>(tb, "PART_ValidationIcon");
+                Assert.IsNotNull(icon, "TextBox template must expose PART_ValidationIcon.");
 
                 StackPanel? helperRow = VisualTreeHelper.GetParent(helper) as StackPanel;
                 Assert.IsNotNull(helperRow, "Helper text should be hosted in the validation/helper row.");
-                Assert.AreEqual(new Thickness(12, 2, 12, 0), helperRow.Margin,
-                    "Helper and validation text should sit 2px below the input chrome.");
+                Assert.AreEqual(new Thickness(12, 4, 12, 0), helperRow.Margin,
+                    "Helper and validation text should sit 4px below the input chrome.");
+                Assert.AreEqual(VerticalAlignment.Center, helper.VerticalAlignment,
+                    "Helper text should be vertically centered with the validation icon.");
+                Assert.AreEqual(VerticalAlignment.Center, icon.VerticalAlignment,
+                    "Validation icon should be vertically centered with helper text.");
 
                 w.Close();
             });

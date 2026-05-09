@@ -261,7 +261,7 @@ namespace Fluence.Wpf.Tests
         }
 
         // ---------------------------------------------------------------------------
-        // 5. WindowPolicy.BuildBackdropPlan — None backdrop returns non-transparent bg
+        // 5. WindowPolicy.BuildBackdropPlan - None backdrop returns non-transparent bg
         // ---------------------------------------------------------------------------
 
         [TestMethod]

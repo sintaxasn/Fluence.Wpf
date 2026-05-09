@@ -1,6 +1,6 @@
 ﻿<!--
     Copyright (C) 2026 Dan Cunningham. All rights reserved.
-    
+
     Shared demo gallery styles (merged by App.xaml and test host).
 -->
 <ResourceDictionary
@@ -41,7 +41,7 @@
             Custom template: paint Background directly without any VSM hover overrides.
             The default ui:Button template re-colours the background on PointerOver via
             VisualStateManager, washing out the swatch colour to ControlFillColorSecondaryBrush
-            (grey). This template bypasses VSM entirely — hover feedback comes only from the
+            (grey). This template bypasses VSM entirely - hover feedback comes only from the
             border-colour + scale triggers below.
         -->
         <Setter Property="Template">
