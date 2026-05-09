@@ -143,7 +143,7 @@ namespace Fluence.Wpf.Demo.Pages.Trees
             }
 
             var parentPath = BuildPath(parent);
-            return string.IsNullOrEmpty(parentPath)
+            return string.IsNullOrWhiteSpace(parentPath)
                 ? header
                 : string.Format(""{0} / {1}"", parentPath, header);
         }

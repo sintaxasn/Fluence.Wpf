@@ -154,7 +154,7 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
             }
 
             var text = (NewItemBox.Text ?? string.Empty).Trim();
-            if (string.IsNullOrEmpty(text))
+            if (string.IsNullOrWhiteSpace(text))
             {
                 return;
             }

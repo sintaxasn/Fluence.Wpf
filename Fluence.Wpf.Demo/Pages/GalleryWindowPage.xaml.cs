@@ -299,7 +299,7 @@ namespace Fluence.Wpf.Demo.Pages.Window
         {
             var button = sender as FrameworkElement;
             var hex = button is not null ? button.Tag as string : null;
-            if (string.IsNullOrEmpty(hex))
+            if (string.IsNullOrWhiteSpace(hex))
             {
                 return;
             }

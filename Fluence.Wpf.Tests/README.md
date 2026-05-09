@@ -8,7 +8,7 @@ This folder contains the MSTest suite for the Fluence.Wpf library and demo shell
 - `ThemeTestHelpers.cs` - application/resource setup helpers and standard theme-cycle assertions.
 - `ControlTests*.cs` - control template, behavior, focus, and theme tests.
 - `DemoMainWindowTests.cs` - gallery navigation, source sample, and shell behavior tests.
-- `GalleryScreenshotHarness.cs` - opt-in screenshot regeneration for documentation banners.
+- `GalleryScreenshotHarness.cs` - screenshot regeneration for documentation banners during full test runs.
 - `DisableParallelization.cs` - disables parallel MSTest execution for WPF resource/template stability.
 
 ## Run
@@ -19,10 +19,9 @@ From the repository root:
 dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug
 ```
 
-To regenerate documentation screenshots:
+To regenerate documentation screenshots directly:
 
 ```powershell
-$env:FLUENCE_CAPTURE_SCREENSHOTS = '1'
 dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug --filter "FullyQualifiedName~GalleryScreenshotHarness"
 ```
 

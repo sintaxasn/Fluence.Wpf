@@ -2406,6 +2406,53 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void RadioButton_ContentAlignment_MatchesWinUITopLayout()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+                Controls.RadioButton radio = new()
+                {
+                    Content = "Standard",
+                    Width = 240,
+                    Height = 40
+                };
+
+                try
+                {
+                    window.Content = radio;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    _ = radio.ApplyTemplate();
+                    Grid? indicatorHost = FindVisualChildByName<Grid>(radio, "IndicatorHost");
+                    ContentPresenter? contentPresenter = FindVisualChildByName<ContentPresenter>(radio, "ContentPresenter");
+
+                    Assert.IsNotNull(indicatorHost, "RadioButton template must include IndicatorHost.");
+                    Assert.IsNotNull(contentPresenter, "RadioButton template must include ContentPresenter.");
+                    Assert.AreEqual(VerticalAlignment.Top, radio.VerticalContentAlignment,
+                        "RadioButton should default to WinUI's top content alignment.");
+                    Assert.AreEqual(VerticalAlignment.Top, indicatorHost.VerticalAlignment,
+                        "RadioButton indicator should be top aligned within the root row.");
+                    Assert.AreEqual(new Thickness(0), indicatorHost.Margin,
+                        "RadioButton indicator should not carry an extra top offset.");
+                    Assert.AreEqual(VerticalAlignment.Top, contentPresenter.VerticalAlignment,
+                        "RadioButton content should follow VerticalContentAlignment rather than re-centering.");
+                    Assert.AreEqual(new Thickness(8, 6, 0, 0), contentPresenter.Margin,
+                        "RadioButton content presenter should use the WinUI default text inset.");
+                }
+                finally
+                {
+                    window.Close();
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                }
+            });
+        }
+
+        [TestMethod]
         public void RadioButton_GroupExclusivity_UnchecksOthers()
         {
             RunOnStaThread(() =>

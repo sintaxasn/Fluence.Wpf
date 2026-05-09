@@ -179,15 +179,16 @@
                         Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}">
-                        <ScrollViewer
+                        <controls:SmoothScrollViewer
                             x:Name="PART_ScrollViewer"
                             CanContentScroll="False"
                             Focusable="False"
                             HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
                             PanningMode="{TemplateBinding ScrollViewer.PanningMode}"
+                            Style="{DynamicResource ScrollViewerStyle}"
                             VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}">
                             <ItemsPresenter />
-                        </ScrollViewer>
+                        </controls:SmoothScrollViewer>
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="False">

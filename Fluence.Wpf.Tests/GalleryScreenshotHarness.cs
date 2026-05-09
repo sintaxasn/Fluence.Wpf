@@ -43,9 +43,8 @@ namespace Fluence.Wpf.Tests
     /// <summary>
     /// Maintainer-driven harness that renders representative demo surfaces with
     /// <see cref="RenderTargetBitmap"/> and writes PNGs under
-    /// <c>docs/screenshots/</c>. All tests here are <see cref="IgnoreAttribute"/>d by
-    /// default - remove the attribute (or run with
-    /// <c>--filter TestCategory=Screenshots</c>) to regenerate documentation images.
+    /// <c>docs/screenshots/</c>. The screenshot capture runs as part of the normal
+    /// full test suite so documentation images stay current with visual changes.
     /// </summary>
     /// <remarks>
     /// Captures only the WPF visual tree - DWM Mica / Acrylic backdrops are composited
@@ -216,18 +215,6 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void CaptureBannerAcrossThemesAndScales()
         {
-            // Opt-in: CI runs skip this test unless FLUENCE_CAPTURE_SCREENSHOTS=1 is set in
-            // the environment. Maintainers enable it when refreshing docs/screenshots/.
-            if (!string.Equals(
-                Environment.GetEnvironmentVariable("FLUENCE_CAPTURE_SCREENSHOTS"),
-                "1",
-                StringComparison.Ordinal))
-            {
-                Assert.Inconclusive(
-                    "Set FLUENCE_CAPTURE_SCREENSHOTS=1 to regenerate docs/screenshots/. Skipping screenshot capture.");
-                return;
-            }
-
             RunOnStaThread(() =>
             {
                 string output = EnsureOutputDirectory();

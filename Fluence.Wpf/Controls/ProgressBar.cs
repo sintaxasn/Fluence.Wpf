@@ -292,13 +292,12 @@ namespace Fluence.Wpf.Controls
                     _fill.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, "SystemFillColorCriticalBrush");
                     break;
                 case ProgressBarMode.Paused:
-                    _fill.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, "SystemFillColorCautionBrush");
+                    _fill.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, "AccentFillColorDefaultBrush");
                     break;
                 case ProgressBarMode.Standard:
-                    break;
-                case ProgressBarMode.Indeterminate:
-                    break;
                 case ProgressBarMode.StepProgress:
+                case ProgressBarMode.Indeterminate:
+                    _fill.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, "AccentFillColorDefaultBrush");
                     break;
                 default:
                     _fill.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, "AccentFillColorDefaultBrush");

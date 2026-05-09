@@ -37,15 +37,90 @@ namespace Fluence.Wpf.Tests
     public partial class ControlTests
     {
         [TestMethod]
-        public void ProgressBar_PausedMode_UsesCautionBrush()
+        public void ProgressBar_PausedMode_UsesAccentBrush()
         {
-            AssertProgressBarModeBrush(ProgressBarMode.Paused, "SystemFillColorCautionBrush");
+            AssertProgressBarModeBrush(ProgressBarMode.Paused, "AccentFillColorDefaultBrush");
+        }
+
+        [TestMethod]
+        public void ProgressBar_PausedMode_TracksAccentColorChange()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                FluenceProgressBar progressBar = new()
+                {
+                    Width = 240,
+                    Height = 24,
+                    Value = 50,
+                    ProgressMode = ProgressBarMode.Paused
+                };
+                Window w = new() { Content = progressBar, Width = 300, Height = 120 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                WpfBorder? fill = FindVisualChildByName<WpfBorder>(progressBar, "PART_Fill");
+                Assert.IsNotNull(fill, "ProgressBar template must expose PART_Fill.");
+                SolidColorBrush? initial = fill.Background as SolidColorBrush;
+                Assert.IsNotNull(initial, "PART_Fill.Background should be a SolidColorBrush.");
+                Color initialColor = initial.Color;
+
+                ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0xC3, 0x00, 0x52));
+                DrainDispatcher(w.Dispatcher);
+
+                SolidColorBrush? expected = app?.TryFindResource("AccentFillColorDefaultBrush") as SolidColorBrush;
+                Assert.IsNotNull(expected, "AccentFillColorDefaultBrush must resolve after accent change.");
+                SolidColorBrush? actual = fill.Background as SolidColorBrush;
+                Assert.IsNotNull(actual, "PART_Fill.Background should remain a SolidColorBrush after accent change.");
+                Assert.AreEqual(expected.Color, actual.Color, "Paused ProgressBar should track the current accent brush.");
+                Assert.AreNotEqual(initialColor, actual.Color, "Paused ProgressBar fill should change when the accent changes.");
+
+                w.Close();
+            });
         }
 
         [TestMethod]
         public void ProgressBar_ErrorMode_UsesCriticalBrush()
         {
             AssertProgressBarModeBrush(ProgressBarMode.Error, "SystemFillColorCriticalBrush");
+        }
+
+        [TestMethod]
+        public void ProgressBar_ReturningToStandardMode_RestoresAccentBrush()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                FluenceProgressBar progressBar = new()
+                {
+                    Width = 240,
+                    Height = 24,
+                    Value = 50,
+                    ProgressMode = ProgressBarMode.Error
+                };
+                Window w = new() { Content = progressBar, Width = 300, Height = 120 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                WpfBorder? fill = FindVisualChildByName<WpfBorder>(progressBar, "PART_Fill");
+                Assert.IsNotNull(fill, "ProgressBar template must expose PART_Fill.");
+
+                progressBar.ProgressMode = ProgressBarMode.Standard;
+                DrainDispatcher(w.Dispatcher);
+
+                SolidColorBrush? expected = app?.TryFindResource("AccentFillColorDefaultBrush") as SolidColorBrush;
+                Assert.IsNotNull(expected, "AccentFillColorDefaultBrush must resolve.");
+                SolidColorBrush? actual = fill.Background as SolidColorBrush;
+                Assert.IsNotNull(actual, "PART_Fill.Background should be a SolidColorBrush.");
+                Assert.AreEqual(expected.Color, actual.Color,
+                    "ProgressBar should restore the accent brush when returning to Standard mode.");
+
+                w.Close();
+            });
         }
 
         private static void AssertProgressBarModeBrush(ProgressBarMode mode, string brushKey)

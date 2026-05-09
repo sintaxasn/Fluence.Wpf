@@ -293,10 +293,15 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            bool nextChecked = _dragDistance <= DragDistanceThreshold
-                ? IsChecked != true
-                : (_knobTranslate?.X ?? KnobOffOffset) >= DragCommitOffset;
-            CompleteThumbInteraction(nextChecked);
+            if (e.Canceled)
+            {
+                CancelThumbInteraction();
+            }
+            else
+            {
+                CompleteThumbInteraction(ResolveThumbInteractionCheckedState());
+            }
+
             e.Handled = true;
         }
 
@@ -307,6 +312,24 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
+            if (Mouse.LeftButton == MouseButtonState.Released)
+            {
+                CompleteThumbInteraction(ResolveThumbInteractionCheckedState());
+                return;
+            }
+
+            CancelThumbInteraction();
+        }
+
+        private bool ResolveThumbInteractionCheckedState()
+        {
+            return _dragDistance <= DragDistanceThreshold
+                ? IsChecked != true
+                : (_knobTranslate?.X ?? KnobOffOffset) >= DragCommitOffset;
+        }
+
+        private void CancelThumbInteraction()
+        {
             _pendingClick = false;
             _dragStarted = false;
             _dragDistance = 0.0;

@@ -28,6 +28,7 @@
 
 using System.Windows;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -199,6 +200,91 @@ namespace Fluence.Wpf.Tests
                 Assert.AreEqual(20.0, tx.X, 0.5, "Committed drag should leave the knob on the checked side.");
                 Assert.AreEqual(12.0, thumb.Width, 0.5, "Released thumb should return to rest width.");
                 Assert.AreEqual(12.0, thumb.Height, 0.5, "Released thumb should return to rest height.");
+
+                w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void ToggleSwitch_ClickReleaseThroughCaptureLoss_CommitsCheckedState()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                ToggleSwitch ts = new() { IsChecked = false };
+                Window w = new() { Content = ts, Width = 160, Height = 60 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                Thumb? input = FindVisualChildByName<Thumb>(ts, "PART_SwitchThumbInput");
+                Assert.IsNotNull(input, "PART_SwitchThumbInput must exist.");
+
+                MouseButtonEventArgs pressed = new(Mouse.PrimaryDevice, 0, MouseButton.Left)
+                {
+                    RoutedEvent = UIElement.PreviewMouseLeftButtonDownEvent
+                };
+                input.RaiseEvent(pressed);
+
+                MouseEventArgs lostCapture = new(Mouse.PrimaryDevice, 0)
+                {
+                    RoutedEvent = UIElement.LostMouseCaptureEvent
+                };
+                input.RaiseEvent(lostCapture);
+
+                Assert.AreEqual(true, ts.IsChecked,
+                    "Releasing a click through capture loss should commit the opposite ToggleSwitch state.");
+
+                WaitForAnimationAndDrain(w.Dispatcher, 250);
+                TranslateTransform tx = GetToggleSwitchKnobTranslate(ts);
+                Assert.AreEqual(20.0, tx.X, 0.5, "Clicked switch should finish on the checked side.");
+
+                w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void ToggleSwitch_DragReleaseThroughCaptureLoss_CommitsNearestState()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                ToggleSwitch ts = new() { IsChecked = false };
+                Window w = new() { Content = ts, Width = 160, Height = 60 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                Thumb? input = FindVisualChildByName<Thumb>(ts, "PART_SwitchThumbInput");
+                Assert.IsNotNull(input, "PART_SwitchThumbInput must exist.");
+                TranslateTransform tx = GetToggleSwitchKnobTranslate(ts);
+
+                DragStartedEventArgs started = new(0, 0)
+                {
+                    RoutedEvent = Thumb.DragStartedEvent
+                };
+                input.RaiseEvent(started);
+
+                DragDeltaEventArgs delta = new(20, 0)
+                {
+                    RoutedEvent = Thumb.DragDeltaEvent
+                };
+                input.RaiseEvent(delta);
+                Assert.AreEqual(20.0, tx.X, 0.5, "Dragging to the right should move the knob to the checked side.");
+
+                MouseEventArgs lostCapture = new(Mouse.PrimaryDevice, 0)
+                {
+                    RoutedEvent = UIElement.LostMouseCaptureEvent
+                };
+                input.RaiseEvent(lostCapture);
+
+                Assert.AreEqual(true, ts.IsChecked,
+                    "Releasing a dragged thumb on the checked side through capture loss should commit the checked state.");
+
+                WaitForAnimationAndDrain(w.Dispatcher, 250);
+                Assert.AreEqual(20.0, tx.X, 0.5, "Committed drag should finish on the checked side.");
 
                 w.Close();
             });

@@ -169,7 +169,7 @@ namespace Fluence.Wpf.Tests
                     Maximum = 100,
                     Value = 0,
                     ViewportSize = 10,
-                    Width = 10,
+                    Width = 12,
                     Height = 200
                 };
 
@@ -188,7 +188,9 @@ namespace Fluence.Wpf.Tests
                     Assert.IsTrue(stateApplied,
                         "GoToState('MouseIndicator') must return true - VSM group must be present.");
 
-                    AssertScrollBarVisualStateDoubleKeyFrame(sb, "MouseIndicator", "Root", "Width", 10.0);
+                    AssertScrollBarVisualStateDoubleKeyFrame(sb, "MouseIndicator", "Root", "Width", 12.0);
+                    AssertScrollBarVisualStateDoubleKeyFrame(sb, "MouseIndicator", "DecreaseButton", "Opacity", 1.0);
+                    AssertScrollBarVisualStateDoubleKeyFrame(sb, "MouseIndicator", "IncreaseButton", "Opacity", 1.0);
                 }
                 finally
                 {
@@ -213,7 +215,7 @@ namespace Fluence.Wpf.Tests
                     Maximum = 100,
                     Value = 0,
                     ViewportSize = 10,
-                    Width = 10,
+                    Width = 12,
                     Height = 200
                 };
 
@@ -234,7 +236,9 @@ namespace Fluence.Wpf.Tests
                     Assert.IsTrue(stateApplied,
                         "GoToState('NoIndicator') must return true - VSM group must be present.");
 
-                    AssertScrollBarVisualStateDoubleKeyFrame(sb, "NoIndicator", "Root", "Width", 6.0);
+                    AssertScrollBarVisualStateDoubleKeyFrame(sb, "NoIndicator", "Root", "Width", 8.0);
+                    AssertScrollBarVisualStateDoubleKeyFrame(sb, "NoIndicator", "DecreaseButton", "Opacity", 0.0);
+                    AssertScrollBarVisualStateDoubleKeyFrame(sb, "NoIndicator", "IncreaseButton", "Opacity", 0.0);
                 }
                 finally
                 {
@@ -259,7 +263,7 @@ namespace Fluence.Wpf.Tests
                     Maximum = 100,
                     Value = 0,
                     ViewportSize = 10,
-                    Height = 10,
+                    Height = 12,
                     Width = 200
                 };
 
@@ -276,7 +280,9 @@ namespace Fluence.Wpf.Tests
                     Assert.IsTrue(stateApplied,
                         "GoToState('MouseIndicator') on horizontal ScrollBar must return true.");
 
-                    AssertScrollBarVisualStateDoubleKeyFrame(sb, "MouseIndicator", "Root", "Height", 10.0);
+                    AssertScrollBarVisualStateDoubleKeyFrame(sb, "MouseIndicator", "Root", "Height", 12.0);
+                    AssertScrollBarVisualStateDoubleKeyFrame(sb, "MouseIndicator", "DecreaseButton", "Opacity", 1.0);
+                    AssertScrollBarVisualStateDoubleKeyFrame(sb, "MouseIndicator", "IncreaseButton", "Opacity", 1.0);
                 }
                 finally
                 {
@@ -313,12 +319,21 @@ namespace Fluence.Wpf.Tests
 
                     Grid? root = FindVisualChildByName<Grid>(sb, "Root");
                     Assert.IsNotNull(root, "Root Grid must be present in ScrollBar template.");
-                    Assert.AreEqual(10.0, sb.ActualWidth, 0.5,
-                        "Vertical ScrollBar should reserve the full expanded 10px layout slot on first layout.");
-                    Assert.AreEqual(6.0, root.Width, 0.5,
-                        "Vertical ScrollBar indicator should still start at the compact 6px visual width.");
+                    Assert.AreEqual(12.0, sb.ActualWidth, 0.5,
+                        "Vertical ScrollBar should reserve the WinUI 12px layout slot on first layout.");
+                    Assert.AreEqual(8.0, root.Width, 0.5,
+                        "Vertical ScrollBar indicator should start at the compact WinUI thumb width.");
                     Assert.AreEqual(HorizontalAlignment.Right, root.HorizontalAlignment,
                         "Compact vertical indicator should align to the outside edge of the reserved slot.");
+
+                    RepeatButton? decreaseButton = FindVisualChildByName<RepeatButton>(sb, "DecreaseButton");
+                    RepeatButton? increaseButton = FindVisualChildByName<RepeatButton>(sb, "IncreaseButton");
+                    Assert.IsNotNull(decreaseButton, "Vertical ScrollBar must include the top line button for hover expansion.");
+                    Assert.IsNotNull(increaseButton, "Vertical ScrollBar must include the bottom line button for hover expansion.");
+                    Assert.AreEqual(0.0, decreaseButton.Opacity, 0.01,
+                        "Line buttons should be hidden until the ScrollBar enters the hover/MouseIndicator state.");
+                    Assert.AreEqual(0.0, increaseButton.Opacity, 0.01,
+                        "Line buttons should be hidden until the ScrollBar enters the hover/MouseIndicator state.");
                 }
                 finally
                 {
@@ -347,7 +362,7 @@ namespace Fluence.Wpf.Tests
                     Maximum = 100,
                     Value = 0,
                     ViewportSize = 10,
-                    Width = 6,
+                    Width = 12,
                     Height = 200
                 };
 
@@ -386,6 +401,9 @@ namespace Fluence.Wpf.Tests
 
                 string[] keys =
                 [
+                    "ScrollBarSize",
+                    "ScrollBarCompactThumbSize",
+                    "ScrollViewerScrollBarMargin",
                     "ControlStrongFillColorDefaultBrush",
                     "SubtleFillColorSecondaryBrush"
                 ];

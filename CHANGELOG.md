@@ -9,13 +9,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **Screenshot capture test policy** - `GalleryScreenshotHarness.CaptureBannerAcrossThemesAndScales` now runs during normal full test runs and regenerates `docs/screenshots/banner-{theme}-{scale}x.png` without requiring `FLUENCE_CAPTURE_SCREENSHOTS=1`.
 - **PowerShell demo** - replaced the monolithic `Show-FluenceDemo.ps1` with three self-contained demo scripts (`Show-ThemeDemo.ps1`, `Show-ControlsDemo.ps1`, `Show-ProgressDemo.ps1`). Each script auto-builds the DLL if absent, loads assets from `assets\`, and uses inline XAML.
 
 ### Added
 
 - **WinUI-style `NavigationView.ItemInvoked`** - item mouse, keyboard, and automation invocation now raises `ItemInvoked` before `SelectionChanged`, with `NavigationViewItemInvokedEventArgs` exposing the invoked data item, container, and settings flag.
 - **Shell `TitleBar` control surface** - `TitleBar` now derives from `ContentControl` and provides back/pane-toggle buttons, icon/title/subtitle, left/right header slots, command properties, and `BackRequested` / `PaneToggleRequested` events for WPF shell integration.
-- **`ProgressRingState` enum and `ProgressRing.ProgressState`** - `Normal`, `Paused`, and `Error` states color determinate and indeterminate ring arcs with accent, `SystemFillColorCautionBrush`, and `SystemFillColorCriticalBrush` respectively.
+- **`ProgressRingState` enum and `ProgressRing.ProgressState`** - `Normal` and `Paused` states color determinate and indeterminate ring arcs with accent, while `Error` uses `SystemFillColorCriticalBrush`.
 - **Folder-level README documentation** - added short component READMEs for the library, gallery demo, MVVM demo, PowerShell demo, tests, and reserved gallery folder so each `Fluence.*` directory explains its purpose, run/build entry points, and maintenance notes.
 - **`Fluence.Wpf.Demo.PowerShell` folder** - Windows PowerShell 5.1 sample that copies the current `net472` `Fluence.Wpf.dll`, loads `MainWindow.xaml` via `XamlReader`, applies `ApplicationThemeManager` resources, enables `SystemThemeWatcher`, and shows a non-modal `FluenceWindow` with demo controls while logging lifecycle and UI events to the console.
 - **`Fluence.Wpf.Demo.Mvvm` project** - minimal Task Manager application demonstrating `FluenceWindow` with CommunityToolkit.Mvvm (`[ObservableProperty]`, `[RelayCommand(CanExecute)]`, `ObservableCollection` filter-rebuild pattern). Targets `net10.0-windows`. Covers: filter `RadioButton` ↔ `FilterMode` enum via `EnumToBoolConverter`, `ProgressBar` + status footer, delete button via `RelativeSource AncestorType=Window` in `DataTemplate`, `SmoothScrollViewer` wrapping `ItemsControl`. Key MVVM correctness notes: `[NotifyPropertyChangedFor]` removed from `_activeFilter` to prevent stale derived-property reads; `App.xaml` has no manual `Generic.xaml` merge (avoids 6th-slot corruption of `ApplicationThemeManager`). Zero code-behind.
@@ -40,6 +41,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **Selection control and scrollbar parity** - RadioButton content now follows the WinUI top-aligned text inset, TreeView templates use `SmoothScrollViewer` so nested scrollbars inherit Fluence styling, and shared ScrollBar visuals use WinUI 12 px hover rails with compact resting thumbs and line buttons.
+- **Accent and interaction regressions** - `ToggleSwitch` now commits click and drag releases when thumb capture is lost at release, paused `ProgressRing` / `ProgressBar` visuals track accent changes, informational `InfoBar` sidebar and icon colors update from the current accent, TextBox helper / validation content sits 3 px lower, and ProgressBar restores the accent brush when returning to Standard mode.
 - **Animation and demo polish** - restored animated `NavigationView` compact pane expansion/collapse, restored `ToggleSwitch` click/hold/drag knob motion, fixed initial scrollbar clipping in demo pages, preserved indentation in inline sample source rendering, switched the determinate `ProgressRing` demo to `NumberBox`, tightened Typography row spacing, and aligned TextBox validation helper content.
 - **Demo startup resource load order** - `Fluence.Wpf.Demo` now loads `DemoSharedStyles.xaml` after `ApplicationThemeManager.Apply`, preventing early implicit theme-dictionary lookup from crashing startup with missing control BAML resources.
 - **NavigationView title-bar alignment** - extended-title-bar demo chrome now uses the shared `TitleBar` control with 48 px rail slots so back/collapse glyphs align with left-mode item icons, title identity shifts right as glyphs appear, and non-extended left pane chrome uses a horizontal row above the item list without the previous extra spacer.
@@ -91,7 +94,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`TabViewWidthMode`** and **`TabViewCloseButtonOverlayMode`** enums in `Fluence.Wpf` (namespace intentionally flat to match the rest of the public enums).
 - **`TabViewTabCloseRequestedEventArgs`** routed event args carrying `Tab` (the originating `TabViewItem`) and `Item` (the bound data item).
 - **`Fluence.Wpf.Demo/Pages/GalleryTabsPage`** - new "Tabs" entry in the demo `NavigationView`; shows `TabControl` and `TabView` side-by-side, wires up add-tab and close-tab handlers, and demonstrates `IsClosable="False"` for pinned tabs.
-- **`GalleryScreenshotHarness`** (`Fluence.Wpf.Tests`) - MSTest-driven `RenderTargetBitmap` capture of the gallery home surface across Light / Dark / High Contrast at 1.0× and 1.5× DPI. Opt-in: set `FLUENCE_CAPTURE_SCREENSHOTS=1` and run the test to regenerate `docs/screenshots/banner-{theme}-{scale}x.png`.
+- **`GalleryScreenshotHarness`** (`Fluence.Wpf.Tests`) - MSTest-driven `RenderTargetBitmap` capture of the gallery home surface across Light / Dark / High Contrast at 1.0× and 1.5× DPI, regenerated by normal full test runs.
 - **`docs/screenshots/`** - committed banner captures (`banner-light-1x.png`, `banner-dark-1x.png`, `banner-highcontrast-1x.png`, and 1.5× counterparts) for documentation and README use.
 - **13 new MSTests** in `TabViewTests.cs` covering default dependency-property values, container generation, template parts, add-tab invoke → `AddTabButtonClick`, close-button invoke → `CloseRequested` → `TabView.TabCloseRequested` bubbling, `IsClosable="False"` hides the close button, and `IsAddTabButtonVisible="False"` hides the add button.
 

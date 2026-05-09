@@ -19,7 +19,7 @@
     <!--  Windows 11 Fluent - Typography layer  -->
     <!--  Prefer Display typography for large/small optical sizes; fall back when not installed.  -->
 
-    <FontFamily x:Key="FluentFontFamily">Segoe UI Variable, Segoe UI</FontFamily>
+    <FontFamily x:Key="FluentFontFamily">Segoe UI Variable Display, Segoe UI Variable, Segoe UI</FontFamily>
 
     <!--
         Implicit default TextBlock style.

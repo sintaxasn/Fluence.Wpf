@@ -66,8 +66,8 @@
                         </MultiTrigger>
 
                         <Trigger Property="ProgressState" Value="{x:Static ui:ProgressRingState.Paused}">
-                            <Setter TargetName="PART_IndeterminateArc" Property="Stroke" Value="{DynamicResource SystemFillColorCautionBrush}" />
-                            <Setter TargetName="PART_DeterminateArc" Property="Stroke" Value="{DynamicResource SystemFillColorCautionBrush}" />
+                            <Setter TargetName="PART_IndeterminateArc" Property="Stroke" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                            <Setter TargetName="PART_DeterminateArc" Property="Stroke" Value="{DynamicResource AccentFillColorDefaultBrush}" />
                         </Trigger>
 
                         <Trigger Property="ProgressState" Value="{x:Static ui:ProgressRingState.Error}">
