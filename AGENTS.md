@@ -446,13 +446,13 @@ STOP CONDITION: both working trees are "git-clean minus intended diff"; wait for
 <claude-mem-context>
 # Memory Context
 
-# [Fluence.Wpf] recent context, 2026-05-09 8:57pm EDT
+# [Fluence.Wpf] recent context, 2026-05-09 11:30pm EDT
 
 Legend: 🎯session 🔴bugfix 🟣feature 🔄refactor ✅change 🔵discovery ⚖️decision 🚨security_alert 🔐security_note
 Format: ID TIME TYPE TITLE
 Fetch details: get_observations([IDs]) | Search: mem-search skill
 
-Stats: 50 obs (28,169t read) | 333,219t work | 92% savings
+Stats: 50 obs (11,351t read) | 87,194t work | 87% savings
 
 ### May 8, 2026
 S72 User acknowledged that a pull request will be created once the remote session completes its planned work (May 8, 8:27 PM)
@@ -463,71 +463,71 @@ S74 Implement fixes and improvements to WinUI/WPF controls: ToggleStatus button 
 S75 Fix ToggleStatus button state switching, adjust ValidationMessage/Icon positioning, fix paused Progress Ring and Progress Bar accent color updates, fix Infobar Informational accent color updates, and review controls in WinUI references and current implementation for improvements. (May 9, 2:08 PM)
 S76 Fix four control issues in Fluence.Wpf: ToggleStatus button state not switching on release, ValidationMessage/Icon positioning, paused Progress Ring/Bar not updating to accent color, and InfoBar Informational colors not updating to accent color. Review WinUI 3 and WinUIGallery references for implementation guidance while respecting CLAUDE.md project doctrine. (May 9, 3:11 PM)
 S77 Continue WinUI Gallery brush token parity verification for Fluence.Wpf control library - verify all control background colors match between WinUI Gallery reference and Fluence.Wpf demo app, identify deviations, and document custom brush usage (May 9, 5:10 PM)
-1758 5:49p 🔵 Fluence.Wpf RadioButton Control Template: Background and Fill Bindings
-1759 " 🔵 Fluence.Wpf ToggleSwitch Control Template: Track and Thumb Token Bindings
-1760 " 🔵 Fluence.Wpf Button Control Template: Background and State Token Bindings
-1761 " 🔵 WinUI 3 CheckBox Theme Resources: Comprehensive Token Structure
-1762 6:51p 🔵 Prior Fluence.Wpf work validated through memory search
-1763 6:52p 🔵 F:\StagedMigration workspace layout confirmed with reference repositories accessible
-1764 " 🔵 Fluence.Wpf repository has 24 uncommitted changes spanning demo pages, control themes, tests, and documentation
-1765 " 🔵 Plan-mode explorer agent dispatched for WinUI resource audit comparison
-1766 " 🔵 Plan-mode explorer agent dispatched for NavigationView pane mode conditional behavior audit
-1767 " 🔵 Fluence.Wpf repository structure confirmed with multi-project solution layout
-1768 6:53p 🔵 Fluence.Wpf test suite spans 50+ control test files plus integration/theme/window tests
-1769 " 🔵 DemoSampleControl and SourceExpander background colors use dynamic resource references, not literal hex values
-1770 " 🔵 NavigationView PaneDisplayMode and title-bar integration infrastructure confirmed; conditional property enforcement patterns exist but incomplete for Top pane mode
-1771 " 🔵 Demo example coverage confirms Slider with tick marks missing; RepeatButton with click counter needed; RatingControl, TreeView, CheckBox variants, ToggleSwitch examples partially present
-1772 " 🔵 WinUI reference source structure confirmed with canonical theme resources and test pages for Slider, CheckBox, ToggleSwitch, TreeView, RatingControl, ProgressRing, NavigationView
-1773 6:54p 🔵 WinUIGallery demo control pages enumerated; core sample pages and test infrastructure located for alignment audit
-1774 " 🔵 Staged git changes reveal in-progress work on demo pages, control themes, background parity tests, and banner assets
-1775 6:55p 🔵 Fluence.Wpf control library structure and requested control availability
-1776 " 🔵 Fluence.Wpf demo pages contain baseline control samples; Samples folder missing
-1777 " 🔵 WinUIGallery reference pages document specific control sample patterns including gaps in Fluence.Wpf
-1778 " 🔵 Fluence.Wpf.Tests contains demo page navigation mapping and ProgressRing regression tests
-1779 " 🔵 Fluence.Wpf demo pages contain embedded sample code for most controls; three-state CheckBox and ToggleSwitch+ProgressRing layout confirmed present
-1780 6:56p 🔵 WinUIGallery reference pages define complete control sample patterns with specific XAML structures for Fluence.Wpf parity gap closure
-1781 " 🔵 WinUIGallery SampleCode subfolder contains external TreeView sample code files
-1782 " 🔵 Fluence.Wpf test suite validates RatingControl but demo page is completely absent
-1783 " 🔵 GalleryStatusPage ProgressRing examples use Grid layout with ToggleSwitch binding in separate row, not horizontal pairing
-1784 " 🔵 GalleryTreesPage demonstrates TreeView hierarchy, selection, and expansion but lacks multi-select checkbox variant
-1785 " 🔵 WinUIGallery RepeatButtonPage implements click counter TextBlock pattern: private static int _clicks with Click handler increment
-1786 " 🔵 WinUIGallery RatingControlPage demonstrates two RatingControl sample patterns: simple with IsClearEnabled/IsReadOnly checkboxes, and PlaceholderValue with Slider binding
-1787 7:07p 🔵 NavigationView chrome, back button, and selection indicator prior work in Fluence.Wpf
-1788 " 🔵 Fluence.Wpf control patterns, brush management, and test best practices
-1789 7:08p 🔵 NavigationView implementation files and test coverage in Fluence.Wpf codebase
-1790 " 🔵 NavigationView PaneDisplayMode and property usage patterns in Fluence.Wpf
-1791 " 🔵 NavigationView control code-behind structure and dependency properties
-1792 " 🔵 NavigationView event handling, state management, and pane animation logic
-1793 " 🔵 NavigationView selection indicator positioning and animation logic
-1794 " 🔵 NavigationViewPaneDisplayMode enum definition and semantics
-1795 " 🔵 NavigationView XAML template structure for headers, separators, and items
-1796 " 🔵 NavigationViewItem mode-specific layout and NavigationView Left pane template structure
-1797 7:09p 🔵 NavigationView Left and LeftCompact pane templates: selection indicator, content borders, and VSM states
-1798 " 🔵 NavigationView Top pane template and style template switching logic
-1799 " 🔵 Title bar integration with NavigationView: ExtendsContentIntoTitleBar property and chrome ownership pattern
-1800 " 🔵 Demo MainWindow XAML: FluenceWindow with TitleBar and NavigationView Top mode configuration
-1801 " 🔵 Demo MainWindow chrome ownership logic: ExtendedTitleBar property synchronization
-1802 " 🔵 FluenceWindow class: ExtendsContentIntoTitleBar property and title bar integration structure
-**1803** " 🔵 **NavigationView test infrastructure and pane display mode test cases**
-The test suite validates NavigationView's three pane display modes via orientation and content offset measurements. Tests use utility functions for animation timing (167ms for LeftCompact), condition-based waits (16ms intervals up to 3000ms), and layout measurements. PaneDisplayMode.Left and LeftCompact render vertical ItemsPresenter, Top renders horizontal. Scroll viewer styling varies: Left and Top show scrollbars, LeftCompact does not (tested with IsPaneOpen=true/false variants). Content offset assertions wait until layout settles within 1.0px tolerance. Selection indicator tests verify depart/arrive animation by checking vertical Y movement while X stays constant and opacity fades.
-~533t 🔍 4,881
+1896 11:22p 🔵 PaneFooter toggle in demo uses StackPanel with ToggleSwitch and label for mode switching
+1897 " ✅ ToggleSwitch footer layout updated for Left/Compact mode centering and text hiding
+1898 " ✅ Patch applied to MainWindow.xaml for responsive toggle footer layout
+1899 " ✅ TextBlock style BasedOn attribute removed from PaneModeToggleLabel
+1900 " ✅ Patch applied simplifying PaneModeToggleLabel TextBlock style
+1901 11:23p 🔵 NavigationView.xaml contains two PaneFooterHost instances for Left and Compact mode templates
+1902 " 🔵 Compact pane template structure shows 48px fixed pane width with content in Grid.Row="2"
+1903 " ✅ PaneFooterHost padding reduced in Compact mode to accommodate ToggleSwitch
+1904 " ✅ Patch applied reducing PaneFooterHost padding in Compact mode
+1905 " 🔵 Patch applied to Compact mode only; Left mode PaneFooterHost still has original padding
+1906 " ✅ Compact mode PaneFooterHost padding reverted from 4,0,4,8 back to 8,0,8,8
+1907 " ✅ Patch applied reverting Compact PaneFooterHost padding to 8,0,8,8
+1908 " ✅ Compact mode PaneFooterHost padding reduced again to 4,0,4,8
+1909 " ✅ Patch applied reducing Compact mode PaneFooterHost padding to 4,0,4,8
+1910 " 🔵 Padding changes confirmed: Compact 4,0,4,8 and Left 8,0,8,8 are now asymmetric
+1911 " 🔵 Left mode pane footer now has reduced padding 4,0,4,8 while Compact retains 8,0,8,8
+1912 " ✅ Left mode PaneFooterHost padding reverted to 8,0,8,8
+1913 " ✅ Patch applied reverting Left mode PaneFooterHost padding to 8,0,8,8
+1914 11:24p ✅ Compact mode PaneFooterHost padding reduced to 4,0,4,8
+1915 " ✅ Patch applied reducing Compact mode footer padding to 4,0,4,8
+1916 " ✅ Test assertions added for Left and LeftCompact mode toggle layout behavior
+1917 " ✅ Patch applied adding test assertions for Left and LeftCompact mode toggle layout
+1918 " 🔵 Existing test validates LeftCompact footer visibility tied to IsPaneOpen state
+1919 " 🔵 Left and Compact pane templates have different header and chrome heights
+1920 " 🔵 Compact pane template includes IsPaneOpen trigger that collapses PaneFooterHost
+1921 " ✅ PaneModeToggleLabel DataTrigger added to hide label when compact pane is closed
+1922 " ✅ Patch applied adding IsPaneOpen trigger to PaneModeToggleLabel
+1923 " ✅ IsPaneOpen trigger added to set PaneFooterHost padding in Compact template
+1924 11:25p ✅ Patch applied adding IsPaneOpen trigger to Compact pane template
+1925 " 🔵 Final padding configuration confirmed: Left 8,0,8,8 and Compact 4,0,4,8
+1926 " ✅ Test assertions added for closed Left pane mode toggle layout
+1927 " ✅ Patch applied adding closed Left pane mode test assertions
+1929 " ✅ Complete diff summary: ToggleSwitch footer layout implemented across three files
+1933 11:28p 🔵 NavigationView control bindings confirm PaneDisplayMode property drives template selection and animations
+1935 " 🔵 MainWindow.xaml.cs implements PaneModeToggle_CheckedChanged to sync DemoNav.PaneDisplayMode
+1936 " 🔵 NavigationView.cs implements comprehensive pane mode lifecycle and animation orchestration
+1937 " 🔵 NavigationView.xaml templates define three-pane layouts with PaneFooter content positioning
+1938 " ✅ MainWindow.xaml.cs updated with pane mode transition animation constants and state flags
+1939 " ✅ Patch applied adding animation timing and transition state management to MainWindow.xaml.cs
+1940 " 🟣 Pane mode transition animations implemented for Left-to-Top mode switch
+1941 " 🟣 Patch applied implementing pane mode transition animations in MainWindow.xaml.cs
+1942 " 🟣 Animation helper methods added for pane transition animations
+1943 " 🟣 Patch applied adding animation helper methods to MainWindow.xaml.cs
+1944 11:29p 🟣 FindVisualChildByName helper method added for visual tree traversal
+1948 " 🟣 Patch applied successfully adding FindVisualChildByName helper method to MainWindow.xaml.cs
+**1949** " 🟣 **Patch confirmed successfully applied to MainWindow.xaml.cs**
+Successfully confirmed patch application adding FindVisualChildByName helper method to MainWindow.xaml.cs. The method is now integrated and available for visual tree element lookup operations used by pane mode transition animations.
+~141t 🛠️ 982
 
-**1804** 7:10p 🔵 **NavigationView test cases: IsPaneToggleButtonVisible, BackRequested, and theme switching**
-Tests validate NavigationView's pane toggle visibility control via IsPaneToggleButtonVisible property, which hides the PART_PaneToggleButton when false. Back button event firing is tested via an internal RaiseBackRequestedForTesting method that simulates back button click without needing to interact with the button directly. Theme switching is validated by applying light and dark ApplicationTheme via ApplicationThemeManager and checking that DynamicResource brushes in MergedDictionaries update their color values. All tests use standard WPF test patterns: create window, populate control, show, drain dispatcher for async work, measure/assert, cleanup.
-~490t 🔍 3,237
+**1950** " ✅ **CHANGELOG.md updated documenting pane mode transition animations feature**
+Updated CHANGELOG.md to document the pane mode transition animation feature. The changelog entry now describes the smooth visual transitions when switching from Left to Top pane mode, including the left pane slide-out and top strip/content slide-in animations.
+~206t 🛠️ 879
 
-**1805** " 🔵 **NavigationView test cases: Top mode indicator, full theme cycle, and pane mode switching**
-Tests validate selection indicator behavior in Top mode and across pane mode changes. The Top mode indicator visibility test confirms the shared selection indicator (PART_SelectionIndicator) is visible when an item is selected. Full theme cycle test ensures NavigationView survives switching between Light, Dark, HighContrast, and Auto themes without throwing exceptions. Pane mode switch test verifies the indicator persists across template swaps (Left to Top), confirming the template-swapping mechanism doesn't lose or recreate the indicator. All tests follow the pattern of making changes, draining dispatcher, updating layout, then measuring/asserting.
-~497t 🔍 3,360
+**1951** " ✅ **Patch applied successfully updating CHANGELOG.md with animation feature documentation**
+Successfully applied patch updating CHANGELOG.md to document the pane mode transition animation feature, completing the changelog documentation for the responsive ToggleSwitch footer and animation system.
+~139t 🛠️ 906
 
-**1806** " 🔵 **NavigationView test utilities: pane background transparency, scroll viewer style, and indicator transform validation**
-Tests validate pane background transparency (confirming DWM Mica/Acrylic backdrop shows through) and scroll viewer styling. The AssertBrushIsTransparentOrNull utility checks three forms of transparency: null background, Brushes.Transparent constant, or zero-alpha SolidColorBrush. Scroll viewer tests verify that PART_PaneItemsScrollViewer is a SmoothScrollViewer using the Fluent ScrollViewerStyle for all pane modes. The selection indicator structure test validates the TransformGroup contains at least two children with ScaleTransform at index 0 and TranslateTransform at index 1 for animation of opacity and position.
-~493t 🔍 2,793
+**1953** " 🔵 **Test infrastructure includes WaitForAnimationAndDrain utility for animation timing**
+Test infrastructure includes WaitForAnimationAndDrain utility that uses DispatcherTimer for waiting during animations. The new MainWindow_PaneModeToggle_SwitchesBetweenTopAndLeft test was added but uses Drain() instead of WaitForAnimationAndDrain, meaning it doesn't wait for the 167ms pane mode transition animations to complete. The test may need updates to call WaitForAnimationAndDrain(window.Dispatcher, 167) after pane mode transitions to account for slide animations.
+~322t 🔍 1,879
 
-**1807** " 🔵 **Comprehensive NavigationView and MainWindow test suite coverage**
-The test suite comprehensively validates NavigationView across all three pane display modes (Left, LeftCompact, Top) with 39+ test methods. Tests cover pane layout dimensions, content offset alignment, selection indicator animation (depart/arrive with Y movement and opacity fade), back/pane toggle button visibility and enabled states, theme switching resilience, and layout edge cases (pane closed, header height, content background). MainWindow tests validate the extended title bar integration pattern: when ExtendsContentIntoTitleBar=true, navigation chrome moves to title bar; when false, pane chrome is used. Tests verify search box positioning, title text overlap detection, and catalog navigation ordering. The test suite uses condition-based waits for animation (167ms LeftCompact pane width animation), visual tree search for template parts, and brush transparency validation for backdrop support.
-~646t 🔍 3,990
+**1955** " 🔵 **WaitForAnimationAndDrain utility explicitly documents 167ms LeftCompact pane animation timing**
+The WaitForAnimationAndDrain test utility is explicitly designed to handle 167ms animations (matching LeftCompact pane column animation). The comment documents this timing. The pane mode transition animations added to MainWindow.xaml.cs also use 167ms duration, making them compatible with this test infrastructure. Tests calling WaitForAnimationAndDrain(dispatcher, 167) or similar would properly account for pane mode transition completion.
+~302t 🔍 1,209
 
 
-Access 333k tokens of past work via get_observations([IDs]) or mem-search skill.
+Access 87k tokens of past work via get_observations([IDs]) or mem-search skill.
 </claude-mem-context>

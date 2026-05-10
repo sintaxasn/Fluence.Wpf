@@ -46,6 +46,7 @@ using Fluence.Wpf.Demo.Pages;
 using FluenceExpander = Fluence.Wpf.Controls.Expander;
 using FluenceListView = Fluence.Wpf.Controls.ListView;
 using WpfBorder = System.Windows.Controls.Border;
+using WpfStackPanel = System.Windows.Controls.StackPanel;
 using WpfTextBlock = System.Windows.Controls.TextBlock;
 using WpfButton = System.Windows.Controls.Button;
 
@@ -543,13 +544,31 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(titleBarToggle, "TitleBar should expose a pane toggle slot.");
                     Assert.AreEqual(Visibility.Collapsed, titleBarToggle.Visibility,
                         "Top mode should not show a pane toggle in the title bar.");
+                    WpfButton? titleBarBack = FindByName<WpfButton>(shellTitleBar, "PART_BackButton");
+                    Assert.IsNotNull(titleBarBack, "TitleBar should expose a back button slot.");
+                    Assert.AreEqual(Visibility.Visible, titleBarBack.Visibility,
+                        "Top mode should move the requested back button into the title bar.");
+                    WpfTextBlock? titleBarBackGlyph = FindVisualChild<WpfTextBlock>(titleBarBack);
+                    Assert.IsNotNull(titleBarBackGlyph, "Title-bar back button should render a Segoe Fluent Icons glyph.");
+                    Assert.AreEqual(16.0, titleBarBackGlyph.FontSize, 0.01,
+                        "Title-bar back glyph should match the compact title-bar glyph style.");
+                    ContentPresenter? titleIcon = FindByName<ContentPresenter>(shellTitleBar, "PART_IconPresenter");
+                    Controls.TextBox? search = FindByName<Controls.TextBox>(window, "NavSearchBox");
+                    Assert.IsNotNull(titleIcon, "TitleBar should expose the app icon presenter.");
+                    Assert.IsNotNull(search, "Demo search box must be present.");
+                    Assert.AreEqual(Visibility.Visible, titleIcon.Visibility,
+                        "Top mode should keep the title-bar app icon visible after the back slot.");
+                    Assert.IsTrue((GetVisualX(titleBarBack, window) ?? double.MaxValue) < (GetVisualX(titleIcon, window) ?? double.MaxValue),
+                        "Top mode back should be the first visible title-bar item.");
+                    Assert.IsTrue((GetVisualX(titleBarBack, window) ?? double.MaxValue) < (GetVisualX(search, window) ?? double.MaxValue),
+                        "Top mode back should appear before centered title-bar content.");
 
                     _ = nav.ApplyTemplate();
                     WpfButton? internalBack = nav.Template.FindName(NavigationView.PartBackButton, nav) as WpfButton;
                     WpfButton? internalToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as WpfButton;
                     Assert.IsNotNull(internalBack, "Internal NavigationView back button should exist.");
-                    Assert.AreEqual(Visibility.Visible, internalBack.Visibility,
-                        "Top non-extended mode should use the NavigationView back button.");
+                    Assert.AreEqual(Visibility.Collapsed, internalBack.Visibility,
+                        "Demo shell should suppress the internal Top pane back button while the title bar owns back navigation.");
                     Assert.IsNull(internalToggle,
                         "Top NavigationView template should not include the pane toggle button.");
 
@@ -557,6 +576,117 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(firstItem, "DemoNav should contain a first navigation item.");
                     Assert.AreEqual(Visibility.Visible, firstItem.Visibility,
                         "Top NavigationView items should stay visible in the horizontal strip.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void MainWindow_PaneModeToggle_SwitchesBetweenTopAndLeft()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                MainWindow window = CreateShownMainWindow();
+                try
+                {
+                    NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
+                    ToggleSwitch? toggle = FindByName<ToggleSwitch>(window, "PaneModeToggle");
+                    WpfTextBlock? label = FindByName<WpfTextBlock>(window, "PaneModeToggleLabel");
+                    WpfStackPanel? toggleHost = FindByName<WpfStackPanel>(window, "PaneModeToggleHost");
+                    Assert.IsNotNull(nav, "DemoNav must exist.");
+                    Assert.IsNotNull(toggle, "Demo pane-mode toggle must exist.");
+                    Assert.IsNotNull(label, "Demo pane-mode toggle label must exist.");
+                    Assert.IsNotNull(toggleHost, "Demo pane-mode toggle host must exist.");
+                    Assert.AreEqual("Top", label.Text, "Pane-mode toggle label should identify the checked mode.");
+                    Assert.AreEqual(VerticalAlignment.Center, label.VerticalAlignment,
+                        "The Top pane-mode label should be vertically centered with the switch.");
+                    Assert.AreEqual(VerticalAlignment.Center, toggle.VerticalAlignment,
+                        "The Top pane-mode switch should be vertically centered with the label.");
+                    Assert.AreEqual(NavigationViewPaneDisplayMode.Top, nav.PaneDisplayMode,
+                        "The demo should start in Top pane mode.");
+                    Assert.AreEqual(true, toggle.IsChecked,
+                        "Pane-mode toggle should start checked when the demo starts in Top mode.");
+                    Assert.IsFalse(window.ExtendsContentIntoTitleBar,
+                        "Top pane mode should keep the demo title bar non-extended.");
+                    Assert.IsTrue((GetVisualX(toggleHost, nav) ?? double.MinValue) + toggleHost.ActualWidth >= nav.ActualWidth - 24.0,
+                        "Top pane mode should dock PaneFooter content to the right side of the strip.");
+
+                    nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.AreEqual(false, toggle.IsChecked,
+                        "Programmatic Left mode changes should sync the PaneFooter toggle.");
+                    Assert.IsTrue(window.ExtendsContentIntoTitleBar,
+                        "Left pane mode should extend the demo content into the title bar.");
+                    Assert.AreEqual(HorizontalAlignment.Center, toggleHost.HorizontalAlignment,
+                        "Left pane mode should center the PaneFooter toggle in the navigation footer.");
+                    Assert.AreEqual(VerticalAlignment.Bottom, toggleHost.VerticalAlignment,
+                        "Left pane mode should keep the PaneFooter toggle at the bottom of the navigation footer.");
+                    Assert.AreEqual(Visibility.Visible, label.Visibility,
+                        "Left pane mode should keep the Top label visible.");
+                    Assert.IsTrue((GetVisualY(toggleHost, nav) ?? double.MinValue) + toggleHost.ActualHeight >= nav.ActualHeight - 56.0,
+                        "Left pane mode should place the same PaneFooter toggle at the bottom of the navigation strip.");
+
+                    nav.IsPaneOpen = false;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.AreEqual(Visibility.Collapsed, label.Visibility,
+                        "Closed Left pane mode should hide the Top label so the footer fits the compact rail.");
+                    Assert.AreEqual(40.0, toggle.Width, 0.01,
+                        "Closed Left pane mode should use only the 40px switch track width.");
+                    Assert.AreEqual(new Thickness(0), toggle.Padding,
+                        "Closed Left pane mode should not add toggle content padding.");
+
+                    nav.IsPaneOpen = true;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    nav.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.AreEqual(HorizontalAlignment.Center, toggleHost.HorizontalAlignment,
+                        "LeftCompact pane mode should keep the compact switch centered in the footer.");
+                    Assert.AreEqual(VerticalAlignment.Bottom, toggleHost.VerticalAlignment,
+                        "LeftCompact pane mode should keep the compact switch at the bottom of the footer.");
+                    Assert.AreEqual(Visibility.Collapsed, label.Visibility,
+                        "LeftCompact pane mode should hide the Top label so the footer fits the compact rail.");
+                    Assert.AreEqual(40.0, toggle.Width, 0.01,
+                        "LeftCompact pane mode should use only the 40px switch track width.");
+                    Assert.AreEqual(new Thickness(0), toggle.Padding,
+                        "LeftCompact pane mode should not add toggle content padding.");
+
+                    toggle.IsChecked = true;
+                    WaitForAnimationAndDrain(window.Dispatcher, 380);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.AreEqual(NavigationViewPaneDisplayMode.Top, nav.PaneDisplayMode,
+                        "Checking the PaneFooter toggle should switch the demo back to Top pane mode.");
+                    Assert.IsFalse(window.ExtendsContentIntoTitleBar,
+                        "Returning to Top mode should restore the non-extended title bar.");
+                    Assert.IsTrue((GetVisualX(toggleHost, nav) ?? double.MinValue) + toggleHost.ActualWidth >= nav.ActualWidth - 24.0,
+                        "The PaneFooter toggle should return to the right side of the Top strip.");
+
+                    toggle.IsChecked = false;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.AreEqual(NavigationViewPaneDisplayMode.Left, nav.PaneDisplayMode,
+                        "Unchecking the PaneFooter toggle should switch the demo to Left pane mode.");
+                    Assert.IsTrue(window.ExtendsContentIntoTitleBar,
+                        "The unchecked pane-mode toggle should leave the demo in Left extended-title-bar mode.");
                 }
                 finally
                 {
@@ -1329,6 +1459,20 @@ namespace Fluence.Wpf.Tests
         private static void Drain(Dispatcher dispatcher)
         {
             _ = dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
+        }
+
+        private static void WaitForAnimationAndDrain(Dispatcher dispatcher, int milliseconds)
+        {
+            DispatcherFrame frame = new();
+            DispatcherTimer timer = new(
+                TimeSpan.FromMilliseconds(milliseconds),
+                DispatcherPriority.Normal,
+                delegate { frame.Continue = false; },
+                dispatcher);
+            timer.Start();
+            Dispatcher.PushFrame(frame);
+            timer.Stop();
+            Drain(dispatcher);
         }
 
         private static void AssertGridCell(Grid grid, Predicate<UIElement> match, int expectedRow, int expectedColumn, string name)

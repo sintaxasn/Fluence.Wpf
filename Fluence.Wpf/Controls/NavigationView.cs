@@ -1314,6 +1314,7 @@ namespace Fluence.Wpf.Controls
                     {
                         _topOverflowButton.Visibility = Visibility.Collapsed;
                         _topOverflowButton.ContextMenu = null;
+                        SetTopOverflowButtonOffset(0.0);
                     }
 
                     return;
@@ -1321,6 +1322,7 @@ namespace Fluence.Wpf.Controls
 
                 _topOverflowButton.Visibility = Visibility.Collapsed;
                 _topOverflowButton.ContextMenu = null;
+                SetTopOverflowButtonOffset(0.0);
                 UpdateLayout();
 
                 double availableWidth = _topItemsHost.ActualWidth;
@@ -1338,16 +1340,17 @@ namespace Fluence.Wpf.Controls
                     }
                 }
 
-                if (totalItemWidth <= availableWidth)
+                _topOverflowButton.Visibility = Visibility.Visible;
+                _topOverflowButton.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                double overflowButtonWidth = GetElementWidth(_topOverflowButton);
+                double visibleItemsWidthLimit = Math.Max(0.0, availableWidth - overflowButtonWidth);
+                if (totalItemWidth <= visibleItemsWidthLimit)
                 {
+                    _topOverflowButton.Visibility = Visibility.Collapsed;
+                    SetTopOverflowButtonOffset(0.0);
                     return;
                 }
 
-                _topOverflowButton.Visibility = Visibility.Visible;
-                _topOverflowButton.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
-
-                double overflowButtonWidth = GetElementWidth(_topOverflowButton);
-                double visibleItemsWidthLimit = Math.Max(0.0, availableWidth - overflowButtonWidth);
                 double usedWidth = 0.0;
                 List<NavigationViewItem> overflowItems = [];
 
@@ -1374,9 +1377,11 @@ namespace Fluence.Wpf.Controls
                 if (overflowItems.Count == 0)
                 {
                     _topOverflowButton.Visibility = Visibility.Collapsed;
+                    SetTopOverflowButtonOffset(0.0);
                     return;
                 }
 
+                SetTopOverflowButtonOffset(usedWidth);
                 _topOverflowButton.ContextMenu = CreateTopOverflowMenu(overflowItems);
             }
             finally
@@ -1400,6 +1405,17 @@ namespace Fluence.Wpf.Controls
             }
 
             return navItems;
+        }
+
+        private void SetTopOverflowButtonOffset(double x)
+        {
+            if (_topOverflowButton is null)
+            {
+                return;
+            }
+
+            Thickness margin = _topOverflowButton.Margin;
+            _topOverflowButton.Margin = new Thickness(Math.Max(0.0, x), margin.Top, margin.Right, margin.Bottom);
         }
 
         private System.Windows.Controls.ContextMenu CreateTopOverflowMenu(IReadOnlyList<NavigationViewItem> overflowItems)
@@ -1452,11 +1468,6 @@ namespace Fluence.Wpf.Controls
 
         private static double GetElementWidth(FrameworkElement element)
         {
-            if (element.ActualWidth > 0.0)
-            {
-                return element.ActualWidth;
-            }
-
             element.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
             return Math.Max(element.DesiredSize.Width, element.MinWidth);
         }

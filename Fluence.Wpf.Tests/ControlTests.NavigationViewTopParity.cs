@@ -32,6 +32,8 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Fluence.Wpf.Controls;
 using FluentButton = Fluence.Wpf.Controls.Button;
 using FluentMenuItem = Fluence.Wpf.Controls.MenuItem;
+using WpfBorder = System.Windows.Controls.Border;
+using WpfStackPanel = System.Windows.Controls.StackPanel;
 
 namespace Fluence.Wpf.Tests
 {
@@ -154,7 +156,13 @@ namespace Fluence.Wpf.Tests
                         Content = "Home",
                         Icon = new FontIcon { Glyph = "\uE80F" }
                     };
+                    NavigationViewItem second = new()
+                    {
+                        Content = "Design",
+                        Icon = new FontIcon { Glyph = "\uE790" }
+                    };
                     _ = nav.Items.Add(item);
+                    _ = nav.Items.Add(second);
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
@@ -171,6 +179,39 @@ namespace Fluence.Wpf.Tests
                         "Top navigation item icon presenter should stay visible.");
                     Assert.AreEqual(Visibility.Visible, contentPresenter.Visibility,
                         "Top navigation item content presenter should stay visible.");
+                    Assert.AreEqual(new Thickness(4, 0, 2, 0), iconPresenter.Margin,
+                        "Top navigation item icon presenter should keep the tighter strip while adding 2px more lead-in before the icon.");
+                    Assert.AreEqual(new Thickness(2, 0, 2, 0), contentPresenter.Margin,
+                        "Top navigation item text presenter should use 2px horizontal spacing.");
+                    WpfBorder? outerBorder = FindVisualChildByName<WpfBorder>(item, "OuterBorder");
+                    ContentPresenter? infoBadgePresenter = FindVisualChildByName<ContentPresenter>(item, "InfoBadgePresenter");
+                    Assert.IsNotNull(outerBorder, "Top navigation item template should expose the outer border.");
+                    Assert.IsNotNull(infoBadgePresenter, "Navigation item template should expose the info badge presenter.");
+                    Assert.AreEqual(new Thickness(4, 4, 4, 4), outerBorder.Margin,
+                        "Top navigation items should keep compact 4px horizontal outer spacing.");
+                    Assert.AreEqual(new Thickness(0), outerBorder.Padding,
+                        "Top navigation items should not keep left-pane padding.");
+                    Assert.AreEqual(Visibility.Collapsed, infoBadgePresenter.Visibility,
+                        "Navigation items without an info badge should not reserve trailing badge space.");
+
+                    ColumnDefinition? iconColumn = item.Template.FindName("IconColumn", item) as ColumnDefinition;
+                    ColumnDefinition? gapColumn = item.Template.FindName("GapColumn", item) as ColumnDefinition;
+                    ColumnDefinition? contentColumn = item.Template.FindName("ContentColumn", item) as ColumnDefinition;
+                    Assert.IsNotNull(iconColumn, "Top navigation item template should expose the icon column.");
+                    Assert.IsNotNull(gapColumn, "Top navigation item template should expose the icon/text gap column.");
+                    Assert.IsNotNull(contentColumn, "Top navigation item template should expose the text content column.");
+                    Assert.AreEqual(GridUnitType.Auto, iconColumn.Width.GridUnitType,
+                        "Top navigation item icon column should size to its content instead of keeping the left-pane rail width.");
+                    Assert.AreEqual(0.0, gapColumn.Width.Value, 0.01,
+                        "Top navigation item icon/text gap column should not add extra spacing.");
+                    Assert.AreEqual(GridUnitType.Auto, contentColumn.Width.GridUnitType,
+                        "Top navigation item text column should size to content so items do not reserve a wide trailing gap.");
+
+                    ContentPresenter? secondIconPresenter = FindVisualChildByName<ContentPresenter>(second, "IconPresenter");
+                    Assert.IsNotNull(secondIconPresenter, "Second top navigation item should render its icon presenter.");
+                    double textToNextIconGap = GetNavigationElementX(secondIconPresenter, nav) - GetNavigationElementRight(contentPresenter, nav);
+                    Assert.AreEqual(18.0, textToNextIconGap, 1.5,
+                        "Top navigation item text should leave the requested 2px text margin, 4px item margins, and 4px icon lead-in before the next item icon.");
                 }
                 finally
                 {
@@ -196,9 +237,10 @@ namespace Fluence.Wpf.Tests
                 {
                     NavigationView nav = new()
                     {
-                        Width = 220,
+                        Width = 300,
                         Height = 320,
-                        PaneDisplayMode = NavigationViewPaneDisplayMode.Top
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Top,
+                        PaneFooter = new WpfStackPanel { Width = 88, Height = 36 }
                     };
                     NavigationViewItem first = new() { Content = "Home", Icon = new FontIcon { Glyph = "\uE80F" } };
                     NavigationViewItem last = new() { Content = "Windowing", Icon = new FontIcon { Glyph = "\uE8A7" } };
@@ -221,6 +263,28 @@ namespace Fluence.Wpf.Tests
                         "Top pane overflow button should use the same subtle Fluence button chrome as other navigation strip buttons.");
                     Assert.AreEqual(Visibility.Visible, overflowButton.Visibility,
                         "Top pane overflow button should become visible when items do not fit.");
+                    Grid? topItemsHost = FindVisualChildByName<Grid>(nav, NavigationView.PartTopItemsHost);
+                    Assert.IsNotNull(topItemsHost, "Top pane should expose the horizontal item host.");
+                    double visibleItemsRight = double.MinValue;
+                    foreach (object item in nav.Items)
+                    {
+                        if (item is NavigationViewItem navItem && navItem.Visibility == Visibility.Visible)
+                        {
+                            double itemRight = GetNavigationElementRight(navItem, nav);
+                            if (itemRight > visibleItemsRight)
+                            {
+                                visibleItemsRight = itemRight;
+                            }
+                        }
+                    }
+
+                    double overflowButtonGap = GetNavigationElementX(overflowButton, nav) - visibleItemsRight;
+                    Assert.AreEqual(4.0, overflowButtonGap, 1.5,
+                        "Top pane overflow button should sit after the last visible navigation item using the same 4px strip spacing.");
+                    WpfStackPanel? footer = nav.PaneFooter as WpfStackPanel;
+                    Assert.IsNotNull(footer, "Test setup should use a right-docked PaneFooter.");
+                    Assert.IsTrue(GetNavigationElementRight(overflowButton, nav) <= GetNavigationElementX(footer, nav) + 0.5,
+                        "Top pane overflow button should appear before the right-docked PaneFooter instead of docking to the strip edge.");
                     Assert.IsNotNull(overflowButton.ContextMenu, "Top pane overflow button should own a lightweight popup menu.");
                     Assert.IsTrue(overflowButton.ContextMenu.Items.Count > 0,
                         "Top pane overflow menu should contain hidden navigation items.");
@@ -247,6 +311,16 @@ namespace Fluence.Wpf.Tests
                     }
                 }
             });
+        }
+
+        private static double GetNavigationElementX(FrameworkElement element, NavigationView ancestor)
+        {
+            return element.TransformToAncestor(ancestor).Transform(new Point(0, 0)).X;
+        }
+
+        private static double GetNavigationElementRight(FrameworkElement element, NavigationView ancestor)
+        {
+            return GetNavigationElementX(element, ancestor) + element.ActualWidth;
         }
     }
 }
