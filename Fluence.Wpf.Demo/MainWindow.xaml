@@ -28,7 +28,7 @@
             >
             <ui:TextBox
                 x:Name="NavSearchBox"
-                Width="400"
+                Width="520"
                 Margin="0,4,0,0"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"

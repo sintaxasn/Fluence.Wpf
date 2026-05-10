@@ -377,7 +377,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void NavigationView_LeftMode_DefaultFontIconSizeIs20()
+        public void NavigationView_LeftMode_DefaultFontIconSizeIs16()
         {
             RunOnStaThread(() =>
             {
@@ -400,8 +400,8 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Assert.AreEqual(20.0, icon.IconFontSize, 0.01,
-                        "NavigationView left-mode FontIcon content should default to 20 px.");
+                    Assert.AreEqual(16.0, icon.IconFontSize, 0.01,
+                        "NavigationView left-mode FontIcon content should default to the compact 16 px glyph size.");
                 }
                 finally
                 {

@@ -322,6 +322,8 @@ namespace Fluence.Wpf.Tests
                     Controls.TextBox? search = FindByName<Controls.TextBox>(window, "NavSearchBox");
                     Assert.IsNotNull(shellTitleBar, "Extended title bar should use the shared TitleBar control.");
                     Assert.IsNotNull(search, "Demo search box must be present.");
+                    Assert.AreEqual(520.0, search.Width, 0.01,
+                        "The demo title-bar search box should match the WinUI Gallery 520px width.");
                     Assert.AreEqual(window.ActualWidth / 2.0, GetVisualCenterX(search, window) ?? double.MaxValue, 1.0,
                         "Search should stay horizontally centered in the window.");
                     Assert.AreEqual((GetVisualCenterY(shellTitleBar, window) ?? double.MinValue) + 2.0, GetVisualCenterY(search, window) ?? double.MaxValue, 1.0,
@@ -679,14 +681,102 @@ namespace Fluence.Wpf.Tests
                         "The PaneFooter toggle should return to the right side of the Top strip.");
 
                     toggle.IsChecked = false;
+                    WaitForAnimationAndDrain(window.Dispatcher, 380);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.AreEqual(NavigationViewPaneDisplayMode.LeftCompact, nav.PaneDisplayMode,
+                        "Unchecking the PaneFooter toggle should restore the previous compact navigation mode.");
+                    Assert.IsFalse(window.ExtendsContentIntoTitleBar,
+                        "Restoring LeftCompact mode should preserve the existing non-extended title-bar behavior.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void MainWindow_PaneModeToggle_RestoresClosedLeftStateAfterTopMode()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                MainWindow window = CreateShownMainWindow();
+                try
+                {
+                    NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
+                    ToggleSwitch? toggle = FindByName<ToggleSwitch>(window, "PaneModeToggle");
+                    Assert.IsNotNull(nav, "DemoNav must exist.");
+                    Assert.IsNotNull(toggle, "Demo pane-mode toggle must exist.");
+
+                    nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
+                    nav.IsPaneOpen = false;
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
+                    toggle.IsChecked = true;
+                    WaitForAnimationAndDrain(window.Dispatcher, 380);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.AreEqual(NavigationViewPaneDisplayMode.Top, nav.PaneDisplayMode,
+                        "Checking the PaneFooter toggle should switch to Top pane mode.");
+
+                    toggle.IsChecked = false;
+                    WaitForAnimationAndDrain(window.Dispatcher, 380);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
                     Assert.AreEqual(NavigationViewPaneDisplayMode.Left, nav.PaneDisplayMode,
-                        "Unchecking the PaneFooter toggle should switch the demo to Left pane mode.");
-                    Assert.IsTrue(window.ExtendsContentIntoTitleBar,
-                        "The unchecked pane-mode toggle should leave the demo in Left extended-title-bar mode.");
+                        "Unchecking the PaneFooter toggle should restore Left pane mode.");
+                    Assert.IsFalse(nav.IsPaneOpen,
+                        "Unchecking Top mode should restore the prior closed Left pane state.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void MainWindow_ExtendedTitleBar_TrimsTitleToSearchClearance()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                MainWindow window = CreateShownMainWindow();
+                try
+                {
+                    NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
+                    Assert.IsNotNull(nav, "DemoNav must exist.");
+                    nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
+                    nav.IsPaneToggleButtonVisible = true;
+                    Drain(window.Dispatcher);
+
+                    window.Width = 1200;
+                    window.SetUserShowIcon(true, window.Icon);
+                    window.SetUserShowTitle(true, "Fluence.Wpf Control Gallery Extended Title That Should Trim Before Search");
+                    window.ExtendsContentIntoTitleBar = true;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    TitleBar? shellTitleBar = FindByName<TitleBar>(window, "ShellTitleBar");
+                    Assert.IsNotNull(shellTitleBar, "Extended title bar should use the shared TitleBar control.");
+                    WpfTextBlock? titleText = FindByName<WpfTextBlock>(shellTitleBar, "PART_TitleText");
+                    Controls.TextBox? search = FindByName<Controls.TextBox>(window, "NavSearchBox");
+                    Assert.IsNotNull(titleText, "Extended title bar title should exist.");
+                    Assert.IsNotNull(search, "Demo search box must be present.");
+                    Assert.AreEqual(Visibility.Visible, titleText.Visibility,
+                        "A long title should stay visible when there is enough room to trim before the search box.");
+                    double titleRight = (GetVisualX(titleText, window) ?? double.MinValue) + titleText.ActualWidth;
+                    double searchLeft = GetVisualX(search, window) ?? double.MaxValue;
+                    Assert.AreEqual(searchLeft - 12.0, titleRight, 1.5,
+                        "The title text should extend to the 12px search clearance before trimming.");
                 }
                 finally
                 {

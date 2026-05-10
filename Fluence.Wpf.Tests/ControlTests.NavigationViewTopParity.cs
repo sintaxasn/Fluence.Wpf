@@ -179,6 +179,12 @@ namespace Fluence.Wpf.Tests
                         "Top navigation item icon presenter should stay visible.");
                     Assert.AreEqual(Visibility.Visible, contentPresenter.Visibility,
                         "Top navigation item content presenter should stay visible.");
+                    Assert.AreEqual(13.0, item.FontSize, 0.01,
+                        "NavigationViewItem text should be one point smaller than the previous 14pt default.");
+                    FontIcon? itemIcon = item.Icon as FontIcon;
+                    Assert.IsNotNull(itemIcon, "Test item should use a FontIcon.");
+                    Assert.AreEqual(16.0, itemIcon.IconFontSize, 0.01,
+                        "NavigationViewItem glyphs should default to the compact 16px WinUI strip size.");
                     Assert.AreEqual(new Thickness(4, 0, 2, 0), iconPresenter.Margin,
                         "Top navigation item icon presenter should keep the tighter strip while adding 2px more lead-in before the icon.");
                     Assert.AreEqual(new Thickness(2, 0, 2, 0), contentPresenter.Margin,
@@ -189,8 +195,8 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(infoBadgePresenter, "Navigation item template should expose the info badge presenter.");
                     Assert.AreEqual(new Thickness(4, 4, 4, 4), outerBorder.Margin,
                         "Top navigation items should keep compact 4px horizontal outer spacing.");
-                    Assert.AreEqual(new Thickness(0), outerBorder.Padding,
-                        "Top navigation items should not keep left-pane padding.");
+                    Assert.AreEqual(new Thickness(2, 0, 4, 0), outerBorder.Padding,
+                        "Top navigation items should add breathing room inside the border before the icon and after the text.");
                     Assert.AreEqual(Visibility.Collapsed, infoBadgePresenter.Visibility,
                         "Navigation items without an info badge should not reserve trailing badge space.");
 
@@ -210,8 +216,8 @@ namespace Fluence.Wpf.Tests
                     ContentPresenter? secondIconPresenter = FindVisualChildByName<ContentPresenter>(second, "IconPresenter");
                     Assert.IsNotNull(secondIconPresenter, "Second top navigation item should render its icon presenter.");
                     double textToNextIconGap = GetNavigationElementX(secondIconPresenter, nav) - GetNavigationElementRight(contentPresenter, nav);
-                    Assert.AreEqual(18.0, textToNextIconGap, 1.5,
-                        "Top navigation item text should leave the requested 2px text margin, 4px item margins, and 4px icon lead-in before the next item icon.");
+                    Assert.AreEqual(24.0, textToNextIconGap, 1.5,
+                        "Top navigation item text should include the requested inner border padding before the next item icon.");
                 }
                 finally
                 {
@@ -243,7 +249,7 @@ namespace Fluence.Wpf.Tests
                         PaneFooter = new WpfStackPanel { Width = 88, Height = 36 }
                     };
                     NavigationViewItem first = new() { Content = "Home", Icon = new FontIcon { Glyph = "\uE80F" } };
-                    NavigationViewItem last = new() { Content = "Windowing", Icon = new FontIcon { Glyph = "\uE8A7" } };
+                    NavigationViewItem last = new() { Content = "Windowing", Icon = new FontIcon { Glyph = "\uE8A7", IconFontSize = 20 } };
                     _ = nav.Items.Add(first);
                     _ = nav.Items.Add(new NavigationViewItem { Content = "Design", Icon = new FontIcon { Glyph = "\uE790" } });
                     _ = nav.Items.Add(new NavigationViewItem { Content = "Controls", Icon = new FontIcon { Glyph = "\uECAA" } });
@@ -291,7 +297,15 @@ namespace Fluence.Wpf.Tests
 
                     FluentMenuItem? overflowItem = overflowButton.ContextMenu.Items[overflowButton.ContextMenu.Items.Count - 1] as FluentMenuItem;
                     Assert.IsNotNull(overflowItem, "Overflow entries should be lightweight Fluence MenuItem rows.");
+                    Assert.AreEqual(280.0, overflowItem.MinWidth, 0.01,
+                        "Overflow entries should use the wider WinUI-style flyout row width.");
+                    Assert.AreEqual(44.0, overflowItem.MinHeight, 0.01,
+                        "Overflow entries should use a comfortably spaced WinUI-style row height.");
                     Assert.IsNotNull(overflowItem.Icon, "Overflow entries should include the underlying item icon.");
+                    FontIcon? overflowIcon = overflowItem.Icon as FontIcon;
+                    Assert.IsNotNull(overflowIcon, "Overflow entries should clone FontIcon icons.");
+                    Assert.AreEqual(16.0, overflowIcon.IconFontSize, 0.01,
+                        "Overflow menu glyphs should render at the compact 16px size even when the source item used a larger glyph.");
                     Assert.AreEqual("Windowing", overflowItem.Header,
                         "Overflow entries should show the underlying item text.");
                     overflowItem.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.MenuItem.ClickEvent));
@@ -301,6 +315,71 @@ namespace Fluence.Wpf.Tests
                         "Clicking an overflow row should invoke the underlying NavigationViewItem without reparenting it.");
                     Assert.AreSame(last, nav.SelectedItem,
                         "Clicking an overflow row should select the underlying NavigationViewItem.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary is not null)
+                    {
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NavigationView_TopMode_ReservesOverflowButtonByMovingLastFittingItemToMenu()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+
+                try
+                {
+                    NavigationView nav = new()
+                    {
+                        Width = 212,
+                        Height = 240,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Top
+                    };
+                    NavigationViewItem first = new() { Content = "One", Icon = new FontIcon { Glyph = "\uE80F" } };
+                    NavigationViewItem second = new() { Content = "Two", Icon = new FontIcon { Glyph = "\uE790" } };
+                    NavigationViewItem third = new() { Content = "Three", Icon = new FontIcon { Glyph = "\uE8A7" } };
+                    _ = nav.Items.Add(first);
+                    _ = nav.Items.Add(second);
+                    _ = nav.Items.Add(third);
+
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    FluentButton? overflowButton = FindVisualChildByName<FluentButton>(nav, "PART_TopOverflowButton");
+                    Assert.IsNotNull(overflowButton, "Top pane should expose a three-dot overflow button.");
+                    Assert.AreEqual(Visibility.Visible, overflowButton.Visibility,
+                        "The overflow button should be visible when all items fit only if the button is not reserved.");
+                    Assert.AreEqual(Visibility.Visible, first.Visibility,
+                        "The first item should remain on the strip.");
+                    Assert.AreEqual(Visibility.Visible, second.Visibility,
+                        "The second item should remain on the strip.");
+                    Assert.AreEqual(Visibility.Collapsed, third.Visibility,
+                        "The last item that would otherwise fit should move to the overflow menu to reserve button space.");
+
+                    double secondRight = GetNavigationElementRight(second, nav);
+                    double overflowLeft = GetNavigationElementX(overflowButton, nav);
+                    Assert.IsTrue(overflowLeft >= secondRight - 0.5,
+                        "The overflow button should be laid out after the last visible item without overlapping it. "
+                        + "overflowLeft=" + overflowLeft + ", secondRight=" + secondRight + ".");
+
+                    Assert.IsNotNull(overflowButton.ContextMenu, "Top pane overflow button should own a menu for collapsed items.");
+                    Assert.AreEqual(1, overflowButton.ContextMenu.Items.Count,
+                        "Only the last fitting item should move to the overflow menu in this boundary case.");
+                    FluentMenuItem? overflowItem = overflowButton.ContextMenu.Items[0] as FluentMenuItem;
+                    Assert.AreEqual("Three", overflowItem?.Header,
+                        "The moved item should appear in the overflow menu.");
                 }
                 finally
                 {

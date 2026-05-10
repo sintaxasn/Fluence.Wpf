@@ -61,9 +61,12 @@ namespace Fluence.Wpf.Demo
         private bool _syncingPaneModeToggle;
         private bool _isAnimatingPaneModeTransition;
         private bool _isUpdatingExtendedTitleOverlap;
+        private NavigationViewPaneDisplayMode _lastNonTopPaneDisplayMode = NavigationViewPaneDisplayMode.Left;
+        private bool _lastNonTopIsPaneOpen = true;
         private Image? _titleBarIconView;
         private DependencyPropertyDescriptor? _extendsDpd;
         private DependencyPropertyDescriptor? _paneModeDpd;
+        private DependencyPropertyDescriptor? _paneOpenDpd;
         private DependencyPropertyDescriptor? _backEnabledDpd;
         private DependencyPropertyDescriptor? _backVisibleDpd;
         private DependencyPropertyDescriptor? _paneToggleVisibleDpd;
@@ -84,6 +87,7 @@ namespace Fluence.Wpf.Demo
             _userTitle = Title;
             _userNavBackButtonVisible = DemoNav is not null && DemoNav.IsBackButtonVisible;
             _userNavPaneToggleButtonVisible = DemoNav is null || DemoNav.IsPaneToggleButtonVisible;
+            CaptureNonTopPaneState();
 
             DemoNav?.SelectionChanged += DemoNav_SelectionChanged;
 
@@ -99,6 +103,11 @@ namespace Fluence.Wpf.Demo
             if (_paneModeDpd is not null && DemoNav is not null)
             {
                 _paneModeDpd.RemoveValueChanged(DemoNav, OnTitleBarDependencyChanged);
+            }
+
+            if (_paneOpenDpd is not null && DemoNav is not null)
+            {
+                _paneOpenDpd.RemoveValueChanged(DemoNav, OnTitleBarDependencyChanged);
             }
 
             if (_backEnabledDpd is not null && DemoNav is not null)
@@ -158,7 +167,7 @@ namespace Fluence.Wpf.Demo
             {
                 Content = item.Title,
                 Tag = item.Route + " " + item.Keywords,
-                Icon = new FontIcon { Glyph = item.Glyph, IconFontSize = 20 }
+                Icon = new FontIcon { Glyph = item.Glyph, IconFontSize = 16 }
             };
         }
 
@@ -469,6 +478,22 @@ namespace Fluence.Wpf.Demo
             transform.BeginAnimation(TranslateTransform.YProperty, slideAnimation, HandoffBehavior.SnapshotAndReplace);
         }
 
+        private static void BeginTranslateXAnimation(FrameworkElement element, TranslateTransform transform, double from, double to)
+        {
+            DoubleAnimation slideAnimation = CreateTransitionAnimation(from, to);
+            slideAnimation.Completed += delegate
+            {
+                transform.BeginAnimation(TranslateTransform.XProperty, null);
+                transform.X = to;
+                if (Math.Abs(to) <= 0.1)
+                {
+                    element.RenderTransform = null;
+                }
+            };
+
+            transform.BeginAnimation(TranslateTransform.XProperty, slideAnimation, HandoffBehavior.SnapshotAndReplace);
+        }
+
         /// <summary>
         /// Records the user's intended title-bar icon visibility before layout rules are applied.
         /// </summary>
@@ -499,11 +524,12 @@ namespace Fluence.Wpf.Demo
 
             if (targetMode == NavigationViewPaneDisplayMode.Top)
             {
+                CaptureNonTopPaneState();
                 BeginPaneModeTransitionToTop();
                 return;
             }
 
-            DemoNav.PaneDisplayMode = targetMode;
+            BeginPaneModeTransitionFromTop();
         }
 
         private void BeginPaneModeTransitionToTop()
@@ -536,6 +562,29 @@ namespace Fluence.Wpf.Demo
             };
 
             transform.BeginAnimation(TranslateTransform.XProperty, slideOut, HandoffBehavior.SnapshotAndReplace);
+        }
+
+        private void BeginPaneModeTransitionFromTop()
+        {
+            if (DemoNav is null)
+            {
+                return;
+            }
+
+            NavigationViewPaneDisplayMode targetMode = GetLastNonTopPaneDisplayMode();
+            bool targetIsPaneOpen = _lastNonTopIsPaneOpen;
+
+            _isAnimatingPaneModeTransition = true;
+            DemoNav.PaneDisplayMode = targetMode;
+            DemoNav.IsPaneOpen = targetIsPaneOpen;
+            _ = Dispatcher.BeginInvoke(new Action(AnimateNonTopPaneModeIn), DispatcherPriority.Loaded);
+        }
+
+        private NavigationViewPaneDisplayMode GetLastNonTopPaneDisplayMode()
+        {
+            return _lastNonTopPaneDisplayMode == NavigationViewPaneDisplayMode.Top
+                ? NavigationViewPaneDisplayMode.Left
+                : _lastNonTopPaneDisplayMode;
         }
 
         private void SwitchToTopAndAnimateIn()
@@ -583,6 +632,39 @@ namespace Fluence.Wpf.Demo
             _isAnimatingPaneModeTransition = false;
         }
 
+        private void AnimateNonTopPaneModeIn()
+        {
+            if (DemoNav is null)
+            {
+                _isAnimatingPaneModeTransition = false;
+                return;
+            }
+
+            _ = DemoNav.ApplyTemplate();
+            DemoNav.UpdateLayout();
+
+            FrameworkElement? sidePane = FindVisualChildByName<FrameworkElement>(DemoNav, "PaneBorder")
+                ?? FindVisualChildByName<FrameworkElement>(DemoNav, "CompactPane");
+            FrameworkElement? contentPresenter = FindVisualChildByName<FrameworkElement>(DemoNav, NavigationView.PartContentPresenter);
+
+            if (sidePane is not null)
+            {
+                double paneWidth = Math.Max(sidePane.ActualWidth, 48.0);
+                TranslateTransform paneTransform = new(-paneWidth, 0.0);
+                sidePane.RenderTransform = paneTransform;
+                BeginTranslateXAnimation(sidePane, paneTransform, -paneWidth, 0.0);
+            }
+
+            if (contentPresenter is not null)
+            {
+                TranslateTransform contentTransform = new(0.0, 48.0);
+                contentPresenter.RenderTransform = contentTransform;
+                BeginTranslateYAnimation(contentPresenter, contentTransform, 48.0, 0.0);
+            }
+
+            _isAnimatingPaneModeTransition = false;
+        }
+
         /// <summary>
         /// Records the user's intended title-bar title visibility before layout rules are applied.
         /// </summary>
@@ -607,6 +689,10 @@ namespace Fluence.Wpf.Demo
                     NavigationView.PaneDisplayModeProperty, typeof(NavigationView));
                 _paneModeDpd?.AddValueChanged(DemoNav, OnTitleBarDependencyChanged);
 
+                _paneOpenDpd = DependencyPropertyDescriptor.FromProperty(
+                    NavigationView.IsPaneOpenProperty, typeof(NavigationView));
+                _paneOpenDpd?.AddValueChanged(DemoNav, OnTitleBarDependencyChanged);
+
                 _backEnabledDpd = DependencyPropertyDescriptor.FromProperty(
                     NavigationView.IsBackEnabledProperty, typeof(NavigationView));
                 _backEnabledDpd?.AddValueChanged(DemoNav, OnTitleBarDependencyChanged);
@@ -625,6 +711,8 @@ namespace Fluence.Wpf.Demo
         {
             if (sender == DemoNav && !_isApplyingTitleBarChrome)
             {
+                CaptureNonTopPaneState();
+
                 if (DemoNav.PaneDisplayMode != NavigationViewPaneDisplayMode.Top)
                 {
                     if (ExtendsContentIntoTitleBar)
@@ -642,6 +730,17 @@ namespace Fluence.Wpf.Demo
             }
 
             ApplyTitleBarContentVisibility();
+        }
+
+        private void CaptureNonTopPaneState()
+        {
+            if (DemoNav is null || DemoNav.PaneDisplayMode == NavigationViewPaneDisplayMode.Top)
+            {
+                return;
+            }
+
+            _lastNonTopPaneDisplayMode = DemoNav.PaneDisplayMode;
+            _lastNonTopIsPaneOpen = DemoNav.IsPaneOpen;
         }
 
         private void OnNavigationBackVisibilityChanged(object? sender, EventArgs e)
@@ -832,9 +931,23 @@ namespace Fluence.Wpf.Demo
 
                 Point titlePoint = titleText.TransformToAncestor(this).Transform(new Point(0, 0));
                 Point searchPoint = NavSearchBox.TransformToAncestor(this).Transform(new Point(0, 0));
-                double titleRight = titlePoint.X + titleText.ActualWidth;
                 double searchLeft = searchPoint.X;
-                ShellTitleBar.Title = titleRight + 12.0 > searchLeft ? string.Empty : desiredTitle;
+                double availableTitleWidth = searchLeft - titlePoint.X - 12.0;
+                if (availableTitleWidth < 48.0)
+                {
+                    titleText.ClearValue(MaxWidthProperty);
+                    ShellTitleBar.Title = string.Empty;
+                    return;
+                }
+
+                titleText.MaxWidth = availableTitleWidth;
+                titleText.UpdateLayout();
+                titlePoint = titleText.TransformToAncestor(this).Transform(new Point(0, 0));
+                double titleRight = titlePoint.X + titleText.ActualWidth;
+                if (titleRight > searchLeft - 11.0)
+                {
+                    ShellTitleBar.Title = string.Empty;
+                }
             }
             catch (InvalidOperationException)
             {

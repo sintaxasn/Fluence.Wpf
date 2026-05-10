@@ -205,7 +205,7 @@ namespace Fluence.Wpf.Controls
         {
             if (icon?.ReadLocalValue(FontIcon.IconFontSizeProperty) == DependencyProperty.UnsetValue)
             {
-                icon.SetCurrentValue(FontIcon.IconFontSizeProperty, 20.0);
+                icon.SetCurrentValue(FontIcon.IconFontSizeProperty, 16.0);
             }
         }
     }

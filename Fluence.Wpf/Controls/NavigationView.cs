@@ -1342,15 +1342,17 @@ namespace Fluence.Wpf.Controls
 
                 _topOverflowButton.Visibility = Visibility.Visible;
                 _topOverflowButton.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+
+                const double overflowButtonGap = 4.0;
                 double overflowButtonWidth = GetElementWidth(_topOverflowButton);
-                double visibleItemsWidthLimit = Math.Max(0.0, availableWidth - overflowButtonWidth);
-                if (totalItemWidth <= visibleItemsWidthLimit)
+                if (totalItemWidth <= availableWidth)
                 {
                     _topOverflowButton.Visibility = Visibility.Collapsed;
                     SetTopOverflowButtonOffset(0.0);
                     return;
                 }
 
+                double visibleItemsWidthLimit = Math.Max(0.0, availableWidth - overflowButtonWidth - overflowButtonGap);
                 double usedWidth = 0.0;
                 List<NavigationViewItem> overflowItems = [];
 
@@ -1381,7 +1383,7 @@ namespace Fluence.Wpf.Controls
                     return;
                 }
 
-                SetTopOverflowButtonOffset(usedWidth);
+                SetTopOverflowButtonOffset(usedWidth + (usedWidth > 0.0 ? overflowButtonGap : 0.0));
                 _topOverflowButton.ContextMenu = CreateTopOverflowMenu(overflowItems);
             }
             finally
@@ -1414,6 +1416,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
+            _topOverflowButton.RenderTransform = null;
             Thickness margin = _topOverflowButton.Margin;
             _topOverflowButton.Margin = new Thickness(Math.Max(0.0, x), margin.Top, margin.Right, margin.Bottom);
         }
@@ -1427,7 +1430,8 @@ namespace Fluence.Wpf.Controls
                 {
                     Header = GetOverflowItemText(navItem),
                     Icon = CreateOverflowIcon(navItem),
-                    MinWidth = 180,
+                    MinWidth = 280,
+                    MinHeight = 44,
                     Tag = navItem
                 };
                 menuItem.Click += OnTopOverflowMenuItemClick;
@@ -1448,7 +1452,7 @@ namespace Fluence.Wpf.Controls
             {
                 Glyph = fontIcon.Glyph,
                 IconFontFamily = fontIcon.IconFontFamily,
-                IconFontSize = fontIcon.IconFontSize,
+                IconFontSize = 16.0,
                 MirroredWhenRightToLeft = fontIcon.MirroredWhenRightToLeft
             };
             overflowIcon.SetResourceReference(ForegroundProperty, "TextFillColorSecondaryBrush");
@@ -1468,6 +1472,11 @@ namespace Fluence.Wpf.Controls
 
         private static double GetElementWidth(FrameworkElement element)
         {
+            if (element.ActualWidth > 0.0)
+            {
+                return element.ActualWidth;
+            }
+
             element.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
             return Math.Max(element.DesiredSize.Width, element.MinWidth);
         }

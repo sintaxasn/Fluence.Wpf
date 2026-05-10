@@ -131,7 +131,7 @@
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontSize" Value="13" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="Template">
             <Setter.Value>
@@ -192,7 +192,7 @@
                         <!--  Top mode: keep icon and text visible while tightening horizontal spacing.  -->
                         <DataTrigger Binding="{Binding PaneDisplayMode, RelativeSource={RelativeSource AncestorType=controls:NavigationView}}" Value="{x:Static uicore:NavigationViewPaneDisplayMode.Top}">
                             <Setter TargetName="OuterBorder" Property="Margin" Value="4,4,4,4" />
-                            <Setter TargetName="OuterBorder" Property="Padding" Value="0" />
+                            <Setter TargetName="OuterBorder" Property="Padding" Value="2,0,4,0" />
                             <Setter TargetName="IconColumn" Property="Width" Value="Auto" />
                             <Setter TargetName="GapColumn" Property="Width" Value="0" />
                             <Setter TargetName="ContentColumn" Property="Width" Value="Auto" />
