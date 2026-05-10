@@ -31,15 +31,16 @@
                 Padding="16"
                 Variant="{x:Static uicore:CardVariant.Default}">
                 <StackPanel>
-                    <WrapPanel Margin="0,0,0,12">
+                    <WrapPanel Margin="0,0,0,16">
                         <ui:CheckBox
+                            x:Name="TwoStateCheckBox"
                             Margin="0,0,32,10"
-                            Content="Checked"
+                            Content="Two-state checkbox"
                             IsChecked="True" />
-                        <ui:CheckBox Margin="0,0,32,10" Content="Unchecked" />
                         <ui:CheckBox
+                            x:Name="ThreeStateCheckBox"
                             Margin="0,0,32,10"
-                            Content="Indeterminate"
+                            Content="Three-state checkbox"
                             IsChecked="{x:Null}"
                             IsThreeState="True" />
                         <ui:CheckBox
@@ -48,10 +49,34 @@
                             IsChecked="True"
                             IsEnabled="False" />
                     </WrapPanel>
-                    <ui:CheckBox
-                        Margin="0,0,0,12"
-                        Content="With description"
-                        Description="Additional detail about this option" />
+                    <StackPanel Margin="0,0,0,12">
+                        <ui:CheckBox
+                            x:Name="SelectAllCheckBox"
+                            Margin="0,0,0,8"
+                            Checked="SelectAllCheckBox_Changed"
+                            Content="Select all"
+                            Indeterminate="SelectAllCheckBox_Changed"
+                            IsThreeState="True"
+                            Unchecked="SelectAllCheckBox_Changed" />
+                        <ui:CheckBox
+                            x:Name="OptionOneCheckBox"
+                            Margin="24,0,0,8"
+                            Checked="OptionCheckBox_Changed"
+                            Content="Option 1"
+                            Unchecked="OptionCheckBox_Changed" />
+                        <ui:CheckBox
+                            x:Name="OptionTwoCheckBox"
+                            Margin="24,0,0,8"
+                            Checked="OptionCheckBox_Changed"
+                            Content="Option 2"
+                            Unchecked="OptionCheckBox_Changed" />
+                        <ui:CheckBox
+                            x:Name="OptionThreeCheckBox"
+                            Margin="24,0,0,0"
+                            Checked="OptionCheckBox_Changed"
+                            Content="Option 3"
+                            Unchecked="OptionCheckBox_Changed" />
+                    </StackPanel>
                     <ui:HyperlinkButton
                         x:Name="CheckBoxStatesSourceLink"
                         HorizontalAlignment="Right"
@@ -121,6 +146,19 @@
                 Variant="{x:Static uicore:CardVariant.Default}">
                 <StackPanel>
                     <WrapPanel Margin="0,0,0,12">
+                        <StackPanel Margin="0,0,28,10">
+                            <ui:ToggleSwitch
+                                x:Name="ToggleProgressSwitch"
+                                Margin="0,0,0,12"
+                                Checked="ToggleProgressSwitch_Changed"
+                                IsChecked="True"
+                                Unchecked="ToggleProgressSwitch_Changed" />
+                            <ui:ProgressRing
+                                x:Name="ToggleProgressRing"
+                                Width="36"
+                                Height="36"
+                                IsActive="{Binding IsChecked, ElementName=ToggleProgressSwitch}" />
+                        </StackPanel>
                         <StackPanel Margin="0,0,20,10" Orientation="Horizontal">
                             <ui:ToggleSwitch
                                 x:Name="DefaultToggle"
@@ -161,6 +199,34 @@
                         Text="Default toggle: Off" />
                     <ui:HyperlinkButton
                         x:Name="ToggleSwitchStatesSourceLink"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
+                        Content="Source" />
+                </StackPanel>
+            </ui:Card>
+
+            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="RatingControl" />
+            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Use rating when a compact ordered preference is more natural than a numeric input." />
+            <ui:Card
+                Margin="0,0,0,16"
+                Padding="16"
+                Variant="{x:Static uicore:CardVariant.Default}">
+                <StackPanel>
+                    <ui:RatingControl
+                        x:Name="RatingSample"
+                        Margin="0,0,0,14"
+                        Caption="Rate the experience"
+                        MaxRating="5"
+                        Value="3" />
+                    <ui:RatingControl
+                        x:Name="ReadOnlyRatingSample"
+                        Margin="0,0,0,12"
+                        Caption="Read-only rating"
+                        IsReadOnly="True"
+                        MaxRating="5"
+                        Value="4" />
+                    <ui:HyperlinkButton
+                        x:Name="RatingControlSourceLink"
                         HorizontalAlignment="Right"
                         Style="{StaticResource DemoSourceLinkButtonStyle}"
                         Content="Source" />

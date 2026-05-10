@@ -34,21 +34,24 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GallerySelectionPage : UserControl
     {
+        private bool _updatingSelectAll;
+
         private const string CheckBoxStatesXamlSource = @"<UserControl
     x:Class=""Fluence.Wpf.Demo.Pages.Selection.CheckBoxStates""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
     <StackPanel>
-        <WrapPanel Margin=""0,0,0,12"">
+        <WrapPanel Margin=""0,0,0,16"">
             <ui:CheckBox
+                x:Name=""TwoStateCheckBox""
                 Margin=""0,0,32,10""
-                Content=""Checked""
+                Content=""Two-state checkbox""
                 IsChecked=""True"" />
-            <ui:CheckBox Margin=""0,0,32,10"" Content=""Unchecked"" />
             <ui:CheckBox
+                x:Name=""ThreeStateCheckBox""
                 Margin=""0,0,32,10""
-                Content=""Indeterminate""
+                Content=""Three-state checkbox""
                 IsChecked=""{x:Null}""
                 IsThreeState=""True"" />
             <ui:CheckBox
@@ -57,22 +60,79 @@ namespace Fluence.Wpf.Demo.Pages
                 IsChecked=""True""
                 IsEnabled=""False"" />
         </WrapPanel>
-        <ui:CheckBox
-            Content=""With description""
-            Description=""Additional detail about this option"" />
+        <StackPanel>
+            <ui:CheckBox
+                x:Name=""SelectAllCheckBox""
+                Margin=""0,0,0,8""
+                Checked=""SelectAllCheckBox_Changed""
+                Content=""Select all""
+                Indeterminate=""SelectAllCheckBox_Changed""
+                IsThreeState=""True""
+                Unchecked=""SelectAllCheckBox_Changed"" />
+            <ui:CheckBox
+                x:Name=""OptionOneCheckBox""
+                Margin=""24,0,0,8""
+                Checked=""OptionCheckBox_Changed""
+                Content=""Option 1""
+                Unchecked=""OptionCheckBox_Changed"" />
+            <ui:CheckBox
+                x:Name=""OptionTwoCheckBox""
+                Margin=""24,0,0,8""
+                Checked=""OptionCheckBox_Changed""
+                Content=""Option 2""
+                Unchecked=""OptionCheckBox_Changed"" />
+            <ui:CheckBox
+                x:Name=""OptionThreeCheckBox""
+                Margin=""24,0,0,0""
+                Checked=""OptionCheckBox_Changed""
+                Content=""Option 3""
+                Unchecked=""OptionCheckBox_Changed"" />
+        </StackPanel>
     </StackPanel>
 </UserControl>
 ";
 
-        private const string CheckBoxStatesCSharpSource = @"using System.Windows.Controls;
+        private const string CheckBoxStatesCSharpSource = @"using System.Windows;
+using System.Windows.Controls;
 
 namespace Fluence.Wpf.Demo.Pages.Selection
 {
     public partial class CheckBoxStates : UserControl
     {
+        private bool updatingSelectAll;
+
         public CheckBoxStates()
         {
             InitializeComponent();
+        }
+
+        private void SelectAllCheckBox_Changed(object sender, RoutedEventArgs e)
+        {
+            if (updatingSelectAll || SelectAllCheckBox.IsChecked is null)
+            {
+                return;
+            }
+
+            bool isChecked = SelectAllCheckBox.IsChecked == true;
+            updatingSelectAll = true;
+            OptionOneCheckBox.IsChecked = isChecked;
+            OptionTwoCheckBox.IsChecked = isChecked;
+            OptionThreeCheckBox.IsChecked = isChecked;
+            updatingSelectAll = false;
+        }
+
+        private void OptionCheckBox_Changed(object sender, RoutedEventArgs e)
+        {
+            int selectedCount = 0;
+            selectedCount += OptionOneCheckBox.IsChecked == true ? 1 : 0;
+            selectedCount += OptionTwoCheckBox.IsChecked == true ? 1 : 0;
+            selectedCount += OptionThreeCheckBox.IsChecked == true ? 1 : 0;
+
+            updatingSelectAll = true;
+            SelectAllCheckBox.IsChecked = selectedCount == 3
+                ? true
+                : selectedCount == 0 ? false : null;
+            updatingSelectAll = false;
         }
     }
 }
@@ -142,6 +202,19 @@ namespace Fluence.Wpf.Demo.Pages.Selection
     xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
     <ui:StackPanel Spacing=""18"">
         <ui:StackPanel Spacing=""10"">
+            <TextBlock Text=""Switch with progress"" />
+            <ui:StackPanel Spacing=""12"">
+                <ui:ToggleSwitch
+                    x:Name=""ToggleProgressSwitch""
+                    IsChecked=""True"" />
+                <ui:ProgressRing
+                    x:Name=""ToggleProgressRing""
+                    Width=""36""
+                    Height=""36""
+                    IsActive=""{Binding IsChecked, ElementName=ToggleProgressSwitch}"" />
+            </ui:StackPanel>
+        </ui:StackPanel>
+        <ui:StackPanel Spacing=""10"">
             <TextBlock Text=""Simple switch"" />
             <ui:StackPanel Spacing=""12"" Orientation=""Horizontal"">
                 <ui:ToggleSwitch VerticalAlignment=""Center"" />
@@ -180,6 +253,38 @@ namespace Fluence.Wpf.Demo.Pages.Selection
     public partial class ToggleSwitchStates : UserControl
     {
         public ToggleSwitchStates()
+        {
+            InitializeComponent();
+        }
+    }
+}
+";
+        private const string RatingControlXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Selection.RatingControlSample""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <ui:StackPanel Spacing=""14"">
+        <ui:RatingControl
+            Caption=""Rate the experience""
+            MaxRating=""5""
+            Value=""3"" />
+        <ui:RatingControl
+            Caption=""Read-only rating""
+            IsReadOnly=""True""
+            MaxRating=""5""
+            Value=""4"" />
+    </ui:StackPanel>
+</UserControl>
+";
+
+        private const string RatingControlCSharpSource = @"using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Selection
+{
+    public partial class RatingControlSample : UserControl
+    {
+        public RatingControlSample()
         {
             InitializeComponent();
         }
@@ -245,6 +350,7 @@ namespace Fluence.Wpf.Demo.Pages.Selection
             _ = DemoSampleControl.ReplaceSourceLink(CheckBoxStatesSourceLink, CheckBoxStatesXamlSource, CheckBoxStatesCSharpSource);
             _ = DemoSampleControl.ReplaceSourceLink(RadioButtonGroupsSourceLink, RadioButtonGroupsXamlSource, RadioButtonGroupsCSharpSource);
             _ = DemoSampleControl.ReplaceSourceLink(ToggleSwitchStatesSourceLink, ToggleSwitchStatesXamlSource, ToggleSwitchStatesCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(RatingControlSourceLink, RatingControlXamlSource, RatingControlCSharpSource);
             _ = DemoSampleControl.ReplaceSourceLink(ComboBoxSelectionSourceLink, ComboBoxSelectionXamlSource, ComboBoxSelectionCSharpSource);
 
             Loaded += GallerySelectionPage_Loaded;
@@ -254,6 +360,54 @@ namespace Fluence.Wpf.Demo.Pages.Selection
         {
             Loaded -= GallerySelectionPage_Loaded;
             DefaultToggle_Changed(null, null);
+            ToggleProgressSwitch_Changed(null, null);
+        }
+
+        private void SelectAllCheckBox_Changed(object? sender, RoutedEventArgs? e)
+        {
+            if (_updatingSelectAll || SelectAllCheckBox is null || SelectAllCheckBox.IsChecked is null)
+            {
+                return;
+            }
+
+            bool isChecked = SelectAllCheckBox.IsChecked == true;
+            _updatingSelectAll = true;
+            OptionOneCheckBox.IsChecked = isChecked;
+            OptionTwoCheckBox.IsChecked = isChecked;
+            OptionThreeCheckBox.IsChecked = isChecked;
+            _updatingSelectAll = false;
+        }
+
+        private void OptionCheckBox_Changed(object sender, RoutedEventArgs e)
+        {
+            if (SelectAllCheckBox is null || OptionOneCheckBox is null || OptionTwoCheckBox is null || OptionThreeCheckBox is null)
+            {
+                return;
+            }
+
+            int selectedCount = 0;
+            selectedCount += OptionOneCheckBox.IsChecked == true ? 1 : 0;
+            selectedCount += OptionTwoCheckBox.IsChecked == true ? 1 : 0;
+            selectedCount += OptionThreeCheckBox.IsChecked == true ? 1 : 0;
+
+            _updatingSelectAll = true;
+            SelectAllCheckBox.IsChecked = selectedCount switch
+            {
+                0 => false,
+                3 => true,
+                _ => null
+            };
+            _updatingSelectAll = false;
+        }
+
+        private void ToggleProgressSwitch_Changed(object? sender, RoutedEventArgs? e)
+        {
+            if (ToggleProgressSwitch is null || ToggleProgressRing is null)
+            {
+                return;
+            }
+
+            ToggleProgressRing.IsActive = ToggleProgressSwitch.IsChecked == true;
         }
 
         private void DefaultToggle_Changed(object? sender, RoutedEventArgs? e)

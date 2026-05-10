@@ -101,6 +101,40 @@
                 </StackPanel>
             </ui:Card>
 
+            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="Multiple selection" />
+            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Use multiple selection when people need to select several nodes from the same hierarchy." />
+            <ui:Card
+                Margin="0,0,0,16"
+                Padding="16"
+                Variant="{x:Static uicore:CardVariant.Default}">
+                <StackPanel>
+                    <ui:TreeView
+                        x:Name="MultiSelectTreeView"
+                        MaxHeight="260"
+                        Margin="0,0,0,12"
+                        SelectionMode="{x:Static uicore:TreeViewSelectionMode.Multiple}">
+                        <ui:TreeViewItem
+                            Header="Documents"
+                            IsExpanded="True">
+                            <ui:TreeViewItem Header="Contracts" />
+                            <ui:TreeViewItem Header="Invoices" />
+                            <ui:TreeViewItem Header="Receipts" />
+                        </ui:TreeViewItem>
+                        <ui:TreeViewItem
+                            Header="Pictures"
+                            IsExpanded="True">
+                            <ui:TreeViewItem Header="Screenshots" />
+                            <ui:TreeViewItem Header="Archive" />
+                        </ui:TreeViewItem>
+                    </ui:TreeView>
+                    <ui:HyperlinkButton
+                        x:Name="TreeViewMultiSelectSourceLink"
+                        HorizontalAlignment="Right"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}"
+                        Content="Source" />
+                </StackPanel>
+            </ui:Card>
+
             <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="Expand and collapse" />
             <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Set IsExpanded directly, or walk the item collection when a command controls the tree." />
             <ui:Card Padding="16" Variant="{x:Static uicore:CardVariant.Default}">

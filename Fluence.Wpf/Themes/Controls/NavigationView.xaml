@@ -189,16 +189,10 @@
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
-                        <!--  Top mode: hide icon, adjust margin, hide selection pill  -->
+                        <!--  Top mode: keep icon and text visible while tightening horizontal spacing.  -->
                         <DataTrigger Binding="{Binding PaneDisplayMode, RelativeSource={RelativeSource AncestorType=controls:NavigationView}}" Value="{x:Static uicore:NavigationViewPaneDisplayMode.Top}">
-                            <Setter TargetName="IconColumn" Property="Width" Value="0" />
-                            <Setter TargetName="GapColumn" Property="Width" Value="0" />
-                            <Setter TargetName="InfoBadgeColumn" Property="Width" Value="0" />
-                            <Setter TargetName="IconPresenter" Property="Visibility" Value="Collapsed" />
-                            <Setter TargetName="InfoBadgePresenter" Property="Visibility" Value="Collapsed" />
                             <Setter TargetName="OuterBorder" Property="Margin" Value="2,4" />
                             <Setter TargetName="OuterBorder" Property="Padding" Value="8,0" />
-                            <Setter Property="FontSize" Value="12" />
                         </DataTrigger>
                         <!--  Left + pane closed: hide label and center icon in 48px pane  -->
                         <MultiDataTrigger>
@@ -764,6 +758,7 @@
                             <ColumnDefinition Width="Auto" />
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="Auto" />
+                            <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
                         <Button
                             x:Name="PART_BackButton"
@@ -789,40 +784,50 @@
                             VerticalAlignment="Center"
                             Content="{TemplateBinding PaneHeader}"
                             />
-                        <controls:SmoothScrollViewer
-                            x:Name="PART_PaneItemsScrollViewer"
+                        <Grid
+                            x:Name="PART_TopItemsHost"
                             Grid.Column="2"
                             VerticalAlignment="Stretch"
-                            Focusable="False"
-                            HorizontalScrollBarVisibility="Auto"
-                            Style="{DynamicResource ScrollViewerStyle}"
-                            VerticalScrollBarVisibility="Disabled"
                             >
-                            <Grid>
-                                <ItemsPresenter VerticalAlignment="Center" />
-                                <Border
-                                    x:Name="PART_SelectionIndicator"
-                                    Width="16"
-                                    Height="3"
-                                    HorizontalAlignment="Left"
-                                    VerticalAlignment="Bottom"
-                                    Background="{DynamicResource AccentFillColorDefaultBrush}"
-                                    CornerRadius="1.5"
-                                    IsHitTestVisible="False"
-                                    Opacity="0"
-                                    RenderTransformOrigin="0.5,0.5"
-                                    >
-                                    <Border.RenderTransform>
-                                        <TransformGroup>
-                                            <ScaleTransform />
-                                            <TranslateTransform />
-                                        </TransformGroup>
-                                    </Border.RenderTransform>
-                                </Border>
-                            </Grid>
-                        </controls:SmoothScrollViewer>
-                        <ContentPresenter
+                            <ItemsPresenter VerticalAlignment="Center" />
+                            <Border
+                                x:Name="PART_SelectionIndicator"
+                                Width="16"
+                                Height="3"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Bottom"
+                                Background="{DynamicResource AccentFillColorDefaultBrush}"
+                                CornerRadius="1.5"
+                                IsHitTestVisible="False"
+                                Opacity="0"
+                                RenderTransformOrigin="0.5,0.5"
+                                >
+                                <Border.RenderTransform>
+                                    <TransformGroup>
+                                        <ScaleTransform />
+                                        <TranslateTransform />
+                                    </TransformGroup>
+                                </Border.RenderTransform>
+                            </Border>
+                        </Grid>
+                        <Button
+                            x:Name="PART_TopOverflowButton"
                             Grid.Column="3"
+                            Width="40"
+                            Height="36"
+                            Margin="4,0"
+                            Padding="0"
+                            VerticalAlignment="Center"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            Visibility="Collapsed">
+                            <controls:FontIcon
+                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                Glyph="&#xE712;"
+                                IconFontSize="16" />
+                        </Button>
+                        <ContentPresenter
+                            Grid.Column="4"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Center"
                             Content="{TemplateBinding PaneFooter}"

@@ -228,6 +228,12 @@ namespace Fluence.Wpf.Tests
                 MainWindow window = CreateShownMainWindow();
                 try
                 {
+                    NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
+                    Assert.IsNotNull(nav, "DemoNav must exist.");
+                    nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
+                    nav.IsPaneToggleButtonVisible = true;
+                    Drain(window.Dispatcher);
+
                     Controls.TextBox? search = FindByName<Controls.TextBox>(window, "NavSearchBox");
                     Assert.IsNotNull(search, "Demo search box must be present.");
 
@@ -300,6 +306,12 @@ namespace Fluence.Wpf.Tests
                 MainWindow window = CreateShownMainWindow();
                 try
                 {
+                    NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
+                    Assert.IsNotNull(nav, "DemoNav must exist.");
+                    nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
+                    nav.IsPaneToggleButtonVisible = true;
+                    Drain(window.Dispatcher);
+
                     window.ExtendsContentIntoTitleBar = true;
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
@@ -332,6 +344,9 @@ namespace Fluence.Wpf.Tests
                 {
                     NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
                     Assert.IsNotNull(nav, "DemoNav must exist.");
+                    nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
+                    nav.IsPaneToggleButtonVisible = true;
+                    Drain(window.Dispatcher);
 
                     window.ExtendsContentIntoTitleBar = true;
                     Drain(window.Dispatcher);
@@ -355,15 +370,19 @@ namespace Fluence.Wpf.Tests
 
                     WpfButton? titleBarBack = FindByName<WpfButton>(shellTitleBar, "PART_BackButton");
                     Assert.IsNotNull(titleBarBack, "Extended title bar should expose a back button slot.");
-                    Assert.AreEqual(Visibility.Collapsed, titleBarBack.Visibility,
-                        "Back button should collapse in the title bar when no back route is enabled.");
+                    Assert.AreEqual(Visibility.Visible, titleBarBack.Visibility,
+                        "The demo starts with back navigation enabled, so the title-bar back slot should be visible in Left mode.");
+                    Assert.IsTrue((GetVisualX(titleBarBack, window) ?? double.MaxValue) < (GetVisualX(titleBarToggle, window) ?? double.MaxValue),
+                        "Back should occupy the first title-bar navigation slot.");
+                    WpfTextBlock? titleBarBackGlyph = FindVisualChild<WpfTextBlock>(titleBarBack);
+                    Assert.IsNotNull(titleBarBackGlyph, "Title-bar back button should render a Segoe Fluent Icons glyph.");
 
                     NavigationViewItem? firstItem = nav.Items.Count > 0 ? nav.Items[0] as NavigationViewItem : null;
                     Assert.IsNotNull(firstItem, "DemoNav should contain a first navigation item.");
                     FontIcon? itemGlyph = FindVisualChild<FontIcon>(firstItem);
                     Assert.IsNotNull(itemGlyph, "First navigation item should render an icon.");
-                    Assert.AreEqual(GetVisualCenterX(itemGlyph, window) ?? double.MaxValue, GetVisualCenterX(titleBarGlyph, window) ?? double.MaxValue, 2.5,
-                        "Title-bar pane toggle glyph should align with the NavigationViewItem glyph rail.");
+                    Assert.AreEqual(GetVisualCenterX(itemGlyph, window) ?? double.MaxValue, GetVisualCenterX(titleBarBackGlyph, window) ?? double.MaxValue, 2.5,
+                        "The first title-bar navigation glyph should align with the NavigationViewItem glyph rail.");
 
                     ContentPresenter? titleIcon = FindByName<ContentPresenter>(shellTitleBar, "PART_IconPresenter");
                     Assert.IsNotNull(titleIcon, "Extended title bar icon presenter should exist.");
@@ -402,6 +421,8 @@ namespace Fluence.Wpf.Tests
                 {
                     NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
                     Assert.IsNotNull(nav, "DemoNav must exist.");
+                    nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
+                    nav.IsPaneToggleButtonVisible = true;
                     nav.IsBackButtonVisible = true;
                     nav.IsBackEnabled = true;
 
@@ -459,6 +480,8 @@ namespace Fluence.Wpf.Tests
                 {
                     NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
                     Assert.IsNotNull(nav, "DemoNav must exist.");
+                    nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
+                    nav.IsPaneToggleButtonVisible = true;
 
                     window.ExtendsContentIntoTitleBar = true;
                     Drain(window.Dispatcher);
@@ -484,7 +507,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void MainWindow_NonExtendedTitleBar_UsesPaneChromeAboveNavigationItems()
+        public void MainWindow_TopPane_UsesNonExtendedTitleBarWithoutPaneToggleChrome()
         {
             RunOnSta(delegate
             {
@@ -495,35 +518,45 @@ namespace Fluence.Wpf.Tests
                     NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
                     Assert.IsNotNull(nav, "DemoNav must exist.");
                     window.ExtendsContentIntoTitleBar = false;
+                    nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Top;
+                    nav.IsPaneOpen = false;
                     nav.IsPaneToggleButtonVisible = true;
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
-                    _ = nav.ApplyTemplate();
                     nav.IsBackEnabled = true;
                     nav.IsBackButtonVisible = true;
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
+                    Assert.IsFalse(window.ExtendsContentIntoTitleBar,
+                        "Top NavigationView mode should keep the FluenceWindow title bar non-extended.");
+                    Assert.IsTrue(nav.IsPaneOpen, "Top NavigationView mode should coerce IsPaneOpen=True.");
+                    Assert.IsFalse(nav.IsPaneToggleButtonVisible,
+                        "Top NavigationView mode should coerce the pane toggle hidden.");
+
+                    TitleBar? shellTitleBar = FindByName<TitleBar>(window, "ShellTitleBar");
+                    Assert.IsNotNull(shellTitleBar, "Demo shell should expose a TitleBar.");
+                    WpfButton? titleBarToggle = FindByName<WpfButton>(shellTitleBar, "PART_PaneToggleButton");
+                    Assert.IsNotNull(titleBarToggle, "TitleBar should expose a pane toggle slot.");
+                    Assert.AreEqual(Visibility.Collapsed, titleBarToggle.Visibility,
+                        "Top mode should not show a pane toggle in the title bar.");
+
+                    _ = nav.ApplyTemplate();
                     WpfButton? internalBack = nav.Template.FindName(NavigationView.PartBackButton, nav) as WpfButton;
                     WpfButton? internalToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as WpfButton;
                     Assert.IsNotNull(internalBack, "Internal NavigationView back button should exist.");
-                    Assert.IsNotNull(internalToggle, "Internal NavigationView pane toggle should exist.");
                     Assert.AreEqual(Visibility.Visible, internalBack.Visibility,
-                        "Non-extended mode should use the NavigationView back button.");
-                    Assert.AreEqual(Visibility.Visible, internalToggle.Visibility,
-                        "Non-extended mode should use the NavigationView pane toggle.");
-                    Assert.IsTrue((GetVisualX(internalBack, window) ?? double.MaxValue) < (GetVisualX(internalToggle, window) ?? double.MaxValue),
-                        "Internal back button should be the first glyph in the pane chrome row.");
-                    Assert.AreEqual(GetVisualY(internalBack, window) ?? double.MaxValue, GetVisualY(internalToggle, window) ?? double.MaxValue, 1.0,
-                        "Internal back and pane toggle should be arranged in a horizontal row.");
+                        "Top non-extended mode should use the NavigationView back button.");
+                    Assert.IsNull(internalToggle,
+                        "Top NavigationView template should not include the pane toggle button.");
 
                     NavigationViewItem? firstItem = nav.Items.Count > 0 ? nav.Items[0] as NavigationViewItem : null;
                     Assert.IsNotNull(firstItem, "DemoNav should contain a first navigation item.");
-                    Assert.IsTrue((GetVisualY(firstItem, window) ?? double.MinValue) > (GetVisualY(internalBack, window) ?? double.MinValue) + internalBack.ActualHeight - 0.5,
-                        "Navigation items should start below the non-extended pane chrome row.");
+                    Assert.AreEqual(Visibility.Visible, firstItem.Visibility,
+                        "Top NavigationView items should stay visible in the horizontal strip.");
                 }
                 finally
                 {
@@ -541,6 +574,12 @@ namespace Fluence.Wpf.Tests
                 MainWindow window = CreateShownMainWindow();
                 try
                 {
+                    NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
+                    Assert.IsNotNull(nav, "DemoNav must exist.");
+                    nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
+                    nav.IsPaneToggleButtonVisible = true;
+                    Drain(window.Dispatcher);
+
                     window.Width = 760;
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
@@ -579,6 +618,12 @@ namespace Fluence.Wpf.Tests
                 MainWindow window = CreateShownMainWindow();
                 try
                 {
+                    NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
+                    Assert.IsNotNull(nav, "DemoNav must exist.");
+                    nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
+                    nav.IsPaneToggleButtonVisible = true;
+                    Drain(window.Dispatcher);
+
                     window.Width = 760;
                     Drain(window.Dispatcher);
                     window.UpdateLayout();

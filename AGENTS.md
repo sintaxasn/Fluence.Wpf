@@ -446,13 +446,13 @@ STOP CONDITION: both working trees are "git-clean minus intended diff"; wait for
 <claude-mem-context>
 # Memory Context
 
-# [Fluence.Wpf] recent context, 2026-05-09 6:50pm EDT
+# [Fluence.Wpf] recent context, 2026-05-09 8:53pm EDT
 
 Legend: 🎯session 🔴bugfix 🟣feature 🔄refactor ✅change 🔵discovery ⚖️decision 🚨security_alert 🔐security_note
 Format: ID TIME TYPE TITLE
 Fetch details: get_observations([IDs]) | Search: mem-search skill
 
-Stats: 50 obs (29,801t read) | 343,363t work | 91% savings
+Stats: 50 obs (28,169t read) | 333,219t work | 92% savings
 
 ### May 8, 2026
 S72 User acknowledged that a pull request will be created once the remote session completes its planned work (May 8, 8:27 PM)
@@ -463,71 +463,71 @@ S74 Implement fixes and improvements to WinUI/WPF controls: ToggleStatus button 
 S75 Fix ToggleStatus button state switching, adjust ValidationMessage/Icon positioning, fix paused Progress Ring and Progress Bar accent color updates, fix Infobar Informational accent color updates, and review controls in WinUI references and current implementation for improvements. (May 9, 2:08 PM)
 S76 Fix four control issues in Fluence.Wpf: ToggleStatus button state not switching on release, ValidationMessage/Icon positioning, paused Progress Ring/Bar not updating to accent color, and InfoBar Informational colors not updating to accent color. Review WinUI 3 and WinUIGallery references for implementation guidance while respecting CLAUDE.md project doctrine. (May 9, 3:11 PM)
 S77 Continue WinUI Gallery brush token parity verification for Fluence.Wpf control library - verify all control background colors match between WinUI Gallery reference and Fluence.Wpf demo app, identify deviations, and document custom brush usage (May 9, 5:10 PM)
-1705 5:35p 🔵 Fluence.Wpf.Demo Gallery*.xaml literal colors audit final: 7 hex accent colors + 24 named foreground literals (White/Black) in color/system swatches only
-1706 " 🔵 Fluence.Wpf.Demo Gallery*.xaml BorderBrush/Fill/Stroke audit: 100% DynamicResource, no literals
-1707 " 🔵 TabView.xaml uses SolidBackgroundFillColorTertiaryBrush/CardStrokeColorDefaultSolidBrush for selected tabs; TabControl uses ControlFillColorDefaultBrush for selected items
-1708 " 🔵 NavigationView.xaml uses AccentFillColorDefaultBrush for pane-level PART_SelectionIndicator; items use SubtleFillColor* overlays with no item-level indicator
-1709 5:36p 🔵 WinUIGallery ControlExample.xaml resource composition pattern: ThemeDictionaries page-local override with StaticResource and ThemeResource fallbacks
-1710 " 🔵 ContextMenu/Menu use SolidBackgroundFillColorTertiaryBrush and SurfaceStrokeColorFlyoutBrush for popup containers; MenuItems use SubtleFillColor* overlays
-1711 " 🔵 WinUIGallery SampleCodePresenter.xaml: code display harness using x:Bind for dynamic properties and ThemeResource for chrome
-1712 " 🔵 DropDownButton/SplitButton use SolidBackgroundFillColorQuarternaryBrush for flyout containers; SplitButton divider uses ControlStrokeColorOnAccentSecondaryBrush
-1713 " 🔵 WinUIGallery resource naming and pattern consistency: GalleryTileGridStyle and CardBackgroundFillColorSecondaryBrush used across 60+ design guidance and control pages
-1721 5:41p 🔵 Memory session references WinUI resource audit tasks and background parity mapping scope
-1722 " 🔵 User accessed WPF ResourceDictionary and Style management skill documentation
-1723 5:42p 🔵 Session memory captures prior multi-target migration, resource audit, and user workflow preferences
-1724 " 🔵 Inventory of WinUI CommonStyles theme resource files located
-1725 " 🔵 WinUIGallery application and sample resource files identified
-1726 " 🔵 Fluence.Wpf theme and gallery page structure mapped
-1727 " 🔵 WinUIGallery chrome resource definitions and theme-specific mappings identified
-1728 " 🔵 WinUI3 canonical background/fill token definitions and theme variant mappings in Common_themeresources_any.xaml
-1729 " 🔵 Fluence.Wpf background/fill token implementation matches WinUI3 canonical naming with DynamicResource and SystemColor fallbacks
-1730 5:43p 🔵 WinUIGallery App.xaml theme dictionary structure and resource aliasing pattern
-1731 " 🔵 WinUIGallery ControlExample.xaml sample chrome surface definitions with nested theme dictionaries
-1732 " 🔵 WinUIGallery Styles/Grid.xaml defines gallery grid and card styles using fill token brushes
-1733 " 🔵 WinUI3 Common_themeresources_any.xaml canonical token mappings across all three theme variants with complete Color and Brush definitions
-1734 " 🔵 Fluence.Wpf background/fill token inventory confirmed complete parity with WinUI3 canonical structure across all themes and files
-1735 " 🔵 WinUI3 reference files Common_themeresources.xaml and Common_themeresources_any.xaml compared; ApplicationPageBackgroundThemeBrush identified as standard app chrome alias
-1736 5:44p 🔵 Fluence.Wpf gallery and control implementations extensively use canonical background/fill tokens with active coverage in GalleryColorsPage and control templates
-1737 " 🔵 Fluence.Wpf HighContrast theme brush definitions confirmed complete with SystemColors static key bindings for accessibility
-1738 " 🔵 Fluence.Wpf.Demo DemoSampleControl.xaml gallery sample container structure confirmed using canonical background tokens
-1739 " 🔵 DemoSampleControl.xaml.cs source code viewer uses SolidBackgroundFillColorTertiaryBrush and canonical token SetResourceReference pattern
-1740 " 🔵 DemoSampleControl.xaml confirmed using SolidBackgroundFillColorBaseBrush for primary sample display surface
-1741 " 🔵 WinUI3 Common_themeresources.xaml baseline defines ApplicationPageBackgroundThemeBrush as app-level chrome anchor mapped to SolidBackgroundFillColorBase
-1742 " 🔵 WinUI3 CommonStyles AcrylicBackgroundFillColor and LayerOnMica/Acrylic tokens inventory across control-specific theme resource files
-1743 5:45p 🔵 WinUI3 Acrylic and Mica backdrop implementations with AcrylicBackgroundFillColorDefaultBackdrop system backdrop and MicaBackdrop control
-1744 " 🔵 WinUI3 AcrylicBrush_themeresources.xaml theme-specific acrylic brush definitions with tint colors, opacities, and fallback colors
-1745 5:47p 🔵 Fluence.Wpf Project Structure and Development Handbook
-1746 " ⚖️ Parity Audit Plan Initiated for WinUI and Fluence Control Surfaces
-1747 " ✅ Background/Fill Token Parity Audit Agent Dispatched
-1748 " ✅ Control Template Background/Fill/Stroke Parity Audit Agent Dispatched
-1749 " ✅ Demo Sample Chrome and Background Parity Audit Agent Dispatched
-1750 " 🔵 Fluence.Wpf Background/Fill Token Resource Inventory
-1751 " 🔵 Fluence.Wpf Test Harness and Helper Infrastructure
-1752 " 🔵 Fluence.Wpf Test Coverage of Theme Brushes and Resource Resolution
-1753 5:48p 🔵 Fluence.Wpf Light Theme Color Palette Structure
-1754 " 🔵 Fluence.Wpf Brush Resource Architecture and DynamicResource Pattern
-1755 " 🔵 WinUI 3 CommonStyles Control Background and Fill Token Mapping
-1756 " 🔵 WinUI 3 Control Background Token Patterns: ScrollBar, TextBox, ListViewItem, CheckBox
-**1757** " 🔵 **Fluence.Wpf CheckBox Control Template: Background and Fill Bindings**
-Fluence.Wpf CheckBox control template implements a WinUI 3-aligned pattern using ControlFill token family for unchecked states (Default → Secondary → Tertiary progression) and AccentFill token family for checked/indeterminate states (Default → Secondary → Tertiary progression). The template uses a layered overlay approach with opacity-based state transitions rather than direct property replacement, allowing smooth visual state changes. The indicator (checkbox square) binds its background and border to appropriate brushes via DynamicResource, enabling runtime theme reactivity. Disabled states map to the Disabled variant of each token family. This pattern aligns with WinUI 3 CommonStyles CheckBox_themeresources.xaml which defines identical token bindings (ControlAltFill for unchecked, AccentFill for checked). The template establishes Fluence.Wpf CheckBox as parity-aligned with WinUI 3 in background token selection, though detailed state bindings and brush references require comparison against WinUI control-specific themes.
-~608t 🔍 6,684
+1758 5:49p 🔵 Fluence.Wpf RadioButton Control Template: Background and Fill Bindings
+1759 " 🔵 Fluence.Wpf ToggleSwitch Control Template: Track and Thumb Token Bindings
+1760 " 🔵 Fluence.Wpf Button Control Template: Background and State Token Bindings
+1761 " 🔵 WinUI 3 CheckBox Theme Resources: Comprehensive Token Structure
+1762 6:51p 🔵 Prior Fluence.Wpf work validated through memory search
+1763 6:52p 🔵 F:\StagedMigration workspace layout confirmed with reference repositories accessible
+1764 " 🔵 Fluence.Wpf repository has 24 uncommitted changes spanning demo pages, control themes, tests, and documentation
+1765 " 🔵 Plan-mode explorer agent dispatched for WinUI resource audit comparison
+1766 " 🔵 Plan-mode explorer agent dispatched for NavigationView pane mode conditional behavior audit
+1767 " 🔵 Fluence.Wpf repository structure confirmed with multi-project solution layout
+1768 6:53p 🔵 Fluence.Wpf test suite spans 50+ control test files plus integration/theme/window tests
+1769 " 🔵 DemoSampleControl and SourceExpander background colors use dynamic resource references, not literal hex values
+1770 " 🔵 NavigationView PaneDisplayMode and title-bar integration infrastructure confirmed; conditional property enforcement patterns exist but incomplete for Top pane mode
+1771 " 🔵 Demo example coverage confirms Slider with tick marks missing; RepeatButton with click counter needed; RatingControl, TreeView, CheckBox variants, ToggleSwitch examples partially present
+1772 " 🔵 WinUI reference source structure confirmed with canonical theme resources and test pages for Slider, CheckBox, ToggleSwitch, TreeView, RatingControl, ProgressRing, NavigationView
+1773 6:54p 🔵 WinUIGallery demo control pages enumerated; core sample pages and test infrastructure located for alignment audit
+1774 " 🔵 Staged git changes reveal in-progress work on demo pages, control themes, background parity tests, and banner assets
+1775 6:55p 🔵 Fluence.Wpf control library structure and requested control availability
+1776 " 🔵 Fluence.Wpf demo pages contain baseline control samples; Samples folder missing
+1777 " 🔵 WinUIGallery reference pages document specific control sample patterns including gaps in Fluence.Wpf
+1778 " 🔵 Fluence.Wpf.Tests contains demo page navigation mapping and ProgressRing regression tests
+1779 " 🔵 Fluence.Wpf demo pages contain embedded sample code for most controls; three-state CheckBox and ToggleSwitch+ProgressRing layout confirmed present
+1780 6:56p 🔵 WinUIGallery reference pages define complete control sample patterns with specific XAML structures for Fluence.Wpf parity gap closure
+1781 " 🔵 WinUIGallery SampleCode subfolder contains external TreeView sample code files
+1782 " 🔵 Fluence.Wpf test suite validates RatingControl but demo page is completely absent
+1783 " 🔵 GalleryStatusPage ProgressRing examples use Grid layout with ToggleSwitch binding in separate row, not horizontal pairing
+1784 " 🔵 GalleryTreesPage demonstrates TreeView hierarchy, selection, and expansion but lacks multi-select checkbox variant
+1785 " 🔵 WinUIGallery RepeatButtonPage implements click counter TextBlock pattern: private static int _clicks with Click handler increment
+1786 " 🔵 WinUIGallery RatingControlPage demonstrates two RatingControl sample patterns: simple with IsClearEnabled/IsReadOnly checkboxes, and PlaceholderValue with Slider binding
+1787 7:07p 🔵 NavigationView chrome, back button, and selection indicator prior work in Fluence.Wpf
+1788 " 🔵 Fluence.Wpf control patterns, brush management, and test best practices
+1789 7:08p 🔵 NavigationView implementation files and test coverage in Fluence.Wpf codebase
+1790 " 🔵 NavigationView PaneDisplayMode and property usage patterns in Fluence.Wpf
+1791 " 🔵 NavigationView control code-behind structure and dependency properties
+1792 " 🔵 NavigationView event handling, state management, and pane animation logic
+1793 " 🔵 NavigationView selection indicator positioning and animation logic
+1794 " 🔵 NavigationViewPaneDisplayMode enum definition and semantics
+1795 " 🔵 NavigationView XAML template structure for headers, separators, and items
+1796 " 🔵 NavigationViewItem mode-specific layout and NavigationView Left pane template structure
+1797 7:09p 🔵 NavigationView Left and LeftCompact pane templates: selection indicator, content borders, and VSM states
+1798 " 🔵 NavigationView Top pane template and style template switching logic
+1799 " 🔵 Title bar integration with NavigationView: ExtendsContentIntoTitleBar property and chrome ownership pattern
+1800 " 🔵 Demo MainWindow XAML: FluenceWindow with TitleBar and NavigationView Top mode configuration
+1801 " 🔵 Demo MainWindow chrome ownership logic: ExtendedTitleBar property synchronization
+1802 " 🔵 FluenceWindow class: ExtendsContentIntoTitleBar property and title bar integration structure
+**1803** " 🔵 **NavigationView test infrastructure and pane display mode test cases**
+The test suite validates NavigationView's three pane display modes via orientation and content offset measurements. Tests use utility functions for animation timing (167ms for LeftCompact), condition-based waits (16ms intervals up to 3000ms), and layout measurements. PaneDisplayMode.Left and LeftCompact render vertical ItemsPresenter, Top renders horizontal. Scroll viewer styling varies: Left and Top show scrollbars, LeftCompact does not (tested with IsPaneOpen=true/false variants). Content offset assertions wait until layout settles within 1.0px tolerance. Selection indicator tests verify depart/arrive animation by checking vertical Y movement while X stays constant and opacity fades.
+~533t 🔍 4,881
 
-**1758** 5:49p 🔵 **Fluence.Wpf RadioButton Control Template: Background and Fill Bindings**
-Fluence.Wpf RadioButton control template implements a WinUI 3-aligned pattern using ControlAltFill token family for unchecked states and AccentFill family for checked states. The outer ellipse binds to ControlAltFillColorSecondary (rest) with ControlAltFillColorTertiary overlay on hover/pressed. The checked state replaces the outer ellipse with an accent-filled ellipse (Default → Secondary → Tertiary progression) and animates an inner dot that expands from 0x0 to 8x8 pixels when checked, providing visual feedback. The inner dot color uses TextOnAccentFillColorPrimaryBrush, ensuring contrast against the accent background. Disabled state degrades all visuals to ControlFillColorDisabled and TextFillColorDisabled, respecting accessibility constraints. This pattern aligns with WinUI 3 RadioButton_themeresources.xaml which defines identical token bindings (ControlAltFill for unchecked backgrounds, ControlStrongFill for ring stroke). The animation-based state transitions and token bindings establish Fluence.Wpf RadioButton as parity-aligned with WinUI 3 in background token selection.
-~611t 🔍 6,595
+**1804** 7:10p 🔵 **NavigationView test cases: IsPaneToggleButtonVisible, BackRequested, and theme switching**
+Tests validate NavigationView's pane toggle visibility control via IsPaneToggleButtonVisible property, which hides the PART_PaneToggleButton when false. Back button event firing is tested via an internal RaiseBackRequestedForTesting method that simulates back button click without needing to interact with the button directly. Theme switching is validated by applying light and dark ApplicationTheme via ApplicationThemeManager and checking that DynamicResource brushes in MergedDictionaries update their color values. All tests use standard WPF test patterns: create window, populate control, show, drain dispatcher for async work, measure/assert, cleanup.
+~490t 🔍 3,237
 
-**1759** " 🔵 **Fluence.Wpf ToggleSwitch Control Template: Track and Thumb Token Bindings**
-Fluence.Wpf ToggleSwitch control template implements a WinUI 3-aligned pattern using ControlAltFill token family for off-state track (Secondary → Tertiary on hover) and AccentFill family for on-state track (Default → Secondary → Tertiary progression). The knob (thumb) animates from 12x12 to 14x14 pixels on hover, then squashes to 17x14 on press using ControlFastOutSlowIn easing curve over 83ms (WinUI ControlFasterAnimationDuration). The thumb fill uses TextFillColorSecondaryBrush when off and TextOnAccentFillColorPrimaryBrush when on, maintaining contrast. Disabled state applies ControlFillColorDisabledBrush (off) or AccentFillColorDisabledBrush (on) to the track with 40% thumb opacity. Content presentation switches between OffContent and OnContent based on IsChecked state. This pattern aligns with WinUI 3 ToggleSwitch_themeresources.xaml token bindings and establishes Fluence.Wpf ToggleSwitch as parity-aligned with WinUI 3 in background and fill token selection, animation timing, and content management.
-~626t 🔍 7,689
+**1805** " 🔵 **NavigationView test cases: Top mode indicator, full theme cycle, and pane mode switching**
+Tests validate selection indicator behavior in Top mode and across pane mode changes. The Top mode indicator visibility test confirms the shared selection indicator (PART_SelectionIndicator) is visible when an item is selected. Full theme cycle test ensures NavigationView survives switching between Light, Dark, HighContrast, and Auto themes without throwing exceptions. Pane mode switch test verifies the indicator persists across template swaps (Left to Top), confirming the template-swapping mechanism doesn't lose or recreate the indicator. All tests follow the pattern of making changes, draining dispatcher, updating layout, then measuring/asserting.
+~497t 🔍 3,360
 
-**1760** " 🔵 **Fluence.Wpf Button Control Template: Background and State Token Bindings**
-Fluence.Wpf Button control template implements a comprehensive WinUI 3-aligned appearance system with three variants: Default (ControlFill family), Accent (AccentFill family), and Subtle (transparent with optional fill). The Default appearance uses ControlFillColorDefault (rest) → ControlFillColorSecondary (hover) → ControlFillColorTertiary (pressed) progression, with Foreground text changing to TextFillColorSecondary when pressed. Accent appearance maps to AccentFillColorDefault → Secondary → Tertiary progression with TextOnAccentFill foreground variants. Subtle appearance uses transparent background with SubtleFillColor overlays (Secondary on hover, Tertiary on pressed). All pressed states trigger a scale animation (1.0 → 0.98 over 100ms) using ControlFastOutSlowIn easing for tactile feedback. Disabled state degrades to ControlFillColorDisabled (default/subtle) or AccentFillColorDisabled (accent) with reduced opacity. This multi-appearance pattern aligns with WinUI 3 button design and establishes Fluence.Wpf Button as parity-aligned in background token selection, state progression, and appearance variants.
-~791t 🔍 7,476
+**1806** " 🔵 **NavigationView test utilities: pane background transparency, scroll viewer style, and indicator transform validation**
+Tests validate pane background transparency (confirming DWM Mica/Acrylic backdrop shows through) and scroll viewer styling. The AssertBrushIsTransparentOrNull utility checks three forms of transparency: null background, Brushes.Transparent constant, or zero-alpha SolidColorBrush. Scroll viewer tests verify that PART_PaneItemsScrollViewer is a SmoothScrollViewer using the Fluent ScrollViewerStyle for all pane modes. The selection indicator structure test validates the TransformGroup contains at least two children with ScaleTransform at index 0 and TranslateTransform at index 1 for animation of opacity and position.
+~493t 🔍 2,793
 
-**1761** " 🔵 **WinUI 3 CheckBox Theme Resources: Comprehensive Token Structure**
-WinUI 3 CheckBox theme resources establish a granular token structure with separate keys for every visual element (foreground, background, border, check square stroke, check square fill, glyph) across all three check states (unchecked, checked, indeterminate) and all interaction states (default, pointer-over, pressed, disabled). The unchecked state uses ControlAltFill family for the check square (Secondary at rest, Tertiary on hover, Quaternary on press) while checked/indeterminate states use AccentFill family (Default → Secondary → Tertiary). Strokes follow a complementary pattern: ControlStrongStroke for unchecked, AccentFill for checked. The glyph (checkmark or dash) uses TextOnAccentFill colors to ensure contrast against accent backgrounds. This comprehensive token structure enables independent styling of every visual component per interaction state. Fluence.Wpf CheckBox currently binds the unchecked indicator fill to ControlFillColorDefaultBrush rather than ControlAltFillColorSecondaryBrush, indicating a potential parity gap that may warrant alignment depending on the visual intent and user expectations established in the current design.
-~676t 🔍 6,000
+**1807** " 🔵 **Comprehensive NavigationView and MainWindow test suite coverage**
+The test suite comprehensively validates NavigationView across all three pane display modes (Left, LeftCompact, Top) with 39+ test methods. Tests cover pane layout dimensions, content offset alignment, selection indicator animation (depart/arrive with Y movement and opacity fade), back/pane toggle button visibility and enabled states, theme switching resilience, and layout edge cases (pane closed, header height, content background). MainWindow tests validate the extended title bar integration pattern: when ExtendsContentIntoTitleBar=true, navigation chrome moves to title bar; when false, pane chrome is used. Tests verify search box positioning, title text overlap detection, and catalog navigation ordering. The test suite uses condition-based waits for animation (167ms LeftCompact pane width animation), visual tree search for template parts, and brush transparency validation for backdrop support.
+~646t 🔍 3,990
 
 
-Access 343k tokens of past work via get_observations([IDs]) or mem-search skill.
+Access 333k tokens of past work via get_observations([IDs]) or mem-search skill.
 </claude-mem-context>

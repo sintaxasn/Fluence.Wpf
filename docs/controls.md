@@ -8,8 +8,8 @@ The **Fluence.Wpf.Demo** gallery is the live inventory: `FluenceWindow` chrome w
 - Typography (Fluent type ramp and TextBlock usage)
 - Accessibility (focus order, high contrast, automation, RTL)
 - Buttons
-- Selection (CheckBox, RadioButton, ToggleSwitch, Slider)
-- Inputs (TextBox, PasswordBox, NumberBox, ComboBox)
+- Selection (CheckBox, RadioButton, ToggleSwitch, RatingControl)
+- Inputs (TextBox, PasswordBox, NumberBox, ComboBox, Slider)
 - Forms (sign-in, checkout, settings)
 - Data (Card, ListBox, ListView)
 - Data Binding (ObservableCollection, selection modes, data templates)
@@ -27,7 +27,7 @@ Each non-Home gallery page renders examples inline and exposes source through `D
 
 ## Namespaces
 
-- `Fluence.Wpf` - theme, accent, window chrome helpers, and UI enums (`ApplicationTheme`, `BackdropType`, `CardVariant`, `NavigationViewPaneDisplayMode`, typography enums).
+- `Fluence.Wpf` - theme, accent, window chrome helpers, and UI enums (`ApplicationTheme`, `BackdropType`, `CardVariant`, `NavigationViewPaneDisplayMode`, `TreeViewSelectionMode`, typography enums).
 - `Fluence.Wpf.Controls` - styled controls, primitives, and `FluenceWindow`.
 
 Example XML namespace declarations:
@@ -85,6 +85,8 @@ Left and LeftCompact share the same visual contract:
 - Content region is a `Border` with `CornerRadius="8,0,0,0"`, `BorderThickness="1,1,0,0"`, and `BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"`, wrapping `PART_ContentPresenter`.
 - Back button visibility and enabled state are driven by `IsBackButtonVisible` / `IsBackEnabled`. The back button is visible only when both are `true`; a disabled back route collapses the button and does not reserve a glyph slot. Consumers route the `BackRequested` event to their own history stack.
 - Pane toggle visibility is controlled by `IsPaneToggleButtonVisible`. It defaults to `true` for left pane modes and is not shown in top mode.
+- When hosted inside a `FluenceWindow`, `Left` mode sets `ExtendsContentIntoTitleBar=True`; `Top` mode sets it `False`.
+- `Top` mode coerces `IsPaneOpen=True` and `IsPaneToggleButtonVisible=False`, keeps item icons and text visible, lays items out horizontally without scrolling, and moves overflowed items to the `PART_TopOverflowButton` menu.
 - Item invocation raises `ItemInvoked` before WPF `SelectionChanged`, matching WinUI ordering. Navigation content belongs to the app layer: set `NavigationView.Content` or route through your own frame/service when handling `ItemInvoked`.
 
 ## Cards
@@ -220,7 +222,7 @@ Consumers remove the tab from the source collection themselves - the control doe
 `TreeView` and `TreeViewItem` provide a hierarchical list matching the WinUI 3 `TreeView` visual contract.
 
 ```xml
-<ui:TreeView>
+<ui:TreeView SelectionMode="{x:Static uicore:TreeViewSelectionMode.Multiple}">
     <ui:TreeViewItem Header="Documents" IsExpanded="True">
         <ui:TreeViewItem Header="Reports">
             <ui:TreeViewItem Header="Q1.xlsx" />
@@ -232,9 +234,17 @@ Consumers remove the tab from the source collection themselves - the control doe
 </ui:TreeView>
 ```
 
+Selection members:
+
+| Member                         | Type                    | Notes                                                           |
+| ------------------------------ | ----------------------- | --------------------------------------------------------------- |
+| `TreeView.SelectionMode`       | `TreeViewSelectionMode` | `Single` by default; use `Multiple` for checkbox selection.     |
+| `TreeView.SelectedItems`       | `IList`                 | Live selected item list.                                        |
+| `TreeViewItem.IsSelectionChecked` | `bool`                | Mirrors the multiple-selection checkbox state for each item.    |
+
 Visual contract:
 - Per-level indent via `LevelToIndentConverter` (16 px per level).
-- Chevron (`U+E76C`) rotates 90° on expand — 100 ms `ControlFastOutSlowInKeySpline` easing.
+- Chevron (`U+E76C`) rotates 90° on expand - 100 ms `ControlFastOutSlowInKeySpline` easing.
 - `SubtleFillColorSecondaryBrush` on hover, `SubtleFillColorTertiaryBrush` on press, `AccentFillColorDefaultBrush` when selected.
 - VSM groups: `CommonStates`, `SelectionStates`, `ExpansionStates`.
 

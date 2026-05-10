@@ -26,7 +26,9 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System.Collections;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace Fluence.Wpf.Controls
 {
@@ -37,6 +39,8 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     public class TreeView : System.Windows.Controls.TreeView
     {
+        private readonly ArrayList _selectedItems = [];
+
         /// <summary>
         /// Initializes static members of the TreeView class and overrides the default style metadata.
         /// </summary>
@@ -50,6 +54,41 @@ namespace Fluence.Wpf.Controls
                 new FrameworkPropertyMetadata(typeof(TreeView)));
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TreeView"/> class.
+        /// </summary>
+        public TreeView()
+        {
+            SelectedItems = _selectedItems;
+        }
+
+        /// <summary>
+        /// Identifies the <see cref="SelectionMode"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty SelectionModeProperty =
+            DependencyProperty.Register(
+                nameof(SelectionMode),
+                typeof(TreeViewSelectionMode),
+                typeof(TreeView),
+                new FrameworkPropertyMetadata(
+                    TreeViewSelectionMode.Single,
+                    FrameworkPropertyMetadataOptions.AffectsMeasure,
+                    OnSelectionModeChanged));
+
+        /// <summary>
+        /// Gets or sets the selection mode used by the tree view.
+        /// </summary>
+        public TreeViewSelectionMode SelectionMode
+        {
+            get => (TreeViewSelectionMode)GetValue(SelectionModeProperty);
+            set => SetValue(SelectionModeProperty, value);
+        }
+
+        /// <summary>
+        /// Gets the live list of currently selected items.
+        /// </summary>
+        public IList SelectedItems { get; }
+
         /// <inheritdoc />
         protected override DependencyObject GetContainerForItemOverride()
         {
@@ -60,6 +99,147 @@ namespace Fluence.Wpf.Controls
         protected override bool IsItemItsOwnContainerOverride(object item)
         {
             return item is TreeViewItem;
+        }
+
+        /// <inheritdoc />
+        protected override void PrepareContainerForItemOverride(DependencyObject element, object item)
+        {
+            base.PrepareContainerForItemOverride(element, item);
+
+            if (element is TreeViewItem treeViewItem)
+            {
+                treeViewItem.CoerceSelectionForOwner(this);
+            }
+        }
+
+        /// <inheritdoc />
+        protected override void OnSelectedItemChanged(RoutedPropertyChangedEventArgs<object> e)
+        {
+            base.OnSelectedItemChanged(e);
+
+            if (SelectionMode == TreeViewSelectionMode.Single)
+            {
+                _selectedItems.Clear();
+                if (e.NewValue is not null)
+                {
+                    _ = _selectedItems.Add(e.NewValue);
+                }
+            }
+            else if (SelectionMode == TreeViewSelectionMode.None)
+            {
+                _selectedItems.Clear();
+            }
+        }
+
+        internal void UpdateSelectionFromItem(TreeViewItem item, bool isSelected)
+        {
+            if (SelectionMode == TreeViewSelectionMode.None)
+            {
+                _selectedItems.Clear();
+                if (item.IsSelectionChecked)
+                {
+                    item.SetCurrentValue(TreeViewItem.IsSelectionCheckedProperty, false);
+                }
+
+                return;
+            }
+
+            object selectedItem = GetSelectedItemValue(item);
+
+            if (SelectionMode == TreeViewSelectionMode.Single)
+            {
+                _selectedItems.Clear();
+                if (isSelected)
+                {
+                    _ = _selectedItems.Add(selectedItem);
+                    item.SetCurrentValue(System.Windows.Controls.TreeViewItem.IsSelectedProperty, true);
+                }
+
+                return;
+            }
+
+            if (isSelected)
+            {
+                if (!_selectedItems.Contains(selectedItem))
+                {
+                    _ = _selectedItems.Add(selectedItem);
+                }
+            }
+            else if (_selectedItems.Contains(selectedItem))
+            {
+                _selectedItems.Remove(selectedItem);
+            }
+        }
+
+        internal void ApplySelectionModeToItems()
+        {
+            if (SelectionMode == TreeViewSelectionMode.None)
+            {
+                _selectedItems.Clear();
+            }
+            else if (SelectionMode == TreeViewSelectionMode.Single)
+            {
+                _selectedItems.Clear();
+                if (SelectedItem is not null)
+                {
+                    _ = _selectedItems.Add(SelectedItem);
+                }
+            }
+
+            ApplySelectionModeToContainers(this);
+        }
+
+        private static void OnSelectionModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is TreeView treeView)
+            {
+                treeView.ApplySelectionModeToItems();
+            }
+        }
+
+        private static void ApplySelectionModeToContainers(ItemsControl owner)
+        {
+            foreach (object item in owner.Items)
+            {
+                TreeViewItem? container = owner.ItemContainerGenerator.ContainerFromItem(item) as TreeViewItem;
+                container ??= item as TreeViewItem;
+
+                if (container is null)
+                {
+                    continue;
+                }
+
+                TreeView? treeView = FindOwningTreeView(container);
+                if (treeView is not null && treeView.SelectionMode != TreeViewSelectionMode.Multiple)
+                {
+                    container.SetCurrentValue(TreeViewItem.IsSelectionCheckedProperty, false);
+                }
+
+                container.CoerceSelectionForOwner(treeView);
+                ApplySelectionModeToContainers(container);
+            }
+        }
+
+        private static TreeView? FindOwningTreeView(DependencyObject item)
+        {
+            ItemsControl? owner = ItemsControl.ItemsControlFromItemContainer(item);
+
+            while (owner is TreeViewItem treeViewItem)
+            {
+                owner = ItemsControl.ItemsControlFromItemContainer(treeViewItem);
+            }
+
+            return owner as TreeView;
+        }
+
+        private static object GetSelectedItemValue(TreeViewItem item)
+        {
+            ItemsControl? owner = ItemsControl.ItemsControlFromItemContainer(item);
+            object? generatedItem = owner?.ItemContainerGenerator.ItemFromContainer(item);
+
+            return generatedItem is not null && generatedItem != DependencyProperty.UnsetValue
+                ? generatedItem
+                : item;
         }
     }
 }

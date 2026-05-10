@@ -27,6 +27,7 @@
  */
 
 using System.Windows;
+using System.Windows.Controls;
 
 namespace Fluence.Wpf.Controls
 {
@@ -56,6 +57,28 @@ namespace Fluence.Wpf.Controls
                 new FrameworkPropertyMetadata(typeof(TreeViewItem)));
         }
 
+        /// <summary>
+        /// Identifies the <see cref="IsSelectionChecked"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty IsSelectionCheckedProperty =
+            DependencyProperty.Register(
+                nameof(IsSelectionChecked),
+                typeof(bool),
+                typeof(TreeViewItem),
+                new FrameworkPropertyMetadata(
+                    false,
+                    FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
+                    OnIsSelectionCheckedChanged));
+
+        /// <summary>
+        /// Gets or sets whether this item is checked in a multiple-selection tree view.
+        /// </summary>
+        public bool IsSelectionChecked
+        {
+            get => (bool)GetValue(IsSelectionCheckedProperty);
+            set => SetValue(IsSelectionCheckedProperty, value);
+        }
+
         /// <inheritdoc />
         protected override DependencyObject GetContainerForItemOverride()
         {
@@ -66,6 +89,79 @@ namespace Fluence.Wpf.Controls
         protected override bool IsItemItsOwnContainerOverride(object item)
         {
             return item is TreeViewItem;
+        }
+
+        /// <inheritdoc />
+        protected override void OnSelected(RoutedEventArgs e)
+        {
+            base.OnSelected(e);
+
+            TreeView? owner = FindOwningTreeView();
+            if (owner is null)
+            {
+                return;
+            }
+
+            if (owner.SelectionMode == TreeViewSelectionMode.None)
+            {
+                SetCurrentValue(IsSelectedProperty, false);
+            }
+            else if (owner.SelectionMode == TreeViewSelectionMode.Multiple)
+            {
+                SetCurrentValue(IsSelectionCheckedProperty, true);
+            }
+        }
+
+        internal void CoerceSelectionForOwner(TreeView? owner)
+        {
+            if (owner is null)
+            {
+                return;
+            }
+
+            if (owner.SelectionMode != TreeViewSelectionMode.Multiple && IsSelectionChecked)
+            {
+                SetCurrentValue(IsSelectionCheckedProperty, false);
+            }
+        }
+
+        private static void OnIsSelectionCheckedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is not TreeViewItem item)
+            {
+                return;
+            }
+
+            TreeView? owner = item.FindOwningTreeView();
+            if (owner is null)
+            {
+                return;
+            }
+
+            bool isChecked = (bool)e.NewValue;
+            if (owner.SelectionMode != TreeViewSelectionMode.Multiple)
+            {
+                if (isChecked)
+                {
+                    item.SetCurrentValue(IsSelectionCheckedProperty, false);
+                }
+
+                return;
+            }
+
+            owner.UpdateSelectionFromItem(item, isChecked);
+        }
+
+        private TreeView? FindOwningTreeView()
+        {
+            ItemsControl? owner = ItemsControl.ItemsControlFromItemContainer(this);
+
+            while (owner is TreeViewItem treeViewItem)
+            {
+                owner = ItemsControl.ItemsControlFromItemContainer(treeViewItem);
+            }
+
+            return owner as TreeView;
         }
     }
 }

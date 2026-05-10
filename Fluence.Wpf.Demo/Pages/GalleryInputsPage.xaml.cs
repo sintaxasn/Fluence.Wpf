@@ -238,6 +238,7 @@ namespace Fluence.Wpf.Demo.Pages.Inputs
                 Maximum=""10""
                 Minimum=""0""
                 TickFrequency=""1""
+                TickPlacement=""BottomRight""
                 Value=""4"" />
         </ui:StackPanel>
         <Grid
@@ -255,6 +256,8 @@ namespace Fluence.Wpf.Demo.Pages.Inputs
                     Maximum=""100""
                     Minimum=""0""
                     Orientation=""Vertical""
+                    TickFrequency=""10""
+                    TickPlacement=""BottomRight""
                     Value=""40"" />
             </ui:StackPanel>
             <ui:StackPanel Grid.Column=""2"" Spacing=""10"" HorizontalAlignment=""Center"">

@@ -283,8 +283,16 @@
                             Content="Disabled"
                             IsEnabled="False" />
                         <ui:RepeatButton
+                            x:Name="RepeatCounterButton"
                             Margin="0,0,8,8"
+                            Click="RepeatCounterButton_Click"
                             Content="Hold to repeat" />
+                        <TextBlock
+                            x:Name="RepeatButtonCountText"
+                            Margin="0,0,16,8"
+                            VerticalAlignment="Center"
+                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                            Text="Clicks: 0" />
                         <ui:RepeatButton
                             Margin="0,0,8,8"
                             Appearance="Accent"

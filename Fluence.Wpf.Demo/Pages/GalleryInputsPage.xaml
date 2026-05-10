@@ -206,11 +206,13 @@
                         Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                         Text="Snapped to ticks" />
                     <ui:Slider
+                        x:Name="HorizontalTickSlider"
                         Margin="0,0,0,14"
                         IsSnapToTickEnabled="True"
                         Maximum="10"
                         Minimum="0"
                         TickFrequency="1"
+                        TickPlacement="BottomRight"
                         Value="4" />
                     <Grid
                         MaxWidth="292"
@@ -228,10 +230,13 @@
                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                 Text="Vertical" />
                             <ui:Slider
+                                x:Name="VerticalTickSlider"
                                 Height="210"
                                 Maximum="100"
                                 Minimum="0"
                                 Orientation="Vertical"
+                                TickFrequency="10"
+                                TickPlacement="BottomRight"
                                 Value="40" />
                         </StackPanel>
                         <StackPanel Grid.Column="2" HorizontalAlignment="Center">

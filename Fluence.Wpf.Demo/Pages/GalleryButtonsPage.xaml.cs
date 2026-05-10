@@ -26,6 +26,8 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System.Globalization;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace Fluence.Wpf.Demo.Pages
@@ -322,8 +324,16 @@ namespace Fluence.Wpf.Demo.Pages.Buttons
             Content=""Disabled""
             IsEnabled=""False"" />
         <ui:RepeatButton
+            x:Name=""RepeatCounterButton""
             Margin=""0,0,8,8""
+            Click=""RepeatCounterButton_Click""
             Content=""Hold to repeat"" />
+        <TextBlock
+            x:Name=""RepeatButtonCountText""
+            Margin=""0,0,16,8""
+            VerticalAlignment=""Center""
+            Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+            Text=""Clicks: 0"" />
         <ui:RepeatButton
             Margin=""0,0,8,8""
             Appearance=""Accent""
@@ -332,19 +342,34 @@ namespace Fluence.Wpf.Demo.Pages.Buttons
 </UserControl>
 ";
 
-        private const string ToggleAndRepeatButtonsCSharpSource = @"using System.Windows.Controls;
+        private const string ToggleAndRepeatButtonsCSharpSource = @"using System.Globalization;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace Fluence.Wpf.Demo.Pages.Buttons
 {
     public partial class ToggleAndRepeatButtons : UserControl
     {
+        private int repeatButtonClickCount;
+
         public ToggleAndRepeatButtons()
         {
             InitializeComponent();
         }
+
+        private void RepeatCounterButton_Click(object sender, RoutedEventArgs e)
+        {
+            repeatButtonClickCount++;
+            RepeatButtonCountText.Text = string.Format(
+                CultureInfo.CurrentCulture,
+                ""Clicks: {0}"",
+                repeatButtonClickCount);
+        }
     }
 }
 ";
+
+        private int _repeatButtonClickCount;
 
         public GalleryButtonsPage()
         {
@@ -356,6 +381,15 @@ namespace Fluence.Wpf.Demo.Pages.Buttons
             _ = DemoSampleControl.ReplaceSourceLink(DropDownButtonsSourceLink, DropDownButtonsXamlSource, DropDownButtonsCSharpSource);
             _ = DemoSampleControl.ReplaceSourceLink(SplitButtonsSourceLink, SplitButtonsXamlSource, SplitButtonsCSharpSource);
             _ = DemoSampleControl.ReplaceSourceLink(ToggleAndRepeatButtonsSourceLink, ToggleAndRepeatButtonsXamlSource, ToggleAndRepeatButtonsCSharpSource);
+        }
+
+        private void RepeatCounterButton_Click(object sender, RoutedEventArgs e)
+        {
+            _repeatButtonClickCount++;
+            RepeatButtonCountText.Text = string.Format(
+                CultureInfo.CurrentCulture,
+                "Clicks: {0}",
+                _repeatButtonClickCount);
         }
     }
 }

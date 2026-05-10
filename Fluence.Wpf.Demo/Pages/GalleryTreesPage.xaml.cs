@@ -150,6 +150,45 @@ namespace Fluence.Wpf.Demo.Pages.Trees
     }
 }
 ";
+        private const string TreeViewMultiSelectXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Trees.TreeViewMultiSelect""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf""
+    xmlns:uicore=""clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"">
+    <ui:TreeView
+        MaxHeight=""260""
+        SelectionMode=""{x:Static uicore:TreeViewSelectionMode.Multiple}"">
+        <ui:TreeViewItem
+            Header=""Documents""
+            IsExpanded=""True"">
+            <ui:TreeViewItem Header=""Contracts"" />
+            <ui:TreeViewItem Header=""Invoices"" />
+            <ui:TreeViewItem Header=""Receipts"" />
+        </ui:TreeViewItem>
+        <ui:TreeViewItem
+            Header=""Pictures""
+            IsExpanded=""True"">
+            <ui:TreeViewItem Header=""Screenshots"" />
+            <ui:TreeViewItem Header=""Archive"" />
+        </ui:TreeViewItem>
+    </ui:TreeView>
+</UserControl>
+";
+
+        private const string TreeViewMultiSelectCSharpSource = @"using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Trees
+{
+    public partial class TreeViewMultiSelect : UserControl
+    {
+        public TreeViewMultiSelect()
+        {
+            InitializeComponent();
+        }
+    }
+}
+";
         private const string TreeViewExpansionXamlSource = @"<UserControl
     x:Class=""Fluence.Wpf.Demo.Pages.Trees.TreeViewExpansion""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
@@ -232,6 +271,7 @@ namespace Fluence.Wpf.Demo.Pages.Trees
 
             _ = DemoSampleControl.ReplaceSourceLink(TreeViewHierarchySourceLink, TreeViewHierarchyXamlSource, TreeViewHierarchyCSharpSource);
             _ = DemoSampleControl.ReplaceSourceLink(TreeViewSelectionSourceLink, TreeViewSelectionXamlSource, TreeViewSelectionCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLink(TreeViewMultiSelectSourceLink, TreeViewMultiSelectXamlSource, TreeViewMultiSelectCSharpSource);
             _ = DemoSampleControl.ReplaceSourceLink(TreeViewExpansionSourceLink, TreeViewExpansionXamlSource, TreeViewExpansionCSharpSource);
         }
 

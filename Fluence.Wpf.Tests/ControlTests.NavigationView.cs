@@ -223,7 +223,6 @@ namespace Fluence.Wpf.Tests
                 {
                     AssertPaneItemsScrollViewerUsesFluentStyle(NavigationViewPaneDisplayMode.Left, true);
                     AssertPaneItemsScrollViewerUsesFluentStyle(NavigationViewPaneDisplayMode.LeftCompact, false);
-                    AssertPaneItemsScrollViewerUsesFluentStyle(NavigationViewPaneDisplayMode.Top, true);
                 }
                 finally
                 {
