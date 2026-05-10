@@ -8,7 +8,7 @@
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Padding" Value="16,9" />
-        <Setter Property="Margin" Value="0,0,2,0" />
+        <Setter Property="Margin" Value="0,0,4,2" />
         <Setter Property="MinHeight" Value="38" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Template">
@@ -150,7 +150,7 @@
                             Grid.Row="0"
                             Grid.Column="0"
                             Grid.ColumnSpan="2"
-                            Margin="0,0,0,8"
+                            Margin="0,0,1,8"
                             Panel.ZIndex="1"
                             IsItemsHost="True"
                             KeyboardNavigation.TabIndex="1" />
@@ -177,7 +177,7 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="TabStripPlacement" Value="Bottom">
                             <Setter TargetName="HeaderPanel" Property="Grid.Row" Value="1" />
-                            <Setter TargetName="HeaderPanel" Property="Margin" Value="0,8,0,0" />
+                            <Setter TargetName="HeaderPanel" Property="Margin" Value="0,8,1,0" />
                             <Setter TargetName="ContentPanel" Property="Grid.Row" Value="0" />
                         </Trigger>
                         <Trigger Property="TabStripPlacement" Value="Left">
@@ -185,7 +185,7 @@
                             <Setter TargetName="HeaderPanel" Property="Grid.RowSpan" Value="2" />
                             <Setter TargetName="HeaderPanel" Property="Grid.Column" Value="0" />
                             <Setter TargetName="HeaderPanel" Property="Grid.ColumnSpan" Value="1" />
-                            <Setter TargetName="HeaderPanel" Property="Margin" Value="0,0,8,0" />
+                            <Setter TargetName="HeaderPanel" Property="Margin" Value="0,0,9,0" />
                             <Setter TargetName="ContentPanel" Property="Grid.Row" Value="0" />
                             <Setter TargetName="ContentPanel" Property="Grid.RowSpan" Value="2" />
                             <Setter TargetName="ContentPanel" Property="Grid.Column" Value="1" />
@@ -196,7 +196,7 @@
                             <Setter TargetName="HeaderPanel" Property="Grid.RowSpan" Value="2" />
                             <Setter TargetName="HeaderPanel" Property="Grid.Column" Value="1" />
                             <Setter TargetName="HeaderPanel" Property="Grid.ColumnSpan" Value="1" />
-                            <Setter TargetName="HeaderPanel" Property="Margin" Value="8,0,0,0" />
+                            <Setter TargetName="HeaderPanel" Property="Margin" Value="9,0,1,0" />
                             <Setter TargetName="ContentPanel" Property="Grid.Row" Value="0" />
                             <Setter TargetName="ContentPanel" Property="Grid.RowSpan" Value="2" />
                             <Setter TargetName="ContentPanel" Property="Grid.Column" Value="0" />

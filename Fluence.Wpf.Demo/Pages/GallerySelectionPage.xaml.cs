@@ -201,45 +201,38 @@ namespace Fluence.Wpf.Demo.Pages.Selection
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
     <ui:StackPanel Spacing=""18"">
-        <ui:StackPanel Spacing=""10"">
-            <TextBlock Text=""Switch with progress"" />
-            <ui:StackPanel Spacing=""12"">
+        <ui:StackPanel Spacing=""12"" Orientation=""Horizontal"">
+            <ui:ToggleSwitch
+                x:Name=""SimpleToggleSwitch""
+                VerticalAlignment=""Center""
+                IsChecked=""True"" />
+            <TextBlock
+                x:Name=""SimpleToggleStateText""
+                VerticalAlignment=""Center""
+                Text=""On"" />
+        </ui:StackPanel>
+        <ui:StackPanel Spacing=""8"">
+            <TextBlock
+                x:Name=""WorkToggleHeaderText""
+                Text=""Toggle work"" />
+            <ui:StackPanel Orientation=""Horizontal"">
                 <ui:ToggleSwitch
-                    x:Name=""ToggleProgressSwitch""
+                    x:Name=""WorkToggleSwitch""
+                    VerticalAlignment=""Center""
                     IsChecked=""True"" />
+                <TextBlock
+                    x:Name=""WorkToggleStateText""
+                    Margin=""12,0,0,0""
+                    VerticalAlignment=""Center""
+                    Text=""On"" />
                 <ui:ProgressRing
-                    x:Name=""ToggleProgressRing""
+                    x:Name=""WorkToggleProgressRing""
                     Width=""36""
                     Height=""36""
-                    IsActive=""{Binding IsChecked, ElementName=ToggleProgressSwitch}"" />
-            </ui:StackPanel>
-        </ui:StackPanel>
-        <ui:StackPanel Spacing=""10"">
-            <TextBlock Text=""Simple switch"" />
-            <ui:StackPanel Spacing=""12"" Orientation=""Horizontal"">
-                <ui:ToggleSwitch VerticalAlignment=""Center"" />
-                <TextBlock VerticalAlignment=""Center"" Text=""Notifications"" />
-            </ui:StackPanel>
-        </ui:StackPanel>
-        <ui:StackPanel Spacing=""10"">
-            <TextBlock Text=""Custom content"" />
-            <ui:StackPanel Spacing=""12"" Orientation=""Horizontal"">
-                <ui:ToggleSwitch
+                    Margin=""24,0,0,0""
                     VerticalAlignment=""Center""
-                    IsChecked=""True""
-                    OffContent=""Off""
-                    OnContent=""On"" />
-                <TextBlock VerticalAlignment=""Center"" Text=""Cloud sync"" />
-            </ui:StackPanel>
-        </ui:StackPanel>
-        <ui:StackPanel Spacing=""10"">
-            <TextBlock Text=""Disabled"" />
-            <ui:StackPanel Spacing=""12"" Orientation=""Horizontal"">
-                <ui:ToggleSwitch
-                    VerticalAlignment=""Center""
-                    IsChecked=""True""
-                    IsEnabled=""False"" />
-                <TextBlock VerticalAlignment=""Center"" Text=""Disabled (on)"" />
+                    IsActive=""{Binding IsChecked, ElementName=WorkToggleSwitch}""
+                    IsIndeterminate=""True"" />
             </ui:StackPanel>
         </ui:StackPanel>
     </ui:StackPanel>
@@ -352,15 +345,6 @@ namespace Fluence.Wpf.Demo.Pages.Selection
             _ = DemoSampleControl.ReplaceSourceLink(ToggleSwitchStatesSourceLink, ToggleSwitchStatesXamlSource, ToggleSwitchStatesCSharpSource);
             _ = DemoSampleControl.ReplaceSourceLink(RatingControlSourceLink, RatingControlXamlSource, RatingControlCSharpSource);
             _ = DemoSampleControl.ReplaceSourceLink(ComboBoxSelectionSourceLink, ComboBoxSelectionXamlSource, ComboBoxSelectionCSharpSource);
-
-            Loaded += GallerySelectionPage_Loaded;
-        }
-
-        private void GallerySelectionPage_Loaded(object sender, RoutedEventArgs e)
-        {
-            Loaded -= GallerySelectionPage_Loaded;
-            DefaultToggle_Changed(null, null);
-            ToggleProgressSwitch_Changed(null, null);
         }
 
         private void SelectAllCheckBox_Changed(object? sender, RoutedEventArgs? e)
@@ -398,29 +382,6 @@ namespace Fluence.Wpf.Demo.Pages.Selection
                 _ => null
             };
             _updatingSelectAll = false;
-        }
-
-        private void ToggleProgressSwitch_Changed(object? sender, RoutedEventArgs? e)
-        {
-            if (ToggleProgressSwitch is null || ToggleProgressRing is null)
-            {
-                return;
-            }
-
-            ToggleProgressRing.IsActive = ToggleProgressSwitch.IsChecked == true;
-        }
-
-        private void DefaultToggle_Changed(object? sender, RoutedEventArgs? e)
-        {
-            if (ToggleStateLabel is null || DefaultToggle is null)
-            {
-                return;
-            }
-
-            ToggleStateLabel.Text = string.Format(
-                CultureInfo.CurrentCulture,
-                "Default toggle: {0}",
-                DefaultToggle.IsChecked == true ? "On" : "Off");
         }
 
         private void SelectionDemoCombo_SelectionChanged(object sender, SelectionChangedEventArgs e)

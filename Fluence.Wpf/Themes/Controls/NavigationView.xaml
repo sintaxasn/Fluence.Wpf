@@ -810,22 +810,23 @@
                                 </Border.RenderTransform>
                             </Border>
                         </Grid>
-                        <Button
+                        <controls:Button
                             x:Name="PART_TopOverflowButton"
                             Grid.Column="3"
                             Width="40"
                             Height="36"
                             Margin="4,0"
+                            MinWidth="40"
+                            MinHeight="36"
                             Padding="0"
                             VerticalAlignment="Center"
-                            Background="Transparent"
-                            BorderThickness="0"
+                            Appearance="{x:Static uicore:ControlAppearance.Subtle}"
                             Visibility="Collapsed">
                             <controls:FontIcon
                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                 Glyph="&#xE712;"
                                 IconFontSize="16" />
-                        </Button>
+                        </controls:Button>
                         <ContentPresenter
                             Grid.Column="4"
                             HorizontalAlignment="Right"

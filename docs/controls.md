@@ -240,7 +240,7 @@ Selection members:
 | ------------------------------ | ----------------------- | --------------------------------------------------------------- |
 | `TreeView.SelectionMode`       | `TreeViewSelectionMode` | `Single` by default; use `Multiple` for checkbox selection.     |
 | `TreeView.SelectedItems`       | `IList`                 | Live selected item list.                                        |
-| `TreeViewItem.IsSelectionChecked` | `bool`                | Mirrors the multiple-selection checkbox state for each item.    |
+| `TreeViewItem.IsSelectionChecked` | `bool?`               | Mirrors checked, unchecked, and indeterminate checkbox state.    |
 
 Visual contract:
 - Per-level indent via `LevelToIndentConverter` (16 px per level).

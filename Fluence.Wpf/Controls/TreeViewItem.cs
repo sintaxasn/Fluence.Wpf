@@ -63,7 +63,7 @@ namespace Fluence.Wpf.Controls
         public static readonly DependencyProperty IsSelectionCheckedProperty =
             DependencyProperty.Register(
                 nameof(IsSelectionChecked),
-                typeof(bool),
+                typeof(bool?),
                 typeof(TreeViewItem),
                 new FrameworkPropertyMetadata(
                     false,
@@ -72,10 +72,11 @@ namespace Fluence.Wpf.Controls
 
         /// <summary>
         /// Gets or sets whether this item is checked in a multiple-selection tree view.
+        /// A <see langword="null"/> value represents an indeterminate parent state.
         /// </summary>
-        public bool IsSelectionChecked
+        public bool? IsSelectionChecked
         {
-            get => (bool)GetValue(IsSelectionCheckedProperty);
+            get => (bool?)GetValue(IsSelectionCheckedProperty);
             set => SetValue(IsSelectionCheckedProperty, value);
         }
 
@@ -119,7 +120,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            if (owner.SelectionMode != TreeViewSelectionMode.Multiple && IsSelectionChecked)
+            if (owner.SelectionMode != TreeViewSelectionMode.Multiple && IsSelectionChecked != false)
             {
                 SetCurrentValue(IsSelectionCheckedProperty, false);
             }
@@ -138,10 +139,10 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            bool isChecked = (bool)e.NewValue;
+            bool? isChecked = (bool?)e.NewValue;
             if (owner.SelectionMode != TreeViewSelectionMode.Multiple)
             {
-                if (isChecked)
+                if (isChecked != false)
                 {
                     item.SetCurrentValue(IsSelectionCheckedProperty, false);
                 }

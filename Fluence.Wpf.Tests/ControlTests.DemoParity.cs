@@ -60,9 +60,11 @@ namespace Fluence.Wpf.Tests
             {
                 Controls.RepeatButton? button = FindVisualChildByName<Controls.RepeatButton>(window, "RepeatCounterButton");
                 TextBlock? count = FindVisualChildByName<TextBlock>(window, "RepeatButtonCountText");
+                Controls.RepeatButton? accentRepeat = FindRepeatButtonByContent(window, "Accent repeat");
 
                 Assert.IsNotNull(button, "Buttons page should include a repeat button wired to a count label.");
                 Assert.IsNotNull(count, "Buttons page should include a nearby repeat count text block.");
+                Assert.IsNull(accentRepeat, "Buttons page should not include the extra Accent repeat sample.");
                 Assert.AreEqual("Clicks: 0", count.Text);
 
                 button.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
@@ -110,25 +112,42 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void GallerySelectionPage_RatingAndToggleProgressSamplesArePresent()
+        public void GallerySelectionPage_RatingAndRequestedToggleSamplesArePresent()
         {
             RunDemoPageTest(() => new GallerySelectionPage(), window =>
             {
                 Controls.RatingControl? rating = FindVisualChildByName<Controls.RatingControl>(window, "RatingSample");
                 Controls.RatingControl? readOnlyRating = FindVisualChildByName<Controls.RatingControl>(window, "ReadOnlyRatingSample");
-                Controls.ToggleSwitch? toggle = FindVisualChildByName<Controls.ToggleSwitch>(window, "ToggleProgressSwitch");
-                Controls.ProgressRing? ring = FindVisualChildByName<Controls.ProgressRing>(window, "ToggleProgressRing");
+                Controls.ToggleSwitch? simpleToggle = FindVisualChildByName<Controls.ToggleSwitch>(window, "SimpleToggleSwitch");
+                TextBlock? simpleLabel = FindVisualChildByName<TextBlock>(window, "SimpleToggleStateText");
+                TextBlock? workHeader = FindVisualChildByName<TextBlock>(window, "WorkToggleHeaderText");
+                Controls.ToggleSwitch? workToggle = FindVisualChildByName<Controls.ToggleSwitch>(window, "WorkToggleSwitch");
+                TextBlock? workLabel = FindVisualChildByName<TextBlock>(window, "WorkToggleStateText");
+                Controls.ProgressRing? ring = FindVisualChildByName<Controls.ProgressRing>(window, "WorkToggleProgressRing");
 
                 Assert.IsNotNull(rating, "Selection page should include an editable RatingControl example.");
                 Assert.IsNotNull(readOnlyRating, "Selection page should include a read-only RatingControl example.");
-                Assert.IsNotNull(toggle, "Selection page should include the ToggleSwitch that controls progress.");
-                Assert.IsNotNull(ring, "Selection page should include a ProgressRing bound to the ToggleSwitch.");
+                Assert.AreEqual(2, CountVisualChildren<Controls.ToggleSwitch>(window),
+                    "Selection page ToggleSwitch section should contain only the two requested ToggleSwitch samples.");
+                Assert.IsNotNull(simpleToggle, "Selection page should include a simple on ToggleSwitch sample.");
+                Assert.IsNotNull(simpleLabel, "Selection page should include the simple ToggleSwitch state label.");
+                Assert.IsTrue(simpleToggle.IsChecked.GetValueOrDefault());
+                Assert.AreEqual("On", simpleLabel.Text);
+                Assert.IsNotNull(workHeader, "Selection page should include the Toggle work header text.");
+                Assert.AreEqual("Toggle work", workHeader.Text);
+                Assert.IsNotNull(workToggle, "Selection page should include the Toggle work ToggleSwitch.");
+                Assert.IsNotNull(workLabel, "Selection page should include the Toggle work state label.");
+                Assert.IsTrue(workToggle.IsChecked.GetValueOrDefault());
+                Assert.AreEqual("On", workLabel.Text);
+                Assert.IsNotNull(ring, "Selection page should include a ProgressRing bound to the Toggle work ToggleSwitch.");
+                Assert.IsTrue(ring.IsIndeterminate);
+                Assert.AreEqual(new Thickness(24, 0, 0, 0), ring.Margin);
 
-                toggle.IsChecked = false;
+                workToggle.IsChecked = false;
                 DrainDispatcher(window.Dispatcher);
                 Assert.IsFalse(ring.IsActive);
 
-                toggle.IsChecked = true;
+                workToggle.IsChecked = true;
                 DrainDispatcher(window.Dispatcher);
                 Assert.IsTrue(ring.IsActive);
             });
@@ -144,6 +163,74 @@ namespace Fluence.Wpf.Tests
                 Assert.IsNotNull(treeView, "Trees page should include a TreeView with multi-select checkboxes.");
                 Assert.AreEqual(Fluence.Wpf.TreeViewSelectionMode.Multiple, treeView.SelectionMode);
             });
+        }
+
+        [TestMethod]
+        public void GalleryLayoutPage_ExpanderStartsCollapsed()
+        {
+            RunDemoPageTest(() => new GalleryLayoutPage(), window =>
+            {
+                Controls.Expander? expander = FindVisualChildByName<Controls.Expander>(window, "AdvancedOptionsExpander");
+
+                Assert.IsNotNull(expander, "Layout page should expose the Advanced options Expander.");
+                Assert.IsFalse(expander.IsExpanded, "Layout page Expander sample should be collapsed by default.");
+            });
+        }
+
+        [TestMethod]
+        public void GalleryDataAndTreeSamplesExposeThemedBorders()
+        {
+            RunDemoPageTest(() => new GalleryDataPage(), window =>
+            {
+                AssertControlHasThemedBorder(FindVisualChildByName<Controls.ListView>(window, "SimpleListView"), "SimpleListView");
+                AssertControlHasThemedBorder(FindVisualChildByName<Controls.ListView>(window, "RichListView"), "RichListView");
+            });
+
+            RunDemoPageTest(() => new GalleryDataBindingPage(), window =>
+            {
+                AssertControlHasThemedBorder(FindVisualChildByName<Controls.ListView>(window, "BoundListView"), "BoundListView");
+                AssertControlHasThemedBorder(FindVisualChildByName<Controls.ListView>(window, "SelectionModeListView"), "SelectionModeListView");
+                AssertControlHasThemedBorder(FindVisualChildByName<Controls.ListView>(window, "DataTemplateListView"), "DataTemplateListView");
+            });
+
+            RunDemoPageTest(() => new GalleryTreesPage(), window =>
+            {
+                AssertControlHasThemedBorder(FindVisualChildByName<Controls.TreeView>(window, "HierarchyTreeView"), "HierarchyTreeView");
+                AssertControlHasThemedBorder(FindVisualChildByName<Controls.TreeView>(window, "SelectionTreeView"), "SelectionTreeView");
+                AssertControlHasThemedBorder(FindVisualChildByName<Controls.TreeView>(window, "MultiSelectTreeView"), "MultiSelectTreeView");
+                AssertControlHasThemedBorder(FindVisualChildByName<Controls.TreeView>(window, "ExpansionTreeView"), "ExpansionTreeView");
+            });
+        }
+
+        private static void AssertControlHasThemedBorder(Control? control, string name)
+        {
+            Assert.IsNotNull(control, name + " should exist in the demo page.");
+            Assert.AreEqual(new Thickness(1), control.BorderThickness, name + " should expose a visible 1px border.");
+            Assert.IsNotNull(control.BorderBrush, name + " should use a themed BorderBrush.");
+        }
+
+        private static int CountVisualChildren<T>(DependencyObject root) where T : DependencyObject
+        {
+            int count = 0;
+            foreach (T child in FindVisualChildren<T>(root))
+            {
+                count++;
+            }
+
+            return count;
+        }
+
+        private static Controls.RepeatButton? FindRepeatButtonByContent(DependencyObject root, string content)
+        {
+            foreach (Controls.RepeatButton repeatButton in FindVisualChildren<Controls.RepeatButton>(root))
+            {
+                if ((repeatButton.Content as string) == content)
+                {
+                    return repeatButton;
+                }
+            }
+
+            return null;
         }
 
         private static void RunDemoPageTest(Func<UserControl> createPage, Action<Window> verify)

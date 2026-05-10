@@ -1404,13 +1404,14 @@ namespace Fluence.Wpf.Controls
 
         private System.Windows.Controls.ContextMenu CreateTopOverflowMenu(IReadOnlyList<NavigationViewItem> overflowItems)
         {
-            System.Windows.Controls.ContextMenu menu = new();
+            ContextMenu menu = new();
             foreach (NavigationViewItem navItem in overflowItems)
             {
-                System.Windows.Controls.MenuItem menuItem = new()
+                MenuItem menuItem = new()
                 {
                     Header = GetOverflowItemText(navItem),
                     Icon = CreateOverflowIcon(navItem),
+                    MinWidth = 180,
                     Tag = navItem
                 };
                 menuItem.Click += OnTopOverflowMenuItemClick;
@@ -1422,15 +1423,21 @@ namespace Fluence.Wpf.Controls
 
         private static object? CreateOverflowIcon(NavigationViewItem navItem)
         {
-            return navItem.Icon is FontIcon fontIcon
-                ? new FontIcon
-                {
-                    Glyph = fontIcon.Glyph,
-                    IconFontFamily = fontIcon.IconFontFamily,
-                    IconFontSize = fontIcon.IconFontSize,
-                    MirroredWhenRightToLeft = fontIcon.MirroredWhenRightToLeft
-                }
-                : null;
+            if (navItem.Icon is not FontIcon fontIcon)
+            {
+                return null;
+            }
+
+            FontIcon overflowIcon = new()
+            {
+                Glyph = fontIcon.Glyph,
+                IconFontFamily = fontIcon.IconFontFamily,
+                IconFontSize = fontIcon.IconFontSize,
+                MirroredWhenRightToLeft = fontIcon.MirroredWhenRightToLeft
+            };
+            overflowIcon.SetResourceReference(ForegroundProperty, "TextFillColorSecondaryBrush");
+
+            return overflowIcon;
         }
 
         private static string GetOverflowItemText(NavigationViewItem navItem)

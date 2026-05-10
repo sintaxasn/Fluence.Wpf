@@ -112,6 +112,7 @@
                                     VerticalAlignment="Center"
                                     Focusable="False"
                                     IsChecked="{Binding IsSelectionChecked, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                    IsThreeState="True"
                                     Visibility="Collapsed" />
 
                                 <!--  PART_Header: item label / content  -->

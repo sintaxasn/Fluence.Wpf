@@ -52,7 +52,9 @@ namespace Fluence.Wpf.Demo.Pages
     </ui:StackPanel>
 </ui:Border>
 
-<ui:Expander Header=""Advanced options"" IsExpanded=""True"">
+<ui:Expander
+    x:Name=""AdvancedOptionsExpander""
+    Header=""Advanced options"">
     <TextBlock Text=""Expander shows secondary settings only when useful.""
                TextWrapping=""Wrap"" />
 </ui:Expander>";

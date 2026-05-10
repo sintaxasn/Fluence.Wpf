@@ -334,10 +334,6 @@ namespace Fluence.Wpf.Demo.Pages.Buttons
             VerticalAlignment=""Center""
             Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
             Text=""Clicks: 0"" />
-        <ui:RepeatButton
-            Margin=""0,0,8,8""
-            Appearance=""Accent""
-            Content=""Accent repeat"" />
     </WrapPanel>
 </UserControl>
 ";

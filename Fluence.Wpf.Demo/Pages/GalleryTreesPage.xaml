@@ -32,8 +32,11 @@
                 Variant="{x:Static uicore:CardVariant.Default}">
                 <StackPanel>
                     <ui:TreeView
+                        x:Name="HierarchyTreeView"
                         MaxHeight="260"
-                        Margin="0,0,0,12">
+                        Margin="0,0,0,12"
+                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1">
                         <ui:TreeViewItem
                             Header="Workspace"
                             IsExpanded="True">
@@ -70,6 +73,8 @@
                         x:Name="SelectionTreeView"
                         MaxHeight="260"
                         Margin="0,0,0,12"
+                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
                         SelectedItemChanged="SelectionTreeView_SelectedItemChanged">
                         <ui:TreeViewItem
                             Header="Inbox"
@@ -112,6 +117,8 @@
                         x:Name="MultiSelectTreeView"
                         MaxHeight="260"
                         Margin="0,0,0,12"
+                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
                         SelectionMode="{x:Static uicore:TreeViewSelectionMode.Multiple}">
                         <ui:TreeViewItem
                             Header="Documents"
@@ -142,7 +149,9 @@
                     <ui:TreeView
                         x:Name="ExpansionTreeView"
                         MaxHeight="260"
-                        Margin="0,0,0,12">
+                        Margin="0,0,0,12"
+                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1">
                         <ui:TreeViewItem
                             Header="Project"
                             IsExpanded="True">

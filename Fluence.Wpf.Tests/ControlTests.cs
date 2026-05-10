@@ -1259,8 +1259,56 @@ namespace Fluence.Wpf.Tests
                         "Left TabStripPlacement should place tab headers in the left column.");
                     Assert.AreEqual(1, Grid.GetColumn(contentPanel),
                         "Left TabStripPlacement should keep content in the right column.");
-                    Assert.AreEqual(new Thickness(0, 0, 8, 0), headerPanel.Margin,
-                        "Left TabStripPlacement should keep the same 8px Fluent gap used by the default top layout.");
+                    Assert.AreEqual(new Thickness(0, 0, 9, 0), headerPanel.Margin,
+                        "Left TabStripPlacement should keep the 8px Fluent gap plus 1px border breathing room.");
+
+                    TabItem? firstItem = tabControl.Items[0] as TabItem;
+                    Assert.IsNotNull(firstItem);
+                    Assert.AreEqual(new Thickness(0, 0, 4, 2), firstItem.Margin,
+                        "TabItem should reserve right and bottom space so selected borders are not clipped.");
+                }
+                finally
+                {
+                    window.Close();
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                }
+            });
+        }
+
+        [TestMethod]
+        public void FluentTabControl_BottomPlacement_LeavesBorderBreathingRoom()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+
+                try
+                {
+                    TabControl tabControl = new()
+                    {
+                        TabStripPlacement = Dock.Bottom
+                    };
+                    _ = tabControl.Items.Add(new TabItem { Header = "First", Content = new TextBlock { Text = "A" } });
+                    _ = tabControl.Items.Add(new TabItem { Header = "Second", Content = new TextBlock { Text = "B" } });
+                    window.Content = tabControl;
+                    window.Width = 640;
+                    window.Height = 480;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    FrameworkElement? headerPanel = tabControl.Template.FindName("HeaderPanel", tabControl) as FrameworkElement;
+
+                    Assert.IsNotNull(headerPanel);
+                    Assert.AreEqual(new Thickness(0, 8, 1, 0), headerPanel.Margin,
+                        "Bottom TabStripPlacement should keep the top gap plus 1px right-side border breathing room.");
+
+                    TabItem? firstItem = tabControl.Items[0] as TabItem;
+                    Assert.IsNotNull(firstItem);
+                    Assert.AreEqual(new Thickness(0, 0, 4, 2), firstItem.Margin,
+                        "TabItem should reserve right and bottom space so selected borders are not clipped.");
                 }
                 finally
                 {
@@ -1293,7 +1341,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(FindVisualChildByName<Controls.TextBox>(window, "CharCountTextBox"));
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Selection");
-                    Assert.IsNotNull(FindVisualChildByName<Controls.ToggleSwitch>(window, "DefaultToggle"));
+                    Assert.IsNotNull(FindVisualChildByName<Controls.ToggleSwitch>(window, "SimpleToggleSwitch"));
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Selection");
                     Assert.IsNotNull(FindVisualChildByName<Controls.ComboBox>(window, "SelectionDemoCombo"));
@@ -2406,7 +2454,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void RadioButton_ContentAlignment_MatchesWinUITopLayout()
+        public void RadioButton_ContentAlignment_CentersTextWithIndicator()
         {
             RunOnStaThread(() =>
             {
@@ -2433,16 +2481,16 @@ namespace Fluence.Wpf.Tests
 
                     Assert.IsNotNull(indicatorHost, "RadioButton template must include IndicatorHost.");
                     Assert.IsNotNull(contentPresenter, "RadioButton template must include ContentPresenter.");
-                    Assert.AreEqual(VerticalAlignment.Top, radio.VerticalContentAlignment,
-                        "RadioButton should default to WinUI's top content alignment.");
-                    Assert.AreEqual(VerticalAlignment.Top, indicatorHost.VerticalAlignment,
-                        "RadioButton indicator should be top aligned within the root row.");
+                    Assert.AreEqual(VerticalAlignment.Center, radio.VerticalContentAlignment,
+                        "RadioButton text should default to center alignment with the indicator.");
+                    Assert.AreEqual(VerticalAlignment.Center, indicatorHost.VerticalAlignment,
+                        "RadioButton indicator should be centered within the root row.");
                     Assert.AreEqual(new Thickness(0), indicatorHost.Margin,
                         "RadioButton indicator should not carry an extra top offset.");
-                    Assert.AreEqual(VerticalAlignment.Top, contentPresenter.VerticalAlignment,
-                        "RadioButton content should follow VerticalContentAlignment rather than re-centering.");
-                    Assert.AreEqual(new Thickness(8, 6, 0, 0), contentPresenter.Margin,
-                        "RadioButton content presenter should use the WinUI default text inset.");
+                    Assert.AreEqual(VerticalAlignment.Center, contentPresenter.VerticalAlignment,
+                        "RadioButton content should align vertically with the indicator center.");
+                    Assert.AreEqual(new Thickness(8, 0, 0, 0), contentPresenter.Margin,
+                        "RadioButton content presenter should keep the horizontal WinUI text inset without a top offset.");
                 }
                 finally
                 {

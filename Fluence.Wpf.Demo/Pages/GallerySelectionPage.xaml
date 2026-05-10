@@ -145,58 +145,47 @@
                 Padding="16"
                 Variant="{x:Static uicore:CardVariant.Default}">
                 <StackPanel>
-                    <WrapPanel Margin="0,0,0,12">
-                        <StackPanel Margin="0,0,28,10">
-                            <ui:ToggleSwitch
-                                x:Name="ToggleProgressSwitch"
-                                Margin="0,0,0,12"
-                                Checked="ToggleProgressSwitch_Changed"
-                                IsChecked="True"
-                                Unchecked="ToggleProgressSwitch_Changed" />
-                            <ui:ProgressRing
-                                x:Name="ToggleProgressRing"
-                                Width="36"
-                                Height="36"
-                                IsActive="{Binding IsChecked, ElementName=ToggleProgressSwitch}" />
-                        </StackPanel>
-                        <StackPanel Margin="0,0,20,10" Orientation="Horizontal">
-                            <ui:ToggleSwitch
-                                x:Name="DefaultToggle"
-                                Margin="0,0,12,0"
-                                Checked="DefaultToggle_Changed"
-                                Unchecked="DefaultToggle_Changed" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Text="Default" />
-                        </StackPanel>
-                        <StackPanel Margin="0,0,20,10" Orientation="Horizontal">
-                            <ui:ToggleSwitch
-                                Margin="0,0,12,0"
-                                IsChecked="True"
-                                OffContent="Off"
-                                OnContent="On" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Text="Custom On/Off" />
-                        </StackPanel>
-                        <StackPanel Margin="0,0,20,10" Orientation="Horizontal">
-                            <ui:ToggleSwitch
-                                Margin="0,0,12,0"
-                                IsChecked="True"
-                                IsEnabled="False" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                Text="Disabled (on)" />
-                        </StackPanel>
-                    </WrapPanel>
+                    <StackPanel
+                        Margin="0,0,0,18"
+                        Orientation="Horizontal">
+                        <ui:ToggleSwitch
+                            x:Name="SimpleToggleSwitch"
+                            Margin="0,0,12,0"
+                            VerticalAlignment="Center"
+                            IsChecked="True" />
+                        <TextBlock
+                            x:Name="SimpleToggleStateText"
+                            VerticalAlignment="Center"
+                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                            Text="On" />
+                    </StackPanel>
                     <TextBlock
-                        x:Name="ToggleStateLabel"
+                        x:Name="WorkToggleHeaderText"
+                        Margin="0,0,0,8"
+                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                        Text="Toggle work" />
+                    <StackPanel
                         Margin="0,0,0,12"
-                        Style="{StaticResource StateLabelStyle}"
-                        Text="Default toggle: Off" />
+                        Orientation="Horizontal">
+                        <ui:ToggleSwitch
+                            x:Name="WorkToggleSwitch"
+                            VerticalAlignment="Center"
+                            IsChecked="True" />
+                        <TextBlock
+                            x:Name="WorkToggleStateText"
+                            Margin="12,0,0,0"
+                            VerticalAlignment="Center"
+                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                            Text="On" />
+                        <ui:ProgressRing
+                            x:Name="WorkToggleProgressRing"
+                            Width="36"
+                            Height="36"
+                            Margin="24,0,0,0"
+                            VerticalAlignment="Center"
+                            IsActive="{Binding IsChecked, ElementName=WorkToggleSwitch}"
+                            IsIndeterminate="True" />
+                    </StackPanel>
                     <ui:HyperlinkButton
                         x:Name="ToggleSwitchStatesSourceLink"
                         HorizontalAlignment="Right"

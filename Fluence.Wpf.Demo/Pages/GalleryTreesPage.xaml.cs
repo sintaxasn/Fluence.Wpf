@@ -41,7 +41,11 @@ namespace Fluence.Wpf.Demo.Pages
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
-    <ui:TreeView MaxHeight=""260"">
+    <ui:TreeView
+        x:Name=""HierarchyTreeView""
+        MaxHeight=""260""
+        BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
+        BorderThickness=""1"">
         <ui:TreeViewItem
             Header=""Workspace""
             IsExpanded=""True"">
@@ -85,6 +89,8 @@ namespace Fluence.Wpf.Demo.Pages.Trees
             x:Name=""SelectionTreeView""
             MaxHeight=""260""
             Margin=""0,0,0,12""
+            BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
+            BorderThickness=""1""
             SelectedItemChanged=""SelectionTreeView_SelectedItemChanged"">
             <ui:TreeViewItem
                 Header=""Inbox""
@@ -157,7 +163,10 @@ namespace Fluence.Wpf.Demo.Pages.Trees
     xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf""
     xmlns:uicore=""clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"">
     <ui:TreeView
+        x:Name=""MultiSelectTreeView""
         MaxHeight=""260""
+        BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
+        BorderThickness=""1""
         SelectionMode=""{x:Static uicore:TreeViewSelectionMode.Multiple}"">
         <ui:TreeViewItem
             Header=""Documents""
@@ -198,7 +207,9 @@ namespace Fluence.Wpf.Demo.Pages.Trees
         <ui:TreeView
             x:Name=""ExpansionTreeView""
             MaxHeight=""260""
-            Margin=""0,0,0,12"">
+            Margin=""0,0,0,12""
+            BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
+            BorderThickness=""1"">
             <ui:TreeViewItem
                 Header=""Project""
                 IsExpanded=""True"">

@@ -30,6 +30,8 @@ using System.Windows;
 using System.Windows.Controls;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Fluence.Wpf.Controls;
+using FluentButton = Fluence.Wpf.Controls.Button;
+using FluentMenuItem = Fluence.Wpf.Controls.MenuItem;
 
 namespace Fluence.Wpf.Tests
 {
@@ -213,16 +215,21 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    System.Windows.Controls.Button? overflowButton = FindVisualChildByName<System.Windows.Controls.Button>(nav, "PART_TopOverflowButton");
+                    FluentButton? overflowButton = FindVisualChildByName<FluentButton>(nav, "PART_TopOverflowButton");
                     Assert.IsNotNull(overflowButton, "Top pane should expose a three-dot overflow button.");
+                    Assert.AreEqual(Fluence.Wpf.ControlAppearance.Subtle, overflowButton.Appearance,
+                        "Top pane overflow button should use the same subtle Fluence button chrome as other navigation strip buttons.");
                     Assert.AreEqual(Visibility.Visible, overflowButton.Visibility,
                         "Top pane overflow button should become visible when items do not fit.");
                     Assert.IsNotNull(overflowButton.ContextMenu, "Top pane overflow button should own a lightweight popup menu.");
                     Assert.IsTrue(overflowButton.ContextMenu.Items.Count > 0,
                         "Top pane overflow menu should contain hidden navigation items.");
 
-                    System.Windows.Controls.MenuItem? overflowItem = overflowButton.ContextMenu.Items[overflowButton.ContextMenu.Items.Count - 1] as System.Windows.Controls.MenuItem;
-                    Assert.IsNotNull(overflowItem, "Overflow entries should be lightweight MenuItem rows.");
+                    FluentMenuItem? overflowItem = overflowButton.ContextMenu.Items[overflowButton.ContextMenu.Items.Count - 1] as FluentMenuItem;
+                    Assert.IsNotNull(overflowItem, "Overflow entries should be lightweight Fluence MenuItem rows.");
+                    Assert.IsNotNull(overflowItem.Icon, "Overflow entries should include the underlying item icon.");
+                    Assert.AreEqual("Windowing", overflowItem.Header,
+                        "Overflow entries should show the underlying item text.");
                     overflowItem.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.MenuItem.ClickEvent));
                     DrainDispatcher(window.Dispatcher);
 

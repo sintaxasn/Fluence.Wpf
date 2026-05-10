@@ -40,6 +40,7 @@ namespace Fluence.Wpf.Controls
     public class TreeView : System.Windows.Controls.TreeView
     {
         private readonly ArrayList _selectedItems = [];
+        private bool _updatingSelectionChecks;
 
         /// <summary>
         /// Initializes static members of the TreeView class and overrides the default style metadata.
@@ -131,12 +132,17 @@ namespace Fluence.Wpf.Controls
             }
         }
 
-        internal void UpdateSelectionFromItem(TreeViewItem item, bool isSelected)
+        internal void UpdateSelectionFromItem(TreeViewItem item, bool? isSelected)
         {
+            if (_updatingSelectionChecks)
+            {
+                return;
+            }
+
             if (SelectionMode == TreeViewSelectionMode.None)
             {
                 _selectedItems.Clear();
-                if (item.IsSelectionChecked)
+                if (item.IsSelectionChecked != false)
                 {
                     item.SetCurrentValue(TreeViewItem.IsSelectionCheckedProperty, false);
                 }
@@ -149,7 +155,7 @@ namespace Fluence.Wpf.Controls
             if (SelectionMode == TreeViewSelectionMode.Single)
             {
                 _selectedItems.Clear();
-                if (isSelected)
+                if (isSelected == true)
                 {
                     _ = _selectedItems.Add(selectedItem);
                     item.SetCurrentValue(System.Windows.Controls.TreeViewItem.IsSelectedProperty, true);
@@ -158,16 +164,20 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            if (isSelected)
+            _updatingSelectionChecks = true;
+            try
             {
-                if (!_selectedItems.Contains(selectedItem))
+                if (isSelected is not null)
                 {
-                    _ = _selectedItems.Add(selectedItem);
+                    ApplySelectionStateToDescendants(item, isSelected.Value);
                 }
+
+                UpdateAncestorSelectionStates(item);
+                RebuildMultipleSelectedItems();
             }
-            else if (_selectedItems.Contains(selectedItem))
+            finally
             {
-                _selectedItems.Remove(selectedItem);
+                _updatingSelectionChecks = false;
             }
         }
 
@@ -230,6 +240,100 @@ namespace Fluence.Wpf.Controls
             }
 
             return owner as TreeView;
+        }
+
+        private static void ApplySelectionStateToDescendants(TreeViewItem item, bool isSelected)
+        {
+            foreach (object child in item.Items)
+            {
+                TreeViewItem? container = item.ItemContainerGenerator.ContainerFromItem(child) as TreeViewItem;
+                container ??= child as TreeViewItem;
+
+                if (container is null)
+                {
+                    continue;
+                }
+
+                container.SetCurrentValue(TreeViewItem.IsSelectionCheckedProperty, isSelected);
+                ApplySelectionStateToDescendants(container, isSelected);
+            }
+        }
+
+        private static void UpdateAncestorSelectionStates(TreeViewItem item)
+        {
+            ItemsControl? owner = ItemsControl.ItemsControlFromItemContainer(item);
+            while (owner is TreeViewItem parent)
+            {
+                parent.SetCurrentValue(TreeViewItem.IsSelectionCheckedProperty, GetChildSelectionState(parent));
+                owner = ItemsControl.ItemsControlFromItemContainer(parent);
+            }
+        }
+
+        private static bool? GetChildSelectionState(TreeViewItem parent)
+        {
+            int childCount = 0;
+            int checkedCount = 0;
+            bool hasPartialChild = false;
+
+            foreach (object child in parent.Items)
+            {
+                TreeViewItem? container = parent.ItemContainerGenerator.ContainerFromItem(child) as TreeViewItem;
+                container ??= child as TreeViewItem;
+
+                if (container is null)
+                {
+                    continue;
+                }
+
+                childCount++;
+                if (container.IsSelectionChecked == true)
+                {
+                    checkedCount++;
+                }
+                else if (container.IsSelectionChecked is null)
+                {
+                    hasPartialChild = true;
+                }
+            }
+
+            return childCount switch
+            {
+                0 => false,
+                _ when checkedCount == childCount => true,
+                _ when checkedCount == 0 && !hasPartialChild => false,
+                _ => null
+            };
+        }
+
+        private void RebuildMultipleSelectedItems()
+        {
+            _selectedItems.Clear();
+            AddCheckedItems(this);
+        }
+
+        private void AddCheckedItems(ItemsControl owner)
+        {
+            foreach (object item in owner.Items)
+            {
+                TreeViewItem? container = owner.ItemContainerGenerator.ContainerFromItem(item) as TreeViewItem;
+                container ??= item as TreeViewItem;
+
+                if (container is null)
+                {
+                    continue;
+                }
+
+                if (container.IsSelectionChecked == true)
+                {
+                    object selectedItem = GetSelectedItemValue(container);
+                    if (!_selectedItems.Contains(selectedItem))
+                    {
+                        _ = _selectedItems.Add(selectedItem);
+                    }
+                }
+
+                AddCheckedItems(container);
+            }
         }
 
         private static object GetSelectedItemValue(TreeViewItem item)

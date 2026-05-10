@@ -92,6 +92,8 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(firstCheckBox, "Multiple-selection TreeViewItem template should expose a checkbox.");
                     Assert.AreEqual(Visibility.Visible, firstCheckBox.Visibility,
                         "TreeViewItem checkbox should be visible when the owning TreeView is in Multiple mode.");
+                    Assert.IsTrue(firstCheckBox.IsThreeState,
+                        "Multiple-selection TreeViewItem checkbox should support indeterminate parent state.");
 
                     first.IsSelectionChecked = true;
                     second.IsSelectionChecked = true;
@@ -154,10 +156,81 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(checkBox, "TreeViewItem template should keep the checkbox part available.");
                     Assert.AreEqual(Visibility.Collapsed, checkBox.Visibility,
                         "TreeViewItem checkbox should be hidden when selection is disabled.");
-                    Assert.IsFalse(item.IsSelectionChecked,
+                    Assert.AreEqual(false, item.IsSelectionChecked,
                         "TreeViewItem checked state should be cleared when SelectionMode=None.");
                     Assert.AreEqual(0, treeView.SelectedItems.Count,
                         "TreeView.SelectedItems should be cleared when SelectionMode=None.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary is not null)
+                    {
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void TreeView_MultipleSelectionCascadesAndComputesParentState()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+
+                try
+                {
+                    FluentTreeViewItem parent = new() { Header = "Documents", IsExpanded = true };
+                    FluentTreeViewItem first = new() { Header = "Contracts" };
+                    FluentTreeViewItem second = new() { Header = "Invoices" };
+                    FluentTreeViewItem third = new() { Header = "Receipts" };
+                    _ = parent.Items.Add(first);
+                    _ = parent.Items.Add(second);
+                    _ = parent.Items.Add(third);
+
+                    FluentTreeView treeView = new()
+                    {
+                        SelectionMode = Fluence.Wpf.TreeViewSelectionMode.Multiple
+                    };
+                    _ = treeView.Items.Add(parent);
+                    window.Content = treeView;
+                    window.Width = 320;
+                    window.Height = 240;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    parent.IsSelectionChecked = true;
+                    DrainDispatcher(window.Dispatcher);
+
+                    Assert.AreEqual(true, first.IsSelectionChecked);
+                    Assert.AreEqual(true, second.IsSelectionChecked);
+                    Assert.AreEqual(true, third.IsSelectionChecked);
+                    CollectionAssert.Contains(treeView.SelectedItems, parent);
+                    CollectionAssert.Contains(treeView.SelectedItems, first);
+                    CollectionAssert.Contains(treeView.SelectedItems, second);
+                    CollectionAssert.Contains(treeView.SelectedItems, third);
+
+                    second.IsSelectionChecked = false;
+                    DrainDispatcher(window.Dispatcher);
+
+                    Assert.IsNull(parent.IsSelectionChecked,
+                        "Parent should become indeterminate when fewer than all child items are checked.");
+                    CollectionAssert.DoesNotContain(treeView.SelectedItems, parent);
+                    CollectionAssert.Contains(treeView.SelectedItems, first);
+                    CollectionAssert.DoesNotContain(treeView.SelectedItems, second);
+                    CollectionAssert.Contains(treeView.SelectedItems, third);
+
+                    first.IsSelectionChecked = false;
+                    third.IsSelectionChecked = false;
+                    DrainDispatcher(window.Dispatcher);
+
+                    Assert.AreEqual(false, parent.IsSelectionChecked,
+                        "Parent should be unchecked when none of its child items are checked.");
+                    Assert.AreEqual(0, treeView.SelectedItems.Count);
                 }
                 finally
                 {

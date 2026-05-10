@@ -69,6 +69,8 @@
                     <ui:ListView
                         x:Name="BoundListView"
                         Grid.Row="2"
+                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
                         SelectionMode="Single">
                         <ui:ListView.ItemTemplate>
                             <DataTemplate>
@@ -157,6 +159,8 @@
                     <ui:ListView
                         x:Name="SelectionModeListView"
                         Height="200"
+                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
                         SelectionChanged="SelectionModeListView_SelectionChanged"
                         SelectionMode="Single">
                         <ListViewItem Content="Alpha" />
@@ -198,6 +202,8 @@
                     <ui:ListView
                         x:Name="DataTemplateListView"
                         Height="180"
+                        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                        BorderThickness="1"
                         SelectionMode="Single">
                         <ui:ListView.ItemTemplate>
                             <DataTemplate>
