@@ -730,7 +730,7 @@ namespace Fluence.Wpf.Tests
         {
             RunWithShownWindow(w =>
             {
-                // Mirror the real PSADT lifecycle: XAML sets IsMinimizeButtonVisible=Collapsed
+                // XAML sets IsMinimizeButtonVisible=Collapsed
                 // on the FluentDialog template, then code-behind flips it back to Visible when
                 // DialogAllowMinimize is honoured (IsMinimizeButtonVisible=Visibility.Visible).
                 w.IsMinimizeButtonVisible = Visibility.Collapsed;
@@ -990,7 +990,7 @@ namespace Fluence.Wpf.Tests
             // WS_SYSMENU on the native HWND. Without WS_SYSMENU (and the implicitly-disabled
             // WS_MINIMIZEBOX) DefWindowProc silently drops WM_SYSCOMMAND/SC_MINIMIZE, so
             // SystemCommands.MinimizeWindow(this) would be a no-op - exactly the production
-            // symptom that made the PSADT AllowMinimize caption button look clickable but
+            // symptom that made the AllowMinimize caption button look clickable but
             // refuse to actually minimize. The Executed handler must bypass the sysmenu gate
             // by assigning WindowState directly so the transition always lands.
             RunWithShownWindow(w =>
