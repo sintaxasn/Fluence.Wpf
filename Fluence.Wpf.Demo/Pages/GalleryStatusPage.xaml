@@ -1,4 +1,4 @@
-<UserControl
+﻿<UserControl
     x:Class="Fluence.Wpf.Demo.Pages.GalleryStatusPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -10,7 +10,7 @@
     d:DesignWidth="900"
     mc:Ignorable="d">
     <ui:SmoothScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="24" HorizontalAlignment="Stretch">
+        <StackPanel Margin="28,24,28,28" HorizontalAlignment="Stretch">
             <TextBlock
                 Margin="0,0,0,4"
                 ui:TextBlockExtensions.Typography="Title"
@@ -47,8 +47,8 @@
                         Value="50" />
                     <TextBlock
                         x:Name="SliderValueLabel"
-                        HorizontalAlignment="Center"
                         Margin="0,8,0,24"
+                        HorizontalAlignment="Center"
                         Style="{StaticResource StateLabelStyle}"
                         Text="Value: 50" />
                     <Grid Margin="0,12,0,12">
@@ -64,7 +64,7 @@
                                 Text="Paused" />
                             <ui:ProgressBar
                                 Height="8"
-                                Margin="6,0,6,6"                                
+                                Margin="6,0,6,6"
                                 HorizontalAlignment="Stretch"
                                 Maximum="100"
                                 Minimum="0"
@@ -73,12 +73,12 @@
                         </StackPanel>
                         <StackPanel Grid.Column="2">
                             <TextBlock
-                                Margin="6,0,6,6"                                
+                                Margin="6,0,6,6"
                                 Style="{StaticResource StateLabelStyle}"
                                 Text="Failure" />
                             <ui:ProgressBar
                                 Height="8"
-                                Margin="6,0,6,12"                                
+                                Margin="6,0,6,12"
                                 HorizontalAlignment="Stretch"
                                 Maximum="100"
                                 Minimum="0"
@@ -89,8 +89,8 @@
                     <ui:HyperlinkButton
                         x:Name="ProgressBarValueSourceLink"
                         HorizontalAlignment="Right"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}"
-                        Content="Source" />
+                        Content="Source"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
                 </StackPanel>
             </ui:Card>
 
@@ -123,8 +123,8 @@
                         x:Name="ProgressBarIndeterminateSourceLink"
                         Margin="0,12,0,0"
                         HorizontalAlignment="Right"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}"
-                        Content="Source" />
+                        Content="Source"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
                 </StackPanel>
             </ui:Card>
 
@@ -166,8 +166,8 @@
                         x:Name="ProgressBarStepsSourceLink"
                         Margin="0,12,0,0"
                         HorizontalAlignment="Right"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}"
-                        Content="Source" />
+                        Content="Source"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
                 </StackPanel>
             </ui:Card>
 
@@ -178,9 +178,7 @@
                 Padding="16"
                 Variant="{x:Static uicore:CardVariant.Default}">
                 <StackPanel>
-                    <Grid
-                        Margin="0,12,0,12"
-                        HorizontalAlignment="Stretch">
+                    <Grid Margin="0,12,0,12" HorizontalAlignment="Stretch">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
@@ -263,12 +261,12 @@
                             Width="48"
                             Height="48"
                             HorizontalAlignment="Center"
-                            Maximum="100"
-                            Minimum="0"
                             IsActive="True"
                             IsIndeterminate="False"
-                            Value="80"
-                            ProgressState="{x:Static uicore:ProgressRingState.Paused}" />
+                            Maximum="100"
+                            Minimum="0"
+                            ProgressState="{x:Static uicore:ProgressRingState.Paused}"
+                            Value="80" />
                         <TextBlock
                             Grid.Row="2"
                             Grid.Column="2"
@@ -301,8 +299,8 @@
                     <ui:HyperlinkButton
                         x:Name="ProgressRingsSourceLink"
                         HorizontalAlignment="Right"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}"
-                        Content="Source" />
+                        Content="Source"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
                 </StackPanel>
             </ui:Card>
 
@@ -355,8 +353,8 @@
                         x:Name="InfoBarsSourceLink"
                         Margin="0,12,0,0"
                         HorizontalAlignment="Right"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}"
-                        Content="Source" />
+                        Content="Source"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
                 </StackPanel>
             </ui:Card>
         </StackPanel>

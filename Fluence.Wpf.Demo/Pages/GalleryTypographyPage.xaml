@@ -9,7 +9,7 @@
     d:DesignWidth="900"
     mc:Ignorable="d">
     <ui:SmoothScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="24">
+        <StackPanel Margin="28,24,28,28" HorizontalAlignment="Stretch">
             <TextBlock
                 Margin="0,0,0,4"
                 Style="{StaticResource SectionHeaderStyle}"

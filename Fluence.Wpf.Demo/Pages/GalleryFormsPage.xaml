@@ -10,7 +10,7 @@
     d:DesignWidth="900"
     mc:Ignorable="d">
     <ui:SmoothScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="24" HorizontalAlignment="Stretch">
+        <StackPanel Margin="28,24,28,28" HorizontalAlignment="Stretch">
             <TextBlock
                 Margin="0,0,0,4"
                 ui:TextBlockExtensions.Typography="Title"
@@ -25,9 +25,7 @@
                 Margin="0,0,0,4"
                 Style="{StaticResource SectionHeaderStyle}"
                 Text="Sign in" />
-            <TextBlock
-                Style="{StaticResource SectionDescriptionStyle}"
-                Text="Use a compact form for account access, with clear labels and a primary action." />
+            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Use a compact form for account access, with clear labels and a primary action." />
             <ui:Card
                 Margin="0,0,0,16"
                 Padding="16"
@@ -69,24 +67,22 @@
                     </StackPanel>
                     <ui:InfoBar
                         x:Name="SignInStatusBar"
+                        Title="Ready"
                         Margin="0,0,0,12"
                         IsClosable="True"
                         IsOpen="False"
                         Message="Signed in for this demo session."
-                        Severity="{x:Static uicore:InfoBarSeverity.Success}"
-                        Title="Ready" />
+                        Severity="{x:Static uicore:InfoBarSeverity.Success}" />
                     <ui:HyperlinkButton
                         x:Name="SignInFormSourceLink"
                         HorizontalAlignment="Right"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}"
-                        Content="Source" />
+                        Content="Source"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
                 </StackPanel>
             </ui:Card>
 
             <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="Checkout" />
-            <TextBlock
-                Style="{StaticResource SectionDescriptionStyle}"
-                Text="Combine contact, shipping, and quantity fields when a form needs several related decisions." />
+            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Combine contact, shipping, and quantity fields when a form needs several related decisions." />
             <ui:Card
                 Margin="0,0,0,16"
                 Padding="16"
@@ -97,17 +93,13 @@
                         ui:TextBlockExtensions.Typography="Caption"
                         Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                         Text="Contact email" />
-                    <ui:TextBox
-                        Margin="0,0,0,12"
-                        PlaceholderText="name@example.com" />
+                    <ui:TextBox Margin="0,0,0,12" PlaceholderText="name@example.com" />
                     <TextBlock
                         Margin="0,0,0,4"
                         ui:TextBlockExtensions.Typography="Caption"
                         Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                         Text="Shipping speed" />
-                    <ui:ComboBox
-                        Margin="0,0,0,12"
-                        SelectedIndex="1">
+                    <ui:ComboBox Margin="0,0,0,12" SelectedIndex="1">
                         <ComboBoxItem Content="Standard" />
                         <ComboBoxItem Content="Priority" />
                         <ComboBoxItem Content="Overnight" />
@@ -140,15 +132,13 @@
                     <ui:HyperlinkButton
                         x:Name="CheckoutFormSourceLink"
                         HorizontalAlignment="Right"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}"
-                        Content="Source" />
+                        Content="Source"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
                 </StackPanel>
             </ui:Card>
 
             <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="Settings" />
-            <TextBlock
-                Style="{StaticResource SectionDescriptionStyle}"
-                Text="Use form controls to edit a small set of preferences and show confirmation after saving." />
+            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Use form controls to edit a small set of preferences and show confirmation after saving." />
             <ui:Card Padding="16" Variant="{x:Static uicore:CardVariant.Default}">
                 <StackPanel MaxWidth="560" HorizontalAlignment="Left">
                     <TextBlock
@@ -156,17 +146,13 @@
                         ui:TextBlockExtensions.Typography="Caption"
                         Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                         Text="Display name" />
-                    <ui:TextBox
-                        Margin="0,0,0,12"
-                        Text="Avery Stone" />
+                    <ui:TextBox Margin="0,0,0,12" Text="Avery Stone" />
                     <TextBlock
                         Margin="0,0,0,4"
                         ui:TextBlockExtensions.Typography="Caption"
                         Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                         Text="Theme" />
-                    <ui:ComboBox
-                        Margin="0,0,0,12"
-                        SelectedIndex="0">
+                    <ui:ComboBox Margin="0,0,0,12" SelectedIndex="0">
                         <ComboBoxItem Content="Use system setting" />
                         <ComboBoxItem Content="Light" />
                         <ComboBoxItem Content="Dark" />
@@ -186,17 +172,17 @@
                         Content="Save settings" />
                     <ui:InfoBar
                         x:Name="SettingsSavedBar"
+                        Title="Saved"
                         Margin="0,0,0,12"
                         IsClosable="True"
                         IsOpen="False"
                         Message="Your preferences were saved."
-                        Severity="{x:Static uicore:InfoBarSeverity.Success}"
-                        Title="Saved" />
+                        Severity="{x:Static uicore:InfoBarSeverity.Success}" />
                     <ui:HyperlinkButton
                         x:Name="SettingsFormSourceLink"
                         HorizontalAlignment="Right"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}"
-                        Content="Source" />
+                        Content="Source"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
                 </StackPanel>
             </ui:Card>
         </StackPanel>

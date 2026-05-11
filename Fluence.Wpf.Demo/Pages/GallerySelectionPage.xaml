@@ -10,7 +10,7 @@
     d:DesignWidth="900"
     mc:Ignorable="d">
     <ui:SmoothScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="24" HorizontalAlignment="Stretch">
+        <StackPanel Margin="28,24,28,28" HorizontalAlignment="Stretch">
             <TextBlock
                 Margin="0,0,0,4"
                 ui:TextBlockExtensions.Typography="Title"
@@ -80,8 +80,8 @@
                     <ui:HyperlinkButton
                         x:Name="CheckBoxStatesSourceLink"
                         HorizontalAlignment="Right"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}"
-                        Content="Source" />
+                        Content="Source"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
                 </StackPanel>
             </ui:Card>
 
@@ -133,8 +133,8 @@
                     <ui:HyperlinkButton
                         x:Name="RadioButtonGroupsSourceLink"
                         HorizontalAlignment="Right"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}"
-                        Content="Source" />
+                        Content="Source"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
                 </StackPanel>
             </ui:Card>
 
@@ -145,9 +145,7 @@
                 Padding="16"
                 Variant="{x:Static uicore:CardVariant.Default}">
                 <StackPanel>
-                    <StackPanel
-                        Margin="0,0,0,18"
-                        Orientation="Horizontal">
+                    <StackPanel Margin="0,0,0,18" Orientation="Horizontal">
                         <ui:ToggleSwitch
                             x:Name="SimpleToggleSwitch"
                             Margin="0,0,12,0"
@@ -164,9 +162,7 @@
                         Margin="0,0,0,8"
                         Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                         Text="Toggle work" />
-                    <StackPanel
-                        Margin="0,0,0,12"
-                        Orientation="Horizontal">
+                    <StackPanel Margin="0,0,0,12" Orientation="Horizontal">
                         <ui:ToggleSwitch
                             x:Name="WorkToggleSwitch"
                             VerticalAlignment="Center"
@@ -189,8 +185,8 @@
                     <ui:HyperlinkButton
                         x:Name="ToggleSwitchStatesSourceLink"
                         HorizontalAlignment="Right"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}"
-                        Content="Source" />
+                        Content="Source"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
                 </StackPanel>
             </ui:Card>
 
@@ -217,8 +213,8 @@
                     <ui:HyperlinkButton
                         x:Name="RatingControlSourceLink"
                         HorizontalAlignment="Right"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}"
-                        Content="Source" />
+                        Content="Source"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
                 </StackPanel>
             </ui:Card>
 
@@ -265,8 +261,8 @@
                     <ui:HyperlinkButton
                         x:Name="ComboBoxSelectionSourceLink"
                         HorizontalAlignment="Right"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}"
-                        Content="Source" />
+                        Content="Source"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
                 </StackPanel>
             </ui:Card>
         </StackPanel>

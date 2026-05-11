@@ -10,7 +10,7 @@
     d:DesignWidth="900"
     mc:Ignorable="d">
     <ui:SmoothScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="24" HorizontalAlignment="Stretch">
+        <StackPanel Margin="28,24,28,28" HorizontalAlignment="Stretch">
             <TextBlock
                 Margin="0,0,0,4"
                 ui:TextBlockExtensions.Typography="Title"
@@ -39,9 +39,7 @@
                         BorderThickness="1"
                         CornerRadius="8">
                         <ui:StackPanel Spacing="10">
-                            <TextBlock
-                                Style="{StaticResource BodyStrongTextBlockStyle}"
-                                Text="Settings group" />
+                            <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Settings group" />
                             <TextBlock
                                 Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                 Text="StackPanel spacing keeps rows readable while Border frames the group."
@@ -49,9 +47,9 @@
                             <ui:Separator />
                             <DockPanel LastChildFill="True">
                                 <ui:Button
-                                    DockPanel.Dock="Right"
                                     Appearance="Accent"
-                                    Content="Apply" />
+                                    Content="Apply"
+                                    DockPanel.Dock="Right" />
                                 <TextBlock
                                     VerticalAlignment="Center"
                                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
@@ -60,9 +58,7 @@
                         </ui:StackPanel>
                     </ui:Border>
 
-                    <ui:Expander
-                        x:Name="AdvancedOptionsExpander"
-                        Header="Advanced options">
+                    <ui:Expander x:Name="AdvancedOptionsExpander" Header="Advanced options">
                         <TextBlock
                             Margin="0,8,0,0"
                             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
@@ -74,8 +70,8 @@
                         x:Name="LayoutSourceLink"
                         Margin="0,12,0,0"
                         HorizontalAlignment="Right"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}"
-                        Content="Source" />
+                        Content="Source"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
                 </StackPanel>
             </ui:Card>
         </StackPanel>

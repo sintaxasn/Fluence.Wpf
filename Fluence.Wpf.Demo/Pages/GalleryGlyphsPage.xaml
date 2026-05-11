@@ -8,7 +8,7 @@
     d:DesignHeight="900"
     d:DesignWidth="900"
     mc:Ignorable="d">
-    <Grid x:Name="PageRoot" Margin="24">
+    <Grid x:Name="PageRoot" Margin="28,24,28,28">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />

@@ -10,7 +10,7 @@
     d:DesignWidth="900"
     mc:Ignorable="d">
     <ui:SmoothScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="28,0,28,0" HorizontalAlignment="Stretch">
+        <StackPanel Margin="28,0,28,28" HorizontalAlignment="Stretch">
             <!--  Hero brand graphic  -->
             <StackPanel Margin="0,8,0,28" HorizontalAlignment="Center">
                 <Image
@@ -20,23 +20,21 @@
                     HorizontalAlignment="Stretch"
                     RenderOptions.BitmapScalingMode="HighQuality" />
                 <TextBlock
-                    HorizontalAlignment="Center"
                     Margin="0,0,0,0"
+                    HorizontalAlignment="Center"
                     ui:TextBlockExtensions.Typography="Subtitle"
                     Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                     Text="Windows 11 Fluent Design controls for WPF" />
                 <TextBlock
-                    HorizontalAlignment="Center"
                     Margin="0,8,0,0"
+                    HorizontalAlignment="Center"
                     ui:TextBlockExtensions.Typography="Body"
                     Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}">
-                    <Hyperlink
-                        NavigateUri="https://github.com/sintaxasn/fluence.wpf"
-                        RequestNavigate="GitHubLink_RequestNavigate">
+                    <Hyperlink NavigateUri="https://github.com/sintaxasn/fluence.wpf" RequestNavigate="GitHubLink_RequestNavigate">
                         <Run Text="https://github.com/sintaxasn/fluence.wpf" />
                     </Hyperlink>
                 </TextBlock>
-        </StackPanel>
+            </StackPanel>
 
             <!--  Action cards  -->
             <UniformGrid Margin="0,8,0,16" Columns="2">

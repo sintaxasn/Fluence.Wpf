@@ -10,7 +10,7 @@
     d:DesignWidth="900"
     mc:Ignorable="d">
     <ui:SmoothScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="24" HorizontalAlignment="Stretch">
+        <StackPanel Margin="28,24,28,28" HorizontalAlignment="Stretch">
             <TextBlock
                 Margin="0,0,0,4"
                 ui:TextBlockExtensions.Typography="Title"
@@ -119,8 +119,8 @@
                     <ui:HyperlinkButton
                         x:Name="ListViewItemsSourceLink"
                         HorizontalAlignment="Right"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}"
-                        Content="Source" />
+                        Content="Source"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
                 </StackPanel>
             </ui:Card>
 
@@ -157,8 +157,8 @@
                     <ui:HyperlinkButton
                         x:Name="ListViewEmptyStateSourceLink"
                         HorizontalAlignment="Right"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}"
-                        Content="Source" />
+                        Content="Source"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
                 </StackPanel>
             </ui:Card>
 
@@ -201,8 +201,8 @@
                 x:Name="CardVariantsSourceLink"
                 Margin="0,0,0,16"
                 HorizontalAlignment="Right"
-                Style="{StaticResource DemoSourceLinkButtonStyle}"
-                Content="Source" />
+                Content="Source"
+                Style="{StaticResource DemoSourceLinkButtonStyle}" />
         </StackPanel>
     </ui:SmoothScrollViewer>
 </UserControl>

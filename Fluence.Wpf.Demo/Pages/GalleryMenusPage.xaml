@@ -10,7 +10,7 @@
     d:DesignWidth="900"
     mc:Ignorable="d">
     <ui:SmoothScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="24" HorizontalAlignment="Stretch">
+        <StackPanel Margin="28,24,28,28" HorizontalAlignment="Stretch">
             <TextBlock
                 Margin="0,0,0,4"
                 ui:TextBlockExtensions.Typography="Title"
@@ -98,8 +98,8 @@
                         x:Name="MenuBarSourceLink"
                         Margin="8,0,0,0"
                         HorizontalAlignment="Right"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}"
-                        Content="Source" />
+                        Content="Source"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
                 </StackPanel>
             </ui:Card>
 
@@ -150,16 +150,20 @@
                                     IsCheckable="True"
                                     Tag="Add to favorites" />
                                 <ui:MenuItem Header="Share">
-                                    <ui:MenuItem Click="ContextMenu_Click" Header="Copy link" Tag="Share - Copy link" />
-                                    <ui:MenuItem Click="ContextMenu_Click" Header="Send email" Tag="Share - Send email" />
+                                    <ui:MenuItem
+                                        Click="ContextMenu_Click"
+                                        Header="Copy link"
+                                        Tag="Share - Copy link" />
+                                    <ui:MenuItem
+                                        Click="ContextMenu_Click"
+                                        Header="Send email"
+                                        Tag="Share - Send email" />
                                     <ui:MenuItem Header="Export PDF" IsEnabled="False" />
                                 </ui:MenuItem>
                             </ui:ContextMenu>
                         </ui:Card.ContextMenu>
                         <StackPanel>
-                            <TextBlock
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Text="Right-click this note" />
+                            <TextBlock Foreground="{DynamicResource TextFillColorPrimaryBrush}" Text="Right-click this note" />
                             <TextBlock
                                 x:Name="ContextMenuResultLabel"
                                 Margin="0,8,0,0"
@@ -170,8 +174,8 @@
                     <ui:HyperlinkButton
                         x:Name="ContextMenuSourceLink"
                         HorizontalAlignment="Right"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}"
-                        Content="Source" />
+                        Content="Source"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
                 </StackPanel>
             </ui:Card>
 
@@ -201,9 +205,7 @@
                                             FontWeight="SemiBold"
                                             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                             Text="Share" />
-                                        <TextBlock
-                                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                            Text="Copy a link or send an email." />
+                                        <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}" Text="Copy a link or send an email." />
                                     </StackPanel>
                                 </ui:ToolTip>
                             </ui:Button.ToolTip>
@@ -221,8 +223,8 @@
                     <ui:HyperlinkButton
                         x:Name="ToolTipsSourceLink"
                         HorizontalAlignment="Right"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}"
-                        Content="Source" />
+                        Content="Source"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
                 </StackPanel>
             </ui:Card>
 
@@ -301,8 +303,8 @@
                     <ui:HyperlinkButton
                         x:Name="DropDownAndSplitButtonsSourceLink"
                         HorizontalAlignment="Right"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}"
-                        Content="Source" />
+                        Content="Source"
+                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
                 </StackPanel>
             </ui:Card>
         </StackPanel>
