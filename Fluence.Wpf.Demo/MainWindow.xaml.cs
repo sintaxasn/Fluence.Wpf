@@ -942,7 +942,25 @@ namespace Fluence.Wpf.Demo
 
                 titleText.MaxWidth = availableTitleWidth;
                 titleText.UpdateLayout();
+
+                // Re-read both positions after the layout pass: the TitleBar may still be
+                // settling into a new window size (e.g. after a Width assignment that is
+                // constrained by the screen), which can shift the NavSearchBox by several
+                // pixels relative to the value captured before UpdateLayout was called.
+                // Using stale positions produces a MaxWidth that is too narrow, leaving a
+                // gap larger than the intended 12-px clearance.
                 titlePoint = titleText.TransformToAncestor(this).Transform(new Point(0, 0));
+                searchPoint = NavSearchBox.TransformToAncestor(this).Transform(new Point(0, 0));
+                searchLeft = searchPoint.X;
+                availableTitleWidth = searchLeft - titlePoint.X - 12.0;
+                if (availableTitleWidth < 48.0)
+                {
+                    titleText.ClearValue(MaxWidthProperty);
+                    ShellTitleBar.Title = string.Empty;
+                    return;
+                }
+
+                titleText.MaxWidth = availableTitleWidth;
                 double titleRight = titlePoint.X + titleText.ActualWidth;
                 if (titleRight > searchLeft - 11.0)
                 {
