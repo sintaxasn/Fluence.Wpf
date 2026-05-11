@@ -9,6 +9,7 @@
     <AssemblyName>Fluence.Wpf.Demo.Mvvm</AssemblyName>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <ApplicationIcon>Resources\fluence-wpf-appicon-256.ico</ApplicationIcon>
+    <!-- slopwatch-ignore: SW005 MVVM demo intentionally suppresses XML docs and WPF threading analyzer noise outside the library API. -->
     <NoWarn>$(NoWarn);CS1591;VSTHRD001</NoWarn>
   </PropertyGroup>
 

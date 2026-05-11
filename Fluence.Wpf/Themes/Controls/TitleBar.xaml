@@ -28,12 +28,17 @@
                         CornerRadius="{DynamicResource ControlCornerRadius}">
                         <TextBlock
                             x:Name="Glyph"
+                            Width="16"
+                            Height="16"
                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                             FontFamily="{TemplateBinding FontFamily}"
                             FontSize="{TemplateBinding FontSize}"
                             Foreground="{TemplateBinding Foreground}"
-                            Text="{TemplateBinding Content}" />
+                            LineHeight="16"
+                            LineStackingStrategy="BlockLineHeight"
+                            Text="{TemplateBinding Content}"
+                            TextAlignment="Center" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -88,7 +93,9 @@
                             x:Name="PART_BackButton"
                             Grid.Column="1"
                             Content="&#xE72B;"
-                            Margin="4,0,0,0"
+                            Width="36"
+                            Height="32"
+                            Margin="6,0,0,0"
                             Style="{StaticResource TitleBarGlyphButtonStyle}"
                             ToolTip="Back"
                             Visibility="Collapsed" />

@@ -18,12 +18,6 @@
     <Color x:Key="SystemAccentColorDark2">#FF003E92</Color>
     <Color x:Key="SystemAccentColorDark3">#FF001A68</Color>
 
-    <!--  Theme-adaptive aliases (Light → Dark variants, Dark → Light variants).  -->
-    <!--  AccentManager sets these per-theme at runtime. Defaults here are for Light.  -->
-    <Color x:Key="SystemAccentColorPrimary">#FF0067C0</Color>
-    <Color x:Key="SystemAccentColorSecondary">#FF003E92</Color>
-    <Color x:Key="SystemAccentColorTertiary">#FF001A68</Color>
-
     <!--  Accent fill (derived from Primary with alpha steps)  -->
     <Color x:Key="AccentFillColorDefault">#FF0067C0</Color>
     <Color x:Key="AccentFillColorSecondary">#E60067C0</Color>
@@ -46,7 +40,7 @@
     <SolidColorBrush x:Key="SystemAccentColorDark3Brush" Color="{DynamicResource SystemAccentColorDark3}" />
 
     <!--  Theme-adaptive brushes  -->
-    <SolidColorBrush x:Key="SystemAccentColorPrimaryBrush" Color="{DynamicResource SystemAccentColorPrimary}" />
+    <SolidColorBrush x:Key="SystemAccentColorPrimaryBrush" Color="{DynamicResource SystemAccentColorDark1}" />
     <SolidColorBrush x:Key="SystemAccentColorSecondaryBrush" Color="{DynamicResource SystemAccentColorSecondary}" />
     <SolidColorBrush x:Key="SystemAccentColorTertiaryBrush" Color="{DynamicResource SystemAccentColorTertiary}" />
     <SolidColorBrush x:Key="NavigationViewSelectionIndicatorBrush" Color="{DynamicResource SystemAccentColor}" />
@@ -56,8 +50,6 @@
     <SolidColorBrush x:Key="AccentFillColorSecondaryBrush" Color="{DynamicResource AccentFillColorSecondary}" />
     <SolidColorBrush x:Key="AccentFillColorTertiaryBrush" Color="{DynamicResource AccentFillColorTertiary}" />
     <SolidColorBrush x:Key="AccentFillColorDisabledBrush" Color="{DynamicResource AccentFillColorDisabled}" />
-
-    <!--  Accent text fill brushes (set per-theme by ApplicationAccentColorManager)  -->
 
     <!--  Accent selection highlight  -->
     <SolidColorBrush x:Key="AccentFillColorSelectedTextBackgroundBrush" Color="{DynamicResource SystemAccentColor}" />

@@ -174,12 +174,11 @@ namespace Fluence.Wpf.Tests
                 "NativeConstants." + fieldName + " must match the Win32 value.");
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0004:Cast is redundant", Justification = "This is necessary on net472.")]
         private static IntPtr MakeLParamScreen(double screenX, double screenY)
         {
             int x = (int)screenX;
             int y = (int)screenY;
-            return (IntPtr)((y << 16) | (x & 0xffff));
+            return new IntPtr((y << 16) | (x & 0xffff));
         }
 
         private static System.Windows.Controls.Button? GetCaptionButtonField(FluenceWindow window, string fieldName)
@@ -1135,7 +1134,6 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Bug", "S1226:Method parameters, caught exceptions and foreach variables' initial values should not be ignored", Justification = "We're discarding anyway.")]
         public void MinimizeButton_EndToEnd_WorksUnderShowDialogModalPsadtConfig()
         {
             // Same topology as the Show() variant above, but uses ShowDialog() which is what
@@ -1153,7 +1151,7 @@ namespace Fluence.Wpf.Tests
                 bool minimizeCommandCanExecute = false;
                 bool minimizeButtonIsEnabled = false;
                 Visibility minimizeButtonVisibility = Visibility.Collapsed;
-                Exception? scenarioException = null;
+                ExceptionDispatchInfo? scenarioExceptionInfo = null;
 
                 try
                 {
@@ -1174,7 +1172,7 @@ namespace Fluence.Wpf.Tests
                     };
 
                     FluenceWindow capturedWindow = window;
-                    capturedWindow.Loaded += (_, __) =>
+                    capturedWindow.Loaded += (loadedSender, loadedArgs) =>
                     {
                         _ = capturedWindow.Dispatcher.BeginInvoke(() =>
                         {
@@ -1203,14 +1201,14 @@ namespace Fluence.Wpf.Tests
                                     }
                                     catch (Exception exInner)
                                     {
-                                        scenarioException = exInner;
+                                        scenarioExceptionInfo = ExceptionDispatchInfo.Capture(exInner);
                                         capturedWindow.Close();
                                     }
                                 }, DispatcherPriority.ApplicationIdle);
                             }
                             catch (Exception exOuter)
                             {
-                                scenarioException = exOuter;
+                                scenarioExceptionInfo = ExceptionDispatchInfo.Capture(exOuter);
                                 capturedWindow.Close();
                             }
                         }, DispatcherPriority.ApplicationIdle);
@@ -1218,10 +1216,7 @@ namespace Fluence.Wpf.Tests
 
                     _ = window.ShowDialog();
 
-                    if (scenarioException is not null)
-                    {
-                        ExceptionDispatchInfo.Capture(scenarioException).Throw();
-                    }
+                    scenarioExceptionInfo?.Throw();
 
                     Assert.AreEqual(Visibility.Visible, minimizeButtonVisibility,
                         "PSADT ShowDialog flow: IsMinimizeButtonVisible must render Visible after Loaded flip.");
@@ -1252,7 +1247,6 @@ namespace Fluence.Wpf.Tests
         #region 8. PasswordBox.SelectAll
 
         [TestMethod]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Blocker Code Smell", "S2699:Tests should include assertions", Justification = "Suppress this for now.")]
         public void PasswordBox_SelectAll_DoesNotThrowWithoutTemplate()
         {
             RunOnFreshStaThread(() =>
@@ -1262,8 +1256,14 @@ namespace Fluence.Wpf.Tests
 
                 try
                 {
-                    PasswordBox passwordBox = new();
+                    PasswordBox passwordBox = new()
+                    {
+                        Password = "hidden"
+                    };
                     passwordBox.SelectAll();
+
+                    Assert.AreEqual("hidden", passwordBox.Password,
+                        "SelectAll without a template should not alter the password value.");
                 }
                 finally
                 {

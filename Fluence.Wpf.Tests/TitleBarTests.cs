@@ -34,11 +34,13 @@ using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Shell;
 using System.Windows.Threading;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Fluent = Fluence.Wpf.Controls;
 using WpfButton = System.Windows.Controls.Button;
+using WpfTextBlock = System.Windows.Controls.TextBlock;
 
 namespace Fluence.Wpf.Tests
 {
@@ -83,6 +85,42 @@ namespace Fluence.Wpf.Tests
                         "PART_BackButton must opt into WindowChrome hit testing.");
                     Assert.IsTrue(WindowChrome.GetIsHitTestVisibleInChrome(paneToggleButton),
                         "PART_PaneToggleButton must opt into WindowChrome hit testing.");
+                });
+        }
+
+        [TestMethod]
+        public void TitleBar_BackButton_UsesCompactSlot()
+        {
+            RunWithTitleBar(
+                delegate
+                {
+                    return new Fluent.TitleBar
+                    {
+                        Title = "Fluence",
+                        IsBackButtonVisible = true,
+                        IsPaneToggleButtonVisible = true
+                    };
+                },
+                titleBar =>
+                {
+                    WpfButton backButton = GetTemplateButton(titleBar, "PART_BackButton");
+                    WpfButton paneToggleButton = GetTemplateButton(titleBar, "PART_PaneToggleButton");
+
+                    Assert.AreEqual(36.0, backButton.ActualWidth, 0.5,
+                        "The title-bar back button should use a smaller slot than the pane toggle.");
+                    Assert.AreEqual(32.0, backButton.ActualHeight, 0.5,
+                        "The title-bar back button should use a smaller height than the pane toggle.");
+                    Assert.AreEqual(42.0, paneToggleButton.ActualWidth, 0.5,
+                        "The title-bar pane toggle should keep the compact title-bar glyph slot.");
+                    Assert.AreEqual(36.0, paneToggleButton.ActualHeight, 0.5,
+                        "The title-bar pane toggle should keep the compact title-bar glyph height.");
+
+                    WpfTextBlock? backGlyph = FindVisualChild<WpfTextBlock>(backButton);
+                    Assert.IsNotNull(backGlyph, "Back button should render a glyph text block.");
+                    Assert.AreEqual(16.0, backGlyph.ActualWidth, 0.5,
+                        "Back glyph should occupy a 16px visual box.");
+                    Assert.AreEqual(16.0, backGlyph.ActualHeight, 0.5,
+                        "Back glyph should occupy a 16px visual box.");
                 });
         }
 
@@ -218,6 +256,28 @@ namespace Fluence.Wpf.Tests
             WpfButton? button = titleBar.Template.FindName(partName, titleBar) as WpfButton;
             Assert.IsNotNull(button, partName + " must exist in the TitleBar template.");
             return button;
+        }
+
+        private static T? FindVisualChild<T>(DependencyObject parent)
+            where T : DependencyObject
+        {
+            int childCount = VisualTreeHelper.GetChildrenCount(parent);
+            for (int i = 0; i < childCount; i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(parent, i);
+                if (child is T typedChild)
+                {
+                    return typedChild;
+                }
+
+                T? descendant = FindVisualChild<T>(child);
+                if (descendant is not null)
+                {
+                    return descendant;
+                }
+            }
+
+            return null;
         }
 
         private static void InvokeButton(WpfButton button)

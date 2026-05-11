@@ -191,6 +191,9 @@
                     <ControlTemplate.Triggers>
                         <!--  Top mode: keep icon and text visible while tightening horizontal spacing.  -->
                         <DataTrigger Binding="{Binding PaneDisplayMode, RelativeSource={RelativeSource AncestorType=controls:NavigationView}}" Value="{x:Static uicore:NavigationViewPaneDisplayMode.Top}">
+                            <Setter Property="HorizontalAlignment" Value="Left" />
+                            <Setter Property="HorizontalContentAlignment" Value="Left" />
+                            <Setter Property="MinWidth" Value="0" />
                             <Setter TargetName="OuterBorder" Property="Margin" Value="4,4,4,4" />
                             <Setter TargetName="OuterBorder" Property="Padding" Value="2,0,4,0" />
                             <Setter TargetName="IconColumn" Property="Width" Value="Auto" />
@@ -451,9 +454,8 @@
                         <!--
                             Rounded content background and the 1 px stroke are split so
                             PART_ContentPresenter sits flush with the pane column edge.
-                            WI-1 F1 regression: wrapping the presenter in a BorderThickness=1
-                            Border pushed content.X to 281.333 at 150% DPI (1 logical px
-                            snaps to 1.333 at 150%), causing the pane-layout tests to fail.
+                            Regression guard: wrapping the presenter in a BorderThickness=1
+                            Border adds layout-rounding drift at 150% DPI.
                         -->
                         <Border
                             Background="{TemplateBinding ContentBackground}"
@@ -527,7 +529,7 @@
             <!--
                 Two-column inline layout: pane resizes between 48 and 280 and pushes content.
                 This mirrors WinUI 3 NavigationView / .NET 10 WPF NavigationView compact-left
-                behavior and replaces the previous Panel.ZIndex overlay approach.
+                behavior while transition code temporarily expands content during Top mode changes.
             -->
             <Grid>
                 <Grid.ColumnDefinitions>
@@ -674,9 +676,8 @@
                         <!--
                             Rounded content background and the 1 px stroke are split so
                             PART_ContentPresenter sits flush with the pane column edge.
-                            WI-1 F1 regression: wrapping the presenter in a BorderThickness=1
-                            Border pushed content.X to 281.333 at 150% DPI (1 logical px
-                            snaps to 1.333 at 150%), causing the pane-layout tests to fail.
+                            Regression guard: wrapping the presenter in a BorderThickness=1
+                            Border adds layout-rounding drift at 150% DPI.
                         -->
                         <Border
                             Background="{TemplateBinding ContentBackground}"
@@ -811,7 +812,7 @@
                                 Height="36"
                                 MinWidth="40"
                                 MinHeight="36"
-                                Margin="0,0,4,0"
+                                Margin="0"
                                 Padding="0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Center"

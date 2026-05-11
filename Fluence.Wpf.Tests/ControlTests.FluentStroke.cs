@@ -163,6 +163,60 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void CheckBox_CheckedGlyph_UsesIndeterminateDashStrokeWeight()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+
+                try
+                {
+                    Controls.CheckBox checkBox = new()
+                    {
+                        Content = "Check",
+                        IsChecked = true,
+                        IsHitTestVisible = false,
+                        Width = 200,
+                        Height = 40
+                    };
+                    window.Content = checkBox;
+                    window.Width = 240;
+                    window.Height = 80;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    _ = checkBox.ApplyTemplate();
+                    Path? checkGlyph = FindVisualChildByName<Path>(checkBox, "CheckGlyph");
+                    Border? indeterminateDash = FindVisualChildByName<Border>(checkBox, "IndeterminateDash");
+                    Assert.IsNotNull(checkGlyph, "CheckBox template should contain CheckGlyph.");
+                    Assert.IsNotNull(indeterminateDash, "CheckBox template should contain IndeterminateDash.");
+
+                    Assert.AreEqual(1.0, checkGlyph.Opacity, 0.01,
+                        "Checked CheckBox state should show the check glyph.");
+                    Assert.AreEqual(0.0, indeterminateDash.Opacity, 0.01,
+                        "Checked CheckBox state should hide the indeterminate dash.");
+                    Assert.AreEqual(indeterminateDash.Height, checkGlyph.StrokeThickness, 0.01,
+                        "Checked CheckBox glyph stroke should be as prominent as the indeterminate dash.");
+                    Assert.AreSame(indeterminateDash.Background, checkGlyph.Stroke,
+                        "Checked CheckBox glyph should use the same on-accent brush as the indeterminate dash.");
+                }
+                finally
+                {
+                    window.Content = null;
+                    window.UpdateLayout();
+                    window.Close();
+                    if (genericDictionary is not null)
+                    {
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
         public void Card_Click_FiresOnMouseDownThenUp_WhenIsClickable()
         {
             RunOnStaThread(() =>
@@ -297,10 +351,10 @@ namespace Fluence.Wpf.Tests
                     Assert.AreEqual(new CornerRadius(8, 0, 0, 0), contentBorder.CornerRadius,
                         "Left-mode content background Border must carry an 8,0,0,0 corner radius so the content hugs the top-left per WinUI 3.");
 
-                    // WI-1 F1: the 1,1,0,0 stroke sits on a sibling decorative Border so
-                    // PART_ContentPresenter lines up with the pane column edge. Wrapping the
-                    // presenter in a BorderThickness=1 Border snapped content.X to 281.333 at
-                    // 150% DPI (layout rounding), breaking the pane-layout assertions.
+                    // The 1,1,0,0 stroke sits on a sibling decorative Border so
+                    // PART_ContentPresenter lines up with the pane column edge.
+                    // Wrapping the presenter in a BorderThickness=1 Border introduces
+                    // layout-rounding drift at 150% DPI.
                     Grid? contentGrid = VisualTreeHelper.GetParent(contentBorder) as Grid;
                     Assert.IsNotNull(contentGrid, "The content Border must be hosted in a Grid that also carries the decorative stroke Border.");
                     Assert.AreEqual(2, VisualTreeHelper.GetChildrenCount(contentGrid),
@@ -365,9 +419,9 @@ namespace Fluence.Wpf.Tests
                     Assert.AreEqual(new CornerRadius(8, 0, 0, 0), contentBorder.CornerRadius,
                         "LeftCompact-mode content background Border must carry the same 8,0,0,0 corner radius as Left mode.");
 
-                    // WI-1 F1: the 1,1,0,0 stroke sits on a sibling decorative Border so
-                    // PART_ContentPresenter lines up with the pane column edge at both 48 px
-                    // (pane closed) and 280 px (pane open) without layout-rounding drift.
+                    // The 1,1,0,0 stroke sits on a sibling decorative Border so
+                    // PART_ContentPresenter lines up with the pane column edge without
+                    // layout-rounding drift.
                     Grid? contentGrid = VisualTreeHelper.GetParent(contentBorder) as Grid;
                     Assert.IsNotNull(contentGrid, "The content Border must be hosted in a Grid that also carries the decorative stroke Border.");
                     Assert.AreEqual(2, VisualTreeHelper.GetChildrenCount(contentGrid),

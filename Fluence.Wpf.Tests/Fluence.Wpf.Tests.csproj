@@ -8,6 +8,7 @@
     <IsPackable>false</IsPackable>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <TestTfmsInParallel>false</TestTfmsInParallel>
+    <!-- slopwatch-ignore: SW005 Test-project suppressions cover MSTest naming, fixture exception capture, and WPF analyzer compatibility. -->
     <NoWarn>$(NoWarn);CA1031;CA1305;CA1707;CA1861;CA2249;CA2263;CS1591;IDE0330;VSTHRD001</NoWarn>
   </PropertyGroup>
 

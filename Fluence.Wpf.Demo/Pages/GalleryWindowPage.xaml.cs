@@ -38,6 +38,10 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryWindowPage : UserControl
     {
+        private static readonly Uri DemoAppIconUri = new(
+            "pack://application:,,,/Fluence.Wpf.Demo;component/Resources/fluence-wpf-appicon-256.ico",
+            UriKind.Absolute);
+
         private const string ThemeAndAccentXamlSource = @"<UserControl
     x:Class=""Fluence.Wpf.Demo.Pages.Window.ThemeAndAccent""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
@@ -306,14 +310,15 @@ namespace Fluence.Wpf.Demo.Pages.Window
 
             try
             {
-                var converted = ColorConverter.ConvertFromString(hex);
-                if (converted is not null)
+                object converted = ColorConverter.ConvertFromString(hex);
+                if (converted is Color color)
                 {
-                    ApplicationAccentColorManager.ApplyCustomAccent((Color)converted);
+                    ApplicationAccentColorManager.ApplyCustomAccent(color);
                 }
             }
             catch (FormatException)
             {
+                return;
             }
         }
 
@@ -612,29 +617,46 @@ namespace Fluence.Wpf.Demo.Pages.Window
 
         private void AccentSwatch_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is not FrameworkElement button || button.Tag is null)
+            if (sender is not FrameworkElement button)
             {
                 return;
             }
 
-            string? hex = button?.Tag?.ToString();
-            try
+            string? hex = button.Tag?.ToString();
+            if (TryGetAccentSwatchColor(hex, out Color accentColor))
             {
-                object converted = ColorConverter.ConvertFromString(hex);
-                if (converted is not null)
-                {
-                    ApplicationAccentColorManager.ApplyCustomAccent((Color)converted);
-                }
-            }
-            catch (FormatException)
-            {
-                // No idea what we're catching here.
+                ApplicationAccentColorManager.ApplyCustomAccent(accentColor);
             }
         }
 
         private void SystemAccent_Click(object sender, RoutedEventArgs e)
         {
             ApplicationAccentColorManager.ApplySystemAccent();
+        }
+
+        private static bool TryGetAccentSwatchColor(string? hex, out Color accentColor)
+        {
+            accentColor = default;
+            if (string.IsNullOrWhiteSpace(hex))
+            {
+                return false;
+            }
+
+            try
+            {
+                object converted = ColorConverter.ConvertFromString(hex);
+                if (converted is Color color)
+                {
+                    accentColor = color;
+                    return true;
+                }
+            }
+            catch (FormatException)
+            {
+                return false;
+            }
+
+            return false;
         }
 
         private void SystemThemeWatcher_Toggled(object sender, RoutedEventArgs e)
@@ -680,7 +702,6 @@ namespace Fluence.Wpf.Demo.Pages.Window
             ApplyCaptionVisibility(CloseVisibilityCombo, v => fw.IsCloseButtonVisible = v, en => fw.IsClosable = en);
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1075:URIs should not be hardcoded", Justification = "This is a demo application.")]
         private void WindowChromeToggle_Changed(object? sender, RoutedEventArgs? e)
         {
             FluenceWindow? fw = HostFluenceWindow;
@@ -713,7 +734,7 @@ namespace Fluence.Wpf.Demo.Pages.Window
             {
                 bool show = ShowWindowIconToggle.IsChecked == true;
                 ImageSource? icon = show
-                    ? new BitmapImage(new Uri("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/fluence-wpf-appicon-256.ico"))
+                    ? new BitmapImage(DemoAppIconUri)
                     : null;
                 if (main is not null)
                 {

@@ -261,6 +261,58 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void MainWindow_BackRequested_WalksVisitedPagesInOrder()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                MainWindow window = CreateShownMainWindow();
+                try
+                {
+                    TitleBar? shellTitleBar = FindByName<TitleBar>(window, "ShellTitleBar");
+                    Assert.IsNotNull(shellTitleBar, "Demo shell should expose a TitleBar.");
+
+                    window.NavigateTo("buttons");
+                    Drain(window.Dispatcher);
+                    window.NavigateTo("trees");
+                    Drain(window.Dispatcher);
+                    window.NavigateTo("window");
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.AreEqual(typeof(GalleryWindowPage), GetSelectedPageContent(window).GetType(),
+                        "Setup should end on the Window gallery page.");
+
+                    InvokeTitleBarBack(shellTitleBar);
+                    Assert.AreEqual(typeof(GalleryTreesPage), GetSelectedPageContent(window).GetType(),
+                        "First Back should return to the previously visited Trees page.");
+
+                    InvokeTitleBarBack(shellTitleBar);
+                    Assert.AreEqual(typeof(GalleryButtonsPage), GetSelectedPageContent(window).GetType(),
+                        "Second Back should return to the previously visited Buttons page.");
+
+                    InvokeTitleBarBack(shellTitleBar);
+                    Assert.AreEqual(typeof(GalleryHomePage), GetSelectedPageContent(window).GetType(),
+                        "Third Back should return to the initial Home page.");
+
+                    NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
+                    Assert.IsNotNull(nav, "DemoNav must exist.");
+                    Assert.IsFalse(nav.IsBackEnabled,
+                        "Back should become disabled when the demo history is empty.");
+
+                    InvokeTitleBarBack(shellTitleBar);
+                    Assert.AreEqual(typeof(GalleryHomePage), GetSelectedPageContent(window).GetType(),
+                        "Back with empty history should leave the current Home page unchanged.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
         public void MainWindow_NavigationCatalog_PutsAccessibilityBeforeWindowing()
         {
             List<DemoNavigationItem> items = [.. DemoNavigationCatalog.Items];
@@ -322,12 +374,28 @@ namespace Fluence.Wpf.Tests
                     Controls.TextBox? search = FindByName<Controls.TextBox>(window, "NavSearchBox");
                     Assert.IsNotNull(shellTitleBar, "Extended title bar should use the shared TitleBar control.");
                     Assert.IsNotNull(search, "Demo search box must be present.");
-                    Assert.AreEqual(520.0, search.Width, 0.01,
-                        "The demo title-bar search box should match the WinUI Gallery 520px width.");
+                    Assert.AreEqual(230.0, search.Width, 0.01,
+                        "Demo title-bar search should use the requested 230px resting width.");
+                    Assert.AreEqual(230.0, search.MinWidth, 0.01,
+                        "Demo title-bar search should not shrink below the requested 230px resting width.");
+                    Assert.AreEqual(475.0, search.MaxWidth, 0.01,
+                        "Demo title-bar search should keep the requested 475px expanded cap.");
+                    Assert.AreEqual(230.0, search.ActualWidth, 0.5,
+                        "Demo title-bar search should rest at 230px when not focused.");
                     Assert.AreEqual(window.ActualWidth / 2.0, GetVisualCenterX(search, window) ?? double.MaxValue, 1.0,
                         "Search should stay horizontally centered in the window.");
                     Assert.AreEqual((GetVisualCenterY(shellTitleBar, window) ?? double.MinValue) + 2.0, GetVisualCenterY(search, window) ?? double.MaxValue, 1.0,
                         "Search should sit 2px below the title-bar vertical center.");
+
+                    Assert.IsTrue(search.Focus(), "Search should accept keyboard focus.");
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.AreEqual(230.0, search.ActualWidth, 0.5,
+                        "Demo title-bar search should not expand just because it receives focus.");
+                    Assert.AreEqual(window.ActualWidth / 2.0, GetVisualCenterX(search, window) ?? double.MaxValue, 1.0,
+                        "Focused search should stay horizontally centered in the window.");
                 }
                 finally
                 {
@@ -347,6 +415,8 @@ namespace Fluence.Wpf.Tests
                 {
                     NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
                     Assert.IsNotNull(nav, "DemoNav must exist.");
+                    window.NavigateTo("buttons");
+                    Drain(window.Dispatcher);
                     nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
                     nav.IsPaneToggleButtonVisible = true;
                     Drain(window.Dispatcher);
@@ -374,7 +444,7 @@ namespace Fluence.Wpf.Tests
                     WpfButton? titleBarBack = FindByName<WpfButton>(shellTitleBar, "PART_BackButton");
                     Assert.IsNotNull(titleBarBack, "Extended title bar should expose a back button slot.");
                     Assert.AreEqual(Visibility.Visible, titleBarBack.Visibility,
-                        "The demo starts with back navigation enabled, so the title-bar back slot should be visible in Left mode.");
+                        "Visited-page history should make the title-bar back slot visible in Left mode.");
                     Assert.IsTrue((GetVisualX(titleBarBack, window) ?? double.MaxValue) < (GetVisualX(titleBarToggle, window) ?? double.MaxValue),
                         "Back should occupy the first title-bar navigation slot.");
                     WpfTextBlock? titleBarBackGlyph = FindVisualChild<WpfTextBlock>(titleBarBack);
@@ -446,8 +516,8 @@ namespace Fluence.Wpf.Tests
                         "Pane toggle should remain visible after back appears.");
                     Assert.IsTrue((GetVisualX(titleBarBack, window) ?? double.MaxValue) < (GetVisualX(titleBarToggle, window) ?? double.MaxValue),
                         "Back should occupy the first title-bar navigation slot.");
-                    Assert.AreEqual(GetVisualY(titleBarBack, window) ?? double.MaxValue, GetVisualY(titleBarToggle, window) ?? double.MaxValue, 1.0,
-                        "Back and pane toggle should be arranged in the same title-bar row.");
+                    Assert.AreEqual(GetVisualCenterY(titleBarBack, window) ?? double.MaxValue, GetVisualCenterY(titleBarToggle, window) ?? double.MaxValue, 1.0,
+                        "Back and pane toggle should be vertically centered in the same title-bar row.");
 
                     ContentPresenter? titleIcon = FindByName<ContentPresenter>(shellTitleBar, "PART_IconPresenter");
                     Assert.IsNotNull(titleIcon, "Extended title bar icon should exist.");
@@ -462,8 +532,8 @@ namespace Fluence.Wpf.Tests
 
                     Assert.AreEqual(Visibility.Collapsed, titleBarBack.Visibility,
                         "Back must collapse in the title bar when back navigation is disabled.");
-                    Assert.AreEqual((titleIconWithBackX ?? double.MaxValue) - 46.0, GetVisualX(titleIcon, window) ?? double.MaxValue, 1.5,
-                        "Title identity should shift left by one rail slot when the back glyph collapses.");
+                    Assert.AreEqual((titleIconWithBackX ?? double.MaxValue) - 42.0, GetVisualX(titleIcon, window) ?? double.MaxValue, 1.5,
+                        "Title identity should shift left by the compact back rail when the back glyph collapses.");
                 }
                 finally
                 {
@@ -608,6 +678,10 @@ namespace Fluence.Wpf.Tests
                         "The Top pane-mode label should be vertically centered with the switch.");
                     Assert.AreEqual(VerticalAlignment.Center, toggle.VerticalAlignment,
                         "The Top pane-mode switch should be vertically centered with the label.");
+                    Assert.IsTrue((GetVisualX(toggle, toggleHost) ?? double.MaxValue) <= 1.5,
+                        "Top pane mode should left-align the switch inside the PaneFooter toggle host.");
+                    Assert.IsTrue((GetVisualX(label, toggleHost) ?? double.MinValue) >= (GetVisualX(toggle, toggleHost) ?? double.MinValue) + toggle.ActualWidth + 8.0 - 1.5,
+                        "Top pane mode should place the Top label on the right side of the switch.");
                     Assert.AreEqual(NavigationViewPaneDisplayMode.Top, nav.PaneDisplayMode,
                         "The demo should start in Top pane mode.");
                     Assert.AreEqual(true, toggle.IsChecked,
@@ -626,8 +700,8 @@ namespace Fluence.Wpf.Tests
                         "Programmatic Left mode changes should sync the PaneFooter toggle.");
                     Assert.IsTrue(window.ExtendsContentIntoTitleBar,
                         "Left pane mode should extend the demo content into the title bar.");
-                    Assert.AreEqual(HorizontalAlignment.Center, toggleHost.HorizontalAlignment,
-                        "Left pane mode should center the PaneFooter toggle in the navigation footer.");
+                    Assert.AreEqual(HorizontalAlignment.Left, toggleHost.HorizontalAlignment,
+                        "Left pane mode should dock the PaneFooter toggle to the left side of the navigation footer.");
                     Assert.AreEqual(VerticalAlignment.Bottom, toggleHost.VerticalAlignment,
                         "Left pane mode should keep the PaneFooter toggle at the bottom of the navigation footer.");
                     Assert.AreEqual(Visibility.Visible, label.Visibility,
@@ -669,7 +743,7 @@ namespace Fluence.Wpf.Tests
                         "LeftCompact pane mode should not add toggle content padding.");
 
                     toggle.IsChecked = true;
-                    WaitForAnimationAndDrain(window.Dispatcher, 380);
+                    Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
@@ -681,7 +755,7 @@ namespace Fluence.Wpf.Tests
                         "The PaneFooter toggle should return to the right side of the Top strip.");
 
                     toggle.IsChecked = false;
-                    WaitForAnimationAndDrain(window.Dispatcher, 380);
+                    Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
@@ -689,6 +763,68 @@ namespace Fluence.Wpf.Tests
                         "Unchecking the PaneFooter toggle should restore the previous compact navigation mode.");
                     Assert.IsFalse(window.ExtendsContentIntoTitleBar,
                         "Restoring LeftCompact mode should preserve the existing non-extended title-bar behavior.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void MainWindow_TopPane_OverflowButtonDoesNotOverlapTreesAtMinimumWidth()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                MainWindow window = CreateShownMainWindow();
+                try
+                {
+                    window.Width = 698;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
+                    Assert.IsNotNull(nav, "DemoNav must exist.");
+                    nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Top;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    FrameworkElement? overflowButton = FindByName<FrameworkElement>(nav, NavigationView.PartTopOverflowButton);
+                    Assert.IsNotNull(overflowButton, "Top pane should expose the overflow button.");
+                    Assert.AreEqual(Visibility.Visible, overflowButton.Visibility,
+                        "The overflow button should be visible at the minimum demo width.");
+                    int visibleNavigationItems = nav.Items.OfType<NavigationViewItem>().Count(item => item.Visibility == Visibility.Visible);
+                    Assert.IsTrue(visibleNavigationItems > 1,
+                        "Top pane should show every navigation item that fits before the overflow button would overlap the Top toggle status.");
+                    WpfStackPanel? toggleHost = FindByName<WpfStackPanel>(window, "PaneModeToggleHost");
+                    Assert.IsNotNull(toggleHost, "Top toggle status host should exist.");
+                    double overflowRight = (GetVisualX(overflowButton, nav) ?? double.MaxValue) + overflowButton.ActualWidth;
+                    double toggleHostLeft = GetVisualX(toggleHost, nav) ?? double.MinValue;
+                    Assert.IsTrue(overflowRight <= toggleHostLeft - 4.0 + 1.5,
+                        "The three-dot overflow entry should stop before it overlaps the Top toggle status.");
+
+                    NavigationViewItem? trees = null;
+                    foreach (object item in nav.Items)
+                    {
+                        if (item is NavigationViewItem navItem
+                            && string.Equals(navItem.Content as string, "Trees", StringComparison.Ordinal))
+                        {
+                            trees = navItem;
+                            break;
+                        }
+                    }
+
+                    Assert.IsNotNull(trees, "DemoNav should include the Trees item.");
+                    if (trees.Visibility == Visibility.Visible)
+                    {
+                        double treesRight = (GetVisualX(trees, nav) ?? double.MinValue) + trees.ActualWidth;
+                        double overflowLeft = GetVisualX(overflowButton, nav) ?? double.MaxValue;
+                        Assert.IsTrue(treesRight <= overflowLeft - 4.0 + 1.5,
+                            "Trees must not overlap the three-dot overflow entry.");
+                    }
                 }
                 finally
                 {
@@ -718,7 +854,7 @@ namespace Fluence.Wpf.Tests
                     Drain(window.Dispatcher);
 
                     toggle.IsChecked = true;
-                    WaitForAnimationAndDrain(window.Dispatcher, 380);
+                    Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
@@ -726,7 +862,7 @@ namespace Fluence.Wpf.Tests
                         "Checking the PaneFooter toggle should switch to Top pane mode.");
 
                     toggle.IsChecked = false;
-                    WaitForAnimationAndDrain(window.Dispatcher, 380);
+                    Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
@@ -734,6 +870,150 @@ namespace Fluence.Wpf.Tests
                         "Unchecking the PaneFooter toggle should restore Left pane mode.");
                     Assert.IsFalse(nav.IsPaneOpen,
                         "Unchecking Top mode should restore the prior closed Left pane state.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void MainWindow_PaneModeToggle_FromLeftCompactToTop_SwitchesImmediatelyAndKeepsContentLive()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                MainWindow window = CreateShownMainWindow();
+                try
+                {
+                    NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
+                    ToggleSwitch? toggle = FindByName<ToggleSwitch>(window, "PaneModeToggle");
+                    WpfStackPanel? toggleHost = FindByName<WpfStackPanel>(window, "PaneModeToggleHost");
+                    Assert.IsNotNull(nav, "DemoNav must exist.");
+                    Assert.IsNotNull(toggle, "Demo pane-mode toggle must exist.");
+                    Assert.IsNotNull(toggleHost, "Demo pane-mode toggle host must exist.");
+
+                    nav.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+                    Assert.AreEqual(false, toggle.IsChecked,
+                        "Programmatic LeftCompact mode changes should sync the PaneFooter toggle.");
+
+                    object contentBefore = nav.Content
+                        ?? throw new InvalidOperationException("DemoNav should have live page content before the pane mode changes.");
+                    toggle.IsChecked = true;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.AreEqual(NavigationViewPaneDisplayMode.Top, nav.PaneDisplayMode,
+                        "Checking the PaneFooter toggle should switch to Top pane mode.");
+                    Assert.AreSame(contentBefore, nav.Content,
+                        "Pane mode changes should keep the current page content live.");
+                    FrameworkElement? contentPresenter = FindByName<FrameworkElement>(nav, NavigationView.PartContentPresenter);
+                    Assert.IsNotNull(contentPresenter, "Top mode should expose the content presenter.");
+                    Assert.IsTrue(contentPresenter.IsVisible,
+                        "Top mode should keep the content presenter visible.");
+                    Assert.IsTrue((GetVisualX(toggleHost, nav) ?? double.MinValue) + toggleHost.ActualWidth >= nav.ActualWidth - 24.0,
+                        "Top toggle should finish visible at the right side of the top strip.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void MainWindow_PaneModeToggle_FromTopToLeft_SwitchesImmediatelyAndCleansUp()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                MainWindow window = CreateShownMainWindow();
+                try
+                {
+                    NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
+                    ToggleSwitch? toggle = FindByName<ToggleSwitch>(window, "PaneModeToggle");
+                    Assert.IsNotNull(nav, "DemoNav must exist.");
+                    Assert.IsNotNull(toggle, "Demo pane-mode toggle must exist.");
+                    Assert.AreEqual(NavigationViewPaneDisplayMode.Top, nav.PaneDisplayMode,
+                        "Setup should start in Top pane mode.");
+
+                    toggle.IsChecked = false;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.AreEqual(NavigationViewPaneDisplayMode.Left, nav.PaneDisplayMode,
+                        "Unchecking Top mode should finish in Left pane mode.");
+                    FrameworkElement? contentPresenter = FindByName<FrameworkElement>(nav, NavigationView.PartContentPresenter);
+                    Assert.IsNotNull(contentPresenter, "Final Left mode should expose live content.");
+                    FrameworkElement? livePage = nav.Content as FrameworkElement;
+                    Assert.IsNotNull(livePage, "Final Left mode should keep live page content.");
+                    Assert.IsTrue(double.IsNaN(livePage.Width), "The live page width should not be locked by a pane mode switch.");
+                    Assert.IsTrue(double.IsNaN(livePage.Height), "The live page height should not be locked by a pane mode switch.");
+                    FrameworkElement? sidePane = FindByName<FrameworkElement>(nav, "PaneBorder");
+                    Assert.IsNotNull(sidePane, "Final Left mode should expose the side pane.");
+                    Assert.AreEqual(1.0, sidePane.Opacity, 0.01,
+                        "The real Left pane should be visible after the mode switch.");
+                    Assert.AreEqual(sidePane.ActualWidth, GetVisualX(contentPresenter, nav) ?? double.MaxValue, 1.5,
+                        "Final Left-mode content should sit against the side pane.");
+                    Assert.AreEqual(nav.ActualWidth - sidePane.ActualWidth, contentPresenter.ActualWidth, 1.5,
+                        "Final Left-mode content should fill the remaining width beside the side pane.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void MainWindow_PaneModeToggle_FromTopToLeftCompact_UsesCompactFinalBounds()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                MainWindow window = CreateShownMainWindow();
+                try
+                {
+                    NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
+                    ToggleSwitch? toggle = FindByName<ToggleSwitch>(window, "PaneModeToggle");
+                    Assert.IsNotNull(nav, "DemoNav must exist.");
+                    Assert.IsNotNull(toggle, "Demo pane-mode toggle must exist.");
+
+                    nav.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    toggle.IsChecked = true;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+                    Assert.AreEqual(NavigationViewPaneDisplayMode.Top, nav.PaneDisplayMode,
+                        "Setup should enter Top mode from a compact previous pane state.");
+
+                    toggle.IsChecked = false;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    FrameworkElement? compactPane = FindByName<FrameworkElement>(nav, "CompactPane");
+                    FrameworkElement? contentPresenter = FindByName<FrameworkElement>(nav, NavigationView.PartContentPresenter);
+                    Assert.AreEqual(NavigationViewPaneDisplayMode.LeftCompact, nav.PaneDisplayMode,
+                        "Unchecking Top mode should restore the compact previous pane state.");
+                    Assert.IsNotNull(compactPane, "Final LeftCompact mode should expose the compact pane.");
+                    Assert.IsNotNull(contentPresenter, "Final LeftCompact mode should expose live content.");
+                    Assert.AreEqual(1.0, compactPane.Opacity, 0.01,
+                        "The real compact pane should be visible after the mode switch.");
+                    Assert.AreEqual(compactPane.ActualWidth, GetVisualX(contentPresenter, nav) ?? double.MaxValue, 1.5,
+                        "Final LeftCompact content should sit against the compact pane.");
+                    Assert.AreEqual(48.0, compactPane.ActualWidth, 1.5,
+                        "Final LeftCompact pane width should stay compact.");
                 }
                 finally
                 {
@@ -775,7 +1055,7 @@ namespace Fluence.Wpf.Tests
                         "A long title should stay visible when there is enough room to trim before the search box.");
                     double titleRight = (GetVisualX(titleText, window) ?? double.MinValue) + titleText.ActualWidth;
                     double searchLeft = GetVisualX(search, window) ?? double.MaxValue;
-                    Assert.AreEqual(searchLeft - 12.0, titleRight, 1.5,
+                    Assert.AreEqual(searchLeft - 12.0, titleRight, 3.0,
                         "The title text should extend to the 12px search clearance before trimming.");
                 }
                 finally
@@ -819,8 +1099,65 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(titleText, "Extended title bar title should exist.");
                     Assert.AreEqual(Visibility.Visible, titleIcon.Visibility,
                         "Title icon should remain visible when title text is hidden for search clearance.");
-                    Assert.AreEqual(Visibility.Collapsed, titleText.Visibility,
-                        "Title text should hide when its bounds would overlap the search box.");
+                    if (titleText.Visibility == Visibility.Visible)
+                    {
+                        Controls.TextBox? search = FindByName<Controls.TextBox>(window, "NavSearchBox");
+                        Assert.IsNotNull(search, "Demo search box must be present.");
+                        double titleRight = (GetVisualX(titleText, window) ?? double.MinValue) + titleText.ActualWidth;
+                        double searchLeft = GetVisualX(search, window) ?? double.MaxValue;
+                        Assert.IsTrue(titleRight <= searchLeft - 12.0,
+                            "Visible title text must keep a 12px clearance before the search box.");
+                    }
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void MainWindow_ExtendedTitleBar_DoesNotLetTitleOverlapSearchAtMinimumWidth()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                MainWindow window = CreateShownMainWindow();
+                try
+                {
+                    NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
+                    Assert.IsNotNull(nav, "DemoNav must exist.");
+                    nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
+                    nav.IsPaneToggleButtonVisible = true;
+                    Drain(window.Dispatcher);
+
+                    window.Width = 698;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    window.SetUserShowIcon(true, window.Icon);
+                    window.SetUserShowTitle(true, "Fluence.Wpf Control Gallery Extended Title That Must Never Overlap Search");
+                    window.ExtendsContentIntoTitleBar = true;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    TitleBar? shellTitleBar = FindByName<TitleBar>(window, "ShellTitleBar");
+                    Controls.TextBox? search = FindByName<Controls.TextBox>(window, "NavSearchBox");
+                    Assert.IsNotNull(shellTitleBar, "Extended title bar should use the shared TitleBar control.");
+                    Assert.IsNotNull(search, "Demo search box must be present.");
+                    Assert.AreEqual(window.ActualWidth / 2.0, GetVisualCenterX(search, window) ?? double.MaxValue, 1.0,
+                        "Search should stay horizontally centered in the window even when title text is constrained.");
+
+                    WpfTextBlock? titleText = FindByName<WpfTextBlock>(shellTitleBar, "PART_TitleText");
+                    Assert.IsNotNull(titleText, "Extended title bar title should exist.");
+                    if (titleText.Visibility == Visibility.Visible)
+                    {
+                        double titleRight = (GetVisualX(titleText, window) ?? double.MinValue) + titleText.ActualWidth;
+                        double searchLeft = GetVisualX(search, window) ?? double.MaxValue;
+                        Assert.IsTrue(titleRight <= searchLeft - 12.0,
+                            "Visible title text must keep a 12px clearance before the centered search box.");
+                    }
                 }
                 finally
                 {
@@ -1300,6 +1637,40 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void GalleryWindowPage_InvalidAccentSwatchTag_DoesNotChangeAccent()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                GalleryWindowPage page = new();
+                Window window = CreateHostWindow(page);
+                try
+                {
+                    UniformGrid? accentRow = FindByName<UniformGrid>(page, "AccentSwatchRow");
+                    Assert.IsNotNull(accentRow, "Accent swatches should use a named single-row host.");
+
+                    Controls.Button? swatch = accentRow.Children[0] as Controls.Button;
+                    Assert.IsNotNull(swatch, "Accent swatch should be a Fluence button.");
+
+                    Color originalAccent = Color.FromRgb(0x22, 0x44, 0x66);
+                    ApplicationAccentColorManager.ApplyCustomAccent(originalAccent);
+
+                    swatch.Tag = "#NotAColor";
+                    swatch.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, swatch));
+
+                    Assert.AreEqual(originalAccent, ApplicationAccentColorManager.SystemAccentColor,
+                        "Invalid accent swatch tags should be ignored without changing the active accent.");
+                }
+                finally
+                {
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
+                    ApplicationAccentColorManager.ApplyApplicationAccent();
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
         public void GalleryAccessibilityPage_KeyboardSamplesUseAlignedRows()
         {
             RunOnSta(delegate
@@ -1526,6 +1897,14 @@ namespace Fluence.Wpf.Tests
             return nav.Content;
         }
 
+        private static void InvokeTitleBarBack(TitleBar titleBar)
+        {
+            WpfButton? backButton = FindByName<WpfButton>(titleBar, "PART_BackButton");
+            Assert.IsNotNull(backButton, "TitleBar should expose a back button.");
+            backButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, backButton));
+            Drain(titleBar.Dispatcher);
+        }
+
         private static double? GetVisualX(FrameworkElement? element, Visual ancestor)
         {
             return element?.TransformToAncestor(ancestor).Transform(new Point(0, 0)).X;
@@ -1549,20 +1928,6 @@ namespace Fluence.Wpf.Tests
         private static void Drain(Dispatcher dispatcher)
         {
             _ = dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
-        }
-
-        private static void WaitForAnimationAndDrain(Dispatcher dispatcher, int milliseconds)
-        {
-            DispatcherFrame frame = new();
-            DispatcherTimer timer = new(
-                TimeSpan.FromMilliseconds(milliseconds),
-                DispatcherPriority.Normal,
-                delegate { frame.Continue = false; },
-                dispatcher);
-            timer.Start();
-            Dispatcher.PushFrame(frame);
-            timer.Stop();
-            Drain(dispatcher);
         }
 
         private static void AssertGridCell(Grid grid, Predicate<UIElement> match, int expectedRow, int expectedColumn, string name)

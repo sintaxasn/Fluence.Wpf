@@ -2251,7 +2251,6 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Blocker Code Smell", "S2699:Tests should include assertions", Justification = "Suppress this for now.")]
         public void HyperlinkButton_Click_WithNavigateUri_DoesNotThrow()
         {
             RunOnStaThread(() =>
@@ -2274,6 +2273,11 @@ namespace Fluence.Wpf.Tests
 
                     button.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
                     DrainDispatcher(window.Dispatcher);
+
+                    Assert.IsTrue(button.IsLoaded,
+                        "HyperlinkButton should remain loaded after click dispatch.");
+                    Assert.IsNull(button.NavigateUri,
+                        "This regression test exercises the no-uri click path.");
                 }
                 finally
                 {

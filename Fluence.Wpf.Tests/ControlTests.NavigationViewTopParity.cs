@@ -340,7 +340,7 @@ namespace Fluence.Wpf.Tests
                 {
                     NavigationView nav = new()
                     {
-                        Width = 212,
+                        Width = 220,
                         Height = 240,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.Top
                     };
@@ -364,22 +364,87 @@ namespace Fluence.Wpf.Tests
                     Assert.AreEqual(Visibility.Visible, first.Visibility,
                         "The first item should remain on the strip.");
                     Assert.AreEqual(Visibility.Visible, second.Visibility,
-                        "The second item should remain on the strip.");
+                        "The second item should remain visible when it still clears the overflow button.");
                     Assert.AreEqual(Visibility.Collapsed, third.Visibility,
                         "The last item that would otherwise fit should move to the overflow menu to reserve button space.");
 
                     double secondRight = GetNavigationElementRight(second, nav);
                     double overflowLeft = GetNavigationElementX(overflowButton, nav);
-                    Assert.IsTrue(overflowLeft >= secondRight - 0.5,
+                    Assert.IsTrue(overflowLeft >= secondRight + 4.0 - 1.5,
                         "The overflow button should be laid out after the last visible item without overlapping it. "
                         + "overflowLeft=" + overflowLeft + ", secondRight=" + secondRight + ".");
 
                     Assert.IsNotNull(overflowButton.ContextMenu, "Top pane overflow button should own a menu for collapsed items.");
                     Assert.AreEqual(1, overflowButton.ContextMenu.Items.Count,
-                        "Only the last fitting item should move to the overflow menu in this boundary case.");
-                    FluentMenuItem? overflowItem = overflowButton.ContextMenu.Items[0] as FluentMenuItem;
-                    Assert.AreEqual("Three", overflowItem?.Header,
+                        "Measured clearance should move only the trailing item that does not fit to the overflow menu.");
+                    FluentMenuItem? firstOverflowItem = overflowButton.ContextMenu.Items[0] as FluentMenuItem;
+                    Assert.AreEqual("Three", firstOverflowItem?.Header,
                         "The moved item should appear in the overflow menu.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary is not null)
+                    {
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NavigationView_TopMode_OverflowButtonStaysLeftOfClippedItem()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+
+                try
+                {
+                    NavigationView nav = new()
+                    {
+                        Width = 212,
+                        Height = 240,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Top
+                    };
+                    NavigationViewItem first = new() { Content = "One", Icon = new FontIcon { Glyph = "\uE80F" } };
+                    NavigationViewItem second = new() { Content = "Two", Icon = new FontIcon { Glyph = "\uE790" } };
+                    NavigationViewItem trees = new() { Content = "Trees", Icon = new FontIcon { Glyph = "\uE8B7" } };
+                    _ = nav.Items.Add(first);
+                    _ = nav.Items.Add(second);
+                    _ = nav.Items.Add(trees);
+
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    FluentButton? overflowButton = FindVisualChildByName<FluentButton>(nav, "PART_TopOverflowButton");
+                    Grid? topItemsHost = FindVisualChildByName<Grid>(nav, NavigationView.PartTopItemsHost);
+                    Assert.IsNotNull(overflowButton, "Top pane should expose a three-dot overflow button.");
+                    Assert.IsNotNull(topItemsHost, "Top pane should expose the horizontal item host.");
+                    Assert.AreEqual(Visibility.Visible, overflowButton.Visibility,
+                        "Overflow button should be visible when the Trees item cannot fit cleanly.");
+                    Assert.AreEqual(Visibility.Collapsed, trees.Visibility,
+                        "Trees should move to overflow rather than overlap the three-dot button.");
+
+                    double overflowLeft = GetNavigationElementX(overflowButton, nav);
+                    foreach (object item in nav.Items)
+                    {
+                        if (item is NavigationViewItem navItem && navItem.Visibility == Visibility.Visible)
+                        {
+                            Assert.IsTrue(GetNavigationElementRight(navItem, nav) <= overflowLeft - 4.0 + 1.5,
+                                "Visible top items must clear the overflow button. item=" + navItem.Content);
+                        }
+                    }
+
+                    double hostRight = GetNavigationElementRight(topItemsHost, nav);
+                    double overflowRight = GetNavigationElementRight(overflowButton, nav);
+                    Assert.IsTrue(overflowRight <= hostRight - 12.0 + 1.5,
+                        "The overflow button should reserve 12px at the right edge of the top items host.");
                 }
                 finally
                 {

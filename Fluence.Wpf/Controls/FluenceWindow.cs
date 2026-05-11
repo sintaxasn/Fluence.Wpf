@@ -1181,5 +1181,6 @@ namespace Fluence.Wpf.Controls
         /// Represents the button control that is currently being hovered over for snap operations.
         /// </summary>
         private System.Windows.Controls.Button? _snapHoveredButton;
+
     }
 }

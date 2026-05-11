@@ -37,7 +37,7 @@ namespace Fluence.Wpf.Automation
     /// Exposes <see cref="NavigationViewItem"/> to UI Automation as a selectable list item.
     /// </summary>
     /// <remarks>Initializes a new instance.</remarks>
-    public class NavigationViewItemAutomationPeer(NavigationViewItem owner) : FrameworkElementAutomationPeer(owner), ISelectionItemProvider, IInvokeProvider
+    public sealed class NavigationViewItemAutomationPeer(NavigationViewItem owner) : FrameworkElementAutomationPeer(owner), ISelectionItemProvider, IInvokeProvider
     {
         /// <inheritdoc />
         protected override string GetClassNameCore()
@@ -60,40 +60,46 @@ namespace Fluence.Wpf.Automation
         }
 
         /// <inheritdoc />
-        public virtual bool IsSelected => NavigationViewItem.IsSelected;
+        public bool IsSelected => NavigationViewItem.IsSelected;
 
         /// <inheritdoc />
-        public virtual IRawElementProviderSimple? SelectionContainer => ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) is NavigationView nav
+        public IRawElementProviderSimple? SelectionContainer => ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) is NavigationView nav
             ? ProviderFromPeer(CreatePeerForElement(nav))
             : null;
 
         /// <inheritdoc />
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1716:Identifiers should not match keywords")]
-        public virtual void Select()
+        public void AddToSelection()
         {
-            if (ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) is NavigationView nav)
-            {
-                nav.SelectItemFromContainer(NavigationViewItem);
-            }
+            SelectItem();
         }
 
         /// <inheritdoc />
-        public virtual void AddToSelection()
-        {
-            Select();
-        }
-
-        /// <inheritdoc />
-        public virtual void RemoveFromSelection()
+        public void RemoveFromSelection()
         {
         }
 
         /// <inheritdoc />
-        public virtual void Invoke()
+        public void Invoke()
         {
             if (ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) is NavigationView nav)
             {
                 nav.InvokeItem(NavigationViewItem);
+            }
+        }
+
+        void ISelectionItemProvider.Select()
+        {
+            SelectItem();
+        }
+
+        /// <summary>
+        /// Selects the associated navigation view item.
+        /// </summary>
+        public void SelectItem()
+        {
+            if (ItemsControl.ItemsControlFromItemContainer(NavigationViewItem) is NavigationView nav)
+            {
+                nav.SelectItemFromContainer(NavigationViewItem);
             }
         }
 

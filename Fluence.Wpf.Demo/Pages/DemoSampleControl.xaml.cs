@@ -311,18 +311,29 @@ namespace Fluence.Wpf.Demo.Pages
         private Grid CreateSourcePane(string source, SourceLanguage language)
         {
             Grid panel = new();
-            panel.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-            panel.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
-
-            Controls.Button copyButton = CreateCopyButton(source);
-            Grid.SetRow(copyButton, 0);
-            _ = panel.Children.Add(copyButton);
 
             RichTextBox viewer = CreateSourceViewer(source, language);
-            Grid.SetRow(viewer, 1);
             _ = panel.Children.Add(viewer);
 
+            Border copyButtonHost = CreateCopyButtonHost(CreateCopyButton(source));
+            _ = panel.Children.Add(copyButtonHost);
+
             return panel;
+        }
+
+        private static Border CreateCopyButtonHost(Controls.Button copyButton)
+        {
+            Border border = new()
+            {
+                Name = "CopySourceButtonHost",
+                Child = copyButton,
+                CornerRadius = new CornerRadius(4),
+                HorizontalAlignment = HorizontalAlignment.Right,
+                Margin = new Thickness(0, 8, 8, 0),
+                VerticalAlignment = VerticalAlignment.Top
+            };
+            border.SetResourceReference(BackgroundProperty, "ControlOnImageFillColorDefaultBrush");
+            return border;
         }
 
         private Controls.Button CreateCopyButton(string source)
@@ -331,10 +342,11 @@ namespace Fluence.Wpf.Demo.Pages
             {
                 Name = "CopySourceButton",
                 Appearance = ControlAppearance.Subtle,
-                Content = "Copy",
+                Content = "\uE8C8",
                 HorizontalAlignment = HorizontalAlignment.Right,
-                Icon = new Controls.FontIcon { Glyph = "\uE8C8" },
-                Margin = new Thickness(0, 0, 0, 8),
+                FontFamily = new FontFamily("Segoe Fluent Icons"),
+                MinWidth = 0,
+                Padding = new Thickness(8, 4, 8, 4),
                 Tag = source
             };
             button.Click += OnCopySourceButtonClick;
@@ -363,7 +375,7 @@ namespace Fluence.Wpf.Demo.Pages
                 Padding = new Thickness(0),
                 VerticalScrollBarVisibility = ScrollBarVisibility.Auto
             };
-            viewer.SetResourceReference(BackgroundProperty, "SolidBackgroundFillColorTertiaryBrush");
+            viewer.SetResourceReference(BackgroundProperty, "ControlOnImageFillColorTertiaryBrush");
             viewer.SetResourceReference(ForegroundProperty, "TextFillColorPrimaryBrush");
             viewer.SetResourceReference(BorderBrushProperty, "CardStrokeColorDefaultBrush");
             viewer.Document = CreateSourceDocument(source, language);
@@ -600,7 +612,6 @@ namespace Fluence.Wpf.Demo.Pages
                    value == '-';
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Critical Code Smell", "S2302:\"nameof\" should be used", Justification = "False positive.")]
         public static DemoSampleControl ReplaceSourceLink(FrameworkElement placeholder, string xamlSource, string csharpSource)
         {
 #if NET6_0_OR_GREATER
@@ -669,7 +680,7 @@ namespace Fluence.Wpf.Demo.Pages
                 return sample;
             }
 
-            throw new InvalidOperationException("Source link placeholder must be hosted by a Panel or ContentControl.");
+            throw new InvalidOperationException("Source link " + nameof(placeholder) + " must be hosted by a Panel or ContentControl.");
         }
 
         private static FluenceCard? FindAncestorCard(FrameworkElement element)

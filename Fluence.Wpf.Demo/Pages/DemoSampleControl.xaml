@@ -13,10 +13,10 @@
         <fluence:Card
             x:Name="SampleCard"
             Grid.Row="0"
-            Padding="16"
+            Padding="12"
             CornerRadius="8,8,0,0"
-            Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
-            Variant="Default">
+            Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}"
+            Variant="Filled">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -57,7 +57,7 @@
             Header="Source code">
             <fluence:TabView
                 x:Name="SourceTabs"
-                Margin="8,16,8,8"
+                Margin="16,8,16,16"
                 IsAddTabButtonVisible="False" />
         </fluence:Expander>
     </Grid>

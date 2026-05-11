@@ -28,11 +28,12 @@
             >
             <ui:TextBox
                 x:Name="NavSearchBox"
-                Width="520"
+                Width="230"
+                MinWidth="230"
+                MaxWidth="475"
                 Margin="0,4,0,0"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"
-                LostKeyboardFocus="NavSearchBox_LostKeyboardFocus"
                 PlaceholderText="Search"
                 PreviewKeyDown="NavSearchBox_PreviewKeyDown"
                 Style="{StaticResource TitleBarSearchBoxStyle}"
@@ -42,70 +43,75 @@
         </ui:TitleBar>
     </ui:FluenceWindow.TitleBar>
 
-    <ui:NavigationView
-        x:Name="DemoNav"
-        Background="Transparent"
-        IsBackButtonVisible="True"
-        IsBackEnabled="True"
-        IsPaneOpen="True"
-        IsPaneToggleButtonVisible="True"
-        PaneDisplayMode="Top"
-        SelectedIndex="0"
+    <Grid
+        x:Name="ShellRoot"
+        ClipToBounds="True"
         >
-        <ui:NavigationView.PaneFooter>
-            <StackPanel
-                x:Name="PaneModeToggleHost"
-                Margin="0"
-                Orientation="Horizontal"
-                >
-                <StackPanel.Style>
-                    <Style TargetType="{x:Type StackPanel}">
-                        <Setter Property="HorizontalAlignment" Value="Right" />
-                        <Setter Property="VerticalAlignment" Value="Center" />
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding PaneDisplayMode, RelativeSource={RelativeSource AncestorType=ui:NavigationView}}" Value="{x:Static uicore:NavigationViewPaneDisplayMode.Left}">
-                                <Setter Property="HorizontalAlignment" Value="Center" />
-                                <Setter Property="VerticalAlignment" Value="Bottom" />
-                            </DataTrigger>
-                            <DataTrigger Binding="{Binding PaneDisplayMode, RelativeSource={RelativeSource AncestorType=ui:NavigationView}}" Value="{x:Static uicore:NavigationViewPaneDisplayMode.LeftCompact}">
-                                <Setter Property="HorizontalAlignment" Value="Center" />
-                                <Setter Property="VerticalAlignment" Value="Bottom" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </StackPanel.Style>
-                <TextBlock
-                    x:Name="PaneModeToggleLabel"
-                    Margin="0,0,8,0"
-                    VerticalAlignment="Center"
-                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                    Text="Top"
-                    ui:TextBlockExtensions.Typography="Body"
+        <ui:NavigationView
+            x:Name="DemoNav"
+            Background="Transparent"
+            IsBackButtonVisible="True"
+            IsBackEnabled="True"
+            IsPaneOpen="True"
+            IsPaneToggleButtonVisible="True"
+            PaneDisplayMode="Top"
+            SelectedIndex="0"
+            >
+            <ui:NavigationView.PaneFooter>
+                <StackPanel
+                    x:Name="PaneModeToggleHost"
+                    Margin="0"
+                    Orientation="Horizontal"
                     >
-                    <TextBlock.Style>
-                        <Style TargetType="{x:Type TextBlock}">
-                            <Setter Property="Visibility" Value="Visible" />
+                    <StackPanel.Style>
+                        <Style TargetType="{x:Type StackPanel}">
+                            <Setter Property="HorizontalAlignment" Value="Right" />
+                            <Setter Property="VerticalAlignment" Value="Center" />
                             <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsPaneOpen, RelativeSource={RelativeSource AncestorType=ui:NavigationView}}" Value="False">
-                                    <Setter Property="Visibility" Value="Collapsed" />
+                                <DataTrigger Binding="{Binding PaneDisplayMode, RelativeSource={RelativeSource AncestorType=ui:NavigationView}}" Value="{x:Static uicore:NavigationViewPaneDisplayMode.Left}">
+                                    <Setter Property="HorizontalAlignment" Value="Left" />
+                                    <Setter Property="VerticalAlignment" Value="Bottom" />
                                 </DataTrigger>
                                 <DataTrigger Binding="{Binding PaneDisplayMode, RelativeSource={RelativeSource AncestorType=ui:NavigationView}}" Value="{x:Static uicore:NavigationViewPaneDisplayMode.LeftCompact}">
-                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Setter Property="HorizontalAlignment" Value="Center" />
+                                    <Setter Property="VerticalAlignment" Value="Bottom" />
                                 </DataTrigger>
                             </Style.Triggers>
                         </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-                <ui:ToggleSwitch
-                    x:Name="PaneModeToggle"
-                    Width="40"
-                    Checked="PaneModeToggle_CheckedChanged"
-                    IsChecked="True"
-                    Padding="0"
-                    VerticalAlignment="Center"
-                    Unchecked="PaneModeToggle_CheckedChanged"
-                    />
-            </StackPanel>
-        </ui:NavigationView.PaneFooter>
-    </ui:NavigationView>
+                    </StackPanel.Style>
+                    <ui:ToggleSwitch
+                        x:Name="PaneModeToggle"
+                        Width="40"
+                        Checked="PaneModeToggle_CheckedChanged"
+                        IsChecked="True"
+                        Padding="0"
+                        VerticalAlignment="Center"
+                        Unchecked="PaneModeToggle_CheckedChanged"
+                        />
+                    <TextBlock
+                        x:Name="PaneModeToggleLabel"
+                        Margin="8,0,0,0"
+                        VerticalAlignment="Center"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Text="Top"
+                        ui:TextBlockExtensions.Typography="Body"
+                        >
+                        <TextBlock.Style>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Visibility" Value="Visible" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsPaneOpen, RelativeSource={RelativeSource AncestorType=ui:NavigationView}}" Value="False">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding PaneDisplayMode, RelativeSource={RelativeSource AncestorType=ui:NavigationView}}" Value="{x:Static uicore:NavigationViewPaneDisplayMode.LeftCompact}">
+                                        <Setter Property="Visibility" Value="Collapsed" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                </StackPanel>
+            </ui:NavigationView.PaneFooter>
+        </ui:NavigationView>
+    </Grid>
 </ui:FluenceWindow>

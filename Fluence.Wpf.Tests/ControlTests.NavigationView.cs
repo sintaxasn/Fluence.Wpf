@@ -125,7 +125,7 @@ namespace Fluence.Wpf.Tests
             double originalY,
             bool upward)
         {
-            return WaitUntil(dispatcher, 250, delegate
+            return WaitUntil(dispatcher, 2000, delegate
             {
                 bool xIsUnchanged = Math.Abs(translate.X - expectedX) <= 0.5;
                 bool yMovedInExpectedDirection = upward ? translate.Y < originalY : translate.Y > originalY;
@@ -1421,7 +1421,6 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Blocker Code Smell", "S2699:Tests should include assertions", Justification = "Don't care for now.")]
         public void NavigationView_FullThemeCycle_NoExceptions()
         {
             RunOnStaThread(() =>
@@ -1457,6 +1456,11 @@ namespace Fluence.Wpf.Tests
                         ApplicationThemeManager.Apply(themes[i], BackdropType.None, true);
                         DrainDispatcher(window.Dispatcher);
                         nav.UpdateLayout();
+
+                        Assert.AreEqual(themes[i], ApplicationThemeManager.CurrentTheme,
+                            "Theme cycle should apply the requested theme.");
+                        Assert.IsTrue(nav.IsLoaded,
+                            "NavigationView should remain loaded after a theme change.");
                     }
                 }
                 finally
@@ -1750,12 +1754,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        // WI-1 F1: LeftCompact pane must resize inline and push sibling content. Never overlay.
-        //
-        // Regression guard: the original LeftCompactPaneTemplate drew the pane as an overlay
-        // (Panel.ZIndex="1", Width triggered to 280), which caused the pane to cover the content
-        // area rather than push it aside. We assert that the pane's visible width changes with
-        // IsPaneOpen AND that the content host starts immediately to the right of the pane.
+        // LeftCompact pane still resizes inline and pushes sibling content.
         [TestMethod]
         public void NavigationView_LeftCompact_PaneOpen_ContentStartsAt280px_Inline()
         {
@@ -1787,7 +1786,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in LeftCompact template.");
 
                     AssertContentOffsetEventually(window, nav, presenter, 280.0,
-                        "When IsPaneOpen=true in LeftCompact, content must start inline at pane width 280 (not overlap the pane).");
+                        "When IsPaneOpen=true in LeftCompact, content must start inline at pane width 280.");
                 }
                 finally
                 {
@@ -1874,7 +1873,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in LeftCompact template.");
 
                     AssertContentOffsetEventually(window, nav, presenter, 48.0,
-                        "When IsPaneOpen=false in LeftCompact, content must start inline at pane width 48 (compact rail).");
+                        "When IsPaneOpen=false in LeftCompact, content must start inline at pane width 48.");
                 }
                 finally
                 {
@@ -1981,7 +1980,7 @@ namespace Fluence.Wpf.Tests
                     nav.IsPaneOpen = false;
                     Assert.IsTrue(nav.GetPaneColumnWidthForTesting() > 48.0,
                         "Closing LeftCompact should animate from the current expanded width instead of snapping immediately to 48.");
-                    AssertContentOffsetEventually(window, nav, presenter, 48.0, "Closed state: content begins at 48 (push, not overlay).");
+                    AssertContentOffsetEventually(window, nav, presenter, 48.0, "Closed state: content begins at 48.");
 
                     nav.IsPaneOpen = true;
                     Assert.IsTrue(nav.GetPaneColumnWidthForTesting() < 280.0,

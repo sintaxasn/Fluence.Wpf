@@ -78,20 +78,26 @@
                                     BorderThickness="1"
                                     CornerRadius="{TemplateBinding CornerRadius}"
                                     Opacity="0" />
-                                <TextBlock
+                                <Path
                                     x:Name="CheckGlyph"
+                                    Width="12"
+                                    Height="10"
                                     HorizontalAlignment="Center"
                                     VerticalAlignment="Center"
-                                    FontFamily="Segoe Fluent Icons"
-                                    FontSize="12"
-                                    Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
+                                    Data="M 1,5 L 4.5,8.5 L 11,1.5"
+                                    Fill="{x:Null}"
                                     Opacity="0"
                                     RenderTransformOrigin="0.5,0.5"
-                                    Text="&#xE73E;">
-                                    <TextBlock.RenderTransform>
+                                    Stroke="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
+                                    StrokeEndLineCap="Round"
+                                    StrokeLineJoin="Round"
+                                    StrokeStartLineCap="Round"
+                                    StrokeThickness="2"
+                                    Stretch="Uniform">
+                                    <Path.RenderTransform>
                                         <ScaleTransform ScaleX="1" ScaleY="1" />
-                                    </TextBlock.RenderTransform>
-                                </TextBlock>
+                                    </Path.RenderTransform>
+                                </Path>
                                 <Border
                                     x:Name="IndeterminateDash"
                                     Width="10"
@@ -243,7 +249,7 @@
                             <Setter TargetName="IndicatorChecked" Property="BorderBrush" Value="{DynamicResource AccentFillColorDisabledBrush}" />
                             <Setter TargetName="IndicatorCheckedHover" Property="Background" Value="{DynamicResource AccentFillColorDisabledBrush}" />
                             <Setter TargetName="IndicatorCheckedPressed" Property="Background" Value="{DynamicResource AccentFillColorDisabledBrush}" />
-                            <Setter TargetName="CheckGlyph" Property="Foreground" Value="{DynamicResource TextOnAccentFillColorDisabledBrush}" />
+                            <Setter TargetName="CheckGlyph" Property="Stroke" Value="{DynamicResource TextOnAccentFillColorDisabledBrush}" />
                         </MultiTrigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>

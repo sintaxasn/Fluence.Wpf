@@ -253,12 +253,27 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(sampleCard, "DemoSampleControl must expose SampleCard.");
                     Assert.IsNotNull(sourceExpander, "DemoSampleControl must expose SourceExpander.");
 
-                    AssertBrushColor(sampleCard.Background, "SolidBackgroundFillColorBaseBrush",
-                        "Demo sample display should use the WinUI Gallery ControlExample display background.");
+                    Assert.AreEqual(CardVariant.Filled, sampleCard.Variant,
+                        "Demo sample display should use the darker filled card surface.");
+                    AssertBrushColor(sampleCard.Background, "CardBackgroundFillColorSecondaryBrush",
+                        "Demo sample display should use the darker WinUI Gallery card background role.");
                     AssertBrushColor(sourceExpander.Background, "CardBackgroundFillColorSecondaryBrush",
                         "Demo source surface should use the WinUI Gallery source-code background.");
                     Assert.AreEqual("Source code", sourceExpander.Header,
                         "Demo source expander header should match the WinUI Gallery source label.");
+
+                    sourceExpander.IsExpanded = true;
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    RichTextBox? sourceViewer = FindVisualChildByName<RichTextBox>(sourceExpander, "SourceTextViewer");
+                    WpfBorder? copyButtonHost = FindVisualChildByName<WpfBorder>(sourceExpander, "CopySourceButtonHost");
+                    Assert.IsNotNull(sourceViewer, "Expanded source should expose the code viewer.");
+                    Assert.IsNotNull(copyButtonHost, "Expanded source should expose the overlaid copy-button host.");
+                    AssertBrushColor(sourceViewer.Background, "ControlOnImageFillColorTertiaryBrush",
+                        "Source code should use the darker WinUI Gallery on-image fill role.");
+                    AssertBrushColor(copyButtonHost.Background, "ControlOnImageFillColorDefaultBrush",
+                        "Copy action should sit on the WinUI Gallery on-image fill bubble.");
                 }
                 finally
                 {

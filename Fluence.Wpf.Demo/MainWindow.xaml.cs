@@ -44,11 +44,11 @@ namespace Fluence.Wpf.Demo
     {
         internal const string GalleryWindowTitle = "Fluence.Wpf \u2014 Control Gallery";
 
-        private const double PaneModeTransitionMilliseconds = 167.0;
-
         private readonly Dictionary<NavigationViewItem, DemoNavigationItem> _navigationItemByContainer =
             [];
         private readonly Dictionary<NavigationViewItem, object> _pageByContainer =
+            [];
+        private readonly List<NavigationViewItem> _navigationBackStack =
             [];
         private bool _userShowIcon;
         private bool _userShowTitle;
@@ -59,10 +59,11 @@ namespace Fluence.Wpf.Demo
         private bool _lastAppliedExtendedTitleBar;
         private bool _isApplyingTitleBarChrome;
         private bool _syncingPaneModeToggle;
-        private bool _isAnimatingPaneModeTransition;
+        private bool _isNavigatingBack;
         private bool _isUpdatingExtendedTitleOverlap;
         private NavigationViewPaneDisplayMode _lastNonTopPaneDisplayMode = NavigationViewPaneDisplayMode.Left;
         private bool _lastNonTopIsPaneOpen = true;
+        private NavigationViewItem? _currentNavigationItem;
         private Image? _titleBarIconView;
         private DependencyPropertyDescriptor? _extendsDpd;
         private DependencyPropertyDescriptor? _paneModeDpd;
@@ -140,6 +141,8 @@ namespace Fluence.Wpf.Demo
             DemoNav.Items.Clear();
             _navigationItemByContainer.Clear();
             _pageByContainer.Clear();
+            _navigationBackStack.Clear();
+            _currentNavigationItem = null;
 
             NavigationViewItem? defaultItem = null;
             foreach (DemoNavigationItem item in DemoNavigationCatalog.Items)
@@ -159,6 +162,7 @@ namespace Fluence.Wpf.Demo
             }
 
             NavigateToItem(defaultItem);
+            UpdateBackNavigationState();
         }
 
         private static NavigationViewItem CreateNavigationItem(DemoNavigationItem item)
@@ -178,12 +182,24 @@ namespace Fluence.Wpf.Demo
                 return;
             }
 
+            if (!ReferenceEquals(_currentNavigationItem, selected))
+            {
+                if (!_isNavigatingBack && _currentNavigationItem is not null)
+                {
+                    _navigationBackStack.Add(_currentNavigationItem);
+                }
+
+                _currentNavigationItem = selected;
+            }
+
             object? page = EnsurePageContent(selected);
             if (page is not null)
             {
                 DemoNav.Content = page;
                 AnimatePageInIfChanged(page);
             }
+
+            UpdateBackNavigationState();
         }
 
         /// <summary>
@@ -214,13 +230,31 @@ namespace Fluence.Wpf.Demo
 
             if (ReferenceEquals(DemoNav.SelectedItem, item) && EnsurePageContent(item) is object page)
             {
+                _currentNavigationItem ??= item;
                 DemoNav.Content = page;
                 AnimatePageInIfChanged(page);
+                UpdateBackNavigationState();
             }
             else
             {
                 DemoNav.SelectedItem = item;
             }
+        }
+
+        private void UpdateBackNavigationState()
+        {
+            if (DemoNav is null)
+            {
+                return;
+            }
+
+            bool isBackEnabled = _navigationBackStack.Count > 0;
+            if (DemoNav.IsBackEnabled != isBackEnabled)
+            {
+                DemoNav.IsBackEnabled = isBackEnabled;
+            }
+
+            ApplyTitleBarContentVisibility();
         }
 
         private object? EnsurePageContent(NavigationViewItem item)
@@ -274,12 +308,6 @@ namespace Fluence.Wpf.Demo
         private void NavSearchBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             ApplyNavSearchFilter();
-        }
-
-        private void NavSearchBox_LostKeyboardFocus(object sender, KeyboardFocusChangedEventArgs e)
-        {
-
-            // No idea why this is empty.
         }
 
         private void NavSearchBox_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -438,62 +466,6 @@ namespace Fluence.Wpf.Demo
             }
         }
 
-        private static DoubleAnimation CreateTransitionAnimation(double from, double to)
-        {
-            return new DoubleAnimation(from, to, new Duration(TimeSpan.FromMilliseconds(PaneModeTransitionMilliseconds)))
-            {
-                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut },
-                FillBehavior = FillBehavior.Stop
-            };
-        }
-
-        private static void BeginOpacityAnimation(UIElement element, double from, double to)
-        {
-            element.BeginAnimation(OpacityProperty, null);
-            element.Opacity = from;
-
-            DoubleAnimation opacityAnimation = CreateTransitionAnimation(from, to);
-            opacityAnimation.Completed += delegate
-            {
-                element.BeginAnimation(OpacityProperty, null);
-                element.Opacity = to;
-            };
-
-            element.BeginAnimation(OpacityProperty, opacityAnimation, HandoffBehavior.SnapshotAndReplace);
-        }
-
-        private static void BeginTranslateYAnimation(FrameworkElement element, TranslateTransform transform, double from, double to)
-        {
-            DoubleAnimation slideAnimation = CreateTransitionAnimation(from, to);
-            slideAnimation.Completed += delegate
-            {
-                transform.BeginAnimation(TranslateTransform.YProperty, null);
-                transform.Y = to;
-                if (Math.Abs(to) <= 0.1)
-                {
-                    element.RenderTransform = null;
-                }
-            };
-
-            transform.BeginAnimation(TranslateTransform.YProperty, slideAnimation, HandoffBehavior.SnapshotAndReplace);
-        }
-
-        private static void BeginTranslateXAnimation(FrameworkElement element, TranslateTransform transform, double from, double to)
-        {
-            DoubleAnimation slideAnimation = CreateTransitionAnimation(from, to);
-            slideAnimation.Completed += delegate
-            {
-                transform.BeginAnimation(TranslateTransform.XProperty, null);
-                transform.X = to;
-                if (Math.Abs(to) <= 0.1)
-                {
-                    element.RenderTransform = null;
-                }
-            };
-
-            transform.BeginAnimation(TranslateTransform.XProperty, slideAnimation, HandoffBehavior.SnapshotAndReplace);
-        }
-
         /// <summary>
         /// Records the user's intended title-bar icon visibility before layout rules are applied.
         /// </summary>
@@ -508,76 +480,29 @@ namespace Fluence.Wpf.Demo
 
         private void PaneModeToggle_CheckedChanged(object sender, RoutedEventArgs e)
         {
-            if (_syncingPaneModeToggle || _isAnimatingPaneModeTransition || DemoNav is null || PaneModeToggle is null)
+            if (_syncingPaneModeToggle || DemoNav is null || PaneModeToggle is null)
             {
                 return;
             }
 
-            NavigationViewPaneDisplayMode targetMode = PaneModeToggle.IsChecked == true
-                ? NavigationViewPaneDisplayMode.Top
-                : NavigationViewPaneDisplayMode.Left;
-
-            if (DemoNav.PaneDisplayMode == targetMode)
+            if (PaneModeToggle.IsChecked == true)
             {
+                if (DemoNav.PaneDisplayMode != NavigationViewPaneDisplayMode.Top)
+                {
+                    CaptureNonTopPaneState();
+                    DemoNav.PaneDisplayMode = NavigationViewPaneDisplayMode.Top;
+                }
+
                 return;
             }
 
-            if (targetMode == NavigationViewPaneDisplayMode.Top)
+            if (DemoNav.PaneDisplayMode == NavigationViewPaneDisplayMode.Top)
             {
-                CaptureNonTopPaneState();
-                BeginPaneModeTransitionToTop();
-                return;
+                NavigationViewPaneDisplayMode targetMode = GetLastNonTopPaneDisplayMode();
+                bool targetIsPaneOpen = _lastNonTopIsPaneOpen;
+                DemoNav.PaneDisplayMode = targetMode;
+                DemoNav.IsPaneOpen = targetIsPaneOpen;
             }
-
-            BeginPaneModeTransitionFromTop();
-        }
-
-        private void BeginPaneModeTransitionToTop()
-        {
-            if (DemoNav is null)
-            {
-                return;
-            }
-
-            FrameworkElement? leftPane = FindVisualChildByName<FrameworkElement>(DemoNav, "PaneBorder")
-                ?? FindVisualChildByName<FrameworkElement>(DemoNav, "CompactPane");
-
-            if (leftPane is null || leftPane.ActualWidth <= 0.0)
-            {
-                SwitchToTopAndAnimateIn();
-                return;
-            }
-
-            _isAnimatingPaneModeTransition = true;
-            double paneWidth = Math.Max(leftPane.ActualWidth, 48.0);
-            TranslateTransform transform = new();
-            leftPane.RenderTransform = transform;
-
-            DoubleAnimation slideOut = CreateTransitionAnimation(0.0, -paneWidth);
-            slideOut.Completed += delegate
-            {
-                transform.BeginAnimation(TranslateTransform.XProperty, null);
-                leftPane.RenderTransform = null;
-                SwitchToTopAndAnimateIn();
-            };
-
-            transform.BeginAnimation(TranslateTransform.XProperty, slideOut, HandoffBehavior.SnapshotAndReplace);
-        }
-
-        private void BeginPaneModeTransitionFromTop()
-        {
-            if (DemoNav is null)
-            {
-                return;
-            }
-
-            NavigationViewPaneDisplayMode targetMode = GetLastNonTopPaneDisplayMode();
-            bool targetIsPaneOpen = _lastNonTopIsPaneOpen;
-
-            _isAnimatingPaneModeTransition = true;
-            DemoNav.PaneDisplayMode = targetMode;
-            DemoNav.IsPaneOpen = targetIsPaneOpen;
-            _ = Dispatcher.BeginInvoke(new Action(AnimateNonTopPaneModeIn), DispatcherPriority.Loaded);
         }
 
         private NavigationViewPaneDisplayMode GetLastNonTopPaneDisplayMode()
@@ -585,84 +510,6 @@ namespace Fluence.Wpf.Demo
             return _lastNonTopPaneDisplayMode == NavigationViewPaneDisplayMode.Top
                 ? NavigationViewPaneDisplayMode.Left
                 : _lastNonTopPaneDisplayMode;
-        }
-
-        private void SwitchToTopAndAnimateIn()
-        {
-            if (DemoNav is null)
-            {
-                _isAnimatingPaneModeTransition = false;
-                return;
-            }
-
-            DemoNav.PaneDisplayMode = NavigationViewPaneDisplayMode.Top;
-            _ = Dispatcher.BeginInvoke(new Action(AnimateTopPaneModeIn), DispatcherPriority.Loaded);
-        }
-
-        private void AnimateTopPaneModeIn()
-        {
-            if (DemoNav is null)
-            {
-                _isAnimatingPaneModeTransition = false;
-                return;
-            }
-
-            _ = DemoNav.ApplyTemplate();
-            DemoNav.UpdateLayout();
-
-            FrameworkElement? topHeader = FindVisualChildByName<FrameworkElement>(DemoNav, "PaneHeaderBorder");
-            FrameworkElement? contentPresenter = FindVisualChildByName<FrameworkElement>(DemoNav, NavigationView.PartContentPresenter);
-
-            if (topHeader is not null)
-            {
-                topHeader.Opacity = 0.0;
-                TranslateTransform topHeaderTransform = new(0.0, -48.0);
-                topHeader.RenderTransform = topHeaderTransform;
-                BeginOpacityAnimation(topHeader, 0.0, 1.0);
-                BeginTranslateYAnimation(topHeader, topHeaderTransform, -48.0, 0.0);
-            }
-
-            if (contentPresenter is not null)
-            {
-                TranslateTransform contentTransform = new(0.0, -48.0);
-                contentPresenter.RenderTransform = contentTransform;
-                BeginTranslateYAnimation(contentPresenter, contentTransform, -48.0, 0.0);
-            }
-
-            _isAnimatingPaneModeTransition = false;
-        }
-
-        private void AnimateNonTopPaneModeIn()
-        {
-            if (DemoNav is null)
-            {
-                _isAnimatingPaneModeTransition = false;
-                return;
-            }
-
-            _ = DemoNav.ApplyTemplate();
-            DemoNav.UpdateLayout();
-
-            FrameworkElement? sidePane = FindVisualChildByName<FrameworkElement>(DemoNav, "PaneBorder")
-                ?? FindVisualChildByName<FrameworkElement>(DemoNav, "CompactPane");
-            FrameworkElement? contentPresenter = FindVisualChildByName<FrameworkElement>(DemoNav, NavigationView.PartContentPresenter);
-
-            if (sidePane is not null)
-            {
-                double paneWidth = Math.Max(sidePane.ActualWidth, 48.0);
-                TranslateTransform paneTransform = new(-paneWidth, 0.0);
-                sidePane.RenderTransform = paneTransform;
-                BeginTranslateXAnimation(sidePane, paneTransform, -paneWidth, 0.0);
-            }
-
-            if (contentPresenter is not null)
-            {
-                TranslateTransform contentTransform = new(0.0, 48.0);
-                contentPresenter.RenderTransform = contentTransform;
-                BeginTranslateYAnimation(contentPresenter, contentTransform, 48.0, 0.0);
-            }
-
-            _isAnimatingPaneModeTransition = false;
         }
 
         /// <summary>
@@ -807,7 +654,7 @@ namespace Fluence.Wpf.Demo
                 }
                 else
                 {
-                    ShellTitleBar.ClearValue(Fluence.Wpf.Controls.TitleBar.IconProperty);
+                    ShellTitleBar.ClearValue(Controls.TitleBar.IconProperty);
                 }
 
                 ShellTitleBar.IsBackButtonVisible = _userNavBackButtonVisible
@@ -877,9 +724,24 @@ namespace Fluence.Wpf.Demo
 
         private void ShellTitleBar_BackRequested(object sender, EventArgs e)
         {
-            if (DemoNav is not null && DemoNav.IsBackEnabled)
+            if (DemoNav is null || _navigationBackStack.Count == 0)
             {
-                NavigateTo("home");
+                UpdateBackNavigationState();
+                return;
+            }
+
+            NavigationViewItem previousItem = _navigationBackStack[_navigationBackStack.Count - 1];
+            _navigationBackStack.RemoveAt(_navigationBackStack.Count - 1);
+
+            _isNavigatingBack = true;
+            try
+            {
+                NavigateToItem(previousItem);
+            }
+            finally
+            {
+                _isNavigatingBack = false;
+                UpdateBackNavigationState();
             }
         }
 
@@ -929,10 +791,25 @@ namespace Fluence.Wpf.Demo
                     return;
                 }
 
-                Point titlePoint = titleText.TransformToAncestor(this).Transform(new Point(0, 0));
-                Point searchPoint = NavSearchBox.TransformToAncestor(this).Transform(new Point(0, 0));
-                double searchLeft = searchPoint.X;
-                double availableTitleWidth = searchLeft - titlePoint.X - 12.0;
+                if (!TryGetVisualX(titleText, this, out double titleLeft)
+                    || !TryGetVisualX(NavSearchBox, this, out double searchLeft))
+                {
+                    return;
+                }
+
+                ContentPresenter? titleIcon = GetTitleBarTemplatePart<ContentPresenter>("PART_IconPresenter");
+                if (titleIcon is not null
+                    && titleIcon.Visibility == Visibility.Visible
+                    && titleIcon.IsVisible
+                    && TryGetVisualX(titleIcon, this, out double titleIconLeft)
+                    && titleIconLeft + titleIcon.ActualWidth > searchLeft - 12.0)
+                {
+                    titleText.ClearValue(MaxWidthProperty);
+                    ShellTitleBar.Title = string.Empty;
+                    return;
+                }
+
+                double availableTitleWidth = searchLeft - titleLeft - 12.0;
                 if (availableTitleWidth < 48.0)
                 {
                     titleText.ClearValue(MaxWidthProperty);
@@ -942,21 +819,55 @@ namespace Fluence.Wpf.Demo
 
                 titleText.MaxWidth = availableTitleWidth;
                 titleText.UpdateLayout();
-                titlePoint = titleText.TransformToAncestor(this).Transform(new Point(0, 0));
-                double titleRight = titlePoint.X + titleText.ActualWidth;
+                if (!TryGetVisualX(titleText, this, out titleLeft))
+                {
+                    return;
+                }
+
+                double titleRight = titleLeft + titleText.ActualWidth;
                 if (titleRight > searchLeft - 11.0)
                 {
                     ShellTitleBar.Title = string.Empty;
                 }
             }
-            catch (InvalidOperationException)
-            {
-                // No idea what we're swallowing here.
-            }
             finally
             {
                 _isUpdatingExtendedTitleOverlap = false;
             }
+        }
+
+        private static bool TryGetVisualX(FrameworkElement element, Visual ancestor, out double x)
+        {
+            x = 0.0;
+            if (!IsVisualAncestorOf(ancestor, element))
+            {
+                return false;
+            }
+
+            GeneralTransform transform = element.TransformToAncestor(ancestor);
+            x = transform.Transform(new Point(0, 0)).X;
+            return true;
+        }
+
+        private static bool IsVisualAncestorOf(Visual ancestor, DependencyObject descendant)
+        {
+            DependencyObject? current = descendant;
+            while (current is not null)
+            {
+                if (ReferenceEquals(current, ancestor))
+                {
+                    return true;
+                }
+
+                if (current is not Visual and not System.Windows.Media.Media3D.Visual3D)
+                {
+                    return false;
+                }
+
+                current = VisualTreeHelper.GetParent(current);
+            }
+
+            return false;
         }
 
         private static T? FindVisualChildByName<T>(DependencyObject? root, string name)

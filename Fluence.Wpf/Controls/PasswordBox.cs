@@ -42,8 +42,7 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = "PART_RevealTextBox", Type = typeof(System.Windows.Controls.TextBox))]
     [TemplatePart(Name = "PART_RevealButton", Type = typeof(System.Windows.Controls.Button))]
     [TemplatePart(Name = "PART_CapsLockIndicator", Type = typeof(FrameworkElement))]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S2333:Redundant modifiers should not be used", Justification = "This needs to be partial for XAML.")]
-    public partial class PasswordBox : Control
+    public class PasswordBox : Control
     {
         // Precompiled regexes for password strength evaluation.
         private static readonly Regex LowercasePasswordRegex = new("[a-z]", RegexOptions.CultureInvariant | RegexOptions.Compiled);

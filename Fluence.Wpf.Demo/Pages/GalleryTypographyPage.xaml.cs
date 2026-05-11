@@ -271,7 +271,6 @@ namespace Fluence.Wpf.Demo.Pages.Typography
             });
         }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S6670:\"Trace.Write\" and \"Trace.WriteLine\" should not be used", Justification = "Don't care for now.")]
         private static void CopyStyleKey_Click(object sender, RoutedEventArgs e)
         {
             string? styleKey = sender is Fluent.Button button ? button.Tag as string : null;
@@ -286,11 +285,11 @@ namespace Fluence.Wpf.Demo.Pages.Typography
             }
             catch (ExternalException)
             {
-                System.Diagnostics.Trace.WriteLine("Clipboard was unavailable while copying a typography style key.");
+                System.Diagnostics.Debug.WriteLine("Clipboard was unavailable while copying a typography style key.");
             }
             catch (ThreadStateException)
             {
-                System.Diagnostics.Trace.WriteLine("Clipboard access requires an STA thread.");
+                System.Diagnostics.Debug.WriteLine("Clipboard access requires an STA thread.");
             }
         }
 
