@@ -49,6 +49,7 @@ namespace Fluence.Wpf.Demo
             ApplicationThemeManager.Apply(ApplicationTheme.Auto);
             ApplicationAccentColorManager.ApplySystemAccent();
             LoadDemoSharedStyles();
+            DemoThemeResources.Initialize();
 
             MainWindow mainWindow = new();
             MainWindow = mainWindow;
@@ -72,6 +73,10 @@ namespace Fluence.Wpf.Demo
                     RealizeIconographyList(mainWindow);
                 }
             }
+
+            mainWindow.NavigateTo("settings");
+            mainWindow.UpdateLayout();
+            DrainDispatcher(mainWindow.Dispatcher);
 
             ApplicationThemeManager.Apply(ApplicationTheme.Light);
             ApplicationThemeManager.Apply(ApplicationTheme.Dark);

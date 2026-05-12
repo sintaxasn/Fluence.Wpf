@@ -26,9 +26,14 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
 using System.Windows;
+using System.Windows.Input;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Fluence.Wpf.Controls;
+using WpfTabControl = System.Windows.Controls.TabControl;
+using WpfTabItem = System.Windows.Controls.TabItem;
+using WpfTextBlock = System.Windows.Controls.TextBlock;
 
 namespace Fluence.Wpf.Tests
 {
@@ -169,6 +174,99 @@ namespace Fluence.Wpf.Tests
                 Assert.AreSame(sharedStyle, tb.FocusVisualStyle,
                     "ToggleButton.FocusVisualStyle must reference the shared DefaultControlFocusVisualStyle.");
                 w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void FocusVisual_TabItem_UsesCollectionFocusStyleWithRightBreathingRoom()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Style? sharedStyle = app?.TryFindResource("DefaultCollectionFocusVisualStyle") as Style;
+                Assert.IsNotNull(sharedStyle, "DefaultCollectionFocusVisualStyle must resolve.");
+
+                WpfTabControl tabControl = new();
+                _ = tabControl.Items.Add(new WpfTabItem { Header = "Text", Content = new WpfTextBlock { Text = "A" } });
+                _ = tabControl.Items.Add(new WpfTabItem { Header = "Fill", Content = new WpfTextBlock { Text = "B" } });
+                Window w = new() { Content = tabControl, Width = 360, Height = 180 };
+
+                try
+                {
+                    w.Show();
+                    DrainDispatcher(w.Dispatcher);
+                    w.UpdateLayout();
+
+                    WpfTabItem? first = tabControl.ItemContainerGenerator.ContainerFromIndex(0) as WpfTabItem;
+                    Assert.IsNotNull(first, "The first TabItem container should be generated.");
+                    Assert.AreSame(sharedStyle, first.FocusVisualStyle,
+                        "TabItem should use WPF keyboard focus cues instead of a pointer-sticky custom focus ring.");
+                    Assert.IsTrue(first.Margin.Right >= 8.0,
+                        "TabItem should reserve enough right margin so the focus rectangle is not clipped at the tab edge.");
+                }
+                finally
+                {
+                    w.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void FocusVisual_NavigationViewItem_PointerInvokeDoesNotMoveKeyboardFocus()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                NavigationViewItem first = new() { Content = "Home" };
+                NavigationViewItem second = new() { Content = "Colors" };
+                NavigationView nav = new()
+                {
+                    Width = 320,
+                    Height = 220,
+                    PaneDisplayMode = NavigationViewPaneDisplayMode.Left,
+                    SelectionFollowsFocus = false
+                };
+                _ = nav.Items.Add(first);
+                _ = nav.Items.Add(second);
+                Window w = new() { Content = nav, Width = 360, Height = 260 };
+
+                try
+                {
+                    w.Show();
+                    DrainDispatcher(w.Dispatcher);
+                    w.UpdateLayout();
+
+                    _ = Keyboard.Focus(first);
+                    DrainDispatcher(w.Dispatcher);
+                    Assert.AreSame(first, Keyboard.FocusedElement,
+                        "Test setup should put keyboard focus on the first navigation item.");
+
+                    MouseButtonEventArgs mouseArgs = new(
+                        Mouse.PrimaryDevice,
+                        Environment.TickCount,
+                        MouseButton.Left)
+                    {
+                        RoutedEvent = UIElement.PreviewMouseLeftButtonDownEvent,
+                        Source = second
+                    };
+                    second.RaiseEvent(mouseArgs);
+                    DrainDispatcher(w.Dispatcher);
+                    w.UpdateLayout();
+
+                    Assert.AreSame(second, nav.SelectedItem,
+                        "Pointer selection should still select the clicked navigation item.");
+                    Assert.AreNotSame(second, Keyboard.FocusedElement,
+                        "Pointer selection should not leave the keyboard focus visual on the clicked navigation item.");
+                }
+                finally
+                {
+                    Keyboard.ClearFocus();
+                    w.Close();
+                }
             });
         }
     }

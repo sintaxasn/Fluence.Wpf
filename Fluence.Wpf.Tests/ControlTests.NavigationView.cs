@@ -117,22 +117,6 @@ namespace Fluence.Wpf.Tests
             return presenter.TransformToAncestor(nav).Transform(new Point(0, 0)).X;
         }
 
-        private static bool WaitForSelectionIndicatorVerticalDepart(
-            Dispatcher dispatcher,
-            FrameworkElement indicator,
-            TranslateTransform translate,
-            double expectedX,
-            double originalY,
-            bool upward)
-        {
-            return WaitUntil(dispatcher, 2000, delegate
-            {
-                bool xIsUnchanged = Math.Abs(translate.X - expectedX) <= 0.5;
-                bool yMovedInExpectedDirection = upward ? translate.Y < originalY : translate.Y > originalY;
-                return xIsUnchanged && yMovedInExpectedDirection && indicator.Opacity < 1.0;
-            });
-        }
-
         [TestMethod]
         public void NavigationView_PaneDisplayMode_Left_RendersVerticalPane()
         {
@@ -235,7 +219,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void NavigationView_LeftCompact_ClosedPaneHidesFooter()
+        public void NavigationView_LeftCompact_ClosedPaneKeepsIconFooterVisible()
         {
             RunOnStaThread(() =>
             {
@@ -245,13 +229,18 @@ namespace Fluence.Wpf.Tests
 
                 try
                 {
+                    NavigationViewItem footer = new()
+                    {
+                        Content = "Settings",
+                        Icon = new FontIcon { Glyph = "\uE713", IconFontSize = 20 }
+                    };
                     NavigationView nav = new()
                     {
                         Width = 420,
                         Height = 320,
                         PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact,
                         IsPaneOpen = false,
-                        PaneFooter = new System.Windows.Controls.TextBlock { Text = "Footer" }
+                        PaneFooter = footer
                     };
                     _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
                     window.Content = nav;
@@ -261,14 +250,70 @@ namespace Fluence.Wpf.Tests
 
                     System.Windows.Controls.Border? footerHost = FindVisualChildByName<System.Windows.Controls.Border>(nav, "PaneFooterHost");
                     Assert.IsNotNull(footerHost, "LeftCompact template should expose PaneFooterHost.");
-                    Assert.AreEqual(Visibility.Collapsed, footerHost.Visibility,
-                        "LeftCompact footer should be collapsed while the compact pane is closed.");
+                    Assert.AreEqual(Visibility.Visible, footerHost.Visibility,
+                        "LeftCompact footer should remain visible while the compact pane is closed so icon-only Settings entries stay reachable.");
+                    Assert.IsTrue(footer.ActualWidth >= 48.0 - 0.5,
+                        "LeftCompact footer navigation items should receive the full compact pane width so their icons are visible.");
 
                     nav.IsPaneOpen = true;
                     WaitForAnimationAndDrain(window.Dispatcher, 220);
 
                     Assert.AreEqual(Visibility.Visible, footerHost.Visibility,
                         "LeftCompact footer should be visible when the pane opens.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary is not null)
+                    {
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NavigationView_LeftCompact_ClosedPaneItemsKeepFullIconWidth()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+
+                try
+                {
+                    NavigationViewItem messages = new()
+                    {
+                        Content = "Messages",
+                        Icon = new FontIcon { Glyph = "\uE8BD", IconFontSize = 20 },
+                        IsSelected = true
+                    };
+                    NavigationView nav = new()
+                    {
+                        Width = 420,
+                        Height = 320,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact,
+                        IsPaneOpen = false
+                    };
+                    _ = nav.Items.Add(messages);
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.AreEqual(48.0, nav.GetPaneColumnWidthForTesting(), 0.01,
+                        "Closed LeftCompact pane should reserve the canonical 48px compact width.");
+                    Assert.IsTrue(messages.ActualWidth >= 48.0 - 0.5,
+                        "Closed LeftCompact navigation items should receive the full compact pane width so icons are not clipped.");
+
+                    ContentPresenter? iconPresenter = FindVisualChildByName<ContentPresenter>(messages, "IconPresenter");
+                    Assert.IsNotNull(iconPresenter, "NavigationViewItem template should expose the icon presenter.");
+                    Point iconOffset = iconPresenter.TransformToAncestor(messages).Transform(new Point(0, 0));
+                    Assert.IsTrue(iconOffset.X >= 4.0 - 0.5,
+                        "Closed LeftCompact icon should not be clipped on the left edge.");
+                    Assert.IsTrue(iconOffset.X + iconPresenter.ActualWidth <= 44.0 + 0.5,
+                        "Closed LeftCompact icon should stay inside the 40px icon slot.");
                 }
                 finally
                 {
@@ -1138,13 +1183,25 @@ namespace Fluence.Wpf.Tests
                     TranslateTransform translate = GetSelectionIndicatorTranslate(indicator);
                     double parentX = translate.X;
                     double parentY = translate.Y;
+                    NavigationViewItem? parentItem = nav.Items[0] as NavigationViewItem;
+                    Assert.IsNotNull(parentItem, "Parent item should be a NavigationViewItem.");
+                    Point departPosition = nav.CalculateDepartPositionForTesting(
+                        new Point(parentX, parentY),
+                        parentItem,
+                        false,
+                        1.0);
+                    Assert.AreEqual(parentX, departPosition.X, 0.5,
+                        "The downward depart leg should keep the parent item's X until the indicator fades out.");
+                    Assert.IsTrue(departPosition.Y > parentY,
+                        "The downward depart leg should move below the parent before the child inset X is applied.");
 
                     nav.SelectedIndex = 1;
                     Assert.IsTrue(
-                        WaitForSelectionIndicatorVerticalDepart(window.Dispatcher, indicator, translate, parentX, parentY, false),
-                        "The selection indicator should move vertically downward and fade out before it moves to the child item's inset X position.");
-
-                    WaitForAnimationAndDrain(window.Dispatcher, 400);
+                        WaitUntil(window.Dispatcher, 3000, delegate
+                        {
+                            return Math.Abs(translate.X - 48.0) <= 0.5 && Math.Abs(indicator.Opacity - 1.0) <= 0.01;
+                        }),
+                        "After the depart/arrive animation completes, the child item indicator should become visible at the child inset.");
                     Assert.AreEqual(48.0, translate.X, 0.5,
                         "After the depart/arrive animation completes, the child item indicator should sit at the child inset.");
                     Assert.AreEqual(1.0, indicator.Opacity, 0.01,
@@ -1203,13 +1260,25 @@ namespace Fluence.Wpf.Tests
                     TranslateTransform translate = GetSelectionIndicatorTranslate(indicator);
                     double childX = translate.X;
                     double childY = translate.Y;
+                    NavigationViewItem? childItem = nav.Items[1] as NavigationViewItem;
+                    Assert.IsNotNull(childItem, "Child item should be a NavigationViewItem.");
+                    Point departPosition = nav.CalculateDepartPositionForTesting(
+                        new Point(childX, childY),
+                        childItem,
+                        false,
+                        -1.0);
+                    Assert.AreEqual(childX, departPosition.X, 0.5,
+                        "The upward depart leg should keep the child item's X until the indicator fades out.");
+                    Assert.IsTrue(departPosition.Y < childY,
+                        "The upward depart leg should move above the child before the parent X is applied.");
 
                     nav.SelectedIndex = 0;
                     Assert.IsTrue(
-                        WaitForSelectionIndicatorVerticalDepart(window.Dispatcher, indicator, translate, childX, childY, true),
-                        "The selection indicator should move upward and fade out before it moves to the parent item's X position.");
-
-                    WaitForAnimationAndDrain(window.Dispatcher, 400);
+                        WaitUntil(window.Dispatcher, 3000, delegate
+                        {
+                            return Math.Abs(translate.X - 4.0) <= 0.5 && Math.Abs(indicator.Opacity - 1.0) <= 0.01;
+                        }),
+                        "After the depart/arrive animation completes, the parent item indicator should become visible at the parent inset.");
                     Assert.AreEqual(4.0, translate.X, 0.5,
                         "After the depart/arrive animation completes, the parent item indicator should sit at the parent inset.");
                     Assert.AreEqual(1.0, indicator.Opacity, 0.01,

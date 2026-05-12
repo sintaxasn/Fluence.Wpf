@@ -63,8 +63,7 @@ namespace Fluence.Wpf.Demo
             new("Tabs", "tabs", "tabcontrol tabview tab tabs document close add", "\uF22C", false),
             new("Layout", "layout", "border dockpanel stackpanel expander separator layout surface", "\uECA5", false),
             new("Status", "status", "infobar infobadge progressbar progressring personpicture progress ring busy", "\uE916", false),
-            new("Accessibility", "accessibility", "screen reader narrator automation keyboard focus contrast rtl", "\uE776", false),
-            new("Windowing", "window", "fluencewindow window theme backdrop mica acrylic titlebar caption chrome", "\uE737", false)
+            new("Accessibility", "accessibility", "screen reader narrator automation keyboard focus contrast rtl", "\uE776", false)
         ];
 
         public static IEnumerable<DemoNavigationItem> Items => CatalogItems;

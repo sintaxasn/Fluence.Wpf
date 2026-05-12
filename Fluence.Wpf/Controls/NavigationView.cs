@@ -530,6 +530,15 @@ namespace Fluence.Wpf.Controls
             return _paneColumn?.Width.Value ?? double.NaN;
         }
 
+        internal Point CalculateDepartPositionForTesting(
+            Point fromPosition,
+            NavigationViewItem? previousItem,
+            bool topMode,
+            double direction)
+        {
+            return CalculateDepartPosition(fromPosition, previousItem, topMode, direction);
+        }
+
         internal void InvokeItem(NavigationViewItem item)
         {
             if (item is null || !item.IsEnabled)

@@ -332,7 +332,7 @@ namespace Fluence.Wpf.Demo.Pages
                 Margin = new Thickness(0, 8, 8, 0),
                 VerticalAlignment = VerticalAlignment.Top
             };
-            border.SetResourceReference(BackgroundProperty, "ControlOnImageFillColorDefaultBrush");
+            border.SetResourceReference(BackgroundProperty, "DemoControlSurfaceBrush");
             return border;
         }
 
@@ -375,7 +375,7 @@ namespace Fluence.Wpf.Demo.Pages
                 Padding = new Thickness(0),
                 VerticalScrollBarVisibility = ScrollBarVisibility.Auto
             };
-            viewer.SetResourceReference(BackgroundProperty, "ControlOnImageFillColorTertiaryBrush");
+            viewer.SetResourceReference(BackgroundProperty, "DemoSourceSurfaceBrush");
             viewer.SetResourceReference(ForegroundProperty, "TextFillColorPrimaryBrush");
             viewer.SetResourceReference(BorderBrushProperty, "CardStrokeColorDefaultBrush");
             viewer.Document = CreateSourceDocument(source, language);

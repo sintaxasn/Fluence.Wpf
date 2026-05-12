@@ -8,7 +8,7 @@
     d:DesignHeight="900"
     d:DesignWidth="900"
     mc:Ignorable="d">
-    <Grid x:Name="PageRoot" Margin="28,24,28,28">
+    <Grid x:Name="PageRoot" Margin="36,24,36,48" MaxWidth="1064" HorizontalAlignment="Left" Background="{DynamicResource DemoPageBackgroundBrush}">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />

@@ -58,11 +58,8 @@ namespace Fluence.Wpf.Demo
         private bool _userNavPaneToggleButtonVisible;
         private bool _lastAppliedExtendedTitleBar;
         private bool _isApplyingTitleBarChrome;
-        private bool _syncingPaneModeToggle;
         private bool _isNavigatingBack;
         private bool _isUpdatingExtendedTitleOverlap;
-        private NavigationViewPaneDisplayMode _lastNonTopPaneDisplayMode = NavigationViewPaneDisplayMode.Left;
-        private bool _lastNonTopIsPaneOpen = true;
         private NavigationViewItem? _currentNavigationItem;
         private Image? _titleBarIconView;
         private DependencyPropertyDescriptor? _extendsDpd;
@@ -72,6 +69,9 @@ namespace Fluence.Wpf.Demo
         private DependencyPropertyDescriptor? _backVisibleDpd;
         private DependencyPropertyDescriptor? _paneToggleVisibleDpd;
         private object? _lastAnimatedPageContent;
+        private object? _settingsPage;
+
+        internal event EventHandler? DemoNavigationPaneStateChanged;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S3366:\"this\" should not be exposed from constructors", Justification = "This is only demo code.")]
         public MainWindow()
@@ -88,7 +88,6 @@ namespace Fluence.Wpf.Demo
             _userTitle = Title;
             _userNavBackButtonVisible = DemoNav is not null && DemoNav.IsBackButtonVisible;
             _userNavPaneToggleButtonVisible = DemoNav is null || DemoNav.IsPaneToggleButtonVisible;
-            CaptureNonTopPaneState();
 
             DemoNav?.SelectionChanged += DemoNav_SelectionChanged;
 
@@ -143,6 +142,10 @@ namespace Fluence.Wpf.Demo
             _pageByContainer.Clear();
             _navigationBackStack.Clear();
             _currentNavigationItem = null;
+            if (SettingsNavigationItem is NavigationViewItem settingsNavigationItem)
+            {
+                settingsNavigationItem.IsSelected = false;
+            }
 
             NavigationViewItem? defaultItem = null;
             foreach (DemoNavigationItem item in DemoNavigationCatalog.Items)
@@ -182,6 +185,11 @@ namespace Fluence.Wpf.Demo
                 return;
             }
 
+            if (SettingsNavigationItem is NavigationViewItem settingsNavigationItem)
+            {
+                settingsNavigationItem.IsSelected = false;
+            }
+
             if (!ReferenceEquals(_currentNavigationItem, selected))
             {
                 if (!_isNavigatingBack && _currentNavigationItem is not null)
@@ -205,7 +213,7 @@ namespace Fluence.Wpf.Demo
         /// <summary>
         /// Selects the pane item whose title, route, or keywords contain the supplied tag.
         /// </summary>
-        /// <param name="tag">Search tag such as "buttons", "progress ring", or "window".</param>
+        /// <param name="tag">Search tag such as "buttons", "progress ring", or "settings".</param>
         public void NavigateTo(string tag)
         {
             if (DemoNav is null || string.IsNullOrWhiteSpace(tag))
@@ -218,6 +226,12 @@ namespace Fluence.Wpf.Demo
                 NavSearchBox.Text = string.Empty;
             }
 
+            if (string.Equals(tag.Trim(), "settings", StringComparison.OrdinalIgnoreCase))
+            {
+                NavigateToSettings();
+                return;
+            }
+
             NavigateToItem(FindFirstMatchingItem(tag));
         }
 
@@ -226,6 +240,11 @@ namespace Fluence.Wpf.Demo
             if (item is null || DemoNav is null)
             {
                 return;
+            }
+
+            if (SettingsNavigationItem is NavigationViewItem settingsNavigationItem)
+            {
+                settingsNavigationItem.IsSelected = false;
             }
 
             if (ReferenceEquals(DemoNav.SelectedItem, item) && EnsurePageContent(item) is object page)
@@ -239,6 +258,27 @@ namespace Fluence.Wpf.Demo
             {
                 DemoNav.SelectedItem = item;
             }
+        }
+
+        private void NavigateToSettings()
+        {
+            if (DemoNav is null || SettingsNavigationItem is null)
+            {
+                return;
+            }
+
+            if (!ReferenceEquals(DemoNav.Content, _settingsPage) && !_isNavigatingBack && _currentNavigationItem is not null)
+            {
+                _navigationBackStack.Add(_currentNavigationItem);
+            }
+
+            _currentNavigationItem = null;
+            DemoNav.SelectedItem = null;
+            SettingsNavigationItem.IsSelected = true;
+            _settingsPage ??= new GallerySettingsPage(this);
+            DemoNav.Content = _settingsPage;
+            AnimatePageInIfChanged(_settingsPage);
+            UpdateBackNavigationState();
         }
 
         private void UpdateBackNavigationState()
@@ -279,7 +319,7 @@ namespace Fluence.Wpf.Demo
             return page;
         }
 
-        private static object CreatePageForRoute(string route)
+        private object CreatePageForRoute(string route)
         {
             return (route ?? string.Empty).ToLowerInvariant() switch
             {
@@ -300,7 +340,7 @@ namespace Fluence.Wpf.Demo
                 "tabs" => new GalleryTabsPage(),
                 "layout" => new GalleryLayoutPage(),
                 "status" => new GalleryStatusPage(),
-                "window" => new GalleryWindowPage(),
+                "settings" => new GallerySettingsPage(this),
                 _ => new GalleryHomePage(),
             };
         }
@@ -478,38 +518,45 @@ namespace Fluence.Wpf.Demo
             ApplyTitleBarContentVisibility();
         }
 
-        private void PaneModeToggle_CheckedChanged(object sender, RoutedEventArgs e)
+        internal NavigationViewPaneDisplayMode GetDemoNavigationPaneDisplayMode()
         {
-            if (_syncingPaneModeToggle || DemoNav is null || PaneModeToggle is null)
-            {
-                return;
-            }
-
-            if (PaneModeToggle.IsChecked == true)
-            {
-                if (DemoNav.PaneDisplayMode != NavigationViewPaneDisplayMode.Top)
-                {
-                    CaptureNonTopPaneState();
-                    DemoNav.PaneDisplayMode = NavigationViewPaneDisplayMode.Top;
-                }
-
-                return;
-            }
-
-            if (DemoNav.PaneDisplayMode == NavigationViewPaneDisplayMode.Top)
-            {
-                NavigationViewPaneDisplayMode targetMode = GetLastNonTopPaneDisplayMode();
-                bool targetIsPaneOpen = _lastNonTopIsPaneOpen;
-                DemoNav.PaneDisplayMode = targetMode;
-                DemoNav.IsPaneOpen = targetIsPaneOpen;
-            }
+            return DemoNav?.PaneDisplayMode ?? NavigationViewPaneDisplayMode.Top;
         }
 
-        private NavigationViewPaneDisplayMode GetLastNonTopPaneDisplayMode()
+        internal bool IsDemoNavigationPaneOpen()
         {
-            return _lastNonTopPaneDisplayMode == NavigationViewPaneDisplayMode.Top
-                ? NavigationViewPaneDisplayMode.Left
-                : _lastNonTopPaneDisplayMode;
+            return DemoNav?.IsPaneOpen == true;
+        }
+
+        internal void SetDemoNavigationPaneDisplayMode(NavigationViewPaneDisplayMode mode)
+        {
+            if (DemoNav is null)
+            {
+                return;
+            }
+
+            if (mode == NavigationViewPaneDisplayMode.Top)
+            {
+                DemoNav.PaneDisplayMode = NavigationViewPaneDisplayMode.Top;
+                DemoNav.IsPaneOpen = true;
+                ApplyTitleBarContentVisibility();
+                NotifyDemoNavigationPaneStateChanged();
+                return;
+            }
+
+            if (mode == NavigationViewPaneDisplayMode.Left)
+            {
+                DemoNav.IsPaneOpen = true;
+                DemoNav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
+            }
+            else
+            {
+                DemoNav.PaneDisplayMode = mode;
+                DemoNav.IsPaneOpen = false;
+            }
+
+            ApplyTitleBarContentVisibility();
+            NotifyDemoNavigationPaneStateChanged();
         }
 
         /// <summary>
@@ -558,8 +605,6 @@ namespace Fluence.Wpf.Demo
         {
             if (sender == DemoNav && !_isApplyingTitleBarChrome)
             {
-                CaptureNonTopPaneState();
-
                 if (DemoNav.PaneDisplayMode != NavigationViewPaneDisplayMode.Top)
                 {
                     if (ExtendsContentIntoTitleBar)
@@ -577,17 +622,10 @@ namespace Fluence.Wpf.Demo
             }
 
             ApplyTitleBarContentVisibility();
-        }
-
-        private void CaptureNonTopPaneState()
-        {
-            if (DemoNav is null || DemoNav.PaneDisplayMode == NavigationViewPaneDisplayMode.Top)
+            if (sender == DemoNav)
             {
-                return;
+                NotifyDemoNavigationPaneStateChanged();
             }
-
-            _lastNonTopPaneDisplayMode = DemoNav.PaneDisplayMode;
-            _lastNonTopIsPaneOpen = DemoNav.IsPaneOpen;
         }
 
         private void OnNavigationBackVisibilityChanged(object? sender, EventArgs e)
@@ -666,33 +704,27 @@ namespace Fluence.Wpf.Demo
                     && DemoNav.PaneDisplayMode != NavigationViewPaneDisplayMode.Top;
             }
 
-            SyncPaneModeToggle();
+            UpdateSettingsNavigationItemDisplay();
             ScheduleExtendedTitleOverlapCheck();
             _lastAppliedExtendedTitleBar = extendedTitleBar;
         }
 
-        private void SyncPaneModeToggle()
+        private void UpdateSettingsNavigationItemDisplay()
         {
-            if (DemoNav is null || PaneModeToggle is null)
+            if (DemoNav is null || SettingsNavigationItem is null)
             {
                 return;
             }
 
-            bool shouldBeChecked = DemoNav.PaneDisplayMode == NavigationViewPaneDisplayMode.Top;
-            if (PaneModeToggle.IsChecked == shouldBeChecked)
-            {
-                return;
-            }
+            bool showText = DemoNav.PaneDisplayMode == NavigationViewPaneDisplayMode.Left && DemoNav.IsPaneOpen;
+            SettingsNavigationItem.Content = showText ? "Settings" : string.Empty;
+            SettingsNavigationItem.Width = showText ? double.NaN : 48.0;
+            SettingsNavigationItem.MinWidth = showText ? 0.0 : 48.0;
+        }
 
-            _syncingPaneModeToggle = true;
-            try
-            {
-                PaneModeToggle.IsChecked = shouldBeChecked;
-            }
-            finally
-            {
-                _syncingPaneModeToggle = false;
-            }
+        private void NotifyDemoNavigationPaneStateChanged()
+        {
+            DemoNavigationPaneStateChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void TitleBarLayout_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -719,7 +751,19 @@ namespace Fluence.Wpf.Demo
 
         private void ShellTitleBar_PaneToggleRequested(object sender, EventArgs e)
         {
-            _ = (DemoNav?.IsPaneOpen = !DemoNav.IsPaneOpen);
+            if (DemoNav is null || DemoNav.PaneDisplayMode == NavigationViewPaneDisplayMode.Top)
+            {
+                return;
+            }
+
+            if (DemoNav.PaneDisplayMode == NavigationViewPaneDisplayMode.Left && DemoNav.IsPaneOpen)
+            {
+                SetDemoNavigationPaneDisplayMode(NavigationViewPaneDisplayMode.LeftCompact);
+            }
+            else
+            {
+                SetDemoNavigationPaneDisplayMode(NavigationViewPaneDisplayMode.Left);
+            }
         }
 
         private void ShellTitleBar_BackRequested(object sender, EventArgs e)
@@ -743,6 +787,24 @@ namespace Fluence.Wpf.Demo
                 _isNavigatingBack = false;
                 UpdateBackNavigationState();
             }
+        }
+
+        private void SettingsNavigationItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            NavigateToSettings();
+            e.Handled = true;
+        }
+
+        private void SettingsNavigationItem_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key is not (Key.Enter or Key.Space))
+            {
+                return;
+            }
+
+            _ = SettingsNavigationItem?.Focus();
+            NavigateToSettings();
+            e.Handled = true;
         }
 
         private void ScheduleExtendedTitleOverlapCheck()

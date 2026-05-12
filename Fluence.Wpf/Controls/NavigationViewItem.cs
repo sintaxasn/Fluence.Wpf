@@ -192,7 +192,6 @@ namespace Fluence.Wpf.Controls
                 return;
             }
             nav.InvokeItem(this);
-            _ = Focus();
             e.Handled = true;
         }
 

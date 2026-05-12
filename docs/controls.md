@@ -19,7 +19,7 @@ The **Fluence.Wpf.Demo** gallery is the live inventory: `FluenceWindow` chrome w
 - Tabs (TabControl, TabView)
 - Layout (StackPanel, DockPanel, Border, Separator, Expander)
 - Status (InfoBar, InfoBadge, ProgressBar, ProgressRing)
-- Windowing (backdrop, caption, theme)
+- Settings (theme, navigation style, colors, backdrop, caption buttons)
 
 Each non-Home gallery page renders examples inline and exposes source through `DemoSampleControl`. Source tabs are backed by page-local `XamlSource` and optional `CSharpSource` strings so examples can be debugged directly with their page code-behind.
 

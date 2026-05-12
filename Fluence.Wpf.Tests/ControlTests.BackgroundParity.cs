@@ -33,9 +33,9 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using Fluence.Wpf.Demo;
 using Fluence.Wpf.Demo.Pages;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluenceCard = Fluence.Wpf.Controls.Card;
 using FluenceCheckBox = Fluence.Wpf.Controls.CheckBox;
 using FluenceExpander = Fluence.Wpf.Controls.Expander;
 using FluenceProgressBar = Fluence.Wpf.Controls.ProgressBar;
@@ -227,6 +227,10 @@ namespace Fluence.Wpf.Tests
             {
                 Application? application = EnsureApplication();
                 _ = MergeGenericDictionary(application);
+                MergeDemoSharedStyles(application);
+                DemoThemeResources.RefreshForCurrentTheme();
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, true);
+                DemoThemeResources.RefreshForCurrentTheme();
 
                 DemoSampleControl sample = new()
                 {
@@ -248,16 +252,16 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    FluenceCard? sampleCard = sample.FindName("SampleCard") as FluenceCard;
+                    WpfBorder? sampleCard = sample.FindName("SampleCard") as WpfBorder;
                     FluenceExpander? sourceExpander = sample.FindName("SourceExpander") as FluenceExpander;
                     Assert.IsNotNull(sampleCard, "DemoSampleControl must expose SampleCard.");
                     Assert.IsNotNull(sourceExpander, "DemoSampleControl must expose SourceExpander.");
 
-                    Assert.AreEqual(CardVariant.Filled, sampleCard.Variant,
-                        "Demo sample display should use the darker filled card surface.");
-                    AssertBrushColor(sampleCard.Background, "CardBackgroundFillColorSecondaryBrush",
-                        "Demo sample display should use the darker WinUI Gallery card background role.");
-                    AssertBrushColor(sourceExpander.Background, "CardBackgroundFillColorSecondaryBrush",
+                    Assert.AreEqual(new CornerRadius(8, 8, 0, 0), sampleCard.CornerRadius,
+                        "Demo sample display should attach to the source section with WinUI Gallery corners.");
+                    AssertBrushColor(sampleCard.Background, "DemoControlSurfaceBrush",
+                        "Demo sample display should use the WinUI Gallery control-example surface.");
+                    AssertBrushColor(sourceExpander.Background, "DemoSourceSurfaceBrush",
                         "Demo source surface should use the WinUI Gallery source-code background.");
                     Assert.AreEqual("Source code", sourceExpander.Header,
                         "Demo source expander header should match the WinUI Gallery source label.");
@@ -270,14 +274,58 @@ namespace Fluence.Wpf.Tests
                     WpfBorder? copyButtonHost = FindVisualChildByName<WpfBorder>(sourceExpander, "CopySourceButtonHost");
                     Assert.IsNotNull(sourceViewer, "Expanded source should expose the code viewer.");
                     Assert.IsNotNull(copyButtonHost, "Expanded source should expose the overlaid copy-button host.");
-                    AssertBrushColor(sourceViewer.Background, "ControlOnImageFillColorTertiaryBrush",
+                    AssertBrushColor(sourceViewer.Background, "DemoSourceSurfaceBrush",
                         "Source code should use the darker WinUI Gallery on-image fill role.");
-                    AssertBrushColor(copyButtonHost.Background, "ControlOnImageFillColorDefaultBrush",
+                    AssertBrushColor(copyButtonHost.Background, "DemoControlSurfaceBrush",
                         "Copy action should sit on the WinUI Gallery on-image fill bubble.");
                 }
                 finally
                 {
                     CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [TestMethod]
+        public void DemoSharedResources_DarkTheme_UseExactWinUiGallerySurfaces()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                Application? application = EnsureApplication();
+                _ = MergeGenericDictionary(application);
+                MergeDemoSharedStyles(application);
+
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, true);
+                DemoThemeResources.RefreshForCurrentTheme();
+
+                AssertBrushColor("DemoPageBackgroundBrush", Color.FromRgb(0x27, 0x27, 0x27));
+                AssertBrushColor("DemoControlSurfaceBrush", Color.FromRgb(0x20, 0x20, 0x20));
+                AssertBrushColor("DemoSourceSurfaceBrush", Color.FromRgb(0x32, 0x32, 0x32));
+                AssertBrushColor("DemoSettingsCardBrush", Color.FromRgb(0x32, 0x32, 0x32));
+            });
+        }
+
+        [TestMethod]
+        public void DemoSharedResources_LightAndHighContrast_StayThemeReadable()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                Application? application = EnsureApplication();
+                _ = MergeGenericDictionary(application);
+                MergeDemoSharedStyles(application);
+
+                foreach (ApplicationTheme theme in new[] { ApplicationTheme.Light, ApplicationTheme.HighContrast })
+                {
+                    ApplicationThemeManager.Apply(theme, BackdropType.None, true);
+                    DemoThemeResources.RefreshForCurrentTheme();
+
+                    foreach (string key in GetDemoSurfaceBrushKeys())
+                    {
+                        SolidColorBrush? brush = application?.TryFindResource(key) as SolidColorBrush;
+                        Assert.IsNotNull(brush, key + " must resolve under " + theme + ".");
+                        Assert.AreNotEqual(Color.FromRgb(0x27, 0x27, 0x27), brush.Color,
+                            key + " should not keep the dark page token under " + theme + ".");
+                    }
                 }
             });
         }
@@ -289,6 +337,7 @@ namespace Fluence.Wpf.Tests
             {
                 Application? application = EnsureApplication();
                 _ = MergeGenericDictionary(application);
+                MergeDemoSharedStyles(application);
 
                 string[] keys =
                 [
@@ -303,7 +352,12 @@ namespace Fluence.Wpf.Tests
                     "ScrollBarTrackFillBrush",
                     "SolidBackgroundFillColorBaseBrush",
                     "CardBackgroundFillColorSecondaryBrush",
-                    "AccentFillColorDefaultBrush"
+                    "AccentFillColorDefaultBrush",
+                    "DemoPageBackgroundBrush",
+                    "DemoControlSurfaceBrush",
+                    "DemoSourceSurfaceBrush",
+                    "DemoSettingsCardBrush",
+                    "DemoSectionCardBrush"
                 ];
 
                 ApplicationTheme[] themes =
@@ -317,6 +371,7 @@ namespace Fluence.Wpf.Tests
                 {
                     ApplicationThemeManager.Apply(theme, BackdropType.None, true);
                     ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
+                    DemoThemeResources.RefreshForCurrentTheme();
 
                     foreach (string key in keys)
                     {
@@ -447,12 +502,40 @@ namespace Fluence.Wpf.Tests
             Assert.AreEqual(expected.Color, actual.Color, message);
         }
 
+        private static void AssertBrushColor(string resourceKey, Color expectedColor)
+        {
+            SolidColorBrush? actual = Application.Current?.TryFindResource(resourceKey) as SolidColorBrush;
+            Assert.IsNotNull(actual, resourceKey + " must resolve.");
+            Assert.AreEqual(expectedColor, actual.Color, resourceKey + " should match the requested WinUI Gallery dark token.");
+        }
+
+        private static string[] GetDemoSurfaceBrushKeys()
+        {
+            return
+            [
+                "DemoPageBackgroundBrush",
+                "DemoControlSurfaceBrush",
+                "DemoSourceSurfaceBrush",
+                "DemoSettingsCardBrush",
+                "DemoSectionCardBrush"
+            ];
+        }
+
+        private static void MergeDemoSharedStyles(Application? application)
+        {
+            ResourceDictionary demoShared = new()
+            {
+                Source = new Uri("/Fluence.Wpf.Demo;component/Resources/DemoSharedStyles.xaml", UriKind.Relative)
+            };
+            application?.Resources.MergedDictionaries.Add(demoShared);
+        }
+
         private static bool IsBackgroundLiteralAllowedPath(string path)
         {
             string fileName = Path.GetFileName(path);
             return fileName.Equals("fluence-wpf-banner-light.xaml", StringComparison.OrdinalIgnoreCase) ||
                 fileName.Equals("fluence-wpf-banner-dark.xaml", StringComparison.OrdinalIgnoreCase) ||
-                fileName.Equals("GalleryWindowPage.xaml", StringComparison.OrdinalIgnoreCase) ||
+                fileName.Equals("GallerySettingsPage.xaml", StringComparison.OrdinalIgnoreCase) ||
                 fileName.Equals("GalleryColorsPage.xaml", StringComparison.OrdinalIgnoreCase) ||
                 fileName.Equals("GalleryAccessibilityPage.xaml", StringComparison.OrdinalIgnoreCase);
         }

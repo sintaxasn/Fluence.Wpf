@@ -9,8 +9,8 @@
     d:DesignHeight="800"
     d:DesignWidth="900"
     mc:Ignorable="d">
-    <ui:SmoothScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="28,24,28,28" HorizontalAlignment="Stretch">
+    <ui:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
+        <StackPanel Style="{StaticResource GalleryPageContentStackStyle}">
             <TextBlock
                 Margin="0,0,0,4"
                 ui:TextBlockExtensions.Typography="Title"
@@ -30,7 +30,7 @@
                         <TextBlock Style="{StaticResource SwatchSectionHeaderStyle}" Text="Text" />
                         <TextBlock Style="{StaticResource SwatchSectionDescStyle}" Text="For UI labels and static text" />
                         <Border
-                            Margin="0,0,0,24"
+                            Margin="0,24,0,12"
                             Padding="16"
                             Background="{DynamicResource SolidBackgroundFillColorQuarternaryBrush}"
                             CornerRadius="8">
@@ -43,7 +43,7 @@
                                     Text="Aa" />
                                 <UniformGrid Columns="4" Rows="1">
                                     <Border
-                                        Margin="0,0,2,0"
+                                        Margin="2,0,2,0"
                                         Background="{DynamicResource TextFillColorPrimaryBrush}"
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
@@ -121,7 +121,7 @@
                                     Text="Aa" />
                                 <UniformGrid Columns="4" Rows="1">
                                     <Border
-                                        Margin="0,0,2,0"
+                                        Margin="2,0,2,0"
                                         Background="{DynamicResource AccentTextFillColorPrimaryBrush}"
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
@@ -208,7 +208,7 @@
                                     Text="Aa" />
                                 <UniformGrid Columns="2" Rows="2">
                                     <Border
-                                        Margin="0,0,2,2"
+                                        Margin="2"
                                         Background="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
@@ -227,7 +227,7 @@
                                         </StackPanel>
                                     </Border>
                                     <Border
-                                        Margin="2,0,0,2"
+                                        Margin="2"
                                         Background="{DynamicResource TextOnAccentFillColorSecondaryBrush}"
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
@@ -237,7 +237,7 @@
                                         </StackPanel>
                                     </Border>
                                     <Border
-                                        Margin="0,2,2,0"
+                                        Margin="2"
                                         Background="{DynamicResource TextOnAccentFillColorDisabledBrush}"
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
@@ -247,7 +247,7 @@
                                         </StackPanel>
                                     </Border>
                                     <Border
-                                        Margin="2,2,0,0"
+                                        Margin="2"
                                         Background="{DynamicResource TextOnAccentFillColorSelectedTextBrush}"
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
@@ -275,7 +275,7 @@
                             <StackPanel>
                                 <UniformGrid Columns="4" Rows="2">
                                     <Border
-                                        Margin="0,0,2,2"
+                                        Margin="2"
                                         Background="{DynamicResource ControlFillColorDefaultBrush}"
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
@@ -294,7 +294,7 @@
                                         </StackPanel>
                                     </Border>
                                     <Border
-                                        Margin="2,0,2,2"
+                                        Margin="2"
                                         Background="{DynamicResource ControlFillColorSecondaryBrush}"
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
@@ -313,7 +313,7 @@
                                         </StackPanel>
                                     </Border>
                                     <Border
-                                        Margin="2,0,2,2"
+                                        Margin="2"
                                         Background="{DynamicResource ControlFillColorTertiaryBrush}"
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
@@ -332,7 +332,7 @@
                                         </StackPanel>
                                     </Border>
                                     <Border
-                                        Margin="2,0,0,2"
+                                        Margin="2"
                                         Background="{DynamicResource ControlFillColorQuarternaryBrush}"
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
@@ -351,7 +351,7 @@
                                         </StackPanel>
                                     </Border>
                                     <Border
-                                        Margin="0,2,2,0"
+                                        Margin="2"
                                         Background="{DynamicResource ControlFillColorDisabledBrush}"
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
@@ -370,7 +370,7 @@
                                         </StackPanel>
                                     </Border>
                                     <Border
-                                        Margin="2,2,2,0"
+                                        Margin="2"
                                         Background="{DynamicResource ControlFillColorTransparentBrush}"
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
@@ -389,7 +389,7 @@
                                         </StackPanel>
                                     </Border>
                                     <Border
-                                        Margin="2,2,0,0"
+                                        Margin="2"
                                         Background="{DynamicResource ControlFillColorInputActiveBrush}"
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
@@ -420,7 +420,7 @@
                             CornerRadius="8">
                             <UniformGrid Columns="4">
                                 <Border
-                                    Margin="0,0,2,0"
+                                    Margin="2"
                                     Background="{DynamicResource ControlAltFillColorTransparentBrush}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -435,7 +435,7 @@
                                     </StackPanel>
                                 </Border>
                                 <Border
-                                    Margin="2,0,2,0"
+                                    Margin="2"
                                     Background="{DynamicResource ControlAltFillColorSecondaryBrush}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -454,7 +454,7 @@
                                     </StackPanel>
                                 </Border>
                                 <Border
-                                    Margin="2,0,2,0"
+                                    Margin="2"
                                     Background="{DynamicResource ControlAltFillColorTertiaryBrush}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -473,7 +473,7 @@
                                     </StackPanel>
                                 </Border>
                                 <Border
-                                    Margin="2,0,0,0"
+                                    Margin="2"
                                     Background="{DynamicResource ControlAltFillColorDisabledBrush}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -503,7 +503,7 @@
                             CornerRadius="8">
                             <UniformGrid Columns="2">
                                 <Border
-                                    Margin="0,0,2,0"
+                                    Margin="2"
                                     Background="{DynamicResource ControlSolidFillColorDefaultBrush}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -522,7 +522,7 @@
                                     </StackPanel>
                                 </Border>
                                 <Border
-                                    Margin="2,0,0,0"
+                                    Margin="2"
                                     Background="{DynamicResource ControlStrongFillColorDefaultBrush}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -557,7 +557,7 @@
                             CornerRadius="8">
                             <UniformGrid Columns="2">
                                 <Border
-                                    Margin="0,0,2,0"
+                                    Margin="2"
                                     Background="{DynamicResource CardStrokeColorDefaultBrush}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -566,7 +566,7 @@
                                     </StackPanel>
                                 </Border>
                                 <Border
-                                    Margin="2,0,0,0"
+                                    Margin="2"
                                     Background="{DynamicResource CardStrokeColorDefaultSolidBrush}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -586,7 +586,7 @@
                             CornerRadius="8">
                             <UniformGrid Columns="3">
                                 <Border
-                                    Margin="0,0,2,0"
+                                    Margin="2"
                                     BorderBrush="{DynamicResource ControlElevationBorderBrush}"
                                     BorderThickness="2"
                                     Style="{StaticResource ColorSwatchCellStyle}">
@@ -606,7 +606,7 @@
                                     </StackPanel>
                                 </Border>
                                 <Border
-                                    Margin="2,0,2,0"
+                                    Margin="2"
                                     BorderBrush="{DynamicResource TextControlElevationBorderBrush}"
                                     BorderThickness="2"
                                     Style="{StaticResource ColorSwatchCellStyle}">
@@ -626,7 +626,7 @@
                                     </StackPanel>
                                 </Border>
                                 <Border
-                                    Margin="2,0,0,0"
+                                    Margin="2"
                                     BorderBrush="{DynamicResource AccentControlElevationBorderBrush}"
                                     BorderThickness="2"
                                     Style="{StaticResource ColorSwatchCellStyle}">
@@ -657,7 +657,7 @@
                             CornerRadius="8">
                             <UniformGrid Columns="4">
                                 <Border
-                                    Margin="0,0,2,2"
+                                    Margin="2"
                                     Background="{DynamicResource ControlStrokeColorDefaultBrush}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -666,7 +666,7 @@
                                     </StackPanel>
                                 </Border>
                                 <Border
-                                    Margin="2,0,2,2"
+                                    Margin="2"
                                     Background="{DynamicResource ControlStrokeColorSecondaryBrush}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -675,7 +675,7 @@
                                     </StackPanel>
                                 </Border>
                                 <Border
-                                    Margin="2,0,2,2"
+                                    Margin="2"
                                     Background="{DynamicResource ControlStrokeColorOnAccentDefaultBrush}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -684,7 +684,7 @@
                                     </StackPanel>
                                 </Border>
                                 <Border
-                                    Margin="2,0,0,2"
+                                    Margin="2"
                                     Background="{DynamicResource ControlStrokeColorOnAccentSecondaryBrush}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -703,7 +703,7 @@
                             CornerRadius="8">
                             <UniformGrid Columns="2">
                                 <Border
-                                    Margin="0,0,2,0"
+                                    Margin="2"
                                     Background="{DynamicResource FocusStrokeColorOuterBrush}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -718,7 +718,7 @@
                                     </StackPanel>
                                 </Border>
                                 <Border
-                                    Margin="2,0,0,0"
+                                    Margin="2"
                                     Background="{DynamicResource FocusStrokeColorInnerBrush}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -743,7 +743,7 @@
                             CornerRadius="8">
                             <UniformGrid Columns="3">
                                 <Border
-                                    Margin="0,0,2,0"
+                                    Margin="2"
                                     Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -758,7 +758,7 @@
                                     </StackPanel>
                                 </Border>
                                 <Border
-                                    Margin="2,0,2,0"
+                                    Margin="2"
                                     Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -773,7 +773,7 @@
                                     </StackPanel>
                                 </Border>
                                 <Border
-                                    Margin="2,0,0,0"
+                                    Margin="2"
                                     Background="{DynamicResource CardBackgroundTertiaryBrush}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -824,7 +824,7 @@
                             CornerRadius="8">
                             <UniformGrid Columns="2">
                                 <Border
-                                    Margin="0,0,2,0"
+                                    Margin="2"
                                     Background="{DynamicResource LayerFillColorDefaultBrush}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -839,7 +839,7 @@
                                     </StackPanel>
                                 </Border>
                                 <Border
-                                    Margin="2,0,0,0"
+                                    Margin="2"
                                     Background="{DynamicResource LayerFillColorAltBrush}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -864,7 +864,7 @@
                             CornerRadius="8">
                             <UniformGrid Columns="4">
                                 <Border
-                                    Margin="0,0,2,0"
+                                    Margin="2"
                                     Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -879,7 +879,7 @@
                                     </StackPanel>
                                 </Border>
                                 <Border
-                                    Margin="2,0,2,0"
+                                    Margin="2"
                                     Background="{DynamicResource SolidBackgroundFillColorSecondaryBrush}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -894,7 +894,7 @@
                                     </StackPanel>
                                 </Border>
                                 <Border
-                                    Margin="2,0,2,0"
+                                    Margin="2"
                                     Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -909,7 +909,7 @@
                                     </StackPanel>
                                 </Border>
                                 <Border
-                                    Margin="2,0,0,0"
+                                    Margin="2"
                                     Background="{DynamicResource SolidBackgroundFillColorQuarternaryBrush}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -941,7 +941,7 @@
                             <StackPanel>
                                 <UniformGrid Margin="0,0,0,4" Columns="3">
                                     <Border
-                                        Margin="0,0,2,0"
+                                        Margin="2"
                                         Background="{DynamicResource SystemFillColorSuccessBrush}"
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
@@ -960,7 +960,7 @@
                                         </StackPanel>
                                     </Border>
                                     <Border
-                                        Margin="2,0,2,0"
+                                        Margin="2"
                                         Background="{DynamicResource SystemFillColorCautionBrush}"
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
@@ -979,7 +979,7 @@
                                         </StackPanel>
                                     </Border>
                                     <Border
-                                        Margin="2,0,0,0"
+                                        Margin="2"
                                         Background="{DynamicResource SystemFillColorCriticalBrush}"
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
@@ -1000,7 +1000,7 @@
                                 </UniformGrid>
                                 <UniformGrid Margin="0,4,0,4" Columns="3">
                                     <Border
-                                        Margin="0,0,2,0"
+                                        Margin="2"
                                         Background="{DynamicResource SystemFillColorSuccessBackgroundBrush}"
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
@@ -1019,7 +1019,7 @@
                                         </StackPanel>
                                     </Border>
                                     <Border
-                                        Margin="2,0,2,0"
+                                        Margin="2"
                                         Background="{DynamicResource SystemFillColorCautionBackgroundBrush}"
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
@@ -1038,7 +1038,7 @@
                                         </StackPanel>
                                     </Border>
                                     <Border
-                                        Margin="2,0,0,0"
+                                        Margin="2"
                                         Background="{DynamicResource SystemFillColorCriticalBackgroundBrush}"
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
@@ -1059,7 +1059,7 @@
                                 </UniformGrid>
                                 <UniformGrid Margin="0,4,0,4" Columns="3">
                                     <Border
-                                        Margin="0,0,2,0"
+                                        Margin="2"
                                         Background="{DynamicResource SystemFillColorAttentionBrush}"
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
@@ -1078,7 +1078,7 @@
                                         </StackPanel>
                                     </Border>
                                     <Border
-                                        Margin="2,0,2,0"
+                                        Margin="2"
                                         Background="{DynamicResource SystemFillColorNeutralBrush}"
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
@@ -1097,7 +1097,7 @@
                                         </StackPanel>
                                     </Border>
                                     <Border
-                                        Margin="2,0,0,0"
+                                        Margin="2"
                                         Background="{DynamicResource SystemFillColorSolidNeutralBrush}"
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
@@ -1118,7 +1118,7 @@
                                 </UniformGrid>
                                 <UniformGrid Margin="0,4,0,0" Columns="3">
                                     <Border
-                                        Margin="0,0,2,0"
+                                        Margin="2"
                                         Background="{DynamicResource SystemFillColorAttentionBackgroundBrush}"
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
@@ -1137,7 +1137,7 @@
                                         </StackPanel>
                                     </Border>
                                     <Border
-                                        Margin="2,0,2,0"
+                                        Margin="2"
                                         Background="{DynamicResource SystemFillColorNeutralBackgroundBrush}"
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
@@ -1156,7 +1156,7 @@
                                         </StackPanel>
                                     </Border>
                                     <Border
-                                        Margin="2,0,0,0"
+                                        Margin="2"
                                         Background="{DynamicResource SystemFillColorSolidNeutralBackgroundBrush}"
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
@@ -1191,7 +1191,7 @@
                             CornerRadius="8">
                             <UniformGrid Columns="4" Rows="2">
                                 <Border
-                                    Margin="0,0,2,2"
+                                    Margin="2"
                                     Background="{DynamicResource {x:Static SystemColors.WindowTextBrushKey}}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -1210,7 +1210,7 @@
                                     </StackPanel>
                                 </Border>
                                 <Border
-                                    Margin="2,0,2,2"
+                                    Margin="2"
                                     Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -1229,7 +1229,7 @@
                                     </StackPanel>
                                 </Border>
                                 <Border
-                                    Margin="2,0,2,2"
+                                    Margin="2"
                                     Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -1248,7 +1248,7 @@
                                     </StackPanel>
                                 </Border>
                                 <Border
-                                    Margin="2,0,0,2"
+                                    Margin="2"
                                     Background="{DynamicResource {x:Static SystemColors.HotTrackBrushKey}}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -1267,7 +1267,7 @@
                                     </StackPanel>
                                 </Border>
                                 <Border
-                                    Margin="0,2,2,0"
+                                    Margin="2"
                                     Background="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -1286,7 +1286,7 @@
                                     </StackPanel>
                                 </Border>
                                 <Border
-                                    Margin="2,2,2,0"
+                                    Margin="2"
                                     Background="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -1305,7 +1305,7 @@
                                     </StackPanel>
                                 </Border>
                                 <Border
-                                    Margin="2,2,2,0"
+                                    Margin="2"
                                     Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
@@ -1324,7 +1324,7 @@
                                     </StackPanel>
                                 </Border>
                                 <Border
-                                    Margin="2,2,0,0"
+                                    Margin="2"
                                     Background="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>

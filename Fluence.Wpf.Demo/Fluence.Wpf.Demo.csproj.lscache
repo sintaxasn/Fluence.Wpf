@@ -61,6 +61,7 @@ TemporaryDependencyNodeTargetIdentifier=net10.0-windows10.0.26100.0
 [sourceFiles]
 App.xaml.cs
 DemoNavigationCatalog.cs
+DemoThemeResources.cs
 MainWindow.xaml.cs
 obj/Debug/net10.0-windows10.0.26100.0/
  .NETCoreApp,Version=v10.0.AssemblyAttributes.cs
@@ -82,11 +83,11 @@ obj/Debug/net10.0-windows10.0.26100.0/
   GalleryMenusPage.g.cs
   GalleryNavigationPage.g.cs
   GallerySelectionPage.g.cs
+  GallerySettingsPage.g.cs
   GalleryStatusPage.g.cs
   GalleryTabsPage.g.cs
   GalleryTreesPage.g.cs
   GalleryTypographyPage.g.cs
-  GalleryWindowPage.g.cs
 Pages/
  DemoSampleControl.xaml.cs
  GalleryAccessibilityPage.xaml.cs
@@ -102,11 +103,12 @@ Pages/
  GalleryMenusPage.xaml.cs
  GalleryNavigationPage.xaml.cs
  GallerySelectionPage.xaml.cs
+ GallerySettingsPage.xaml.cs
  GalleryStatusPage.xaml.cs
  GalleryTabsPage.xaml.cs
  GalleryTreesPage.xaml.cs
  GalleryTypographyPage.xaml.cs
- GalleryWindowPage.xaml.cs
+SettingsOptions.cs
 
 [metadataReferences]
 ../../.dotnet/packs/Microsoft.NETCore.App.Ref/10.0.7/ref/net10.0/
@@ -421,6 +423,7 @@ TemporaryDependencyNodeTargetIdentifier=net472
 [sourceFiles]
 App.xaml.cs
 DemoNavigationCatalog.cs
+DemoThemeResources.cs
 MainWindow.xaml.cs
 obj/Debug/net472/
  .NETFramework,Version=v4.7.2.AssemblyAttributes.cs
@@ -442,11 +445,11 @@ obj/Debug/net472/
   GalleryMenusPage.g.cs
   GalleryNavigationPage.g.cs
   GallerySelectionPage.g.cs
+  GallerySettingsPage.g.cs
   GalleryStatusPage.g.cs
   GalleryTabsPage.g.cs
   GalleryTreesPage.g.cs
   GalleryTypographyPage.g.cs
-  GalleryWindowPage.g.cs
 Pages/
  DemoSampleControl.xaml.cs
  GalleryAccessibilityPage.xaml.cs
@@ -462,11 +465,12 @@ Pages/
  GalleryMenusPage.xaml.cs
  GalleryNavigationPage.xaml.cs
  GallerySelectionPage.xaml.cs
+ GallerySettingsPage.xaml.cs
  GalleryStatusPage.xaml.cs
  GalleryTabsPage.xaml.cs
  GalleryTreesPage.xaml.cs
  GalleryTypographyPage.xaml.cs
- GalleryWindowPage.xaml.cs
+SettingsOptions.cs
 
 [metadataReferences]
 ../Fluence.Wpf/bin/Debug/net472/Fluence.Wpf.dll

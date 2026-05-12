@@ -986,7 +986,9 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    SelectMainWindowNavPage(window, window.Dispatcher, "Windowing");
+                    window.NavigateTo("settings");
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
 
                     List<Controls.Button> accentSwatchButtons = [.. FindVisualChildren<Controls.Button>(window).Where(b => b.Tag is string hex && hex.Length > 0 && hex[0] == '#')];
 
@@ -1002,7 +1004,7 @@ namespace Fluence.Wpf.Tests
                     ];
 
                     CollectionAssert.AreEqual(expectedSwatches, accentSwatchButtons.Select(b => (string)b.Tag).ToList(),
-                        "Window page should expose the seven logo accent swatches.");
+                        "Settings page should expose the seven logo accent swatches.");
                     foreach (Controls.Button swatch in accentSwatchButtons)
                     {
                         Assert.IsInstanceOfType(swatch, typeof(Controls.Button));
@@ -1018,7 +1020,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void MainWindow_TitleSelectors_UseExpectedControls()
+        public void MainWindow_SettingsSelectors_UseExpectedControls()
         {
             RunOnStaThread(() =>
             {
@@ -1033,13 +1035,14 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    SelectMainWindowNavPage(window, window.Dispatcher, "Windowing");
+                    window.NavigateTo("settings");
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
 
-                    Assert.IsInstanceOfType(FindVisualChildByName<Controls.RadioButton>(window, "ThemeLight"), typeof(Controls.RadioButton));
-                    Assert.IsInstanceOfType(FindVisualChildByName<Controls.RadioButton>(window, "ThemeDark"), typeof(Controls.RadioButton));
-                    Assert.IsInstanceOfType(FindVisualChildByName<Controls.RadioButton>(window, "ThemeHighContrast"), typeof(Controls.RadioButton));
-                    Assert.IsInstanceOfType(FindVisualChildByName<Controls.RadioButton>(window, "ThemeAuto"), typeof(Controls.RadioButton));
-                    Assert.IsInstanceOfType(FindVisualChildByName<Controls.ComboBox>(window, "BackdropCombo"), typeof(Controls.ComboBox));
+                    Assert.IsInstanceOfType(FindVisualChildByName<Controls.ComboBox>(window, "AppThemeComboBox"), typeof(Controls.ComboBox));
+                    Assert.IsInstanceOfType(FindVisualChildByName<Controls.ComboBox>(window, "NavigationStyleComboBox"), typeof(Controls.ComboBox));
+                    Assert.IsInstanceOfType(FindVisualChildByName<Controls.ComboBox>(window, "BackdropComboBox"), typeof(Controls.ComboBox));
+                    Assert.IsInstanceOfType(FindVisualChildByName<Controls.ToggleSwitch>(window, "ThemeWatcherToggle"), typeof(Controls.ToggleSwitch));
                 }
                 finally
                 {
@@ -1051,7 +1054,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void MainWindow_ThemeRadioButton_UpdatesStateLabel()
+        public void MainWindow_AppThemeComboBox_UpdatesStateLabel()
         {
             RunOnStaThread(() =>
             {
@@ -1067,19 +1070,21 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    SelectMainWindowNavPage(window, window.Dispatcher, "Windowing");
-
-                    Controls.RadioButton? themeDark = FindVisualChildByName<Controls.RadioButton>(window, "ThemeDark");
-                    TextBlock? themeStateLabel = FindVisualChildByName<TextBlock>(window, "ThemeStateLabel");
-
-                    Assert.IsNotNull(themeDark);
-                    Assert.IsNotNull(themeStateLabel);
-
-                    themeDark.IsChecked = true;
+                    window.NavigateTo("settings");
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Assert.AreEqual("Current: Dark", themeStateLabel.Text, "Theme radio button should update the state label when checked.");
+                    Controls.ComboBox? themeComboBox = FindVisualChildByName<Controls.ComboBox>(window, "AppThemeComboBox");
+                    TextBlock? themeStateLabel = FindVisualChildByName<TextBlock>(window, "ThemeStateLabel");
+
+                    Assert.IsNotNull(themeComboBox);
+                    Assert.IsNotNull(themeStateLabel);
+
+                    themeComboBox.SelectedIndex = 2;
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.AreEqual("Current: Dark", themeStateLabel.Text, "App theme combo box should update the state label when changed.");
                 }
                 finally
                 {
@@ -1227,6 +1232,66 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void FluentTabControl_SelectedHeaderUsesSequentialPanelAndCenteredIndicator()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+
+                try
+                {
+                    TabControl tabControl = new();
+                    _ = tabControl.Items.Add(new TabItem { Header = "Overview", Content = new TextBlock { Text = "A" } });
+                    _ = tabControl.Items.Add(new TabItem { Header = "Activity", Content = new TextBlock { Text = "B" } });
+                    _ = tabControl.Items.Add(new TabItem { Header = "Settings", Content = new TextBlock { Text = "C" } });
+                    window.Content = tabControl;
+                    window.Width = 640;
+                    window.Height = 480;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    tabControl.SelectedIndex = 1;
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    WaitForAnimationAndDrain(window.Dispatcher, 250);
+
+                    FrameworkElement? headerPanel = tabControl.Template.FindName("HeaderPanel", tabControl) as FrameworkElement;
+                    TabItem? selectedTab = tabControl.ItemContainerGenerator.ContainerFromIndex(1) as TabItem;
+                    Assert.IsNotNull(headerPanel, "TabControl template should expose the header host.");
+                    Assert.IsNotNull(selectedTab, "The selected TabItem should be generated.");
+                    Assert.IsInstanceOfType(headerPanel, typeof(StackPanel),
+                        "TabControl should use a sequential StackPanel header host; WPF TabPanel can clip the selected tab's right edge.");
+                    Assert.IsNotInstanceOfType(headerPanel, typeof(TabPanel),
+                        "TabControl should not use TabPanel for Fluent headers because its selection overlap can clip rounded corners.");
+                    Assert.AreEqual(Orientation.Horizontal, ((StackPanel)headerPanel).Orientation,
+                        "Top TabControl headers should arrange horizontally.");
+
+                    Border? selectedBackground = FindVisualChildByName<Border>(selectedTab, "SelectedBackground");
+                    Border? selectionIndicator = FindVisualChildByName<Border>(selectedTab, "SelectionIndicator");
+                    Assert.IsNotNull(selectedBackground, "Selected TabItem should expose the selected background border.");
+                    Assert.IsNotNull(selectionIndicator, "Selected TabItem should expose the accent selection indicator.");
+
+                    double backgroundX = selectedBackground.TransformToAncestor(selectedTab).Transform(new Point(0, 0)).X;
+                    double indicatorX = selectionIndicator.TransformToAncestor(selectedTab).Transform(new Point(0, 0)).X;
+                    double backgroundCenter = backgroundX + (selectedBackground.ActualWidth / 2.0);
+                    double indicatorCenter = indicatorX + (selectionIndicator.ActualWidth / 2.0);
+                    Assert.AreEqual(backgroundCenter, indicatorCenter, 0.5,
+                        "The selection indicator should remain centered in the selected tab background.");
+                    Assert.AreEqual(selectedTab.ActualWidth, selectedBackground.ActualWidth, 0.5,
+                        "The selected background should occupy the full arranged tab width so the right rounded corner is not cut off.");
+                }
+                finally
+                {
+                    window.Close();
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                }
+            });
+        }
+
+        [TestMethod]
         public void FluentTabControl_LeftPlacement_SeparatesHeadersAndContent()
         {
             RunOnStaThread(() =>
@@ -1261,10 +1326,14 @@ namespace Fluence.Wpf.Tests
                         "Left TabStripPlacement should keep content in the right column.");
                     Assert.AreEqual(new Thickness(0, 0, 9, 0), headerPanel.Margin,
                         "Left TabStripPlacement should keep the 8px Fluent gap plus 1px border breathing room.");
+                    Assert.IsInstanceOfType(headerPanel, typeof(StackPanel),
+                        "Left TabStripPlacement should use the same sequential header host as top placement.");
+                    Assert.AreEqual(Orientation.Vertical, ((StackPanel)headerPanel).Orientation,
+                        "Left TabStripPlacement should stack tab headers vertically.");
 
                     TabItem? firstItem = tabControl.Items[0] as TabItem;
                     Assert.IsNotNull(firstItem);
-                    Assert.AreEqual(new Thickness(0, 0, 4, 2), firstItem.Margin,
+                    Assert.AreEqual(new Thickness(0, 0, 8, 2), firstItem.Margin,
                         "TabItem should reserve right and bottom space so selected borders are not clipped.");
                 }
                 finally
@@ -1304,10 +1373,14 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(headerPanel);
                     Assert.AreEqual(new Thickness(0, 8, 1, 0), headerPanel.Margin,
                         "Bottom TabStripPlacement should keep the top gap plus 1px right-side border breathing room.");
+                    Assert.IsInstanceOfType(headerPanel, typeof(StackPanel),
+                        "Bottom TabStripPlacement should use the same sequential header host as top placement.");
+                    Assert.AreEqual(Orientation.Horizontal, ((StackPanel)headerPanel).Orientation,
+                        "Bottom TabStripPlacement should keep tab headers horizontal.");
 
                     TabItem? firstItem = tabControl.Items[0] as TabItem;
                     Assert.IsNotNull(firstItem);
-                    Assert.AreEqual(new Thickness(0, 0, 4, 2), firstItem.Margin,
+                    Assert.AreEqual(new Thickness(0, 0, 8, 2), firstItem.Margin,
                         "TabItem should reserve right and bottom space so selected borders are not clipped.");
                 }
                 finally
@@ -1397,7 +1470,7 @@ namespace Fluence.Wpf.Tests
                     CollectionAssert.Contains(pages, "Inputs");
                     CollectionAssert.Contains(pages, "Typography");
                     CollectionAssert.Contains(pages, "Iconography");
-                    CollectionAssert.Contains(pages, "Windowing");
+                    Assert.IsFalse(pages.Contains("Windowing"), "Windowing controls should move to Settings rather than the main navigation list.");
                     Assert.IsFalse(pages.Contains("Button"), "Demo navigation should use grouped pages, not generated per-control pages.");
                     Assert.IsFalse(pages.Contains("Fundamentals"), "Demo navigation should not expose the old Fundamentals section.");
                 }
@@ -1459,7 +1532,9 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    SelectMainWindowNavPage(window, window.Dispatcher, "Windowing");
+                    window.NavigateTo("settings");
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
 
                     Controls.ToggleSwitch? toggle = FindVisualChildByName<Controls.ToggleSwitch>(window, "ThemeWatcherToggle");
                     TextBlock? label = FindVisualChildByName<TextBlock>(window, "SystemThemeLabel");

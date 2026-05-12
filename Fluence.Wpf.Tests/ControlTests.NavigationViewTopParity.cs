@@ -193,10 +193,10 @@ namespace Fluence.Wpf.Tests
                     ContentPresenter? infoBadgePresenter = FindVisualChildByName<ContentPresenter>(item, "InfoBadgePresenter");
                     Assert.IsNotNull(outerBorder, "Top navigation item template should expose the outer border.");
                     Assert.IsNotNull(infoBadgePresenter, "Navigation item template should expose the info badge presenter.");
-                    Assert.AreEqual(new Thickness(4, 4, 4, 4), outerBorder.Margin,
-                        "Top navigation items should keep compact 4px horizontal outer spacing.");
-                    Assert.AreEqual(new Thickness(2, 0, 4, 0), outerBorder.Padding,
-                        "Top navigation items should add breathing room inside the border before the icon and after the text.");
+                    Assert.AreEqual(new Thickness(2, 4, 2, 4), outerBorder.Margin,
+                        "Top navigation items should let hover and selected fills extend 2px wider on both sides.");
+                    Assert.AreEqual(new Thickness(4, 0, 6, 0), outerBorder.Padding,
+                        "Top navigation items should preserve content placement while widening the selected fill.");
                     Assert.AreEqual(Visibility.Collapsed, infoBadgePresenter.Visibility,
                         "Navigation items without an info badge should not reserve trailing badge space.");
 
@@ -249,7 +249,7 @@ namespace Fluence.Wpf.Tests
                         PaneFooter = new WpfStackPanel { Width = 88, Height = 36 }
                     };
                     NavigationViewItem first = new() { Content = "Home", Icon = new FontIcon { Glyph = "\uE80F" } };
-                    NavigationViewItem last = new() { Content = "Windowing", Icon = new FontIcon { Glyph = "\uE8A7", IconFontSize = 20 } };
+                    NavigationViewItem last = new() { Content = "Diagnostics", Icon = new FontIcon { Glyph = "\uE8A7", IconFontSize = 20 } };
                     _ = nav.Items.Add(first);
                     _ = nav.Items.Add(new NavigationViewItem { Content = "Design", Icon = new FontIcon { Glyph = "\uE790" } });
                     _ = nav.Items.Add(new NavigationViewItem { Content = "Controls", Icon = new FontIcon { Glyph = "\uECAA" } });
@@ -306,7 +306,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(overflowIcon, "Overflow entries should clone FontIcon icons.");
                     Assert.AreEqual(16.0, overflowIcon.IconFontSize, 0.01,
                         "Overflow menu glyphs should render at the compact 16px size even when the source item used a larger glyph.");
-                    Assert.AreEqual("Windowing", overflowItem.Header,
+                    Assert.AreEqual("Diagnostics", overflowItem.Header,
                         "Overflow entries should show the underlying item text.");
                     overflowItem.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.MenuItem.ClickEvent));
                     DrainDispatcher(window.Dispatcher);

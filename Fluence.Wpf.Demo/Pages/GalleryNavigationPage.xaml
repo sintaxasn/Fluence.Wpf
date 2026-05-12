@@ -9,8 +9,8 @@
     d:DesignHeight="900"
     d:DesignWidth="900"
     mc:Ignorable="d">
-    <ui:SmoothScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="28,24,28,28" HorizontalAlignment="Stretch">
+    <ui:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
+        <StackPanel Style="{StaticResource GalleryPageContentStackStyle}">
             <TextBlock
                 Margin="0,0,0,4"
                 ui:TextBlockExtensions.Typography="Title"
@@ -129,10 +129,13 @@
                             ItemInvoked="NavigationDemo_ItemInvoked"
                             PaneDisplayMode="LeftCompact">
                             <ui:NavigationView.PaneFooter>
-                                <TextBlock
-                                    Margin="12"
-                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                    Text="Footer content" />
+                                <ui:NavigationViewItem
+                                    x:Name="CompactNavigationFooterItem"
+                                    Content="Settings">
+                                    <ui:NavigationViewItem.Icon>
+                                        <ui:FontIcon Glyph="&#xE713;" IconFontSize="20" />
+                                    </ui:NavigationViewItem.Icon>
+                                </ui:NavigationViewItem>
                             </ui:NavigationView.PaneFooter>
                             <ui:NavigationViewItem
                                 x:Name="CompactNavigationDashboardItem"

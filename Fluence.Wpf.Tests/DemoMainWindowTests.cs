@@ -46,7 +46,6 @@ using Fluence.Wpf.Demo.Pages;
 using FluenceExpander = Fluence.Wpf.Controls.Expander;
 using FluenceListView = Fluence.Wpf.Controls.ListView;
 using WpfBorder = System.Windows.Controls.Border;
-using WpfStackPanel = System.Windows.Controls.StackPanel;
 using WpfTextBlock = System.Windows.Controls.TextBlock;
 using WpfButton = System.Windows.Controls.Button;
 
@@ -71,8 +70,7 @@ namespace Fluence.Wpf.Tests
             new("navigation", typeof(GalleryNavigationPage)),
             new("tabs", typeof(GalleryTabsPage)),
             new("layout", typeof(GalleryLayoutPage)),
-            new("status", typeof(GalleryStatusPage)),
-            new("window", typeof(GalleryWindowPage))
+            new("status", typeof(GalleryStatusPage))
         ];
 
         private static void RunOnSta(Action action)
@@ -276,13 +274,13 @@ namespace Fluence.Wpf.Tests
                     Drain(window.Dispatcher);
                     window.NavigateTo("trees");
                     Drain(window.Dispatcher);
-                    window.NavigateTo("window");
+                    window.NavigateTo("status");
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
-                    Assert.AreEqual(typeof(GalleryWindowPage), GetSelectedPageContent(window).GetType(),
-                        "Setup should end on the Window gallery page.");
+                    Assert.AreEqual(typeof(GalleryStatusPage), GetSelectedPageContent(window).GetType(),
+                        "Setup should end on the Status gallery page.");
 
                     InvokeTitleBarBack(shellTitleBar);
                     Assert.AreEqual(typeof(GalleryTreesPage), GetSelectedPageContent(window).GetType(),
@@ -313,14 +311,99 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void MainWindow_NavigationCatalog_PutsAccessibilityBeforeWindowing()
+        public void MainWindow_NavigationCatalog_RemovesWindowingPage()
         {
             List<DemoNavigationItem> items = [.. DemoNavigationCatalog.Items];
-            Assert.IsTrue(items.Count >= 2, "Navigation catalog should contain at least two entries.");
-            Assert.AreEqual("Accessibility", items[items.Count - 2].Title,
-                "Accessibility should be second-last in the NavigationView list.");
-            Assert.AreEqual("Windowing", items[items.Count - 1].Title,
-                "Windowing should remain the final NavigationView item.");
+            Assert.IsTrue(items.Count >= 1, "Navigation catalog should contain at least one entry.");
+            Assert.AreEqual("Accessibility", items[items.Count - 1].Title,
+                "Accessibility should be the final regular NavigationView item after Windowing moves into Settings.");
+            Assert.IsFalse(items.Any(item => string.Equals(item.Title, "Windowing", StringComparison.Ordinal)),
+                "Windowing should not remain as a regular NavigationView item.");
+            Assert.IsFalse(items.Any(item => string.Equals(item.Route, "window", StringComparison.Ordinal)),
+                "The old Windowing route should be removed from the regular navigation catalog.");
+        }
+
+        [TestMethod]
+        public void GalleryPages_UseSharedWinUiGalleryPageLayout()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                Style? scrollStyle = Application.Current?.TryFindResource("GalleryPageScrollViewerStyle") as Style;
+                Style? fluentScrollStyle = Application.Current?.TryFindResource("ScrollViewerStyle") as Style;
+                Style? contentStyle = Application.Current?.TryFindResource("GalleryPageContentStackStyle") as Style;
+                Assert.IsNotNull(scrollStyle, "Demo shared styles should expose the gallery scroll style.");
+                Assert.IsNotNull(fluentScrollStyle, "Fluence should expose the styled ScrollViewer template.");
+                Assert.AreSame(fluentScrollStyle, scrollStyle.BasedOn,
+                    "Gallery page scroll viewers should be based on ScrollViewerStyle so NavigationView content keeps styled scrollbars.");
+                Assert.IsNotNull(contentStyle, "Demo shared styles should expose the gallery content style.");
+
+                UserControl[] pages =
+                [
+                    new GalleryHomePage(),
+                    new GalleryColorsPage(),
+                    new GalleryGlyphsPage(),
+                    new GalleryTypographyPage(),
+                    new GalleryAccessibilityPage(),
+                    new GalleryButtonsPage(),
+                    new GallerySelectionPage(),
+                    new GalleryInputsPage(),
+                    new GalleryFormsPage(),
+                    new GalleryDataPage(),
+                    new GalleryDataBindingPage(),
+                    new GalleryTreesPage(),
+                    new GalleryMenusPage(),
+                    new GalleryNavigationPage(),
+                    new GalleryTabsPage(),
+                    new GalleryLayoutPage(),
+                    new GalleryStatusPage(),
+                    new GallerySettingsPage()
+                ];
+
+                foreach (UserControl page in pages)
+                {
+                    Window window = CreateHostWindow(page);
+                    try
+                    {
+                        if (page is GalleryGlyphsPage)
+                        {
+                            Grid? pageRoot = FindByName<Grid>(page, "PageRoot");
+                            Assert.IsNotNull(pageRoot, "Iconography should keep a named root for virtualization layout.");
+                            Assert.AreEqual(new Thickness(36, 24, 36, 48), pageRoot.Margin,
+                                "Iconography should keep the shared page margins including 48px bottom breathing room.");
+                            Assert.AreEqual(1064.0, pageRoot.MaxWidth, 0.01,
+                                "Iconography should share the WinUI Gallery max content width.");
+                            Assert.AreEqual(HorizontalAlignment.Left, pageRoot.HorizontalAlignment,
+                                "Iconography content should be left aligned within the page.");
+                            Assert.IsNotNull(pageRoot.Background,
+                                "Iconography root should paint the shared demo page background.");
+                            continue;
+                        }
+
+                        SmoothScrollViewer? scrollViewer = FindVisualChild<SmoothScrollViewer>(page);
+                        Assert.IsNotNull(scrollViewer, page.GetType().Name + " should use SmoothScrollViewer.");
+                        Assert.AreSame(scrollStyle, scrollViewer.Style,
+                            page.GetType().Name + " should use the shared gallery scroll style.");
+                        Assert.IsNotNull(scrollViewer.Background,
+                            page.GetType().Name + " should paint the shared demo page background.");
+
+                        System.Windows.Controls.StackPanel? content = scrollViewer.Content as System.Windows.Controls.StackPanel;
+                        Assert.IsNotNull(content, page.GetType().Name + " should use a StackPanel content host.");
+                        Assert.AreSame(contentStyle, content.Style,
+                            page.GetType().Name + " should use the shared max-width content style.");
+                        Assert.AreEqual(new Thickness(36, 24, 36, 48), content.Margin,
+                            page.GetType().Name + " should keep the shared page margins including 48px bottom breathing room.");
+                        Assert.AreEqual(1064.0, content.MaxWidth, 0.01,
+                            page.GetType().Name + " should share the WinUI Gallery max content width.");
+                        Assert.AreEqual(HorizontalAlignment.Left, content.HorizontalAlignment,
+                            page.GetType().Name + " content should be left aligned.");
+                    }
+                    finally
+                    {
+                        window.Close();
+                    }
+                }
+            });
         }
 
         [TestMethod]
@@ -657,7 +740,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void MainWindow_PaneModeToggle_SwitchesBetweenTopAndLeft()
+        public void MainWindow_SettingsFooter_NavigatesToSelectableSettingsPage()
         {
             RunOnSta(delegate
             {
@@ -666,103 +749,72 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
-                    ToggleSwitch? toggle = FindByName<ToggleSwitch>(window, "PaneModeToggle");
-                    WpfTextBlock? label = FindByName<WpfTextBlock>(window, "PaneModeToggleLabel");
-                    WpfStackPanel? toggleHost = FindByName<WpfStackPanel>(window, "PaneModeToggleHost");
+                    NavigationViewItem? settings = FindByName<NavigationViewItem>(window, "SettingsNavigationItem");
                     Assert.IsNotNull(nav, "DemoNav must exist.");
-                    Assert.IsNotNull(toggle, "Demo pane-mode toggle must exist.");
-                    Assert.IsNotNull(label, "Demo pane-mode toggle label must exist.");
-                    Assert.IsNotNull(toggleHost, "Demo pane-mode toggle host must exist.");
-                    Assert.AreEqual("Top", label.Text, "Pane-mode toggle label should identify the checked mode.");
-                    Assert.AreEqual(VerticalAlignment.Center, label.VerticalAlignment,
-                        "The Top pane-mode label should be vertically centered with the switch.");
-                    Assert.AreEqual(VerticalAlignment.Center, toggle.VerticalAlignment,
-                        "The Top pane-mode switch should be vertically centered with the label.");
-                    Assert.IsTrue((GetVisualX(toggle, toggleHost) ?? double.MaxValue) <= 1.5,
-                        "Top pane mode should left-align the switch inside the PaneFooter toggle host.");
-                    Assert.IsTrue((GetVisualX(label, toggleHost) ?? double.MinValue) >= (GetVisualX(toggle, toggleHost) ?? double.MinValue) + toggle.ActualWidth + 8.0 - 1.5,
-                        "Top pane mode should place the Top label on the right side of the switch.");
+                    Assert.IsNotNull(settings, "The demo shell should expose a selectable Settings footer item.");
+                    Assert.IsNull(FindByName<FrameworkElement>(window, "PaneModeToggle"),
+                        "The old top-mode ToggleSwitch should be removed from the demo shell.");
+
+                    InvokeSettingsItem(settings);
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.IsInstanceOfType(nav.Content, typeof(GallerySettingsPage),
+                        "Selecting the footer Settings item should navigate to the Settings page.");
+                    Assert.IsTrue(settings.IsSelected,
+                        "The footer Settings item should show the same selected state as navigation list items.");
+                    Assert.IsNull(nav.SelectedItem,
+                        "Settings lives in PaneFooter and should not masquerade as a normal navigation item.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void MainWindow_SettingsFooter_HidesTextInCompactAndTopModes()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                MainWindow window = CreateShownMainWindow();
+                try
+                {
+                    NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
+                    NavigationViewItem? settings = FindByName<NavigationViewItem>(window, "SettingsNavigationItem");
+                    Assert.IsNotNull(nav, "DemoNav must exist.");
+                    Assert.IsNotNull(settings, "The Settings footer item must exist.");
+
                     Assert.AreEqual(NavigationViewPaneDisplayMode.Top, nav.PaneDisplayMode,
-                        "The demo should start in Top pane mode.");
-                    Assert.AreEqual(true, toggle.IsChecked,
-                        "Pane-mode toggle should start checked when the demo starts in Top mode.");
-                    Assert.IsFalse(window.ExtendsContentIntoTitleBar,
-                        "Top pane mode should keep the demo title bar non-extended.");
-                    Assert.IsTrue((GetVisualX(toggleHost, nav) ?? double.MinValue) + toggleHost.ActualWidth >= nav.ActualWidth - 24.0,
-                        "Top pane mode should dock PaneFooter content to the right side of the strip.");
+                        "Demo shell starts in Top navigation mode.");
+                    Assert.AreEqual(string.Empty, settings.Content as string,
+                        "Top mode should render the Settings footer as icon-only.");
 
                     nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
-                    Drain(window.Dispatcher);
-                    window.UpdateLayout();
-                    Drain(window.Dispatcher);
-
-                    Assert.AreEqual(false, toggle.IsChecked,
-                        "Programmatic Left mode changes should sync the PaneFooter toggle.");
-                    Assert.IsTrue(window.ExtendsContentIntoTitleBar,
-                        "Left pane mode should extend the demo content into the title bar.");
-                    Assert.AreEqual(HorizontalAlignment.Left, toggleHost.HorizontalAlignment,
-                        "Left pane mode should dock the PaneFooter toggle to the left side of the navigation footer.");
-                    Assert.AreEqual(VerticalAlignment.Bottom, toggleHost.VerticalAlignment,
-                        "Left pane mode should keep the PaneFooter toggle at the bottom of the navigation footer.");
-                    Assert.AreEqual(Visibility.Visible, label.Visibility,
-                        "Left pane mode should keep the Top label visible.");
-                    Assert.IsTrue((GetVisualY(toggleHost, nav) ?? double.MinValue) + toggleHost.ActualHeight >= nav.ActualHeight - 56.0,
-                        "Left pane mode should place the same PaneFooter toggle at the bottom of the navigation strip.");
-
-                    nav.IsPaneOpen = false;
-                    Drain(window.Dispatcher);
-                    window.UpdateLayout();
-                    Drain(window.Dispatcher);
-
-                    Assert.AreEqual(Visibility.Collapsed, label.Visibility,
-                        "Closed Left pane mode should hide the Top label so the footer fits the compact rail.");
-                    Assert.AreEqual(40.0, toggle.Width, 0.01,
-                        "Closed Left pane mode should use only the 40px switch track width.");
-                    Assert.AreEqual(new Thickness(0), toggle.Padding,
-                        "Closed Left pane mode should not add toggle content padding.");
-
                     nav.IsPaneOpen = true;
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
+
+                    Assert.AreEqual("Settings", settings.Content as string,
+                        "Expanded Left mode should show the Settings label.");
 
                     nav.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact;
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
-                    Assert.AreEqual(HorizontalAlignment.Center, toggleHost.HorizontalAlignment,
-                        "LeftCompact pane mode should keep the compact switch centered in the footer.");
-                    Assert.AreEqual(VerticalAlignment.Bottom, toggleHost.VerticalAlignment,
-                        "LeftCompact pane mode should keep the compact switch at the bottom of the footer.");
-                    Assert.AreEqual(Visibility.Collapsed, label.Visibility,
-                        "LeftCompact pane mode should hide the Top label so the footer fits the compact rail.");
-                    Assert.AreEqual(40.0, toggle.Width, 0.01,
-                        "LeftCompact pane mode should use only the 40px switch track width.");
-                    Assert.AreEqual(new Thickness(0), toggle.Padding,
-                        "LeftCompact pane mode should not add toggle content padding.");
-
-                    toggle.IsChecked = true;
-                    Drain(window.Dispatcher);
-                    window.UpdateLayout();
-                    Drain(window.Dispatcher);
-
-                    Assert.AreEqual(NavigationViewPaneDisplayMode.Top, nav.PaneDisplayMode,
-                        "Checking the PaneFooter toggle should switch the demo back to Top pane mode.");
-                    Assert.IsFalse(window.ExtendsContentIntoTitleBar,
-                        "Returning to Top mode should restore the non-extended title bar.");
-                    Assert.IsTrue((GetVisualX(toggleHost, nav) ?? double.MinValue) + toggleHost.ActualWidth >= nav.ActualWidth - 24.0,
-                        "The PaneFooter toggle should return to the right side of the Top strip.");
-
-                    toggle.IsChecked = false;
-                    Drain(window.Dispatcher);
-                    window.UpdateLayout();
-                    Drain(window.Dispatcher);
-
-                    Assert.AreEqual(NavigationViewPaneDisplayMode.LeftCompact, nav.PaneDisplayMode,
-                        "Unchecking the PaneFooter toggle should restore the previous compact navigation mode.");
-                    Assert.IsFalse(window.ExtendsContentIntoTitleBar,
-                        "Restoring LeftCompact mode should preserve the existing non-extended title-bar behavior.");
+                    Assert.AreEqual(string.Empty, settings.Content as string,
+                        "LeftCompact mode should render the Settings footer as icon-only.");
+                    Assert.AreEqual(48.0, settings.Width, 0.01,
+                        "Icon-only Settings footer should reserve the compact pane width.");
+                    Assert.AreEqual(Visibility.Visible, settings.Visibility,
+                        "LeftCompact mode should keep the Settings footer item visible as a gear icon.");
+                    FontIcon? settingsIcon = settings.Icon as FontIcon;
+                    Assert.IsNotNull(settingsIcon, "The Settings footer item should keep its gear icon in compact mode.");
                 }
                 finally
                 {
@@ -799,12 +851,12 @@ namespace Fluence.Wpf.Tests
                     int visibleNavigationItems = nav.Items.OfType<NavigationViewItem>().Count(item => item.Visibility == Visibility.Visible);
                     Assert.IsTrue(visibleNavigationItems > 1,
                         "Top pane should show every navigation item that fits before the overflow button would overlap the Top toggle status.");
-                    WpfStackPanel? toggleHost = FindByName<WpfStackPanel>(window, "PaneModeToggleHost");
-                    Assert.IsNotNull(toggleHost, "Top toggle status host should exist.");
+                    NavigationViewItem? settings = FindByName<NavigationViewItem>(window, "SettingsNavigationItem");
+                    Assert.IsNotNull(settings, "Settings footer item should exist.");
                     double overflowRight = (GetVisualX(overflowButton, nav) ?? double.MaxValue) + overflowButton.ActualWidth;
-                    double toggleHostLeft = GetVisualX(toggleHost, nav) ?? double.MinValue;
-                    Assert.IsTrue(overflowRight <= toggleHostLeft - 4.0 + 1.5,
-                        "The three-dot overflow entry should stop before it overlaps the Top toggle status.");
+                    double settingsLeft = GetVisualX(settings, nav) ?? double.MinValue;
+                    Assert.IsTrue(overflowRight <= settingsLeft - 4.0 + 1.5,
+                        "The three-dot overflow entry should stop before it overlaps the Settings item.");
 
                     NavigationViewItem? trees = null;
                     foreach (object item in nav.Items)
@@ -834,7 +886,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void MainWindow_PaneModeToggle_RestoresClosedLeftStateAfterTopMode()
+        public void GallerySettingsPage_NavigationStyleCombo_SwitchesPaneModeAndKeepsContentLive()
         {
             RunOnSta(delegate
             {
@@ -843,177 +895,150 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
-                    ToggleSwitch? toggle = FindByName<ToggleSwitch>(window, "PaneModeToggle");
                     Assert.IsNotNull(nav, "DemoNav must exist.");
-                    Assert.IsNotNull(toggle, "Demo pane-mode toggle must exist.");
 
-                    nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
-                    nav.IsPaneOpen = false;
+                    window.NavigateTo("settings");
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
-                    toggle.IsChecked = true;
+                    object settingsPage = nav.Content
+                        ?? throw new InvalidOperationException("Settings navigation should create a live Settings page.");
+                    Fluence.Wpf.Controls.ComboBox? navigationStyle = FindByName<Fluence.Wpf.Controls.ComboBox>(
+                        settingsPage as DependencyObject,
+                        "NavigationStyleComboBox");
+                    Assert.IsNotNull(navigationStyle, "Settings page should expose the navigation-style selector.");
+
+                    navigationStyle.SelectedIndex = 1;
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
-
-                    Assert.AreEqual(NavigationViewPaneDisplayMode.Top, nav.PaneDisplayMode,
-                        "Checking the PaneFooter toggle should switch to Top pane mode.");
-
-                    toggle.IsChecked = false;
-                    Drain(window.Dispatcher);
-                    window.UpdateLayout();
-                    Drain(window.Dispatcher);
-
                     Assert.AreEqual(NavigationViewPaneDisplayMode.Left, nav.PaneDisplayMode,
-                        "Unchecking the PaneFooter toggle should restore Left pane mode.");
-                    Assert.IsFalse(nav.IsPaneOpen,
-                        "Unchecking Top mode should restore the prior closed Left pane state.");
-                }
-                finally
-                {
-                    window.Close();
-                }
-            });
-        }
+                        "Choosing Left in Settings should move the shell navigation to Left mode.");
+                    Assert.IsTrue(nav.IsPaneOpen,
+                        "Choosing Left in Settings should open the left pane instead of preserving a compact state.");
+                    Assert.AreSame(settingsPage, nav.Content,
+                        "Changing pane mode from Settings should keep the current page content live.");
 
-        [TestMethod]
-        public void MainWindow_PaneModeToggle_FromLeftCompactToTop_SwitchesImmediatelyAndKeepsContentLive()
-        {
-            RunOnSta(delegate
-            {
-                EnsureTheme();
-                MainWindow window = CreateShownMainWindow();
-                try
-                {
-                    NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
-                    ToggleSwitch? toggle = FindByName<ToggleSwitch>(window, "PaneModeToggle");
-                    WpfStackPanel? toggleHost = FindByName<WpfStackPanel>(window, "PaneModeToggleHost");
-                    Assert.IsNotNull(nav, "DemoNav must exist.");
-                    Assert.IsNotNull(toggle, "Demo pane-mode toggle must exist.");
-                    Assert.IsNotNull(toggleHost, "Demo pane-mode toggle host must exist.");
-
-                    nav.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact;
+                    navigationStyle.SelectedIndex = 2;
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
-                    Assert.AreEqual(false, toggle.IsChecked,
-                        "Programmatic LeftCompact mode changes should sync the PaneFooter toggle.");
-
-                    object contentBefore = nav.Content
-                        ?? throw new InvalidOperationException("DemoNav should have live page content before the pane mode changes.");
-                    toggle.IsChecked = true;
-                    Drain(window.Dispatcher);
-                    window.UpdateLayout();
-                    Drain(window.Dispatcher);
-
-                    Assert.AreEqual(NavigationViewPaneDisplayMode.Top, nav.PaneDisplayMode,
-                        "Checking the PaneFooter toggle should switch to Top pane mode.");
-                    Assert.AreSame(contentBefore, nav.Content,
-                        "Pane mode changes should keep the current page content live.");
-                    FrameworkElement? contentPresenter = FindByName<FrameworkElement>(nav, NavigationView.PartContentPresenter);
-                    Assert.IsNotNull(contentPresenter, "Top mode should expose the content presenter.");
-                    Assert.IsTrue(contentPresenter.IsVisible,
-                        "Top mode should keep the content presenter visible.");
-                    Assert.IsTrue((GetVisualX(toggleHost, nav) ?? double.MinValue) + toggleHost.ActualWidth >= nav.ActualWidth - 24.0,
-                        "Top toggle should finish visible at the right side of the top strip.");
-                }
-                finally
-                {
-                    window.Close();
-                }
-            });
-        }
-
-        [TestMethod]
-        public void MainWindow_PaneModeToggle_FromTopToLeft_SwitchesImmediatelyAndCleansUp()
-        {
-            RunOnSta(delegate
-            {
-                EnsureTheme();
-                MainWindow window = CreateShownMainWindow();
-                try
-                {
-                    NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
-                    ToggleSwitch? toggle = FindByName<ToggleSwitch>(window, "PaneModeToggle");
-                    Assert.IsNotNull(nav, "DemoNav must exist.");
-                    Assert.IsNotNull(toggle, "Demo pane-mode toggle must exist.");
-                    Assert.AreEqual(NavigationViewPaneDisplayMode.Top, nav.PaneDisplayMode,
-                        "Setup should start in Top pane mode.");
-
-                    toggle.IsChecked = false;
-                    Drain(window.Dispatcher);
-                    window.UpdateLayout();
-                    Drain(window.Dispatcher);
-
-                    Assert.AreEqual(NavigationViewPaneDisplayMode.Left, nav.PaneDisplayMode,
-                        "Unchecking Top mode should finish in Left pane mode.");
-                    FrameworkElement? contentPresenter = FindByName<FrameworkElement>(nav, NavigationView.PartContentPresenter);
-                    Assert.IsNotNull(contentPresenter, "Final Left mode should expose live content.");
-                    FrameworkElement? livePage = nav.Content as FrameworkElement;
-                    Assert.IsNotNull(livePage, "Final Left mode should keep live page content.");
-                    Assert.IsTrue(double.IsNaN(livePage.Width), "The live page width should not be locked by a pane mode switch.");
-                    Assert.IsTrue(double.IsNaN(livePage.Height), "The live page height should not be locked by a pane mode switch.");
-                    FrameworkElement? sidePane = FindByName<FrameworkElement>(nav, "PaneBorder");
-                    Assert.IsNotNull(sidePane, "Final Left mode should expose the side pane.");
-                    Assert.AreEqual(1.0, sidePane.Opacity, 0.01,
-                        "The real Left pane should be visible after the mode switch.");
-                    Assert.AreEqual(sidePane.ActualWidth, GetVisualX(contentPresenter, nav) ?? double.MaxValue, 1.5,
-                        "Final Left-mode content should sit against the side pane.");
-                    Assert.AreEqual(nav.ActualWidth - sidePane.ActualWidth, contentPresenter.ActualWidth, 1.5,
-                        "Final Left-mode content should fill the remaining width beside the side pane.");
-                }
-                finally
-                {
-                    window.Close();
-                }
-            });
-        }
-
-        [TestMethod]
-        public void MainWindow_PaneModeToggle_FromTopToLeftCompact_UsesCompactFinalBounds()
-        {
-            RunOnSta(delegate
-            {
-                EnsureTheme();
-                MainWindow window = CreateShownMainWindow();
-                try
-                {
-                    NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
-                    ToggleSwitch? toggle = FindByName<ToggleSwitch>(window, "PaneModeToggle");
-                    Assert.IsNotNull(nav, "DemoNav must exist.");
-                    Assert.IsNotNull(toggle, "Demo pane-mode toggle must exist.");
-
-                    nav.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact;
-                    Drain(window.Dispatcher);
-                    window.UpdateLayout();
-                    Drain(window.Dispatcher);
-
-                    toggle.IsChecked = true;
-                    Drain(window.Dispatcher);
-                    window.UpdateLayout();
-                    Drain(window.Dispatcher);
-                    Assert.AreEqual(NavigationViewPaneDisplayMode.Top, nav.PaneDisplayMode,
-                        "Setup should enter Top mode from a compact previous pane state.");
-
-                    toggle.IsChecked = false;
-                    Drain(window.Dispatcher);
-                    window.UpdateLayout();
-                    Drain(window.Dispatcher);
-
-                    FrameworkElement? compactPane = FindByName<FrameworkElement>(nav, "CompactPane");
-                    FrameworkElement? contentPresenter = FindByName<FrameworkElement>(nav, NavigationView.PartContentPresenter);
                     Assert.AreEqual(NavigationViewPaneDisplayMode.LeftCompact, nav.PaneDisplayMode,
-                        "Unchecking Top mode should restore the compact previous pane state.");
-                    Assert.IsNotNull(compactPane, "Final LeftCompact mode should expose the compact pane.");
-                    Assert.IsNotNull(contentPresenter, "Final LeftCompact mode should expose live content.");
-                    Assert.AreEqual(1.0, compactPane.Opacity, 0.01,
-                        "The real compact pane should be visible after the mode switch.");
-                    Assert.AreEqual(compactPane.ActualWidth, GetVisualX(contentPresenter, nav) ?? double.MaxValue, 1.5,
-                        "Final LeftCompact content should sit against the compact pane.");
-                    Assert.AreEqual(48.0, compactPane.ActualWidth, 1.5,
-                        "Final LeftCompact pane width should stay compact.");
+                        "Choosing Left compact in Settings should move the shell navigation to LeftCompact mode.");
+                    Assert.IsFalse(nav.IsPaneOpen,
+                        "Choosing Left compact in Settings should close the pane.");
+
+                    navigationStyle.SelectedIndex = 0;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+                    Assert.AreEqual(NavigationViewPaneDisplayMode.Top, nav.PaneDisplayMode,
+                        "Choosing Top in Settings should restore the top navigation strip.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void GallerySettingsPage_NavigationStyleCombo_FollowsShellPaneToggle()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                MainWindow window = CreateShownMainWindow();
+                try
+                {
+                    NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
+                    Assert.IsNotNull(nav, "DemoNav must exist.");
+
+                    window.NavigateTo("settings");
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    object settingsPage = nav.Content
+                        ?? throw new InvalidOperationException("Settings navigation should create a live Settings page.");
+                    Fluence.Wpf.Controls.ComboBox? navigationStyle = FindByName<Fluence.Wpf.Controls.ComboBox>(
+                        settingsPage as DependencyObject,
+                        "NavigationStyleComboBox");
+                    Assert.IsNotNull(navigationStyle, "Settings page should expose the navigation-style selector.");
+
+                    navigationStyle.SelectedIndex = 1;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.AreEqual(NavigationViewPaneDisplayMode.Left, nav.PaneDisplayMode,
+                        "The test should start from expanded Left navigation.");
+                    Assert.IsTrue(nav.IsPaneOpen, "Left navigation should be expanded before the pane toggle is clicked.");
+                    Assert.AreEqual(1, navigationStyle.SelectedIndex,
+                        "Settings should show Left before the shell pane toggle is clicked.");
+
+                    TitleBar? shellTitleBar = FindByName<TitleBar>(window, "ShellTitleBar");
+                    Assert.IsNotNull(shellTitleBar, "Extended title bar should expose the shell pane toggle.");
+                    WpfButton? titleBarToggle = FindByName<WpfButton>(shellTitleBar, "PART_PaneToggleButton");
+                    Assert.IsNotNull(titleBarToggle, "Shell title bar should expose a pane toggle button in Left navigation.");
+                    Assert.AreEqual(Visibility.Visible, titleBarToggle.Visibility,
+                        "The shell pane toggle should be visible in Left navigation.");
+
+                    titleBarToggle.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, titleBarToggle));
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.AreEqual(NavigationViewPaneDisplayMode.LeftCompact, nav.PaneDisplayMode,
+                        "Clicking the shell pane toggle should switch the demo shell to LeftCompact.");
+                    Assert.IsFalse(nav.IsPaneOpen,
+                        "LeftCompact should keep the pane closed.");
+                    Assert.AreEqual(2, navigationStyle.SelectedIndex,
+                        "Settings should sync to Left compact after the shell pane toggle collapses the pane.");
+
+                    titleBarToggle.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, titleBarToggle));
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.AreEqual(NavigationViewPaneDisplayMode.Left, nav.PaneDisplayMode,
+                        "Clicking the shell pane toggle again should return to expanded Left navigation.");
+                    Assert.IsTrue(nav.IsPaneOpen,
+                        "Expanded Left should keep the pane open after the second pane-toggle click.");
+                    Assert.AreEqual(1, navigationStyle.SelectedIndex,
+                        "Settings should sync back to Left after the shell pane toggle expands the pane.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void GalleryNavigationPage_CompactSamplePaneToggleOpensPane()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                GalleryNavigationPage page = new();
+                Window window = CreateHostWindow(page);
+                try
+                {
+                    NavigationView? nav = FindByName<NavigationView>(page, "CompactNavigationDemo");
+                    Assert.IsNotNull(nav, "Navigation page should expose the compact sample NavigationView.");
+                    Assert.IsFalse(nav.IsPaneOpen, "Compact sample should start collapsed.");
+
+                    WpfButton? paneToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as WpfButton;
+                    Assert.IsNotNull(paneToggle, "Compact sample should expose the pane toggle button.");
+                    paneToggle.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, paneToggle));
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.IsTrue(nav.IsPaneOpen,
+                        "Clicking the compact sample pane toggle should open the sample pane.");
                 }
                 finally
                 {
@@ -1304,16 +1329,16 @@ namespace Fluence.Wpf.Tests
                     AssertSourceTab(tabs, "XAML", sample.XamlSource);
                     AssertSourceTab(tabs, "C# Code-behind", sample.CSharpSource);
 
-                    Card? sampleCard = FindByName<Card>(sample, "SampleCard");
-                    Assert.IsNotNull(sampleCard, "Sample host should expose the sample card.");
+                    WpfBorder? sampleCard = FindByName<WpfBorder>(sample, "SampleCard");
+                    Assert.IsNotNull(sampleCard, "Sample host should expose the sample surface.");
                     Assert.AreEqual(new CornerRadius(8, 8, 0, 0), sampleCard.CornerRadius,
-                        "Sample card should square off its bottom corners so source attaches.");
+                        "Sample surface should square off its bottom corners so source attaches.");
                     Assert.AreEqual(new CornerRadius(0, 0, 8, 8), expander.CornerRadius,
                         "Source expander should square off its top corners so it joins the card.");
                     Assert.AreEqual(new Thickness(1, 0, 1, 1), expander.BorderThickness,
                         "Source expander should share the card seam without a duplicate top stroke.");
                     Assert.AreEqual((GetVisualY(sampleCard, window) ?? double.MinValue) + sampleCard.ActualHeight, GetVisualY(expander, window) ?? double.MinValue, 0.5,
-                        "Source expander should be attached directly below the sample card.");
+                        "Source expander should be attached directly below the sample surface.");
                 }
                 finally
                 {
@@ -1401,7 +1426,7 @@ namespace Fluence.Wpf.Tests
                         "The old source-link button should be removed from the sample body.");
 
                     FluenceExpander? expander = FindByName<FluenceExpander>(sample, "SourceExpander");
-                    Card? sampleCard = FindByName<Card>(sample, "SampleCard");
+                    WpfBorder? sampleCard = FindByName<WpfBorder>(sample, "SampleCard");
                     Assert.IsNotNull(expander);
                     Assert.IsNotNull(sampleCard);
                     Assert.AreEqual((GetVisualY(sampleCard, window) ?? double.MinValue) + sampleCard.ActualHeight, GetVisualY(expander, window) ?? double.MinValue, 0.5,
@@ -1554,16 +1579,19 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void GalleryWindowPage_UsesCompactThemeAndCaptionLayout()
+        public void GallerySettingsPage_UsesFullWidthSettingsRowsForWindowControls()
         {
             RunOnSta(delegate
             {
                 EnsureTheme();
-                GalleryWindowPage page = new();
+                GallerySettingsPage page = new();
                 Window window = CreateHostWindow(page);
                 try
                 {
-                    System.Windows.Controls.ComboBox? backdrop = FindByName<System.Windows.Controls.ComboBox>(page, "BackdropCombo");
+                    WpfBorder? appThemeCard = FindByName<WpfBorder>(page, "AppThemeSettingsCard");
+                    WpfBorder? backdropCard = FindByName<WpfBorder>(page, "BackdropSettingsCard");
+                    WpfBorder? colorsCard = FindByName<WpfBorder>(page, "ColorsSettingsCard");
+                    System.Windows.Controls.ComboBox? backdrop = FindByName<System.Windows.Controls.ComboBox>(page, "BackdropComboBox");
                     UniformGrid? accentRow = FindByName<UniformGrid>(page, "AccentSwatchRow");
                     System.Windows.Controls.ComboBox? minimize = FindByName<System.Windows.Controls.ComboBox>(page, "MinimizeVisibilityCombo");
                     System.Windows.Controls.ComboBox? maximize = FindByName<System.Windows.Controls.ComboBox>(page, "MaximizeVisibilityCombo");
@@ -1571,26 +1599,30 @@ namespace Fluence.Wpf.Tests
                     FrameworkElement? showIcon = FindByName<FrameworkElement>(page, "ShowWindowIconToggle");
                     FrameworkElement? showTitle = FindByName<FrameworkElement>(page, "ShowWindowTitleToggle");
 
-                    Assert.IsNotNull(backdrop, "Backdrop picker should live in the theme card.");
+                    Assert.IsNotNull(appThemeCard, "Settings should expose a named app-theme card.");
+                    Assert.IsNotNull(backdropCard, "Settings should expose a named backdrop card.");
+                    Assert.IsNotNull(colorsCard, "Settings should expose a named colors card.");
+                    Assert.IsTrue(appThemeCard.ActualWidth > 700.0, "Settings cards should stretch across the content column.");
+                    Assert.AreEqual(appThemeCard.ActualWidth, backdropCard.ActualWidth, 1.0,
+                        "Settings row cards should share a consistent stretched width.");
+                    Assert.AreEqual(backdropCard.ActualWidth, colorsCard.ActualWidth, 1.0,
+                        "The Colors row should align to the Backdrop row width.");
+                    Assert.IsNotNull(backdrop, "Backdrop picker should live in Settings.");
                     Assert.IsNotNull(accentRow, "Accent swatches should use a named single-row host.");
                     Assert.IsNotNull(minimize, "Minimize caption picker should exist.");
                     Assert.IsNotNull(maximize, "Maximize caption picker should exist.");
                     Assert.IsNotNull(close, "Close caption picker should exist.");
                     Assert.IsNotNull(showIcon, "Show Icon toggle should exist.");
                     Assert.IsNotNull(showTitle, "Show Title toggle should exist.");
-                    Assert.AreEqual(7, accentRow.Children.Count, "The Window page accent picker should expose seven logo accent swatches.");
+                    Assert.AreEqual(7, accentRow.Children.Count, "The Settings page accent picker should expose seven logo accent swatches.");
                     Assert.AreEqual(GetVisualY(accentRow.Children[0] as FrameworkElement, window) ?? double.MaxValue, GetVisualY(accentRow.Children[6] as FrameworkElement, window) ?? double.MaxValue, 1.0,
                         "All accent swatches should fit on one row.");
-                    Assert.AreEqual(GetVisualY(minimize, window) ?? double.MaxValue, GetVisualY(maximize, window) ?? double.MaxValue, 1.0,
-                        "Minimize and Maximize caption controls should be on the same row.");
-                    Assert.AreEqual(GetVisualY(minimize, window) ?? double.MaxValue, GetVisualY(close, window) ?? double.MaxValue, 1.0,
-                        "Close should be on the same row as the other caption controls.");
-                    Assert.AreEqual(GetVisualY(showIcon, window) ?? double.MaxValue, GetVisualY(showTitle, window) ?? double.MaxValue, 1.0,
-                        "Show Icon and Show Title should share their own row.");
-                    Assert.IsTrue((GetVisualY(showIcon, window) ?? double.MinValue) > (GetVisualY(minimize, window) ?? double.MinValue),
-                        "Show Icon and Show Title should be arranged below the caption-button row.");
-                    Assert.IsNull(FindByName<FrameworkElement>(page, "TitleBarChromeSourceLink"),
-                        "The TitleBar Chrome section should be removed from the Window page.");
+                    Assert.IsTrue((GetVisualX(backdrop, window) ?? double.MinValue) > (GetVisualX(appThemeCard, window) ?? double.MinValue) + 500.0,
+                        "The Backdrop combo box should stay docked to the right side of its settings card.");
+                    Assert.IsTrue((GetVisualY(maximize, window) ?? double.MinValue) > (GetVisualY(minimize, window) ?? double.MinValue),
+                        "Caption button customization should use separate settings rows.");
+                    Assert.IsTrue((GetVisualY(close, window) ?? double.MinValue) > (GetVisualY(maximize, window) ?? double.MinValue),
+                        "Close button customization should appear below Maximize.");
                 }
                 finally
                 {
@@ -1600,12 +1632,12 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void GalleryWindowPage_RainbowAccentSwatches_PreserveLogoColors()
+        public void GallerySettingsPage_RainbowAccentSwatches_PreserveLogoColors()
         {
             RunOnSta(delegate
             {
                 EnsureTheme();
-                GalleryWindowPage page = new();
+                GallerySettingsPage page = new();
                 Window window = CreateHostWindow(page);
                 try
                 {
@@ -1624,14 +1656,14 @@ namespace Fluence.Wpf.Tests
                     ];
 
                     Assert.AreEqual(expected.Length, accentRow.Children.Count,
-                        "The Window page accent picker should expose the seven rainbow swatches.");
+                        "The Settings page accent picker should expose the seven rainbow swatches.");
 
                     for (int i = 0; i < expected.Length; i++)
                     {
                         FrameworkElement? swatch = accentRow.Children[i] as FrameworkElement;
                         Assert.IsNotNull(swatch, "Each accent swatch should be a FrameworkElement.");
                         Assert.AreEqual(expected[i], swatch.Tag as string,
-                            "The Window page swatches should stay in rainbow order.");
+                            "The Settings page swatches should stay in rainbow order.");
 
                         object converted = ColorConverter.ConvertFromString(expected[i]);
                         Assert.IsInstanceOfType(converted, typeof(Color), "Swatch Tag should be a valid color: " + expected[i]);
@@ -1647,12 +1679,12 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void GalleryWindowPage_InvalidAccentSwatchTag_DoesNotChangeAccent()
+        public void GallerySettingsPage_InvalidAccentSwatchTag_DoesNotChangeAccent()
         {
             RunOnSta(delegate
             {
                 EnsureTheme();
-                GalleryWindowPage page = new();
+                GallerySettingsPage page = new();
                 Window window = CreateHostWindow(page);
                 try
                 {
@@ -1913,6 +1945,20 @@ namespace Fluence.Wpf.Tests
             Assert.IsNotNull(backButton, "TitleBar should expose a back button.");
             backButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, backButton));
             Drain(titleBar.Dispatcher);
+        }
+
+        private static void InvokeSettingsItem(NavigationViewItem settingsItem)
+        {
+            MouseButtonEventArgs mouseArgs = new(
+                Mouse.PrimaryDevice,
+                Environment.TickCount,
+                MouseButton.Left)
+            {
+                RoutedEvent = UIElement.PreviewMouseLeftButtonDownEvent,
+                Source = settingsItem
+            };
+            settingsItem.RaiseEvent(mouseArgs);
+            Drain(settingsItem.Dispatcher);
         }
 
         private static double? GetVisualX(FrameworkElement? element, Visual ancestor)

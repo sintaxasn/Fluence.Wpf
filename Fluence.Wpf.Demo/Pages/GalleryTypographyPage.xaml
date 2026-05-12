@@ -8,8 +8,8 @@
     d:DesignHeight="800"
     d:DesignWidth="900"
     mc:Ignorable="d">
-    <ui:SmoothScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="28,24,28,28" HorizontalAlignment="Stretch">
+    <ui:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
+        <StackPanel Style="{StaticResource GalleryPageContentStackStyle}">
             <TextBlock
                 Margin="0,0,0,4"
                 Style="{StaticResource SectionHeaderStyle}"

@@ -10,6 +10,13 @@
     xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
     >
 
+    <SolidColorBrush x:Key="DemoPageBackgroundBrush" Color="#272727" />
+    <SolidColorBrush x:Key="DemoControlSurfaceBrush" Color="#202020" />
+    <SolidColorBrush x:Key="DemoSourceSurfaceBrush" Color="#323232" />
+    <SolidColorBrush x:Key="DemoSettingsCardBrush" Color="#323232" />
+    <SolidColorBrush x:Key="DemoSectionCardBrush" Color="#202020" />
+    <SolidColorBrush x:Key="DemoFieldLabelForegroundBrush" Color="#D6D6D6" />
+
     <Style x:Key="AccentSwatchStyle" TargetType="{x:Type ui:Button}">
         <Setter Property="Width" Value="42" />
         <Setter Property="Height" Value="42" />
@@ -213,6 +220,68 @@
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="Margin" Value="0,0,0,36" />
+    </Style>
+
+    <Style x:Key="GalleryPageRootStyle" TargetType="{x:Type Grid}">
+        <Setter Property="Background" Value="{DynamicResource DemoPageBackgroundBrush}" />
+        <Setter Property="ClipToBounds" Value="False" />
+    </Style>
+
+    <Style
+        x:Key="GalleryPageScrollViewerStyle"
+        BasedOn="{StaticResource ScrollViewerStyle}"
+        TargetType="{x:Type ui:SmoothScrollViewer}">
+        <Setter Property="Background" Value="{DynamicResource DemoPageBackgroundBrush}" />
+        <Setter Property="HorizontalScrollBarVisibility" Value="Disabled" />
+        <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+    </Style>
+
+    <Style x:Key="GalleryPageContentStackStyle" TargetType="{x:Type StackPanel}">
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="Margin" Value="36,24,36,48" />
+        <Setter Property="MaxWidth" Value="1064" />
+    </Style>
+
+    <Style x:Key="SettingsSectionHeaderStyle" BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize" Value="16" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="Margin" Value="1,30,0,12" />
+    </Style>
+
+    <Style x:Key="SettingsRowCardStyle" TargetType="{x:Type Border}">
+        <Setter Property="MinHeight" Value="76" />
+        <Setter Property="Margin" Value="0,0,0,6" />
+        <Setter Property="Padding" Value="16,12" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="Background" Value="{DynamicResource DemoSettingsCardBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="4" />
+    </Style>
+
+    <Style x:Key="SettingsRowIconStyle" TargetType="{x:Type ui:FontIcon}">
+        <Setter Property="Width" Value="36" />
+        <Setter Property="IconFontSize" Value="20" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
+
+    <Style x:Key="SettingsRowTitleStyle" BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style x:Key="SettingsRowDescriptionStyle" BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style x:Key="FieldLabelStyle" BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{DynamicResource DemoFieldLabelForegroundBrush}" />
+        <Setter Property="Margin" Value="0,0,0,6" />
+        <Setter Property="ui:TextBlockExtensions.Typography" Value="Caption" />
     </Style>
 
     <Style

@@ -10,13 +10,15 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <fluence:Card
+        <Border
             x:Name="SampleCard"
             Grid.Row="0"
-            Padding="12"
-            Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}"
+            Padding="16"
+            Background="{DynamicResource DemoControlSurfaceBrush}"
+            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
             CornerRadius="8,8,0,0"
-            Variant="Filled">
+            >
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
@@ -44,13 +46,13 @@
                     Grid.Row="1"
                     Content="{Binding SampleContent, ElementName=Root}" />
             </Grid>
-        </fluence:Card>
+        </Border>
 
         <fluence:Expander
             x:Name="SourceExpander"
             Grid.Row="1"
             Margin="0"
-            Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}"
+            Background="{DynamicResource DemoSourceSurfaceBrush}"
             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
             BorderThickness="1,0,1,1"
             CornerRadius="0,0,8,8"
