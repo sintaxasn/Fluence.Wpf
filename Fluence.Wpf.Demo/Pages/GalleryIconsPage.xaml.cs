@@ -38,10 +38,10 @@ using System.Windows.Resources;
 
 namespace Fluence.Wpf.Demo.Pages
 {
-    public partial class GalleryGlyphsPage : UserControl
+    public partial class GalleryIconsPage : UserControl
     {
         private const string IconCatalogXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Glyphs.IconCatalog""
+    x:Class=""Fluence.Wpf.Demo.Pages.Icons.IconCatalog""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
@@ -74,7 +74,7 @@ namespace Fluence.Wpf.Demo.Pages
 
         private const string IconCatalogCSharpSource = @"using System.Windows.Controls;
 
-namespace Fluence.Wpf.Demo.Pages.Glyphs
+namespace Fluence.Wpf.Demo.Pages.Icons
 {
     public partial class IconCatalog : UserControl
     {
@@ -95,7 +95,7 @@ namespace Fluence.Wpf.Demo.Pages.Glyphs
             "/Fluence.Wpf.Demo;component/Resources/SegoeFluentIcons.tsv",
             UriKind.Relative);
 
-        public GalleryGlyphsPage()
+        public GalleryIconsPage()
         {
             InitializeComponent();
 
@@ -108,11 +108,10 @@ namespace Fluence.Wpf.Demo.Pages.Glyphs
 
             DemoSampleControl sample = new()
             {
-                Title = "FontIcon",
-                Description = "FontIcon renders one Segoe Fluent Icons glyph by private-use code point.",
+                SampleDescription = "FontIcon renders one Segoe Fluent Icons icon by private-use code point.",
                 XamlSource = IconCatalogXamlSource,
                 CSharpSource = IconCatalogCSharpSource,
-                SampleContent = FontIconSampleContent
+                DemoContent = FontIconSampleContent
             };
             Grid.SetRow(sample, 2);
             PageRoot.Children.Remove(FontIconSampleContent);
@@ -145,7 +144,7 @@ namespace Fluence.Wpf.Demo.Pages.Glyphs
 
             if (!typeface.TryGetGlyphTypeface(out GlyphTypeface glyphTypeface))
             {
-                throw new InvalidOperationException("Segoe Fluent Icons is required to render the iconography catalog.");
+                throw new InvalidOperationException("Segoe Fluent Icons is required to render the icons catalog.");
             }
 
             List<int> codes = [];
@@ -171,7 +170,7 @@ namespace Fluence.Wpf.Demo.Pages.Glyphs
                 }
                 else
                 {
-                    unnamedIcons.Add(new IconCatalogItem("Private-use glyph", codeText, glyph));
+                    unnamedIcons.Add(new IconCatalogItem("Private-use icon", codeText, glyph));
                 }
             }
 

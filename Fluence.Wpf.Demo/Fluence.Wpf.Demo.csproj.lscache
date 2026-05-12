@@ -76,7 +76,7 @@ obj/Debug/net10.0-windows10.0.26100.0/
   GalleryDataBindingPage.g.cs
   GalleryDataPage.g.cs
   GalleryFormsPage.g.cs
-  GalleryGlyphsPage.g.cs
+  GalleryIconsPage.g.cs
   GalleryHomePage.g.cs
   GalleryInputsPage.g.cs
   GalleryLayoutPage.g.cs
@@ -96,7 +96,7 @@ Pages/
  GalleryDataBindingPage.xaml.cs
  GalleryDataPage.xaml.cs
  GalleryFormsPage.xaml.cs
- GalleryGlyphsPage.xaml.cs
+ GalleryIconsPage.xaml.cs
  GalleryHomePage.xaml.cs
  GalleryInputsPage.xaml.cs
  GalleryLayoutPage.xaml.cs
@@ -438,7 +438,7 @@ obj/Debug/net472/
   GalleryDataBindingPage.g.cs
   GalleryDataPage.g.cs
   GalleryFormsPage.g.cs
-  GalleryGlyphsPage.g.cs
+  GalleryIconsPage.g.cs
   GalleryHomePage.g.cs
   GalleryInputsPage.g.cs
   GalleryLayoutPage.g.cs
@@ -458,7 +458,7 @@ Pages/
  GalleryDataBindingPage.xaml.cs
  GalleryDataPage.xaml.cs
  GalleryFormsPage.xaml.cs
- GalleryGlyphsPage.xaml.cs
+ GalleryIconsPage.xaml.cs
  GalleryHomePage.xaml.cs
  GalleryInputsPage.xaml.cs
  GalleryLayoutPage.xaml.cs

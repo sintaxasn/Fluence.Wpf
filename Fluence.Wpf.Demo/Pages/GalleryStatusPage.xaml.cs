@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -470,11 +470,18 @@ namespace Fluence.Wpf.Demo.Pages.Status
         {
             InitializeComponent();
 
-            _ = DemoSampleControl.ReplaceSourceLink(ProgressBarValueSourceLink, ProgressBarValueXamlSource, ProgressBarValueCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(ProgressBarIndeterminateSourceLink, ProgressBarIndeterminateXamlSource, ProgressBarIndeterminateCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(ProgressBarStepsSourceLink, ProgressBarStepsXamlSource, ProgressBarStepsCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(ProgressRingsSourceLink, ProgressRingsXamlSource, ProgressRingsCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(InfoBarsSourceLink, InfoBarsXamlSource, InfoBarsCSharpSource);
+            DemoSampleControl.ApplySources(
+                (System.Windows.DependencyObject)Content,
+                ProgressBarValueXamlSource,
+                ProgressBarValueCSharpSource,
+                ProgressBarIndeterminateXamlSource,
+                ProgressBarIndeterminateCSharpSource,
+                ProgressBarStepsXamlSource,
+                ProgressBarStepsCSharpSource,
+                ProgressRingsXamlSource,
+                ProgressRingsCSharpSource,
+                InfoBarsXamlSource,
+                InfoBarsCSharpSource);
 
             Loaded += GalleryStatusPage_Loaded;
         }

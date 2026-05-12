@@ -28,6 +28,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -36,7 +37,7 @@ using FluenceCard = Fluence.Wpf.Controls.Card;
 
 namespace Fluence.Wpf.Demo.Pages
 {
-    public partial class DemoSampleControl : UserControl
+    public partial class DemoSampleControl : ContentControl
     {
         private enum SourceLanguage
         {
@@ -120,19 +121,12 @@ namespace Fluence.Wpf.Demo.Pages
             "while"
         };
 
-        public static readonly DependencyProperty TitleProperty =
+        public static readonly DependencyProperty SampleDescriptionProperty =
             DependencyProperty.Register(
-                "Title",
+                "SampleDescription",
                 typeof(string),
                 typeof(DemoSampleControl),
-                new FrameworkPropertyMetadata(string.Empty, OnHeaderTextChanged));
-
-        public static readonly DependencyProperty DescriptionProperty =
-            DependencyProperty.Register(
-                "Description",
-                typeof(string),
-                typeof(DemoSampleControl),
-                new FrameworkPropertyMetadata(string.Empty, OnHeaderTextChanged));
+                new FrameworkPropertyMetadata(string.Empty, OnSampleDescriptionChanged));
 
         public static readonly DependencyProperty XamlSourceProperty =
             DependencyProperty.Register(
@@ -148,33 +142,64 @@ namespace Fluence.Wpf.Demo.Pages
                 typeof(DemoSampleControl),
                 new FrameworkPropertyMetadata(string.Empty, OnSourceChanged));
 
+        public static readonly DependencyProperty DemoContentProperty =
+            DependencyProperty.Register(
+                "DemoContent",
+                typeof(object),
+                typeof(DemoSampleControl),
+                new FrameworkPropertyMetadata(null, OnDemoContentChanged));
+
+        public static readonly DependencyProperty OutputContentProperty =
+            DependencyProperty.Register(
+                "OutputContent",
+                typeof(object),
+                typeof(DemoSampleControl),
+                new FrameworkPropertyMetadata(null, OnOutputContentChanged));
+
+        public static readonly DependencyProperty RightRailContentProperty =
+            DependencyProperty.Register(
+                "RightRailContent",
+                typeof(object),
+                typeof(DemoSampleControl),
+                new FrameworkPropertyMetadata(null, OnRightRailContentChanged));
+
+        public static readonly DependencyProperty TitleProperty =
+            DependencyProperty.Register(
+                "Title",
+                typeof(string),
+                typeof(DemoSampleControl),
+                new FrameworkPropertyMetadata(string.Empty, OnLegacyHeaderTextChanged));
+
+        public static readonly DependencyProperty DescriptionProperty =
+            DependencyProperty.Register(
+                "Description",
+                typeof(string),
+                typeof(DemoSampleControl),
+                new FrameworkPropertyMetadata(string.Empty, OnLegacyHeaderTextChanged));
+
         public static readonly DependencyProperty SampleContentProperty =
             DependencyProperty.Register(
                 "SampleContent",
                 typeof(UIElement),
                 typeof(DemoSampleControl),
-                new FrameworkPropertyMetadata(null, OnSampleContentChanged));
+                new FrameworkPropertyMetadata(null, OnLegacySampleContentChanged));
 
         private bool _sourceLoaded;
 
         public DemoSampleControl()
         {
             InitializeComponent();
-            UpdateHeaderVisibility();
-            UpdateSampleContentVisibility();
+            UpdateSampleDescriptionVisibility();
+            UpdateDemoContentVisibility();
+            UpdateOutputVisibility();
+            UpdateRightRailVisibility();
             UpdateSourceVisibility();
         }
 
-        public string Title
+        public string SampleDescription
         {
-            get => (string)GetValue(TitleProperty);
-            set => SetValue(TitleProperty, value);
-        }
-
-        public string Description
-        {
-            get => (string)GetValue(DescriptionProperty);
-            set => SetValue(DescriptionProperty, value);
+            get => (string)GetValue(SampleDescriptionProperty);
+            set => SetValue(SampleDescriptionProperty, value);
         }
 
         public string XamlSource
@@ -189,17 +214,50 @@ namespace Fluence.Wpf.Demo.Pages
             set => SetValue(CSharpSourceProperty, value);
         }
 
-        public UIElement SampleContent
+        public object? DemoContent
         {
-            get => (UIElement)GetValue(SampleContentProperty);
+            get => GetValue(DemoContentProperty);
+            set => SetValue(DemoContentProperty, value);
+        }
+
+        public object? OutputContent
+        {
+            get => GetValue(OutputContentProperty);
+            set => SetValue(OutputContentProperty, value);
+        }
+
+        public object? RightRailContent
+        {
+            get => GetValue(RightRailContentProperty);
+            set => SetValue(RightRailContentProperty, value);
+        }
+
+        [Obsolete("Use SampleDescription instead.")]
+        public string Title
+        {
+            get => (string)GetValue(TitleProperty);
+            set => SetValue(TitleProperty, value);
+        }
+
+        [Obsolete("Use SampleDescription and page-level description text instead.")]
+        public string Description
+        {
+            get => (string)GetValue(DescriptionProperty);
+            set => SetValue(DescriptionProperty, value);
+        }
+
+        [Obsolete("Use DemoContent instead.")]
+        public UIElement? SampleContent
+        {
+            get => DemoContent as UIElement;
             set => SetValue(SampleContentProperty, value);
         }
 
-        private static void OnHeaderTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnSampleDescriptionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is DemoSampleControl control)
             {
-                control.UpdateHeaderVisibility();
+                control.UpdateSampleDescriptionVisibility();
             }
         }
 
@@ -211,43 +269,85 @@ namespace Fluence.Wpf.Demo.Pages
             }
         }
 
-        private static void OnSampleContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnDemoContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is DemoSampleControl control)
             {
-                control.UpdateSampleContentVisibility();
+                control.UpdateDemoContentVisibility();
             }
         }
 
-        private void UpdateHeaderVisibility()
+        private static void OnOutputContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (TitleTextBlock is null || DescriptionTextBlock is null || HeaderPanel is null)
+            if (d is DemoSampleControl control)
+            {
+                control.UpdateOutputVisibility();
+            }
+        }
+
+        private static void OnRightRailContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is DemoSampleControl control)
+            {
+                control.UpdateRightRailVisibility();
+            }
+        }
+
+        private static void OnLegacyHeaderTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is DemoSampleControl control)
+            {
+                control.UpdateSampleDescriptionFromLegacyHeader();
+            }
+        }
+
+        private static void OnLegacySampleContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is DemoSampleControl control)
+            {
+                control.DemoContent = e.NewValue;
+            }
+        }
+
+        private void UpdateSampleDescriptionFromLegacyHeader()
+        {
+            string title = (string)GetValue(TitleProperty);
+            string description = (string)GetValue(DescriptionProperty);
+            SampleDescription = !string.IsNullOrWhiteSpace(title) ? title : description;
+        }
+
+        private void UpdateSampleDescriptionVisibility()
+        {
+            if (SampleDescriptionTextBlock is null)
             {
                 return;
             }
 
-            TitleTextBlock.Visibility = string.IsNullOrWhiteSpace(Title) ? Visibility.Collapsed : Visibility.Visible;
-            DescriptionTextBlock.Visibility = string.IsNullOrWhiteSpace(Description) ? Visibility.Collapsed : Visibility.Visible;
-            HeaderPanel.Visibility = string.IsNullOrWhiteSpace(Title) && string.IsNullOrWhiteSpace(Description)
+            SampleDescriptionTextBlock.Visibility = string.IsNullOrWhiteSpace(SampleDescription)
                 ? Visibility.Collapsed
                 : Visibility.Visible;
         }
 
         private void UpdateSourceVisibility()
         {
-            _ = (SourceExpander?.Visibility = string.IsNullOrWhiteSpace(XamlSource) && string.IsNullOrWhiteSpace(CSharpSource)
-                    ? Visibility.Collapsed
-                    : Visibility.Visible);
+            if (SourceExpander is null)
+            {
+                return;
+            }
+
+            SourceExpander.Visibility = string.IsNullOrWhiteSpace(XamlSource) && string.IsNullOrWhiteSpace(CSharpSource)
+                ? Visibility.Collapsed
+                : Visibility.Visible;
         }
 
-        private void UpdateSampleContentVisibility()
+        private void UpdateDemoContentVisibility()
         {
             if (SampleCard is null || SourceExpander is null)
             {
                 return;
             }
 
-            if (SampleContent is null)
+            if (DemoContent is null)
             {
                 SampleCard.Visibility = Visibility.Collapsed;
                 SourceExpander.BorderThickness = new Thickness(1);
@@ -260,10 +360,30 @@ namespace Fluence.Wpf.Demo.Pages
             SourceExpander.CornerRadius = new CornerRadius(0, 0, 8, 8);
         }
 
+        private void UpdateOutputVisibility()
+        {
+            if (OutputRegion is null)
+            {
+                return;
+            }
+
+            OutputRegion.Visibility = OutputContent is null ? Visibility.Collapsed : Visibility.Visible;
+        }
+
+        private void UpdateRightRailVisibility()
+        {
+            if (RightRailBorder is null)
+            {
+                return;
+            }
+
+            RightRailBorder.Visibility = RightRailContent is null ? Visibility.Collapsed : Visibility.Visible;
+        }
+
         private void ResetSource()
         {
             _sourceLoaded = false;
-            SourceTabs?.Items.Clear();
+            SourceTabControl?.Items.Clear();
 
             UpdateSourceVisibility();
         }
@@ -281,7 +401,7 @@ namespace Fluence.Wpf.Demo.Pages
             }
 
             _sourceLoaded = true;
-            SourceTabs.Items.Clear();
+            SourceTabControl.Items.Clear();
             if (!string.IsNullOrWhiteSpace(XamlSource))
             {
                 AddSourceTab("XAML", XamlSource, SourceLanguage.Xaml);
@@ -289,22 +409,22 @@ namespace Fluence.Wpf.Demo.Pages
 
             if (!string.IsNullOrWhiteSpace(CSharpSource))
             {
-                AddSourceTab("C# Code-behind", CSharpSource, SourceLanguage.CSharp);
+                AddSourceTab("C#", CSharpSource, SourceLanguage.CSharp);
             }
         }
 
         private void AddSourceTab(string header, string source, SourceLanguage language)
         {
-            _ = SourceTabs.Items.Add(new Controls.TabViewItem
+            TabItem tab = new()
             {
                 Header = header,
-                IsClosable = false,
                 Content = CreateSourcePane(source, language)
-            });
+            };
+            _ = SourceTabControl.Items.Add(tab);
 
-            if (SourceTabs.SelectedIndex < 0)
+            if (SourceTabControl.SelectedIndex < 0)
             {
-                SourceTabs.SelectedIndex = 0;
+                SourceTabControl.SelectedIndex = 0;
             }
         }
 
@@ -329,10 +449,10 @@ namespace Fluence.Wpf.Demo.Pages
                 Child = copyButton,
                 CornerRadius = new CornerRadius(4),
                 HorizontalAlignment = HorizontalAlignment.Right,
-                Margin = new Thickness(0, 8, 8, 0),
+                Margin = GetThicknessResource("DemoSourceCopyButtonHostMargin", new Thickness(0, 8, 8, 0)),
                 VerticalAlignment = VerticalAlignment.Top
             };
-            border.SetResourceReference(BackgroundProperty, "DemoControlSurfaceBrush");
+            border.SetResourceReference(BackgroundProperty, "DemoSampleCardBackgroundBrush");
             return border;
         }
 
@@ -346,7 +466,7 @@ namespace Fluence.Wpf.Demo.Pages
                 HorizontalAlignment = HorizontalAlignment.Right,
                 FontFamily = new FontFamily("Segoe Fluent Icons"),
                 MinWidth = 0,
-                Padding = new Thickness(8, 4, 8, 4),
+                Padding = GetThicknessResource("DemoSourceCopyButtonPadding", new Thickness(8, 4, 8, 4)),
                 Tag = source
             };
             button.Click += OnCopySourceButtonClick;
@@ -366,6 +486,7 @@ namespace Fluence.Wpf.Demo.Pages
         {
             RichTextBox viewer = new()
             {
+                BorderThickness = new Thickness(0),
                 FontFamily = new FontFamily("Consolas"),
                 FontSize = 12,
                 HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
@@ -375,9 +496,8 @@ namespace Fluence.Wpf.Demo.Pages
                 Padding = new Thickness(0),
                 VerticalScrollBarVisibility = ScrollBarVisibility.Auto
             };
-            viewer.SetResourceReference(BackgroundProperty, "DemoSourceSurfaceBrush");
+            viewer.SetResourceReference(BackgroundProperty, "DemoSampleSourceContentBackgroundBrush");
             viewer.SetResourceReference(ForegroundProperty, "TextFillColorPrimaryBrush");
-            viewer.SetResourceReference(BorderBrushProperty, "CardStrokeColorDefaultBrush");
             viewer.Document = CreateSourceDocument(source, language);
             return viewer;
         }
@@ -388,7 +508,7 @@ namespace Fluence.Wpf.Demo.Pages
             {
                 FontFamily = new FontFamily("Consolas"),
                 FontSize = 12,
-                PagePadding = new Thickness(12)
+                PagePadding = GetThicknessResource("DemoSourceCodeDocumentPadding", new Thickness(12))
             };
             document.SetResourceReference(TextElement.ForegroundProperty, "TextFillColorPrimaryBrush");
 
@@ -612,7 +732,18 @@ namespace Fluence.Wpf.Demo.Pages
                    value == '-';
         }
 
+        [Obsolete("Use DemoSampleControl with DemoContent, XamlSource, and CSharpSource instead.")]
         public static DemoSampleControl ReplaceSourceLink(FrameworkElement placeholder, string xamlSource, string csharpSource)
+        {
+            return ReplaceSourceLinkCore(placeholder, xamlSource, csharpSource);
+        }
+
+        internal static DemoSampleControl ReplaceSourceLinkForCompatibility(FrameworkElement placeholder, string xamlSource, string csharpSource)
+        {
+            return ReplaceSourceLinkCore(placeholder, xamlSource, csharpSource);
+        }
+
+        private static DemoSampleControl ReplaceSourceLinkCore(FrameworkElement placeholder, string xamlSource, string csharpSource)
         {
 #if NET6_0_OR_GREATER
             ArgumentNullException.ThrowIfNull(placeholder);
@@ -640,7 +771,11 @@ namespace Fluence.Wpf.Demo.Pages
                 CopyAttachedLayout(hostCard, sample);
                 RemovePlaceholderFromParent(placeholder);
                 hostCard.Content = null;
-                sample.SampleContent = sampleContent;
+                sample.DemoContent = sampleContent;
+                if (hostCard.Header is string header && !string.IsNullOrWhiteSpace(header))
+                {
+                    sample.SampleDescription = header;
+                }
 
                 if (hostCard.Parent is Panel hostPanel)
                 {
@@ -681,6 +816,134 @@ namespace Fluence.Wpf.Demo.Pages
             }
 
             throw new InvalidOperationException("Source link " + nameof(placeholder) + " must be hosted by a Panel or ContentControl.");
+        }
+
+        internal static void ApplySources(DependencyObject root, params string[] sourcePairs)
+        {
+#if NET6_0_OR_GREATER
+            ArgumentNullException.ThrowIfNull(root);
+#else
+            if (root is null)
+            {
+                throw new ArgumentNullException(nameof(root));
+            }
+#endif
+
+            if (sourcePairs.Length % 2 != 0)
+            {
+                throw new ArgumentException("Source pairs must contain XAML and C# values.", nameof(sourcePairs));
+            }
+
+            List<DemoSampleControl> samples = [];
+            CollectDemoSampleControls(root, samples);
+            ApplyContentSlots(root, samples);
+
+            int sampleCount = sourcePairs.Length / 2;
+            if (samples.Count < sampleCount)
+            {
+                throw new InvalidOperationException("The page has fewer DemoSampleControl instances than source pairs.");
+            }
+
+            for (int i = 0; i < sampleCount; i++)
+            {
+                DemoSampleControl sample = samples[i];
+                sample.XamlSource = sourcePairs[i * 2];
+                sample.CSharpSource = sourcePairs[(i * 2) + 1];
+            }
+        }
+
+        private static void ApplyContentSlots(DependencyObject root, IList<DemoSampleControl> samples)
+        {
+            Dictionary<int, ContentControl> demoSlots = [];
+            Dictionary<int, ContentControl> outputSlots = [];
+            Dictionary<int, ContentControl> rightRailSlots = [];
+            CollectContentSlots(root, demoSlots, outputSlots, rightRailSlots);
+
+            for (int i = 0; i < samples.Count; i++)
+            {
+                int slotIndex = i + 1;
+                DemoSampleControl sample = samples[i];
+                if (demoSlots.TryGetValue(slotIndex, out ContentControl? demoSlot))
+                {
+                    sample.DemoContent = TakeSlotContent(demoSlot);
+                }
+
+                if (outputSlots.TryGetValue(slotIndex, out ContentControl? outputSlot))
+                {
+                    sample.OutputContent = TakeSlotContent(outputSlot);
+                }
+
+                if (rightRailSlots.TryGetValue(slotIndex, out ContentControl? rightRailSlot))
+                {
+                    sample.RightRailContent = TakeSlotContent(rightRailSlot);
+                }
+            }
+        }
+
+        private static object? TakeSlotContent(ContentControl slot)
+        {
+            object? content = slot.Content;
+            slot.Content = null;
+            return content;
+        }
+
+        private static void CollectContentSlots(
+            DependencyObject current,
+            IDictionary<int, ContentControl> demoSlots,
+            IDictionary<int, ContentControl> outputSlots,
+            IDictionary<int, ContentControl> rightRailSlots)
+        {
+            if (current is ContentControl contentControl && !string.IsNullOrWhiteSpace(contentControl.Name))
+            {
+                AddSlotIfMatched(contentControl, "DemoContentHost", demoSlots);
+                AddSlotIfMatched(contentControl, "OutputContentHost", outputSlots);
+                AddSlotIfMatched(contentControl, "RightRailContentHost", rightRailSlots);
+            }
+
+            foreach (object child in LogicalTreeHelper.GetChildren(current))
+            {
+                if (child is DependencyObject childObject)
+                {
+                    CollectContentSlots(childObject, demoSlots, outputSlots, rightRailSlots);
+                }
+            }
+        }
+
+        private static void AddSlotIfMatched(
+            ContentControl slot,
+            string suffix,
+            IDictionary<int, ContentControl> slots)
+        {
+            const string prefix = "DemoSampleSlot";
+            string name = slot.Name;
+            if (!name.StartsWith(prefix, StringComparison.Ordinal) ||
+                !name.EndsWith(suffix, StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            string indexText = name.Substring(prefix.Length, name.Length - prefix.Length - suffix.Length);
+            if (int.TryParse(indexText, NumberStyles.None, CultureInfo.InvariantCulture, out int index))
+            {
+                slots[index] = slot;
+            }
+        }
+
+        private static void CollectDemoSampleControls(DependencyObject current, ICollection<DemoSampleControl> samples)
+        {
+            if (current is DemoSampleControl sample)
+            {
+                samples.Add(sample);
+                return;
+            }
+
+            foreach (object child in LogicalTreeHelper.GetChildren(current))
+            {
+                if (child is DependencyObject childObject)
+                {
+                    CollectDemoSampleControls(childObject, samples);
+                }
+            }
         }
 
         private static FluenceCard? FindAncestorCard(FrameworkElement element)
@@ -725,6 +988,11 @@ namespace Fluence.Wpf.Demo.Pages
             Grid.SetRowSpan(target, Grid.GetRowSpan(source));
             Grid.SetColumnSpan(target, Grid.GetColumnSpan(source));
             DockPanel.SetDock(target, DockPanel.GetDock(source));
+        }
+
+        private static Thickness GetThicknessResource(string key, Thickness fallback)
+        {
+            return Application.Current?.TryFindResource(key) is Thickness value ? value : fallback;
         }
     }
 }

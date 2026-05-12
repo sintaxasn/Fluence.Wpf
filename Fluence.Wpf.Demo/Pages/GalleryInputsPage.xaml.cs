@@ -293,11 +293,18 @@ namespace Fluence.Wpf.Demo.Pages.Inputs
         {
             InitializeComponent();
 
-            _ = DemoSampleControl.ReplaceSourceLink(TextBoxInputSourceLink, TextBoxInputXamlSource, TextBoxInputCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(TextBoxValidationSourceLink, TextBoxValidationXamlSource, TextBoxValidationCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(PasswordBoxInputSourceLink, PasswordBoxInputXamlSource, PasswordBoxInputCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(NumberBoxInputSourceLink, NumberBoxInputXamlSource, NumberBoxInputCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(SliderInputSourceLink, SliderInputXamlSource, SliderInputCSharpSource);
+            DemoSampleControl.ApplySources(
+                (System.Windows.DependencyObject)Content,
+                TextBoxInputXamlSource,
+                TextBoxInputCSharpSource,
+                TextBoxValidationXamlSource,
+                TextBoxValidationCSharpSource,
+                PasswordBoxInputXamlSource,
+                PasswordBoxInputCSharpSource,
+                NumberBoxInputXamlSource,
+                NumberBoxInputCSharpSource,
+                SliderInputXamlSource,
+                SliderInputCSharpSource);
         }
 
         private void CharCountTextBox_TextChanged(object sender, TextChangedEventArgs e)

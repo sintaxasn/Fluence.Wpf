@@ -3,94 +3,70 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Fluence.Wpf.Demo.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
-    xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
     d:DesignHeight="900"
     d:DesignWidth="900"
     mc:Ignorable="d">
     <ui:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
         <StackPanel Style="{StaticResource GalleryPageContentStackStyle}">
+            <TextBlock Style="{StaticResource PageTitleStyle}" Text="Tabs" />
             <TextBlock
-                Margin="0,0,0,4"
-                ui:TextBlockExtensions.Typography="Title"
-                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                Text="Tabs" />
-            <TextBlock
-                Margin="0,0,0,24"
                 Style="{StaticResource SectionDescriptionStyle}"
                 Text="Tabs organize related panels while keeping one view active at a time." />
 
-            <TextBlock
-                Margin="0,0,0,4"
-                Style="{StaticResource SectionHeaderStyle}"
-                Text="TabControl" />
-            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Use TabControl for a small set of peer panels that share the same space." />
-            <ui:Card
-                Margin="0,0,0,16"
-                Padding="16"
-                Variant="{x:Static uicore:CardVariant.Default}">
-                <StackPanel>
-                    <TabControl Height="210" Margin="0,0,0,12">
+
+            <ContentControl
+                x:Name="DemoSampleSlot01DemoContentHost"
+                Visibility="Collapsed">
+<TabControl Height="210">
                         <TabItem Header="Overview">
-                            <StackPanel Margin="20">
+                            <StackPanel Margin="{DynamicResource DemoTabContentMargin}">
                                 <TextBlock
-                                    FontSize="18"
-                                    FontWeight="SemiBold"
-                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                    Style="{StaticResource BodyStrongTextBlockStyle}"
                                     Text="Overview" />
                                 <TextBlock
-                                    Margin="0,6,0,0"
+                                    Margin="{DynamicResource DemoTextTopGapMargin}"
                                     Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                     Text="A concise summary of the current workspace."
                                     TextWrapping="Wrap" />
                             </StackPanel>
                         </TabItem>
                         <TabItem Header="Activity">
-                            <StackPanel Margin="20">
+                            <StackPanel Margin="{DynamicResource DemoTabContentMargin}">
                                 <TextBlock
-                                    FontSize="18"
-                                    FontWeight="SemiBold"
-                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                    Style="{StaticResource BodyStrongTextBlockStyle}"
                                     Text="Activity" />
                                 <TextBlock
-                                    Margin="0,6,0,0"
+                                    Margin="{DynamicResource DemoTextTopGapMargin}"
                                     Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                     Text="Recent changes and follow-up work stay grouped in one panel."
                                     TextWrapping="Wrap" />
                             </StackPanel>
                         </TabItem>
                         <TabItem Header="Settings">
-                            <StackPanel Margin="20">
+                            <StackPanel Margin="{DynamicResource DemoTabContentMargin}">
                                 <TextBlock
-                                    FontSize="18"
-                                    FontWeight="SemiBold"
-                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                    Style="{StaticResource BodyStrongTextBlockStyle}"
                                     Text="Settings" />
                                 <TextBlock
-                                    Margin="0,6,0,0"
+                                    Margin="{DynamicResource DemoTextTopGapMargin}"
                                     Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                     Text="Preferences and configuration can live beside the main content."
                                     TextWrapping="Wrap" />
                             </StackPanel>
                         </TabItem>
                     </TabControl>
-                    <ui:HyperlinkButton
-                        x:Name="TabControlBasicsSourceLink"
-                        HorizontalAlignment="Right"
-                        Content="Source"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
-                </StackPanel>
-            </ui:Card>
+            </ContentControl>
+            <local:DemoSampleControl
+                SampleDescription="Use TabControl for a small set of peer panels that share the same space." />
 
-            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="Tab placement" />
-            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Use TabStripPlacement to move the tab row when the layout benefits from a side rail or bottom row." />
-            <ui:Card
-                Margin="0,0,0,16"
-                Padding="16"
-                Variant="{x:Static uicore:CardVariant.Default}">
-                <StackPanel>
-                    <Grid Margin="0,0,0,12">
+
+            <ContentControl
+                x:Name="DemoSampleSlot02DemoContentHost"
+                Visibility="Collapsed">
+<Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="20" />
@@ -99,14 +75,14 @@
                         <TabControl Height="220" TabStripPlacement="Left">
                             <TabItem Header="Inbox">
                                 <TextBlock
-                                    Margin="20"
+                                    Margin="{DynamicResource DemoTabContentMargin}"
                                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                     Text="Left tabs keep vertical categories visible."
                                     TextWrapping="Wrap" />
                             </TabItem>
                             <TabItem Header="Archive">
                                 <TextBlock
-                                    Margin="20"
+                                    Margin="{DynamicResource DemoTabContentMargin}"
                                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                     Text="Archived conversations and completed items."
                                     TextWrapping="Wrap" />
@@ -118,36 +94,31 @@
                             TabStripPlacement="Bottom">
                             <TabItem Header="Preview">
                                 <TextBlock
-                                    Margin="20"
+                                    Margin="{DynamicResource DemoTabContentMargin}"
                                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                     Text="Bottom tabs leave the top edge for document chrome."
                                     TextWrapping="Wrap" />
                             </TabItem>
                             <TabItem Header="Details">
                                 <TextBlock
-                                    Margin="20"
+                                    Margin="{DynamicResource DemoTabContentMargin}"
                                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                     Text="Details can remain close to the lower action area."
                                     TextWrapping="Wrap" />
                             </TabItem>
                         </TabControl>
                     </Grid>
-                    <ui:HyperlinkButton
-                        x:Name="TabControlPlacementSourceLink"
-                        HorizontalAlignment="Right"
-                        Content="Source"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
-                </StackPanel>
-            </ui:Card>
+            </ContentControl>
+            <local:DemoSampleControl
+                SampleDescription="Use TabStripPlacement to move the tab row when the layout benefits from a side rail or bottom row." />
 
-            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="TabView" />
-            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Use TabView for document-style tabs with add and close affordances." />
-            <ui:Card Padding="16" Variant="{x:Static uicore:CardVariant.Default}">
-                <StackPanel>
-                    <ui:TabView
+
+            <ContentControl
+                x:Name="DemoSampleSlot03DemoContentHost"
+                Visibility="Collapsed">
+<ui:TabView
                         x:Name="DemoTabView"
                         Height="260"
-                        Margin="0,0,0,12"
                         AddTabButtonClick="DemoTabView_AddTabButtonClick"
                         CloseButtonOverlayMode="Auto"
                         TabCloseRequested="DemoTabView_TabCloseRequested">
@@ -155,14 +126,12 @@
                             <ui:TabViewItem.Icon>
                                 <ui:FontIcon Glyph="&#xE8A5;" IconFontSize="16" />
                             </ui:TabViewItem.Icon>
-                            <StackPanel Margin="20">
+                            <StackPanel Margin="{DynamicResource DemoTabContentMargin}">
                                 <TextBlock
-                                    FontSize="18"
-                                    FontWeight="SemiBold"
-                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                    Style="{StaticResource BodyStrongTextBlockStyle}"
                                     Text="Document 1" />
                                 <TextBlock
-                                    Margin="0,6,0,0"
+                                    Margin="{DynamicResource DemoTextTopGapMargin}"
                                     Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                     Text="Close document tabs or add another document from the tab row."
                                     TextWrapping="Wrap" />
@@ -172,14 +141,12 @@
                             <ui:TabViewItem.Icon>
                                 <ui:FontIcon Glyph="&#xE8A5;" IconFontSize="16" />
                             </ui:TabViewItem.Icon>
-                            <StackPanel Margin="20">
+                            <StackPanel Margin="{DynamicResource DemoTabContentMargin}">
                                 <TextBlock
-                                    FontSize="18"
-                                    FontWeight="SemiBold"
-                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                    Style="{StaticResource BodyStrongTextBlockStyle}"
                                     Text="Document 2" />
                                 <TextBlock
-                                    Margin="0,6,0,0"
+                                    Margin="{DynamicResource DemoTextTopGapMargin}"
                                     Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                     Text="Each tab hosts independent content."
                                     TextWrapping="Wrap" />
@@ -189,32 +156,29 @@
                             <ui:TabViewItem.Icon>
                                 <ui:FontIcon Glyph="&#xE718;" IconFontSize="16" />
                             </ui:TabViewItem.Icon>
-                            <StackPanel Margin="20">
+                            <StackPanel Margin="{DynamicResource DemoTabContentMargin}">
                                 <TextBlock
-                                    FontSize="18"
-                                    FontWeight="SemiBold"
-                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                    Style="{StaticResource BodyStrongTextBlockStyle}"
                                     Text="Pinned" />
                                 <TextBlock
-                                    Margin="0,6,0,0"
+                                    Margin="{DynamicResource DemoTextTopGapMargin}"
                                     Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                     Text="Set IsClosable to false when a tab should stay available."
                                     TextWrapping="Wrap" />
                             </StackPanel>
                         </ui:TabViewItem>
                     </ui:TabView>
-                    <TextBlock
+            </ContentControl>
+            <ContentControl
+                x:Name="DemoSampleSlot03OutputContentHost"
+                Visibility="Collapsed">
+<TextBlock
                         x:Name="DemoTabViewStatus"
-                        Margin="0,0,0,12"
                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                         Text="Tabs: 3" />
-                    <ui:HyperlinkButton
-                        x:Name="TabViewDocumentsSourceLink"
-                        HorizontalAlignment="Right"
-                        Content="Source"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
-                </StackPanel>
-            </ui:Card>
+            </ContentControl>
+            <local:DemoSampleControl
+                SampleDescription="Use TabView for document-style tabs with add and close affordances." />
         </StackPanel>
     </ui:SmoothScrollViewer>
 </UserControl>

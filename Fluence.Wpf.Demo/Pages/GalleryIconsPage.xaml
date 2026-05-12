@@ -1,5 +1,5 @@
 ﻿<UserControl
-    x:Class="Fluence.Wpf.Demo.Pages.GalleryGlyphsPage"
+    x:Class="Fluence.Wpf.Demo.Pages.GalleryIconsPage"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -28,12 +28,12 @@
                     Margin="0,0,0,4"
                     ui:TextBlockExtensions.Typography="Title"
                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                    Text="Iconography" />
+                    Text="Icons" />
                 <TextBlock
                     MaxWidth="720"
                     HorizontalAlignment="Left"
                     Style="{StaticResource SectionDescriptionStyle}"
-                    Text="FontIcon renders glyphs from the Segoe Fluent Icons font. This catalog enumerates the private-use glyphs available from the installed font and shows friendly names where Fluence has source data." />
+                    Text="FontIcon renders icons from the Segoe Fluent Icons font. This catalog enumerates the private-use icons available from the installed font and shows friendly names where Fluence has source data." />
             </StackPanel>
 
         </Grid>
@@ -76,7 +76,7 @@
             Grid.Row="3"
             Margin="0,16,0,16"
             Style="{StaticResource SectionHeaderStyle}"
-            Text="Installed glyph catalog" />
+            Text="Installed icon catalog" />
 
 
         <ui:ListView

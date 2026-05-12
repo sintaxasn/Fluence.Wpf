@@ -300,9 +300,14 @@ namespace Fluence.Wpf.Demo.Pages.Tabs
         {
             InitializeComponent();
 
-            _ = DemoSampleControl.ReplaceSourceLink(TabControlBasicsSourceLink, TabControlBasicsXamlSource, TabControlBasicsCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(TabControlPlacementSourceLink, TabControlPlacementXamlSource, TabControlPlacementCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(TabViewDocumentsSourceLink, TabViewDocumentsXamlSource, TabViewDocumentsCSharpSource);
+            DemoSampleControl.ApplySources(
+                (System.Windows.DependencyObject)Content,
+                TabControlBasicsXamlSource,
+                TabControlBasicsCSharpSource,
+                TabControlPlacementXamlSource,
+                TabControlPlacementCSharpSource,
+                TabViewDocumentsXamlSource,
+                TabViewDocumentsCSharpSource);
         }
 
         private void DemoTabView_AddTabButtonClick(object sender, RoutedEventArgs e)

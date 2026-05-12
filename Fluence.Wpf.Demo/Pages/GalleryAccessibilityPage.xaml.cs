@@ -444,10 +444,10 @@ namespace Fluence.Wpf.Demo.Pages.Accessibility
         {
             InitializeComponent();
 
-            _ = DemoSampleControl.ReplaceSourceLink(FocusAndTabOrderSourceLink, FocusAndTabOrderXamlSource, FocusAndTabOrderCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(HighContrastMappingSourceLink, HighContrastMappingXamlSource, HighContrastMappingCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(AutomationPropertiesSourceLink, AutomationPropertiesXamlSource, AutomationPropertiesCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(RtlLayoutSourceLink, RtlLayoutXamlSource, RtlLayoutCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLinkForCompatibility(FocusAndTabOrderSourceLink, FocusAndTabOrderXamlSource, FocusAndTabOrderCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLinkForCompatibility(HighContrastMappingSourceLink, HighContrastMappingXamlSource, HighContrastMappingCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLinkForCompatibility(AutomationPropertiesSourceLink, AutomationPropertiesXamlSource, AutomationPropertiesCSharpSource);
+            _ = DemoSampleControl.ReplaceSourceLinkForCompatibility(RtlLayoutSourceLink, RtlLayoutXamlSource, RtlLayoutCSharpSource);
 
             Loaded += OnLoaded;
         }

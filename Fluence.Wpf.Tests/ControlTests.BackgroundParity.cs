@@ -234,9 +234,10 @@ namespace Fluence.Wpf.Tests
 
                 DemoSampleControl sample = new()
                 {
-                    Title = "Sample",
-                    Description = "Description",
-                    SampleContent = new TextBlock { Text = "Body" },
+                    SampleDescription = "Sample",
+                    DemoContent = new TextBlock { Text = "Body" },
+                    OutputContent = new TextBlock { Text = "Output" },
+                    RightRailContent = new CheckBox { Content = "Option" },
                     XamlSource = "<Grid />"
                 };
                 Window window = new()
@@ -259,10 +260,17 @@ namespace Fluence.Wpf.Tests
 
                     Assert.AreEqual(new CornerRadius(8, 8, 0, 0), sampleCard.CornerRadius,
                         "Demo sample display should attach to the source section with WinUI Gallery corners.");
-                    AssertBrushColor(sampleCard.Background, "DemoControlSurfaceBrush",
+                    WpfBorder? rightRail = sample.FindName("RightRailBorder") as WpfBorder;
+                    WpfBorder? outputRegion = sample.FindName("OutputRegion") as WpfBorder;
+                    Assert.IsNotNull(rightRail, "DemoSampleControl must expose RightRailBorder.");
+                    Assert.IsNotNull(outputRegion, "DemoSampleControl must expose OutputRegion.");
+
+                    AssertBrushColor(sampleCard.Background, "DemoSampleCardBackgroundBrush",
                         "Demo sample display should use the WinUI Gallery control-example surface.");
-                    AssertBrushColor(sourceExpander.Background, "DemoSourceSurfaceBrush",
-                        "Demo source surface should use the WinUI Gallery source-code background.");
+                    AssertBrushColor(rightRail.Background, "DemoSampleRightRailBackgroundBrush",
+                        "Demo right rail should use the WinUI Gallery options-pane surface.");
+                    AssertBrushColor(sourceExpander.Background, "DemoSampleSourceHeaderBackgroundBrush",
+                        "Demo source header should use the WinUI Gallery source-code header background.");
                     Assert.AreEqual("Source code", sourceExpander.Header,
                         "Demo source expander header should match the WinUI Gallery source label.");
 
@@ -274,9 +282,9 @@ namespace Fluence.Wpf.Tests
                     WpfBorder? copyButtonHost = FindVisualChildByName<WpfBorder>(sourceExpander, "CopySourceButtonHost");
                     Assert.IsNotNull(sourceViewer, "Expanded source should expose the code viewer.");
                     Assert.IsNotNull(copyButtonHost, "Expanded source should expose the overlaid copy-button host.");
-                    AssertBrushColor(sourceViewer.Background, "DemoSourceSurfaceBrush",
+                    AssertBrushColor(sourceViewer.Background, "DemoSampleSourceContentBackgroundBrush",
                         "Source code should use the darker WinUI Gallery on-image fill role.");
-                    AssertBrushColor(copyButtonHost.Background, "DemoControlSurfaceBrush",
+                    AssertBrushColor(copyButtonHost.Background, "DemoSampleCardBackgroundBrush",
                         "Copy action should sit on the WinUI Gallery on-image fill bubble.");
                 }
                 finally
@@ -299,6 +307,10 @@ namespace Fluence.Wpf.Tests
                 DemoThemeResources.RefreshForCurrentTheme();
 
                 AssertBrushColor("DemoPageBackgroundBrush", Color.FromRgb(0x27, 0x27, 0x27));
+                AssertBrushColor("DemoSampleCardBackgroundBrush", Color.FromRgb(0x20, 0x20, 0x20));
+                AssertBrushColor("DemoSampleRightRailBackgroundBrush", Color.FromRgb(0x2B, 0x2B, 0x2B));
+                AssertBrushColor("DemoSampleSourceHeaderBackgroundBrush", Color.FromRgb(0x32, 0x32, 0x32));
+                AssertBrushColor("DemoSampleSourceContentBackgroundBrush", Color.FromRgb(0x2E, 0x2E, 0x2E));
                 AssertBrushColor("DemoControlSurfaceBrush", Color.FromRgb(0x20, 0x20, 0x20));
                 AssertBrushColor("DemoSourceSurfaceBrush", Color.FromRgb(0x32, 0x32, 0x32));
                 AssertBrushColor("DemoSettingsCardBrush", Color.FromRgb(0x32, 0x32, 0x32));
@@ -354,6 +366,10 @@ namespace Fluence.Wpf.Tests
                     "CardBackgroundFillColorSecondaryBrush",
                     "AccentFillColorDefaultBrush",
                     "DemoPageBackgroundBrush",
+                    "DemoSampleCardBackgroundBrush",
+                    "DemoSampleRightRailBackgroundBrush",
+                    "DemoSampleSourceHeaderBackgroundBrush",
+                    "DemoSampleSourceContentBackgroundBrush",
                     "DemoControlSurfaceBrush",
                     "DemoSourceSurfaceBrush",
                     "DemoSettingsCardBrush",
@@ -514,6 +530,10 @@ namespace Fluence.Wpf.Tests
             return
             [
                 "DemoPageBackgroundBrush",
+                "DemoSampleCardBackgroundBrush",
+                "DemoSampleRightRailBackgroundBrush",
+                "DemoSampleSourceHeaderBackgroundBrush",
+                "DemoSampleSourceContentBackgroundBrush",
                 "DemoControlSurfaceBrush",
                 "DemoSourceSurfaceBrush",
                 "DemoSettingsCardBrush",

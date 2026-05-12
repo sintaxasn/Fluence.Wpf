@@ -187,9 +187,14 @@ namespace Fluence.Wpf.Demo.Pages.Forms
         {
             InitializeComponent();
 
-            _ = DemoSampleControl.ReplaceSourceLink(SignInFormSourceLink, SignInFormXamlSource, SignInFormCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(CheckoutFormSourceLink, CheckoutFormXamlSource, CheckoutFormCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(SettingsFormSourceLink, SettingsFormXamlSource, SettingsFormCSharpSource);
+            DemoSampleControl.ApplySources(
+                (System.Windows.DependencyObject)Content,
+                SignInFormXamlSource,
+                SignInFormCSharpSource,
+                CheckoutFormXamlSource,
+                CheckoutFormCSharpSource,
+                SettingsFormXamlSource,
+                SettingsFormCSharpSource);
 
             Loaded += GalleryFormsPage_Loaded;
         }

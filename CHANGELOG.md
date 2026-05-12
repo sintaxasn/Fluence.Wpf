@@ -11,8 +11,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Initial Fluence.Wpf control library for WPF applications that want Windows 11 Fluent and WinUI 3 style controls.
 - Theme system with stable Light, Dark, High Contrast, and Auto dictionaries, WinUI-style color and brush keys, typography resources, and dynamic accent ramp updates.
 - Fluent window shell support through `FluenceWindow`, including DWM backdrop selection, rounded corners, title-bar extension, caption controls, and title-bar content slots.
-- Core control set covering buttons, selection controls, text input, combo boxes, sliders, progress controls, cards, borders, panels, list and tree views, menus, tooltips, tabs, navigation, status controls, iconography, and smooth scrolling.
-- Demo gallery with concrete pages for Home, Colors, Iconography, Typography, Accessibility, Buttons, Selection, Inputs, Forms, Data, Data binding, Trees, Menus, Navigation, Tabs, Layout, and Status.
+- Core control set covering buttons, selection controls, text input, combo boxes, sliders, progress controls, cards, borders, panels, list and tree views, menus, tooltips, tabs, navigation, status controls, icons, and smooth scrolling.
+- Demo gallery with concrete pages for Home, Colors, Icons, Typography, Accessibility, Buttons, Selection, Inputs, Forms, Data, Data binding, Trees, Menus, Navigation, Tabs, Layout, and Status.
 - Demo Settings page with theme, navigation style, accent colors, backdrop, caption-button customization, version, and repository actions.
 - MVVM demo application that shows Fluence controls in a CommunityToolkit.Mvvm task manager sample.
 - MSTest suite covering theme stability, accent behavior, focus visuals, window policy, control templates, demo navigation, page layout, and representative interaction states.

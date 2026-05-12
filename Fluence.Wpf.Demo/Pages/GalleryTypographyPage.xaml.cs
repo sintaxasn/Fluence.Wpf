@@ -263,11 +263,10 @@ namespace Fluence.Wpf.Demo.Pages.Typography
             parent.Children.Insert(index, new DemoSampleControl
             {
                 Margin = new Thickness(0, 12, 0, 24),
-                Title = "Typography scale",
-                Description = "Supported text styles, variable font roles, and line-height guidance.",
+                SampleDescription = "Typography scale",
                 XamlSource = TypographyTableXamlSource,
                 CSharpSource = TypographyTableCSharpSource,
-                SampleContent = TypographyTable
+                DemoContent = TypographyTable
             });
         }
 

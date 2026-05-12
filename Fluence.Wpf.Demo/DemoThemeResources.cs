@@ -37,6 +37,10 @@ namespace Fluence.Wpf.Demo
     public static class DemoThemeResources
     {
         private const string DemoPageBackgroundBrushKey = "DemoPageBackgroundBrush";
+        private const string DemoSampleCardBackgroundBrushKey = "DemoSampleCardBackgroundBrush";
+        private const string DemoSampleRightRailBackgroundBrushKey = "DemoSampleRightRailBackgroundBrush";
+        private const string DemoSampleSourceHeaderBackgroundBrushKey = "DemoSampleSourceHeaderBackgroundBrush";
+        private const string DemoSampleSourceContentBackgroundBrushKey = "DemoSampleSourceContentBackgroundBrush";
         private const string DemoControlSurfaceBrushKey = "DemoControlSurfaceBrush";
         private const string DemoSourceSurfaceBrushKey = "DemoSourceSurfaceBrush";
         private const string DemoSettingsCardBrushKey = "DemoSettingsCardBrush";
@@ -95,17 +99,40 @@ namespace Fluence.Wpf.Demo
             if (theme == ApplicationTheme.Dark)
             {
                 SetBrush(resources, DemoPageBackgroundBrushKey, Color.FromRgb(0x27, 0x27, 0x27));
-                SetBrush(resources, DemoControlSurfaceBrushKey, Color.FromRgb(0x20, 0x20, 0x20));
-                SetBrush(resources, DemoSourceSurfaceBrushKey, Color.FromRgb(0x32, 0x32, 0x32));
+                SetBrush(resources, DemoSampleCardBackgroundBrushKey, Color.FromRgb(0x20, 0x20, 0x20));
+                SetBrush(resources, DemoSampleRightRailBackgroundBrushKey, Color.FromRgb(0x2B, 0x2B, 0x2B));
+                SetBrush(resources, DemoSampleSourceHeaderBackgroundBrushKey, Color.FromRgb(0x32, 0x32, 0x32));
+                SetBrush(resources, DemoSampleSourceContentBackgroundBrushKey, Color.FromRgb(0x2E, 0x2E, 0x2E));
+                CopyBrush(resources, DemoControlSurfaceBrushKey, DemoSampleCardBackgroundBrushKey);
+                CopyBrush(resources, DemoSourceSurfaceBrushKey, DemoSampleSourceHeaderBackgroundBrushKey);
                 SetBrush(resources, DemoSettingsCardBrushKey, Color.FromRgb(0x32, 0x32, 0x32));
                 SetBrush(resources, DemoSectionCardBrushKey, Color.FromRgb(0x20, 0x20, 0x20));
                 PromoteBrush(resources, DemoFieldLabelForegroundBrushKey, "TextFillColorSecondaryBrush");
                 return;
             }
 
+            if (theme == ApplicationTheme.Light)
+            {
+                SetBrush(resources, DemoPageBackgroundBrushKey, Color.FromRgb(0xF9, 0xF9, 0xF9));
+                SetBrush(resources, DemoSampleCardBackgroundBrushKey, Color.FromRgb(0xF3, 0xF3, 0xF3));
+                SetBrush(resources, DemoSampleRightRailBackgroundBrushKey, Color.FromRgb(0xFB, 0xFB, 0xFB));
+                SetBrush(resources, DemoSampleSourceHeaderBackgroundBrushKey, Color.FromRgb(0xFD, 0xFD, 0xFD));
+                SetBrush(resources, DemoSampleSourceContentBackgroundBrushKey, Color.FromRgb(0xFF, 0xFF, 0xFF));
+                CopyBrush(resources, DemoControlSurfaceBrushKey, DemoSampleCardBackgroundBrushKey);
+                CopyBrush(resources, DemoSourceSurfaceBrushKey, DemoSampleSourceHeaderBackgroundBrushKey);
+                PromoteBrush(resources, DemoSettingsCardBrushKey, "CardBackgroundFillColorDefaultBrush");
+                PromoteBrush(resources, DemoSectionCardBrushKey, "CardBackgroundFillColorDefaultBrush");
+                PromoteBrush(resources, DemoFieldLabelForegroundBrushKey, "TextFillColorSecondaryBrush");
+                return;
+            }
+
             PromoteBrush(resources, DemoPageBackgroundBrushKey, "SolidBackgroundFillColorBaseBrush");
-            PromoteBrush(resources, DemoControlSurfaceBrushKey, "CardBackgroundFillColorDefaultBrush");
-            PromoteBrush(resources, DemoSourceSurfaceBrushKey, "CardBackgroundFillColorSecondaryBrush");
+            PromoteBrush(resources, DemoSampleCardBackgroundBrushKey, "CardBackgroundFillColorDefaultBrush");
+            PromoteBrush(resources, DemoSampleRightRailBackgroundBrushKey, "CardBackgroundFillColorSecondaryBrush");
+            PromoteBrush(resources, DemoSampleSourceHeaderBackgroundBrushKey, "ControlFillColorDefaultBrush");
+            PromoteBrush(resources, DemoSampleSourceContentBackgroundBrushKey, "SolidBackgroundFillColorBaseBrush");
+            CopyBrush(resources, DemoControlSurfaceBrushKey, DemoSampleCardBackgroundBrushKey);
+            CopyBrush(resources, DemoSourceSurfaceBrushKey, DemoSampleSourceHeaderBackgroundBrushKey);
             PromoteBrush(resources, DemoSettingsCardBrushKey, "CardBackgroundFillColorDefaultBrush");
             PromoteBrush(resources, DemoSectionCardBrushKey, "CardBackgroundFillColorDefaultBrush");
             PromoteBrush(resources, DemoFieldLabelForegroundBrushKey, "TextFillColorSecondaryBrush");
@@ -114,6 +141,14 @@ namespace Fluence.Wpf.Demo
         private static void SetBrush(ResourceDictionary resources, string key, Color color)
         {
             resources[key] = new SolidColorBrush(color);
+        }
+
+        private static void CopyBrush(ResourceDictionary resources, string targetKey, string sourceKey)
+        {
+            if (resources[sourceKey] is SolidColorBrush source)
+            {
+                SetBrush(resources, targetKey, source.Color);
+            }
         }
 
         private static void PromoteBrush(ResourceDictionary resources, string targetKey, string sourceKey)

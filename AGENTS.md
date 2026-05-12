@@ -48,7 +48,7 @@ Every `.cs` file in the library, demo, and tests starts with the BSD 3-Clause he
 
 ### Language features
 
-- Avoid the use of em dash (-) or en dash (–) anywhere in documentation or comments.
+- Avoid em dash or en dash characters anywhere in documentation or comments.
 - All TFMs use `LangVersion=latest` (set in `Directory.Build.props`). Use modern C# features freely; verify any runtime API is available in `net472` before using it.
 - Do not guard blocks with `#if NET10_0_OR_GREATER` to gain runtime APIs not present in `net472`; instead apply §4.3 guidance.
 - Nullable reference types are **enabled** (`Nullable=enable` in `Directory.Build.props`). Library and test code must be nullable-clean - annotate parameters and returns with `?` only where genuinely nullable.
@@ -261,10 +261,10 @@ dotnet test    Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug
 ### Fluence.Wpf.Demo (gallery, net472)
 
 - `MainWindow` is a `FluenceWindow` with `ExtendsContentIntoTitleBar="True"`; the title bar hosts the app icon, title, a `TextBox` **search** bound to filter menu items, and caption buttons.
-- `NavigationView` named `DemoNav`: default `PaneDisplayMode="Left"` in source (demo currently opens in `LeftCompact` with `IsPaneOpen="True"` to showcase expansion - verify at review time).
+- `NavigationView` named `DemoNav`: default `PaneDisplayMode="Left"` in source and opens expanded with `IsPaneOpen="True"` to showcase the full pane.
 - Menu items carry `Tag` strings; `MainWindow.NavigateTo(string tag)` does a switch to the matching `Gallery*Page` inside the content frame. The back stack has been intentionally removed; navigation is tag-driven.
 - `GalleryHomePage` shows a theme-aware hero banner (`BannerLight.png` / `BannerDark.png`) and four large **clickable `Card`** tiles that route to Buttons, Selection, Navigation, and Window pages via the same `NavigateTo` helper.
-- 11 gallery pages: Home, Buttons, Selection, Inputs, Data, Tabs, Navigation, Window, Status, Colors, Glyphs - grouped under three `NavigationViewItemHeader` sections.
+- 17 gallery pages: Home, Colors, Icons, Typography, Buttons, Selection, Inputs, Forms, Data, Data binding, Trees, Menus, Navigation, Tabs, Layout, Status, and Accessibility.
 - Run: `dotnet run -p Fluence.Wpf.Demo` (net472, Windows).
 
 ### Fluence.Wpf.Demo.Mvvm (MVVM Task Manager, net10.0-windows)
@@ -388,3 +388,78 @@ ACCEPTANCE:
 
 STOP CONDITION: working tree is "git-clean minus your intended diff"; wait for explicit user approval before committing.
 ```
+
+---
+
+## 14. Demo Sample Pages
+
+All in-scope control samples in `Fluence.Wpf.Demo` render through `DemoSampleControl`. The pattern mirrors WinUI Gallery `ControlExample` composition and is the source of truth for future sample pages.
+
+### 14.1 Page skeleton
+
+```text
+ScrollViewer
+└── StackPanel (page root)
+    ├── TextBlock        - Page name              [Title typography]
+    ├── TextBlock        - Page description       [Body, secondary foreground]
+    └── for each sample:
+        └── DemoSampleControl
+            ├── SampleDescription                [Body Strong]
+            ├── DemoContent                      [live sample]
+            ├── OutputContent                    [optional interaction result]
+            ├── RightRailContent                 [optional options pane]
+            └── Source expander                  [XAML and C# tabs]
+```
+
+### 14.2 Color layering
+
+These demo-owned resources are the source of truth. Keep them in `Fluence.Wpf.Demo/Resources/DemoSharedStyles.xaml` and refresh values through `Fluence.Wpf.Demo/DemoThemeResources.cs`. Do not add these sample-page-only roles to the public library theme dictionaries.
+
+| Layer | Brush resource | Light target | Dark target |
+| --- | --- | --- | --- |
+| Page background | `DemoPageBackgroundBrush` | `#F9F9F9` | `#272727` |
+| Sample card surface | `DemoSampleCardBackgroundBrush` | `#F3F3F3` | `#202020` |
+| Right rail / options pane | `DemoSampleRightRailBackgroundBrush` | `#FBFBFB` | `#2B2B2B` |
+| Expander header | `DemoSampleSourceHeaderBackgroundBrush` | `#FDFDFD` | `#323232` |
+| Expander expanded content | `DemoSampleSourceContentBackgroundBrush` | `#FFFFFF` | `#2E2E2E` |
+
+Compatibility aliases may remain only while older excluded pages need them: `DemoControlSurfaceBrush` maps to the sample card role, and `DemoSourceSurfaceBrush` maps to the source header role.
+
+### 14.3 DemoSampleControl contract
+
+`DemoSampleControl` is the only reusable surface for in-scope samples. Its public surface is additive:
+
+- `SampleDescription` (`string`) renders bold text above the sample card.
+- `XamlSource` (`string`) supplies the XAML source tab.
+- `CSharpSource` (`string`) supplies the C# source tab.
+- `DemoContent` (`object`) hosts the live control region.
+- `OutputContent` (`object`) optionally hosts interaction results.
+- `RightRailContent` (`object`) optionally hosts property toggles and options.
+
+Composition requirements:
+
+- Outer card uses the sample card brush, card stroke brush, and `CornerRadius="8,8,0,0"`.
+- Demo region uses a `*, Auto` layout. Output content lives inside the demo region, not the right rail.
+- Right rail collapses when empty, uses the right-rail brush, and keeps `CornerRadius="0,8,0,0"`.
+- Source expander is attached below the card with `CornerRadius="0,0,8,8"`, header text `Source code`, the source-header brush when collapsed, and the source-content brush when expanded.
+- Source content uses a `TabControl` with `XAML` and `C#` tabs. Each tab hosts the syntax-highlighted, copy-enabled RichTextBox viewer owned by `DemoSampleControl`.
+- Legacy `Title`, `Description`, `SampleContent`, and `ReplaceSourceLink(...)` stay only as compatibility shims for excluded or transitional pages.
+
+Named live controls must not be declared directly inside `DemoSampleControl` property elements because WPF raises `MC3093`. Keep named content in page-owned hidden `ContentControl` slots and move it into `DemoSampleControl` from code-behind using the existing demo helper pattern.
+
+### 14.4 Excluded pages
+
+The following pages are excluded from the structural refactor because they are reference/catalog pages or have bespoke verification requirements: Colors, Icons, Typography, and Accessibility. Keep their existing structure unless a task explicitly targets them, but terminology must still use Icons rather than the old catalog wording.
+
+### 14.5 Definition of done
+
+A new or updated in-scope sample page is done only when:
+
+- Every demonstration uses `DemoSampleControl`.
+- All five surface tokens resolve in Light, Dark, and High Contrast after runtime theme changes.
+- Card and source expander corners follow the `8,8,0,0` plus `0,0,8,8` pattern with no visible seam artifact.
+- The source expander shows copy-enabled XAML and C# tabs that match the visible sample.
+- Page heading, description, sample description, card, and source spacing use centralized demo resources. No inline `Margin`, `Padding`, `CornerRadius`, hex color, or font-size literals in in-scope page XAML.
+- Right-rail options mutate the demo control through binding where the target property allows it. Code-behind is acceptable for command-style results such as click counters.
+- The page renders without binding errors or resource-resolution warnings in Light and Dark.
+- `dotnet build Fluence.Wpf.sln -c Debug` and focused tests for the affected area pass with zero warnings.

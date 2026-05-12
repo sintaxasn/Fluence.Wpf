@@ -371,12 +371,20 @@ namespace Fluence.Wpf.Demo.Pages.Buttons
         {
             InitializeComponent();
 
-            _ = DemoSampleControl.ReplaceSourceLink(ButtonAppearancesSourceLink, ButtonAppearancesXamlSource, ButtonAppearancesCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(ButtonIconsSourceLink, ButtonIconsXamlSource, ButtonIconsCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(HyperlinkButtonsSourceLink, HyperlinkButtonsXamlSource, HyperlinkButtonsCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(DropDownButtonsSourceLink, DropDownButtonsXamlSource, DropDownButtonsCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(SplitButtonsSourceLink, SplitButtonsXamlSource, SplitButtonsCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(ToggleAndRepeatButtonsSourceLink, ToggleAndRepeatButtonsXamlSource, ToggleAndRepeatButtonsCSharpSource);
+            DemoSampleControl.ApplySources(
+                (System.Windows.DependencyObject)Content,
+                ButtonAppearancesXamlSource,
+                ButtonAppearancesCSharpSource,
+                ButtonIconsXamlSource,
+                ButtonIconsCSharpSource,
+                HyperlinkButtonsXamlSource,
+                HyperlinkButtonsCSharpSource,
+                DropDownButtonsXamlSource,
+                DropDownButtonsCSharpSource,
+                SplitButtonsXamlSource,
+                SplitButtonsCSharpSource,
+                ToggleAndRepeatButtonsXamlSource,
+                ToggleAndRepeatButtonsCSharpSource);
         }
 
         private void RepeatCounterButton_Click(object sender, RoutedEventArgs e)

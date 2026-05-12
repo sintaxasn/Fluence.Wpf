@@ -49,7 +49,7 @@ namespace Fluence.Wpf.Demo
         [
             new("Home", "home", "overview welcome start", "\uE80F", true),
             new("Colors", "colors", "color brush swatch theme resource high contrast accent", "\uE790", false),
-            new("Iconography", "iconography", "fonticon icon glyph segoe fluent symbols", "\uED58", false),
+            new("Icons", "icons", "fonticon icon segoe fluent symbols", "\uED58", false),
             new("Typography", "typography", "text textblock font style type ramp", "\uE8D2", false),
             new("Buttons", "buttons", "button dropdownbutton splitbutton hyperlinkbutton repeatbutton togglebutton accent icon", "\uE8E5", false),
             new("Selection", "selection", "checkbox radio radiobutton toggleswitch combobox rating slider", "\uE73E", false),

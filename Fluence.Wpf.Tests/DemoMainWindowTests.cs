@@ -30,6 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -57,7 +58,7 @@ namespace Fluence.Wpf.Tests
         private static readonly DemoPageExpectation[] PageExpectations =
         [
             new("colors", typeof(GalleryColorsPage)),
-            new("iconography", typeof(GalleryGlyphsPage)),
+            new("icons", typeof(GalleryIconsPage)),
             new("typography", typeof(GalleryTypographyPage)),
             new("accessibility", typeof(GalleryAccessibilityPage)),
             new("buttons", typeof(GalleryButtonsPage)),
@@ -342,7 +343,7 @@ namespace Fluence.Wpf.Tests
                 [
                     new GalleryHomePage(),
                     new GalleryColorsPage(),
-                    new GalleryGlyphsPage(),
+                    new GalleryIconsPage(),
                     new GalleryTypographyPage(),
                     new GalleryAccessibilityPage(),
                     new GalleryButtonsPage(),
@@ -365,18 +366,18 @@ namespace Fluence.Wpf.Tests
                     Window window = CreateHostWindow(page);
                     try
                     {
-                        if (page is GalleryGlyphsPage)
+                        if (page is GalleryIconsPage)
                         {
                             Grid? pageRoot = FindByName<Grid>(page, "PageRoot");
-                            Assert.IsNotNull(pageRoot, "Iconography should keep a named root for virtualization layout.");
+                            Assert.IsNotNull(pageRoot, "Icons should keep a named root for virtualization layout.");
                             Assert.AreEqual(new Thickness(36, 24, 36, 48), pageRoot.Margin,
-                                "Iconography should keep the shared page margins including 48px bottom breathing room.");
+                                "Icons should keep the shared page margins including 48px bottom breathing room.");
                             Assert.AreEqual(1064.0, pageRoot.MaxWidth, 0.01,
-                                "Iconography should share the WinUI Gallery max content width.");
+                                "Icons should share the WinUI Gallery max content width.");
                             Assert.AreEqual(HorizontalAlignment.Left, pageRoot.HorizontalAlignment,
-                                "Iconography content should be left aligned within the page.");
+                                "Icons content should be left aligned within the page.");
                             Assert.IsNotNull(pageRoot.Background,
-                                "Iconography root should paint the shared demo page background.");
+                                "Icons root should paint the shared demo page background.");
                             continue;
                         }
 
@@ -788,19 +789,18 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(nav, "DemoNav must exist.");
                     Assert.IsNotNull(settings, "The Settings footer item must exist.");
 
-                    Assert.AreEqual(NavigationViewPaneDisplayMode.Top, nav.PaneDisplayMode,
-                        "Demo shell starts in Top navigation mode.");
-                    Assert.AreEqual(string.Empty, settings.Content as string,
-                        "Top mode should render the Settings footer as icon-only.");
+                    Assert.AreEqual(NavigationViewPaneDisplayMode.Left, nav.PaneDisplayMode,
+                        "Demo shell starts in expanded Left navigation mode.");
+                    Assert.AreEqual("Settings", settings.Content as string,
+                        "Expanded Left mode should show the Settings label.");
 
-                    nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
-                    nav.IsPaneOpen = true;
+                    nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Top;
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
-                    Assert.AreEqual("Settings", settings.Content as string,
-                        "Expanded Left mode should show the Settings label.");
+                    Assert.AreEqual(string.Empty, settings.Content as string,
+                        "Top mode should render the Settings footer as icon-only.");
 
                     nav.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact;
                     Drain(window.Dispatcher);
@@ -1306,10 +1306,10 @@ namespace Fluence.Wpf.Tests
                 EnsureTheme();
                 DemoSampleControl sample = new()
                 {
-                    Title = "Snippet",
+                    SampleDescription = "Snippet",
                     XamlSource = "<ui:Button Content=\"Save\" />",
                     CSharpSource = "private void Save_Click(object sender, RoutedEventArgs e) { }",
-                    SampleContent = new WpfTextBlock { Text = "Visible sample" }
+                    DemoContent = new WpfTextBlock { Text = "Visible sample" }
                 };
 
                 Window window = CreateHostWindow(sample);
@@ -1323,11 +1323,11 @@ namespace Fluence.Wpf.Tests
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
 
-                    TabView? tabs = FindByName<TabView>(sample, "SourceTabs");
-                    Assert.IsNotNull(tabs, "Expanded source creates a TabView.");
+                    TabControl? tabs = FindByName<TabControl>(sample, "SourceTabControl");
+                    Assert.IsNotNull(tabs, "Expanded source creates a TabControl.");
                     Assert.AreEqual(2, tabs.Items.Count, "XAML plus C# source should create two tabs.");
                     AssertSourceTab(tabs, "XAML", sample.XamlSource);
-                    AssertSourceTab(tabs, "C# Code-behind", sample.CSharpSource);
+                    AssertSourceTab(tabs, "C#", sample.CSharpSource);
 
                     WpfBorder? sampleCard = FindByName<WpfBorder>(sample, "SampleCard");
                     Assert.IsNotNull(sampleCard, "Sample host should expose the sample surface.");
@@ -1355,10 +1355,10 @@ namespace Fluence.Wpf.Tests
                 EnsureTheme();
                 DemoSampleControl sample = new()
                 {
-                    Title = "Snippet",
+                    SampleDescription = "Snippet",
                     XamlSource = "<Grid>\n    <TextBlock Text=\"Indented\" />\n</Grid>",
                     CSharpSource = "private void Save()\n{\n    string value = \"Indented\";\n}",
-                    SampleContent = new WpfTextBlock { Text = "Visible sample" }
+                    DemoContent = new WpfTextBlock { Text = "Visible sample" }
                 };
 
                 Window window = CreateHostWindow(sample);
@@ -1370,9 +1370,9 @@ namespace Fluence.Wpf.Tests
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
 
-                    TabView? tabs = FindByName<TabView>(sample, "SourceTabs");
+                    TabControl? tabs = FindByName<TabControl>(sample, "SourceTabControl");
                     string renderedXaml = GetSourceTabText(tabs, "XAML");
-                    string renderedCSharp = GetSourceTabText(tabs, "C# Code-behind");
+                    string renderedCSharp = GetSourceTabText(tabs, "C#");
 
                     StringAssert.Contains(renderedXaml, "    <TextBlock",
                         "Rendered XAML source should preserve leading indentation.");
@@ -1410,7 +1410,7 @@ namespace Fluence.Wpf.Tests
                 };
                 _ = host.Children.Add(card);
 
-                DemoSampleControl sample = DemoSampleControl.ReplaceSourceLink(
+                DemoSampleControl sample = InvokeReplaceSourceLink(
                     sourceLink,
                     "<ui:Button Content=\"Save\" />",
                     string.Empty);
@@ -1420,7 +1420,7 @@ namespace Fluence.Wpf.Tests
                 {
                     Assert.AreSame(sample, host.Children[0],
                         "Replacing a source link inside a card should replace the owning card, not nest a sample host inside it.");
-                    Assert.AreSame(cardContent, sample.SampleContent,
+                    Assert.AreSame(cardContent, sample.DemoContent,
                         "The original card body should become the sample content.");
                     Assert.IsFalse(cardContent.Children.Contains(sourceLink),
                         "The old source-link button should be removed from the sample body.");
@@ -1447,7 +1447,7 @@ namespace Fluence.Wpf.Tests
                 EnsureTheme();
                 DemoSampleControl sample = new()
                 {
-                    Title = "Snippet",
+                    SampleDescription = "Snippet",
                     XamlSource = "<ui:ToggleSwitch IsChecked=\"True\" />"
                 };
 
@@ -1459,7 +1459,7 @@ namespace Fluence.Wpf.Tests
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
 
-                    TabView? tabs = FindByName<TabView>(sample, "SourceTabs");
+                    TabControl? tabs = FindByName<TabControl>(sample, "SourceTabControl");
                     Assert.AreEqual(1, tabs?.Items.Count, "XAML-only samples should not show an empty C# tab.");
                     AssertSourceTab(tabs, "XAML", sample.XamlSource);
                 }
@@ -1779,12 +1779,12 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void GalleryGlyphsPage_IconCatalogIsScrollableAndVirtualized()
+        public void GalleryIconsPage_IconCatalogIsScrollableAndVirtualized()
         {
             RunOnSta(delegate
             {
                 EnsureTheme();
-                GalleryGlyphsPage page = new();
+                GalleryIconsPage page = new();
                 Window window = CreateHostWindow(page);
                 try
                 {
@@ -1817,7 +1817,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        private static void AssertSourceTab(TabView? tabs, string expectedHeader, string expectedSource)
+        private static void AssertSourceTab(TabControl? tabs, string expectedHeader, string expectedSource)
         {
             if (tabs is null)
             {
@@ -1825,7 +1825,7 @@ namespace Fluence.Wpf.Tests
             }
             foreach (object item in tabs.Items)
             {
-                if (item is TabViewItem tab && string.Equals(tab.Header as string, expectedHeader, StringComparison.Ordinal))
+                if (item is TabItem tab && string.Equals(tab.Header as string, expectedHeader, StringComparison.Ordinal))
                 {
                     WpfButton? copy = FindByName<WpfButton>(tab.Content as DependencyObject, "CopySourceButton");
                     Assert.IsNotNull(copy, "Source tab should expose a copy button: " + expectedHeader);
@@ -1837,12 +1837,12 @@ namespace Fluence.Wpf.Tests
             Assert.Fail("Missing source tab: " + expectedHeader);
         }
 
-        private static string GetSourceTabText(TabView? tabs, string expectedHeader)
+        private static string GetSourceTabText(TabControl? tabs, string expectedHeader)
         {
             Assert.IsNotNull(tabs, "Source tabs should exist.");
             foreach (object item in tabs.Items)
             {
-                if (item is TabViewItem tab && string.Equals(tab.Header as string, expectedHeader, StringComparison.Ordinal))
+                if (item is TabItem tab && string.Equals(tab.Header as string, expectedHeader, StringComparison.Ordinal))
                 {
                     RichTextBox? viewer = FindByName<RichTextBox>(tab.Content as DependencyObject, "SourceTextViewer");
                     Assert.IsNotNull(viewer, "Source tab should expose a RichTextBox viewer: " + expectedHeader);
@@ -2021,6 +2021,17 @@ namespace Fluence.Wpf.Tests
             }
 
             return null;
+        }
+
+        private static DemoSampleControl InvokeReplaceSourceLink(FrameworkElement placeholder, string xamlSource, string csharpSource)
+        {
+            MethodInfo method = typeof(DemoSampleControl).GetMethod(
+                "ReplaceSourceLink",
+                BindingFlags.Public | BindingFlags.Static) ?? throw new InvalidOperationException("ReplaceSourceLink shim was not found.");
+
+            object? result = method.Invoke(null, [placeholder, xamlSource, csharpSource]);
+            return result as DemoSampleControl
+                ?? throw new InvalidOperationException("ReplaceSourceLink did not return a DemoSampleControl.");
         }
 
         private static IEnumerable<T> FindAllVisualChildren<T>(DependencyObject? root)

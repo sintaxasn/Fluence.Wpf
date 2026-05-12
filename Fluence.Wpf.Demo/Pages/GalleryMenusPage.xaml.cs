@@ -375,10 +375,16 @@ namespace Fluence.Wpf.Demo.Pages.Menus
         {
             InitializeComponent();
 
-            _ = DemoSampleControl.ReplaceSourceLink(MenuBarSourceLink, MenuBarXamlSource, MenuBarCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(ContextMenuSourceLink, ContextMenuXamlSource, ContextMenuCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(ToolTipsSourceLink, ToolTipsXamlSource, ToolTipsCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(DropDownAndSplitButtonsSourceLink, DropDownAndSplitButtonsXamlSource, DropDownAndSplitButtonsCSharpSource);
+            DemoSampleControl.ApplySources(
+                (System.Windows.DependencyObject)Content,
+                MenuBarXamlSource,
+                MenuBarCSharpSource,
+                ContextMenuXamlSource,
+                ContextMenuCSharpSource,
+                ToolTipsXamlSource,
+                ToolTipsCSharpSource,
+                DropDownAndSplitButtonsXamlSource,
+                DropDownAndSplitButtonsCSharpSource);
         }
 
         private void MenuBar_Click(object sender, RoutedEventArgs e)

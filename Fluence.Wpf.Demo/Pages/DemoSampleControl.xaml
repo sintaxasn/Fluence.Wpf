@@ -1,67 +1,247 @@
-﻿<UserControl
+﻿<ContentControl
     x:Class="Fluence.Wpf.Demo.Pages.DemoSampleControl"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:fluence="http://schemas.fluencewpf.com"
     x:Name="Root">
-    <Grid Margin="0">
+    <ContentControl.Resources>
+        <Style x:Key="DemoSampleSourceHeaderToggleButtonStyle" TargetType="{x:Type ToggleButton}">
+            <Setter Property="UseLayoutRounding" Value="True" />
+            <Setter Property="Background" Value="{DynamicResource DemoSampleSourceHeaderBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+            <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+            <Setter Property="Padding" Value="{DynamicResource DemoSampleSourceHeaderPadding}" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type ToggleButton}">
+                        <Border x:Name="HeaderBorder" Background="{TemplateBinding Background}">
+                            <Grid Margin="{TemplateBinding Padding}">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <ContentPresenter
+                                    Grid.Column="0"
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                    VerticalAlignment="Center"
+                                    RecognizesAccessKey="True"
+                                    TextElement.FontFamily="{TemplateBinding FontFamily}"
+                                    TextElement.FontSize="{TemplateBinding FontSize}"
+                                    TextElement.Foreground="{TemplateBinding Foreground}" />
+                                <Border
+                                    Grid.Column="1"
+                                    Width="20"
+                                    Height="20"
+                                    Margin="{DynamicResource DemoSourceChevronMargin}"
+                                    VerticalAlignment="Center"
+                                    RenderTransformOrigin="0.5,0.5">
+                                    <Border.RenderTransform>
+                                        <RotateTransform x:Name="ChevronRotation" Angle="0" />
+                                    </Border.RenderTransform>
+                                    <Path
+                                        x:Name="Chevron"
+                                        Width="12"
+                                        Height="12"
+                                        HorizontalAlignment="Center"
+                                        VerticalAlignment="Center"
+                                        Data="M 2,4.5 L 6,8.5 L 10,4.5"
+                                        Stroke="{DynamicResource TextFillColorPrimaryBrush}"
+                                        StrokeEndLineCap="Round"
+                                        StrokeLineJoin="Round"
+                                        StrokeStartLineCap="Round"
+                                        StrokeThickness="1.5" />
+                                </Border>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="HeaderBorder" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="HeaderBorder" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                            </Trigger>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                                Storyboard.TargetName="ChevronRotation"
+                                                Storyboard.TargetProperty="Angle"
+                                                To="180"
+                                                Duration="0:0:0.167" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <DoubleAnimation
+                                                Storyboard.TargetName="ChevronRotation"
+                                                Storyboard.TargetProperty="Angle"
+                                                To="0"
+                                                Duration="0:0:0.167" />
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+                                <Setter TargetName="Chevron" Property="Stroke" Value="{DynamicResource TextFillColorDisabledBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="DemoSampleSourceExpanderStyle" TargetType="{x:Type fluence:Expander}">
+            <Setter Property="UseLayoutRounding" Value="True" />
+            <Setter Property="Background" Value="{DynamicResource DemoSampleSourceHeaderBackgroundBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+            <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+            <Setter Property="BorderThickness" Value="1,0,1,1" />
+            <Setter Property="CornerRadius" Value="0,0,8,8" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="VerticalContentAlignment" Value="Top" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type fluence:Expander}">
+                        <Border
+                            x:Name="RootBorder"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition x:Name="ContentRowDefinition" Height="0" />
+                                </Grid.RowDefinitions>
+
+                                <ToggleButton
+                                    x:Name="PART_ToggleButton"
+                                    Grid.Row="0"
+                                    Content="{TemplateBinding Header}"
+                                    ContentTemplate="{TemplateBinding HeaderTemplate}"
+                                    ContentTemplateSelector="{TemplateBinding HeaderTemplateSelector}"
+                                    FontFamily="{TemplateBinding FontFamily}"
+                                    FontSize="{TemplateBinding FontSize}"
+                                    Foreground="{TemplateBinding Foreground}"
+                                    IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
+                                    OverridesDefaultStyle="True"
+                                    Style="{StaticResource DemoSampleSourceHeaderToggleButtonStyle}" />
+
+                                <Border
+                                    x:Name="SourceContentBorder"
+                                    Grid.Row="1"
+                                    Background="{DynamicResource DemoSampleSourceContentBackgroundBrush}"
+                                    ClipToBounds="True">
+                                    <ContentPresenter
+                                        x:Name="ExpandSite"
+                                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                        Focusable="False" />
+                                </Border>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsExpanded" Value="True">
+                                <Setter TargetName="ContentRowDefinition" Property="Height" Value="Auto" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+                                <Setter TargetName="RootBorder" Property="Background" Value="{DynamicResource ControlFillColorDisabledBrush}" />
+                                <Setter TargetName="RootBorder" Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </ContentControl.Resources>
+
+    <Grid Margin="{DynamicResource DemoSampleBlockMargin}">
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
+        <TextBlock
+            x:Name="SampleDescriptionTextBlock"
+            Grid.Row="0"
+            Margin="{DynamicResource DemoSampleDescriptionMargin}"
+            Style="{StaticResource BodyStrongTextBlockStyle}"
+            Text="{Binding SampleDescription, ElementName=Root}"
+            TextWrapping="Wrap" />
+
         <Border
             x:Name="SampleCard"
-            Grid.Row="0"
-            Padding="16"
-            Background="{DynamicResource DemoControlSurfaceBrush}"
+            Grid.Row="1"
+            Padding="{DynamicResource DemoSampleCardPadding}"
+            Background="{DynamicResource DemoSampleCardBackgroundBrush}"
             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
             BorderThickness="1"
-            CornerRadius="8,8,0,0"
-            >
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
+            CornerRadius="8,8,0,0">
+            <Grid x:Name="SampleContentGrid">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
 
-                <StackPanel
-                    x:Name="HeaderPanel"
-                    Grid.Row="0"
-                    Margin="0,0,0,12">
-                    <TextBlock
-                        x:Name="TitleTextBlock"
-                        Margin="0,0,0,4"
-                        Style="{StaticResource BodyStrongTextBlockStyle}"
-                        Text="{Binding Title, ElementName=Root}" />
-                    <TextBlock
-                        x:Name="DescriptionTextBlock"
-                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                        Text="{Binding Description, ElementName=Root}"
-                        TextWrapping="Wrap" />
-                </StackPanel>
+                <Grid x:Name="DemoRegionGrid" Grid.Column="0">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
 
-                <ContentPresenter
-                    x:Name="SampleContentPresenter"
-                    Grid.Row="1"
-                    Content="{Binding SampleContent, ElementName=Root}" />
+                    <ContentPresenter
+                        x:Name="DemoContentPresenter"
+                        Grid.Column="0"
+                        Content="{Binding DemoContent, ElementName=Root}" />
+
+                    <Border
+                        x:Name="OutputRegion"
+                        Grid.Column="1"
+                        Margin="{DynamicResource DemoSampleOutputMargin}"
+                        Padding="{DynamicResource DemoSampleOutputPadding}"
+                        Background="{DynamicResource DemoSampleCardBackgroundBrush}"
+                        CornerRadius="{DynamicResource ControlCornerRadius}">
+                        <StackPanel>
+                            <TextBlock Text="Output:" />
+                            <ContentPresenter
+                                x:Name="OutputContentPresenter"
+                                Content="{Binding OutputContent, ElementName=Root}" />
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <Border
+                    x:Name="RightRailBorder"
+                    Grid.Column="1"
+                    Padding="{DynamicResource DemoSampleRightRailPadding}"
+                    Background="{DynamicResource DemoSampleRightRailBackgroundBrush}"
+                    BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                    BorderThickness="1,0,0,0"
+                    CornerRadius="0,8,0,0">
+                    <ContentPresenter
+                        x:Name="RightRailContentPresenter"
+                        Content="{Binding RightRailContent, ElementName=Root}" />
+                </Border>
             </Grid>
         </Border>
 
         <fluence:Expander
             x:Name="SourceExpander"
-            Grid.Row="1"
-            Margin="0"
-            Background="{DynamicResource DemoSourceSurfaceBrush}"
-            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-            BorderThickness="1,0,1,1"
-            CornerRadius="0,0,8,8"
+            Grid.Row="2"
+            Header="Source code"
             Expanded="SourceExpander_Expanded"
-            Header="Source code">
-            <fluence:TabView
-                x:Name="SourceTabs"
-                Margin="16,8,16,16"
-                IsAddTabButtonVisible="False" />
+            Style="{StaticResource DemoSampleSourceExpanderStyle}">
+            <TabControl
+                x:Name="SourceTabControl"
+                Margin="{DynamicResource DemoSampleSourceTabMargin}" />
         </fluence:Expander>
     </Grid>
-</UserControl>
+</ContentControl>

@@ -325,7 +325,7 @@ namespace Fluence.Wpf.Demo
             {
                 "home" => new GalleryHomePage(),
                 "colors" => new GalleryColorsPage(),
-                "iconography" => new GalleryGlyphsPage(),
+                "icons" => new GalleryIconsPage(),
                 "typography" => new GalleryTypographyPage(),
                 "accessibility" => new GalleryAccessibilityPage(),
                 "buttons" => new GalleryButtonsPage(),

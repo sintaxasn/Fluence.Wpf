@@ -1469,7 +1469,7 @@ namespace Fluence.Wpf.Tests
                     CollectionAssert.Contains(pages, "Selection");
                     CollectionAssert.Contains(pages, "Inputs");
                     CollectionAssert.Contains(pages, "Typography");
-                    CollectionAssert.Contains(pages, "Iconography");
+                    CollectionAssert.Contains(pages, "Icons");
                     Assert.IsFalse(pages.Contains("Windowing"), "Windowing controls should move to Settings rather than the main navigation list.");
                     Assert.IsFalse(pages.Contains("Button"), "Demo navigation should use grouped pages, not generated per-control pages.");
                     Assert.IsFalse(pages.Contains("Fundamentals"), "Demo navigation should not expose the old Fundamentals section.");

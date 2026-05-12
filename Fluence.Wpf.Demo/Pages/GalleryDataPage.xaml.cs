@@ -271,6 +271,37 @@ namespace Fluence.Wpf.Demo.Pages.Data
     }
 }
 ";
+        private const string PersonPictureXamlSource = @"<WrapPanel>
+    <ui:PersonPicture
+        Width=""56""
+        Height=""56""
+        DisplayName=""Ana Bowman"" />
+    <ui:PersonPicture
+        Width=""56""
+        Height=""56""
+        Initials=""SH""
+        BadgeNumber=""3"" />
+    <ui:PersonPicture
+        Width=""56""
+        Height=""56""
+        IsGroup=""True""
+        BadgeGlyph=""&#xE73E;"" />
+</WrapPanel>
+";
+
+        private const string PersonPictureCSharpSource = @"using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Data
+{
+    public partial class PersonPictureSample : UserControl
+    {
+        public PersonPictureSample()
+        {
+            InitializeComponent();
+        }
+    }
+}
+";
 
         private int _addCounter;
 
@@ -287,9 +318,16 @@ namespace Fluence.Wpf.Demo.Pages.Data
         {
             InitializeComponent();
 
-            _ = DemoSampleControl.ReplaceSourceLink(ListViewItemsSourceLink, ListViewItemsXamlSource, ListViewItemsCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(ListViewEmptyStateSourceLink, ListViewEmptyStateXamlSource, ListViewEmptyStateCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(CardVariantsSourceLink, CardVariantsXamlSource, CardVariantsCSharpSource);
+            DemoSampleControl.ApplySources(
+                (System.Windows.DependencyObject)Content,
+                ListViewItemsXamlSource,
+                ListViewItemsCSharpSource,
+                ListViewEmptyStateXamlSource,
+                ListViewEmptyStateCSharpSource,
+                PersonPictureXamlSource,
+                PersonPictureCSharpSource,
+                CardVariantsXamlSource,
+                CardVariantsCSharpSource);
         }
 
         private void AddListItem_Click(object sender, RoutedEventArgs e)

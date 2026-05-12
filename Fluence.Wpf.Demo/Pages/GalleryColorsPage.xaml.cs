@@ -320,11 +320,10 @@ namespace Fluence.Wpf.Demo.Pages.Colors
             parent.Children.Remove(ColorSamplesContent);
             parent.Children.Insert(index, new DemoSampleControl
             {
-                Title = "Color resources",
-                Description = "Theme brushes and accent resources available to Fluence controls.",
+                SampleDescription = "Theme brushes and accent resources available to Fluence controls.",
                 XamlSource = ColorSamplesXamlSource,
                 CSharpSource = ColorSamplesCSharpSource,
-                SampleContent = ColorSamplesContent
+                DemoContent = ColorSamplesContent
             });
         }
     }

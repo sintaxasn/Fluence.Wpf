@@ -230,6 +230,60 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
     }
 }
 ";
+        private const string InfoBadgeNavigationXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Navigation.InfoBadgeNavigation""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf""
+    xmlns:uicore=""clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"">
+    <Border Height=""260"">
+        <ui:NavigationView
+            Header=""Inbox""
+            PaneDisplayMode=""LeftCompact"">
+            <ui:NavigationViewItem
+                Content=""Inbox""
+                IsSelected=""True"">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph=""&#xE715;"" IconFontSize=""20"" />
+                </ui:NavigationViewItem.Icon>
+                <ui:NavigationViewItem.InfoBadge>
+                    <ui:InfoBadge Value=""12"" />
+                </ui:NavigationViewItem.InfoBadge>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content=""Approvals"">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph=""&#xE73E;"" IconFontSize=""20"" />
+                </ui:NavigationViewItem.Icon>
+                <ui:NavigationViewItem.InfoBadge>
+                    <ui:InfoBadge BadgeStyle=""{x:Static uicore:InfoBadgeStyle.Caution}"" />
+                </ui:NavigationViewItem.InfoBadge>
+            </ui:NavigationViewItem>
+            <ui:NavigationViewItem Content=""Alerts"">
+                <ui:NavigationViewItem.Icon>
+                    <ui:FontIcon Glyph=""&#xE7BA;"" IconFontSize=""20"" />
+                </ui:NavigationViewItem.Icon>
+                <ui:NavigationViewItem.InfoBadge>
+                    <ui:InfoBadge BadgeStyle=""{x:Static uicore:InfoBadgeStyle.Critical}"" Value=""2"" />
+                </ui:NavigationViewItem.InfoBadge>
+            </ui:NavigationViewItem>
+        </ui:NavigationView>
+    </Border>
+</UserControl>
+";
+
+        private const string InfoBadgeNavigationCSharpSource = @"using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Navigation
+{
+    public partial class InfoBadgeNavigation : UserControl
+    {
+        public InfoBadgeNavigation()
+        {
+            InitializeComponent();
+        }
+    }
+}
+";
 
         private int _backRequestCount;
 
@@ -237,9 +291,16 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
         {
             InitializeComponent();
 
-            _ = DemoSampleControl.ReplaceSourceLink(LeftNavigationViewSourceLink, LeftNavigationViewXamlSource, LeftNavigationViewCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(TopNavigationViewSourceLink, TopNavigationViewXamlSource, TopNavigationViewCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(CompactNavigationViewSourceLink, CompactNavigationViewXamlSource, CompactNavigationViewCSharpSource);
+            DemoSampleControl.ApplySources(
+                (System.Windows.DependencyObject)Content,
+                LeftNavigationViewXamlSource,
+                LeftNavigationViewCSharpSource,
+                TopNavigationViewXamlSource,
+                TopNavigationViewCSharpSource,
+                CompactNavigationViewXamlSource,
+                CompactNavigationViewCSharpSource,
+                InfoBadgeNavigationXamlSource,
+                InfoBadgeNavigationCSharpSource);
 
             Loaded += GalleryNavigationPage_Loaded;
         }
@@ -334,8 +395,6 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
         private void UpdateBackState()
         {
             bool isBackEnabled = BackEnabledToggle is not null && BackEnabledToggle.IsChecked == true;
-
-            _ = (CompactNavigationDemo?.IsBackEnabled = isBackEnabled);
 
             _ = (BackStatusLabel?.Text = isBackEnabled
                     ? string.Format(CultureInfo.CurrentCulture, "Back button enabled ({0} requests)", _backRequestCount)

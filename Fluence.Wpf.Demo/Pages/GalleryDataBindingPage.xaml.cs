@@ -414,9 +414,14 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
         {
             InitializeComponent();
 
-            _ = DemoSampleControl.ReplaceSourceLink(ObservableCollectionListViewSourceLink, ObservableCollectionListViewXamlSource, ObservableCollectionListViewCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(ListViewSelectionModeSourceLink, ListViewSelectionModeXamlSource, ListViewSelectionModeCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(DataTemplateRowSourceLink, DataTemplateRowXamlSource, DataTemplateRowCSharpSource);
+            DemoSampleControl.ApplySources(
+                (System.Windows.DependencyObject)Content,
+                ObservableCollectionListViewXamlSource,
+                ObservableCollectionListViewCSharpSource,
+                ListViewSelectionModeXamlSource,
+                ListViewSelectionModeCSharpSource,
+                DataTemplateRowXamlSource,
+                DataTemplateRowCSharpSource);
 
             Loaded += OnLoaded;
         }

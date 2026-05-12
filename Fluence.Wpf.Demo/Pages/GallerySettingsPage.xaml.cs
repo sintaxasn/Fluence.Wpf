@@ -325,7 +325,7 @@ namespace Fluence.Wpf.Demo.Pages
                 SettingsNavigationOption.Top => NavigationViewPaneDisplayMode.Top,
                 SettingsNavigationOption.Left => NavigationViewPaneDisplayMode.Left,
                 SettingsNavigationOption.LeftCompact => NavigationViewPaneDisplayMode.LeftCompact,
-                _ => NavigationViewPaneDisplayMode.Top,
+                _ => NavigationViewPaneDisplayMode.Left,
             };
         }
 

@@ -280,10 +280,16 @@ namespace Fluence.Wpf.Demo.Pages.Trees
         {
             InitializeComponent();
 
-            _ = DemoSampleControl.ReplaceSourceLink(TreeViewHierarchySourceLink, TreeViewHierarchyXamlSource, TreeViewHierarchyCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(TreeViewSelectionSourceLink, TreeViewSelectionXamlSource, TreeViewSelectionCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(TreeViewMultiSelectSourceLink, TreeViewMultiSelectXamlSource, TreeViewMultiSelectCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLink(TreeViewExpansionSourceLink, TreeViewExpansionXamlSource, TreeViewExpansionCSharpSource);
+            DemoSampleControl.ApplySources(
+                (System.Windows.DependencyObject)Content,
+                TreeViewHierarchyXamlSource,
+                TreeViewHierarchyCSharpSource,
+                TreeViewSelectionXamlSource,
+                TreeViewSelectionCSharpSource,
+                TreeViewMultiSelectXamlSource,
+                TreeViewMultiSelectCSharpSource,
+                TreeViewExpansionXamlSource,
+                TreeViewExpansionCSharpSource);
         }
 
         private void SelectionTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)

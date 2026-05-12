@@ -62,7 +62,7 @@ namespace Fluence.Wpf.Demo.Pages
         public GalleryLayoutPage()
         {
             InitializeComponent();
-            _ = DemoSampleControl.ReplaceSourceLink(LayoutSourceLink, LayoutXamlSource, string.Empty);
+            DemoSampleControl.ApplySources((System.Windows.DependencyObject)Content, LayoutXamlSource, string.Empty);
         }
     }
 }

@@ -4,7 +4,7 @@ The **Fluence.Wpf.Demo** gallery is the live inventory: `FluenceWindow` chrome w
 
 - Home (clickable hero cards)
 - Colors (accent ramp, theme brush swatches)
-- Iconography (FontIcon and virtualized Segoe Fluent Icons catalog)
+- Icons (FontIcon and virtualized Segoe Fluent Icons catalog)
 - Typography (Fluent type ramp and TextBlock usage)
 - Accessibility (focus order, high contrast, automation, RTL)
 - Buttons

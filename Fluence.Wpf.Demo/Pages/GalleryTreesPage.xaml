@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Fluence.Wpf.Demo.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
     xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
@@ -11,30 +12,18 @@
     mc:Ignorable="d">
     <ui:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
         <StackPanel Style="{StaticResource GalleryPageContentStackStyle}">
+            <TextBlock Style="{StaticResource PageTitleStyle}" Text="Trees" />
             <TextBlock
-                Margin="0,0,0,4"
-                ui:TextBlockExtensions.Typography="Title"
-                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                Text="Trees" />
-            <TextBlock
-                Margin="0,0,0,24"
                 Style="{StaticResource SectionDescriptionStyle}"
                 Text="TreeView presents nested items that users can expand, collapse, and select." />
 
-            <TextBlock
-                Margin="0,0,0,4"
-                Style="{StaticResource SectionHeaderStyle}"
-                Text="TreeView hierarchy" />
-            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Use TreeViewItem nesting for compact folder, outline, or category hierarchies." />
-            <ui:Card
-                Margin="0,0,0,16"
-                Padding="16"
-                Variant="{x:Static uicore:CardVariant.Default}">
-                <StackPanel>
-                    <ui:TreeView
+
+            <ContentControl
+                x:Name="DemoSampleSlot01DemoContentHost"
+                Visibility="Collapsed">
+<ui:TreeView
                         x:Name="HierarchyTreeView"
                         MaxHeight="260"
-                        Margin="0,0,0,12"
                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1">
                         <ui:TreeViewItem Header="Workspace" IsExpanded="True">
@@ -52,25 +41,17 @@
                             <ui:TreeViewItem Header="DemoSharedStyles.xaml" />
                         </ui:TreeViewItem>
                     </ui:TreeView>
-                    <ui:HyperlinkButton
-                        x:Name="TreeViewHierarchySourceLink"
-                        HorizontalAlignment="Right"
-                        Content="Source"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
-                </StackPanel>
-            </ui:Card>
+            </ContentControl>
+            <local:DemoSampleControl
+                SampleDescription="Use TreeViewItem nesting for compact folder, outline, or category hierarchies." />
 
-            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="Selection" />
-            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Handle SelectedItemChanged when selecting a node should update related content." />
-            <ui:Card
-                Margin="0,0,0,16"
-                Padding="16"
-                Variant="{x:Static uicore:CardVariant.Default}">
-                <StackPanel>
-                    <ui:TreeView
+
+            <ContentControl
+                x:Name="DemoSampleSlot02DemoContentHost"
+                Visibility="Collapsed">
+<ui:TreeView
                         x:Name="SelectionTreeView"
                         MaxHeight="260"
-                        Margin="0,0,0,12"
                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
                         SelectedItemChanged="SelectionTreeView_SelectedItemChanged">
@@ -89,30 +70,25 @@
                             <ui:TreeViewItem Header="April" />
                         </ui:TreeViewItem>
                     </ui:TreeView>
-                    <TextBlock
+            </ContentControl>
+            <ContentControl
+                x:Name="DemoSampleSlot02OutputContentHost"
+                Visibility="Collapsed">
+<TextBlock
                         x:Name="TreeSelectionLabel"
-                        Margin="0,0,0,12"
                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                         Text="Selected: -" />
-                    <ui:HyperlinkButton
-                        x:Name="TreeViewSelectionSourceLink"
-                        HorizontalAlignment="Right"
-                        Content="Source"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
-                </StackPanel>
-            </ui:Card>
+            </ContentControl>
+            <local:DemoSampleControl
+                SampleDescription="Handle SelectedItemChanged when selecting a node should update related content." />
 
-            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="Multiple selection" />
-            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Use multiple selection when people need to select several nodes from the same hierarchy." />
-            <ui:Card
-                Margin="0,0,0,16"
-                Padding="16"
-                Variant="{x:Static uicore:CardVariant.Default}">
-                <StackPanel>
-                    <ui:TreeView
+
+            <ContentControl
+                x:Name="DemoSampleSlot03DemoContentHost"
+                Visibility="Collapsed">
+<ui:TreeView
                         x:Name="MultiSelectTreeView"
                         MaxHeight="260"
-                        Margin="0,0,0,12"
                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
                         SelectionMode="{x:Static uicore:TreeViewSelectionMode.Multiple}">
@@ -126,22 +102,17 @@
                             <ui:TreeViewItem Header="Archive" />
                         </ui:TreeViewItem>
                     </ui:TreeView>
-                    <ui:HyperlinkButton
-                        x:Name="TreeViewMultiSelectSourceLink"
-                        HorizontalAlignment="Right"
-                        Content="Source"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
-                </StackPanel>
-            </ui:Card>
+            </ContentControl>
+            <local:DemoSampleControl
+                SampleDescription="Use multiple selection when people need to select several nodes from the same hierarchy." />
 
-            <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="Expand and collapse" />
-            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Set IsExpanded directly, or walk the item collection when a command controls the tree." />
-            <ui:Card Padding="16" Variant="{x:Static uicore:CardVariant.Default}">
-                <StackPanel>
-                    <ui:TreeView
+
+            <ContentControl
+                x:Name="DemoSampleSlot04DemoContentHost"
+                Visibility="Collapsed">
+<ui:TreeView
                         x:Name="ExpansionTreeView"
                         MaxHeight="260"
-                        Margin="0,0,0,12"
                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1">
                         <ui:TreeViewItem Header="Project" IsExpanded="True">
@@ -155,20 +126,22 @@
                             </ui:TreeViewItem>
                         </ui:TreeViewItem>
                     </ui:TreeView>
-                    <StackPanel Margin="0,0,0,12" Orientation="Horizontal">
+            </ContentControl>
+            <ContentControl
+                x:Name="DemoSampleSlot04RightRailContentHost"
+                Visibility="Collapsed">
+<StackPanel>
                         <ui:Button
-                            Margin="0,0,8,0"
                             Click="ExpandAll_Click"
                             Content="Expand all" />
-                        <ui:Button Click="CollapseAll_Click" Content="Collapse all" />
+                        <ui:Button
+                            Margin="{DynamicResource DemoTextTopGapMargin}"
+                            Click="CollapseAll_Click"
+                            Content="Collapse all" />
                     </StackPanel>
-                    <ui:HyperlinkButton
-                        x:Name="TreeViewExpansionSourceLink"
-                        HorizontalAlignment="Right"
-                        Content="Source"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
-                </StackPanel>
-            </ui:Card>
+            </ContentControl>
+            <local:DemoSampleControl
+                SampleDescription="Set IsExpanded directly, or walk the item collection when a command controls the tree." />
         </StackPanel>
     </ui:SmoothScrollViewer>
 </UserControl>

@@ -327,7 +327,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void NavigationView_LeftPaneToggleGlyph_IsOffsetToAlignWithItemGlyphs()
+        public void NavigationView_LeftPaneToggleGlyph_IsOffsetToAlignWithItemIcons()
         {
             RunOnStaThread(() =>
             {
@@ -352,7 +352,7 @@ namespace Fluence.Wpf.Tests
                     FontIcon? glyph = FindVisualChildByName<FontIcon>(nav, "PaneToggleGlyph");
                     Assert.IsNotNull(glyph, "Left pane template should expose PaneToggleGlyph.");
                     Assert.AreEqual(2.0, glyph.Margin.Left, 0.01,
-                        "Pane toggle glyph should be nudged right to align with navigation item glyphs.");
+                        "Pane toggle glyph should be nudged right to align with navigation item icons.");
                 }
                 finally
                 {
