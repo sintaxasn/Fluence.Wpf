@@ -53,7 +53,7 @@
             IsBackEnabled="True"
             IsPaneOpen="True"
             IsPaneToggleButtonVisible="True"
-            PaneDisplayMode="Top"
+            PaneDisplayMode="Left"
             SelectedIndex="0"
             >
             <ui:NavigationView.PaneFooter>
