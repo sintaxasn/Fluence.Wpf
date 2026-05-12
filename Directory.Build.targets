@@ -1,6 +1,6 @@
 ﻿<Project>
-  <!-- Delete unwanted XML documentation files from output -->
+  <!-- Keep package XML docs for the library, but avoid XML doc clutter in demo/test outputs. -->
   <Target Name="DeleteUnwantedOutput" AfterTargets="Build">
-    <Delete Files="$(TargetDir)$(AssemblyName).xml" Condition="Exists('$(TargetDir)$(AssemblyName).xml')" />
+    <Delete Files="$(TargetDir)$(AssemblyName).xml" Condition="'$(AssemblyName)' != 'Fluence.Wpf' and Exists('$(TargetDir)$(AssemblyName).xml')" />
   </Target>
 </Project>

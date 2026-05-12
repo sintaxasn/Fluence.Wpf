@@ -8,11 +8,11 @@ dotnet build Fluence.Wpf.sln
 dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj
 ```
 
-Test project targets **net472** and **net10.0-windows**; both must pass. WPF tests run on a shared STA dispatcher (`WpfTestSta`); the assembly uses `[assembly: DoNotParallelize]` to avoid cross-thread resource issues. The branch's current test count is the floor: add coverage for new behavior and do not remove tests without documenting the replacement rationale.
+Test project targets **net472** and **net10.0-windows10.0.26100.0**; both must pass. WPF tests run on a shared STA dispatcher (`WpfTestSta`); the assembly uses `[assembly: DoNotParallelize]` to avoid cross-thread resource issues. The branch's current test count is the floor: add coverage for new behavior and do not remove tests without documenting the replacement rationale.
 
 ## Language and style
 
-- **Fluence.Wpf** library: **C# 7.3** on `net472` (no `default` interface members, no nullable reference types, no ranges). `net10.0-windows` may use `latest` via the `LangVersion` conditional.
+- **Fluence.Wpf** library: `LangVersion=latest` and nullable reference types are enabled centrally. Modern C# syntax is allowed on every target framework, but runtime APIs must remain available on `net472` unless the code is already isolated to a newer target.
 - Every `.cs` file starts with the standard BSD 3-Clause header used across the repo; match an existing file exactly.
 - Public APIs carry `///` XML comments. The library builds with `<DocumentationFile>` and does **not** suppress `CS1591` / `CS1574` - a missing comment becomes a build error.
 - XAML lives in `Fluence.Wpf/Themes/Controls/<ControlName>.xaml` and is merged from `Themes/Generic.xaml`.
@@ -42,4 +42,4 @@ Test project targets **net472** and **net10.0-windows**; both must pass. WPF tes
 ## Documentation
 
 - Public guides live in `docs/*.md`. Maintainer-only notes live under `docs/_internal/`; do not link them from `README.md` or public guides.
-- AI-assisted edits should read [CLAUDE.md](../CLAUDE.md) and [.github/copilot-instructions.md](../.github/copilot-instructions.md) for project standards and quality gates.
+- AI-assisted edits should read [AGENTS.md](../AGENTS.md) and [.github/copilot-instructions.md](../.github/copilot-instructions.md) for project standards and quality gates.

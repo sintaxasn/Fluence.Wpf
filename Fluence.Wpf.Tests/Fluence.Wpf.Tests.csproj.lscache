@@ -63,12 +63,14 @@ AccentColorManagerTests.cs
 AdditionalControlsTests.cs
 ComboBoxTests.cs
 ControlRenderingTests.cs
+ControlTests.BackgroundParity.cs
 ControlTests.Button.cs
 ControlTests.CaptionButtons.cs
 ControlTests.Card.cs
 ControlTests.ComboBox.cs
 ControlTests.ContextMenu.cs
 ControlTests.cs
+ControlTests.DemoParity.cs
 ControlTests.Expander.cs
 ControlTests.FluentStroke.cs
 ControlTests.FocusVisual.cs
@@ -77,6 +79,7 @@ ControlTests.InfoBar.cs
 ControlTests.ListView.cs
 ControlTests.Menu.cs
 ControlTests.NavigationView.cs
+ControlTests.NavigationViewTopParity.cs
 ControlTests.NumberBox.cs
 ControlTests.PersonPicture.cs
 ControlTests.PopupCornerRadius.cs
@@ -92,6 +95,7 @@ ControlTests.TextBox.cs
 ControlTests.ToggleSwitch.cs
 ControlTests.ToolTip.cs
 ControlTests.TreeView.cs
+ControlTests.TreeViewSelectionMode.cs
 DemoMainWindowTests.cs
 DictionaryStabilityTests.cs
 FluenceWindowHardenTests.cs
@@ -461,12 +465,14 @@ AccentColorManagerTests.cs
 AdditionalControlsTests.cs
 ComboBoxTests.cs
 ControlRenderingTests.cs
+ControlTests.BackgroundParity.cs
 ControlTests.Button.cs
 ControlTests.CaptionButtons.cs
 ControlTests.Card.cs
 ControlTests.ComboBox.cs
 ControlTests.ContextMenu.cs
 ControlTests.cs
+ControlTests.DemoParity.cs
 ControlTests.Expander.cs
 ControlTests.FluentStroke.cs
 ControlTests.FocusVisual.cs
@@ -475,6 +481,7 @@ ControlTests.InfoBar.cs
 ControlTests.ListView.cs
 ControlTests.Menu.cs
 ControlTests.NavigationView.cs
+ControlTests.NavigationViewTopParity.cs
 ControlTests.NumberBox.cs
 ControlTests.PersonPicture.cs
 ControlTests.PopupCornerRadius.cs
@@ -490,6 +497,7 @@ ControlTests.TextBox.cs
 ControlTests.ToggleSwitch.cs
 ControlTests.ToolTip.cs
 ControlTests.TreeView.cs
+ControlTests.TreeViewSelectionMode.cs
 DemoMainWindowTests.cs
 DictionaryStabilityTests.cs
 FluenceWindowHardenTests.cs

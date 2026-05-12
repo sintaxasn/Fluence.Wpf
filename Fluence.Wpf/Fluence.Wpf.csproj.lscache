@@ -161,6 +161,7 @@ TabViewCloseButtonOverlayMode.cs
 TabViewTabCloseRequestedEventArgs.cs
 TabViewWidthMode.cs
 ThemeChangedEventArgs.cs
+TreeViewSelectionMode.cs
 ValidationState.cs
 
 [metadataReferences]
@@ -575,6 +576,7 @@ TabViewCloseButtonOverlayMode.cs
 TabViewTabCloseRequestedEventArgs.cs
 TabViewWidthMode.cs
 ThemeChangedEventArgs.cs
+TreeViewSelectionMode.cs
 ValidationState.cs
 
 [metadataReferences]

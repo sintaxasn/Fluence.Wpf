@@ -10,6 +10,10 @@
 *.userosscache
 *.sln.docstates
 
+# Local agent/tooling state
+.skills/
+.slopwatch/
+
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 

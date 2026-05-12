@@ -13,18 +13,20 @@
     <Product>Fluence.Wpf</Product>
     <Title>Fluence.Wpf</Title>
     <PackageId>Fluence.Wpf</PackageId>
+    <VersionPrefix>0.4.0</VersionPrefix>
+    <VersionSuffix>preview</VersionSuffix>
     <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/sintaxasn/Fluence.Wpf</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sintaxasn/Fluence.Wpf</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>wpf;fluent;fluent-design;windows11;controls;theme</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageIcon>AppIcon.png</PackageIcon>
+    <PackageIcon>fluence-wpf-nuget-icon-128.png</PackageIcon>
   </PropertyGroup>
 
   <ItemGroup Label="NuGet package content">
     <None Include="..\README.md" Pack="true" PackagePath="\" />
-    <None Include="..\Fluence.Wpf.Demo\Resources\AppIcon.png" Pack="true" PackagePath="\" />
+    <None Include="..\assets\fluence-wpf-nuget-icon-128.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
 

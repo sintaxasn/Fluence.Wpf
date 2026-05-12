@@ -18,7 +18,7 @@ From the repository root:
 dotnet build Fluence.Wpf/Fluence.Wpf.csproj -c Debug
 ```
 
-The `net472` target is constrained to C# 7.3. Keep public APIs documented with XML comments and keep `.cs`, `.xaml`, and `.csproj` files encoded as UTF-8 with BOM.
+All targets use `LangVersion=latest`, but runtime API use must remain compatible with `net472` unless a file is explicitly target-specific. Keep public APIs documented with XML comments and keep `.cs`, `.xaml`, and `.csproj` files encoded as UTF-8 with BOM.
 
 ## Maintenance Notes
 

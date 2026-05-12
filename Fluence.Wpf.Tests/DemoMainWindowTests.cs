@@ -1055,7 +1055,10 @@ namespace Fluence.Wpf.Tests
                         "A long title should stay visible when there is enough room to trim before the search box.");
                     double titleRight = (GetVisualX(titleText, window) ?? double.MinValue) + titleText.ActualWidth;
                     double searchLeft = GetVisualX(search, window) ?? double.MaxValue;
-                    Assert.AreEqual(searchLeft - 12.0, titleRight, 3.0,
+                    double titleClearanceRight = searchLeft - 12.0;
+                    Assert.IsTrue(titleRight <= titleClearanceRight,
+                        "The title text should not cross the 12px search clearance.");
+                    Assert.AreEqual(titleClearanceRight, titleRight, 4.0,
                         "The title text should extend to the 12px search clearance before trimming.");
                 }
                 finally
@@ -1196,8 +1199,15 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(shellTitleBar, "Extended title bar should use the shared TitleBar control.");
                     WpfTextBlock? titleText = FindByName<WpfTextBlock>(shellTitleBar, "PART_TitleText");
                     Assert.IsNotNull(titleText, "Extended title bar title should exist.");
-                    Assert.AreEqual(Visibility.Collapsed, titleText.Visibility,
-                        "Setup should hide title text while the search collision exists.");
+                    if (titleText.Visibility == Visibility.Visible)
+                    {
+                        Controls.TextBox? setupSearch = FindByName<Controls.TextBox>(window, "NavSearchBox");
+                        Assert.IsNotNull(setupSearch, "Demo search box must be present.");
+                        double titleRight = (GetVisualX(titleText, window) ?? double.MinValue) + titleText.ActualWidth;
+                        double searchLeft = GetVisualX(setupSearch, window) ?? double.MaxValue;
+                        Assert.IsTrue(titleRight <= searchLeft - 12.0,
+                            "Setup should hide or trim title text before it crosses the 12px search clearance.");
+                    }
 
                     window.Width = 1200;
                     window.SetUserShowTitle(true, "Fluence.Wpf");

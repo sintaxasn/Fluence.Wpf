@@ -21,4 +21,4 @@ Use the gallery to check Light, Dark, High Contrast, accent changes, Mica/Acryli
 
 ## Maintenance Notes
 
-The gallery intentionally owns navigation through `NavigationView` selection and `DemoNavigationCatalog` metadata; it does not maintain a page back stack. `MainWindow` maps each route to a concrete `Pages/Gallery*Page.xaml` control, and `DemoSampleControl` displays page-local `XamlSource` / `CSharpSource` strings instead of reading copied sample files from disk.
+The gallery intentionally owns navigation through `NavigationView` selection and `DemoNavigationCatalog` metadata. `MainWindow` keeps a lightweight visited-page stack for the shell Back button, maps each route to a concrete `Pages/Gallery*Page.xaml` control, and `DemoSampleControl` displays page-local `XamlSource` / `CSharpSource` strings instead of reading copied sample files from disk.

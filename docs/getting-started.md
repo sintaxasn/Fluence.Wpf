@@ -16,7 +16,7 @@
     dotnet pack Fluence.Wpf/Fluence.Wpf.csproj -c Release -o ./artifacts
     ```
 
-The package id is **`Fluence.Wpf`** when publishing is enabled.
+The package id is **`Fluence.Wpf`**. Public feed publishing is a release decision; local packages are useful for consumer smoke tests before that point.
 
 ## Initialize theme and accent
 

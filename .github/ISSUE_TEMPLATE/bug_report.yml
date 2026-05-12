@@ -1,0 +1,62 @@
+name: Bug report
+description: Report a reproducible Fluence.Wpf defect.
+title: "[Bug]: "
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Include the smallest reproduction you can provide. For visual bugs, attach screenshots for Light, Dark, or High Contrast when relevant.
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      description: NuGet/package version, tag, or commit SHA.
+      placeholder: "v0.3.0 or 65c1b3d"
+    validations:
+      required: true
+  - type: dropdown
+    id: target-framework
+    attributes:
+      label: Target framework
+      options:
+        - net472
+        - net10.0-windows10.0.26100.0
+        - Both
+        - Not sure
+    validations:
+      required: true
+  - type: input
+    id: windows-version
+    attributes:
+      label: Windows version
+      placeholder: "Windows 11 24H2, Windows 10 22H2"
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Minimal reproduction
+      description: Steps, XAML/C# snippet, or a small sample project link.
+      render: text
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Screenshots, logs, or stack traces
+      render: text
+    validations:
+      required: false
