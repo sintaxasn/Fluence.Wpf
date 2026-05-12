@@ -74,9 +74,10 @@
 
         <TextBlock
             Grid.Row="3"
-            Margin="0,0,0,8"
+            Margin="0,16,0,16"
             Style="{StaticResource SectionHeaderStyle}"
             Text="Installed glyph catalog" />
+
 
         <ui:ListView
             x:Name="IconCatalogList"
@@ -123,8 +124,8 @@
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <ui:Border
-                                    Width="176"
-                                    Height="104"
+                                    Width="192"
+                                    Height="128"
                                     MinHeight="104"
                                     Margin="6"
                                     Style="{StaticResource IconGalleryCardStyle}">
@@ -139,6 +140,7 @@
                                             HorizontalAlignment="Center"
                                             FontFamily="Segoe Fluent Icons"
                                             FontSize="28"
+                                            Margin="0,10,0,4"
                                             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                             Text="{Binding Glyph}"
                                             TextAlignment="Center" />
