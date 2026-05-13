@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:pages="clr-namespace:Fluence.Wpf.Demo.Pages"
     xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
     xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
     d:DesignHeight="900"
@@ -29,129 +30,122 @@
                 Margin="0,0,0,8"
                 Style="{StaticResource SectionDescriptionStyle}"
                 Text="Press Tab to move keyboard focus. Fluence controls render the two-tone focus ring and follow visual tab order unless TabIndex overrides it." />
-            <ui:Card
-                Margin="0,0,0,16"
-                Padding="16"
-                Variant="{x:Static uicore:CardVariant.Default}">
-                <StackPanel>
-                    <Grid x:Name="KeyboardSupportPrimaryControls" Margin="0,0,0,8">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="Auto" />
-                        </Grid.RowDefinitions>
-                        <ui:Button
-                            Grid.Row="0"
-                            Grid.Column="0"
-                            Margin="0,0,12,12"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Center"
-                            AutomationProperties.Name="First focusable button"
-                            Content="Button 1" />
-                        <ui:Button
-                            Grid.Row="0"
-                            Grid.Column="1"
-                            Margin="0,0,12,12"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Center"
-                            AutomationProperties.Name="Second focusable button"
-                            Content="Button 2" />
-                        <ui:TextBox
-                            Grid.Row="0"
-                            Grid.Column="2"
-                            Margin="0,0,12,12"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Center"
-                            AutomationProperties.Name="Focusable text input"
-                            PlaceholderText="TextBox" />
-                        <ui:ComboBox
-                            Grid.Row="0"
-                            Grid.Column="3"
-                            Margin="0,0,0,12"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Center"
-                            AutomationProperties.Name="Focusable combo box">
-                            <ComboBoxItem Content="Option A" IsSelected="True" />
-                            <ComboBoxItem Content="Option B" />
-                        </ui:ComboBox>
-                        <ui:CheckBox
-                            Grid.Row="1"
-                            Grid.Column="0"
-                            Margin="0,0,12,0"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Center"
-                            AutomationProperties.Name="Focusable checkbox"
-                            Content="CheckBox" />
-                        <ui:ToggleSwitch
-                            Grid.Row="1"
-                            Grid.Column="1"
-                            Margin="0,0,12,0"
-                            HorizontalAlignment="Left"
-                            VerticalAlignment="Center"
-                            AutomationProperties.Name="Focusable toggle" />
-                        <ui:Slider
-                            Grid.Row="1"
-                            Grid.Column="2"
-                            Margin="0,0,12,0"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Center"
-                            AutomationProperties.Name="Focusable slider"
-                            Maximum="100"
-                            Minimum="0"
-                            Value="40" />
-                        <ui:HyperlinkButton
-                            Grid.Row="1"
-                            Grid.Column="3"
-                            HorizontalAlignment="Stretch"
-                            VerticalAlignment="Center"
-                            AutomationProperties.Name="Focusable hyperlink"
-                            Content="HyperlinkButton" />
-                    </Grid>
+            <ContentControl
+                x:Name="DemoSampleSlot01DemoContentHost"
+                Visibility="Collapsed">
+                    <StackPanel>
+                        <Grid x:Name="KeyboardSupportPrimaryControls" Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <ui:Button
+                                Grid.Row="0"
+                                Grid.Column="0"
+                                Margin="0,0,12,12"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Center"
+                                AutomationProperties.Name="First focusable button"
+                                Content="Button 1" />
+                            <ui:Button
+                                Grid.Row="0"
+                                Grid.Column="1"
+                                Margin="0,0,12,12"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Center"
+                                AutomationProperties.Name="Second focusable button"
+                                Content="Button 2" />
+                            <ui:TextBox
+                                Grid.Row="0"
+                                Grid.Column="2"
+                                Margin="0,0,12,12"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Center"
+                                AutomationProperties.Name="Focusable text input"
+                                PlaceholderText="TextBox" />
+                            <ui:ComboBox
+                                Grid.Row="0"
+                                Grid.Column="3"
+                                Margin="0,0,0,12"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Center"
+                                AutomationProperties.Name="Focusable combo box">
+                                <ComboBoxItem Content="Option A" IsSelected="True" />
+                                <ComboBoxItem Content="Option B" />
+                            </ui:ComboBox>
+                            <ui:CheckBox
+                                Grid.Row="1"
+                                Grid.Column="0"
+                                Margin="0,0,12,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                AutomationProperties.Name="Focusable checkbox"
+                                Content="CheckBox" />
+                            <ui:ToggleSwitch
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Margin="0,0,12,0"
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                AutomationProperties.Name="Focusable toggle" />
+                            <ui:Slider
+                                Grid.Row="1"
+                                Grid.Column="2"
+                                Margin="0,0,12,0"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Center"
+                                AutomationProperties.Name="Focusable slider"
+                                Maximum="100"
+                                Minimum="0"
+                                Value="40" />
+                            <ui:HyperlinkButton
+                                Grid.Row="1"
+                                Grid.Column="3"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Center"
+                                AutomationProperties.Name="Focusable hyperlink"
+                                Content="HyperlinkButton" />
+                        </Grid>
 
-                    <TextBlock
-                        Margin="0,12,0,8"
-                        ui:TextBlockExtensions.Typography="Caption"
-                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                        Text="The buttons below have an explicit reverse tab order: 3, 2, 1." />
-                    <Grid x:Name="KeyboardSupportExplicitOrderControls" Margin="0,0,0,8">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <ui:Button
-                            Grid.Column="0"
-                            Margin="0,0,12,0"
-                            HorizontalAlignment="Stretch"
-                            Content="Tab order: 3"
-                            TabIndex="3" />
-                        <ui:Button
-                            Grid.Column="1"
-                            Margin="0,0,12,0"
-                            HorizontalAlignment="Stretch"
-                            Content="Tab order: 2"
-                            TabIndex="2" />
-                        <ui:Button
-                            Grid.Column="2"
-                            HorizontalAlignment="Stretch"
-                            Appearance="Accent"
-                            Content="Tab order: 1 (first)"
-                            TabIndex="1" />
-                    </Grid>
-
-                    <ui:HyperlinkButton
-                        x:Name="FocusAndTabOrderSourceLink"
-                        Margin="0,12,0,0"
-                        HorizontalAlignment="Right"
-                        Content="Source"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
-                </StackPanel>
-            </ui:Card>
+                        <TextBlock
+                            Margin="0,12,0,8"
+                            ui:TextBlockExtensions.Typography="Caption"
+                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                            Text="The buttons below have an explicit reverse tab order: 3, 2, 1." />
+                        <Grid x:Name="KeyboardSupportExplicitOrderControls" Margin="0,0,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <ui:Button
+                                Grid.Column="0"
+                                Margin="0,0,12,0"
+                                HorizontalAlignment="Stretch"
+                                Content="Tab order: 3"
+                                TabIndex="3" />
+                            <ui:Button
+                                Grid.Column="1"
+                                Margin="0,0,12,0"
+                                HorizontalAlignment="Stretch"
+                                Content="Tab order: 2"
+                                TabIndex="2" />
+                            <ui:Button
+                                Grid.Column="2"
+                                HorizontalAlignment="Stretch"
+                                Appearance="Accent"
+                                Content="Tab order: 1 (first)"
+                                TabIndex="1" />
+                        </Grid>
+                    </StackPanel>
+            </ContentControl>
+            <pages:DemoSampleControl SampleDescription="Keyboard focus and explicit tab order." />
 
             <TextBlock
                 Margin="0,0,0,4"
@@ -161,11 +155,9 @@
                 Margin="0,0,0,8"
                 Style="{StaticResource SectionDescriptionStyle}"
                 Text="In High Contrast mode, Fluence maps canonical WinUI keys to Windows system colors. Switch to High Contrast from Settings to verify contrast live." />
-            <ui:Card
-                Margin="0,0,0,16"
-                Padding="0"
-                Variant="{x:Static uicore:CardVariant.Default}">
-                <StackPanel>
+            <ContentControl
+                x:Name="DemoSampleSlot02DemoContentHost"
+                Visibility="Collapsed">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -231,14 +223,8 @@
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
                     </Grid>
-                    <ui:HyperlinkButton
-                        x:Name="HighContrastMappingSourceLink"
-                        Margin="12,8,0,12"
-                        HorizontalAlignment="Right"
-                        Content="Source"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
-                </StackPanel>
-            </ui:Card>
+            </ContentControl>
+            <pages:DemoSampleControl SampleDescription="High contrast remaps Fluence semantic brushes to Windows system colors." />
 
             <TextBlock
                 Margin="0,0,0,4"
@@ -248,60 +234,54 @@
                 Margin="0,0,0,8"
                 Style="{StaticResource SectionDescriptionStyle}"
                 Text="Set AutomationProperties.Name for screen readers on controls that have no visible label." />
-            <ui:Card
-                Margin="0,0,0,16"
-                Padding="16"
-                Variant="{x:Static uicore:CardVariant.Default}">
-                <StackPanel>
-                    <TextBlock
-                        Margin="0,0,0,8"
-                        ui:TextBlockExtensions.Typography="Body"
-                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                        Text="These icon-only buttons all have AutomationProperties.Name so Narrator announces their purpose:"
-                        TextWrapping="Wrap" />
-                    <StackPanel Orientation="Horizontal">
-                        <ui:Button
-                            Margin="0,0,8,0"
-                            Padding="8"
-                            AutomationProperties.Name="New document">
-                            <ui:FontIcon Glyph="&#xE8A5;" IconFontSize="18" />
-                        </ui:Button>
-                        <ui:Button
-                            Margin="0,0,8,0"
-                            Padding="8"
-                            AutomationProperties.Name="Open file">
-                            <ui:FontIcon Glyph="&#xE8E5;" IconFontSize="18" />
-                        </ui:Button>
-                        <ui:Button
-                            Margin="0,0,8,0"
-                            Padding="8"
-                            AutomationProperties.Name="Save">
-                            <ui:FontIcon Glyph="&#xE74E;" IconFontSize="18" />
-                        </ui:Button>
-                        <ui:Button
-                            Margin="0,0,8,0"
-                            Padding="8"
-                            AutomationProperties.Name="Delete">
-                            <ui:FontIcon Glyph="&#xE74D;" IconFontSize="18" />
-                        </ui:Button>
-                        <ui:Button Padding="8" AutomationProperties.Name="Share">
-                            <ui:FontIcon Glyph="&#xE72D;" IconFontSize="18" />
-                        </ui:Button>
+            <ContentControl
+                x:Name="DemoSampleSlot03DemoContentHost"
+                Visibility="Collapsed">
+                    <StackPanel>
+                        <TextBlock
+                            Margin="0,0,0,8"
+                            ui:TextBlockExtensions.Typography="Body"
+                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                            Text="These icon-only buttons all have AutomationProperties.Name so Narrator announces their purpose:"
+                            TextWrapping="Wrap" />
+                        <StackPanel Orientation="Horizontal">
+                            <ui:Button
+                                Margin="0,0,8,0"
+                                Padding="8"
+                                AutomationProperties.Name="New document">
+                                <ui:FontIcon Glyph="&#xE8A5;" IconFontSize="18" />
+                            </ui:Button>
+                            <ui:Button
+                                Margin="0,0,8,0"
+                                Padding="8"
+                                AutomationProperties.Name="Open file">
+                                <ui:FontIcon Glyph="&#xE8E5;" IconFontSize="18" />
+                            </ui:Button>
+                            <ui:Button
+                                Margin="0,0,8,0"
+                                Padding="8"
+                                AutomationProperties.Name="Save">
+                                <ui:FontIcon Glyph="&#xE74E;" IconFontSize="18" />
+                            </ui:Button>
+                            <ui:Button
+                                Margin="0,0,8,0"
+                                Padding="8"
+                                AutomationProperties.Name="Delete">
+                                <ui:FontIcon Glyph="&#xE74D;" IconFontSize="18" />
+                            </ui:Button>
+                            <ui:Button Padding="8" AutomationProperties.Name="Share">
+                                <ui:FontIcon Glyph="&#xE72D;" IconFontSize="18" />
+                            </ui:Button>
+                        </StackPanel>
+                        <TextBlock
+                            Margin="0,12,0,0"
+                            ui:TextBlockExtensions.Typography="Caption"
+                            Foreground="{DynamicResource TextFillColorTertiaryBrush}"
+                            Text="Tip: use Windows Narrator or Inspect.exe to verify automation names at runtime."
+                            TextWrapping="Wrap" />
                     </StackPanel>
-                    <TextBlock
-                        Margin="0,12,0,0"
-                        ui:TextBlockExtensions.Typography="Caption"
-                        Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                        Text="Tip: use Windows Narrator or Inspect.exe to verify automation names at runtime."
-                        TextWrapping="Wrap" />
-                    <ui:HyperlinkButton
-                        x:Name="AutomationPropertiesSourceLink"
-                        Margin="0,8,0,0"
-                        HorizontalAlignment="Right"
-                        Content="Source"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
-                </StackPanel>
-            </ui:Card>
+            </ContentControl>
+            <pages:DemoSampleControl SampleDescription="Icon-only buttons expose AutomationProperties.Name for screen readers." />
 
             <TextBlock
                 Margin="0,0,0,4"
@@ -311,44 +291,40 @@
                 Margin="0,0,0,8"
                 Style="{StaticResource SectionDescriptionStyle}"
                 Text="Toggle FlowDirection=RightToLeft on a card to verify Fluence controls mirror correctly for Arabic, Hebrew, and Farsi locales." />
-            <ui:Card
-                Margin="0,0,0,8"
-                Padding="16"
-                Variant="{x:Static uicore:CardVariant.Default}">
-                <StackPanel>
-                    <ui:ToggleSwitch
-                        x:Name="RtlToggle"
-                        Margin="0,0,0,12"
-                        Checked="RtlToggle_Changed"
-                        Content="Enable RTL on demo card"
-                        Unchecked="RtlToggle_Changed" />
-                    <ui:Card
-                        x:Name="RtlDemoCard"
-                        Padding="16"
-                        Variant="{x:Static uicore:CardVariant.Outlined}">
-                        <StackPanel>
-                            <TextBlock
-                                Margin="0,0,0,8"
-                                ui:TextBlockExtensions.Typography="BodyStrong"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Text="نموذج عنصر تحكم" />
-                            <StackPanel Orientation="Horizontal">
-                                <ui:Button
-                                    Margin="0,0,8,0"
-                                    Appearance="Accent"
-                                    Content="زر رئيسي" />
-                                <ui:Button Content="إلغاء" />
+            <ContentControl
+                x:Name="DemoSampleSlot04DemoContentHost"
+                Visibility="Collapsed">
+                    <StackPanel>
+                        <ui:ToggleSwitch
+                            x:Name="RtlToggle"
+                            Margin="0,0,0,12"
+                            Checked="RtlToggle_Changed"
+                            Content="Enable RTL on demo card"
+                            IsChecked="True"
+                            Unchecked="RtlToggle_Changed" />
+                        <ui:Card
+                            x:Name="RtlDemoCard"
+                            Padding="16"
+                            FlowDirection="RightToLeft"
+                            Variant="{x:Static uicore:CardVariant.Outlined}">
+                            <StackPanel>
+                                <TextBlock
+                                    Margin="0,0,0,8"
+                                    ui:TextBlockExtensions.Typography="BodyStrong"
+                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                    Text="نموذج عنصر تحكم" />
+                                <StackPanel Orientation="Horizontal">
+                                    <ui:Button
+                                        Margin="0,0,8,0"
+                                        Appearance="Accent"
+                                        Content="زر رئيسي" />
+                                    <ui:Button Content="إلغاء" />
+                                </StackPanel>
                             </StackPanel>
-                        </StackPanel>
-                    </ui:Card>
-                    <ui:HyperlinkButton
-                        x:Name="RtlLayoutSourceLink"
-                        Margin="0,12,0,0"
-                        HorizontalAlignment="Right"
-                        Content="Source"
-                        Style="{StaticResource DemoSourceLinkButtonStyle}" />
-                </StackPanel>
-            </ui:Card>
+                        </ui:Card>
+                    </StackPanel>
+            </ContentControl>
+            <pages:DemoSampleControl SampleDescription="Right-to-left layout mirrors Fluence controls for RTL locales." />
         </StackPanel>
     </ui:SmoothScrollViewer>
 </UserControl>

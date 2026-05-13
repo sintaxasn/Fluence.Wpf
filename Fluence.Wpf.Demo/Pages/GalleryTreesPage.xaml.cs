@@ -26,11 +26,8 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
-
-using FluenceTreeViewItem = Fluence.Wpf.Controls.TreeViewItem;
 
 namespace Fluence.Wpf.Demo.Pages
 {
@@ -90,8 +87,7 @@ namespace Fluence.Wpf.Demo.Pages.Trees
             MaxHeight=""260""
             Margin=""0,0,0,12""
             BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
-            BorderThickness=""1""
-            SelectedItemChanged=""SelectionTreeView_SelectedItemChanged"">
+            BorderThickness=""1"">
             <ui:TreeViewItem
                 Header=""Inbox""
                 IsExpanded=""True"">
@@ -109,18 +105,11 @@ namespace Fluence.Wpf.Demo.Pages.Trees
                 <ui:TreeViewItem Header=""April"" />
             </ui:TreeViewItem>
         </ui:TreeView>
-        <TextBlock
-            x:Name=""TreeSelectionLabel""
-            Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-            Text=""Selected: -"" />
     </StackPanel>
 </UserControl>
 ";
 
-        private const string TreeViewSelectionCSharpSource = @"using System.Windows;
-using System.Windows.Controls;
-
-using FluenceTreeViewItem = Fluence.Wpf.Controls.TreeViewItem;
+        private const string TreeViewSelectionCSharpSource = @"using System.Windows.Controls;
 
 namespace Fluence.Wpf.Demo.Pages.Trees
 {
@@ -129,29 +118,6 @@ namespace Fluence.Wpf.Demo.Pages.Trees
         public TreeViewSelection()
         {
             InitializeComponent();
-        }
-
-        private void SelectionTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            var item = e.NewValue as FluenceTreeViewItem;
-            TreeSelectionLabel.Text = item is null
-                ? ""Selected: -""
-                : string.Format(""Selected: {0}"", BuildPath(item));
-        }
-
-        private static string BuildPath(FluenceTreeViewItem item)
-        {
-            var header = item.Header as string ?? string.Empty;
-            var parent = ItemsControl.ItemsControlFromItemContainer(item) as FluenceTreeViewItem;
-            if (parent is null)
-            {
-                return header;
-            }
-
-            var parentPath = BuildPath(parent);
-            return string.IsNullOrWhiteSpace(parentPath)
-                ? header
-                : string.Format(""{0} / {1}"", parentPath, header);
         }
     }
 }
@@ -237,8 +203,6 @@ namespace Fluence.Wpf.Demo.Pages.Trees
         private const string TreeViewExpansionCSharpSource = @"using System.Windows;
 using System.Windows.Controls;
 
-using FluenceTreeViewItem = Fluence.Wpf.Controls.TreeViewItem;
-
 namespace Fluence.Wpf.Demo.Pages.Trees
 {
     public partial class TreeViewExpansion : UserControl
@@ -262,7 +226,7 @@ namespace Fluence.Wpf.Demo.Pages.Trees
         {
             foreach (var obj in items)
             {
-                var item = obj as FluenceTreeViewItem;
+                var item = obj as Fluence.Wpf.Controls.TreeViewItem;
                 if (item is null)
                 {
                     continue;
@@ -292,42 +256,6 @@ namespace Fluence.Wpf.Demo.Pages.Trees
                 TreeViewExpansionCSharpSource);
         }
 
-        private void SelectionTreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
-        {
-            if (TreeSelectionLabel is null)
-            {
-                return;
-            }
-
-            if (e.NewValue is not FluenceTreeViewItem item)
-            {
-                TreeSelectionLabel.Text = "Selected: -";
-                return;
-            }
-
-            string path = BuildPath(item);
-            TreeSelectionLabel.Text = string.Format(CultureInfo.CurrentCulture, "Selected: {0}", path);
-        }
-
-        private static string BuildPath(FluenceTreeViewItem item)
-        {
-            if (item is null)
-            {
-                return string.Empty;
-            }
-
-            string header = item.Header as string ?? string.Empty;
-            if (ItemsControl.ItemsControlFromItemContainer(item) is not FluenceTreeViewItem parent)
-            {
-                return header;
-            }
-
-            string parentPath = BuildPath(parent);
-            return string.IsNullOrWhiteSpace(parentPath)
-                ? header
-                : string.Format(CultureInfo.CurrentCulture, "{0} / {1}", parentPath, header);
-        }
-
         private void ExpandAll_Click(object sender, RoutedEventArgs e)
         {
             if (ExpansionTreeView is null)
@@ -352,7 +280,7 @@ namespace Fluence.Wpf.Demo.Pages.Trees
         {
             foreach (object? obj in items)
             {
-                if (obj is not FluenceTreeViewItem tvi)
+                if (obj is not Fluence.Wpf.Controls.TreeViewItem tvi)
                 {
                     continue;
                 }

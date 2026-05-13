@@ -928,21 +928,18 @@ namespace Fluence.Wpf.Controls
             else if (msg == NativeConstants.WM_NCLBUTTONUP && wParam.ToInt32() == NativeConstants.HTMAXBUTTON)
             {
                 ClearSnapHover();
-                if (ResizeMode is ResizeMode.CanResize or ResizeMode.CanResizeWithGrip)
+                if (WindowState == WindowState.Maximized)
                 {
-                    if (WindowState == WindowState.Maximized)
-                    {
-                        if (_restoreButton is not null && _restoreButton.Visibility == Visibility.Visible && _restoreButton.IsEnabled)
-                        {
-                            handled = true;
-                            SystemCommands.RestoreWindow(this);
-                        }
-                    }
-                    else if (_maximizeButton is not null && _maximizeButton.Visibility == Visibility.Visible && _maximizeButton.IsEnabled)
+                    if (_restoreButton is not null && _restoreButton.Visibility == Visibility.Visible && _restoreButton.IsEnabled)
                     {
                         handled = true;
-                        SystemCommands.MaximizeWindow(this);
+                        RestoreWindowDirect();
                     }
+                }
+                else if (_maximizeButton is not null && _maximizeButton.Visibility == Visibility.Visible && _maximizeButton.IsEnabled)
+                {
+                    handled = true;
+                    MaximizeWindowDirect();
                 }
             }
             return IntPtr.Zero;
@@ -954,6 +951,11 @@ namespace Fluence.Wpf.Controls
             int x = unchecked((short)(lParamValue & 0xFFFF));
             int y = unchecked((short)((lParamValue >> 16) & 0xFFFF));
             Point point = PointFromScreen(new(x, y));
+            if (TryGetTopResizeHit(point, out int resizeHit))
+            {
+                return resizeHit;
+            }
+
             if (point.Y < 0 || point.Y > TitleBarHeight)
             {
                 return 0;
@@ -985,6 +987,32 @@ namespace Fluence.Wpf.Controls
             // cursor (e.g. a search TextBox or ToggleSwitch in the TitleBar content area), return
             // HTCLIENT so Windows passes the click to WPF rather than treating it as a drag.
             return !IsOverInteractiveContent(point) && IsMoveable ? NativeConstants.HTCAPTION : 0;
+        }
+
+        private bool TryGetTopResizeHit(Point point, out int hit)
+        {
+            hit = 0;
+            if (WindowState == WindowState.Maximized ||
+                ResizeMode is ResizeMode.NoResize or ResizeMode.CanMinimize)
+            {
+                return false;
+            }
+
+            Thickness resizeBorder = _windowChrome.ResizeBorderThickness;
+            if (resizeBorder.Top <= 0.0 || point.Y < 0.0 || point.Y > resizeBorder.Top)
+            {
+                return false;
+            }
+
+            double leftCornerWidth = Math.Max(resizeBorder.Left, resizeBorder.Top);
+            double rightCornerWidth = Math.Max(resizeBorder.Right, resizeBorder.Top);
+            hit = point.X <= leftCornerWidth
+                ? NativeConstants.HTTOPLEFT
+                : point.X >= ActualWidth - rightCornerWidth
+                    ? NativeConstants.HTTOPRIGHT
+                    : NativeConstants.HTTOP;
+
+            return true;
         }
 
         private void SetSnapHover(System.Windows.Controls.Button? button)
@@ -1108,11 +1136,7 @@ namespace Fluence.Wpf.Controls
         // short-circuit via IsIconic/IsZoomed so there is no double-transition.
         private void OnMaximizeWindow(object sender, ExecutedRoutedEventArgs e)
         {
-            WindowState = WindowState.Maximized;
-            if (_handle != IntPtr.Zero)
-            {
-                _ = NativeMethods.MaximizeWindowNative(_handle);
-            }
+            MaximizeWindowDirect();
         }
 
         private void OnMinimizeWindow(object sender, ExecutedRoutedEventArgs e)
@@ -1126,7 +1150,23 @@ namespace Fluence.Wpf.Controls
 
         private void OnRestoreWindow(object sender, ExecutedRoutedEventArgs e)
         {
+            RestoreWindowDirect();
+        }
+
+        private void MaximizeWindowDirect()
+        {
+            WindowState = WindowState.Maximized;
+            UpdateCaptionButtons();
+            if (_handle != IntPtr.Zero)
+            {
+                _ = NativeMethods.MaximizeWindowNative(_handle);
+            }
+        }
+
+        private void RestoreWindowDirect()
+        {
             WindowState = WindowState.Normal;
+            UpdateCaptionButtons();
             if (_handle != IntPtr.Zero)
             {
                 _ = NativeMethods.RestoreWindowNative(_handle);

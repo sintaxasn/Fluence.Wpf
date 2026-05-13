@@ -33,7 +33,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
-using FluenceCard = Fluence.Wpf.Controls.Card;
 
 namespace Fluence.Wpf.Demo.Pages
 {
@@ -163,27 +162,6 @@ namespace Fluence.Wpf.Demo.Pages
                 typeof(DemoSampleControl),
                 new FrameworkPropertyMetadata(null, OnRightRailContentChanged));
 
-        public static readonly DependencyProperty TitleProperty =
-            DependencyProperty.Register(
-                "Title",
-                typeof(string),
-                typeof(DemoSampleControl),
-                new FrameworkPropertyMetadata(string.Empty, OnLegacyHeaderTextChanged));
-
-        public static readonly DependencyProperty DescriptionProperty =
-            DependencyProperty.Register(
-                "Description",
-                typeof(string),
-                typeof(DemoSampleControl),
-                new FrameworkPropertyMetadata(string.Empty, OnLegacyHeaderTextChanged));
-
-        public static readonly DependencyProperty SampleContentProperty =
-            DependencyProperty.Register(
-                "SampleContent",
-                typeof(UIElement),
-                typeof(DemoSampleControl),
-                new FrameworkPropertyMetadata(null, OnLegacySampleContentChanged));
-
         private bool _sourceLoaded;
 
         public DemoSampleControl()
@@ -232,27 +210,6 @@ namespace Fluence.Wpf.Demo.Pages
             set => SetValue(RightRailContentProperty, value);
         }
 
-        [Obsolete("Use SampleDescription instead.")]
-        public string Title
-        {
-            get => (string)GetValue(TitleProperty);
-            set => SetValue(TitleProperty, value);
-        }
-
-        [Obsolete("Use SampleDescription and page-level description text instead.")]
-        public string Description
-        {
-            get => (string)GetValue(DescriptionProperty);
-            set => SetValue(DescriptionProperty, value);
-        }
-
-        [Obsolete("Use DemoContent instead.")]
-        public UIElement? SampleContent
-        {
-            get => DemoContent as UIElement;
-            set => SetValue(SampleContentProperty, value);
-        }
-
         private static void OnSampleDescriptionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is DemoSampleControl control)
@@ -291,29 +248,6 @@ namespace Fluence.Wpf.Demo.Pages
             {
                 control.UpdateRightRailVisibility();
             }
-        }
-
-        private static void OnLegacyHeaderTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is DemoSampleControl control)
-            {
-                control.UpdateSampleDescriptionFromLegacyHeader();
-            }
-        }
-
-        private static void OnLegacySampleContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is DemoSampleControl control)
-            {
-                control.DemoContent = e.NewValue;
-            }
-        }
-
-        private void UpdateSampleDescriptionFromLegacyHeader()
-        {
-            string title = (string)GetValue(TitleProperty);
-            string description = (string)GetValue(DescriptionProperty);
-            SampleDescription = !string.IsNullOrWhiteSpace(title) ? title : description;
         }
 
         private void UpdateSampleDescriptionVisibility()
@@ -732,92 +666,6 @@ namespace Fluence.Wpf.Demo.Pages
                    value == '-';
         }
 
-        [Obsolete("Use DemoSampleControl with DemoContent, XamlSource, and CSharpSource instead.")]
-        public static DemoSampleControl ReplaceSourceLink(FrameworkElement placeholder, string xamlSource, string csharpSource)
-        {
-            return ReplaceSourceLinkCore(placeholder, xamlSource, csharpSource);
-        }
-
-        internal static DemoSampleControl ReplaceSourceLinkForCompatibility(FrameworkElement placeholder, string xamlSource, string csharpSource)
-        {
-            return ReplaceSourceLinkCore(placeholder, xamlSource, csharpSource);
-        }
-
-        private static DemoSampleControl ReplaceSourceLinkCore(FrameworkElement placeholder, string xamlSource, string csharpSource)
-        {
-#if NET6_0_OR_GREATER
-            ArgumentNullException.ThrowIfNull(placeholder);
-#else
-            if (placeholder is null)
-            {
-                throw new ArgumentNullException(nameof(placeholder));
-            }
-#endif
-
-            DemoSampleControl sample = new()
-            {
-                Name = placeholder.Name,
-                HorizontalAlignment = HorizontalAlignment.Stretch,
-                VerticalAlignment = placeholder.VerticalAlignment,
-                XamlSource = xamlSource,
-                CSharpSource = csharpSource
-            };
-
-            FluenceCard? hostCard = FindAncestorCard(placeholder);
-            if (hostCard is not null && hostCard.Content is UIElement sampleContent)
-            {
-                sample.Margin = hostCard.Margin;
-                sample.VerticalAlignment = hostCard.VerticalAlignment;
-                CopyAttachedLayout(hostCard, sample);
-                RemovePlaceholderFromParent(placeholder);
-                hostCard.Content = null;
-                sample.DemoContent = sampleContent;
-                if (hostCard.Header is string header && !string.IsNullOrWhiteSpace(header))
-                {
-                    sample.SampleDescription = header;
-                }
-
-                if (hostCard.Parent is Panel hostPanel)
-                {
-                    int index = hostPanel.Children.IndexOf(hostCard);
-                    if (index >= 0)
-                    {
-                        hostPanel.Children.RemoveAt(index);
-                        hostPanel.Children.Insert(index, sample);
-                        return sample;
-                    }
-                }
-
-                if (hostCard.Parent is ContentControl hostContent && ReferenceEquals(hostContent.Content, hostCard))
-                {
-                    hostContent.Content = sample;
-                    return sample;
-                }
-            }
-
-            sample.Margin = placeholder.Margin;
-            CopyAttachedLayout(placeholder, sample);
-
-            if (placeholder.Parent is Panel parentPanel)
-            {
-                int index = parentPanel.Children.IndexOf(placeholder);
-                if (index >= 0)
-                {
-                    parentPanel.Children.RemoveAt(index);
-                    parentPanel.Children.Insert(index, sample);
-                    return sample;
-                }
-            }
-
-            if (placeholder.Parent is ContentControl parentContent && ReferenceEquals(parentContent.Content, placeholder))
-            {
-                parentContent.Content = sample;
-                return sample;
-            }
-
-            throw new InvalidOperationException("Source link " + nameof(placeholder) + " must be hosted by a Panel or ContentControl.");
-        }
-
         internal static void ApplySources(DependencyObject root, params string[] sourcePairs)
         {
 #if NET6_0_OR_GREATER
@@ -944,50 +792,6 @@ namespace Fluence.Wpf.Demo.Pages
                     CollectDemoSampleControls(childObject, samples);
                 }
             }
-        }
-
-        private static FluenceCard? FindAncestorCard(FrameworkElement element)
-        {
-            DependencyObject? current = element;
-            while (current is not null)
-            {
-                if (current is FluenceCard card)
-                {
-                    return card;
-                }
-
-                current = GetParentObject(current);
-            }
-
-            return null;
-        }
-
-        private static DependencyObject? GetParentObject(DependencyObject current)
-        {
-            return current is not null ? VisualTreeHelper.GetParent(current) ?? LogicalTreeHelper.GetParent(current) : null;
-        }
-
-        private static void RemovePlaceholderFromParent(FrameworkElement placeholder)
-        {
-            if (placeholder.Parent is Panel parentPanel)
-            {
-                parentPanel.Children.Remove(placeholder);
-                return;
-            }
-
-            if (placeholder.Parent is ContentControl parentContent && ReferenceEquals(parentContent.Content, placeholder))
-            {
-                parentContent.Content = null;
-            }
-        }
-
-        private static void CopyAttachedLayout(FrameworkElement source, FrameworkElement target)
-        {
-            Grid.SetRow(target, Grid.GetRow(source));
-            Grid.SetColumn(target, Grid.GetColumn(source));
-            Grid.SetRowSpan(target, Grid.GetRowSpan(source));
-            Grid.SetColumnSpan(target, Grid.GetColumnSpan(source));
-            DockPanel.SetDock(target, DockPanel.GetDock(source));
         }
 
         private static Thickness GetThicknessResource(string key, Thickness fallback)

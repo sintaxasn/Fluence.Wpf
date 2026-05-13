@@ -52,7 +52,7 @@
                                             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                             Text="{Binding Name}" />
                                         <TextBlock
-                                            Margin="{DynamicResource DemoInlineControlGapMargin}"
+                                            Margin="{DynamicResource DemoDataBindingSecondaryTextMargin}"
                                             VerticalAlignment="Center"
                                             ui:TextBlockExtensions.Typography="Caption"
                                             Foreground="{DynamicResource TextFillColorTertiaryBrush}"
@@ -62,15 +62,6 @@
                             </DataTemplate>
                         </ui:ListView.ItemTemplate>
                     </ui:ListView>
-            </ContentControl>
-            <ContentControl
-                x:Name="DemoSampleSlot01OutputContentHost"
-                Visibility="Collapsed">
-<TextBlock
-                        x:Name="ItemCountLabel"
-                        ui:TextBlockExtensions.Typography="Caption"
-                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                        Text="0 items" />
             </ContentControl>
             <ContentControl
                 x:Name="DemoSampleSlot01RightRailContentHost"

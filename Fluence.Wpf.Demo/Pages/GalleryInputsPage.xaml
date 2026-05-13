@@ -43,17 +43,8 @@
                             Width="480"
                             HorizontalAlignment="Left"
                             MaxLength="40"
-                            PlaceholderText="Limited to 40 characters..."
-                            TextChanged="CharCountTextBox_TextChanged" />
+                            PlaceholderText="Limited to 40 characters..." />
                     </StackPanel>
-            </ContentControl>
-            <ContentControl
-                x:Name="DemoSampleSlot01OutputContentHost"
-                Visibility="Collapsed">
-<TextBlock
-                        x:Name="CharCountLabel"
-                        Style="{StaticResource StateLabelStyle}"
-                        Text="Characters: 0" />
             </ContentControl>
             <local:DemoSampleControl
                 SampleDescription="Use text boxes for short text entry. Add icons, clear buttons, and limits when they clarify the expected input." />

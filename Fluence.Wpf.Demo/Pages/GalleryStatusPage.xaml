@@ -31,7 +31,7 @@
                             HorizontalAlignment="Stretch"
                             Maximum="100"
                             Minimum="0"
-                            Value="{Binding Value, ElementName=ProgressSlider}" />
+                            Value="{Binding Value, Source={x:Reference ProgressValueNumberBox}}" />
                         <Grid Margin="{DynamicResource DemoControlBottomGapMargin}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -70,22 +70,15 @@
                     </StackPanel>
             </ContentControl>
             <ContentControl
-                x:Name="DemoSampleSlot01OutputContentHost"
-                Visibility="Collapsed">
-<TextBlock
-                        x:Name="SliderValueLabel"
-                        HorizontalAlignment="Center"
-                        Style="{StaticResource StateLabelStyle}"
-                        Text="{Binding Value, ElementName=ProgressSlider, StringFormat=Value: {0:0}}" />
-            </ContentControl>
-            <ContentControl
                 x:Name="DemoSampleSlot01RightRailContentHost"
                 Visibility="Collapsed">
-<ui:Slider
-                        x:Name="ProgressSlider"
+<ui:NumberBox
+                        x:Name="ProgressValueNumberBox"
+                        Header="Value"
                         Maximum="100"
-                        Minimum="0"
-                        ValueChanged="ProgressSlider_ValueChanged"
+                        Minimum="1"
+                        SmallChange="5"
+                        SpinButtonPlacementMode="{x:Static uicore:SpinButtonPlacementMode.Inline}"
                         Value="50" />
             </ContentControl>
             <local:DemoSampleControl

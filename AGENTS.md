@@ -393,7 +393,7 @@ STOP CONDITION: working tree is "git-clean minus your intended diff"; wait for e
 
 ## 14. Demo Sample Pages
 
-All in-scope control samples in `Fluence.Wpf.Demo` render through `DemoSampleControl`. The pattern mirrors WinUI Gallery `ControlExample` composition and is the source of truth for future sample pages.
+All control samples in `Fluence.Wpf.Demo` render through `DemoSampleControl`. The pattern mirrors WinUI Gallery `ControlExample` composition and is the source of truth for future sample pages.
 
 ### 14.1 Page skeleton
 
@@ -423,11 +423,11 @@ These demo-owned resources are the source of truth. Keep them in `Fluence.Wpf.De
 | Expander header | `DemoSampleSourceHeaderBackgroundBrush` | `#FDFDFD` | `#323232` |
 | Expander expanded content | `DemoSampleSourceContentBackgroundBrush` | `#FFFFFF` | `#2E2E2E` |
 
-Compatibility aliases may remain only while older excluded pages need them: `DemoControlSurfaceBrush` maps to the sample card role, and `DemoSourceSurfaceBrush` maps to the source header role.
+Do not add compatibility aliases or transitional brush names for this unreleased demo surface. Sample pages use the five resource names in this table directly.
 
 ### 14.3 DemoSampleControl contract
 
-`DemoSampleControl` is the only reusable surface for in-scope samples. Its public surface is additive:
+`DemoSampleControl` is the only reusable surface for demo samples. Its public surface is intentionally small:
 
 - `SampleDescription` (`string`) renders bold text above the sample card.
 - `XamlSource` (`string`) supplies the XAML source tab.
@@ -443,23 +443,23 @@ Composition requirements:
 - Right rail collapses when empty, uses the right-rail brush, and keeps `CornerRadius="0,8,0,0"`.
 - Source expander is attached below the card with `CornerRadius="0,0,8,8"`, header text `Source code`, the source-header brush when collapsed, and the source-content brush when expanded.
 - Source content uses a `TabControl` with `XAML` and `C#` tabs. Each tab hosts the syntax-highlighted, copy-enabled RichTextBox viewer owned by `DemoSampleControl`.
-- Legacy `Title`, `Description`, `SampleContent`, and `ReplaceSourceLink(...)` stay only as compatibility shims for excluded or transitional pages.
+- Do not use or reintroduce legacy `Title`, `Description`, `SampleContent`, `ReplaceSourceLink(...)`, obsolete forwarding members, or source-link placeholder buttons.
 
 Named live controls must not be declared directly inside `DemoSampleControl` property elements because WPF raises `MC3093`. Keep named content in page-owned hidden `ContentControl` slots and move it into `DemoSampleControl` from code-behind using the existing demo helper pattern.
 
-### 14.4 Excluded pages
+### 14.4 Catalog surfaces
 
-The following pages are excluded from the structural refactor because they are reference/catalog pages or have bespoke verification requirements: Colors, Icons, Typography, and Accessibility. Keep their existing structure unless a task explicitly targets them, but terminology must still use Icons rather than the old catalog wording.
+Colors, Icons, Typography, and Accessibility are part of this standard. Discrete demonstrations on those pages use `DemoSampleControl` and real source tabs. The virtualized Icons catalog may stay outside `DemoSampleControl` because it is a catalog surface, not a single control sample.
 
 ### 14.5 Definition of done
 
-A new or updated in-scope sample page is done only when:
+A new or updated sample page is done only when:
 
 - Every demonstration uses `DemoSampleControl`.
 - All five surface tokens resolve in Light, Dark, and High Contrast after runtime theme changes.
 - Card and source expander corners follow the `8,8,0,0` plus `0,0,8,8` pattern with no visible seam artifact.
 - The source expander shows copy-enabled XAML and C# tabs that match the visible sample.
-- Page heading, description, sample description, card, and source spacing use centralized demo resources. No inline `Margin`, `Padding`, `CornerRadius`, hex color, or font-size literals in in-scope page XAML.
+- Page heading, description, sample description, card, and source spacing use centralized demo resources. No inline `Margin`, `Padding`, `CornerRadius`, hex color, or font-size literals in sample page XAML.
 - Right-rail options mutate the demo control through binding where the target property allows it. Code-behind is acceptable for command-style results such as click counters.
 - The page renders without binding errors or resource-resolution warnings in Light and Dark.
 - `dotnet build Fluence.Wpf.sln -c Debug` and focused tests for the affected area pass with zero warnings.

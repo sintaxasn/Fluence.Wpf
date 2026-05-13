@@ -26,7 +26,6 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System.Globalization;
 using System.Windows.Controls;
 
 namespace Fluence.Wpf.Demo.Pages
@@ -307,15 +306,5 @@ namespace Fluence.Wpf.Demo.Pages.Inputs
                 SliderInputCSharpSource);
         }
 
-        private void CharCountTextBox_TextChanged(object sender, TextChangedEventArgs e)
-        {
-            if (CharCountLabel is null || CharCountTextBox is null)
-            {
-                return;
-            }
-
-            int len = CharCountTextBox.Text is not null ? CharCountTextBox.Text.Length : 0;
-            CharCountLabel.Text = string.Format(CultureInfo.CurrentCulture, "Characters: {0}", len);
-        }
     }
 }

@@ -311,8 +311,6 @@ namespace Fluence.Wpf.Tests
                 AssertBrushColor("DemoSampleRightRailBackgroundBrush", Color.FromRgb(0x2B, 0x2B, 0x2B));
                 AssertBrushColor("DemoSampleSourceHeaderBackgroundBrush", Color.FromRgb(0x32, 0x32, 0x32));
                 AssertBrushColor("DemoSampleSourceContentBackgroundBrush", Color.FromRgb(0x2E, 0x2E, 0x2E));
-                AssertBrushColor("DemoControlSurfaceBrush", Color.FromRgb(0x20, 0x20, 0x20));
-                AssertBrushColor("DemoSourceSurfaceBrush", Color.FromRgb(0x32, 0x32, 0x32));
                 AssertBrushColor("DemoSettingsCardBrush", Color.FromRgb(0x32, 0x32, 0x32));
             });
         }
@@ -370,8 +368,6 @@ namespace Fluence.Wpf.Tests
                     "DemoSampleRightRailBackgroundBrush",
                     "DemoSampleSourceHeaderBackgroundBrush",
                     "DemoSampleSourceContentBackgroundBrush",
-                    "DemoControlSurfaceBrush",
-                    "DemoSourceSurfaceBrush",
                     "DemoSettingsCardBrush",
                     "DemoSectionCardBrush"
                 ];
@@ -534,8 +530,6 @@ namespace Fluence.Wpf.Tests
                 "DemoSampleRightRailBackgroundBrush",
                 "DemoSampleSourceHeaderBackgroundBrush",
                 "DemoSampleSourceContentBackgroundBrush",
-                "DemoControlSurfaceBrush",
-                "DemoSourceSurfaceBrush",
                 "DemoSettingsCardBrush",
                 "DemoSectionCardBrush"
             ];

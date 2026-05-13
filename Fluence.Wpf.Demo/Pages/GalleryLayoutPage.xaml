@@ -22,8 +22,7 @@
             <ContentControl
                 x:Name="DemoSampleSlot01DemoContentHost"
                 Visibility="Collapsed">
-<StackPanel>
-                    <ui:Border
+<ui:Border
                         Padding="{DynamicResource DemoSampleInnerCardPadding}"
                         Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}"
                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
@@ -36,30 +35,45 @@
                                 Text="StackPanel spacing keeps rows readable while Border frames the group."
                                 TextWrapping="Wrap" />
                             <ui:Separator />
-                            <DockPanel LastChildFill="True">
-                                <ui:Button
-                                    Appearance="Accent"
-                                    Content="Apply"
-                                    DockPanel.Dock="Right" />
-                                <TextBlock
-                                    VerticalAlignment="Center"
-                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                    Text="DockPanel keeps the command aligned to the edge." />
-                            </DockPanel>
+                            <TextBlock
+                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                Text="Separator divides related rows." />
                         </ui:StackPanel>
                     </ui:Border>
+            </ContentControl>
+            <local:DemoSampleControl
+                SampleDescription="Use Border to frame a region, StackPanel spacing for readable rows, and Separator to divide related content." />
 
-                    <ui:Expander x:Name="AdvancedOptionsExpander" Header="Advanced options">
+            <ContentControl
+                x:Name="DemoSampleSlot02DemoContentHost"
+                Visibility="Collapsed">
+<DockPanel LastChildFill="True">
+                        <ui:Button
+                            Appearance="Accent"
+                            Content="Apply"
+                            DockPanel.Dock="Right" />
+                        <TextBlock
+                            VerticalAlignment="Center"
+                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                            Text="DockPanel keeps the command aligned to the edge." />
+                    </DockPanel>
+            </ContentControl>
+            <local:DemoSampleControl
+                SampleDescription="Use DockPanel when one element should pin to an edge while the remaining content fills the available space." />
+
+            <ContentControl
+                x:Name="DemoSampleSlot03DemoContentHost"
+                Visibility="Collapsed">
+<ui:Expander x:Name="AdvancedOptionsExpander" Header="Advanced options">
                         <TextBlock
                             Margin="{DynamicResource DemoCompactStackSpacingMargin}"
                             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                             Text="Expander shows secondary settings only when they are useful."
                             TextWrapping="Wrap" />
                     </ui:Expander>
-                    </StackPanel>
             </ContentControl>
             <local:DemoSampleControl
-                SampleDescription="StackPanel, Border, Separator, DockPanel, and Expander." />
+                SampleDescription="Use Expander for secondary settings that should start collapsed until needed." />
         </StackPanel>
     </ui:SmoothScrollViewer>
 </UserControl>

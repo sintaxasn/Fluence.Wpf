@@ -50,8 +50,6 @@ namespace Fluence.Wpf.Demo.Pages
             <RowDefinition Height=""Auto"" />
             <RowDefinition Height=""8"" />
             <RowDefinition Height=""220"" />
-            <RowDefinition Height=""8"" />
-            <RowDefinition Height=""Auto"" />
         </Grid.RowDefinitions>
 
         <Grid>
@@ -105,9 +103,9 @@ namespace Fluence.Wpf.Demo.Pages
                                 Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
                                 Text=""{Binding Name}"" />
                             <TextBlock
-                                Margin=""8,0,0,0""
+                                Margin=""{DynamicResource DemoDataBindingSecondaryTextMargin}""
                                 VerticalAlignment=""Center""
-                                FontSize=""12""
+                                ui:TextBlockExtensions.Typography=""Caption""
                                 Foreground=""{DynamicResource TextFillColorTertiaryBrush}""
                                 Text=""{Binding AddedAt}"" />
                         </StackPanel>
@@ -115,12 +113,6 @@ namespace Fluence.Wpf.Demo.Pages
                 </DataTemplate>
             </ui:ListView.ItemTemplate>
         </ui:ListView>
-
-        <TextBlock
-            x:Name=""ItemCountLabel""
-            Grid.Row=""4""
-            Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-            Text=""0 items"" />
     </Grid>
 </UserControl>
 ";
@@ -145,7 +137,6 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
             AddDemoItem(""Fluence.Wpf"");
             AddDemoItem(""WinUI 3 parity controls"");
             AddDemoItem(""net472 + net10.0-windows"");
-            UpdateCount();
         }
 
         private void AddItem_Click(object sender, RoutedEventArgs e)
@@ -164,7 +155,6 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
             AddDemoItem(text);
             NewItemBox.Text = string.Empty;
             NewItemBox.Focus();
-            UpdateCount();
         }
 
         private void NewItemBox_KeyDown(object sender, KeyEventArgs e)
@@ -181,7 +171,7 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
             var selected = BoundListView.SelectedItem as DataBindingSampleItem;
             if (selected is not null)
             {
-                BoundListView.AnimateRemove(selected, UpdateCount);
+                BoundListView.AnimateRemove(selected, null);
             }
         }
 
@@ -194,10 +184,6 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
             });
         }
 
-        private void UpdateCount()
-        {
-            ItemCountLabel.Text = string.Format(""{0} item{1}"", _items.Count, _items.Count == 1 ? """" : ""s"");
-        }
     }
 
     public sealed class DataBindingSampleItem
@@ -439,7 +425,6 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
             AddDataTemplateItem("Release notes");
             AddDataTemplateItem("Design tokens");
             AddDataTemplateItem("Control states");
-            UpdateCount();
         }
 
         private void AddItem_Click(object sender, RoutedEventArgs e)
@@ -458,7 +443,6 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
             AddDemoItem(text);
             NewItemBox.Text = string.Empty;
             _ = NewItemBox.Focus();
-            UpdateCount();
         }
 
         private void NewItemBox_KeyDown(object sender, KeyEventArgs e)
@@ -479,7 +463,7 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
 
             if (BoundListView.SelectedItem is DemoItem selected)
             {
-                BoundListView.AnimateRemove(selected, UpdateCount);
+                BoundListView.AnimateRemove(selected, null);
             }
         }
 
@@ -499,11 +483,6 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
                 Name = name,
                 AddedAt = DateTime.Now.ToString("HH:mm:ss", CultureInfo.CurrentCulture)
             });
-        }
-
-        private void UpdateCount()
-        {
-            _ = (ItemCountLabel?.Text = string.Format(CultureInfo.CurrentCulture, "{0} item{1}", _items.Count, _items.Count == 1 ? "" : "s"));
         }
 
         private void SelectionMode_Changed(object sender, RoutedEventArgs e)

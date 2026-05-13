@@ -192,7 +192,7 @@ namespace Fluence.Wpf.Demo.Pages
 
         private void NavigationStyleComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (_syncing || GetSelectedTag(NavigationStyleComboBox) is not SettingsNavigationOption option || _owner is null)
+            if (!IsLoaded || _syncing || GetSelectedTag(NavigationStyleComboBox) is not SettingsNavigationOption option || _owner is null)
             {
                 return;
             }

@@ -110,14 +110,14 @@ namespace Fluence.Wpf.Demo.Pages.Tabs
             <ColumnDefinition Width=""*"" />
         </Grid.ColumnDefinitions>
         <TabControl Height=""220"" TabStripPlacement=""Left"">
-            <TabItem Header=""Inbox"">
+            <TabItem Header=""Inbox"" Width=""{DynamicResource DemoPlacementTabHeaderWidth}"">
                 <TextBlock
                     Margin=""20""
                     Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
                     Text=""Left tabs keep vertical categories visible.""
                     TextWrapping=""Wrap"" />
             </TabItem>
-            <TabItem Header=""Archive"">
+            <TabItem Header=""Archive"" Width=""{DynamicResource DemoPlacementTabHeaderWidth}"">
                 <TextBlock
                     Margin=""20""
                     Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
@@ -129,14 +129,14 @@ namespace Fluence.Wpf.Demo.Pages.Tabs
             Grid.Column=""2""
             Height=""220""
             TabStripPlacement=""Bottom"">
-            <TabItem Header=""Preview"">
+            <TabItem Header=""Preview"" Width=""{DynamicResource DemoPlacementTabHeaderWidth}"">
                 <TextBlock
                     Margin=""20""
                     Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
                     Text=""Bottom tabs leave the top edge for document chrome.""
                     TextWrapping=""Wrap"" />
             </TabItem>
-            <TabItem Header=""Details"">
+            <TabItem Header=""Details"" Width=""{DynamicResource DemoPlacementTabHeaderWidth}"">
                 <TextBlock
                     Margin=""20""
                     Foreground=""{DynamicResource TextFillColorPrimaryBrush}""

@@ -24,21 +24,17 @@
                         <ui:Button
                             Margin="{DynamicResource DemoControlGroupItemMargin}"
                             Content="Standard"
-                            IsEnabled="{Binding IsChecked, ElementName=ButtonEnableCheckBox}" />
+                            IsEnabled="{Binding IsChecked, Source={x:Reference ButtonEnableCheckBox}}" />
                         <ui:Button
                             Margin="{DynamicResource DemoControlGroupItemMargin}"
                             Appearance="Accent"
                             Content="Accent"
-                            IsEnabled="{Binding IsChecked, ElementName=ButtonEnableCheckBox}" />
+                            IsEnabled="{Binding IsChecked, Source={x:Reference ButtonEnableCheckBox}}" />
                         <ui:Button
                             Margin="{DynamicResource DemoControlGroupItemMargin}"
                             Appearance="Subtle"
                             Content="Subtle"
-                            IsEnabled="{Binding IsChecked, ElementName=ButtonEnableCheckBox}" />
-                        <ui:Button
-                            Margin="{DynamicResource DemoControlGroupItemMargin}"
-                            Content="Disabled"
-                            IsEnabled="False" />
+                            IsEnabled="{Binding IsChecked, Source={x:Reference ButtonEnableCheckBox}}" />
                     </WrapPanel>
             </ContentControl>
             <ContentControl
@@ -229,19 +225,6 @@
                 x:Name="DemoSampleSlot06DemoContentHost"
                 Visibility="Collapsed">
 <WrapPanel>
-                        <ui:ToggleButton
-                            Margin="{DynamicResource DemoControlGroupItemMargin}"
-                            Content="Bold"
-                            IsChecked="True" />
-                        <ui:ToggleButton
-                            Margin="{DynamicResource DemoControlGroupItemMargin}"
-                            Appearance="Accent"
-                            Content="Pinned"
-                            IsChecked="True" />
-                        <ui:ToggleButton
-                            Margin="{DynamicResource DemoControlGroupItemMargin}"
-                            Content="Disabled"
-                            IsEnabled="False" />
                         <ui:RepeatButton
                             x:Name="RepeatCounterButton"
                             Margin="{DynamicResource DemoControlGroupItemMargin}"
@@ -258,7 +241,7 @@
                         Text="Clicks: 0" />
             </ContentControl>
             <local:DemoSampleControl
-                SampleDescription="ToggleButton holds a checked state. RepeatButton raises Click repeatedly while pressed." />
+                SampleDescription="Use RepeatButton when holding the pointer should raise Click repeatedly." />
         </StackPanel>
     </ui:SmoothScrollViewer>
 </UserControl>

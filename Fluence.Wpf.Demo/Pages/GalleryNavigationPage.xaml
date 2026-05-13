@@ -39,17 +39,17 @@
                             Content="Home"
                             IsSelected="True">
                             <ui:NavigationViewItem.Icon>
-                                <ui:FontIcon Glyph="&#xE80F;" IconFontSize="20" />
+                                <ui:FontIcon Glyph="&#xE80F;" IconFontSize="16" />
                             </ui:NavigationViewItem.Icon>
                         </ui:NavigationViewItem>
                         <ui:NavigationViewItem Content="Files">
                             <ui:NavigationViewItem.Icon>
-                                <ui:FontIcon Glyph="&#xE8B7;" IconFontSize="20" />
+                                <ui:FontIcon Glyph="&#xE8B7;" IconFontSize="16" />
                             </ui:NavigationViewItem.Icon>
                         </ui:NavigationViewItem>
                         <ui:NavigationViewItem Content="Reports">
                             <ui:NavigationViewItem.Icon>
-                                <ui:FontIcon Glyph="&#xE9D9;" IconFontSize="20" />
+                                <ui:FontIcon Glyph="&#xE9D9;" IconFontSize="16" />
                             </ui:NavigationViewItem.Icon>
                         </ui:NavigationViewItem>
                     </ui:NavigationView>
@@ -102,7 +102,6 @@
                         BorderThickness="{DynamicResource DemoSingleBorderThickness}">
                         <ui:NavigationView
                             x:Name="CompactNavigationDemo"
-                            BackRequested="CompactNavigationDemo_BackRequested"
                             IsBackButtonVisible="True"
                             IsBackEnabled="{Binding IsChecked, ElementName=BackEnabledToggle}"
                             IsPaneOpen="False"
@@ -113,7 +112,7 @@
                                     x:Name="CompactNavigationFooterItem"
                                     Content="Settings">
                                     <ui:NavigationViewItem.Icon>
-                                        <ui:FontIcon Glyph="&#xE713;" IconFontSize="20" />
+                                        <ui:FontIcon Glyph="&#xE713;" IconFontSize="16" />
                                     </ui:NavigationViewItem.Icon>
                                 </ui:NavigationViewItem>
                             </ui:NavigationView.PaneFooter>
@@ -122,24 +121,16 @@
                                 Content="Dashboard"
                                 IsSelected="True">
                                 <ui:NavigationViewItem.Icon>
-                                    <ui:FontIcon Glyph="&#xE80F;" IconFontSize="20" />
+                                    <ui:FontIcon Glyph="&#xE80F;" IconFontSize="16" />
                                 </ui:NavigationViewItem.Icon>
                             </ui:NavigationViewItem>
                             <ui:NavigationViewItem Content="Messages">
                                 <ui:NavigationViewItem.Icon>
-                                    <ui:FontIcon Glyph="&#xE8BD;" IconFontSize="20" />
+                                    <ui:FontIcon Glyph="&#xE8BD;" IconFontSize="16" />
                                 </ui:NavigationViewItem.Icon>
                             </ui:NavigationViewItem>
                         </ui:NavigationView>
                     </Border>
-            </ContentControl>
-            <ContentControl
-                x:Name="DemoSampleSlot03OutputContentHost"
-                Visibility="Collapsed">
-<TextBlock
-                        x:Name="BackStatusLabel"
-                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                        Text="Back button disabled" />
             </ContentControl>
             <ContentControl
                 x:Name="DemoSampleSlot03RightRailContentHost"
@@ -147,9 +138,8 @@
 <StackPanel>
                         <ui:CheckBox
                             x:Name="BackEnabledToggle"
-                            Checked="BackEnabledToggle_Changed"
                             Content="Back enabled"
-                            Unchecked="BackEnabledToggle_Changed" />
+                            />
                     </StackPanel>
             </ContentControl>
             <local:DemoSampleControl
@@ -162,12 +152,13 @@
 <Border Height="260">
                         <ui:NavigationView
                             Header="Inbox"
-                            PaneDisplayMode="LeftCompact">
+                            IsPaneOpen="True"
+                            PaneDisplayMode="Left">
                             <ui:NavigationViewItem
                                 Content="Inbox"
                                 IsSelected="True">
                                 <ui:NavigationViewItem.Icon>
-                                    <ui:FontIcon Glyph="&#xE715;" IconFontSize="20" />
+                                    <ui:FontIcon Glyph="&#xE715;" IconFontSize="16" />
                                 </ui:NavigationViewItem.Icon>
                                 <ui:NavigationViewItem.InfoBadge>
                                     <ui:InfoBadge Value="12" />
@@ -175,7 +166,7 @@
                             </ui:NavigationViewItem>
                             <ui:NavigationViewItem Content="Approvals">
                                 <ui:NavigationViewItem.Icon>
-                                    <ui:FontIcon Glyph="&#xE73E;" IconFontSize="20" />
+                                    <ui:FontIcon Glyph="&#xE73E;" IconFontSize="16" />
                                 </ui:NavigationViewItem.Icon>
                                 <ui:NavigationViewItem.InfoBadge>
                                     <ui:InfoBadge BadgeStyle="{x:Static uicore:InfoBadgeStyle.Caution}" />
@@ -183,7 +174,7 @@
                             </ui:NavigationViewItem>
                             <ui:NavigationViewItem Content="Alerts">
                                 <ui:NavigationViewItem.Icon>
-                                    <ui:FontIcon Glyph="&#xE7BA;" IconFontSize="20" />
+                                    <ui:FontIcon Glyph="&#xE7BA;" IconFontSize="16" />
                                 </ui:NavigationViewItem.Icon>
                                 <ui:NavigationViewItem.InfoBadge>
                                     <ui:InfoBadge BadgeStyle="{x:Static uicore:InfoBadgeStyle.Critical}" Value="2" />

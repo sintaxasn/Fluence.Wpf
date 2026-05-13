@@ -30,7 +30,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -372,10 +371,10 @@ namespace Fluence.Wpf.Tests
                             Assert.IsNotNull(pageRoot, "Icons should keep a named root for virtualization layout.");
                             Assert.AreEqual(new Thickness(36, 24, 36, 48), pageRoot.Margin,
                                 "Icons should keep the shared page margins including 48px bottom breathing room.");
-                            Assert.AreEqual(1064.0, pageRoot.MaxWidth, 0.01,
-                                "Icons should share the WinUI Gallery max content width.");
-                            Assert.AreEqual(HorizontalAlignment.Left, pageRoot.HorizontalAlignment,
-                                "Icons content should be left aligned within the page.");
+                            Assert.IsTrue(double.IsPositiveInfinity(pageRoot.MaxWidth),
+                                "Icons should stretch instead of keeping the old max content width.");
+                            Assert.AreEqual(HorizontalAlignment.Stretch, pageRoot.HorizontalAlignment,
+                                "Icons content should stretch within the page.");
                             Assert.IsNotNull(pageRoot.Background,
                                 "Icons root should paint the shared demo page background.");
                             continue;
@@ -391,13 +390,13 @@ namespace Fluence.Wpf.Tests
                         System.Windows.Controls.StackPanel? content = scrollViewer.Content as System.Windows.Controls.StackPanel;
                         Assert.IsNotNull(content, page.GetType().Name + " should use a StackPanel content host.");
                         Assert.AreSame(contentStyle, content.Style,
-                            page.GetType().Name + " should use the shared max-width content style.");
+                            page.GetType().Name + " should use the shared content style.");
                         Assert.AreEqual(new Thickness(36, 24, 36, 48), content.Margin,
                             page.GetType().Name + " should keep the shared page margins including 48px bottom breathing room.");
-                        Assert.AreEqual(1064.0, content.MaxWidth, 0.01,
-                            page.GetType().Name + " should share the WinUI Gallery max content width.");
-                        Assert.AreEqual(HorizontalAlignment.Left, content.HorizontalAlignment,
-                            page.GetType().Name + " content should be left aligned.");
+                        Assert.IsTrue(double.IsPositiveInfinity(content.MaxWidth),
+                            page.GetType().Name + " should stretch instead of keeping the old max content width.");
+                        Assert.AreEqual(HorizontalAlignment.Stretch, content.HorizontalAlignment,
+                            page.GetType().Name + " content should stretch.");
                     }
                     finally
                     {
@@ -815,6 +814,96 @@ namespace Fluence.Wpf.Tests
                         "LeftCompact mode should keep the Settings footer item visible as a gear icon.");
                     FontIcon? settingsIcon = settings.Icon as FontIcon;
                     Assert.IsNotNull(settingsIcon, "The Settings footer item should keep its gear icon in compact mode.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void MainWindow_SettingsFooter_DoesNotForceTopPaneModeWhenOpened()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                MainWindow window = CreateShownMainWindow();
+                try
+                {
+                    NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
+                    NavigationViewItem? settings = FindByName<NavigationViewItem>(window, "SettingsNavigationItem");
+                    Assert.IsNotNull(nav, "DemoNav must exist.");
+                    Assert.IsNotNull(settings, "The Settings footer item must exist.");
+
+                    nav.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact;
+                    nav.IsPaneOpen = false;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    InvokeSettingsItem(settings);
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.AreEqual(NavigationViewPaneDisplayMode.LeftCompact, nav.PaneDisplayMode,
+                        "Opening Settings must not force the shell navigation into Top mode.");
+                    Assert.IsFalse(nav.IsPaneOpen,
+                        "Opening Settings must preserve the real collapsed pane state.");
+
+                    Fluence.Wpf.Controls.ComboBox? navigationStyle = FindByName<Fluence.Wpf.Controls.ComboBox>(
+                        nav.Content as DependencyObject,
+                        "NavigationStyleComboBox");
+                    Assert.IsNotNull(navigationStyle, "Settings page should expose the navigation-style selector.");
+                    Assert.AreEqual(2, navigationStyle.SelectedIndex,
+                        "Settings should reflect the current compact pane state when opened.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void GallerySettingsPage_NavigationStyleCombo_TracksExternalIsPaneOpenChanges()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                MainWindow window = CreateShownMainWindow();
+                try
+                {
+                    NavigationView? nav = FindByName<NavigationView>(window, "DemoNav");
+                    Assert.IsNotNull(nav, "DemoNav must exist.");
+
+                    window.NavigateTo("settings");
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Fluence.Wpf.Controls.ComboBox? navigationStyle = FindByName<Fluence.Wpf.Controls.ComboBox>(
+                        nav.Content as DependencyObject,
+                        "NavigationStyleComboBox");
+                    Assert.IsNotNull(navigationStyle, "Settings page should expose the navigation-style selector.");
+
+                    nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
+                    nav.IsPaneOpen = false;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.AreEqual(2, navigationStyle.SelectedIndex,
+                        "A Left pane that is externally collapsed should be shown as Left compact.");
+
+                    nav.IsPaneOpen = true;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.AreEqual(1, navigationStyle.SelectedIndex,
+                        "A Left pane that is externally opened should be shown as Left.");
                 }
                 finally
                 {
@@ -1387,59 +1476,6 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void DemoSampleControl_ReplaceSourceLink_ReplacesOwningCard()
-        {
-            RunOnSta(delegate
-            {
-                EnsureTheme();
-                System.Windows.Controls.StackPanel host = new();
-                System.Windows.Controls.StackPanel cardContent = new();
-                _ = cardContent.Children.Add(new WpfTextBlock { Text = "Visible sample" });
-                WpfButton sourceLink = new()
-                {
-                    Name = "InlineSourceLink",
-                    HorizontalAlignment = HorizontalAlignment.Right,
-                    Content = "Source"
-                };
-                _ = cardContent.Children.Add(sourceLink);
-                Card card = new()
-                {
-                    Margin = new Thickness(0, 0, 0, 16),
-                    Padding = new Thickness(16),
-                    Content = cardContent
-                };
-                _ = host.Children.Add(card);
-
-                DemoSampleControl sample = InvokeReplaceSourceLink(
-                    sourceLink,
-                    "<ui:Button Content=\"Save\" />",
-                    string.Empty);
-
-                Window window = CreateHostWindow(host);
-                try
-                {
-                    Assert.AreSame(sample, host.Children[0],
-                        "Replacing a source link inside a card should replace the owning card, not nest a sample host inside it.");
-                    Assert.AreSame(cardContent, sample.DemoContent,
-                        "The original card body should become the sample content.");
-                    Assert.IsFalse(cardContent.Children.Contains(sourceLink),
-                        "The old source-link button should be removed from the sample body.");
-
-                    FluenceExpander? expander = FindByName<FluenceExpander>(sample, "SourceExpander");
-                    WpfBorder? sampleCard = FindByName<WpfBorder>(sample, "SampleCard");
-                    Assert.IsNotNull(expander);
-                    Assert.IsNotNull(sampleCard);
-                    Assert.AreEqual((GetVisualY(sampleCard, window) ?? double.MinValue) + sampleCard.ActualHeight, GetVisualY(expander, window) ?? double.MinValue, 0.5,
-                        "Source expander should be attached directly below the replaced card body.");
-                }
-                finally
-                {
-                    window.Close();
-                }
-            });
-        }
-
-        [TestMethod]
         public void DemoSampleControl_EmptyCSharpSourceAddsOnlyXamlTab()
         {
             RunOnSta(delegate
@@ -1770,6 +1806,28 @@ namespace Fluence.Wpf.Tests
                         "Explicit tab order buttons should line up in equal columns.");
                     Assert.AreEqual(3, tabOrder.Children.Count,
                         "Explicit tab order sample should contain three aligned buttons.");
+
+                    List<DemoSampleControl> samples = [.. FindAllVisualChildren<DemoSampleControl>(page)];
+                    Assert.AreEqual(4, samples.Count,
+                        "Accessibility page should expose each discrete sample through DemoSampleControl.");
+                    Assert.IsTrue(samples.All(sample => !string.IsNullOrWhiteSpace(sample.XamlSource)),
+                        "Every accessibility sample should have inline XAML source.");
+                    Assert.IsNull(FindByName<FrameworkElement>(page, "FocusAndTabOrderSourceLink"),
+                        "Accessibility page should not keep legacy SourceLink placeholders.");
+                    Assert.IsNull(FindByName<FrameworkElement>(page, "HighContrastMappingSourceLink"),
+                        "Accessibility page should not keep legacy SourceLink placeholders.");
+                    Assert.IsNull(FindByName<FrameworkElement>(page, "AutomationPropertiesSourceLink"),
+                        "Accessibility page should not keep legacy SourceLink placeholders.");
+                    Assert.IsNull(FindByName<FrameworkElement>(page, "RtlLayoutSourceLink"),
+                        "Accessibility page should not keep legacy SourceLink placeholders.");
+
+                    ToggleSwitch? rtlToggle = FindByName<ToggleSwitch>(page, "RtlToggle");
+                    Card? rtlCard = FindByName<Card>(page, "RtlDemoCard");
+                    Assert.IsNotNull(rtlToggle, "RTL sample should expose the toggle.");
+                    Assert.IsNotNull(rtlCard, "RTL sample should expose the demo card.");
+                    Assert.AreEqual(true, rtlToggle.IsChecked, "Accessibility RTL should be enabled by default.");
+                    Assert.AreEqual(FlowDirection.RightToLeft, rtlCard.FlowDirection,
+                        "Accessibility RTL demo card should default to mirrored layout.");
                 }
                 finally
                 {
@@ -2021,17 +2079,6 @@ namespace Fluence.Wpf.Tests
             }
 
             return null;
-        }
-
-        private static DemoSampleControl InvokeReplaceSourceLink(FrameworkElement placeholder, string xamlSource, string csharpSource)
-        {
-            MethodInfo method = typeof(DemoSampleControl).GetMethod(
-                "ReplaceSourceLink",
-                BindingFlags.Public | BindingFlags.Static) ?? throw new InvalidOperationException("ReplaceSourceLink shim was not found.");
-
-            object? result = method.Invoke(null, [placeholder, xamlSource, csharpSource]);
-            return result as DemoSampleControl
-                ?? throw new InvalidOperationException("ReplaceSourceLink did not return a DemoSampleControl.");
         }
 
         private static IEnumerable<T> FindAllVisualChildren<T>(DependencyObject? root)

@@ -39,31 +39,28 @@ namespace Fluence.Wpf.Demo.Pages
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
-    <WrapPanel>
-        <ui:Button Margin=""0,0,8,8"" Content=""Standard"" />
-        <ui:Button
-            Margin=""0,0,8,8""
-            Appearance=""Accent""
-            Content=""Accent"" />
-        <ui:Button
-            Margin=""0,0,8,8""
-            Appearance=""Subtle""
-            Content=""Subtle"" />
-        <ui:Button
-            Margin=""0,0,8,8""
-            Content=""Standard""
-            IsEnabled=""False"" />
-        <ui:Button
-            Margin=""0,0,8,8""
-            Appearance=""Accent""
-            Content=""Accent""
-            IsEnabled=""False"" />
-        <ui:Button
-            Margin=""0,0,8,8""
-            Appearance=""Subtle""
-            Content=""Subtle""
-            IsEnabled=""False"" />
-    </WrapPanel>
+    <StackPanel>
+        <WrapPanel>
+            <ui:Button
+                Margin=""0,0,8,8""
+                Content=""Standard""
+                IsEnabled=""{Binding IsChecked, Source={x:Reference ButtonEnableCheckBox}}"" />
+            <ui:Button
+                Margin=""0,0,8,8""
+                Appearance=""Accent""
+                Content=""Accent""
+                IsEnabled=""{Binding IsChecked, Source={x:Reference ButtonEnableCheckBox}}"" />
+            <ui:Button
+                Margin=""0,0,8,8""
+                Appearance=""Subtle""
+                Content=""Subtle""
+                IsEnabled=""{Binding IsChecked, Source={x:Reference ButtonEnableCheckBox}}"" />
+        </WrapPanel>
+        <ui:CheckBox
+            x:Name=""ButtonEnableCheckBox""
+            Content=""Enable buttons""
+            IsChecked=""True"" />
+    </StackPanel>
 </UserControl>
 ";
 
@@ -310,19 +307,6 @@ namespace Fluence.Wpf.Demo.Pages.Buttons
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
     <WrapPanel>
-        <ui:ToggleButton
-            Margin=""0,0,8,8""
-            Content=""Bold""
-            IsChecked=""True"" />
-        <ui:ToggleButton
-            Margin=""0,0,8,8""
-            Appearance=""Accent""
-            Content=""Pinned""
-            IsChecked=""True"" />
-        <ui:ToggleButton
-            Margin=""0,0,8,8""
-            Content=""Disabled""
-            IsEnabled=""False"" />
         <ui:RepeatButton
             x:Name=""RepeatCounterButton""
             Margin=""0,0,8,8""

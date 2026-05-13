@@ -53,8 +53,7 @@
                         x:Name="SelectionTreeView"
                         MaxHeight="260"
                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                        BorderThickness="1"
-                        SelectedItemChanged="SelectionTreeView_SelectedItemChanged">
+                        BorderThickness="1">
                         <ui:TreeViewItem Header="Inbox" IsExpanded="True">
                             <ui:TreeViewItem Header="Priority" IsExpanded="True">
                                 <ui:TreeViewItem Header="Contract review" />
@@ -70,14 +69,6 @@
                             <ui:TreeViewItem Header="April" />
                         </ui:TreeViewItem>
                     </ui:TreeView>
-            </ContentControl>
-            <ContentControl
-                x:Name="DemoSampleSlot02OutputContentHost"
-                Visibility="Collapsed">
-<TextBlock
-                        x:Name="TreeSelectionLabel"
-                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                        Text="Selected: -" />
             </ContentControl>
             <local:DemoSampleControl
                 SampleDescription="Handle SelectedItemChanged when selecting a node should update related content." />
