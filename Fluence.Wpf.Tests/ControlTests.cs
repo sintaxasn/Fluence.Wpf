@@ -1414,7 +1414,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(FindVisualChildByName<Controls.TextBox>(window, "CharCountTextBox"));
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Selection");
-                    Assert.IsNotNull(FindVisualChildByName<Controls.ToggleSwitch>(window, "SimpleToggleSwitch"));
+                    Assert.IsNotNull(FindVisualChildByName<Controls.ToggleSwitch>(window, "WorkToggleSwitch"));
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Selection");
                     Assert.IsNotNull(FindVisualChildByName<Controls.ComboBox>(window, "SelectionDemoCombo"));

@@ -489,6 +489,10 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(presenter, "NavigationViewItem template must render InfoBadge content.");
                     Assert.AreSame(badge, presenter.Content,
                         "NavigationViewItem InfoBadge presenter must bind to NavigationViewItem.InfoBadge.");
+                    Assert.IsTrue(double.IsNaN(presenter.Width) || presenter.Width >= 34.0,
+                        "NavigationViewItem must not constrain InfoBadge value pills to the old 24px slot.");
+                    Assert.AreEqual(HorizontalAlignment.Center, presenter.HorizontalAlignment,
+                        "NavigationViewItem InfoBadge presenter should center the badge in the trailing slot.");
                 }
                 finally
                 {

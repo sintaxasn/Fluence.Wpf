@@ -127,11 +127,9 @@ namespace Fluence.Wpf.Demo.Pages.Status
                 Margin=""0,0,12,0""
                 Checked=""IndeterminateToggle_Toggled""
                 IsChecked=""True""
+                OffContent=""On / Off""
+                OnContent=""On / Off""
                 Unchecked=""IndeterminateToggle_Toggled"" />
-            <TextBlock
-                VerticalAlignment=""Center""
-                Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-                Text=""Indeterminate"" />
         </StackPanel>
     </StackPanel>
 </UserControl>
@@ -270,8 +268,8 @@ namespace Fluence.Wpf.Demo.Pages.Status
             HorizontalAlignment=""Center""
             VerticalAlignment=""Center""
             IsChecked=""{Binding IsActive, ElementName=IndeterminateProgressRing, Mode=TwoWay}""
-            OffContent=""Off""
-            OnContent=""On"" />
+            OffContent=""On / Off""
+            OnContent=""On / Off"" />
         <TextBlock
             x:Name=""IndeterminateProgressRingLabel""
             Grid.Row=""2""

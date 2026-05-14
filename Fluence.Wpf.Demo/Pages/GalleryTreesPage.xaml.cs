@@ -41,6 +41,7 @@ namespace Fluence.Wpf.Demo.Pages
     <ui:TreeView
         x:Name=""HierarchyTreeView""
         MaxHeight=""260""
+        Background=""{DynamicResource DemoControlExampleBackgroundBrush}""
         BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
         BorderThickness=""1"">
         <ui:TreeViewItem
@@ -86,6 +87,7 @@ namespace Fluence.Wpf.Demo.Pages.Trees
             x:Name=""SelectionTreeView""
             MaxHeight=""260""
             Margin=""0,0,0,12""
+            Background=""{DynamicResource DemoControlExampleBackgroundBrush}""
             BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
             BorderThickness=""1"">
             <ui:TreeViewItem
@@ -131,6 +133,7 @@ namespace Fluence.Wpf.Demo.Pages.Trees
     <ui:TreeView
         x:Name=""MultiSelectTreeView""
         MaxHeight=""260""
+        Background=""{DynamicResource DemoControlExampleBackgroundBrush}""
         BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
         BorderThickness=""1""
         SelectionMode=""{x:Static uicore:TreeViewSelectionMode.Multiple}"">
@@ -174,6 +177,7 @@ namespace Fluence.Wpf.Demo.Pages.Trees
             x:Name=""ExpansionTreeView""
             MaxHeight=""260""
             Margin=""0,0,0,12""
+            Background=""{DynamicResource DemoControlExampleBackgroundBrush}""
             BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
             BorderThickness=""1"">
             <ui:TreeViewItem

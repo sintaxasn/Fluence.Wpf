@@ -47,6 +47,7 @@ namespace Fluence.Wpf.Demo.Pages
         <ui:ListView
             x:Name=""SimpleListView""
             Height=""230""
+            Background=""{DynamicResource DemoControlExampleBackgroundBrush}""
             BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
             BorderThickness=""1"">
             <ListViewItem Content=""Ana Bowman"" />
@@ -59,6 +60,7 @@ namespace Fluence.Wpf.Demo.Pages
             x:Name=""RichListView""
             Grid.Column=""2""
             Height=""230""
+            Background=""{DynamicResource DemoControlExampleBackgroundBrush}""
             BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
             BorderThickness=""1"">
             <ListViewItem>
@@ -275,15 +277,37 @@ namespace Fluence.Wpf.Demo.Pages.Data
     <ui:PersonPicture
         Width=""56""
         Height=""56""
-        DisplayName=""Ana Bowman"" />
+        Margin=""0,0,12,12""
+        DisplayName=""Ana Bowman""
+        ProfilePicture=""pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureAnaBowman.png"" />
     <ui:PersonPicture
         Width=""56""
         Height=""56""
-        Initials=""SH""
+        Margin=""0,0,12,12""
+        DisplayName=""Shawn Hughes""
+        ProfilePicture=""pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureShawnHughes.png""
         BadgeNumber=""3"" />
     <ui:PersonPicture
         Width=""56""
         Height=""56""
+        Margin=""0,0,12,12""
+        DisplayName=""Priya Kapoor""
+        ProfilePicture=""pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPicturePriyaKapoor.png"" />
+    <ui:PersonPicture
+        Width=""56""
+        Height=""56""
+        Margin=""0,0,12,12""
+        DisplayName=""Mateo Rivera""
+        ProfilePicture=""pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureMateoRivera.png"" />
+    <ui:PersonPicture
+        Width=""56""
+        Height=""56""
+        Margin=""0,0,12,12""
+        Initials=""NB"" />
+    <ui:PersonPicture
+        Width=""56""
+        Height=""56""
+        Margin=""0,0,12,12""
         IsGroup=""True""
         BadgeGlyph=""&#xE73E;"" />
 </WrapPanel>

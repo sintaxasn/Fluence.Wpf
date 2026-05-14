@@ -124,9 +124,15 @@ namespace Fluence.Wpf.Tests
             {
                 Controls.NumberBox? numberBox = FindVisualChildByName<Controls.NumberBox>(window, "ProgressValueNumberBox");
                 Controls.ProgressBar? progressBar = FindVisualChildByName<Controls.ProgressBar>(window, "StandardProgressBar");
+                Controls.ToggleSwitch? indeterminateToggle = FindVisualChildByName<Controls.ToggleSwitch>(window, "IndeterminateToggle");
 
                 Assert.IsNotNull(numberBox, "Status page should use a NumberBox for the first ProgressBar value.");
                 Assert.IsNotNull(progressBar, "Status page should expose the first ProgressBar.");
+                Assert.IsNotNull(indeterminateToggle, "Status page should expose the indeterminate ProgressBar toggle.");
+                Assert.AreEqual("On / Off", indeterminateToggle.OnContent as string,
+                    "Indeterminate toggle text should not switch to a state-specific label.");
+                Assert.AreEqual("On / Off", indeterminateToggle.OffContent as string,
+                    "Indeterminate toggle text should not switch to a state-specific label.");
                 Assert.AreEqual(1d, numberBox.Minimum, "Progress value NumberBox should start at 1.");
                 Assert.AreEqual(100d, numberBox.Maximum, "Progress value NumberBox should cap at 100.");
                 Assert.IsNull(FindVisualChildByName<Controls.Slider>(window, "ProgressSlider"),
@@ -140,6 +146,11 @@ namespace Fluence.Wpf.Tests
 
                 Assert.AreEqual(73d, progressBar.Value, 0.1,
                     "Changing the NumberBox should update the first ProgressBar.");
+
+                indeterminateToggle.IsChecked = false;
+                DrainDispatcher(window.Dispatcher);
+                Assert.AreEqual("On / Off", indeterminateToggle.OffContent as string,
+                    "Indeterminate toggle text should remain fixed after toggling off.");
             });
         }
 
@@ -184,6 +195,15 @@ namespace Fluence.Wpf.Tests
                 Assert.AreEqual(infoWidth, previewWidth, 0.1);
                 Assert.AreEqual(infoWidth, detailsWidth, 0.1);
                 Assert.IsTrue(infoWidth > 0.0, "Placement sample tab headers should use an explicit shared width.");
+
+                TabControl? bottomTabs = FindVisualChildByName<TabControl>(window, "BottomPlacementTabs");
+                Assert.IsNotNull(bottomTabs, "Placement sample should expose the bottom TabControl.");
+                Grid? previewPanel = FindVisualChildByName<Grid>(bottomTabs, "PreviewPlacementPanel");
+                Assert.IsNotNull(previewPanel, "Bottom tab content should expose a fill panel.");
+                Assert.AreEqual(GridUnitType.Star, previewPanel.RowDefinitions[0].Height.GridUnitType,
+                    "The space above the bottom tab row should consume available height.");
+                Assert.AreEqual(GridUnitType.Auto, previewPanel.RowDefinitions[1].Height.GridUnitType,
+                    "The bottom details area should remain close to the tab action row.");
             });
         }
 
@@ -200,6 +220,13 @@ namespace Fluence.Wpf.Tests
                     "Layout page should have a dedicated DockPanel DemoSampleControl.");
                 Assert.IsTrue(descriptions.Any(description => description.IndexOf("Expander", StringComparison.OrdinalIgnoreCase) >= 0),
                     "Layout page should have a dedicated Expander DemoSampleControl.");
+
+                Controls.Expander? dockPanelExpander = FindVisualChildByName<Controls.Expander>(window, "DockPanelOptionsExpander");
+                Assert.IsNotNull(dockPanelExpander, "Layout page should expose the DockPanel Expander sample.");
+                Assert.IsInstanceOfType(dockPanelExpander.Header, typeof(DockPanel),
+                    "DockPanel Expander sample should use DockPanel in the collapsed header.");
+                Assert.IsInstanceOfType(dockPanelExpander.Content, typeof(DockPanel),
+                    "DockPanel Expander sample should use DockPanel in the expanded content.");
             });
         }
 

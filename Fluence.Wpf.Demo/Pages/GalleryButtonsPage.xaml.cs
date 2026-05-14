@@ -40,7 +40,7 @@ namespace Fluence.Wpf.Demo.Pages
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
     <StackPanel>
-        <WrapPanel>
+        <WrapPanel VerticalAlignment=""Center"">
             <ui:Button
                 Margin=""0,0,8,8""
                 Content=""Standard""
@@ -82,7 +82,7 @@ namespace Fluence.Wpf.Demo.Pages.Buttons
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
-    <WrapPanel>
+    <WrapPanel VerticalAlignment=""Center"">
         <ui:Button Margin=""0,0,8,8"" Content=""Icon Left"">
             <ui:Button.Icon>
                 <ui:FontIcon Glyph=""&#xE774;"" IconFontSize=""14"" />
@@ -126,7 +126,7 @@ namespace Fluence.Wpf.Demo.Pages.Buttons
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
-    <WrapPanel>
+    <WrapPanel VerticalAlignment=""Center"">
         <ui:HyperlinkButton
             Margin=""0,0,16,8""
             Content=""Documentation""
@@ -169,7 +169,7 @@ namespace Fluence.Wpf.Demo.Pages.Buttons
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
-    <WrapPanel>
+    <WrapPanel VerticalAlignment=""Center"">
         <ui:DropDownButton Margin=""0,0,8,8"" Content=""New"">
             <ui:DropDownButton.Flyout>
                 <StackPanel MinWidth=""180"" Margin=""4"">
@@ -235,7 +235,7 @@ namespace Fluence.Wpf.Demo.Pages.Buttons
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
-    <WrapPanel>
+    <WrapPanel VerticalAlignment=""Center"">
         <ui:SplitButton Margin=""0,0,8,8"" Content=""Save"">
             <ui:SplitButton.Flyout>
                 <StackPanel MinWidth=""180"" Margin=""4"">
@@ -306,7 +306,7 @@ namespace Fluence.Wpf.Demo.Pages.Buttons
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
-    <WrapPanel>
+    <WrapPanel VerticalAlignment=""Center"">
         <ui:RepeatButton
             x:Name=""RepeatCounterButton""
             Margin=""0,0,8,8""

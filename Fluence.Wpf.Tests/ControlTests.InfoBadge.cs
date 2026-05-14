@@ -28,6 +28,7 @@
 
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Documents;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Fluence.Wpf.Controls;
 using System.Collections.Generic;
@@ -118,6 +119,52 @@ namespace Fluence.Wpf.Tests
                 Assert.AreEqual(Visibility.Collapsed, dot?.Visibility, "DotIndicator must be Collapsed when Value >= 0.");
                 Assert.AreEqual(Visibility.Visible, border?.Visibility, "BadgeBorder must be Visible when Value >= 0.");
                 w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void InfoBadge_ValueBadge_UsesStableScreenshotPillMetrics()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                InfoBadge badge = new() { Value = 12 };
+                Window w = new() { Content = badge, Width = 100, Height = 80 };
+                try
+                {
+                    w.Show();
+                    DrainDispatcher(w.Dispatcher);
+                    w.UpdateLayout();
+
+                    System.Windows.Controls.Border? border = FindVisualChildByName<System.Windows.Controls.Border>(badge, "BadgeBorder");
+                    ContentPresenter? content = FindVisualChildByName<ContentPresenter>(badge, "ContentArea");
+                    Assert.IsNotNull(border, "Value badge must render through BadgeBorder.");
+                    Assert.IsNotNull(content, "Value badge must render centered text through ContentArea.");
+                    Assert.AreEqual(34.0, border.MinWidth, 0.1,
+                        "Value badges should keep the stable pill width shown in the Navigation sample screenshot.");
+                    Assert.AreEqual(24.0, border.MinHeight, 0.1,
+                        "Value badges should keep the stable pill height shown in the Navigation sample screenshot.");
+                    Assert.AreEqual(24.0, border.MaxHeight, 0.1,
+                        "Value badges should not stretch taller than the screenshot pill height.");
+                    Assert.AreEqual(border.Padding.Left, border.Padding.Right, 0.01,
+                        "Value badge horizontal padding should be symmetric.");
+                    Assert.AreEqual(border.Padding.Top, border.Padding.Bottom, 0.01,
+                        "Value badge vertical padding should be symmetric.");
+                    Assert.IsTrue(border.Padding.Top > border.Padding.Left,
+                        "Value badge vertical padding should be taller than the horizontal padding.");
+                    Assert.AreEqual(HorizontalAlignment.Center, content.HorizontalAlignment,
+                        "Value badge text should be centered horizontally.");
+                    Assert.AreEqual(VerticalAlignment.Center, content.VerticalAlignment,
+                        "Value badge text should be centered vertically.");
+                    Assert.AreEqual(FontWeights.SemiBold, TextElement.GetFontWeight(content),
+                        "Value badge text should render bold.");
+                }
+                finally
+                {
+                    w.Close();
+                }
             });
         }
 

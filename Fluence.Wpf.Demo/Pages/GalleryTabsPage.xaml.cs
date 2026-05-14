@@ -109,7 +109,10 @@ namespace Fluence.Wpf.Demo.Pages.Tabs
             <ColumnDefinition Width=""20"" />
             <ColumnDefinition Width=""*"" />
         </Grid.ColumnDefinitions>
-        <TabControl Height=""220"" TabStripPlacement=""Left"">
+        <TabControl
+            x:Name=""LeftPlacementTabs""
+            Height=""220""
+            TabStripPlacement=""Left"">
             <TabItem Header=""Inbox"" Width=""{DynamicResource DemoPlacementTabHeaderWidth}"">
                 <TextBlock
                     Margin=""20""
@@ -126,22 +129,41 @@ namespace Fluence.Wpf.Demo.Pages.Tabs
             </TabItem>
         </TabControl>
         <TabControl
+            x:Name=""BottomPlacementTabs""
             Grid.Column=""2""
             Height=""220""
             TabStripPlacement=""Bottom"">
             <TabItem Header=""Preview"" Width=""{DynamicResource DemoPlacementTabHeaderWidth}"">
-                <TextBlock
+                <Grid
+                    x:Name=""PreviewPlacementPanel""
                     Margin=""20""
-                    Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-                    Text=""Bottom tabs leave the top edge for document chrome.""
-                    TextWrapping=""Wrap"" />
+                    >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height=""*"" />
+                        <RowDefinition Height=""Auto"" />
+                    </Grid.RowDefinitions>
+                    <TextBlock
+                        Grid.Row=""1""
+                        Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                        Text=""Bottom tabs leave the top edge for document chrome.""
+                        TextWrapping=""Wrap"" />
+                </Grid>
             </TabItem>
             <TabItem Header=""Details"" Width=""{DynamicResource DemoPlacementTabHeaderWidth}"">
-                <TextBlock
+                <Grid
+                    x:Name=""DetailsPlacementPanel""
                     Margin=""20""
-                    Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-                    Text=""Details can remain close to the lower action area.""
-                    TextWrapping=""Wrap"" />
+                    >
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height=""*"" />
+                        <RowDefinition Height=""Auto"" />
+                    </Grid.RowDefinitions>
+                    <TextBlock
+                        Grid.Row=""1""
+                        Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                        Text=""Details can remain close to the lower action area.""
+                        TextWrapping=""Wrap"" />
+                </Grid>
             </TabItem>
         </TabControl>
     </Grid>

@@ -188,7 +188,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsTrue(stateApplied,
                         "GoToState('MouseIndicator') must return true - VSM group must be present.");
 
-                    AssertScrollBarVisualStateDoubleKeyFrame(sb, "MouseIndicator", "Root", "Width", 12.0);
+                    AssertScrollBarVisualStateDoubleKeyFrame(sb, "MouseIndicator", "Root", "Width", 10.0);
                     AssertScrollBarVisualStateDoubleKeyFrame(sb, "MouseIndicator", "DecreaseButton", "Opacity", 1.0);
                     AssertScrollBarVisualStateDoubleKeyFrame(sb, "MouseIndicator", "IncreaseButton", "Opacity", 1.0);
                 }
@@ -236,7 +236,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsTrue(stateApplied,
                         "GoToState('NoIndicator') must return true - VSM group must be present.");
 
-                    AssertScrollBarVisualStateDoubleKeyFrame(sb, "NoIndicator", "Root", "Width", 8.0);
+                    AssertScrollBarVisualStateDoubleKeyFrame(sb, "NoIndicator", "Root", "Width", 6.0);
                     AssertScrollBarVisualStateDoubleKeyFrame(sb, "NoIndicator", "DecreaseButton", "Opacity", 0.0);
                     AssertScrollBarVisualStateDoubleKeyFrame(sb, "NoIndicator", "IncreaseButton", "Opacity", 0.0);
                 }
@@ -280,7 +280,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsTrue(stateApplied,
                         "GoToState('MouseIndicator') on horizontal ScrollBar must return true.");
 
-                    AssertScrollBarVisualStateDoubleKeyFrame(sb, "MouseIndicator", "Root", "Height", 12.0);
+                    AssertScrollBarVisualStateDoubleKeyFrame(sb, "MouseIndicator", "Root", "Height", 10.0);
                     AssertScrollBarVisualStateDoubleKeyFrame(sb, "MouseIndicator", "DecreaseButton", "Opacity", 1.0);
                     AssertScrollBarVisualStateDoubleKeyFrame(sb, "MouseIndicator", "IncreaseButton", "Opacity", 1.0);
                 }
@@ -319,10 +319,10 @@ namespace Fluence.Wpf.Tests
 
                     Grid? root = FindVisualChildByName<Grid>(sb, "Root");
                     Assert.IsNotNull(root, "Root Grid must be present in ScrollBar template.");
-                    Assert.AreEqual(12.0, sb.ActualWidth, 0.5,
-                        "Vertical ScrollBar should reserve the WinUI 12px layout slot on first layout.");
-                    Assert.AreEqual(8.0, root.Width, 0.5,
-                        "Vertical ScrollBar indicator should start at the compact WinUI thumb width.");
+                    Assert.AreEqual(10.0, sb.ActualWidth, 0.5,
+                        "Vertical ScrollBar should reserve the 10px layout slot after the requested 2px reduction.");
+                    Assert.AreEqual(6.0, root.Width, 0.5,
+                        "Vertical ScrollBar indicator should start at the compact 6px thumb width after the requested 2px reduction.");
                     Assert.AreEqual(HorizontalAlignment.Right, root.HorizontalAlignment,
                         "Compact vertical indicator should align to the outside edge of the reserved slot.");
 

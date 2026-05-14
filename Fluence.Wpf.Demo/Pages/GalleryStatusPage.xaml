@@ -102,8 +102,8 @@
                         x:Name="IndeterminateToggle"
                         Checked="IndeterminateToggle_Toggled"
                         IsChecked="True"
-                        OffContent="Standard"
-                        OnContent="Indeterminate"
+                        OffContent="On / Off"
+                        OnContent="On / Off"
                         Unchecked="IndeterminateToggle_Toggled" />
             </ContentControl>
             <local:DemoSampleControl
@@ -184,8 +184,8 @@
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             IsChecked="{Binding IsActive, ElementName=IndeterminateProgressRing, Mode=TwoWay}"
-                            OffContent="Off"
-                            OnContent="On" />
+                            OffContent="On / Off"
+                            OnContent="On / Off" />
                         <TextBlock
                             x:Name="IndeterminateProgressRingLabel"
                             Grid.Row="2"

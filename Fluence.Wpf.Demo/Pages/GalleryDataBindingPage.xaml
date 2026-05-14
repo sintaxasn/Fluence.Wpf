@@ -22,9 +22,10 @@
             <ContentControl
                 x:Name="DemoSampleSlot01DemoContentHost"
                 Visibility="Collapsed">
-<ui:ListView
+                    <ui:ListView
                         x:Name="BoundListView"
                         Height="220"
+                        Background="{DynamicResource DemoControlExampleBackgroundBrush}"
                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
                         SelectionMode="Single">
@@ -91,9 +92,10 @@
             <ContentControl
                 x:Name="DemoSampleSlot02DemoContentHost"
                 Visibility="Collapsed">
-<ui:ListView
+                    <ui:ListView
                         x:Name="SelectionModeListView"
                         Height="200"
+                        Background="{DynamicResource DemoControlExampleBackgroundBrush}"
                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
                         SelectionChanged="SelectionModeListView_SelectionChanged"
@@ -148,9 +150,10 @@
             <ContentControl
                 x:Name="DemoSampleSlot03DemoContentHost"
                 Visibility="Collapsed">
-<ui:ListView
+                    <ui:ListView
                         x:Name="DataTemplateListView"
                         Height="180"
+                        Background="{DynamicResource DemoControlExampleBackgroundBrush}"
                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
                         SelectionMode="Single">

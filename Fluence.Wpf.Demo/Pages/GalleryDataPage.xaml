@@ -30,6 +30,7 @@
                         <ui:ListView
                             x:Name="SimpleListView"
                             Height="230"
+                            Background="{DynamicResource DemoControlExampleBackgroundBrush}"
                             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                             BorderThickness="1">
                             <ListViewItem Content="Ana Bowman" />
@@ -42,6 +43,7 @@
                             x:Name="RichListView"
                             Grid.Column="2"
                             Height="230"
+                            Background="{DynamicResource DemoControlExampleBackgroundBrush}"
                             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                             BorderThickness="1">
                             <ListViewItem>
@@ -155,13 +157,32 @@
                             Width="56"
                             Height="56"
                             Margin="{DynamicResource DemoControlGroupItemMargin}"
-                            DisplayName="Ana Bowman" />
+                            DisplayName="Ana Bowman"
+                            ProfilePicture="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureAnaBowman.png" />
                         <ui:PersonPicture
                             Width="56"
                             Height="56"
                             Margin="{DynamicResource DemoControlGroupItemMargin}"
-                            Initials="SH"
+                            DisplayName="Shawn Hughes"
+                            ProfilePicture="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureShawnHughes.png"
                             BadgeNumber="3" />
+                        <ui:PersonPicture
+                            Width="56"
+                            Height="56"
+                            Margin="{DynamicResource DemoControlGroupItemMargin}"
+                            DisplayName="Priya Kapoor"
+                            ProfilePicture="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPicturePriyaKapoor.png" />
+                        <ui:PersonPicture
+                            Width="56"
+                            Height="56"
+                            Margin="{DynamicResource DemoControlGroupItemMargin}"
+                            DisplayName="Mateo Rivera"
+                            ProfilePicture="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureMateoRivera.png" />
+                        <ui:PersonPicture
+                            Width="56"
+                            Height="56"
+                            Margin="{DynamicResource DemoControlGroupItemMargin}"
+                            Initials="NB" />
                         <ui:PersonPicture
                             Width="56"
                             Height="56"

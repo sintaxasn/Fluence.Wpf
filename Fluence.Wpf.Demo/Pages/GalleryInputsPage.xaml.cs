@@ -37,15 +37,13 @@ namespace Fluence.Wpf.Demo.Pages
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
-    <StackPanel>
+    <ui:StackPanel Spacing=""20"">
         <ui:TextBox
             Width=""480""
-            Margin=""0,0,0,12""
             HorizontalAlignment=""Left""
             PlaceholderText=""Basic text box..."" />
         <ui:TextBox
             Width=""480""
-            Margin=""0,0,0,12""
             HorizontalAlignment=""Left""
             PlaceholderText=""Search"">
             <ui:TextBox.Icon>
@@ -57,7 +55,7 @@ namespace Fluence.Wpf.Demo.Pages
             HorizontalAlignment=""Left""
             MaxLength=""40""
             PlaceholderText=""Limited to 40 characters..."" />
-    </StackPanel>
+    </ui:StackPanel>
 </UserControl>
 ";
 
@@ -80,23 +78,20 @@ namespace Fluence.Wpf.Demo.Pages.Inputs
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf""
     xmlns:uicore=""clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"">
-    <StackPanel>
+    <ui:StackPanel Spacing=""20"">
         <ui:TextBox
             Width=""480""
-            Margin=""0,0,0,12""
             HorizontalAlignment=""Left""
             HelperText=""Helper text can explain format before validation.""
             PlaceholderText=""With helper text"" />
         <ui:TextBox
             Width=""480""
-            Margin=""0,0,0,12""
             HorizontalAlignment=""Left""
             Text=""Valid input""
             ValidationMessage=""Looks good.""
             ValidationState=""{x:Static uicore:ValidationState.Success}"" />
         <ui:TextBox
             Width=""480""
-            Margin=""0,0,0,12""
             HorizontalAlignment=""Left""
             Text=""Check this value""
             ValidationMessage=""Review this before continuing.""
@@ -107,7 +102,7 @@ namespace Fluence.Wpf.Demo.Pages.Inputs
             Text=""Bad value""
             ValidationMessage=""Please fix this field.""
             ValidationState=""{x:Static uicore:ValidationState.Error}"" />
-    </StackPanel>
+    </ui:StackPanel>
 </UserControl>
 ";
 
@@ -129,16 +124,14 @@ namespace Fluence.Wpf.Demo.Pages.Inputs
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
-    <StackPanel>
+    <ui:StackPanel Spacing=""20"">
         <ui:PasswordBox
             Width=""480""
-            Margin=""0,0,0,12""
             HorizontalAlignment=""Left""
             PlaceholderText=""Enter password...""
             RevealButtonEnabled=""True"" />
         <ui:PasswordBox
             Width=""480""
-            Margin=""0,0,0,12""
             HorizontalAlignment=""Left""
             Password=""CorrectHorse7!""
             RevealButtonEnabled=""True"" />
@@ -147,7 +140,7 @@ namespace Fluence.Wpf.Demo.Pages.Inputs
             HorizontalAlignment=""Left""
             IsEnabled=""False""
             PlaceholderText=""Disabled"" />
-    </StackPanel>
+    </ui:StackPanel>
 </UserControl>
 ";
 
@@ -169,10 +162,9 @@ namespace Fluence.Wpf.Demo.Pages.Inputs
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
-    <WrapPanel>
+    <ui:StackPanel Spacing=""20"">
         <ui:NumberBox
             Width=""260""
-            Margin=""0,0,16,12""
             Header=""Inline""
             Maximum=""100""
             Minimum=""0""
@@ -180,7 +172,6 @@ namespace Fluence.Wpf.Demo.Pages.Inputs
             Value=""5"" />
         <ui:NumberBox
             Width=""260""
-            Margin=""0,0,16,12""
             Header=""Compact""
             Maximum=""100""
             Minimum=""0""
@@ -188,7 +179,6 @@ namespace Fluence.Wpf.Demo.Pages.Inputs
             Value=""25"" />
         <ui:NumberBox
             Width=""260""
-            Margin=""0,0,16,12""
             Header=""Keyboard only""
             Maximum=""100""
             Minimum=""0""
@@ -196,11 +186,10 @@ namespace Fluence.Wpf.Demo.Pages.Inputs
             Value=""50"" />
         <ui:NumberBox
             Width=""260""
-            Margin=""0,0,16,12""
             Header=""Disabled""
             IsEnabled=""False""
             Value=""42"" />
-    </WrapPanel>
+    </ui:StackPanel>
 </UserControl>
 ";
 
@@ -222,16 +211,16 @@ namespace Fluence.Wpf.Demo.Pages.Inputs
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
-    <ui:StackPanel Spacing=""18"">
+    <ui:StackPanel Spacing=""20"">
         <ui:StackPanel Spacing=""8"">
-            <TextBlock Text=""Volume"" />
+            <TextBlock Text=""Default"" />
             <ui:Slider
                 Maximum=""100""
                 Minimum=""0""
                 Value=""35"" />
         </ui:StackPanel>
         <ui:StackPanel Spacing=""8"">
-            <TextBlock Text=""Step frequency"" />
+            <TextBlock Text=""Snapped to ticks"" />
             <ui:Slider
                 IsSnapToTickEnabled=""True""
                 Maximum=""10""
@@ -248,7 +237,7 @@ namespace Fluence.Wpf.Demo.Pages.Inputs
                 <ColumnDefinition Width=""32"" />
                 <ColumnDefinition Width=""Auto"" />
             </Grid.ColumnDefinitions>
-            <ui:StackPanel Grid.Column=""0"" Spacing=""10"" HorizontalAlignment=""Center"">
+            <ui:StackPanel Grid.Column=""0"" Spacing=""8"" HorizontalAlignment=""Center"">
                 <TextBlock HorizontalAlignment=""Center"" Text=""Vertical"" />
                 <ui:Slider
                     Height=""210""
@@ -259,7 +248,7 @@ namespace Fluence.Wpf.Demo.Pages.Inputs
                     TickPlacement=""BottomRight""
                     Value=""40"" />
             </ui:StackPanel>
-            <ui:StackPanel Grid.Column=""2"" Spacing=""10"" HorizontalAlignment=""Center"">
+            <ui:StackPanel Grid.Column=""2"" Spacing=""8"" HorizontalAlignment=""Center"">
                 <TextBlock HorizontalAlignment=""Center"" Text=""Disabled"" />
                 <ui:Slider
                     Height=""210""

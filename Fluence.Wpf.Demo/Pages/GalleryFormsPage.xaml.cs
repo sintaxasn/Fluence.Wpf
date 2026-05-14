@@ -51,7 +51,7 @@ namespace Fluence.Wpf.Demo.Pages
             PlaceholderText=""Password""
             RevealButtonEnabled=""True"" />
         <ui:CheckBox
-            Margin=""0,0,0,16""
+            Margin=""0,0,0,24""
             Content=""Remember me"" />
         <StackPanel Orientation=""Horizontal"">
             <ui:Button
@@ -95,22 +95,31 @@ namespace Fluence.Wpf.Demo.Pages.Forms
             <ComboBoxItem Content=""Priority"" />
             <ComboBoxItem Content=""Overnight"" />
         </ui:ComboBox>
-        <WrapPanel Margin=""0,0,0,12"">
+        <Grid Margin=""0,0,0,24"">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width=""180"" />
+                <ColumnDefinition Width=""16"" />
+                <ColumnDefinition Width=""280"" />
+            </Grid.ColumnDefinitions>
             <ui:NumberBox
+                Grid.Column=""0""
                 Width=""180""
-                Margin=""0,0,16,12""
                 Header=""Quantity""
                 Maximum=""10""
                 Minimum=""1""
                 SpinButtonPlacementMode=""Compact""
                 Value=""2"" />
-            <ui:TextBox
-                Width=""280""
-                Margin=""0,0,0,12""
-                PlaceholderText=""Optional"" />
-        </WrapPanel>
+            <StackPanel Grid.Column=""2"">
+                <TextBlock
+                    Margin=""0,0,0,8""
+                    Text=""Optional"" />
+                <ui:TextBox
+                    Width=""280""
+                    PlaceholderText=""Delivery note"" />
+            </StackPanel>
+        </Grid>
         <ui:CheckBox
-            Margin=""0,0,0,16""
+            Margin=""0,0,0,24""
             Content=""This is a gift""
             Description=""Hide prices on the packing slip."" />
         <StackPanel Orientation=""Horizontal"">
@@ -156,7 +165,7 @@ namespace Fluence.Wpf.Demo.Pages.Forms
             <ComboBoxItem Content=""Dark"" />
         </ui:ComboBox>
         <ui:ToggleSwitch
-            Margin=""0,0,0,16""
+            Margin=""0,0,0,24""
             Content=""Email updates""
             IsChecked=""True""
             OffContent=""Off""

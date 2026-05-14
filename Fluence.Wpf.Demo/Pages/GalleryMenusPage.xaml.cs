@@ -40,7 +40,9 @@ namespace Fluence.Wpf.Demo.Pages
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
     <StackPanel>
-        <ui:Menu Margin=""0,0,0,12"">
+        <ui:Menu
+            Margin=""0,0,0,12""
+            Background=""{DynamicResource DemoControlExampleBackgroundBrush}"">
             <ui:MenuItem Header=""_File"">
                 <ui:MenuItem
                     Click=""MenuBar_Click""

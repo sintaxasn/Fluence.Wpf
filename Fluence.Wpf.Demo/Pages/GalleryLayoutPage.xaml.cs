@@ -60,7 +60,27 @@ namespace Fluence.Wpf.Demo.Pages
     x:Name=""AdvancedOptionsExpander""
     Header=""Advanced options"">
     <TextBlock Text=""Expander shows secondary settings only when useful.""
+               Margin=""{DynamicResource DemoLargeTopGapMargin}""
                TextWrapping=""Wrap"" />
+</ui:Expander>";
+
+        private const string DockPanelExpanderXamlSource = @"<ui:Expander x:Name=""DockPanelOptionsExpander"">
+    <ui:Expander.Header>
+        <DockPanel LastChildFill=""True"">
+            <ui:Button DockPanel.Dock=""Right""
+                       Content=""Edit"" />
+            <TextBlock VerticalAlignment=""Center""
+                       Text=""Delivery options"" />
+        </DockPanel>
+    </ui:Expander.Header>
+    <DockPanel LastChildFill=""True"">
+        <ui:ToggleSwitch DockPanel.Dock=""Right""
+                         OffContent=""Off""
+                         OnContent=""On"" />
+        <TextBlock VerticalAlignment=""Center""
+                   Text=""Notify me when the package ships.""
+                   TextWrapping=""Wrap"" />
+    </DockPanel>
 </ui:Expander>";
 
         public GalleryLayoutPage()
@@ -73,6 +93,8 @@ namespace Fluence.Wpf.Demo.Pages
                 DockPanelXamlSource,
                 string.Empty,
                 ExpanderXamlSource,
+                string.Empty,
+                DockPanelExpanderXamlSource,
                 string.Empty);
         }
     }

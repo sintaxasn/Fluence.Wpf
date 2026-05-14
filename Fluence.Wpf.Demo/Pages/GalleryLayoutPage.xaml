@@ -64,9 +64,9 @@
             <ContentControl
                 x:Name="DemoSampleSlot03DemoContentHost"
                 Visibility="Collapsed">
-<ui:Expander x:Name="AdvancedOptionsExpander" Header="Advanced options">
+                    <ui:Expander x:Name="AdvancedOptionsExpander" Header="Advanced options">
                         <TextBlock
-                            Margin="{DynamicResource DemoCompactStackSpacingMargin}"
+                            Margin="{DynamicResource DemoLargeTopGapMargin}"
                             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                             Text="Expander shows secondary settings only when they are useful."
                             TextWrapping="Wrap" />
@@ -74,6 +74,37 @@
             </ContentControl>
             <local:DemoSampleControl
                 SampleDescription="Use Expander for secondary settings that should start collapsed until needed." />
+
+            <ContentControl
+                x:Name="DemoSampleSlot04DemoContentHost"
+                Visibility="Collapsed">
+                    <ui:Expander x:Name="DockPanelOptionsExpander">
+                        <ui:Expander.Header>
+                            <DockPanel LastChildFill="True">
+                                <ui:Button
+                                    Content="Edit"
+                                    DockPanel.Dock="Right" />
+                                <TextBlock
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                    Text="Delivery options" />
+                            </DockPanel>
+                        </ui:Expander.Header>
+                        <DockPanel LastChildFill="True">
+                            <ui:ToggleSwitch
+                                DockPanel.Dock="Right"
+                                OffContent="Off"
+                                OnContent="On" />
+                            <TextBlock
+                                VerticalAlignment="Center"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                Text="Notify me when the package ships."
+                                TextWrapping="Wrap" />
+                        </DockPanel>
+                    </ui:Expander>
+            </ContentControl>
+            <local:DemoSampleControl
+                SampleDescription="Use DockPanel inside Expander headers and content when the summary and secondary action need edge alignment." />
         </StackPanel>
     </ui:SmoothScrollViewer>
 </UserControl>
