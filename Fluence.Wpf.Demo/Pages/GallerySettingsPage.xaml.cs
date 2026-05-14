@@ -43,6 +43,11 @@ namespace Fluence.Wpf.Demo.Pages
     {
         private const double PageHorizontalMargin = 72.0;
         private const double PageMaxWidth = 1064.0;
+        private const double CompactSettingsWidth = 640.0;
+        private const double RegularPickerWidth = 240.0;
+        private const double CompactPickerWidth = 180.0;
+        private const double RegularCaptionPickerWidth = 160.0;
+        private const double CompactCaptionPickerWidth = 140.0;
         private static readonly Uri RepositoryUri = new UriBuilder("https", "github.com", -1, "sintaxasn/fluence.wpf").Uri;
         private static readonly Uri DemoAppIconUri = new(
             "pack://application:,,,/Fluence.Wpf.Demo;component/Resources/fluence-wpf-appicon-256.ico",
@@ -118,7 +123,35 @@ namespace Fluence.Wpf.Demo.Pages
             if (contentWidth > 0.0)
             {
                 PageContent.Width = contentWidth;
+                UpdateResponsiveSettingsLayout(contentWidth);
             }
+        }
+
+        private void UpdateResponsiveSettingsLayout(double contentWidth)
+        {
+            bool compact = contentWidth < CompactSettingsWidth;
+            double pickerWidth = compact ? CompactPickerWidth : RegularPickerWidth;
+            double captionPickerWidth = compact ? CompactCaptionPickerWidth : RegularCaptionPickerWidth;
+
+            AppThemeComboBox.Width = pickerWidth;
+            NavigationStyleComboBox.Width = pickerWidth;
+            BackdropComboBox.Width = pickerWidth;
+
+            MinimizeVisibilityCombo.Width = captionPickerWidth;
+            MaximizeVisibilityCombo.Width = captionPickerWidth;
+            CloseVisibilityCombo.Width = captionPickerWidth;
+
+            AccentPickerPanel.Orientation = compact ? Orientation.Vertical : Orientation.Horizontal;
+            AccentSwatchRow.Columns = compact ? 4 : 7;
+            AccentSwatchRow.Rows = compact ? 2 : 1;
+            AccentSwatchRow.Margin = compact ? new Thickness(0, 0, 0, 8) : new Thickness(0, 0, 12, 0);
+            SystemAccentButton.MinWidth = compact ? 112.0 : 84.0;
+            SystemAccentButton.HorizontalAlignment = compact ? HorizontalAlignment.Stretch : HorizontalAlignment.Left;
+
+            RepositoryActionsPanel.Orientation = compact ? Orientation.Vertical : Orientation.Horizontal;
+            CopyRepositoryButton.Margin = compact ? new Thickness(0, 0, 0, 8) : new Thickness(0, 0, 8, 0);
+            CopyRepositoryButton.HorizontalAlignment = compact ? HorizontalAlignment.Stretch : HorizontalAlignment.Left;
+            OpenRepositoryButton.HorizontalAlignment = compact ? HorizontalAlignment.Stretch : HorizontalAlignment.Left;
         }
 
         private void SyncSelections()

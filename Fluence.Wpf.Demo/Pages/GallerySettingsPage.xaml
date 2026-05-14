@@ -186,6 +186,7 @@
                                 Text="Choose the demo accent color" />
                         </StackPanel>
                         <StackPanel
+                            x:Name="AccentPickerPanel"
                             Grid.Column="2"
                             VerticalAlignment="Center"
                             Orientation="Horizontal">
@@ -231,6 +232,7 @@
                                     Tag="#FF00E8" />
                             </UniformGrid>
                             <ui:Button
+                                x:Name="SystemAccentButton"
                                 MinWidth="84"
                                 VerticalAlignment="Center"
                                 Click="SystemAccentButton_Click"
@@ -427,10 +429,12 @@
                                 Style="{StaticResource SettingsRowDescriptionStyle}" />
                         </StackPanel>
                         <StackPanel
+                            x:Name="RepositoryActionsPanel"
                             Grid.Column="2"
                             Orientation="Horizontal"
                             VerticalAlignment="Center">
                             <ui:Button
+                                x:Name="CopyRepositoryButton"
                                 Margin="0,0,8,0"
                                 Click="CopyRepositoryButton_Click"
                                 Content="Copy repository"
@@ -440,6 +444,7 @@
                                 </ui:Button.Icon>
                             </ui:Button>
                             <ui:Button
+                                x:Name="OpenRepositoryButton"
                                 Appearance="Accent"
                                 Click="OpenRepositoryButton_Click"
                                 Content="Repository"

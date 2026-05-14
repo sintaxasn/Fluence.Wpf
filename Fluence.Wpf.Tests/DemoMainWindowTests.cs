@@ -1623,6 +1623,40 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void GalleryTypographyPage_SourceUsesCompactRowSpacingAndCopyColumn()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                GalleryTypographyPage page = new();
+                Window window = CreateHostWindow(page);
+                try
+                {
+                    DemoSampleControl? sample = FindAllVisualChildren<DemoSampleControl>(page).FirstOrDefault();
+                    Assert.IsNotNull(sample, "Typography page should wrap the table in DemoSampleControl.");
+
+                    string xamlSource = sample.XamlSource;
+                    StringAssert.Contains(xamlSource, "<ColumnDefinition Width=\"Auto\" MinWidth=\"180\" />");
+                    StringAssert.Contains(xamlSource, "<ColumnDefinition Width=\"Auto\" />");
+                    StringAssert.Contains(xamlSource, "ToolTip=\"Copy style key\"");
+                    StringAssert.Contains(xamlSource, "Tag=\"BodyTextBlockStyle\"");
+                    StringAssert.Contains(xamlSource, "Click=\"CopyStyleKey_Click\"");
+                    StringAssert.Contains(xamlSource, "Margin=\"12,8,16,8\"");
+                    Assert.AreEqual(-1, xamlSource.IndexOf("Margin=\"12,0,16,8\"", StringComparison.Ordinal),
+                        "Typography source should use the same compact header spacing as the live table.");
+
+                    StringAssert.Contains(sample.CSharpSource, "Copyright 2026 Dan Cunningham");
+                    StringAssert.Contains(sample.CSharpSource, "private static void CopyStyleKey_Click");
+                    StringAssert.Contains(sample.CSharpSource, "public partial class TypographyTable");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
         public void GallerySettingsPage_UsesFullWidthSettingsRowsForWindowControls()
         {
             RunOnSta(delegate
@@ -1667,6 +1701,63 @@ namespace Fluence.Wpf.Tests
                         "Caption button customization should use separate settings rows.");
                     Assert.IsTrue((GetVisualY(close, window) ?? double.MinValue) > (GetVisualY(maximize, window) ?? double.MinValue),
                         "Close button customization should appear below Maximize.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void GallerySettingsPage_CompactsControlsAtNarrowWidths()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                GallerySettingsPage page = new();
+                Window window = CreateHostWindow(page);
+                try
+                {
+                    window.Width = 560;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    System.Windows.Controls.ComboBox? appTheme = FindByName<System.Windows.Controls.ComboBox>(page, "AppThemeComboBox");
+                    System.Windows.Controls.ComboBox? minimize = FindByName<System.Windows.Controls.ComboBox>(page, "MinimizeVisibilityCombo");
+                    System.Windows.Controls.StackPanel? accentPanel = FindByName<System.Windows.Controls.StackPanel>(page, "AccentPickerPanel");
+                    UniformGrid? accentRow = FindByName<UniformGrid>(page, "AccentSwatchRow");
+                    FrameworkElement? systemAccent = FindByName<FrameworkElement>(page, "SystemAccentButton");
+                    System.Windows.Controls.StackPanel? repositoryActions = FindByName<System.Windows.Controls.StackPanel>(page, "RepositoryActionsPanel");
+                    FrameworkElement? copyRepository = FindByName<FrameworkElement>(page, "CopyRepositoryButton");
+
+                    Assert.IsNotNull(appTheme, "App theme picker should exist.");
+                    Assert.IsNotNull(minimize, "Minimize caption picker should exist.");
+                    Assert.IsNotNull(accentPanel, "Accent picker host should exist.");
+                    Assert.IsNotNull(accentRow, "Accent swatches should use a named host.");
+                    Assert.IsNotNull(systemAccent, "System accent button should exist.");
+                    Assert.IsNotNull(repositoryActions, "Repository action host should exist.");
+                    Assert.IsNotNull(copyRepository, "Copy repository button should exist.");
+
+                    Assert.AreEqual(180.0, appTheme.Width, 0.001,
+                        "Narrow Settings width should compact the main picker width.");
+                    Assert.AreEqual(140.0, minimize.Width, 0.001,
+                        "Narrow Settings width should compact the caption picker width.");
+                    Assert.AreEqual(Orientation.Vertical, accentPanel.Orientation,
+                        "Narrow Settings width should stack the accent row and system accent button.");
+                    Assert.AreEqual(4, accentRow.Columns,
+                        "Narrow Settings width should wrap seven accent swatches to two rows.");
+                    Assert.AreEqual(2, accentRow.Rows,
+                        "Narrow Settings width should reserve a second accent swatch row.");
+                    Assert.AreEqual(new Thickness(0, 0, 0, 8), accentRow.Margin,
+                        "Narrow Settings width should separate the wrapped accent swatches from the system accent button.");
+                    Assert.AreEqual(112.0, systemAccent.MinWidth, 0.001,
+                        "Narrow Settings width should keep the system accent button readable.");
+                    Assert.AreEqual(Orientation.Vertical, repositoryActions.Orientation,
+                        "Narrow Settings width should stack repository actions.");
+                    Assert.AreEqual(new Thickness(0, 0, 0, 8), copyRepository.Margin,
+                        "Narrow Settings width should separate stacked repository actions.");
                 }
                 finally
                 {

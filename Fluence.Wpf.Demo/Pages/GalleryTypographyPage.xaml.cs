@@ -40,13 +40,15 @@ namespace Fluence.Wpf.Demo.Pages
         private const string TypographyTableXamlSource = @"<UserControl
     x:Class=""Fluence.Wpf.Demo.Pages.Typography.TypographyTable""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width=""2.2*"" MinWidth=""180"" />
+            <ColumnDefinition Width=""Auto"" MinWidth=""180"" />
             <ColumnDefinition Width=""1.2*"" MinWidth=""140"" />
             <ColumnDefinition Width=""1*"" MinWidth=""120"" />
             <ColumnDefinition Width=""1.7*"" MinWidth=""180"" />
+            <ColumnDefinition Width=""Auto"" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height=""Auto"" />
@@ -65,12 +67,12 @@ namespace Fluence.Wpf.Demo.Pages
             Text=""Variable Font"" />
         <TextBlock
             Grid.Column=""2""
-            Margin=""12,0,16,8""
+            Margin=""12,8,16,8""
             Style=""{StaticResource BodyStrongTextBlockStyle}""
             Text=""Size/Line height"" />
         <TextBlock
             Grid.Column=""3""
-            Margin=""12,0,16,8""
+            Margin=""12,8,16,8""
             Style=""{StaticResource BodyStrongTextBlockStyle}""
             Text=""Style"" />
 
@@ -98,6 +100,19 @@ namespace Fluence.Wpf.Demo.Pages
             FontFamily=""Consolas""
             Style=""{StaticResource BodyTextBlockStyle}""
             Text=""BodyTextBlockStyle"" />
+        <ui:Button
+            Grid.Row=""1""
+            Grid.Column=""4""
+            Width=""40""
+            Height=""36""
+            MinWidth=""40""
+            Margin=""12,8,24,8""
+            Padding=""0""
+            Tag=""BodyTextBlockStyle""
+            Click=""CopyStyleKey_Click""
+            ToolTip=""Copy style key"">
+            <ui:FontIcon Glyph=""&#xE8C8;"" IconFontSize=""16"" />
+        </ui:Button>
 
         <TextBlock
             Grid.Row=""2""
@@ -123,11 +138,54 @@ namespace Fluence.Wpf.Demo.Pages
             FontFamily=""Consolas""
             Style=""{StaticResource BodyTextBlockStyle}""
             Text=""TitleTextBlockStyle"" />
+        <ui:Button
+            Grid.Row=""2""
+            Grid.Column=""4""
+            Width=""40""
+            Height=""36""
+            MinWidth=""40""
+            Margin=""12,8,24,8""
+            Padding=""0""
+            Tag=""TitleTextBlockStyle""
+            Click=""CopyStyleKey_Click""
+            ToolTip=""Copy style key"">
+            <ui:FontIcon Glyph=""&#xE8C8;"" IconFontSize=""16"" />
+        </ui:Button>
     </Grid>
 </UserControl>
 ";
 
-        private const string TypographyTableCSharpSource = @"using System.Windows.Controls;
+        private const string TypographyTableCSharpSource = @"/*
+ * Copyright 2026 Dan Cunningham
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * 1. Redistributions of source code must retain the above copyright notice,
+ *    this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright notice,
+ *    this list of conditions and the following disclaimer in the documentation
+ *    and/or other materials provided with the distribution.
+ * 3. Neither the name of the copyright holder nor the names of its contributors
+ *    may be used to endorse or promote products derived from this software
+ *    without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS ""AS IS""
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
+ * THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+using System.Windows;
+using System.Windows.Controls;
+using FluentButton = Fluence.Wpf.Controls.Button;
 
 namespace Fluence.Wpf.Demo.Pages.Typography
 {
@@ -136,6 +194,17 @@ namespace Fluence.Wpf.Demo.Pages.Typography
         public TypographyTable()
         {
             InitializeComponent();
+        }
+
+        private static void CopyStyleKey_Click(object sender, RoutedEventArgs e)
+        {
+            string? styleKey = sender is FluentButton button ? button.Tag as string : null;
+            if (string.IsNullOrWhiteSpace(styleKey))
+            {
+                return;
+            }
+
+            Clipboard.SetText(styleKey);
         }
     }
 }
