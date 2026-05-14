@@ -489,6 +489,10 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(presenter, "NavigationViewItem template must render InfoBadge content.");
                     Assert.AreSame(badge, presenter.Content,
                         "NavigationViewItem InfoBadge presenter must bind to NavigationViewItem.InfoBadge.");
+                    Assert.IsTrue(double.IsNaN(presenter.Width) || presenter.Width >= 34.0,
+                        "NavigationViewItem must not constrain InfoBadge value pills to the old 24px slot.");
+                    Assert.AreEqual(HorizontalAlignment.Center, presenter.HorizontalAlignment,
+                        "NavigationViewItem InfoBadge presenter should center the badge in the trailing slot.");
                 }
                 finally
                 {
@@ -1811,6 +1815,57 @@ namespace Fluence.Wpf.Tests
                     Point offset = presenter.TransformToAncestor(nav).Transform(new Point(0, 0));
                     Assert.AreEqual(20.0, offset.Y, 1.0,
                         "Left NavigationView should only reserve the 42px top gap when Header is empty.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary is not null)
+                    {
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NavigationView_Left_PaneToggle_ResizesPushingContent()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+
+                try
+                {
+                    NavigationView nav = new()
+                    {
+                        Width = 800,
+                        Height = 480,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left,
+                        IsPaneOpen = true
+                    };
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    DrainDispatcher(window.Dispatcher);
+
+                    ContentPresenter? presenter = FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter);
+                    Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in Left template.");
+
+                    AssertContentOffsetEventually(window, nav, presenter, 280.0, "Open Left pane: content begins at 280.");
+
+                    nav.IsPaneOpen = false;
+                    Assert.IsTrue(nav.GetPaneColumnWidthForTesting() > 48.0,
+                        "Closing Left mode should animate from the expanded width instead of snapping immediately to 48.");
+                    AssertContentOffsetEventually(window, nav, presenter, 48.0, "Closed Left pane: content begins at 48.");
+
+                    nav.IsPaneOpen = true;
+                    Assert.IsTrue(nav.GetPaneColumnWidthForTesting() < 280.0,
+                        "Opening Left mode should animate from the compact width instead of snapping immediately to 280.");
+                    AssertContentOffsetEventually(window, nav, presenter, 280.0, "Reopened Left pane: content returns to 280.");
                 }
                 finally
                 {

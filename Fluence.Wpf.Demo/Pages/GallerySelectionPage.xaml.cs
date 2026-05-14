@@ -200,40 +200,28 @@ namespace Fluence.Wpf.Demo.Pages.Selection
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
-    <ui:StackPanel Spacing=""18"">
-        <ui:StackPanel Spacing=""12"" Orientation=""Horizontal"">
+    <ui:StackPanel Spacing=""8"">
+        <TextBlock
+            x:Name=""WorkToggleHeaderText""
+            Text=""Toggle work"" />
+        <ui:StackPanel Orientation=""Horizontal"">
             <ui:ToggleSwitch
-                x:Name=""SimpleToggleSwitch""
+                x:Name=""WorkToggleSwitch""
                 VerticalAlignment=""Center""
                 IsChecked=""True"" />
             <TextBlock
-                x:Name=""SimpleToggleStateText""
+                x:Name=""WorkToggleStateText""
+                Margin=""12,0,0,0""
                 VerticalAlignment=""Center""
                 Text=""On"" />
-        </ui:StackPanel>
-        <ui:StackPanel Spacing=""8"">
-            <TextBlock
-                x:Name=""WorkToggleHeaderText""
-                Text=""Toggle work"" />
-            <ui:StackPanel Orientation=""Horizontal"">
-                <ui:ToggleSwitch
-                    x:Name=""WorkToggleSwitch""
-                    VerticalAlignment=""Center""
-                    IsChecked=""True"" />
-                <TextBlock
-                    x:Name=""WorkToggleStateText""
-                    Margin=""12,0,0,0""
-                    VerticalAlignment=""Center""
-                    Text=""On"" />
-                <ui:ProgressRing
-                    x:Name=""WorkToggleProgressRing""
-                    Width=""36""
-                    Height=""36""
-                    Margin=""24,0,0,0""
-                    VerticalAlignment=""Center""
-                    IsActive=""{Binding IsChecked, ElementName=WorkToggleSwitch}""
-                    IsIndeterminate=""True"" />
-            </ui:StackPanel>
+            <ui:ProgressRing
+                x:Name=""WorkToggleProgressRing""
+                Width=""36""
+                Height=""36""
+                Margin=""24,0,0,0""
+                VerticalAlignment=""Center""
+                IsActive=""{Binding IsChecked, ElementName=WorkToggleSwitch}""
+                IsIndeterminate=""True"" />
         </ui:StackPanel>
     </ui:StackPanel>
 </UserControl>
@@ -289,10 +277,9 @@ namespace Fluence.Wpf.Demo.Pages.Selection
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
-    <StackPanel>
+    <ui:StackPanel Spacing=""20"">
         <ui:ComboBox
             Width=""480""
-            Margin=""0,0,0,12""
             HorizontalAlignment=""Left""
             PlaceholderText=""Choose an option...""
             SelectedIndex=""-1"">
@@ -302,7 +289,6 @@ namespace Fluence.Wpf.Demo.Pages.Selection
         </ui:ComboBox>
         <ui:ComboBox
             Width=""480""
-            Margin=""0,0,0,12""
             HorizontalAlignment=""Left""
             PlaceholderText=""With icon""
             SelectedIndex=""-1"">
@@ -318,7 +304,7 @@ namespace Fluence.Wpf.Demo.Pages.Selection
             HorizontalAlignment=""Left""
             IsEnabled=""False""
             PlaceholderText=""Disabled"" />
-    </StackPanel>
+    </ui:StackPanel>
 </UserControl>
 ";
 

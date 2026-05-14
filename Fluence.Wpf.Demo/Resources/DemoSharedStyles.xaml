@@ -6,6 +6,7 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
     xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
     >
@@ -15,8 +16,7 @@
     <SolidColorBrush x:Key="DemoSampleRightRailBackgroundBrush" Color="#2B2B2B" />
     <SolidColorBrush x:Key="DemoSampleSourceHeaderBackgroundBrush" Color="#323232" />
     <SolidColorBrush x:Key="DemoSampleSourceContentBackgroundBrush" Color="#2E2E2E" />
-    <SolidColorBrush x:Key="DemoControlSurfaceBrush" Color="#202020" />
-    <SolidColorBrush x:Key="DemoSourceSurfaceBrush" Color="#323232" />
+    <SolidColorBrush x:Key="DemoSampleContainerBackgroundBrush" Color="#373737" />
     <SolidColorBrush x:Key="DemoSettingsCardBrush" Color="#323232" />
     <SolidColorBrush x:Key="DemoSectionCardBrush" Color="#202020" />
     <SolidColorBrush x:Key="DemoFieldLabelForegroundBrush" Color="#D6D6D6" />
@@ -45,6 +45,7 @@
     <Thickness x:Key="DemoControlBottomGapMargin">0,0,0,12</Thickness>
     <Thickness x:Key="DemoSmallBottomGapMargin">0,0,0,8</Thickness>
     <Thickness x:Key="DemoMediumTopGapMargin">0,12,0,0</Thickness>
+    <Thickness x:Key="DemoLargeTopGapMargin">0,16,0,0</Thickness>
     <Thickness x:Key="DemoOutputTopGapMargin">0,8,0,0</Thickness>
     <Thickness x:Key="DemoProgressBarMargin">6,12,6,12</Thickness>
     <Thickness x:Key="DemoProgressBarLabelMargin">6,0,6,6</Thickness>
@@ -57,6 +58,8 @@
     <Thickness x:Key="DemoNavigationDescriptionMargin">0,6,0,0</Thickness>
     <Thickness x:Key="DemoFlyoutPanelMargin">4</Thickness>
     <Thickness x:Key="DemoSingleBorderThickness">1</Thickness>
+    <Thickness x:Key="DemoDataBindingSecondaryTextMargin">32,0,0,0</Thickness>
+    <sys:Double x:Key="DemoPlacementTabHeaderWidth">112</sys:Double>
 
     <Style x:Key="AccentSwatchStyle" TargetType="{x:Type ui:Button}">
         <Setter Property="Width" Value="42" />
@@ -278,9 +281,8 @@
     </Style>
 
     <Style x:Key="GalleryPageContentStackStyle" TargetType="{x:Type StackPanel}">
-        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="Margin" Value="{DynamicResource DemoPageContentMargin}" />
-        <Setter Property="MaxWidth" Value="1064" />
     </Style>
 
     <Style x:Key="SettingsSectionHeaderStyle" BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="{x:Type TextBlock}">
@@ -354,20 +356,6 @@
         <Setter Property="FontSize" Value="12" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorTertiaryBrush}" />
         <Setter Property="Margin" Value="0,4,0,0" />
-    </Style>
-
-    <Style
-        x:Key="DemoSourceLinkButtonStyle"
-        BasedOn="{StaticResource {x:Type ui:HyperlinkButton}}"
-        TargetType="{x:Type ui:HyperlinkButton}"
-        >
-        <Setter Property="HorizontalAlignment" Value="Right" />
-        <Setter Property="IconPlacement" Value="Left" />
-        <Setter Property="Icon">
-            <Setter.Value>
-                <ui:FontIcon Glyph="&#xE71B;" IconFontSize="14" />
-            </Setter.Value>
-        </Setter>
     </Style>
 
     <!--  Icon cell hover: accent foreground + scale-up on hover  -->

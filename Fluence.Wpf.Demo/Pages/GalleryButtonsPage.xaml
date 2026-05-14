@@ -20,25 +20,21 @@
             <ContentControl
                 x:Name="DemoSampleSlot01DemoContentHost"
                 Visibility="Collapsed">
-<WrapPanel>
+<WrapPanel VerticalAlignment="Center">
                         <ui:Button
                             Margin="{DynamicResource DemoControlGroupItemMargin}"
                             Content="Standard"
-                            IsEnabled="{Binding IsChecked, ElementName=ButtonEnableCheckBox}" />
+                            IsEnabled="{Binding IsChecked, Source={x:Reference ButtonEnableCheckBox}}" />
                         <ui:Button
                             Margin="{DynamicResource DemoControlGroupItemMargin}"
                             Appearance="Accent"
                             Content="Accent"
-                            IsEnabled="{Binding IsChecked, ElementName=ButtonEnableCheckBox}" />
+                            IsEnabled="{Binding IsChecked, Source={x:Reference ButtonEnableCheckBox}}" />
                         <ui:Button
                             Margin="{DynamicResource DemoControlGroupItemMargin}"
                             Appearance="Subtle"
                             Content="Subtle"
-                            IsEnabled="{Binding IsChecked, ElementName=ButtonEnableCheckBox}" />
-                        <ui:Button
-                            Margin="{DynamicResource DemoControlGroupItemMargin}"
-                            Content="Disabled"
-                            IsEnabled="False" />
+                            IsEnabled="{Binding IsChecked, Source={x:Reference ButtonEnableCheckBox}}" />
                     </WrapPanel>
             </ContentControl>
             <ContentControl
@@ -56,7 +52,7 @@
             <ContentControl
                 x:Name="DemoSampleSlot02DemoContentHost"
                 Visibility="Collapsed">
-<WrapPanel>
+<WrapPanel VerticalAlignment="Center">
                         <ui:Button Margin="{DynamicResource DemoControlGroupItemMargin}" Content="Icon Left">
                             <ui:Button.Icon>
                                 <ui:FontIcon Glyph="&#xE774;" IconFontSize="14" />
@@ -87,7 +83,7 @@
             <ContentControl
                 x:Name="DemoSampleSlot03DemoContentHost"
                 Visibility="Collapsed">
-<WrapPanel>
+<WrapPanel VerticalAlignment="Center">
                         <ui:HyperlinkButton
                             Margin="{DynamicResource DemoControlGroupItemMargin}"
                             Content="Documentation"
@@ -117,7 +113,7 @@
             <ContentControl
                 x:Name="DemoSampleSlot04DemoContentHost"
                 Visibility="Collapsed">
-<WrapPanel>
+<WrapPanel VerticalAlignment="Center">
                         <ui:DropDownButton Margin="{DynamicResource DemoControlGroupItemMargin}" Content="New">
                             <ui:DropDownButton.Flyout>
                                 <StackPanel MinWidth="180" Margin="{DynamicResource DemoSampleInnerCardPadding}">
@@ -170,7 +166,7 @@
             <ContentControl
                 x:Name="DemoSampleSlot05DemoContentHost"
                 Visibility="Collapsed">
-<WrapPanel>
+<WrapPanel VerticalAlignment="Center">
                         <ui:SplitButton Margin="{DynamicResource DemoControlGroupItemMargin}" Content="Save">
                             <ui:SplitButton.Flyout>
                                 <StackPanel MinWidth="180" Margin="{DynamicResource DemoSampleInnerCardPadding}">
@@ -228,20 +224,7 @@
             <ContentControl
                 x:Name="DemoSampleSlot06DemoContentHost"
                 Visibility="Collapsed">
-<WrapPanel>
-                        <ui:ToggleButton
-                            Margin="{DynamicResource DemoControlGroupItemMargin}"
-                            Content="Bold"
-                            IsChecked="True" />
-                        <ui:ToggleButton
-                            Margin="{DynamicResource DemoControlGroupItemMargin}"
-                            Appearance="Accent"
-                            Content="Pinned"
-                            IsChecked="True" />
-                        <ui:ToggleButton
-                            Margin="{DynamicResource DemoControlGroupItemMargin}"
-                            Content="Disabled"
-                            IsEnabled="False" />
+<WrapPanel VerticalAlignment="Center">
                         <ui:RepeatButton
                             x:Name="RepeatCounterButton"
                             Margin="{DynamicResource DemoControlGroupItemMargin}"
@@ -258,7 +241,7 @@
                         Text="Clicks: 0" />
             </ContentControl>
             <local:DemoSampleControl
-                SampleDescription="ToggleButton holds a checked state. RepeatButton raises Click repeatedly while pressed." />
+                SampleDescription="Use RepeatButton when holding the pointer should raise Click repeatedly." />
         </StackPanel>
     </ui:SmoothScrollViewer>
 </UserControl>

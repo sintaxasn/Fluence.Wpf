@@ -26,7 +26,6 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using NavigationView = Fluence.Wpf.Controls.NavigationView;
@@ -55,17 +54,17 @@ namespace Fluence.Wpf.Demo.Pages
                 Content=""Home""
                 IsSelected=""True"">
                 <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph=""&#xE80F;"" IconFontSize=""20"" />
+                    <ui:FontIcon Glyph=""&#xE80F;"" IconFontSize=""16"" />
                 </ui:NavigationViewItem.Icon>
             </ui:NavigationViewItem>
             <ui:NavigationViewItem Content=""Files"">
                 <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph=""&#xE8B7;"" IconFontSize=""20"" />
+                    <ui:FontIcon Glyph=""&#xE8B7;"" IconFontSize=""16"" />
                 </ui:NavigationViewItem.Icon>
             </ui:NavigationViewItem>
             <ui:NavigationViewItem Content=""Reports"">
                 <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph=""&#xE9D9;"" IconFontSize=""20"" />
+                    <ui:FontIcon Glyph=""&#xE9D9;"" IconFontSize=""16"" />
                 </ui:NavigationViewItem.Icon>
             </ui:NavigationViewItem>
         </ui:NavigationView>
@@ -147,8 +146,7 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
                 IsBackButtonVisible=""True""
                 IsBackEnabled=""False""
                 IsPaneOpen=""False""
-                PaneDisplayMode=""LeftCompact""
-                BackRequested=""CompactNavigationDemo_BackRequested"">
+                PaneDisplayMode=""LeftCompact"">
                 <ui:NavigationView.PaneFooter>
                     <TextBlock
                         Margin=""12""
@@ -159,73 +157,32 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
                     Content=""Dashboard""
                     IsSelected=""True"">
                     <ui:NavigationViewItem.Icon>
-                        <ui:FontIcon Glyph=""&#xE80F;"" IconFontSize=""20"" />
+                        <ui:FontIcon Glyph=""&#xE80F;"" IconFontSize=""16"" />
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
                 <ui:NavigationViewItem Content=""Messages"">
                     <ui:NavigationViewItem.Icon>
-                        <ui:FontIcon Glyph=""&#xE8BD;"" IconFontSize=""20"" />
+                        <ui:FontIcon Glyph=""&#xE8BD;"" IconFontSize=""16"" />
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
             </ui:NavigationView>
         </Border>
-        <StackPanel Orientation=""Horizontal"">
             <ui:CheckBox
                 x:Name=""BackEnabledToggle""
-                Margin=""0,0,16,0""
-                Checked=""BackEnabledToggle_Changed""
-                Content=""Back enabled""
-                Unchecked=""BackEnabledToggle_Changed"" />
-            <TextBlock
-                x:Name=""BackStatusLabel""
-                VerticalAlignment=""Center""
-                Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                Text=""Back button disabled"" />
-        </StackPanel>
+                Content=""Back enabled"" />
     </StackPanel>
 </UserControl>
 ";
 
-        private const string CompactNavigationViewCSharpSource = @"using System.Windows;
-using System.Windows.Controls;
+        private const string CompactNavigationViewCSharpSource = @"using System.Windows.Controls;
 
 namespace Fluence.Wpf.Demo.Pages.Navigation
 {
     public partial class CompactNavigationView : UserControl
     {
-        private int _backRequestCount;
-
         public CompactNavigationView()
         {
             InitializeComponent();
-        }
-
-        private void BackEnabledToggle_Changed(object sender, RoutedEventArgs e)
-        {
-            UpdateBackState();
-        }
-
-        private void CompactNavigationDemo_BackRequested(object sender, Fluence.Wpf.Controls.NavigationViewBackRequestedEventArgs e)
-        {
-            _backRequestCount++;
-            UpdateBackState();
-        }
-
-        private void UpdateBackState()
-        {
-            var isBackEnabled = BackEnabledToggle is not null && BackEnabledToggle.IsChecked == true;
-
-            if (CompactNavigationDemo is not null)
-            {
-                CompactNavigationDemo.IsBackEnabled = isBackEnabled;
-            }
-
-            if (BackStatusLabel is not null)
-            {
-                BackStatusLabel.Text = isBackEnabled
-                    ? string.Format(""Back button enabled ({0} requests)"", _backRequestCount)
-                    : ""Back button disabled"";
-            }
         }
     }
 }
@@ -239,12 +196,13 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
     <Border Height=""260"">
         <ui:NavigationView
             Header=""Inbox""
-            PaneDisplayMode=""LeftCompact"">
+            IsPaneOpen=""True""
+            PaneDisplayMode=""Left"">
             <ui:NavigationViewItem
                 Content=""Inbox""
                 IsSelected=""True"">
                 <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph=""&#xE715;"" IconFontSize=""20"" />
+                    <ui:FontIcon Glyph=""&#xE715;"" IconFontSize=""16"" />
                 </ui:NavigationViewItem.Icon>
                 <ui:NavigationViewItem.InfoBadge>
                     <ui:InfoBadge Value=""12"" />
@@ -252,7 +210,7 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
             </ui:NavigationViewItem>
             <ui:NavigationViewItem Content=""Approvals"">
                 <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph=""&#xE73E;"" IconFontSize=""20"" />
+                    <ui:FontIcon Glyph=""&#xE73E;"" IconFontSize=""16"" />
                 </ui:NavigationViewItem.Icon>
                 <ui:NavigationViewItem.InfoBadge>
                     <ui:InfoBadge BadgeStyle=""{x:Static uicore:InfoBadgeStyle.Caution}"" />
@@ -260,7 +218,7 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
             </ui:NavigationViewItem>
             <ui:NavigationViewItem Content=""Alerts"">
                 <ui:NavigationViewItem.Icon>
-                    <ui:FontIcon Glyph=""&#xE7BA;"" IconFontSize=""20"" />
+                    <ui:FontIcon Glyph=""&#xE7BA;"" IconFontSize=""16"" />
                 </ui:NavigationViewItem.Icon>
                 <ui:NavigationViewItem.InfoBadge>
                     <ui:InfoBadge BadgeStyle=""{x:Static uicore:InfoBadgeStyle.Critical}"" Value=""2"" />
@@ -284,8 +242,6 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
     }
 }
 ";
-
-        private int _backRequestCount;
 
         public GalleryNavigationPage()
         {
@@ -315,7 +271,6 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
             SetNavigationDemoContent(LeftNavigationDemo, LeftNavigationHomeItem);
             SetNavigationDemoContent(TopNavigationDemo, TopNavigationOverviewItem);
             SetNavigationDemoContent(CompactNavigationDemo, CompactNavigationDashboardItem);
-            UpdateBackState();
         }
 
         private void NavigationDemo_ItemInvoked(object sender, NavigationViewItemInvokedEventArgs e)
@@ -381,24 +336,5 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
             return textBlock;
         }
 
-        private void BackEnabledToggle_Changed(object sender, RoutedEventArgs e)
-        {
-            UpdateBackState();
-        }
-
-        private void CompactNavigationDemo_BackRequested(object sender, NavigationViewBackRequestedEventArgs e)
-        {
-            _backRequestCount++;
-            UpdateBackState();
-        }
-
-        private void UpdateBackState()
-        {
-            bool isBackEnabled = BackEnabledToggle is not null && BackEnabledToggle.IsChecked == true;
-
-            _ = (BackStatusLabel?.Text = isBackEnabled
-                    ? string.Format(CultureInfo.CurrentCulture, "Back button enabled ({0} requests)", _backRequestCount)
-                    : "Back button disabled");
-        }
     }
 }

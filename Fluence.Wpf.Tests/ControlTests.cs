@@ -1414,7 +1414,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(FindVisualChildByName<Controls.TextBox>(window, "CharCountTextBox"));
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Selection");
-                    Assert.IsNotNull(FindVisualChildByName<Controls.ToggleSwitch>(window, "SimpleToggleSwitch"));
+                    Assert.IsNotNull(FindVisualChildByName<Controls.ToggleSwitch>(window, "WorkToggleSwitch"));
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Selection");
                     Assert.IsNotNull(FindVisualChildByName<Controls.ComboBox>(window, "SelectionDemoCombo"));
@@ -2174,7 +2174,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void MainWindow_ProgressSlider_UsesFluentSliderAndUpdatesLabel()
+        public void MainWindow_ProgressNumberBox_UpdatesFirstProgressBar()
         {
             RunOnStaThread(() =>
             {
@@ -2191,16 +2191,16 @@ namespace Fluence.Wpf.Tests
 
                     SelectMainWindowNavPage(window, window.Dispatcher, "Status");
 
-                    Controls.Slider? slider = FindVisualChildByName<Controls.Slider>(window, "ProgressSlider");
-                    TextBlock? label = FindVisualChildByName<TextBlock>(window, "SliderValueLabel");
-                    Assert.IsNotNull(slider, "ProgressSlider should be a Controls.Slider control.");
-                    Assert.IsNotNull(label, "Slider value label should exist in progress tab.");
+                    Controls.NumberBox? numberBox = FindVisualChildByName<Controls.NumberBox>(window, "ProgressValueNumberBox");
+                    Controls.ProgressBar? progressBar = FindVisualChildByName<Controls.ProgressBar>(window, "StandardProgressBar");
+                    Assert.IsNotNull(numberBox, "ProgressValueNumberBox should be a Controls.NumberBox control.");
+                    Assert.IsNotNull(progressBar, "StandardProgressBar should exist in the status page.");
 
-                    slider.Value = 73;
+                    numberBox.Value = 73;
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Assert.AreEqual("Value: 73", label.Text);
+                    Assert.AreEqual(73d, progressBar.Value, 0.1);
                 }
                 finally
                 {

@@ -101,7 +101,7 @@
             <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
             <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
             <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
-            <Setter Property="BorderThickness" Value="1,0,1,1" />
+            <Setter Property="BorderThickness" Value="1,1,1,1" />
             <Setter Property="CornerRadius" Value="0,0,8,8" />
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
             <Setter Property="VerticalContentAlignment" Value="Top" />
@@ -137,7 +137,8 @@
                                     x:Name="SourceContentBorder"
                                     Grid.Row="1"
                                     Background="{DynamicResource DemoSampleSourceContentBackgroundBrush}"
-                                    ClipToBounds="True">
+                                    ClipToBounds="True"
+                                    CornerRadius="0,0,8,8">
                                     <ContentPresenter
                                         x:Name="ExpandSite"
                                         HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
@@ -207,6 +208,7 @@
                         Grid.Column="1"
                         Margin="{DynamicResource DemoSampleOutputMargin}"
                         Padding="{DynamicResource DemoSampleOutputPadding}"
+                        VerticalAlignment="Center"
                         Background="{DynamicResource DemoSampleCardBackgroundBrush}"
                         CornerRadius="{DynamicResource ControlCornerRadius}">
                         <StackPanel>
@@ -237,6 +239,7 @@
             x:Name="SourceExpander"
             Grid.Row="2"
             Header="Source code"
+            CornerRadius="0,0,8,8"
             Expanded="SourceExpander_Expanded"
             Style="{StaticResource DemoSampleSourceExpanderStyle}">
             <TabControl

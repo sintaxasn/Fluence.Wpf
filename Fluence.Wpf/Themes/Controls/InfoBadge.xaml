@@ -6,11 +6,11 @@
 
     <Style TargetType="{x:Type controls:InfoBadge}">
         <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="MinWidth" Value="8" />
-        <Setter Property="MinHeight" Value="8" />
-        <Setter Property="MaxHeight" Value="16" />
-        <Setter Property="Padding" Value="4,0" />
-        <Setter Property="FontSize" Value="10" />
+        <Setter Property="MinWidth" Value="34" />
+        <Setter Property="MinHeight" Value="24" />
+        <Setter Property="MaxHeight" Value="24" />
+        <Setter Property="Padding" Value="0,0,0,1" />
+        <Setter Property="FontSize" Value="14" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorInverseBrush}" />
@@ -28,7 +28,7 @@
                             MaxHeight="{TemplateBinding MaxHeight}"
                             Padding="{TemplateBinding Padding}"
                             Background="{TemplateBinding Background}"
-                            CornerRadius="8">
+                            CornerRadius="12">
                             <ContentPresenter
                                 x:Name="ContentArea"
                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
@@ -36,6 +36,7 @@
                                 Content="{TemplateBinding Content}"
                                 TextElement.FontFamily="{TemplateBinding FontFamily}"
                                 TextElement.FontSize="{TemplateBinding FontSize}"
+                                TextElement.FontWeight="{TemplateBinding FontWeight}"
                                 TextElement.Foreground="{TemplateBinding Foreground}" />
                         </Border>
                         <!--  Dot mode: 8x8 circle when no content  -->

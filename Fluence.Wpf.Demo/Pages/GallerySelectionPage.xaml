@@ -119,46 +119,32 @@
             <ContentControl
                 x:Name="DemoSampleSlot03DemoContentHost"
                 Visibility="Collapsed">
-<ui:StackPanel Spacing="18">
+<ui:StackPanel Spacing="8">
+                        <TextBlock
+                            x:Name="WorkToggleHeaderText"
+                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                            Text="Toggle work" />
                         <StackPanel Orientation="Horizontal">
                             <ui:ToggleSwitch
-                                x:Name="SimpleToggleSwitch"
+                                x:Name="WorkToggleSwitch"
                                 Margin="{DynamicResource DemoInlineControlGapMargin}"
                                 VerticalAlignment="Center"
                                 IsChecked="True" />
                             <TextBlock
-                                x:Name="SimpleToggleStateText"
+                                x:Name="WorkToggleStateText"
+                                Margin="{DynamicResource DemoInlineControlGapMargin}"
                                 VerticalAlignment="Center"
                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                 Text="On" />
+                            <ui:ProgressRing
+                                x:Name="WorkToggleProgressRing"
+                                Width="36"
+                                Height="36"
+                                Margin="{DynamicResource DemoWorkToggleProgressRingMargin}"
+                                VerticalAlignment="Center"
+                                IsActive="{Binding IsChecked, ElementName=WorkToggleSwitch}"
+                                IsIndeterminate="True" />
                         </StackPanel>
-                        <ui:StackPanel Spacing="8">
-                            <TextBlock
-                                x:Name="WorkToggleHeaderText"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Text="Toggle work" />
-                            <StackPanel Orientation="Horizontal">
-                                <ui:ToggleSwitch
-                                    x:Name="WorkToggleSwitch"
-                                    Margin="{DynamicResource DemoInlineControlGapMargin}"
-                                    VerticalAlignment="Center"
-                                    IsChecked="True" />
-                                <TextBlock
-                                    x:Name="WorkToggleStateText"
-                                    Margin="{DynamicResource DemoInlineControlGapMargin}"
-                                    VerticalAlignment="Center"
-                                    Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                    Text="On" />
-                                <ui:ProgressRing
-                                    x:Name="WorkToggleProgressRing"
-                                    Width="36"
-                                    Height="36"
-                                    Margin="{DynamicResource DemoWorkToggleProgressRingMargin}"
-                                    VerticalAlignment="Center"
-                                    IsActive="{Binding IsChecked, ElementName=WorkToggleSwitch}"
-                                    IsIndeterminate="True" />
-                            </StackPanel>
-                        </ui:StackPanel>
                     </ui:StackPanel>
             </ContentControl>
             <local:DemoSampleControl
@@ -189,7 +175,7 @@
             <ContentControl
                 x:Name="DemoSampleSlot05DemoContentHost"
                 Visibility="Collapsed">
-<ui:StackPanel Spacing="12">
+<ui:StackPanel Spacing="20">
                         <ui:ComboBox
                             x:Name="SelectionDemoCombo"
                             Width="480"

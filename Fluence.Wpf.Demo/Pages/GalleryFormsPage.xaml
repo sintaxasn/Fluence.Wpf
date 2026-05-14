@@ -27,7 +27,7 @@
                             Text="Email" />
                         <ui:TextBox
                             x:Name="SignInEmailBox"
-                            Margin="{DynamicResource DemoCompactStackSpacingMargin}"
+                            Margin="{DynamicResource DemoControlBottomGapMargin}"
                             PlaceholderText="name@example.com"
                             TextChanged="SignInField_Changed" />
                         <TextBlock
@@ -35,12 +35,12 @@
                             Text="Password" />
                         <ui:PasswordBox
                             x:Name="SignInPasswordBox"
-                            Margin="{DynamicResource DemoCompactStackSpacingMargin}"
+                            Margin="{DynamicResource DemoControlBottomGapMargin}"
                             PlaceholderText="Password"
                             RevealButtonEnabled="True" />
                         <ui:CheckBox
                             x:Name="RememberMeCheckBox"
-                            Margin="{DynamicResource DemoCompactStackSpacingMargin}"
+                            Margin="{DynamicResource DemoSampleBlockMargin}"
                             Content="Remember me" />
                         <StackPanel Orientation="Horizontal">
                             <ui:Button
@@ -77,36 +77,50 @@
                             Style="{StaticResource FieldLabelStyle}"
                             Text="Contact email" />
                         <ui:TextBox
-                            Margin="{DynamicResource DemoCompactStackSpacingMargin}"
+                            Margin="{DynamicResource DemoControlBottomGapMargin}"
                             PlaceholderText="name@example.com" />
                         <TextBlock
                             Style="{StaticResource FieldLabelStyle}"
                             Text="Shipping speed" />
                         <ui:ComboBox
-                            Margin="{DynamicResource DemoCompactStackSpacingMargin}"
+                            Margin="{DynamicResource DemoControlBottomGapMargin}"
                             SelectedIndex="1">
                             <ComboBoxItem Content="Standard" />
                             <ComboBoxItem Content="Priority" />
                             <ComboBoxItem Content="Overnight" />
                         </ui:ComboBox>
-                        <WrapPanel Margin="{DynamicResource DemoCompactStackSpacingMargin}">
+                        <Grid
+                            x:Name="CheckoutFieldsGrid"
+                            Margin="{DynamicResource DemoSampleBlockMargin}">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="180" />
+                                <ColumnDefinition Width="16" />
+                                <ColumnDefinition Width="280" />
+                            </Grid.ColumnDefinitions>
                             <ui:NumberBox
+                                x:Name="QuantityNumberBox"
+                                Grid.Column="0"
                                 Width="180"
-                                Margin="{DynamicResource DemoInlineControlGapMargin}"
                                 Header="Quantity"
                                 Maximum="10"
                                 Minimum="1"
                                 SpinButtonPlacementMode="Compact"
                                 Value="2" />
                             <ui:TextBox
+                                x:Name="OptionalTextBox"
+                                Grid.Column="2"
                                 Width="280"
+                                VerticalAlignment="Bottom"
                                 PlaceholderText="Optional" />
-                        </WrapPanel>
+                        </Grid>
                         <ui:CheckBox
-                            Margin="{DynamicResource DemoCompactStackSpacingMargin}"
+                            x:Name="GiftCheckBox"
+                            Margin="{DynamicResource DemoSampleBlockMargin}"
                             Content="This is a gift"
                             Description="Hide prices on the packing slip." />
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel
+                            x:Name="CheckoutButtonsPanel"
+                            Orientation="Horizontal">
                             <ui:Button
                                 Margin="{DynamicResource DemoInlineControlGapMargin}"
                                 Appearance="Accent"
@@ -127,13 +141,13 @@
                             Style="{StaticResource FieldLabelStyle}"
                             Text="Display name" />
                         <ui:TextBox
-                            Margin="{DynamicResource DemoCompactStackSpacingMargin}"
+                            Margin="{DynamicResource DemoControlBottomGapMargin}"
                             Text="Avery Stone" />
                         <TextBlock
                             Style="{StaticResource FieldLabelStyle}"
                             Text="Theme" />
                         <ui:ComboBox
-                            Margin="{DynamicResource DemoCompactStackSpacingMargin}"
+                            Margin="{DynamicResource DemoControlBottomGapMargin}"
                             SelectedIndex="0">
                             <ComboBoxItem Content="Use system setting" />
                             <ComboBoxItem Content="Light" />
@@ -141,7 +155,7 @@
                         </ui:ComboBox>
                         <ui:ToggleSwitch
                             x:Name="EmailUpdatesToggle"
-                            Margin="{DynamicResource DemoCompactStackSpacingMargin}"
+                            Margin="{DynamicResource DemoSampleBlockMargin}"
                             Content="Email updates"
                             IsChecked="True"
                             OffContent="Off"

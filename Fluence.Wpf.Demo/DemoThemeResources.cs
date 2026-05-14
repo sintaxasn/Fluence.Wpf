@@ -41,8 +41,6 @@ namespace Fluence.Wpf.Demo
         private const string DemoSampleRightRailBackgroundBrushKey = "DemoSampleRightRailBackgroundBrush";
         private const string DemoSampleSourceHeaderBackgroundBrushKey = "DemoSampleSourceHeaderBackgroundBrush";
         private const string DemoSampleSourceContentBackgroundBrushKey = "DemoSampleSourceContentBackgroundBrush";
-        private const string DemoControlSurfaceBrushKey = "DemoControlSurfaceBrush";
-        private const string DemoSourceSurfaceBrushKey = "DemoSourceSurfaceBrush";
         private const string DemoSettingsCardBrushKey = "DemoSettingsCardBrush";
         private const string DemoSectionCardBrushKey = "DemoSectionCardBrush";
         private const string DemoFieldLabelForegroundBrushKey = "DemoFieldLabelForegroundBrush";
@@ -103,8 +101,6 @@ namespace Fluence.Wpf.Demo
                 SetBrush(resources, DemoSampleRightRailBackgroundBrushKey, Color.FromRgb(0x2B, 0x2B, 0x2B));
                 SetBrush(resources, DemoSampleSourceHeaderBackgroundBrushKey, Color.FromRgb(0x32, 0x32, 0x32));
                 SetBrush(resources, DemoSampleSourceContentBackgroundBrushKey, Color.FromRgb(0x2E, 0x2E, 0x2E));
-                CopyBrush(resources, DemoControlSurfaceBrushKey, DemoSampleCardBackgroundBrushKey);
-                CopyBrush(resources, DemoSourceSurfaceBrushKey, DemoSampleSourceHeaderBackgroundBrushKey);
                 SetBrush(resources, DemoSettingsCardBrushKey, Color.FromRgb(0x32, 0x32, 0x32));
                 SetBrush(resources, DemoSectionCardBrushKey, Color.FromRgb(0x20, 0x20, 0x20));
                 PromoteBrush(resources, DemoFieldLabelForegroundBrushKey, "TextFillColorSecondaryBrush");
@@ -118,8 +114,6 @@ namespace Fluence.Wpf.Demo
                 SetBrush(resources, DemoSampleRightRailBackgroundBrushKey, Color.FromRgb(0xFB, 0xFB, 0xFB));
                 SetBrush(resources, DemoSampleSourceHeaderBackgroundBrushKey, Color.FromRgb(0xFD, 0xFD, 0xFD));
                 SetBrush(resources, DemoSampleSourceContentBackgroundBrushKey, Color.FromRgb(0xFF, 0xFF, 0xFF));
-                CopyBrush(resources, DemoControlSurfaceBrushKey, DemoSampleCardBackgroundBrushKey);
-                CopyBrush(resources, DemoSourceSurfaceBrushKey, DemoSampleSourceHeaderBackgroundBrushKey);
                 PromoteBrush(resources, DemoSettingsCardBrushKey, "CardBackgroundFillColorDefaultBrush");
                 PromoteBrush(resources, DemoSectionCardBrushKey, "CardBackgroundFillColorDefaultBrush");
                 PromoteBrush(resources, DemoFieldLabelForegroundBrushKey, "TextFillColorSecondaryBrush");
@@ -131,8 +125,6 @@ namespace Fluence.Wpf.Demo
             PromoteBrush(resources, DemoSampleRightRailBackgroundBrushKey, "CardBackgroundFillColorSecondaryBrush");
             PromoteBrush(resources, DemoSampleSourceHeaderBackgroundBrushKey, "ControlFillColorDefaultBrush");
             PromoteBrush(resources, DemoSampleSourceContentBackgroundBrushKey, "SolidBackgroundFillColorBaseBrush");
-            CopyBrush(resources, DemoControlSurfaceBrushKey, DemoSampleCardBackgroundBrushKey);
-            CopyBrush(resources, DemoSourceSurfaceBrushKey, DemoSampleSourceHeaderBackgroundBrushKey);
             PromoteBrush(resources, DemoSettingsCardBrushKey, "CardBackgroundFillColorDefaultBrush");
             PromoteBrush(resources, DemoSectionCardBrushKey, "CardBackgroundFillColorDefaultBrush");
             PromoteBrush(resources, DemoFieldLabelForegroundBrushKey, "TextFillColorSecondaryBrush");
@@ -141,14 +133,6 @@ namespace Fluence.Wpf.Demo
         private static void SetBrush(ResourceDictionary resources, string key, Color color)
         {
             resources[key] = new SolidColorBrush(color);
-        }
-
-        private static void CopyBrush(ResourceDictionary resources, string targetKey, string sourceKey)
-        {
-            if (resources[sourceKey] is SolidColorBrush source)
-            {
-                SetBrush(resources, targetKey, source.Color);
-            }
         }
 
         private static void PromoteBrush(ResourceDictionary resources, string targetKey, string sourceKey)

@@ -691,6 +691,38 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void HitTestTitleBar_TopResizeBand_ReturnsHtTopBeforeCaption()
+        {
+            RunWithShownWindow(w =>
+            {
+                w.UpdateLayout();
+                Point screen = w.PointToScreen(new Point(w.ActualWidth / 2.0, 1.0));
+                int? hit = InvokeHitTestTitleBar(w, MakeLParamScreen(screen.X, screen.Y));
+                Assert.AreEqual(NativeConstants.HTTOP, hit,
+                    "The upper resize band must win over the caption drag region.");
+            });
+        }
+
+        [TestMethod]
+        public void HitTestTitleBar_UpperCorners_ReturnResizeCornersBeforeCaption()
+        {
+            RunWithShownWindow(w =>
+            {
+                w.UpdateLayout();
+
+                Point topLeft = w.PointToScreen(new Point(1.0, 1.0));
+                int? leftHit = InvokeHitTestTitleBar(w, MakeLParamScreen(topLeft.X, topLeft.Y));
+                Assert.AreEqual(NativeConstants.HTTOPLEFT, leftHit,
+                    "The upper-left resize corner must win over the caption drag region.");
+
+                Point topRight = w.PointToScreen(new Point(w.ActualWidth - 1.0, 1.0));
+                int? rightHit = InvokeHitTestTitleBar(w, MakeLParamScreen(topRight.X, topRight.Y));
+                Assert.AreEqual(NativeConstants.HTTOPRIGHT, rightHit,
+                    "The upper-right resize corner must win over caption buttons and caption drag.");
+            });
+        }
+
+        [TestMethod]
         public void HitTestTitleBar_IsMoveableFalse_TitleBarDragAreaReturnsZero()
         {
             RunWithShownWindow(w =>
@@ -718,6 +750,56 @@ namespace Fluence.Wpf.Tests
                 w.IsMoveable = true;
                 _ = InvokeWndProc(w, NativeConstants.WM_SYSCOMMAND, new IntPtr(NativeConstants.SC_MOVE), IntPtr.Zero, out handled);
                 Assert.IsFalse(handled, "IsMoveable=true must leave SC_MOVE available.");
+            });
+        }
+
+        [TestMethod]
+        public void WndProc_NcLeftButtonUpHtMaxButton_UsesDirectMaximizeAndRefreshesCaptionButtons()
+        {
+            RunWithShownWindow(w =>
+            {
+                System.Windows.Controls.Button? max = GetCaptionButtonField(w, "_maximizeButton");
+                System.Windows.Controls.Button? restore = GetCaptionButtonField(w, "_restoreButton");
+                Assert.IsNotNull(max, "Maximize template part should exist after Show.");
+                Assert.IsNotNull(restore, "Restore template part should exist after Show.");
+                Assert.AreEqual(Visibility.Visible, max.Visibility,
+                    "Precondition: maximize button should be visible before HTMAXBUTTON click.");
+                Assert.AreEqual(Visibility.Collapsed, restore.Visibility,
+                    "Precondition: restore button should be hidden before HTMAXBUTTON click.");
+
+                _ = InvokeWndProc(
+                    w,
+                    NativeConstants.WM_NCLBUTTONUP,
+                    new IntPtr(NativeConstants.HTMAXBUTTON),
+                    IntPtr.Zero,
+                    out bool handled);
+                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+
+                Assert.IsTrue(handled,
+                    "WM_NCLBUTTONUP/HTMAXBUTTON should be handled by FluenceWindow.");
+                Assert.AreEqual(WindowState.Maximized, w.WindowState,
+                    "HTMAXBUTTON click should use the same direct WindowState path as the command handler.");
+                Assert.AreEqual(Visibility.Collapsed, max.Visibility,
+                    "After one maximize click, the maximize icon should be hidden.");
+                Assert.AreEqual(Visibility.Visible, restore.Visibility,
+                    "After one maximize click, only the restore icon should be visible.");
+
+                _ = InvokeWndProc(
+                    w,
+                    NativeConstants.WM_NCLBUTTONUP,
+                    new IntPtr(NativeConstants.HTMAXBUTTON),
+                    IntPtr.Zero,
+                    out handled);
+                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+
+                Assert.IsTrue(handled,
+                    "Second WM_NCLBUTTONUP/HTMAXBUTTON should be handled by FluenceWindow.");
+                Assert.AreEqual(WindowState.Normal, w.WindowState,
+                    "Second HTMAXBUTTON click should restore through the same direct path as the command handler.");
+                Assert.AreEqual(Visibility.Visible, max.Visibility,
+                    "After one restore click, only the maximize icon should be visible.");
+                Assert.AreEqual(Visibility.Collapsed, restore.Visibility,
+                    "After one restore click, the restore icon should be hidden.");
             });
         }
 

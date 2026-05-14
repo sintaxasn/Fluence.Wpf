@@ -23,15 +23,13 @@
             <ContentControl
                 x:Name="DemoSampleSlot01DemoContentHost"
                 Visibility="Collapsed">
-<StackPanel>
+<ui:StackPanel Spacing="20">
                         <ui:TextBox
                             Width="480"
-                            Margin="{DynamicResource DemoControlBottomGapMargin}"
                             HorizontalAlignment="Left"
                             PlaceholderText="Basic text box..." />
                         <ui:TextBox
                             Width="480"
-                            Margin="{DynamicResource DemoControlBottomGapMargin}"
                             HorizontalAlignment="Left"
                             PlaceholderText="Search">
                             <ui:TextBox.Icon>
@@ -43,17 +41,8 @@
                             Width="480"
                             HorizontalAlignment="Left"
                             MaxLength="40"
-                            PlaceholderText="Limited to 40 characters..."
-                            TextChanged="CharCountTextBox_TextChanged" />
-                    </StackPanel>
-            </ContentControl>
-            <ContentControl
-                x:Name="DemoSampleSlot01OutputContentHost"
-                Visibility="Collapsed">
-<TextBlock
-                        x:Name="CharCountLabel"
-                        Style="{StaticResource StateLabelStyle}"
-                        Text="Characters: 0" />
+                            PlaceholderText="Limited to 40 characters..." />
+                    </ui:StackPanel>
             </ContentControl>
             <local:DemoSampleControl
                 SampleDescription="Use text boxes for short text entry. Add icons, clear buttons, and limits when they clarify the expected input." />
@@ -62,23 +51,20 @@
             <ContentControl
                 x:Name="DemoSampleSlot02DemoContentHost"
                 Visibility="Collapsed">
-<StackPanel>
+<ui:StackPanel Spacing="20">
                         <ui:TextBox
                             Width="480"
-                            Margin="{DynamicResource DemoControlBottomGapMargin}"
                             HorizontalAlignment="Left"
                             HelperText="Helper text can explain format before validation."
                             PlaceholderText="With helper text" />
                         <ui:TextBox
                             Width="480"
-                            Margin="{DynamicResource DemoControlBottomGapMargin}"
                             HorizontalAlignment="Left"
                             Text="Valid input"
                             ValidationMessage="Looks good."
                             ValidationState="{x:Static uicore:ValidationState.Success}" />
                         <ui:TextBox
                             Width="480"
-                            Margin="{DynamicResource DemoControlBottomGapMargin}"
                             HorizontalAlignment="Left"
                             Text="Check this value"
                             ValidationMessage="Review this before continuing."
@@ -89,7 +75,7 @@
                             Text="Bad value"
                             ValidationMessage="Please fix this field."
                             ValidationState="{x:Static uicore:ValidationState.Error}" />
-                    </StackPanel>
+                    </ui:StackPanel>
             </ContentControl>
             <local:DemoSampleControl
                 SampleDescription="Show helper text for guidance and validation states for committed feedback." />
@@ -98,16 +84,14 @@
             <ContentControl
                 x:Name="DemoSampleSlot03DemoContentHost"
                 Visibility="Collapsed">
-<StackPanel>
+<ui:StackPanel Spacing="20">
                         <ui:PasswordBox
                             Width="480"
-                            Margin="{DynamicResource DemoControlBottomGapMargin}"
                             HorizontalAlignment="Left"
                             PlaceholderText="Enter password..."
                             RevealButtonEnabled="True" />
                         <ui:PasswordBox
                             Width="480"
-                            Margin="{DynamicResource DemoControlBottomGapMargin}"
                             HorizontalAlignment="Left"
                             Password="CorrectHorse7!"
                             RevealButtonEnabled="True" />
@@ -116,7 +100,7 @@
                             HorizontalAlignment="Left"
                             IsEnabled="False"
                             PlaceholderText="Disabled" />
-                    </StackPanel>
+                    </ui:StackPanel>
             </ContentControl>
             <local:DemoSampleControl
                 SampleDescription="Use password boxes for protected text entry, with reveal and strength affordances when appropriate." />
@@ -125,10 +109,9 @@
             <ContentControl
                 x:Name="DemoSampleSlot04DemoContentHost"
                 Visibility="Collapsed">
-<WrapPanel>
+<ui:StackPanel Spacing="20">
                         <ui:NumberBox
                             Width="260"
-                            Margin="{DynamicResource DemoControlGroupItemMargin}"
                             Header="Inline"
                             Maximum="100"
                             Minimum="0"
@@ -136,7 +119,6 @@
                             Value="5" />
                         <ui:NumberBox
                             Width="260"
-                            Margin="{DynamicResource DemoControlGroupItemMargin}"
                             Header="Compact"
                             Maximum="100"
                             Minimum="0"
@@ -144,7 +126,6 @@
                             Value="25" />
                         <ui:NumberBox
                             Width="260"
-                            Margin="{DynamicResource DemoControlGroupItemMargin}"
                             Header="Keyboard only"
                             Maximum="100"
                             Minimum="0"
@@ -152,11 +133,10 @@
                             Value="50" />
                         <ui:NumberBox
                             Width="260"
-                            Margin="{DynamicResource DemoControlGroupItemMargin}"
                             Header="Disabled"
                             IsEnabled="False"
                             Value="42" />
-                    </WrapPanel>
+                    </ui:StackPanel>
             </ContentControl>
             <local:DemoSampleControl
                 SampleDescription="Use number boxes for numeric entry with optional spin buttons, bounds, and supporting descriptions." />
@@ -165,29 +145,29 @@
             <ContentControl
                 x:Name="DemoSampleSlot05DemoContentHost"
                 Visibility="Collapsed">
-<StackPanel>
-                        <TextBlock
-                            Margin="{DynamicResource DemoSmallBottomGapMargin}"
-                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                            Text="Default" />
-                        <ui:Slider
-                            Margin="{DynamicResource DemoControlBottomGapMargin}"
-                            Maximum="100"
-                            Minimum="0"
-                            Value="35" />
-                        <TextBlock
-                            Margin="{DynamicResource DemoSmallBottomGapMargin}"
-                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                            Text="Snapped to ticks" />
-                        <ui:Slider
-                            x:Name="HorizontalTickSlider"
-                            Margin="{DynamicResource DemoControlBottomGapMargin}"
-                            IsSnapToTickEnabled="True"
-                            Maximum="10"
-                            Minimum="0"
-                            TickFrequency="1"
-                            TickPlacement="BottomRight"
-                            Value="4" />
+<ui:StackPanel Spacing="20">
+                        <ui:StackPanel Spacing="8">
+                            <TextBlock
+                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                Text="Default" />
+                            <ui:Slider
+                                Maximum="100"
+                                Minimum="0"
+                                Value="35" />
+                        </ui:StackPanel>
+                        <ui:StackPanel Spacing="8">
+                            <TextBlock
+                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                Text="Snapped to ticks" />
+                            <ui:Slider
+                                x:Name="HorizontalTickSlider"
+                                IsSnapToTickEnabled="True"
+                                Maximum="10"
+                                Minimum="0"
+                                TickFrequency="1"
+                                TickPlacement="BottomRight"
+                                Value="4" />
+                        </ui:StackPanel>
                         <Grid
                             MaxWidth="292"
                             HorizontalAlignment="Center">
@@ -196,9 +176,11 @@
                                 <ColumnDefinition Width="32" />
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
-                            <StackPanel Grid.Column="0" HorizontalAlignment="Center">
+                            <ui:StackPanel
+                                Grid.Column="0"
+                                HorizontalAlignment="Center"
+                                Spacing="8">
                                 <TextBlock
-                                    Margin="{DynamicResource DemoSmallBottomGapMargin}"
                                     HorizontalAlignment="Center"
                                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                     Text="Vertical" />
@@ -211,10 +193,12 @@
                                     TickFrequency="10"
                                     TickPlacement="BottomRight"
                                     Value="40" />
-                            </StackPanel>
-                            <StackPanel Grid.Column="2" HorizontalAlignment="Center">
+                            </ui:StackPanel>
+                            <ui:StackPanel
+                                Grid.Column="2"
+                                HorizontalAlignment="Center"
+                                Spacing="8">
                                 <TextBlock
-                                    Margin="{DynamicResource DemoSmallBottomGapMargin}"
                                     HorizontalAlignment="Center"
                                     Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                     Text="Disabled" />
@@ -225,9 +209,9 @@
                                     Minimum="0"
                                     Orientation="Vertical"
                                     Value="25" />
-                            </StackPanel>
+                            </ui:StackPanel>
                         </Grid>
-                    </StackPanel>
+                    </ui:StackPanel>
             </ContentControl>
             <local:DemoSampleControl
                 SampleDescription="Use sliders when a relative value is easier to choose visually than typing a precise number." />

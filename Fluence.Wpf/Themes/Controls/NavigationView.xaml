@@ -179,7 +179,7 @@
                             <ContentPresenter
                                 x:Name="InfoBadgePresenter"
                                 Grid.Column="3"
-                                Width="24"
+                                MinWidth="34"
                                 Height="32"
                                 Margin="4,0,8,0"
                                 HorizontalAlignment="Center"

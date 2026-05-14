@@ -22,9 +22,10 @@
             <ContentControl
                 x:Name="DemoSampleSlot01DemoContentHost"
                 Visibility="Collapsed">
-<ui:ListView
+                    <ui:ListView
                         x:Name="BoundListView"
                         Height="220"
+                        Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
                         SelectionMode="Single">
@@ -52,7 +53,7 @@
                                             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                             Text="{Binding Name}" />
                                         <TextBlock
-                                            Margin="{DynamicResource DemoInlineControlGapMargin}"
+                                            Margin="{DynamicResource DemoDataBindingSecondaryTextMargin}"
                                             VerticalAlignment="Center"
                                             ui:TextBlockExtensions.Typography="Caption"
                                             Foreground="{DynamicResource TextFillColorTertiaryBrush}"
@@ -62,15 +63,6 @@
                             </DataTemplate>
                         </ui:ListView.ItemTemplate>
                     </ui:ListView>
-            </ContentControl>
-            <ContentControl
-                x:Name="DemoSampleSlot01OutputContentHost"
-                Visibility="Collapsed">
-<TextBlock
-                        x:Name="ItemCountLabel"
-                        ui:TextBlockExtensions.Typography="Caption"
-                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                        Text="0 items" />
             </ContentControl>
             <ContentControl
                 x:Name="DemoSampleSlot01RightRailContentHost"
@@ -100,9 +92,10 @@
             <ContentControl
                 x:Name="DemoSampleSlot02DemoContentHost"
                 Visibility="Collapsed">
-<ui:ListView
+                    <ui:ListView
                         x:Name="SelectionModeListView"
                         Height="200"
+                        Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
                         SelectionChanged="SelectionModeListView_SelectionChanged"
@@ -157,9 +150,10 @@
             <ContentControl
                 x:Name="DemoSampleSlot03DemoContentHost"
                 Visibility="Collapsed">
-<ui:ListView
+                    <ui:ListView
                         x:Name="DataTemplateListView"
                         Height="180"
+                        Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
                         SelectionMode="Single">

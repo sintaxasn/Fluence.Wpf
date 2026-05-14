@@ -21,9 +21,10 @@
             <ContentControl
                 x:Name="DemoSampleSlot01DemoContentHost"
                 Visibility="Collapsed">
-<ui:TreeView
+                    <ui:TreeView
                         x:Name="HierarchyTreeView"
                         MaxHeight="260"
+                        Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1">
                         <ui:TreeViewItem Header="Workspace" IsExpanded="True">
@@ -49,12 +50,12 @@
             <ContentControl
                 x:Name="DemoSampleSlot02DemoContentHost"
                 Visibility="Collapsed">
-<ui:TreeView
+                    <ui:TreeView
                         x:Name="SelectionTreeView"
                         MaxHeight="260"
+                        Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                        BorderThickness="1"
-                        SelectedItemChanged="SelectionTreeView_SelectedItemChanged">
+                        BorderThickness="1">
                         <ui:TreeViewItem Header="Inbox" IsExpanded="True">
                             <ui:TreeViewItem Header="Priority" IsExpanded="True">
                                 <ui:TreeViewItem Header="Contract review" />
@@ -71,14 +72,6 @@
                         </ui:TreeViewItem>
                     </ui:TreeView>
             </ContentControl>
-            <ContentControl
-                x:Name="DemoSampleSlot02OutputContentHost"
-                Visibility="Collapsed">
-<TextBlock
-                        x:Name="TreeSelectionLabel"
-                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                        Text="Selected: -" />
-            </ContentControl>
             <local:DemoSampleControl
                 SampleDescription="Handle SelectedItemChanged when selecting a node should update related content." />
 
@@ -86,9 +79,10 @@
             <ContentControl
                 x:Name="DemoSampleSlot03DemoContentHost"
                 Visibility="Collapsed">
-<ui:TreeView
+                    <ui:TreeView
                         x:Name="MultiSelectTreeView"
                         MaxHeight="260"
+                        Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
                         SelectionMode="{x:Static uicore:TreeViewSelectionMode.Multiple}">
@@ -110,9 +104,10 @@
             <ContentControl
                 x:Name="DemoSampleSlot04DemoContentHost"
                 Visibility="Collapsed">
-<ui:TreeView
+                    <ui:TreeView
                         x:Name="ExpansionTreeView"
                         MaxHeight="260"
+                        Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1">
                         <ui:TreeViewItem Header="Project" IsExpanded="True">

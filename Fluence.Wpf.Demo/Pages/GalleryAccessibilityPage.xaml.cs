@@ -374,10 +374,12 @@ namespace Fluence.Wpf.Demo.Pages.Accessibility
             Margin=""0,0,0,12""
             Checked=""RtlToggle_Changed""
             Content=""Enable RTL on demo card""
+            IsChecked=""True""
             Unchecked=""RtlToggle_Changed"" />
         <ui:Card
             x:Name=""RtlDemoCard""
             Padding=""16""
+            FlowDirection=""RightToLeft""
             Variant=""{x:Static uicore:CardVariant.Outlined}"">
             <StackPanel>
                 <TextBlock
@@ -444,10 +446,16 @@ namespace Fluence.Wpf.Demo.Pages.Accessibility
         {
             InitializeComponent();
 
-            _ = DemoSampleControl.ReplaceSourceLinkForCompatibility(FocusAndTabOrderSourceLink, FocusAndTabOrderXamlSource, FocusAndTabOrderCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLinkForCompatibility(HighContrastMappingSourceLink, HighContrastMappingXamlSource, HighContrastMappingCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLinkForCompatibility(AutomationPropertiesSourceLink, AutomationPropertiesXamlSource, AutomationPropertiesCSharpSource);
-            _ = DemoSampleControl.ReplaceSourceLinkForCompatibility(RtlLayoutSourceLink, RtlLayoutXamlSource, RtlLayoutCSharpSource);
+            DemoSampleControl.ApplySources(
+                (DependencyObject)Content,
+                FocusAndTabOrderXamlSource,
+                FocusAndTabOrderCSharpSource,
+                HighContrastMappingXamlSource,
+                HighContrastMappingCSharpSource,
+                AutomationPropertiesXamlSource,
+                AutomationPropertiesCSharpSource,
+                RtlLayoutXamlSource,
+                RtlLayoutCSharpSource);
 
             Loaded += OnLoaded;
         }

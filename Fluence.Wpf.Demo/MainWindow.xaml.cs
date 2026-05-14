@@ -54,10 +54,7 @@ namespace Fluence.Wpf.Demo
         private bool _userShowTitle;
         private ImageSource? _userIcon;
         private string _userTitle;
-        private bool _userNavBackButtonVisible;
-        private bool _userNavPaneToggleButtonVisible;
-        private bool _lastAppliedExtendedTitleBar;
-        private bool _isApplyingTitleBarChrome;
+        private readonly DemoNavigationShellState _navigationState;
         private bool _isNavigatingBack;
         private bool _isUpdatingExtendedTitleOverlap;
         private NavigationViewItem? _currentNavigationItem;
@@ -86,8 +83,8 @@ namespace Fluence.Wpf.Demo
             _userShowTitle = ShowTitle;
             _userIcon = Icon;
             _userTitle = Title;
-            _userNavBackButtonVisible = DemoNav is not null && DemoNav.IsBackButtonVisible;
-            _userNavPaneToggleButtonVisible = DemoNav is null || DemoNav.IsPaneToggleButtonVisible;
+            _navigationState = new DemoNavigationShellState(DemoNav, ShellTitleBar);
+            _navigationState.Changed += DemoNavigationState_Changed;
 
             DemoNav?.SelectionChanged += DemoNav_SelectionChanged;
 
@@ -126,6 +123,7 @@ namespace Fluence.Wpf.Demo
             }
 
             DemoNav?.SelectionChanged -= DemoNav_SelectionChanged;
+            _navigationState.Changed -= DemoNavigationState_Changed;
 
             base.OnClosed(e);
         }
@@ -283,17 +281,7 @@ namespace Fluence.Wpf.Demo
 
         private void UpdateBackNavigationState()
         {
-            if (DemoNav is null)
-            {
-                return;
-            }
-
-            bool isBackEnabled = _navigationBackStack.Count > 0;
-            if (DemoNav.IsBackEnabled != isBackEnabled)
-            {
-                DemoNav.IsBackEnabled = isBackEnabled;
-            }
-
+            _navigationState.SetBackEnabled(_navigationBackStack.Count > 0);
             ApplyTitleBarContentVisibility();
         }
 
@@ -520,43 +508,18 @@ namespace Fluence.Wpf.Demo
 
         internal NavigationViewPaneDisplayMode GetDemoNavigationPaneDisplayMode()
         {
-            return DemoNav?.PaneDisplayMode ?? NavigationViewPaneDisplayMode.Top;
+            return _navigationState.PaneDisplayMode;
         }
 
         internal bool IsDemoNavigationPaneOpen()
         {
-            return DemoNav?.IsPaneOpen == true;
+            return _navigationState.IsPaneOpen;
         }
 
         internal void SetDemoNavigationPaneDisplayMode(NavigationViewPaneDisplayMode mode)
         {
-            if (DemoNav is null)
-            {
-                return;
-            }
-
-            if (mode == NavigationViewPaneDisplayMode.Top)
-            {
-                DemoNav.PaneDisplayMode = NavigationViewPaneDisplayMode.Top;
-                DemoNav.IsPaneOpen = true;
-                ApplyTitleBarContentVisibility();
-                NotifyDemoNavigationPaneStateChanged();
-                return;
-            }
-
-            if (mode == NavigationViewPaneDisplayMode.Left)
-            {
-                DemoNav.IsPaneOpen = true;
-                DemoNav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
-            }
-            else
-            {
-                DemoNav.PaneDisplayMode = mode;
-                DemoNav.IsPaneOpen = false;
-            }
-
+            _navigationState.SetPaneDisplayMode(mode);
             ApplyTitleBarContentVisibility();
-            NotifyDemoNavigationPaneStateChanged();
         }
 
         /// <summary>
@@ -603,38 +566,13 @@ namespace Fluence.Wpf.Demo
 
         private void OnTitleBarDependencyChanged(object? sender, EventArgs e)
         {
-            if (sender == DemoNav && !_isApplyingTitleBarChrome)
-            {
-                if (DemoNav.PaneDisplayMode != NavigationViewPaneDisplayMode.Top)
-                {
-                    if (ExtendsContentIntoTitleBar)
-                    {
-                        if (DemoNav.IsPaneToggleButtonVisible)
-                        {
-                            _userNavPaneToggleButtonVisible = true;
-                        }
-                    }
-                    else
-                    {
-                        _userNavPaneToggleButtonVisible = DemoNav.IsPaneToggleButtonVisible;
-                    }
-                }
-            }
-
+            _navigationState.CaptureNavigationStateFromControl(ExtendsContentIntoTitleBar);
             ApplyTitleBarContentVisibility();
-            if (sender == DemoNav)
-            {
-                NotifyDemoNavigationPaneStateChanged();
-            }
         }
 
         private void OnNavigationBackVisibilityChanged(object? sender, EventArgs e)
         {
-            if (sender == DemoNav && !_isApplyingTitleBarChrome)
-            {
-                _userNavBackButtonVisible = DemoNav.IsBackButtonVisible;
-            }
-
+            _navigationState.CaptureBackVisibilityFromControl();
             ApplyTitleBarContentVisibility();
         }
 
@@ -653,36 +591,6 @@ namespace Fluence.Wpf.Demo
 
             _ = (NavSearchBox?.Visibility = Visibility.Visible);
 
-            if (DemoNav is not null)
-            {
-                bool titleBarOwnsBack = shellTitleBarPresent;
-                _isApplyingTitleBarChrome = true;
-                try
-                {
-                    if (titleBarOwnsBack)
-                    {
-                        DemoNav.IsBackButtonVisible = false;
-                    }
-                    else if (_lastAppliedExtendedTitleBar)
-                    {
-                        DemoNav.IsBackButtonVisible = _userNavBackButtonVisible;
-                    }
-
-                    if (extendedTitleBar)
-                    {
-                        DemoNav.IsPaneToggleButtonVisible = false;
-                    }
-                    else if (_lastAppliedExtendedTitleBar)
-                    {
-                        DemoNav.IsPaneToggleButtonVisible = _userNavPaneToggleButtonVisible;
-                    }
-                }
-                finally
-                {
-                    _isApplyingTitleBarChrome = false;
-                }
-            }
-
             if (ShellTitleBar is not null)
             {
                 ShellTitleBar.Title = _userShowTitle ? (_userTitle ?? string.Empty) : string.Empty;
@@ -694,19 +602,11 @@ namespace Fluence.Wpf.Demo
                 {
                     ShellTitleBar.ClearValue(Controls.TitleBar.IconProperty);
                 }
-
-                ShellTitleBar.IsBackButtonVisible = _userNavBackButtonVisible
-                    && DemoNav is not null
-                    && DemoNav.IsBackEnabled;
-                ShellTitleBar.IsPaneToggleButtonVisible = extendedTitleBar
-                    && _userNavPaneToggleButtonVisible
-                    && DemoNav is not null
-                    && DemoNav.PaneDisplayMode != NavigationViewPaneDisplayMode.Top;
             }
 
+            _navigationState.ApplyChrome(extendedTitleBar, shellTitleBarPresent);
             UpdateSettingsNavigationItemDisplay();
             ScheduleExtendedTitleOverlapCheck();
-            _lastAppliedExtendedTitleBar = extendedTitleBar;
         }
 
         private void UpdateSettingsNavigationItemDisplay()
@@ -716,14 +616,15 @@ namespace Fluence.Wpf.Demo
                 return;
             }
 
-            bool showText = DemoNav.PaneDisplayMode == NavigationViewPaneDisplayMode.Left && DemoNav.IsPaneOpen;
+            bool showText = _navigationState.ShouldShowSettingsText;
             SettingsNavigationItem.Content = showText ? "Settings" : string.Empty;
             SettingsNavigationItem.Width = showText ? double.NaN : 48.0;
             SettingsNavigationItem.MinWidth = showText ? 0.0 : 48.0;
         }
 
-        private void NotifyDemoNavigationPaneStateChanged()
+        private void DemoNavigationState_Changed(object? sender, EventArgs e)
         {
+            UpdateSettingsNavigationItemDisplay();
             DemoNavigationPaneStateChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -751,19 +652,8 @@ namespace Fluence.Wpf.Demo
 
         private void ShellTitleBar_PaneToggleRequested(object sender, EventArgs e)
         {
-            if (DemoNav is null || DemoNav.PaneDisplayMode == NavigationViewPaneDisplayMode.Top)
-            {
-                return;
-            }
-
-            if (DemoNav.PaneDisplayMode == NavigationViewPaneDisplayMode.Left && DemoNav.IsPaneOpen)
-            {
-                SetDemoNavigationPaneDisplayMode(NavigationViewPaneDisplayMode.LeftCompact);
-            }
-            else
-            {
-                SetDemoNavigationPaneDisplayMode(NavigationViewPaneDisplayMode.Left);
-            }
+            _navigationState.ToggleLeftPane();
+            ApplyTitleBarContentVisibility();
         }
 
         private void ShellTitleBar_BackRequested(object sender, EventArgs e)

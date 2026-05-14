@@ -108,7 +108,7 @@ namespace Fluence.Wpf.Demo.Pages.Icons
 
             DemoSampleControl sample = new()
             {
-                SampleDescription = "FontIcon renders one Segoe Fluent Icons icon by private-use code point.",
+                SampleDescription = "FontIcon uses glyph codes to render icons from the 'Segoe Fluent Icons' font.",
                 XamlSource = IconCatalogXamlSource,
                 CSharpSource = IconCatalogCSharpSource,
                 DemoContent = FontIconSampleContent

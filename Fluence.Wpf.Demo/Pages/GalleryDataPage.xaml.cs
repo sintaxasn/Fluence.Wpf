@@ -44,84 +44,92 @@ namespace Fluence.Wpf.Demo.Pages
             <ColumnDefinition Width=""20"" />
             <ColumnDefinition Width=""*"" />
         </Grid.ColumnDefinitions>
-        <ui:ListView
-            x:Name=""SimpleListView""
-            Height=""230""
-            BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
-            BorderThickness=""1"">
-            <ListViewItem Content=""Ana Bowman"" />
-            <ListViewItem Content=""Shawn Hughes"" />
-            <ListViewItem Content=""Oscar Ward"" />
-            <ListViewItem Content=""Madison Butler"" />
-            <ListViewItem Content=""Graham Barnes"" />
-        </ui:ListView>
-        <ui:ListView
-            x:Name=""RichListView""
+        <Border
+            x:Name=""SimpleListViewBackground""
+            CornerRadius=""{DynamicResource ControlCornerRadius}"">
+            <ui:ListView
+                x:Name=""SimpleListView""
+                Height=""230""
+                BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
+                BorderThickness=""1"">
+                <ListViewItem Content=""Ana Bowman"" />
+                <ListViewItem Content=""Shawn Hughes"" />
+                <ListViewItem Content=""Oscar Ward"" />
+                <ListViewItem Content=""Madison Butler"" />
+                <ListViewItem Content=""Graham Barnes"" />
+            </ui:ListView>
+        </Border>
+        <Border
+            x:Name=""RichListViewBackground""
             Grid.Column=""2""
-            Height=""230""
-            BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
-            BorderThickness=""1"">
-            <ListViewItem>
-                <Grid Margin=""0,4"">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width=""36"" />
-                        <ColumnDefinition Width=""*"" />
-                    </Grid.ColumnDefinitions>
-                    <ui:FontIcon
-                        VerticalAlignment=""Center""
-                        Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                        Glyph=""&#xE77B;""
-                        IconFontSize=""20"" />
-                    <StackPanel Grid.Column=""1"">
-                        <TextBlock FontWeight=""SemiBold"" Text=""Ana Bowman"" />
-                        <TextBlock
-                            FontSize=""12""
+            CornerRadius=""{DynamicResource ControlCornerRadius}"">
+            <ui:ListView
+                x:Name=""RichListView""
+                Height=""230""
+                BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
+                BorderThickness=""1"">
+                <ListViewItem>
+                    <Grid Margin=""0,4"">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width=""36"" />
+                            <ColumnDefinition Width=""*"" />
+                        </Grid.ColumnDefinitions>
+                        <ui:FontIcon
+                            VerticalAlignment=""Center""
                             Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                            Text=""Support Engineer"" />
-                    </StackPanel>
-                </Grid>
-            </ListViewItem>
-            <ListViewItem>
-                <Grid Margin=""0,4"">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width=""36"" />
-                        <ColumnDefinition Width=""*"" />
-                    </Grid.ColumnDefinitions>
-                    <ui:FontIcon
-                        VerticalAlignment=""Center""
-                        Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                        Glyph=""&#xE77B;""
-                        IconFontSize=""20"" />
-                    <StackPanel Grid.Column=""1"">
-                        <TextBlock FontWeight=""SemiBold"" Text=""Shawn Hughes"" />
-                        <TextBlock
-                            FontSize=""12""
+                            Glyph=""&#xE77B;""
+                            IconFontSize=""20"" />
+                        <StackPanel Grid.Column=""1"">
+                            <TextBlock FontWeight=""SemiBold"" Text=""Ana Bowman"" />
+                            <TextBlock
+                                FontSize=""12""
+                                Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                                Text=""Support Engineer"" />
+                        </StackPanel>
+                    </Grid>
+                </ListViewItem>
+                <ListViewItem>
+                    <Grid Margin=""0,4"">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width=""36"" />
+                            <ColumnDefinition Width=""*"" />
+                        </Grid.ColumnDefinitions>
+                        <ui:FontIcon
+                            VerticalAlignment=""Center""
                             Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                            Text=""Platform Specialist"" />
-                    </StackPanel>
-                </Grid>
-            </ListViewItem>
-            <ListViewItem>
-                <Grid Margin=""0,4"">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width=""36"" />
-                        <ColumnDefinition Width=""*"" />
-                    </Grid.ColumnDefinitions>
-                    <ui:FontIcon
-                        VerticalAlignment=""Center""
-                        Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                        Glyph=""&#xE77B;""
-                        IconFontSize=""20"" />
-                    <StackPanel Grid.Column=""1"">
-                        <TextBlock FontWeight=""SemiBold"" Text=""Oscar Ward"" />
-                        <TextBlock
-                            FontSize=""12""
+                            Glyph=""&#xE77B;""
+                            IconFontSize=""20"" />
+                        <StackPanel Grid.Column=""1"">
+                            <TextBlock FontWeight=""SemiBold"" Text=""Shawn Hughes"" />
+                            <TextBlock
+                                FontSize=""12""
+                                Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                                Text=""Platform Specialist"" />
+                        </StackPanel>
+                    </Grid>
+                </ListViewItem>
+                <ListViewItem>
+                    <Grid Margin=""0,4"">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width=""36"" />
+                            <ColumnDefinition Width=""*"" />
+                        </Grid.ColumnDefinitions>
+                        <ui:FontIcon
+                            VerticalAlignment=""Center""
                             Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                            Text=""DevOps Lead"" />
-                    </StackPanel>
-                </Grid>
-            </ListViewItem>
-        </ui:ListView>
+                            Glyph=""&#xE77B;""
+                            IconFontSize=""20"" />
+                        <StackPanel Grid.Column=""1"">
+                            <TextBlock FontWeight=""SemiBold"" Text=""Oscar Ward"" />
+                            <TextBlock
+                                FontSize=""12""
+                                Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                                Text=""DevOps Lead"" />
+                        </StackPanel>
+                    </Grid>
+                </ListViewItem>
+            </ui:ListView>
+        </Border>
     </Grid>
 </UserControl>
 ";
@@ -275,15 +283,49 @@ namespace Fluence.Wpf.Demo.Pages.Data
     <ui:PersonPicture
         Width=""56""
         Height=""56""
-        DisplayName=""Ana Bowman"" />
+        Margin=""0,0,12,12""
+        DisplayName=""Ana Bowman""
+        ProfilePicture=""pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureAnaBowman.png"" />
     <ui:PersonPicture
         Width=""56""
         Height=""56""
-        Initials=""SH""
+        Margin=""0,0,12,12""
+        DisplayName=""Shawn Hughes""
+        ProfilePicture=""pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureShawnHughes.png""
         BadgeNumber=""3"" />
     <ui:PersonPicture
         Width=""56""
         Height=""56""
+        Margin=""0,0,12,12""
+        DisplayName=""Priya Kapoor""
+        ProfilePicture=""pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPicturePriyaKapoor.png"" />
+    <ui:PersonPicture
+        Width=""56""
+        Height=""56""
+        Margin=""0,0,12,12""
+        DisplayName=""Mateo Rivera""
+        ProfilePicture=""pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureMateoRivera.png"" />
+    <ui:PersonPicture
+        Width=""56""
+        Height=""56""
+        Margin=""0,0,12,12""
+        DisplayName=""Madison Butler""
+        ProfilePicture=""pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureMadisonButler.png"" />
+    <ui:PersonPicture
+        Width=""56""
+        Height=""56""
+        Margin=""0,0,12,12""
+        DisplayName=""Oscar Ward""
+        ProfilePicture=""pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureOscarWard.png"" />
+    <ui:PersonPicture
+        Width=""56""
+        Height=""56""
+        Margin=""0,0,12,12""
+        Initials=""NB"" />
+    <ui:PersonPicture
+        Width=""56""
+        Height=""56""
+        Margin=""0,0,12,12""
         IsGroup=""True""
         BadgeGlyph=""&#xE73E;"" />
 </WrapPanel>

@@ -85,9 +85,18 @@
                                         Background="{DynamicResource TextFillColorTertiaryBrush}"
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
-                                            <TextBlock Style="{StaticResource SwatchNameStyle}" Text="Text / Tertiary" />
-                                            <TextBlock Style="{StaticResource SwatchUsageStyle}" Text="Pressed only" />
-                                            <TextBlock Style="{StaticResource SwatchKeyStyle}" Text="TextFillColorTertiaryBrush" />
+                                            <TextBlock
+                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
+                                                Style="{StaticResource SwatchNameStyle}"
+                                                Text="Text / Tertiary" />
+                                            <TextBlock
+                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
+                                                Style="{StaticResource SwatchUsageStyle}"
+                                                Text="Pressed only" />
+                                            <TextBlock
+                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
+                                                Style="{StaticResource SwatchKeyStyle}"
+                                                Text="TextFillColorTertiaryBrush" />
                                         </StackPanel>
                                     </Border>
                                     <Border
@@ -126,15 +135,15 @@
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
                                             <TextBlock
-                                                Foreground="White"
+                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
                                                 Style="{StaticResource SwatchNameStyle}"
                                                 Text="Accent Text / Primary" />
                                             <TextBlock
-                                                Foreground="White"
+                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
                                                 Style="{StaticResource SwatchUsageStyle}"
                                                 Text="Rest or hover" />
                                             <TextBlock
-                                                Foreground="White"
+                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
                                                 Style="{StaticResource SwatchKeyStyle}"
                                                 Text="AccentTextFillColorPrimaryBrush" />
                                         </StackPanel>
@@ -145,15 +154,15 @@
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
                                             <TextBlock
-                                                Foreground="White"
+                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
                                                 Style="{StaticResource SwatchNameStyle}"
                                                 Text="Accent Text / Secondary" />
                                             <TextBlock
-                                                Foreground="White"
+                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
                                                 Style="{StaticResource SwatchUsageStyle}"
                                                 Text="Rest or hover" />
                                             <TextBlock
-                                                Foreground="White"
+                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
                                                 Style="{StaticResource SwatchKeyStyle}"
                                                 Text="AccentTextFillColorSecondaryBrush" />
                                         </StackPanel>
@@ -164,15 +173,15 @@
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
                                             <TextBlock
-                                                Foreground="White"
+                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
                                                 Style="{StaticResource SwatchNameStyle}"
                                                 Text="Accent Text / Tertiary" />
                                             <TextBlock
-                                                Foreground="White"
+                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
                                                 Style="{StaticResource SwatchUsageStyle}"
                                                 Text="Pressed only" />
                                             <TextBlock
-                                                Foreground="White"
+                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
                                                 Style="{StaticResource SwatchKeyStyle}"
                                                 Text="AccentTextFillColorTertiaryBrush" />
                                         </StackPanel>
@@ -212,18 +221,9 @@
                                         Background="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
-                                            <TextBlock
-                                                Foreground="{DynamicResource AccentFillColorDefaultBrush}"
-                                                Style="{StaticResource SwatchNameStyle}"
-                                                Text="Text on Accent / Primary" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource AccentFillColorDefaultBrush}"
-                                                Style="{StaticResource SwatchUsageStyle}"
-                                                Text="Rest or hover" />
-                                            <TextBlock
-                                                Foreground="{DynamicResource AccentFillColorDefaultBrush}"
-                                                Style="{StaticResource SwatchKeyStyle}"
-                                                Text="TextOnAccentFillColorPrimaryBrush" />
+                                            <TextBlock Style="{StaticResource SwatchNameStyle}" Text="Text on Accent / Primary" />
+                                            <TextBlock Style="{StaticResource SwatchUsageStyle}" Text="Rest or hover" />
+                                            <TextBlock Style="{StaticResource SwatchKeyStyle}" Text="TextOnAccentFillColorPrimaryBrush" />
                                         </StackPanel>
                                     </Border>
                                     <Border

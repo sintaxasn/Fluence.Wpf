@@ -118,8 +118,6 @@ namespace Fluence.Wpf.Tests
             {
                 Controls.RatingControl? rating = FindVisualChildByName<Controls.RatingControl>(window, "RatingSample");
                 Controls.RatingControl? readOnlyRating = FindVisualChildByName<Controls.RatingControl>(window, "ReadOnlyRatingSample");
-                Controls.ToggleSwitch? simpleToggle = FindVisualChildByName<Controls.ToggleSwitch>(window, "SimpleToggleSwitch");
-                TextBlock? simpleLabel = FindVisualChildByName<TextBlock>(window, "SimpleToggleStateText");
                 TextBlock? workHeader = FindVisualChildByName<TextBlock>(window, "WorkToggleHeaderText");
                 Controls.ToggleSwitch? workToggle = FindVisualChildByName<Controls.ToggleSwitch>(window, "WorkToggleSwitch");
                 TextBlock? workLabel = FindVisualChildByName<TextBlock>(window, "WorkToggleStateText");
@@ -127,12 +125,12 @@ namespace Fluence.Wpf.Tests
 
                 Assert.IsNotNull(rating, "Selection page should include an editable RatingControl example.");
                 Assert.IsNotNull(readOnlyRating, "Selection page should include a read-only RatingControl example.");
-                Assert.AreEqual(2, CountVisualChildren<Controls.ToggleSwitch>(window),
-                    "Selection page ToggleSwitch section should contain only the two requested ToggleSwitch samples.");
-                Assert.IsNotNull(simpleToggle, "Selection page should include a simple on ToggleSwitch sample.");
-                Assert.IsNotNull(simpleLabel, "Selection page should include the simple ToggleSwitch state label.");
-                Assert.IsTrue(simpleToggle.IsChecked.GetValueOrDefault());
-                Assert.AreEqual("On", simpleLabel.Text);
+                Assert.AreEqual(1, CountVisualChildren<Controls.ToggleSwitch>(window),
+                    "Selection page ToggleSwitch section should contain only the work ToggleSwitch sample.");
+                Assert.IsNull(FindVisualChildByName<Controls.ToggleSwitch>(window, "SimpleToggleSwitch"),
+                    "Selection page should remove the first simple ToggleSwitch sample.");
+                Assert.IsNull(FindVisualChildByName<TextBlock>(window, "SimpleToggleStateText"),
+                    "Selection page should remove the first simple ToggleSwitch state label.");
                 Assert.IsNotNull(workHeader, "Selection page should include the Toggle work header text.");
                 Assert.AreEqual("Toggle work", workHeader.Text);
                 Assert.IsNotNull(workToggle, "Selection page should include the Toggle work ToggleSwitch.");
