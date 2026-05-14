@@ -112,20 +112,33 @@
                                         TextWrapping="Wrap" />
                                 </Grid>
                             </TabItem>
-                            <TabItem Header="Details" Width="{DynamicResource DemoPlacementTabHeaderWidth}">
+                            <TabItem
+                                Header="Details"
+                                IsSelected="True"
+                                Width="{DynamicResource DemoPlacementTabHeaderWidth}">
                                 <Grid
-                                    x:Name="DetailsPlacementPanel"
-                                    Margin="{DynamicResource DemoTabContentMargin}"
-                                    >
+                                    x:Name="DetailsTabContent"
+                                    Margin="{DynamicResource DemoTabContentMargin}">
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="*" />
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
                                     <TextBlock
-                                        Grid.Row="1"
+                                        x:Name="DetailsContentCopy"
+                                        VerticalAlignment="Stretch"
                                         Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                         Text="Details can remain close to the lower action area."
                                         TextWrapping="Wrap" />
+                                    <StackPanel
+                                        x:Name="DetailsActionArea"
+                                        Grid.Row="1"
+                                        Margin="{DynamicResource DemoTextTopGapMargin}"
+                                        Orientation="Horizontal">
+                                        <ui:Button Content="Apply" />
+                                        <ui:Button
+                                            Margin="{DynamicResource DemoSmallInlineControlGapMargin}"
+                                            Content="Cancel" />
+                                    </StackPanel>
                                 </Grid>
                             </TabItem>
                         </TabControl>

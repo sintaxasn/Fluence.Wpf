@@ -24,7 +24,6 @@
                     <ui:TreeView
                         x:Name="HierarchyTreeView"
                         MaxHeight="260"
-                        Background="{DynamicResource DemoControlExampleBackgroundBrush}"
                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1">
                         <ui:TreeViewItem Header="Workspace" IsExpanded="True">
@@ -53,7 +52,6 @@
                     <ui:TreeView
                         x:Name="SelectionTreeView"
                         MaxHeight="260"
-                        Background="{DynamicResource DemoControlExampleBackgroundBrush}"
                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1">
                         <ui:TreeViewItem Header="Inbox" IsExpanded="True">
@@ -82,7 +80,6 @@
                     <ui:TreeView
                         x:Name="MultiSelectTreeView"
                         MaxHeight="260"
-                        Background="{DynamicResource DemoControlExampleBackgroundBrush}"
                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
                         SelectionMode="{x:Static uicore:TreeViewSelectionMode.Multiple}">
@@ -107,7 +104,6 @@
                     <ui:TreeView
                         x:Name="ExpansionTreeView"
                         MaxHeight="260"
-                        Background="{DynamicResource DemoControlExampleBackgroundBrush}"
                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1">
                         <ui:TreeViewItem Header="Project" IsExpanded="True">

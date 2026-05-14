@@ -95,13 +95,14 @@ namespace Fluence.Wpf.Demo.Pages.Forms
             <ComboBoxItem Content=""Priority"" />
             <ComboBoxItem Content=""Overnight"" />
         </ui:ComboBox>
-        <Grid Margin=""0,0,0,24"">
+        <Grid x:Name=""CheckoutFieldsGrid"" Margin=""0,0,0,24"">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width=""180"" />
                 <ColumnDefinition Width=""16"" />
                 <ColumnDefinition Width=""280"" />
             </Grid.ColumnDefinitions>
             <ui:NumberBox
+                x:Name=""QuantityNumberBox""
                 Grid.Column=""0""
                 Width=""180""
                 Header=""Quantity""
@@ -109,20 +110,19 @@ namespace Fluence.Wpf.Demo.Pages.Forms
                 Minimum=""1""
                 SpinButtonPlacementMode=""Compact""
                 Value=""2"" />
-            <StackPanel Grid.Column=""2"">
-                <TextBlock
-                    Margin=""0,0,0,8""
-                    Text=""Optional"" />
-                <ui:TextBox
-                    Width=""280""
-                    PlaceholderText=""Delivery note"" />
-            </StackPanel>
+            <ui:TextBox
+                x:Name=""OptionalTextBox""
+                Grid.Column=""2""
+                Width=""280""
+                VerticalAlignment=""Bottom""
+                PlaceholderText=""Optional"" />
         </Grid>
         <ui:CheckBox
+            x:Name=""GiftCheckBox""
             Margin=""0,0,0,24""
             Content=""This is a gift""
             Description=""Hide prices on the packing slip."" />
-        <StackPanel Orientation=""Horizontal"">
+        <StackPanel x:Name=""CheckoutButtonsPanel"" Orientation=""Horizontal"">
             <ui:Button
                 Margin=""0,0,8,0""
                 Appearance=""Accent""

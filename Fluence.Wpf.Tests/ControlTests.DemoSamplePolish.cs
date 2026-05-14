@@ -155,6 +155,60 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void GalleryFormsPage_CheckoutFieldsUseStableNamesAndAlignOptionalInput()
+        {
+            RunDemoPageTest(() => new GalleryFormsPage(), window =>
+            {
+                Grid? checkoutGrid = FindVisualChildByName<Grid>(window, "CheckoutFieldsGrid");
+                Controls.NumberBox? quantity = FindVisualChildByName<Controls.NumberBox>(window, "QuantityNumberBox");
+                Controls.TextBox? optional = FindVisualChildByName<Controls.TextBox>(window, "OptionalTextBox");
+                Controls.CheckBox? gift = FindVisualChildByName<Controls.CheckBox>(window, "GiftCheckBox");
+                StackPanel? actions = FindVisualChildByName<StackPanel>(window, "CheckoutButtonsPanel");
+
+                Assert.IsNotNull(checkoutGrid, "Checkout sample should expose the quantity/options grid.");
+                Assert.IsNotNull(quantity, "Checkout sample should expose the Quantity NumberBox.");
+                Assert.IsNotNull(optional, "Checkout sample should expose the Optional TextBox.");
+                Assert.IsNotNull(gift, "Checkout sample should expose the gift CheckBox.");
+                Assert.IsNotNull(actions, "Checkout sample should expose the action button row.");
+                Assert.AreEqual(3, checkoutGrid.ColumnDefinitions.Count,
+                    "Checkout field grid should preserve the quantity, spacer, and optional columns.");
+                Assert.AreEqual(0, Grid.GetColumn(quantity),
+                    "Quantity NumberBox should remain in the first column.");
+                Assert.AreEqual(2, Grid.GetColumn(optional),
+                    "Optional TextBox should remain in the aligned right column.");
+                Assert.AreEqual(VerticalAlignment.Bottom, optional.VerticalAlignment,
+                    "Optional TextBox should align with the Quantity input row.");
+            });
+        }
+
+        [TestMethod]
+        public void GalleryDataPage_ListBackgroundsAndPersonPicturesUseExpectedAssets()
+        {
+            RunDemoPageTest(() => new GalleryDataPage(), window =>
+            {
+                Border? simpleBackground = FindVisualChildByName<Border>(window, "SimpleListViewBackground");
+                Border? richBackground = FindVisualChildByName<Border>(window, "RichListViewBackground");
+
+                Assert.IsNotNull(simpleBackground, "Simple ListView sample should have a named background wrapper.");
+                Assert.IsNotNull(richBackground, "Rich ListView sample should have a named background wrapper.");
+
+                List<Controls.PersonPicture> personPictures = [.. FindVisualChildren<Controls.PersonPicture>(window)];
+                Assert.IsTrue(personPictures.Count(picture => picture.ProfilePicture is not null) >= 6,
+                    "PersonPicture sample should include several image-backed portraits.");
+                Assert.IsTrue(personPictures.Any(picture => picture.ProfilePicture is not null &&
+                    picture.ProfilePicture.ToString().IndexOf("PersonPictureMadisonButler.png", StringComparison.Ordinal) >= 0),
+                    "PersonPicture sample should include the Madison Butler portrait asset.");
+                Assert.IsTrue(personPictures.Any(picture => picture.ProfilePicture is not null &&
+                    picture.ProfilePicture.ToString().IndexOf("PersonPictureOscarWard.png", StringComparison.Ordinal) >= 0),
+                    "PersonPicture sample should include the Oscar Ward portrait asset.");
+                Assert.IsTrue(personPictures.Any(picture => string.Equals(picture.Initials, "NB", StringComparison.Ordinal)),
+                    "PersonPicture sample should preserve the initials fallback example.");
+                Assert.IsTrue(personPictures.Any(picture => picture.IsGroup),
+                    "PersonPicture sample should preserve the group example.");
+            });
+        }
+
+        [TestMethod]
         public void GalleryNavigationPage_IconsAreDefaultSizeAndInfoBadgePaneStartsExpanded()
         {
             RunDemoPageTest(() => new GalleryNavigationPage(), window =>
@@ -198,12 +252,16 @@ namespace Fluence.Wpf.Tests
 
                 TabControl? bottomTabs = FindVisualChildByName<TabControl>(window, "BottomPlacementTabs");
                 Assert.IsNotNull(bottomTabs, "Placement sample should expose the bottom TabControl.");
-                Grid? previewPanel = FindVisualChildByName<Grid>(bottomTabs, "PreviewPlacementPanel");
-                Assert.IsNotNull(previewPanel, "Bottom tab content should expose a fill panel.");
-                Assert.AreEqual(GridUnitType.Star, previewPanel.RowDefinitions[0].Height.GridUnitType,
-                    "The space above the bottom tab row should consume available height.");
-                Assert.AreEqual(GridUnitType.Auto, previewPanel.RowDefinitions[1].Height.GridUnitType,
-                    "The bottom details area should remain close to the tab action row.");
+                Grid? detailsPanel = FindVisualChildByName<Grid>(bottomTabs, "DetailsTabContent");
+                StackPanel? actionArea = FindVisualChildByName<StackPanel>(bottomTabs, "DetailsActionArea");
+                Assert.IsNotNull(detailsPanel, "Bottom tab content should expose the Details fill panel.");
+                Assert.IsNotNull(actionArea, "Details tab should expose a named lower action area.");
+                Assert.AreEqual(GridUnitType.Star, detailsPanel.RowDefinitions[0].Height.GridUnitType,
+                    "The area above the lower action row should consume available height.");
+                Assert.AreEqual(GridUnitType.Auto, detailsPanel.RowDefinitions[1].Height.GridUnitType,
+                    "The lower Details action area should stay close to the buttons.");
+                Assert.AreEqual(1, Grid.GetRow(actionArea),
+                    "Details action area should be in the lower auto row.");
             });
         }
 

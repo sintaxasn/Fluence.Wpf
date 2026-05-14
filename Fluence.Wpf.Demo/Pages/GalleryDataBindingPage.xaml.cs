@@ -78,7 +78,6 @@ namespace Fluence.Wpf.Demo.Pages
         <ui:ListView
             x:Name=""BoundListView""
             Grid.Row=""2""
-            Background=""{DynamicResource DemoControlExampleBackgroundBrush}""
             BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
             BorderThickness=""1""
             SelectionMode=""Single"">
@@ -224,7 +223,6 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
         <ui:ListView
             x:Name=""SelectionModeListView""
             Height=""200""
-            Background=""{DynamicResource DemoControlExampleBackgroundBrush}""
             BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
             BorderThickness=""1""
             SelectionChanged=""SelectionModeListView_SelectionChanged""
@@ -319,7 +317,6 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
         <ui:ListView
             x:Name=""DataTemplateListView""
             Height=""180""
-            Background=""{DynamicResource DemoControlExampleBackgroundBrush}""
             BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
             BorderThickness=""1""
             SelectionMode=""Single"">

@@ -41,7 +41,6 @@ namespace Fluence.Wpf.Demo
         private const string DemoSampleRightRailBackgroundBrushKey = "DemoSampleRightRailBackgroundBrush";
         private const string DemoSampleSourceHeaderBackgroundBrushKey = "DemoSampleSourceHeaderBackgroundBrush";
         private const string DemoSampleSourceContentBackgroundBrushKey = "DemoSampleSourceContentBackgroundBrush";
-        private const string DemoControlExampleBackgroundBrushKey = "DemoControlExampleBackgroundBrush";
         private const string DemoSettingsCardBrushKey = "DemoSettingsCardBrush";
         private const string DemoSectionCardBrushKey = "DemoSectionCardBrush";
         private const string DemoFieldLabelForegroundBrushKey = "DemoFieldLabelForegroundBrush";
@@ -102,7 +101,6 @@ namespace Fluence.Wpf.Demo
                 SetBrush(resources, DemoSampleRightRailBackgroundBrushKey, Color.FromRgb(0x2B, 0x2B, 0x2B));
                 SetBrush(resources, DemoSampleSourceHeaderBackgroundBrushKey, Color.FromRgb(0x32, 0x32, 0x32));
                 SetBrush(resources, DemoSampleSourceContentBackgroundBrushKey, Color.FromRgb(0x2E, 0x2E, 0x2E));
-                SetBrush(resources, DemoControlExampleBackgroundBrushKey, Color.FromRgb(0x37, 0x37, 0x37));
                 SetBrush(resources, DemoSettingsCardBrushKey, Color.FromRgb(0x32, 0x32, 0x32));
                 SetBrush(resources, DemoSectionCardBrushKey, Color.FromRgb(0x20, 0x20, 0x20));
                 PromoteBrush(resources, DemoFieldLabelForegroundBrushKey, "TextFillColorSecondaryBrush");
@@ -116,7 +114,6 @@ namespace Fluence.Wpf.Demo
                 SetBrush(resources, DemoSampleRightRailBackgroundBrushKey, Color.FromRgb(0xFB, 0xFB, 0xFB));
                 SetBrush(resources, DemoSampleSourceHeaderBackgroundBrushKey, Color.FromRgb(0xFD, 0xFD, 0xFD));
                 SetBrush(resources, DemoSampleSourceContentBackgroundBrushKey, Color.FromRgb(0xFF, 0xFF, 0xFF));
-                SetBrush(resources, DemoControlExampleBackgroundBrushKey, Color.FromRgb(0x37, 0x37, 0x37));
                 PromoteBrush(resources, DemoSettingsCardBrushKey, "CardBackgroundFillColorDefaultBrush");
                 PromoteBrush(resources, DemoSectionCardBrushKey, "CardBackgroundFillColorDefaultBrush");
                 PromoteBrush(resources, DemoFieldLabelForegroundBrushKey, "TextFillColorSecondaryBrush");
@@ -128,7 +125,6 @@ namespace Fluence.Wpf.Demo
             PromoteBrush(resources, DemoSampleRightRailBackgroundBrushKey, "CardBackgroundFillColorSecondaryBrush");
             PromoteBrush(resources, DemoSampleSourceHeaderBackgroundBrushKey, "ControlFillColorDefaultBrush");
             PromoteBrush(resources, DemoSampleSourceContentBackgroundBrushKey, "SolidBackgroundFillColorBaseBrush");
-            PromoteBrush(resources, DemoControlExampleBackgroundBrushKey, "ControlFillColorDefaultBrush");
             PromoteBrush(resources, DemoSettingsCardBrushKey, "CardBackgroundFillColorDefaultBrush");
             PromoteBrush(resources, DemoSectionCardBrushKey, "CardBackgroundFillColorDefaultBrush");
             PromoteBrush(resources, DemoFieldLabelForegroundBrushKey, "TextFillColorSecondaryBrush");

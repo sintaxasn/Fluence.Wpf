@@ -16,7 +16,6 @@
     <SolidColorBrush x:Key="DemoSampleRightRailBackgroundBrush" Color="#2B2B2B" />
     <SolidColorBrush x:Key="DemoSampleSourceHeaderBackgroundBrush" Color="#323232" />
     <SolidColorBrush x:Key="DemoSampleSourceContentBackgroundBrush" Color="#2E2E2E" />
-    <SolidColorBrush x:Key="DemoControlExampleBackgroundBrush" Color="#373737" />
     <SolidColorBrush x:Key="DemoSettingsCardBrush" Color="#323232" />
     <SolidColorBrush x:Key="DemoSectionCardBrush" Color="#202020" />
     <SolidColorBrush x:Key="DemoFieldLabelForegroundBrush" Color="#D6D6D6" />

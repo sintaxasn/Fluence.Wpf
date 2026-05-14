@@ -89,13 +89,16 @@
                             <ComboBoxItem Content="Priority" />
                             <ComboBoxItem Content="Overnight" />
                         </ui:ComboBox>
-                        <Grid Margin="{DynamicResource DemoSampleBlockMargin}">
+                        <Grid
+                            x:Name="CheckoutFieldsGrid"
+                            Margin="{DynamicResource DemoSampleBlockMargin}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="180" />
                                 <ColumnDefinition Width="16" />
                                 <ColumnDefinition Width="280" />
                             </Grid.ColumnDefinitions>
                             <ui:NumberBox
+                                x:Name="QuantityNumberBox"
                                 Grid.Column="0"
                                 Width="180"
                                 Header="Quantity"
@@ -103,21 +106,21 @@
                                 Minimum="1"
                                 SpinButtonPlacementMode="Compact"
                                 Value="2" />
-                            <StackPanel Grid.Column="2">
-                                <TextBlock
-                                    Margin="{DynamicResource DemoCompactStackSpacingMargin}"
-                                    Style="{StaticResource FieldLabelStyle}"
-                                    Text="Optional" />
-                                <ui:TextBox
-                                    Width="280"
-                                    PlaceholderText="Delivery note" />
-                            </StackPanel>
+                            <ui:TextBox
+                                x:Name="OptionalTextBox"
+                                Grid.Column="2"
+                                Width="280"
+                                VerticalAlignment="Bottom"
+                                PlaceholderText="Optional" />
                         </Grid>
                         <ui:CheckBox
+                            x:Name="GiftCheckBox"
                             Margin="{DynamicResource DemoSampleBlockMargin}"
                             Content="This is a gift"
                             Description="Hide prices on the packing slip." />
-                        <StackPanel Orientation="Horizontal">
+                        <StackPanel
+                            x:Name="CheckoutButtonsPanel"
+                            Orientation="Horizontal">
                             <ui:Button
                                 Margin="{DynamicResource DemoInlineControlGapMargin}"
                                 Appearance="Accent"

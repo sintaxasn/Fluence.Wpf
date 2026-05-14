@@ -23,7 +23,7 @@
             <ContentControl
                 x:Name="DemoSampleSlot01DemoContentHost"
                 Visibility="Collapsed">
-                    <ui:Menu Background="{DynamicResource DemoControlExampleBackgroundBrush}">
+                    <ui:Menu>
                         <ui:MenuItem Header="_File">
                             <ui:MenuItem
                                 Click="MenuBar_Click"

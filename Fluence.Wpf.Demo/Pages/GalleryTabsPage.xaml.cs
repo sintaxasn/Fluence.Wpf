@@ -149,20 +149,31 @@ namespace Fluence.Wpf.Demo.Pages.Tabs
                         TextWrapping=""Wrap"" />
                 </Grid>
             </TabItem>
-            <TabItem Header=""Details"" Width=""{DynamicResource DemoPlacementTabHeaderWidth}"">
+            <TabItem
+                Header=""Details""
+                IsSelected=""True""
+                Width=""{DynamicResource DemoPlacementTabHeaderWidth}"">
                 <Grid
-                    x:Name=""DetailsPlacementPanel""
-                    Margin=""20""
-                    >
+                    x:Name=""DetailsTabContent""
+                    Margin=""20"">
                     <Grid.RowDefinitions>
                         <RowDefinition Height=""*"" />
                         <RowDefinition Height=""Auto"" />
                     </Grid.RowDefinitions>
                     <TextBlock
-                        Grid.Row=""1""
+                        x:Name=""DetailsContentCopy""
+                        VerticalAlignment=""Stretch""
                         Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
                         Text=""Details can remain close to the lower action area.""
                         TextWrapping=""Wrap"" />
+                    <StackPanel
+                        x:Name=""DetailsActionArea""
+                        Grid.Row=""1""
+                        Margin=""0,12,0,0""
+                        Orientation=""Horizontal"">
+                        <ui:Button Content=""Apply"" />
+                        <ui:Button Margin=""8,0,0,0"" Content=""Cancel"" />
+                    </StackPanel>
                 </Grid>
             </TabItem>
         </TabControl>
