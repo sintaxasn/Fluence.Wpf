@@ -161,7 +161,6 @@ namespace Fluence.Wpf
             }
             ApplicationTheme resolvedTheme = ApplicationThemeManager.GetResolvedTheme();
             UpdateThemeAdaptiveColors(resolvedTheme);
-            UpdateResources();
         }
 
         /// <summary>
@@ -183,7 +182,6 @@ namespace Fluence.Wpf
             GenerateAccentRamp(color);
             ApplicationTheme resolvedTheme = ApplicationThemeManager.GetResolvedTheme();
             UpdateThemeAdaptiveColors(resolvedTheme);
-            UpdateResources();
         }
 
         internal static void UpdateThemeAdaptiveColors(ApplicationTheme resolvedTheme)
@@ -201,7 +199,6 @@ namespace Fluence.Wpf
                 SystemAccentColorTertiary = SystemAccentColorDark3;
             }
             UpdateResources();
-            UpdateTextOnAccentColors(resolvedTheme);
         }
 
         internal static void UpdateThemeDependentColors(ApplicationTheme resolvedTheme)
@@ -265,7 +262,6 @@ namespace Fluence.Wpf
             {
                 ApplicationTheme resolvedTheme = ApplicationThemeManager.GetResolvedTheme();
                 UpdateThemeAdaptiveColors(resolvedTheme);
-                UpdateResources();
             }
             else
             {
@@ -333,6 +329,7 @@ namespace Fluence.Wpf
             UpdateDisabledAccentFill(resources, resolvedTheme);
             UpdateSystemAttentionFill(resources, resolvedTheme);
             UpdateAccentTextBrushes(resources);
+            UpdateTextOnAccentColors(resolvedTheme);
             UpdateTitleBarColors(resources);
             OnAccentColorChanged();
         }

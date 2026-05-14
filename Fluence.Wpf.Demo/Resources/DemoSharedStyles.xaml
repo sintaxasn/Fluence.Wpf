@@ -472,6 +472,7 @@
         >
         <Setter Property="FontSize" Value="11" />
         <Setter Property="Opacity" Value="0.7" />
+        <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
 
     <!--  Swatch cell: resource key label at bottom  -->
@@ -483,6 +484,7 @@
         <Setter Property="FontSize" Value="11" />
         <Setter Property="Opacity" Value="0.6" />
         <Setter Property="Margin" Value="0,8,0,0" />
+        <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="VerticalAlignment" Value="Bottom" />
     </Style>
 

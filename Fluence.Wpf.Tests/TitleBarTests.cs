@@ -204,6 +204,40 @@ namespace Fluence.Wpf.Tests
                 });
         }
 
+        [TestMethod]
+        public void TitleBar_Unloaded_UnsubscribesCommandCanExecuteHandlers()
+        {
+            RecordingCommand backCommand = new(true);
+            RecordingCommand paneToggleCommand = new(true);
+
+            RunWithTitleBar(
+                delegate
+                {
+                    return new Fluent.TitleBar
+                    {
+                        IsBackButtonVisible = true,
+                        IsPaneToggleButtonVisible = true,
+                        BackCommand = backCommand,
+                        PaneToggleCommand = paneToggleCommand
+                    };
+                },
+                titleBar =>
+                {
+                    Assert.AreEqual(1, backCommand.CanExecuteSubscriptionCount,
+                        "TitleBar should subscribe to BackCommand.CanExecuteChanged once.");
+                    Assert.AreEqual(1, paneToggleCommand.CanExecuteSubscriptionCount,
+                        "TitleBar should subscribe to PaneToggleCommand.CanExecuteChanged once.");
+
+                    titleBar.RaiseEvent(new RoutedEventArgs(FrameworkElement.UnloadedEvent, titleBar));
+                    DrainDispatcher(titleBar.Dispatcher);
+
+                    Assert.AreEqual(1, backCommand.CanExecuteUnsubscriptionCount,
+                        "TitleBar must unsubscribe from BackCommand.CanExecuteChanged when unloaded.");
+                    Assert.AreEqual(1, paneToggleCommand.CanExecuteUnsubscriptionCount,
+                        "TitleBar must unsubscribe from PaneToggleCommand.CanExecuteChanged when unloaded.");
+                });
+        }
+
         private static void RunWithTitleBar(Func<Fluent.TitleBar> titleBarFactory, Action<Fluent.TitleBar> testBody)
         {
             RunOnFreshStaThread(delegate
@@ -361,16 +395,19 @@ namespace Fluence.Wpf.Tests
                 _canExecute = canExecute;
             }
 
-            [System.Diagnostics.CodeAnalysis.SuppressMessage("Major Code Smell", "S108:Nested blocks of code should not be left empty", Justification = "This is just test code.")]
             public event EventHandler? CanExecuteChanged
             {
-                add { }
-                remove { }
+                add => CanExecuteSubscriptionCount += value is null ? 0 : 1;
+                remove => CanExecuteUnsubscriptionCount += value is null ? 0 : 1;
             }
 
             internal int ExecuteCount { get; private set; }
 
             internal object? LastParameter { get; private set; }
+
+            internal int CanExecuteSubscriptionCount { get; private set; }
+
+            internal int CanExecuteUnsubscriptionCount { get; private set; }
 
             public bool CanExecute(object? parameter)
             {

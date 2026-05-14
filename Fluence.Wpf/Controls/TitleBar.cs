@@ -155,6 +155,15 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="TitleBar"/> class.
+        /// </summary>
+        public TitleBar()
+        {
+            Loaded += OnLoaded;
+            Unloaded += OnUnloaded;
+        }
+
+        /// <summary>
         /// Occurs when the back button is invoked after command execution has been processed.
         /// </summary>
         public event EventHandler? BackRequested;
@@ -336,8 +345,11 @@ namespace Fluence.Wpf.Controls
         private static void OnBackCommandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TitleBar titleBar = (TitleBar)d;
-            UnsubscribeCommand(e.OldValue as ICommand, titleBar.OnBackCommandCanExecuteChanged);
-            SubscribeCommand(e.NewValue as ICommand, titleBar.OnBackCommandCanExecuteChanged);
+            titleBar.UnsubscribeBackCommand(e.OldValue as ICommand);
+            if (titleBar.IsLoaded)
+            {
+                titleBar.SubscribeBackCommand(e.NewValue as ICommand);
+            }
             titleBar.UpdateBackButtonCommandState();
         }
 
@@ -349,14 +361,31 @@ namespace Fluence.Wpf.Controls
         private static void OnPaneToggleCommandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TitleBar titleBar = (TitleBar)d;
-            UnsubscribeCommand(e.OldValue as ICommand, titleBar.OnPaneToggleCommandCanExecuteChanged);
-            SubscribeCommand(e.NewValue as ICommand, titleBar.OnPaneToggleCommandCanExecuteChanged);
+            titleBar.UnsubscribePaneToggleCommand(e.OldValue as ICommand);
+            if (titleBar.IsLoaded)
+            {
+                titleBar.SubscribePaneToggleCommand(e.NewValue as ICommand);
+            }
             titleBar.UpdatePaneToggleButtonCommandState();
         }
 
         private static void OnPaneToggleCommandParameterChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ((TitleBar)d).UpdatePaneToggleButtonCommandState();
+        }
+
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            SubscribeBackCommand(BackCommand);
+            SubscribePaneToggleCommand(PaneToggleCommand);
+            UpdateBackButtonCommandState();
+            UpdatePaneToggleButtonCommandState();
+        }
+
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            UnsubscribeBackCommand(BackCommand);
+            UnsubscribePaneToggleCommand(PaneToggleCommand);
         }
 
         private void OnBackCommandCanExecuteChanged(object? sender, EventArgs e)
@@ -426,6 +455,46 @@ namespace Fluence.Wpf.Controls
             command?.CanExecuteChanged -= handler;
         }
 
+        private void SubscribeBackCommand(ICommand? command)
+        {
+            if (command is null || _isBackCommandSubscribed)
+            {
+                return;
+            }
+            SubscribeCommand(command, OnBackCommandCanExecuteChanged);
+            _isBackCommandSubscribed = true;
+        }
+
+        private void UnsubscribeBackCommand(ICommand? command)
+        {
+            if (!_isBackCommandSubscribed)
+            {
+                return;
+            }
+            UnsubscribeCommand(command, OnBackCommandCanExecuteChanged);
+            _isBackCommandSubscribed = false;
+        }
+
+        private void SubscribePaneToggleCommand(ICommand? command)
+        {
+            if (command is null || _isPaneToggleCommandSubscribed)
+            {
+                return;
+            }
+            SubscribeCommand(command, OnPaneToggleCommandCanExecuteChanged);
+            _isPaneToggleCommandSubscribed = true;
+        }
+
+        private void UnsubscribePaneToggleCommand(ICommand? command)
+        {
+            if (!_isPaneToggleCommandSubscribed)
+            {
+                return;
+            }
+            UnsubscribeCommand(command, OnPaneToggleCommandCanExecuteChanged);
+            _isPaneToggleCommandSubscribed = false;
+        }
+
         /// <summary>
         /// Represents the back button control in the WPF user interface.
         /// </summary>
@@ -435,5 +504,9 @@ namespace Fluence.Wpf.Controls
         /// Represents the toggle button control used to show or hide a pane in the WPF user interface.
         /// </summary>
         private WpfButton? _paneToggleButton;
+
+        private bool _isBackCommandSubscribed;
+
+        private bool _isPaneToggleCommandSubscribed;
     }
 }

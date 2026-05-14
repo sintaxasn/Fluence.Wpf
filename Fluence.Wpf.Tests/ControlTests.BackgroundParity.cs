@@ -33,6 +33,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
+using System.Xml.Linq;
 using Fluence.Wpf.Demo;
 using Fluence.Wpf.Demo.Pages;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -395,6 +396,73 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void GalleryColorsPage_DynamicResourceKeys_ResolveAcrossThemes()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                Application? application = EnsureApplication();
+                _ = MergeGenericDictionary(application);
+                MergeDemoSharedStyles(application);
+
+                string colorsPagePath = Path.Combine(FindRepoRoot(), "Fluence.Wpf.Demo", "Pages", "GalleryColorsPage.xaml");
+                SortedSet<string> resourceKeys = GetDynamicResourceKeysFromXaml(colorsPagePath);
+                List<string> unresolved = [];
+
+                ApplicationTheme[] themes =
+                [
+                    ApplicationTheme.Light,
+                    ApplicationTheme.Dark,
+                    ApplicationTheme.HighContrast
+                ];
+
+                foreach (ApplicationTheme theme in themes)
+                {
+                    ApplicationThemeManager.Apply(theme, BackdropType.None, true);
+                    ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
+                    DemoThemeResources.RefreshForCurrentTheme();
+
+                    foreach (string resourceKey in resourceKeys)
+                    {
+                        if (application?.TryFindResource(resourceKey) is null)
+                        {
+                            unresolved.Add(theme + ": " + resourceKey);
+                        }
+                    }
+                }
+
+                Assert.AreEqual(0, unresolved.Count,
+                    "GalleryColorsPage.xaml must only reference DynamicResource keys that resolve: " +
+                    string.Join("; ", unresolved));
+            });
+        }
+
+        [TestMethod]
+        public void GalleryColorsPage_Foregrounds_AvoidLiteralBlackAndWhite()
+        {
+            string colorsPagePath = Path.Combine(FindRepoRoot(), "Fluence.Wpf.Demo", "Pages", "GalleryColorsPage.xaml");
+            string source = File.ReadAllText(colorsPagePath);
+            string[] forbiddenForegrounds =
+            [
+                "Foreground=\"Black\"",
+                "Foreground=\"White\"",
+                "Foreground=\"#"
+            ];
+            List<string> violations = [];
+
+            foreach (string forbiddenForeground in forbiddenForegrounds)
+            {
+                if (source.Contains(forbiddenForeground))
+                {
+                    violations.Add(forbiddenForeground);
+                }
+            }
+
+            Assert.AreEqual(0, violations.Count,
+                "GalleryColorsPage foregrounds must use theme-aware resources: " +
+                string.Join("; ", violations));
+        }
+
+        [TestMethod]
         public void XamlBackgroundAndFillLiterals_AreAllowListed()
         {
             string repoRoot = FindRepoRoot();
@@ -461,6 +529,52 @@ namespace Fluence.Wpf.Tests
                 }
 
                 violations.Add(GetRepoRelativePath(path) + ": " + attributeName + "=\"" + value + "\"");
+            }
+        }
+
+        private static SortedSet<string> GetDynamicResourceKeysFromXaml(string path)
+        {
+            XDocument document = XDocument.Load(path);
+            SortedSet<string> keys = [];
+
+            foreach (XElement element in document.Descendants())
+            {
+                foreach (XAttribute attribute in element.Attributes())
+                {
+                    CollectDynamicResourceKeys(attribute.Value, keys);
+                }
+            }
+
+            return keys;
+        }
+
+        private static void CollectDynamicResourceKeys(string value, SortedSet<string> keys)
+        {
+            const string prefix = "{DynamicResource ";
+            int searchIndex = 0;
+
+            while (searchIndex < value.Length)
+            {
+                int matchIndex = value.IndexOf(prefix, searchIndex, StringComparison.Ordinal);
+                if (matchIndex < 0)
+                {
+                    break;
+                }
+
+                int keyStart = matchIndex + prefix.Length;
+                int keyEnd = value.IndexOf('}', keyStart);
+                if (keyEnd < 0)
+                {
+                    break;
+                }
+
+                string key = value.Substring(keyStart, keyEnd - keyStart).Trim();
+                if (key.Length > 0 && key[0] != '{')
+                {
+                    _ = keys.Add(key);
+                }
+
+                searchIndex = keyEnd + 1;
             }
         }
 

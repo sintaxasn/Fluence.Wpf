@@ -4,6 +4,16 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- Accent application now raises `AccentColorChanged` once per apply after accent-dependent resources are updated.
+- `PasswordBox` now stops Caps Lock polling when unloaded.
+- `TitleBar` now detaches command `CanExecuteChanged` handlers while unloaded.
+- Colors gallery swatches now use resolving brush keys and theme-aware foregrounds.
+- Removed tracked C# Dev Kit `.lscache` files and ignored them.
+
 ## [0.1.0] - 2026-05-12
 
 ### Added
@@ -41,4 +51,5 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Mica and Acrylic are not captured by `RenderTargetBitmap`.
 - `NavigationView` exposes routing events and back events, but library-owned page history remains consumer-owned by design.
 
+[Unreleased]: https://github.com/sintaxasn/fluence.wpf/compare/v0.1.0...HEAD
 [0.1.0]: https://github.com/sintaxasn/fluence.wpf/releases/tag/v0.1.0

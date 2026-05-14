@@ -30,6 +30,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Reflection;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluenceTextBox = Fluence.Wpf.Controls.TextBox;
 using FluencePasswordBox = Fluence.Wpf.Controls.PasswordBox;
@@ -103,6 +104,39 @@ namespace Fluence.Wpf.Tests
                     expected.Color,
                     actual.Color,
                     "PasswordBox PlaceholderTextBlock.Foreground must be TextFillColorTertiaryBrush per WI-3 C19.");
+                w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void PasswordBox_Unloaded_StopsCapsLockPollingTimer()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                FluencePasswordBox pb = new() { PlaceholderText = "Password" };
+                Window w = new() { Content = pb, Width = 300, Height = 60 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                MethodInfo? startCapsPoll = typeof(FluencePasswordBox).GetMethod(
+                    "StartCapsPoll",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                FieldInfo? capsPollTimer = typeof(FluencePasswordBox).GetField(
+                    "_capsPollTimer",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                Assert.IsNotNull(startCapsPoll, "PasswordBox must expose the expected internal caps-poll start method.");
+                Assert.IsNotNull(capsPollTimer, "PasswordBox must keep the expected caps-poll timer field.");
+
+                _ = startCapsPoll.Invoke(pb, null);
+                Assert.IsNotNull(capsPollTimer.GetValue(pb), "The caps-poll timer should be active after polling starts.");
+
+                pb.RaiseEvent(new RoutedEventArgs(FrameworkElement.UnloadedEvent, pb));
+                DrainDispatcher(w.Dispatcher);
+
+                Assert.IsNull(capsPollTimer.GetValue(pb), "PasswordBox must stop caps-polling when unloaded.");
                 w.Close();
             });
         }

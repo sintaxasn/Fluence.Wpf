@@ -58,7 +58,7 @@
                                             <TextBlock
                                                 Foreground="{DynamicResource TextFillColorInverseBrush}"
                                                 Style="{StaticResource SwatchKeyStyle}"
-                                                Text="Text / Tertiary" />
+                                                Text="TextFillColorPrimaryBrush" />
                                         </StackPanel>
                                     </Border>
                                     <Border
@@ -774,7 +774,7 @@
                                 </Border>
                                 <Border
                                     Margin="2"
-                                    Background="{DynamicResource CardBackgroundTertiaryBrush}"
+                                    Background="{DynamicResource CardBackgroundFillColorTertiaryBrush}"
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
                                         <TextBlock
@@ -784,7 +784,7 @@
                                         <TextBlock
                                             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                             Style="{StaticResource SwatchKeyStyle}"
-                                            Text="CardBackgroundTertiaryBrush" />
+                                            Text="CardBackgroundFillColorTertiaryBrush" />
                                     </StackPanel>
                                 </Border>
                             </UniformGrid>
@@ -946,15 +946,15 @@
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
                                             <TextBlock
-                                                Foreground="White"
+                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
                                                 Style="{StaticResource SwatchNameStyle}"
                                                 Text="System / Success" />
                                             <TextBlock
-                                                Foreground="White"
+                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
                                                 Style="{StaticResource SwatchUsageStyle}"
                                                 Text="Badge" />
                                             <TextBlock
-                                                Foreground="White"
+                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
                                                 Style="{StaticResource SwatchKeyStyle}"
                                                 Text="SystemFillColorSuccessBrush" />
                                         </StackPanel>
@@ -965,15 +965,15 @@
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
                                             <TextBlock
-                                                Foreground="Black"
+                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
                                                 Style="{StaticResource SwatchNameStyle}"
                                                 Text="System / Caution" />
                                             <TextBlock
-                                                Foreground="Black"
+                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
                                                 Style="{StaticResource SwatchUsageStyle}"
                                                 Text="Badge" />
                                             <TextBlock
-                                                Foreground="Black"
+                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
                                                 Style="{StaticResource SwatchKeyStyle}"
                                                 Text="SystemFillColorCautionBrush" />
                                         </StackPanel>
@@ -984,15 +984,15 @@
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
                                             <TextBlock
-                                                Foreground="White"
+                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
                                                 Style="{StaticResource SwatchNameStyle}"
                                                 Text="System / Critical" />
                                             <TextBlock
-                                                Foreground="White"
+                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
                                                 Style="{StaticResource SwatchUsageStyle}"
                                                 Text="Badge" />
                                             <TextBlock
-                                                Foreground="White"
+                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
                                                 Style="{StaticResource SwatchKeyStyle}"
                                                 Text="SystemFillColorCriticalBrush" />
                                         </StackPanel>
@@ -1064,15 +1064,15 @@
                                         Style="{StaticResource ColorSwatchCellStyle}">
                                         <StackPanel>
                                             <TextBlock
-                                                Foreground="Black"
+                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
                                                 Style="{StaticResource SwatchNameStyle}"
                                                 Text="System / Attention" />
                                             <TextBlock
-                                                Foreground="Black"
+                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
                                                 Style="{StaticResource SwatchUsageStyle}"
                                                 Text="Badge" />
                                             <TextBlock
-                                                Foreground="Black"
+                                                Foreground="{DynamicResource TextFillColorInverseBrush}"
                                                 Style="{StaticResource SwatchKeyStyle}"
                                                 Text="SystemFillColorAttentionBrush" />
                                         </StackPanel>
@@ -1253,15 +1253,15 @@
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
                                         <TextBlock
-                                            Foreground="White"
+                                            Foreground="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
                                             Style="{StaticResource SwatchNameStyle}"
                                             Text="Hotlight Color" />
                                         <TextBlock
-                                            Foreground="White"
+                                            Foreground="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
                                             Style="{StaticResource SwatchUsageStyle}"
                                             Text="Hyperlink text" />
                                         <TextBlock
-                                            Foreground="White"
+                                            Foreground="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
                                             Style="{StaticResource SwatchKeyStyle}"
                                             Text="SystemColorHotlightColor" />
                                     </StackPanel>
@@ -1329,15 +1329,15 @@
                                     Style="{StaticResource ColorSwatchCellStyle}">
                                     <StackPanel>
                                         <TextBlock
-                                            Foreground="White"
+                                            Foreground="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
                                             Style="{StaticResource SwatchNameStyle}"
                                             Text="Gray Text Color / Disabled" />
                                         <TextBlock
-                                            Foreground="White"
+                                            Foreground="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
                                             Style="{StaticResource SwatchUsageStyle}"
                                             Text="Disabled text" />
                                         <TextBlock
-                                            Foreground="White"
+                                            Foreground="{DynamicResource {x:Static SystemColors.WindowBrushKey}}"
                                             Style="{StaticResource SwatchKeyStyle}"
                                             Text="SystemColorGrayTextColor" />
                                     </StackPanel>

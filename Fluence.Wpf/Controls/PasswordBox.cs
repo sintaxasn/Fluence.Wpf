@@ -69,6 +69,7 @@ namespace Fluence.Wpf.Controls
         public PasswordBox()
         {
             _capsPollTick = OnCapsPollTick;
+            Unloaded += OnUnloaded;
         }
 
         /// <summary>
@@ -394,6 +395,11 @@ namespace Fluence.Wpf.Controls
             _capsPollTimer.Tick -= _capsPollTick;
             _capsPollTimer.Stop();
             _capsPollTimer = null;
+        }
+
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            StopCapsPoll();
         }
 
         private void OnInnerKeyboardFocusChanged(object sender, KeyboardFocusChangedEventArgs e)
