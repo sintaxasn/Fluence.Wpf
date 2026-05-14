@@ -54,7 +54,7 @@ namespace Fluence.Wpf.Demo.Pages
             x:Name=""ProgressValueNumberBox""
             Header=""Value""
             Maximum=""100""
-            Minimum=""1""
+            Minimum=""0""
             SmallChange=""5""
             SpinButtonPlacementMode=""{x:Static uicore:SpinButtonPlacementMode.Inline}""
             Value=""50"" />
@@ -175,7 +175,7 @@ namespace Fluence.Wpf.Demo.Pages.Status
             HorizontalAlignment=""Stretch""
             CurrentStep=""1""
             ProgressMode=""StepProgress""
-            Steps=""5"" />
+            Steps=""10"" />
         <StackPanel Orientation=""Horizontal"">
             <ui:Button
                 Margin=""0,0,12,0""
@@ -192,7 +192,7 @@ namespace Fluence.Wpf.Demo.Pages.Status
                 x:Name=""StepLabel""
                 VerticalAlignment=""Center""
                 Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-                Text=""Step 1 of 5"" />
+                Text=""Step 1 of 10"" />
         </StackPanel>
     </StackPanel>
 </UserControl>
@@ -321,8 +321,11 @@ namespace Fluence.Wpf.Demo.Pages.Status
             Height=""48""
             HorizontalAlignment=""Center""
             IsActive=""True""
-            IsIndeterminate=""True""
-            ProgressState=""{x:Static uicore:ProgressRingState.Paused}"" />
+            IsIndeterminate=""False""
+            Maximum=""100""
+            Minimum=""0""
+            ProgressState=""{x:Static uicore:ProgressRingState.Paused}""
+            Value=""80"" />
         <TextBlock
             Grid.Row=""2""
             Grid.Column=""2""
@@ -343,7 +346,7 @@ namespace Fluence.Wpf.Demo.Pages.Status
             Maximum=""100""
             Minimum=""0""
             ProgressState=""{x:Static uicore:ProgressRingState.Error}""
-            Value=""70"" />
+            Value=""80"" />
         <TextBlock
             Grid.Row=""2""
             Grid.Column=""3""

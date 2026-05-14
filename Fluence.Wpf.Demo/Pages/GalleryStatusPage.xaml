@@ -76,7 +76,7 @@
                         x:Name="ProgressValueNumberBox"
                         Header="Value"
                         Maximum="100"
-                        Minimum="1"
+                        Minimum="0"
                         SmallChange="5"
                         SpinButtonPlacementMode="{x:Static uicore:SpinButtonPlacementMode.Inline}"
                         Value="50" />

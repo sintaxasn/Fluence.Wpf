@@ -1589,6 +1589,119 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void GalleryStatusPage_ProgressBarValueAllowsZero()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                GalleryStatusPage page = new();
+                Window window = CreateHostWindow(page);
+                try
+                {
+                    NumberBox? valueBox = FindByName<NumberBox>(page, "ProgressValueNumberBox");
+                    Fluence.Wpf.Controls.ProgressBar? progressBar = FindByName<Fluence.Wpf.Controls.ProgressBar>(page, "StandardProgressBar");
+                    Assert.IsNotNull(valueBox, "Status page should expose the ProgressBar NumberBox.");
+                    Assert.IsNotNull(progressBar, "Status page should expose the standard ProgressBar.");
+
+                    Assert.AreEqual(0.0, progressBar.Minimum, 0.001,
+                        "Standard ProgressBar should allow an empty 0 percent state.");
+                    Assert.AreEqual(0.0, valueBox.Minimum, 0.001,
+                        "The controlling NumberBox should allow the ProgressBar's 0 percent state.");
+
+                    valueBox.Value = 0;
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.AreEqual(0.0, progressBar.Value, 0.001,
+                        "ProgressBar value should update from the NumberBox at 0 percent.");
+
+                    DemoSampleControl? sample = FindAllVisualChildren<DemoSampleControl>(page)
+                        .FirstOrDefault(control => control.XamlSource.Contains("ProgressBarValue"));
+                    Assert.IsNotNull(sample, "Status page should expose the ProgressBar value source sample.");
+                    StringAssert.Contains(sample.XamlSource, "x:Name=\"ProgressValueNumberBox\"");
+                    StringAssert.Contains(sample.XamlSource, "Minimum=\"0\"");
+                    Assert.AreEqual(-1, sample.XamlSource.IndexOf("Minimum=\"1\"", StringComparison.Ordinal),
+                        "ProgressBar value source should not keep the stale NumberBox minimum.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void GalleryStatusPage_SourceMatchesLiveStepAndRingValues()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                GalleryStatusPage page = new();
+                Window window = CreateHostWindow(page);
+                try
+                {
+                    DemoSampleControl? stepSample = FindAllVisualChildren<DemoSampleControl>(page)
+                        .FirstOrDefault(control => control.XamlSource.Contains("ProgressBarSteps"));
+                    DemoSampleControl? ringSample = FindAllVisualChildren<DemoSampleControl>(page)
+                        .FirstOrDefault(control => control.XamlSource.Contains("ProgressRings"));
+                    Assert.IsNotNull(stepSample, "Status page should expose the step ProgressBar source sample.");
+                    Assert.IsNotNull(ringSample, "Status page should expose the ProgressRing source sample.");
+
+                    StringAssert.Contains(stepSample.XamlSource, "Steps=\"10\"");
+                    StringAssert.Contains(stepSample.XamlSource, "Text=\"Step 1 of 10\"");
+                    Assert.AreEqual(-1, stepSample.XamlSource.IndexOf("Steps=\"5\"", StringComparison.Ordinal),
+                        "Step ProgressBar source should match the live ten-step sample.");
+
+                    int pausedRingIndex = ringSample.XamlSource.IndexOf("x:Name=\"PausedProgressRing\"", StringComparison.Ordinal);
+                    int errorRingIndex = ringSample.XamlSource.IndexOf("x:Name=\"ErrorProgressRing\"", StringComparison.Ordinal);
+                    Assert.IsTrue(pausedRingIndex >= 0, "ProgressRing source should include PausedProgressRing.");
+                    Assert.IsTrue(errorRingIndex > pausedRingIndex, "ProgressRing source should place ErrorProgressRing after PausedProgressRing.");
+                    string pausedRingSource = ringSample.XamlSource.Substring(pausedRingIndex, errorRingIndex - pausedRingIndex);
+
+                    StringAssert.Contains(pausedRingSource, "IsIndeterminate=\"False\"");
+                    StringAssert.Contains(pausedRingSource, "ProgressState=\"{x:Static uicore:ProgressRingState.Paused}\"");
+                    StringAssert.Contains(pausedRingSource, "Value=\"80\"");
+                    StringAssert.Contains(ringSample.XamlSource, "Value=\"80\"");
+                    Assert.AreEqual(-1, ringSample.XamlSource.IndexOf("Value=\"70\"", StringComparison.Ordinal),
+                        "ProgressRing source should match the live error-state value.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void GalleryNavigationPage_CompactSourceMatchesLiveInteraction()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                GalleryNavigationPage page = new();
+                Window window = CreateHostWindow(page);
+                try
+                {
+                    DemoSampleControl? sample = FindAllVisualChildren<DemoSampleControl>(page)
+                        .FirstOrDefault(control => control.XamlSource.Contains("CompactNavigationView"));
+                    Assert.IsNotNull(sample, "Navigation page should expose the compact NavigationView source sample.");
+
+                    StringAssert.Contains(sample.XamlSource, "IsBackEnabled=\"{Binding IsChecked, ElementName=BackEnabledToggle}\"");
+                    StringAssert.Contains(sample.XamlSource, "<ui:NavigationViewItem");
+                    StringAssert.Contains(sample.XamlSource, "Content=\"Settings\"");
+                    Assert.AreEqual(-1, sample.XamlSource.IndexOf("IsBackEnabled=\"False\"", StringComparison.Ordinal),
+                        "Compact Navigation source should not hard-code back availability.");
+                    Assert.AreEqual(-1, sample.XamlSource.IndexOf("Footer content", StringComparison.Ordinal),
+                        "Compact Navigation source should show the live Settings footer item.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
         public void GalleryTypographyPage_TableUsesCompactRowSpacing()
         {
             RunOnSta(delegate

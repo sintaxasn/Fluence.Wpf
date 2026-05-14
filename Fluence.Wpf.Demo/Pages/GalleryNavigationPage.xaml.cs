@@ -144,14 +144,15 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
             <ui:NavigationView
                 x:Name=""CompactNavigationDemo""
                 IsBackButtonVisible=""True""
-                IsBackEnabled=""False""
+                IsBackEnabled=""{Binding IsChecked, ElementName=BackEnabledToggle}""
                 IsPaneOpen=""False""
                 PaneDisplayMode=""LeftCompact"">
                 <ui:NavigationView.PaneFooter>
-                    <TextBlock
-                        Margin=""12""
-                        Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                        Text=""Footer content"" />
+                    <ui:NavigationViewItem Content=""Settings"">
+                        <ui:NavigationViewItem.Icon>
+                            <ui:FontIcon Glyph=""&#xE713;"" IconFontSize=""16"" />
+                        </ui:NavigationViewItem.Icon>
+                    </ui:NavigationViewItem>
                 </ui:NavigationView.PaneFooter>
                 <ui:NavigationViewItem
                     Content=""Dashboard""

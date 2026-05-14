@@ -133,7 +133,7 @@ namespace Fluence.Wpf.Tests
                     "Indeterminate toggle text should not switch to a state-specific label.");
                 Assert.AreEqual("On / Off", indeterminateToggle.OffContent as string,
                     "Indeterminate toggle text should not switch to a state-specific label.");
-                Assert.AreEqual(1d, numberBox.Minimum, "Progress value NumberBox should start at 1.");
+                Assert.AreEqual(0d, numberBox.Minimum, "Progress value NumberBox should allow the ProgressBar's empty state.");
                 Assert.AreEqual(100d, numberBox.Maximum, "Progress value NumberBox should cap at 100.");
                 Assert.IsNull(FindVisualChildByName<Controls.Slider>(window, "ProgressSlider"),
                     "The first ProgressBar should no longer be driven by a Slider.");
@@ -146,6 +146,13 @@ namespace Fluence.Wpf.Tests
 
                 Assert.AreEqual(73d, progressBar.Value, 0.1,
                     "Changing the NumberBox should update the first ProgressBar.");
+
+                numberBox.Value = 0d;
+                DrainDispatcher(window.Dispatcher);
+                window.UpdateLayout();
+
+                Assert.AreEqual(0d, progressBar.Value, 0.1,
+                    "Changing the NumberBox to 0 should show the ProgressBar empty state.");
 
                 indeterminateToggle.IsChecked = false;
                 DrainDispatcher(window.Dispatcher);
@@ -334,4 +341,3 @@ namespace Fluence.Wpf.Tests
         }
     }
 }
-

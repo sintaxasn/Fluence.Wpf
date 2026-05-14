@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `TitleBar` now detaches command `CanExecuteChanged` handlers while unloaded.
 - Colors gallery swatches now use resolving brush keys and theme-aware foregrounds.
 - Typography and Settings demo pages now keep source snippets and compact settings layouts aligned with the live UI.
+- Status and Navigation demo source snippets now match the live ProgressBar, ProgressRing, and compact navigation samples.
 - Removed tracked C# Dev Kit `.lscache` files and ignored them.
 
 ## [0.1.0] - 2026-05-12
