@@ -268,109 +268,6 @@ namespace Fluence.Wpf.Demo.Pages.Menus
     }
 }
 ";
-        private const string DropDownAndSplitButtonsXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Menus.DropDownAndSplitButtonMenus""
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
-    <StackPanel>
-        <WrapPanel Margin=""0,0,0,12"">
-            <ui:DropDownButton Margin=""0,0,8,8"" Content=""Sort by"">
-                <ui:DropDownButton.Flyout>
-                    <StackPanel MinWidth=""180"" Margin=""4"">
-                        <ui:Button
-                            HorizontalAlignment=""Stretch""
-                            HorizontalContentAlignment=""Left""
-                            Appearance=""Subtle""
-                            Click=""FlyoutAction_Click""
-                            Content=""Name ascending""
-                            Tag=""Sort - Name ascending"" />
-                        <ui:Button
-                            HorizontalAlignment=""Stretch""
-                            HorizontalContentAlignment=""Left""
-                            Appearance=""Subtle""
-                            Click=""FlyoutAction_Click""
-                            Content=""Date modified""
-                            Tag=""Sort - Date modified"" />
-                        <Rectangle
-                            Height=""1""
-                            Margin=""4,2""
-                            Fill=""{DynamicResource DividerStrokeColorDefaultBrush}"" />
-                        <ui:Button
-                            HorizontalAlignment=""Stretch""
-                            HorizontalContentAlignment=""Left""
-                            Appearance=""Subtle""
-                            Click=""FlyoutAction_Click""
-                            Content=""Size""
-                            Tag=""Sort - Size"" />
-                    </StackPanel>
-                </ui:DropDownButton.Flyout>
-            </ui:DropDownButton>
-            <ui:SplitButton
-                Margin=""0,0,8,8""
-                Click=""ExportPrimary_Click""
-                Content=""Export"">
-                <ui:SplitButton.Flyout>
-                    <StackPanel MinWidth=""180"" Margin=""4"">
-                        <ui:Button
-                            HorizontalAlignment=""Stretch""
-                            HorizontalContentAlignment=""Left""
-                            Appearance=""Subtle""
-                            Click=""FlyoutAction_Click""
-                            Content=""Export as CSV""
-                            Tag=""Export - CSV"" />
-                        <ui:Button
-                            HorizontalAlignment=""Stretch""
-                            HorizontalContentAlignment=""Left""
-                            Appearance=""Subtle""
-                            Click=""FlyoutAction_Click""
-                            Content=""Export as JSON""
-                            Tag=""Export - JSON"" />
-                        <ui:Button
-                            HorizontalAlignment=""Stretch""
-                            HorizontalContentAlignment=""Left""
-                            Appearance=""Subtle""
-                            Click=""FlyoutAction_Click""
-                            Content=""Export settings""
-                            Tag=""Export - Settings"" />
-                    </StackPanel>
-                </ui:SplitButton.Flyout>
-            </ui:SplitButton>
-        </WrapPanel>
-        <TextBlock
-            x:Name=""FlyoutResultLabel""
-            Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-            Text=""Last action: None"" />
-    </StackPanel>
-</UserControl>
-";
-
-        private const string DropDownAndSplitButtonsCSharpSource = @"using System.Windows;
-using System.Windows.Controls;
-
-namespace Fluence.Wpf.Demo.Pages.Menus
-{
-    public partial class DropDownAndSplitButtonMenus : UserControl
-    {
-        public DropDownAndSplitButtonMenus()
-        {
-            InitializeComponent();
-        }
-
-        private void ExportPrimary_Click(object sender, RoutedEventArgs e)
-        {
-            FlyoutResultLabel.Text = ""Last action: Export - Default"";
-        }
-
-        private void FlyoutAction_Click(object sender, RoutedEventArgs e)
-        {
-            var element = sender as FrameworkElement;
-            var action = element is not null ? element.Tag as string : null;
-            FlyoutResultLabel.Text = string.Format(""Last action: {0}"", string.IsNullOrWhiteSpace(action) ? ""None"" : action);
-        }
-    }
-}
-";
 
         public GalleryMenusPage()
         {
@@ -383,9 +280,7 @@ namespace Fluence.Wpf.Demo.Pages.Menus
                 ContextMenuXamlSource,
                 ContextMenuCSharpSource,
                 ToolTipsXamlSource,
-                ToolTipsCSharpSource,
-                DropDownAndSplitButtonsXamlSource,
-                DropDownAndSplitButtonsCSharpSource);
+                ToolTipsCSharpSource);
         }
 
         private void MenuBar_Click(object sender, RoutedEventArgs e)
@@ -396,16 +291,6 @@ namespace Fluence.Wpf.Demo.Pages.Menus
         private void ContextMenu_Click(object sender, RoutedEventArgs e)
         {
             SetTextFromTag(ContextMenuResultLabel, "Last action", sender);
-        }
-
-        private void ExportPrimary_Click(object sender, RoutedEventArgs e)
-        {
-            FlyoutResultLabel.Text = "Last action: Export - Default";
-        }
-
-        private void FlyoutAction_Click(object sender, RoutedEventArgs e)
-        {
-            SetTextFromTag(FlyoutResultLabel, "Last action", sender);
         }
 
         private static void SetTextFromTag(TextBlock label, string prefix, object sender)

@@ -1075,18 +1075,26 @@ namespace Fluence.Wpf.Tests
                         "The shell pane toggle should be visible in Left navigation.");
 
                     titleBarToggle.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, titleBarToggle));
+                    Assert.IsTrue(nav.GetPaneColumnWidthForTesting() > 48.0,
+                        "Collapsing Left navigation should start the sidebar width animation instead of snapping to compact width.");
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
-                    Assert.AreEqual(NavigationViewPaneDisplayMode.LeftCompact, nav.PaneDisplayMode,
-                        "Clicking the shell pane toggle should switch the demo shell to LeftCompact.");
+                    Assert.AreEqual(NavigationViewPaneDisplayMode.Left, nav.PaneDisplayMode,
+                        "Clicking the shell pane toggle should keep the demo shell in Left mode so the sidebar can animate.");
                     Assert.IsFalse(nav.IsPaneOpen,
-                        "LeftCompact should keep the pane closed.");
+                        "Clicking the shell pane toggle should collapse the Left pane.");
                     Assert.AreEqual(2, navigationStyle.SelectedIndex,
-                        "Settings should sync to Left compact after the shell pane toggle collapses the pane.");
+                        "Settings should still show the compact visual state after the shell pane toggle collapses the Left pane.");
+
+                    WaitForAnimationAndDrain(window.Dispatcher, 220);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
 
                     titleBarToggle.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, titleBarToggle));
+                    Assert.IsTrue(nav.GetPaneColumnWidthForTesting() < 280.0,
+                        "Expanding Left navigation should start from the current compact width instead of snapping open.");
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
@@ -2042,6 +2050,23 @@ namespace Fluence.Wpf.Tests
         private static void Drain(Dispatcher dispatcher)
         {
             _ = dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
+        }
+
+        private static void WaitForAnimationAndDrain(Dispatcher dispatcher, int milliseconds)
+        {
+            DispatcherFrame frame = new();
+            DispatcherTimer timer = new(DispatcherPriority.Background, dispatcher)
+            {
+                Interval = TimeSpan.FromMilliseconds(milliseconds)
+            };
+            timer.Tick += delegate
+            {
+                timer.Stop();
+                frame.Continue = false;
+            };
+            timer.Start();
+            Dispatcher.PushFrame(frame);
+            Drain(dispatcher);
         }
 
         private static void AssertGridCell(Grid grid, Predicate<UIElement> match, int expectedRow, int expectedColumn, string name)

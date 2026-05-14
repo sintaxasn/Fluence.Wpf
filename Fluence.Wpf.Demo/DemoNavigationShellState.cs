@@ -97,9 +97,14 @@ namespace Fluence.Wpf.Demo
                 return;
             }
 
-            SetPaneDisplayMode(_navigationView.PaneDisplayMode == NavigationViewPaneDisplayMode.Left && _navigationView.IsPaneOpen
-                ? NavigationViewPaneDisplayMode.LeftCompact
-                : NavigationViewPaneDisplayMode.Left);
+            if (_navigationView.PaneDisplayMode == NavigationViewPaneDisplayMode.Left)
+            {
+                _navigationView.IsPaneOpen = !_navigationView.IsPaneOpen;
+                RaiseChanged();
+                return;
+            }
+
+            SetPaneDisplayMode(NavigationViewPaneDisplayMode.Left);
         }
 
         internal void CaptureNavigationStateFromControl(bool extendsContentIntoTitleBar)

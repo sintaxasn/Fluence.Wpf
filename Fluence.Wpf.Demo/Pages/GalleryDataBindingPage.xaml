@@ -25,6 +25,7 @@
                     <ui:ListView
                         x:Name="BoundListView"
                         Height="220"
+                        Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
                         SelectionMode="Single">
@@ -94,6 +95,7 @@
                     <ui:ListView
                         x:Name="SelectionModeListView"
                         Height="200"
+                        Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
                         SelectionChanged="SelectionModeListView_SelectionChanged"
@@ -151,6 +153,7 @@
                     <ui:ListView
                         x:Name="DataTemplateListView"
                         Height="180"
+                        Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
                         SelectionMode="Single">

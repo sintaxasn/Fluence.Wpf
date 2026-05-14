@@ -37,7 +37,7 @@
                     MaxWidth="720"
                     HorizontalAlignment="Left"
                     Style="{StaticResource SectionDescriptionStyle}"
-                    Text="FontIcon renders icons from the Segoe Fluent Icons font. This catalog enumerates the private-use icons available from the installed font and shows friendly names where Fluence has source data." />
+                    Text="FontIcon uses glyph codes to render icons from the 'Segoe Fluent Icons' font." />
             </StackPanel>
 
         </Grid>
@@ -45,13 +45,13 @@
         <TextBlock
             x:Name="IconCatalogCountText"
             Grid.Row="1"
-            Margin="0,16,0,12"
+            Margin="0,0,0,24"
             Style="{StaticResource SectionDescriptionStyle}" />
 
         <Grid
             x:Name="FontIconSampleContent"
             Grid.Row="2"
-            Margin="0,0,0,16">
+            Margin="0,16,0,16">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="56" />
                 <ColumnDefinition Width="*" />
@@ -86,7 +86,8 @@
         <ui:ListView
             x:Name="IconCatalogList"
             Grid.Row="4"
-            BorderThickness="0"
+            Background="{DynamicResource DemoSampleCardBackgroundBrush}"
+            BorderThickness="1"
             ScrollViewer.CanContentScroll="True"
             ScrollViewer.HorizontalScrollBarVisibility="Disabled"
             ScrollViewer.VerticalScrollBarVisibility="Auto"
@@ -131,7 +132,8 @@
                                     Width="192"
                                     Height="128"
                                     MinHeight="104"
-                                    Margin="6"
+                                    Margin="12"
+                                    CornerRadius="8"
                                     Style="{StaticResource IconGalleryCardStyle}">
                                     <Grid>
                                         <Grid.RowDefinitions>
@@ -141,10 +143,10 @@
                                         </Grid.RowDefinitions>
 
                                         <TextBlock
+                                            Margin="0,10,0,4"
                                             HorizontalAlignment="Center"
                                             FontFamily="Segoe Fluent Icons"
                                             FontSize="28"
-                                            Margin="0,10,0,4"
                                             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                             Text="{Binding Glyph}"
                                             TextAlignment="Center" />

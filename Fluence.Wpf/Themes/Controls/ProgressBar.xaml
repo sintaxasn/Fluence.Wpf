@@ -17,7 +17,7 @@
                 <ControlTemplate TargetType="{x:Type controls:ProgressBar}">
                     <Grid>
                         <Border x:Name="PART_Track"
-                                Background="{DynamicResource ControlStrongStrokeColorDefaultBrush}"
+
                                 CornerRadius="{TemplateBinding CornerRadius}"
                                 ClipToBounds="True"
                                 Height="{TemplateBinding TrackHeight}"

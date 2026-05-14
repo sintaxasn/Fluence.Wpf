@@ -33,6 +33,7 @@
                             <ui:ListView
                                 x:Name="SimpleListView"
                                 Height="230"
+                        Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                                 BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                                 BorderThickness="1">
                                 <ListViewItem Content="Ana Bowman" />
@@ -49,6 +50,7 @@
                             <ui:ListView
                                 x:Name="RichListView"
                                 Height="230"
+                                Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                                 BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                                 BorderThickness="1">
                                 <ListViewItem>

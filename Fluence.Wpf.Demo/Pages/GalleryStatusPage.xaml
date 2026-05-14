@@ -178,7 +178,7 @@
                             IsActive="True"
                             IsIndeterminate="True" />
                         <ui:ToggleSwitch
-                            Grid.Row="1"
+                            Grid.Row="2"
                             Grid.Column="0"
                             Margin="{DynamicResource DemoMediumTopGapMargin}"
                             HorizontalAlignment="Center"
@@ -188,7 +188,7 @@
                             OnContent="On / Off" />
                         <TextBlock
                             x:Name="IndeterminateProgressRingLabel"
-                            Grid.Row="2"
+                            Grid.Row="1"
                             Grid.Column="0"
                             Margin="{DynamicResource DemoOutputTopGapMargin}"
                             HorizontalAlignment="Center"
@@ -210,7 +210,7 @@
                             Value="50" />
                         <ui:NumberBox
                             x:Name="ProgressRingValueBox"
-                            Grid.Row="1"
+                            Grid.Row="2"
                             Grid.Column="1"
                             Width="132"
                             Margin="{DynamicResource DemoMediumTopGapMargin}"
@@ -223,7 +223,7 @@
                             Value="{Binding Value, ElementName=DeterminateProgressRing, Mode=TwoWay}" />
                         <TextBlock
                             x:Name="DeterminateProgressRingLabel"
-                            Grid.Row="2"
+                            Grid.Row="1"
                             Grid.Column="1"
                             Margin="{DynamicResource DemoOutputTopGapMargin}"
                             HorizontalAlignment="Center"
@@ -245,7 +245,7 @@
                             ProgressState="{x:Static uicore:ProgressRingState.Paused}"
                             Value="80" />
                         <TextBlock
-                            Grid.Row="2"
+                            Grid.Row="1"
                             Grid.Column="2"
                             Margin="{DynamicResource DemoOutputTopGapMargin}"
                             HorizontalAlignment="Center"
@@ -266,7 +266,7 @@
                             ProgressState="{x:Static uicore:ProgressRingState.Error}"
                             Value="80" />
                         <TextBlock
-                            Grid.Row="2"
+                            Grid.Row="1"
                             Grid.Column="3"
                             Margin="{DynamicResource DemoOutputTopGapMargin}"
                             HorizontalAlignment="Center"

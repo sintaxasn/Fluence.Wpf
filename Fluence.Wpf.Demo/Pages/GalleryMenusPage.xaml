@@ -22,8 +22,12 @@
 
             <ContentControl
                 x:Name="DemoSampleSlot01DemoContentHost"
-                Visibility="Collapsed">
-                    <ui:Menu>
+                Visibility="Collapsed"
+                >
+                    <ui:Menu
+                        Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                        VerticalAlignment="Center"
+                        >
                         <ui:MenuItem Header="_File">
                             <ui:MenuItem
                                 Click="MenuBar_Click"
@@ -99,7 +103,8 @@
                 Visibility="Collapsed">
 <ui:Border
                         Padding="{DynamicResource DemoSampleInnerCardPadding}"
-                        Variant="{x:Static uicore:BorderVariant.Subtle}">
+                        Variant="{x:Static uicore:BorderVariant.Subtle}"
+                        VerticalAlignment="Center">
                         <ui:Border.ContextMenu>
                             <ui:ContextMenu>
                                 <ui:MenuItem
@@ -206,84 +211,6 @@
             <local:DemoSampleControl
                 SampleDescription="Use ToolTip for short hints that clarify icons, disabled commands, or risky actions." />
 
-
-            <ContentControl
-                x:Name="DemoSampleSlot04DemoContentHost"
-                Visibility="Collapsed">
-<WrapPanel>
-                        <ui:DropDownButton Margin="{DynamicResource DemoSmallInlineControlGapMargin}" Content="Sort by">
-                            <ui:DropDownButton.Flyout>
-                                <StackPanel MinWidth="180" Margin="{DynamicResource DemoFlyoutPanelMargin}">
-                                    <ui:Button
-                                        HorizontalAlignment="Stretch"
-                                        HorizontalContentAlignment="Left"
-                                        Appearance="Subtle"
-                                        Click="FlyoutAction_Click"
-                                        Content="Name ascending"
-                                        Tag="Sort - Name ascending" />
-                                    <ui:Button
-                                        HorizontalAlignment="Stretch"
-                                        HorizontalContentAlignment="Left"
-                                        Appearance="Subtle"
-                                        Click="FlyoutAction_Click"
-                                        Content="Date modified"
-                                        Tag="Sort - Date modified" />
-                                    <Rectangle
-                                        Height="1"
-                                        Margin="{DynamicResource DemoSmallBottomGapMargin}"
-                                        Fill="{DynamicResource DividerStrokeColorDefaultBrush}" />
-                                    <ui:Button
-                                        HorizontalAlignment="Stretch"
-                                        HorizontalContentAlignment="Left"
-                                        Appearance="Subtle"
-                                        Click="FlyoutAction_Click"
-                                        Content="Size"
-                                        Tag="Sort - Size" />
-                                </StackPanel>
-                            </ui:DropDownButton.Flyout>
-                        </ui:DropDownButton>
-                        <ui:SplitButton
-                            Margin="{DynamicResource DemoSmallInlineControlGapMargin}"
-                            Click="ExportPrimary_Click"
-                            Content="Export">
-                            <ui:SplitButton.Flyout>
-                                <StackPanel MinWidth="180" Margin="{DynamicResource DemoFlyoutPanelMargin}">
-                                    <ui:Button
-                                        HorizontalAlignment="Stretch"
-                                        HorizontalContentAlignment="Left"
-                                        Appearance="Subtle"
-                                        Click="FlyoutAction_Click"
-                                        Content="Export as CSV"
-                                        Tag="Export - CSV" />
-                                    <ui:Button
-                                        HorizontalAlignment="Stretch"
-                                        HorizontalContentAlignment="Left"
-                                        Appearance="Subtle"
-                                        Click="FlyoutAction_Click"
-                                        Content="Export as JSON"
-                                        Tag="Export - JSON" />
-                                    <ui:Button
-                                        HorizontalAlignment="Stretch"
-                                        HorizontalContentAlignment="Left"
-                                        Appearance="Subtle"
-                                        Click="FlyoutAction_Click"
-                                        Content="Export settings"
-                                        Tag="Export - Settings" />
-                                </StackPanel>
-                            </ui:SplitButton.Flyout>
-                        </ui:SplitButton>
-                    </WrapPanel>
-            </ContentControl>
-            <ContentControl
-                x:Name="DemoSampleSlot04OutputContentHost"
-                Visibility="Collapsed">
-<TextBlock
-                        x:Name="FlyoutResultLabel"
-                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                        Text="Last action: None" />
-            </ContentControl>
-            <local:DemoSampleControl
-                SampleDescription="Use DropDownButton for menu-only choices and SplitButton for one default action with alternatives." />
         </StackPanel>
     </ui:SmoothScrollViewer>
 </UserControl>
