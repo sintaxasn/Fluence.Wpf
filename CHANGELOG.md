@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Colors gallery swatches now use resolving brush keys and theme-aware foregrounds.
 - Typography and Settings demo pages now keep source snippets and compact settings layouts aligned with the live UI.
 - Status and Navigation demo source snippets now match the live ProgressBar, ProgressRing, and compact navigation samples.
+- `NavigationView` now keeps its pane collapse button visible in Left and LeftCompact modes without duplicating shell title-bar chrome.
 - Removed tracked C# Dev Kit `.lscache` files and ignored them.
 
 ## [0.1.0] - 2026-05-12

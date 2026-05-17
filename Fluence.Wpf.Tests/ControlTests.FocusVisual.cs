@@ -26,11 +26,11 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Controls;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Windows;
 using System.Windows.Input;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf.Controls;
 using WpfTabControl = System.Windows.Controls.TabControl;
 using WpfTabItem = System.Windows.Controls.TabItem;
 using WpfTextBlock = System.Windows.Controls.TextBlock;

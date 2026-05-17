@@ -7,6 +7,7 @@
     <ContentControl.Resources>
         <Style x:Key="DemoSampleSourceHeaderToggleButtonStyle" TargetType="{x:Type ToggleButton}">
             <Setter Property="UseLayoutRounding" Value="True" />
+            <Setter Property="Padding" Value="0" />
             <Setter Property="Background" Value="{DynamicResource DemoSampleSourceHeaderBackgroundBrush}" />
             <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
             <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
@@ -15,7 +16,10 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="{x:Type ToggleButton}">
-                        <Border x:Name="HeaderBorder" Background="{TemplateBinding Background}">
+                        <Border
+                            x:Name="HeaderBorder"
+                            Background="{TemplateBinding Background}"
+                            CornerRadius="0,0,8,8">
                             <Grid Margin="{TemplateBinding Padding}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -101,7 +105,7 @@
             <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
             <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
             <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
-            <Setter Property="BorderThickness" Value="1,1,1,1" />
+            <Setter Property="BorderThickness" Value="1" />
             <Setter Property="CornerRadius" Value="0,0,8,8" />
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
             <Setter Property="VerticalContentAlignment" Value="Top" />
@@ -213,9 +217,7 @@
                         CornerRadius="{DynamicResource ControlCornerRadius}">
                         <StackPanel>
                             <TextBlock Text="Output:" />
-                            <ContentPresenter
-                                x:Name="OutputContentPresenter"
-                                Content="{Binding OutputContent, ElementName=Root}" />
+                            <ContentPresenter x:Name="OutputContentPresenter" Content="{Binding OutputContent, ElementName=Root}" />
                         </StackPanel>
                     </Border>
                 </Grid>
@@ -228,9 +230,7 @@
                     BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1,0,0,0"
                     CornerRadius="0,8,0,0">
-                    <ContentPresenter
-                        x:Name="RightRailContentPresenter"
-                        Content="{Binding RightRailContent, ElementName=Root}" />
+                    <ContentPresenter x:Name="RightRailContentPresenter" Content="{Binding RightRailContent, ElementName=Root}" />
                 </Border>
             </Grid>
         </Border>
@@ -238,13 +238,12 @@
         <fluence:Expander
             x:Name="SourceExpander"
             Grid.Row="2"
-            Header="Source code"
+            BorderThickness="1"
             CornerRadius="0,0,8,8"
             Expanded="SourceExpander_Expanded"
+            Header="Source code"
             Style="{StaticResource DemoSampleSourceExpanderStyle}">
-            <TabControl
-                x:Name="SourceTabControl"
-                Margin="{DynamicResource DemoSampleSourceTabMargin}" />
+            <TabControl x:Name="SourceTabControl" Margin="{DynamicResource DemoSampleSourceTabMargin}" />
         </fluence:Expander>
     </Grid>
 </ContentControl>

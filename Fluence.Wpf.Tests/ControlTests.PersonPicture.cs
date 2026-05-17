@@ -26,13 +26,13 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Controls;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows;
 using System.Windows.Shapes;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf.Controls;
-using WpfTextBlock = System.Windows.Controls.TextBlock;
-using WpfGrid = System.Windows.Controls.Grid;
 using WpfBorder = System.Windows.Controls.Border;
+using WpfGrid = System.Windows.Controls.Grid;
+using WpfTextBlock = System.Windows.Controls.TextBlock;
 
 namespace Fluence.Wpf.Tests
 {

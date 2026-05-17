@@ -26,12 +26,12 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Fluence.Wpf.Tests
 {
@@ -349,7 +349,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(contentBorder, "PART_ContentPresenter must be hosted by a Border in the Left template.");
 
                     Assert.AreEqual(new CornerRadius(8, 0, 0, 0), contentBorder.CornerRadius,
-                        "Left-mode content background Border must carry an 8,0,0,0 corner radius so the content hugs the top-left per WinUI 3.");
+                        "Left-mode content background Border must carry an 8,0,0,0 corner radius so the content presenter keeps the page corner rounding.");
 
                     // The 1,1,0,0 stroke sits on a sibling decorative Border so
                     // PART_ContentPresenter lines up with the pane column edge.

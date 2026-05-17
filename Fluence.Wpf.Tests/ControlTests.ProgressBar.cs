@@ -26,9 +26,9 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows;
 using System.Windows.Media;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluenceProgressBar = Fluence.Wpf.Controls.ProgressBar;
 using WpfBorder = System.Windows.Controls.Border;
 
@@ -37,18 +37,19 @@ namespace Fluence.Wpf.Tests
     public partial class ControlTests
     {
         [TestMethod]
-        public void ProgressBar_PausedMode_UsesAccentBrush()
+        public void ProgressBar_PausedMode_UsesCautionBrush()
         {
-            AssertProgressBarModeBrush(ProgressBarMode.Paused, "AccentFillColorDefaultBrush");
+            AssertProgressBarModeBrush(ProgressBarMode.Paused, "SystemFillColorCautionBrush");
         }
 
         [TestMethod]
-        public void ProgressBar_PausedMode_TracksAccentColorChange()
+        public void ProgressBar_PausedMode_TracksCautionBrushAcrossThemeChange()
         {
             WpfTestSta.Invoke(() =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
 
                 FluenceProgressBar progressBar = new()
                 {
@@ -67,15 +68,19 @@ namespace Fluence.Wpf.Tests
                 Assert.IsNotNull(initial, "PART_Fill.Background should be a SolidColorBrush.");
                 Color initialColor = initial.Color;
 
-                ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0xC3, 0x00, 0x52));
+                SolidColorBrush? initialExpected = app?.TryFindResource("SystemFillColorCautionBrush") as SolidColorBrush;
+                Assert.IsNotNull(initialExpected, "SystemFillColorCautionBrush must resolve in light theme.");
+                Assert.AreEqual(initialExpected.Color, initialColor, "Paused ProgressBar should start on the caution brush.");
+
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, true);
                 DrainDispatcher(w.Dispatcher);
 
-                SolidColorBrush? expected = app?.TryFindResource("AccentFillColorDefaultBrush") as SolidColorBrush;
-                Assert.IsNotNull(expected, "AccentFillColorDefaultBrush must resolve after accent change.");
+                SolidColorBrush? expected = app?.TryFindResource("SystemFillColorCautionBrush") as SolidColorBrush;
+                Assert.IsNotNull(expected, "SystemFillColorCautionBrush must resolve after theme change.");
                 SolidColorBrush? actual = fill.Background as SolidColorBrush;
-                Assert.IsNotNull(actual, "PART_Fill.Background should remain a SolidColorBrush after accent change.");
-                Assert.AreEqual(expected.Color, actual.Color, "Paused ProgressBar should track the current accent brush.");
-                Assert.AreNotEqual(initialColor, actual.Color, "Paused ProgressBar fill should change when the accent changes.");
+                Assert.IsNotNull(actual, "PART_Fill.Background should remain a SolidColorBrush after theme change.");
+                Assert.AreEqual(expected.Color, actual.Color, "Paused ProgressBar should track the current caution brush.");
+                Assert.AreNotEqual(initialColor, actual.Color, "Paused ProgressBar fill should change when the theme caution brush changes.");
 
                 w.Close();
             });
@@ -85,6 +90,36 @@ namespace Fluence.Wpf.Tests
         public void ProgressBar_ErrorMode_UsesCriticalBrush()
         {
             AssertProgressBarModeBrush(ProgressBarMode.Error, "SystemFillColorCriticalBrush");
+        }
+
+        [TestMethod]
+        public void ProgressBar_DefaultStyle_UsesThreePixelTrackHeight()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                FluenceProgressBar progressBar = new()
+                {
+                    Width = 240,
+                    Height = 24,
+                    Value = 50
+                };
+                Window w = new() { Content = progressBar, Width = 300, Height = 120 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                WpfBorder? track = FindVisualChildByName<WpfBorder>(progressBar, "PART_Track");
+                Assert.IsNotNull(track, "ProgressBar template must expose PART_Track.");
+
+                Assert.AreEqual(3.0, progressBar.TrackHeight, 0.1,
+                    "ProgressBar default style should set a 3px track height.");
+                Assert.AreEqual(3.0, track.Height, 0.1,
+                    "ProgressBar track template height should follow the 3px TrackHeight.");
+
+                w.Close();
+            });
         }
 
         [TestMethod]

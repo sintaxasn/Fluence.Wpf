@@ -26,6 +26,8 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Controls;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Reflection;
 using System.Windows;
@@ -33,8 +35,6 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Tests
 {
@@ -361,7 +361,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void ProgressRing_PausedState_UsesAccentBrushForBothArcs()
+        public void ProgressRing_PausedState_UsesCautionBrushForBothArcs()
         {
             WpfTestSta.Invoke(() =>
             {
@@ -380,30 +380,31 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                SolidColorBrush? expected = app?.TryFindResource("AccentFillColorDefaultBrush") as SolidColorBrush;
-                Assert.IsNotNull(expected, "AccentFillColorDefaultBrush must resolve.");
+                SolidColorBrush? expected = app?.TryFindResource("SystemFillColorCautionBrush") as SolidColorBrush;
+                Assert.IsNotNull(expected, "SystemFillColorCautionBrush must resolve.");
 
                 Path? indeterminateArc = FindVisualChildByName<Path>(ring, "PART_IndeterminateArc");
-                AssertPathStroke(indeterminateArc, expected, "Paused indeterminate arc should use the accent brush.");
+                AssertPathStroke(indeterminateArc, expected, "Paused indeterminate arc should use the caution brush.");
 
                 ring.IsIndeterminate = false;
                 ring.Value = 50;
                 DrainDispatcher(w.Dispatcher);
 
                 Path? determinateArc = FindVisualChildByName<Path>(ring, "PART_DeterminateArc");
-                AssertPathStroke(determinateArc, expected, "Paused determinate arc should use the accent brush.");
+                AssertPathStroke(determinateArc, expected, "Paused determinate arc should use the caution brush.");
 
                 w.Close();
             });
         }
 
         [TestMethod]
-        public void ProgressRing_PausedState_TracksAccentColorChange()
+        public void ProgressRing_PausedState_TracksCautionBrushAcrossThemeChange()
         {
             WpfTestSta.Invoke(() =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
 
                 ProgressRing ring = new()
                 {
@@ -423,16 +424,20 @@ namespace Fluence.Wpf.Tests
                 Assert.IsNotNull(initial, "Paused indeterminate arc stroke should be a SolidColorBrush.");
                 Color initialColor = initial.Color;
 
-                ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0xC3, 0x00, 0x52));
+                SolidColorBrush? initialExpected = app?.TryFindResource("SystemFillColorCautionBrush") as SolidColorBrush;
+                Assert.IsNotNull(initialExpected, "SystemFillColorCautionBrush must resolve in light theme.");
+                Assert.AreEqual(initialExpected.Color, initialColor, "Paused ProgressRing should start on the caution brush.");
+
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, true);
                 DrainDispatcher(w.Dispatcher);
 
-                SolidColorBrush? expected = app?.TryFindResource("AccentFillColorDefaultBrush") as SolidColorBrush;
-                Assert.IsNotNull(expected, "AccentFillColorDefaultBrush must resolve after accent change.");
-                AssertPathStroke(indeterminateArc, expected, "Paused ProgressRing should track the current accent brush.");
+                SolidColorBrush? expected = app?.TryFindResource("SystemFillColorCautionBrush") as SolidColorBrush;
+                Assert.IsNotNull(expected, "SystemFillColorCautionBrush must resolve after theme change.");
+                AssertPathStroke(indeterminateArc, expected, "Paused ProgressRing should track the current caution brush.");
                 SolidColorBrush? actual = indeterminateArc.Stroke as SolidColorBrush;
                 Assert.IsNotNull(actual, "Paused indeterminate arc stroke should remain a SolidColorBrush.");
                 Assert.AreNotEqual(initialColor, actual.Color,
-                    "Paused ProgressRing arc should change when the accent changes.");
+                    "Paused ProgressRing arc should change when the theme caution brush changes.");
 
                 w.Close();
             });

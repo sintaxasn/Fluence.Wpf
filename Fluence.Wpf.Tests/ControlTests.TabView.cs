@@ -26,11 +26,11 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System.Windows;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Fluence.Wpf.Controls;
-using WpfRepeatButton = System.Windows.Controls.Primitives.RepeatButton;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Windows;
 using System.Windows.Controls;
+using WpfRepeatButton = System.Windows.Controls.Primitives.RepeatButton;
 
 namespace Fluence.Wpf.Tests
 {

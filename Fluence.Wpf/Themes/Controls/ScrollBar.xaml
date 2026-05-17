@@ -536,7 +536,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ScrollViewer}">
                     <Border
-                        Background="{TemplateBinding Background}"
+                        CornerRadius="8,0,0,0"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}">
                         <Grid>

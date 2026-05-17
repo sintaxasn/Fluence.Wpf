@@ -114,8 +114,8 @@ namespace Fluence.Wpf.Demo.Pages.Icons
                 DemoContent = FontIconSampleContent
             };
             Grid.SetRow(sample, 2);
-            PageRoot.Children.Remove(FontIconSampleContent);
-            _ = PageRoot.Children.Add(sample);
+            PageContent.Children.Remove(FontIconSampleContent);
+            _ = PageContent.Children.Add(sample);
         }
 
         private static List<IconCatalogRow> GetIconRows()

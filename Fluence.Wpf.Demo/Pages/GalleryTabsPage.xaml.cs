@@ -26,10 +26,10 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Controls;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
-using Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Demo.Pages
 {
@@ -103,81 +103,25 @@ namespace Fluence.Wpf.Demo.Pages.Tabs
     x:Class=""Fluence.Wpf.Demo.Pages.Tabs.TabControlPlacement""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml"">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width=""*"" />
-            <ColumnDefinition Width=""20"" />
-            <ColumnDefinition Width=""*"" />
-        </Grid.ColumnDefinitions>
-        <TabControl
-            x:Name=""LeftPlacementTabs""
-            Height=""220""
-            TabStripPlacement=""Left"">
-            <TabItem Header=""Inbox"" Width=""{DynamicResource DemoPlacementTabHeaderWidth}"">
-                <TextBlock
-                    Margin=""20""
-                    Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-                    Text=""Left tabs keep vertical categories visible.""
-                    TextWrapping=""Wrap"" />
-            </TabItem>
-            <TabItem Header=""Archive"" Width=""{DynamicResource DemoPlacementTabHeaderWidth}"">
-                <TextBlock
-                    Margin=""20""
-                    Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-                    Text=""Archived conversations and completed items.""
-                    TextWrapping=""Wrap"" />
-            </TabItem>
-        </TabControl>
-        <TabControl
-            x:Name=""BottomPlacementTabs""
-            Grid.Column=""2""
-            Height=""220""
-            TabStripPlacement=""Bottom"">
-            <TabItem Header=""Preview"" Width=""{DynamicResource DemoPlacementTabHeaderWidth}"">
-                <Grid
-                    x:Name=""PreviewPlacementPanel""
-                    Margin=""20""
-                    >
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height=""*"" />
-                        <RowDefinition Height=""Auto"" />
-                    </Grid.RowDefinitions>
-                    <TextBlock
-                        Grid.Row=""1""
-                        Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-                        Text=""Bottom tabs leave the top edge for document chrome.""
-                        TextWrapping=""Wrap"" />
-                </Grid>
-            </TabItem>
-            <TabItem
-                Header=""Details""
-                IsSelected=""True""
-                Width=""{DynamicResource DemoPlacementTabHeaderWidth}"">
-                <Grid
-                    x:Name=""DetailsTabContent""
-                    Margin=""20"">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height=""*"" />
-                        <RowDefinition Height=""Auto"" />
-                    </Grid.RowDefinitions>
-                    <TextBlock
-                        x:Name=""DetailsContentCopy""
-                        VerticalAlignment=""Stretch""
-                        Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-                        Text=""Details can remain close to the lower action area.""
-                        TextWrapping=""Wrap"" />
-                    <StackPanel
-                        x:Name=""DetailsActionArea""
-                        Grid.Row=""1""
-                        Margin=""0,12,0,0""
-                        Orientation=""Horizontal"">
-                        <ui:Button Content=""Apply"" />
-                        <ui:Button Margin=""8,0,0,0"" Content=""Cancel"" />
-                    </StackPanel>
-                </Grid>
-            </TabItem>
-        </TabControl>
-    </Grid>
+    <TabControl
+        x:Name=""LeftPlacementTabs""
+        Height=""220""
+        TabStripPlacement=""Left"">
+        <TabItem Header=""Inbox"" Width=""{DynamicResource DemoPlacementTabHeaderWidth}"">
+            <TextBlock
+                Margin=""20""
+                Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                Text=""Left tabs keep vertical categories visible.""
+                TextWrapping=""Wrap"" />
+        </TabItem>
+        <TabItem Header=""Archive"" Width=""{DynamicResource DemoPlacementTabHeaderWidth}"">
+            <TextBlock
+                Margin=""20""
+                Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                Text=""Archived conversations and completed items.""
+                TextWrapping=""Wrap"" />
+        </TabItem>
+    </TabControl>
 </UserControl>
 ";
 

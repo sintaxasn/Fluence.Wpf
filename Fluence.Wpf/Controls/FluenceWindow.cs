@@ -26,6 +26,8 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Helpers;
+using Fluence.Wpf.Native;
 using System;
 using System.Globalization;
 using System.Runtime.InteropServices;
@@ -36,8 +38,6 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Shell;
-using Fluence.Wpf.Helpers;
-using Fluence.Wpf.Native;
 
 namespace Fluence.Wpf.Controls
 {
@@ -1069,7 +1069,17 @@ namespace Fluence.Wpf.Controls
                 {
                     return true;
                 }
-                hit = VisualTreeHelper.GetParent(hit);
+
+                // ContentElement (e.g. Run, Hyperlink) is not a Visual; VisualTreeHelper.GetParent
+                // would throw InvalidOperationException. Walk content/logical tree until we reach
+                // a Visual, then continue up the visual tree.
+                hit = hit switch
+                {
+                    Visual or System.Windows.Media.Media3D.Visual3D => VisualTreeHelper.GetParent(hit),
+                    FrameworkContentElement fce => fce.Parent ?? LogicalTreeHelper.GetParent(fce),
+                    ContentElement ce => ContentOperations.GetParent(ce) ?? LogicalTreeHelper.GetParent(ce),
+                    _ => LogicalTreeHelper.GetParent(hit),
+                };
             }
             return false;
         }

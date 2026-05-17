@@ -26,6 +26,8 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Automation;
+using Fluence.Wpf.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -38,8 +40,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
-using Fluence.Wpf.Automation;
-using Fluence.Wpf.Helpers;
 
 namespace Fluence.Wpf.Controls
 {
@@ -686,8 +686,9 @@ namespace Fluence.Wpf.Controls
 
         private static object CoerceIsPaneToggleButtonVisible(DependencyObject d, object baseValue)
         {
+            _ = baseValue;
             NavigationView nav = (NavigationView)d;
-            return nav.PaneDisplayMode != NavigationViewPaneDisplayMode.Top && (bool)baseValue;
+            return nav.PaneDisplayMode != NavigationViewPaneDisplayMode.Top;
         }
 
         private void CoerceTopPaneProperties()

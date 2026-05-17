@@ -26,10 +26,10 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Native;
+using Microsoft.Win32;
 using System.Windows;
 using System.Windows.Media;
-using Microsoft.Win32;
-using Fluence.Wpf.Native;
 
 namespace Fluence.Wpf.Helpers
 {

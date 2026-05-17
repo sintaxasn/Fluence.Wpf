@@ -26,18 +26,18 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Controls;
+using Fluence.Wpf.Native;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Shell;
 using System.Windows.Threading;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf.Controls;
-using Fluence.Wpf.Native;
-using System.Windows.Media;
-using System.Collections.ObjectModel;
 
 namespace Fluence.Wpf.Tests
 {

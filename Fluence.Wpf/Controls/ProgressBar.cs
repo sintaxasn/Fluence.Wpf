@@ -249,7 +249,7 @@ namespace Fluence.Wpf.Controls
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
         {
-            UpdateFillWidth(false);
+            UpdateFillWidth(ProgressMode == ProgressBarMode.StepProgress);
             RefreshIndeterminateLayout();
         }
 
@@ -292,7 +292,7 @@ namespace Fluence.Wpf.Controls
                     _fill.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, "SystemFillColorCriticalBrush");
                     break;
                 case ProgressBarMode.Paused:
-                    _fill.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, "AccentFillColorDefaultBrush");
+                    _fill.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, "SystemFillColorCautionBrush");
                     break;
                 case ProgressBarMode.Standard:
                 case ProgressBarMode.StepProgress:
@@ -402,24 +402,52 @@ namespace Fluence.Wpf.Controls
             double targetWidth = trackWidth * ratio;
             if (!animate)
             {
+                _fillAnimationVersion++;
                 _fill.BeginAnimation(WidthProperty, null);
                 _fill.Width = targetWidth;
                 return;
             }
 
-            double fromWidth = _fill.ActualWidth;
-            if (double.IsNaN(fromWidth) || fromWidth <= 0)
+            double fromWidth = _fill.Width;
+            if (double.IsNaN(fromWidth) || fromWidth < 0)
             {
-                fromWidth = _fill.Width;
+                fromWidth = _fill.ActualWidth;
             }
-            _fill.BeginAnimation(WidthProperty, null); _fill.Width = targetWidth;
-            _fill.BeginAnimation(WidthProperty, new DoubleAnimation
+
+            if (double.IsNaN(fromWidth) || fromWidth < 0)
+            {
+                fromWidth = 0;
+            }
+
+            if (Math.Abs(fromWidth - targetWidth) < 0.1)
+            {
+                _fillAnimationVersion++;
+                _fill.BeginAnimation(WidthProperty, null);
+                _fill.Width = targetWidth;
+                return;
+            }
+
+            _fillAnimationVersion++;
+            int animationVersion = _fillAnimationVersion;
+            _fill.BeginAnimation(WidthProperty, null);
+            _fill.Width = fromWidth;
+            DoubleAnimation animation = new()
             {
                 From = fromWidth,
                 To = targetWidth,
                 Duration = TimeSpan.FromMilliseconds(280),
+                FillBehavior = FillBehavior.Stop,
                 EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
-            }, HandoffBehavior.SnapshotAndReplace);
+            };
+            animation.Completed += delegate
+            {
+                if (animationVersion == _fillAnimationVersion && _fill is not null)
+                {
+                    _fill.BeginAnimation(WidthProperty, null);
+                    _fill.Width = targetWidth;
+                }
+            };
+            _fill.BeginAnimation(WidthProperty, animation, HandoffBehavior.SnapshotAndReplace);
         }
 
         /// <summary>
@@ -453,5 +481,10 @@ namespace Fluence.Wpf.Controls
         /// Represents the secondary translate transform used for indeterminate animation states.
         /// </summary>
         private TranslateTransform? _indeterminateTranslate2;
+
+        /// <summary>
+        /// Tracks the active determinate fill animation so replaced clocks cannot commit stale widths.
+        /// </summary>
+        private int _fillAnimationVersion;
     }
 }

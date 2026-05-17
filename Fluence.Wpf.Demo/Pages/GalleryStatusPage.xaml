@@ -170,6 +170,7 @@
 
                         <ui:ProgressRing
                             x:Name="IndeterminateProgressRing"
+                            Margin="0,8,0,8"
                             Grid.Row="0"
                             Grid.Column="0"
                             Width="48"

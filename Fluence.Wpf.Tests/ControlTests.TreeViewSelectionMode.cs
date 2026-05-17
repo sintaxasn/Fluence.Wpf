@@ -26,8 +26,8 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System.Windows;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Windows;
 using FluentTreeView = Fluence.Wpf.Controls.TreeView;
 using FluentTreeViewItem = Fluence.Wpf.Controls.TreeViewItem;
 using WpfCheckBox = System.Windows.Controls.CheckBox;

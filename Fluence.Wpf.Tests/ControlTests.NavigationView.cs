@@ -26,6 +26,8 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Controls;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Windows;
@@ -35,8 +37,6 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Tests
 {
@@ -115,6 +115,16 @@ namespace Fluence.Wpf.Tests
         private static double GetContentOffsetX(FrameworkElement nav, FrameworkElement presenter)
         {
             return presenter.TransformToAncestor(nav).Transform(new Point(0, 0)).X;
+        }
+
+        private static void AssertPaneToggleVisible(NavigationView nav, string message)
+        {
+            _ = nav.ApplyTemplate();
+            System.Windows.Controls.Button? paneToggle = nav.Template.FindName(
+                NavigationView.PartPaneToggleButton,
+                nav) as System.Windows.Controls.Button;
+            Assert.IsNotNull(paneToggle, "NavigationView template must expose PART_PaneToggleButton.");
+            Assert.AreEqual(Visibility.Visible, paneToggle.Visibility, message);
         }
 
         [TestMethod]
@@ -797,37 +807,67 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void NavigationView_IsPaneToggleButtonVisible_False_HidesPaneToggle()
+        public void NavigationView_LeftModes_ForcePaneToggleVisible()
         {
             RunOnStaThread(() =>
             {
                 Application? application = EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
-                Window window = new();
 
                 try
                 {
-                    NavigationView nav = new()
-                    {
-                        Width = 400,
-                        Height = 320,
-                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left,
-                        IsPaneToggleButtonVisible = false
-                    };
-                    _ = nav.Items.Add(new NavigationViewItem { Content = "Item" });
-                    window.Content = nav;
-                    window.Show();
-                    DrainDispatcher(window.Dispatcher);
-                    window.UpdateLayout();
+                    NavigationViewPaneDisplayMode[] modes =
+                    [
+                        NavigationViewPaneDisplayMode.Left,
+                        NavigationViewPaneDisplayMode.LeftCompact
+                    ];
 
-                    _ = nav.ApplyTemplate();
-                    System.Windows.Controls.Button? paneToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as System.Windows.Controls.Button;
-                    Assert.IsNotNull(paneToggle);
-                    Assert.AreEqual(Visibility.Collapsed, paneToggle.Visibility);
+                    foreach (NavigationViewPaneDisplayMode mode in modes)
+                    {
+                        Window window = new();
+
+                        try
+                        {
+                            NavigationView nav = new()
+                            {
+                                Width = 400,
+                                Height = 320,
+                                PaneDisplayMode = NavigationViewPaneDisplayMode.Top,
+                                IsPaneToggleButtonVisible = false
+                            };
+                            _ = nav.Items.Add(new NavigationViewItem { Content = "Item" });
+                            window.Content = nav;
+                            window.Show();
+                            DrainDispatcher(window.Dispatcher);
+                            window.UpdateLayout();
+
+                            Assert.IsFalse(nav.IsPaneToggleButtonVisible,
+                                "Top mode should keep the pane toggle hidden before switching to " + mode + ".");
+
+                            nav.PaneDisplayMode = mode;
+                            DrainDispatcher(window.Dispatcher);
+                            window.UpdateLayout();
+
+                            Assert.IsTrue(nav.IsPaneToggleButtonVisible,
+                                mode + " should coerce the pane toggle visible after switching from Top.");
+                            AssertPaneToggleVisible(nav, mode + " should show the pane toggle after switching from Top.");
+
+                            nav.IsPaneToggleButtonVisible = false;
+                            DrainDispatcher(window.Dispatcher);
+                            window.UpdateLayout();
+
+                            Assert.IsTrue(nav.IsPaneToggleButtonVisible,
+                                mode + " should coerce runtime attempts to hide the pane toggle back to visible.");
+                            AssertPaneToggleVisible(nav, mode + " should keep the pane toggle visible after runtime coercion.");
+                        }
+                        finally
+                        {
+                            CloseWindowAndDrain(window);
+                        }
+                    }
                 }
                 finally
                 {
-                    CloseWindowAndDrain(window);
                     if (genericDictionary is not null)
                     {
                         _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);

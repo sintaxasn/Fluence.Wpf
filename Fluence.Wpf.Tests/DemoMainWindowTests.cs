@@ -26,8 +26,13 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Controls;
+using Fluence.Wpf.Demo;
+using Fluence.Wpf.Demo.Pages;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Runtime.ExceptionServices;
@@ -39,15 +44,11 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf.Controls;
-using Fluence.Wpf.Demo;
-using Fluence.Wpf.Demo.Pages;
 using FluenceExpander = Fluence.Wpf.Controls.Expander;
 using FluenceListView = Fluence.Wpf.Controls.ListView;
 using WpfBorder = System.Windows.Controls.Border;
-using WpfTextBlock = System.Windows.Controls.TextBlock;
 using WpfButton = System.Windows.Controls.Button;
+using WpfTextBlock = System.Windows.Controls.TextBlock;
 
 namespace Fluence.Wpf.Tests
 {
@@ -332,11 +333,13 @@ namespace Fluence.Wpf.Tests
                 Style? scrollStyle = Application.Current?.TryFindResource("GalleryPageScrollViewerStyle") as Style;
                 Style? fluentScrollStyle = Application.Current?.TryFindResource("ScrollViewerStyle") as Style;
                 Style? contentStyle = Application.Current?.TryFindResource("GalleryPageContentStackStyle") as Style;
+                Style? contentGridStyle = Application.Current?.TryFindResource("GalleryPageContentGridStyle") as Style;
                 Assert.IsNotNull(scrollStyle, "Demo shared styles should expose the gallery scroll style.");
                 Assert.IsNotNull(fluentScrollStyle, "Fluence should expose the styled ScrollViewer template.");
                 Assert.AreSame(fluentScrollStyle, scrollStyle.BasedOn,
                     "Gallery page scroll viewers should be based on ScrollViewerStyle so NavigationView content keeps styled scrollbars.");
                 Assert.IsNotNull(contentStyle, "Demo shared styles should expose the gallery content style.");
+                Assert.IsNotNull(contentGridStyle, "Demo shared styles should expose the gallery grid content style.");
 
                 UserControl[] pages =
                 [
@@ -369,14 +372,19 @@ namespace Fluence.Wpf.Tests
                         {
                             Grid? pageRoot = FindByName<Grid>(page, "PageRoot");
                             Assert.IsNotNull(pageRoot, "Icons should keep a named root for virtualization layout.");
-                            Assert.AreEqual(new Thickness(36, 24, 36, 48), pageRoot.Margin,
+                            Assert.IsNull(pageRoot.Background,
+                                "Icons root should leave the page background to the NavigationView content surface.");
+
+                            Grid? pageContent = FindByName<Grid>(page, "PageContent");
+                            Assert.IsNotNull(pageContent, "Icons should keep a named content grid for bounded virtualization layout.");
+                            Assert.AreSame(contentGridStyle, pageContent.Style,
+                                "Icons should use the shared grid content style for its bounded catalog layout.");
+                            Assert.AreEqual(new Thickness(36, 24, 36, 48), pageContent.Margin,
                                 "Icons should keep the shared page margins including 48px bottom breathing room.");
-                            Assert.IsTrue(double.IsPositiveInfinity(pageRoot.MaxWidth),
+                            Assert.IsTrue(double.IsPositiveInfinity(pageContent.MaxWidth),
                                 "Icons should stretch instead of keeping the old max content width.");
-                            Assert.AreEqual(HorizontalAlignment.Stretch, pageRoot.HorizontalAlignment,
+                            Assert.AreEqual(HorizontalAlignment.Stretch, pageContent.HorizontalAlignment,
                                 "Icons content should stretch within the page.");
-                            Assert.IsNotNull(pageRoot.Background,
-                                "Icons root should paint the shared demo page background.");
                             continue;
                         }
 
@@ -384,8 +392,6 @@ namespace Fluence.Wpf.Tests
                         Assert.IsNotNull(scrollViewer, page.GetType().Name + " should use SmoothScrollViewer.");
                         Assert.AreSame(scrollStyle, scrollViewer.Style,
                             page.GetType().Name + " should use the shared gallery scroll style.");
-                        Assert.IsNotNull(scrollViewer.Background,
-                            page.GetType().Name + " should paint the shared demo page background.");
 
                         System.Windows.Controls.StackPanel? content = scrollViewer.Content as System.Windows.Controls.StackPanel;
                         Assert.IsNotNull(content, page.GetType().Name + " should use a StackPanel content host.");
@@ -1673,6 +1679,50 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void GalleryStatusPage_StepProgressBarAnimatesEdgeClicks()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                GalleryStatusPage page = new();
+                Window window = CreateHostWindow(page);
+                try
+                {
+                    Fluence.Wpf.Controls.ProgressBar? progressBar = FindByName<Fluence.Wpf.Controls.ProgressBar>(page, "StepProgressBar");
+                    Assert.IsNotNull(progressBar, "Status page should expose the step ProgressBar.");
+
+                    WpfBorder? track = FindByName<WpfBorder>(progressBar, "PART_Track");
+                    WpfBorder? fill = FindByName<WpfBorder>(progressBar, "PART_Fill");
+                    Assert.IsNotNull(track, "Step ProgressBar should expose PART_Track.");
+                    Assert.IsNotNull(fill, "Step ProgressBar should expose PART_Fill.");
+
+                    Fluence.Wpf.Controls.Button? backButton = FindStepButton(page, "Back");
+                    Fluence.Wpf.Controls.Button? nextButton = FindStepButton(page, "Next");
+                    Assert.IsNotNull(backButton, "Status page should expose the Back step button.");
+                    Assert.IsNotNull(nextButton, "Status page should expose the Next step button.");
+
+                    backButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, backButton));
+                    WaitForAnimationAndDrain(window.Dispatcher, 340);
+
+                    AssertStepClickStartsAwayFromTarget(nextButton, progressBar, fill, track, window.Dispatcher, 1, true);
+                    WaitForAnimationAndDrain(window.Dispatcher, 340);
+                    AssertStepClickStartsAwayFromTarget(nextButton, progressBar, fill, track, window.Dispatcher, 2, true);
+                    WaitForAnimationAndDrain(window.Dispatcher, 340);
+
+                    progressBar.CurrentStep = 9;
+                    WaitForAnimationAndDrain(window.Dispatcher, 340);
+                    AssertStepClickStartsAwayFromTarget(nextButton, progressBar, fill, track, window.Dispatcher, 10, true);
+                    WaitForAnimationAndDrain(window.Dispatcher, 340);
+                    AssertStepClickStartsAwayFromTarget(backButton, progressBar, fill, track, window.Dispatcher, 9, false);
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
         public void GalleryNavigationPage_CompactSourceMatchesLiveInteraction()
         {
             RunOnSta(delegate
@@ -2062,6 +2112,21 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(list, "Icon catalog list must exist.");
                     Assert.IsTrue(list.Items.Count > 100, "Icon catalog must load enough rows to exercise virtualization.");
 
+                    WpfBorder? catalogCard = FindByName<WpfBorder>(page, "IconCatalogCard");
+                    Assert.IsNotNull(catalogCard, "Icon catalog should be hosted in a shared card surface.");
+                    Assert.AreEqual(new Thickness(16), catalogCard.Padding,
+                        "Icon catalog card should use the shared demo sample card padding.");
+                    Assert.AreEqual(new CornerRadius(8), catalogCard.CornerRadius,
+                        "Icon catalog card should use the same 8px corner radius as other demo surfaces.");
+                    Assert.AreEqual(new Thickness(1), catalogCard.BorderThickness,
+                        "Icon catalog card should keep the standard 1px card stroke.");
+                    AssertIconBrush(catalogCard.Background, "CardBackgroundFillColorDefaultBrush",
+                        "Icon catalog card should use the shared section card background.");
+                    AssertIconBrush(catalogCard.BorderBrush, "CardStrokeColorDefaultBrush",
+                        "Icon catalog card should use the shared card stroke.");
+                    Assert.AreEqual(new Thickness(0), list.BorderThickness,
+                        "Icon catalog ListView should let the surrounding card own the stroke.");
+
                     ScrollViewer? viewer = FindVisualChild<ScrollViewer>(list);
                     Assert.IsNotNull(viewer, "Icon catalog list must own a ScrollViewer.");
                     Assert.IsTrue(viewer.ViewportHeight > 0, "Icon catalog needs a bounded viewport height.");
@@ -2085,6 +2150,16 @@ namespace Fluence.Wpf.Tests
                     window.Close();
                 }
             });
+        }
+
+        private static void AssertIconBrush(Brush? actualBrush, string resourceKey, string message)
+        {
+            SolidColorBrush? actual = actualBrush as SolidColorBrush;
+            Assert.IsNotNull(actual, message + " Actual brush must be a SolidColorBrush.");
+
+            SolidColorBrush? expected = Application.Current?.TryFindResource(resourceKey) as SolidColorBrush;
+            Assert.IsNotNull(expected, resourceKey + " must resolve.");
+            Assert.AreEqual(expected.Color, actual.Color, message);
         }
 
         private static void AssertSourceTab(TabControl? tabs, string expectedHeader, string expectedSource)
@@ -2286,6 +2361,49 @@ namespace Fluence.Wpf.Tests
             }
 
             Assert.Fail("Expected control was not found in the grid: " + name);
+        }
+
+        private static Fluence.Wpf.Controls.Button? FindStepButton(DependencyObject root, string tag)
+        {
+            return FindAllVisualChildren<Fluence.Wpf.Controls.Button>(root)
+                .FirstOrDefault(button => string.Equals(button.Tag as string, tag, StringComparison.Ordinal));
+        }
+
+        private static void AssertStepClickStartsAwayFromTarget(
+            Fluence.Wpf.Controls.Button button,
+            Fluence.Wpf.Controls.ProgressBar progressBar,
+            FrameworkElement fill,
+            FrameworkElement track,
+            Dispatcher dispatcher,
+            int expectedStep,
+            bool forward)
+        {
+            button.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, button));
+            WaitForAnimationAndDrain(dispatcher, 40);
+
+            Assert.AreEqual(expectedStep, progressBar.CurrentStep, "Step button should update the current step.");
+            double targetWidth = track.ActualWidth * expectedStep / progressBar.Steps;
+            double animatedWidth = fill.Width;
+            if (forward)
+            {
+                Assert.IsTrue(
+                    animatedWidth < targetWidth,
+                    string.Format(CultureInfo.InvariantCulture,
+                        "Forward step animation should start before the target width. Animated={0}, Target={1}, Step={2}.",
+                        animatedWidth,
+                        targetWidth,
+                        expectedStep));
+            }
+            else
+            {
+                Assert.IsTrue(
+                    animatedWidth > targetWidth,
+                    string.Format(CultureInfo.InvariantCulture,
+                        "Backward step animation should start after the target width. Animated={0}, Target={1}, Step={2}.",
+                        animatedWidth,
+                        targetWidth,
+                        expectedStep));
+            }
         }
 
         private static T? FindByName<T>(DependencyObject? root, string name)

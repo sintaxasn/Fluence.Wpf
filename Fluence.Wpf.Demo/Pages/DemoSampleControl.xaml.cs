@@ -386,7 +386,7 @@ namespace Fluence.Wpf.Demo.Pages
                 Margin = GetThicknessResource("DemoSourceCopyButtonHostMargin", new Thickness(0, 8, 8, 0)),
                 VerticalAlignment = VerticalAlignment.Top
             };
-            border.SetResourceReference(BackgroundProperty, "DemoSampleCardBackgroundBrush");
+            border.SetResourceReference(BackgroundProperty, "CardBackgroundFillColorDefaultBrush");
             return border;
         }
 
@@ -430,7 +430,7 @@ namespace Fluence.Wpf.Demo.Pages
                 Padding = new Thickness(0),
                 VerticalScrollBarVisibility = ScrollBarVisibility.Auto
             };
-            viewer.SetResourceReference(BackgroundProperty, "DemoSampleSourceContentBackgroundBrush");
+            viewer.SetResourceReference(BackgroundProperty, "SolidBackgroundFillColorBaseBrush");
             viewer.SetResourceReference(ForegroundProperty, "TextFillColorPrimaryBrush");
             viewer.Document = CreateSourceDocument(source, language);
             return viewer;

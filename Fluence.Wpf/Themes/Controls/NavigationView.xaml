@@ -147,6 +147,8 @@
                         Margin="4,2,4,2"
                         Background="{TemplateBinding Background}"
                         CornerRadius="{DynamicResource ControlCornerRadius}"
+                        BorderThickness="2"
+
                         >
                         <Grid MinHeight="32">
                             <Grid.ColumnDefinitions>
@@ -517,6 +519,14 @@
             <Trigger Property="IsPaneToggleButtonVisible" Value="False">
                 <Setter TargetName="PART_PaneToggleButton" Property="Visibility" Value="Collapsed" />
             </Trigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding ExtendsContentIntoTitleBar, RelativeSource={RelativeSource AncestorType=controls:FluenceWindow}}" Value="True" />
+                    <Condition Binding="{Binding TitleBar, RelativeSource={RelativeSource AncestorType=controls:FluenceWindow}, Converter={x:Static controls:FluenceWindow.IsNotNullConverter}}" Value="True" />
+                </MultiDataTrigger.Conditions>
+                <Setter TargetName="PART_BackButton" Property="Visibility" Value="Collapsed" />
+                <Setter TargetName="PART_PaneToggleButton" Property="Visibility" Value="Collapsed" />
+            </MultiDataTrigger>
             <Trigger Property="IsPaneOpen" Value="False">
                 <Setter TargetName="PaneFooterHost" Property="Padding" Value="4,0,4,8" />
             </Trigger>
@@ -682,13 +692,14 @@
                         <Border
                             Background="{TemplateBinding ContentBackground}"
                             ClipToBounds="True"
+                            BorderThickness="1"
                             CornerRadius="8,0,0,0"
                             >
                             <ContentPresenter x:Name="PART_ContentPresenter" Content="{TemplateBinding Content}" />
                         </Border>
                         <Border
                             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                            BorderThickness="1,1,0,0"
+                            BorderThickness="1"
                             CornerRadius="8,0,0,0"
                             IsHitTestVisible="False"
                             />
@@ -739,6 +750,14 @@
             <Trigger Property="IsPaneToggleButtonVisible" Value="False">
                 <Setter TargetName="PART_PaneToggleButton" Property="Visibility" Value="Collapsed" />
             </Trigger>
+            <MultiDataTrigger>
+                <MultiDataTrigger.Conditions>
+                    <Condition Binding="{Binding ExtendsContentIntoTitleBar, RelativeSource={RelativeSource AncestorType=controls:FluenceWindow}}" Value="True" />
+                    <Condition Binding="{Binding TitleBar, RelativeSource={RelativeSource AncestorType=controls:FluenceWindow}, Converter={x:Static controls:FluenceWindow.IsNotNullConverter}}" Value="True" />
+                </MultiDataTrigger.Conditions>
+                <Setter TargetName="PART_BackButton" Property="Visibility" Value="Collapsed" />
+                <Setter TargetName="PART_PaneToggleButton" Property="Visibility" Value="Collapsed" />
+            </MultiDataTrigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>
 

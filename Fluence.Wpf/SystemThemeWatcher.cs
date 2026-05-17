@@ -26,11 +26,11 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Native;
 using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Interop;
-using Fluence.Wpf.Native;
 
 namespace Fluence.Wpf
 {

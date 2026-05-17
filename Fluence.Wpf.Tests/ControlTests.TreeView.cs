@@ -26,11 +26,11 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluenceTreeView = Fluence.Wpf.Controls.TreeView;
 using FluenceTreeViewItem = Fluence.Wpf.Controls.TreeViewItem;
 using WpfBorder = System.Windows.Controls.Border;

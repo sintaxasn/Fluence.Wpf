@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Automation;
 using System;
 using System.Windows;
 using System.Windows.Automation.Peers;
@@ -33,7 +34,6 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-using Fluence.Wpf.Automation;
 
 namespace Fluence.Wpf.Controls
 {

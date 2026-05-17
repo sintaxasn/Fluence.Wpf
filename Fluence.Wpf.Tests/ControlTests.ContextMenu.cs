@@ -26,9 +26,9 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System.Windows;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Fluence.Wpf.Controls;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Windows;
 
 namespace Fluence.Wpf.Tests
 {

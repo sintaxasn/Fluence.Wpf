@@ -49,7 +49,6 @@ namespace Fluence.Wpf.Demo
             ApplicationThemeManager.Apply(ApplicationTheme.Auto);
             ApplicationAccentColorManager.ApplySystemAccent();
             LoadDemoSharedStyles();
-            DemoThemeResources.Initialize();
 
             MainWindow mainWindow = new();
             MainWindow = mainWindow;

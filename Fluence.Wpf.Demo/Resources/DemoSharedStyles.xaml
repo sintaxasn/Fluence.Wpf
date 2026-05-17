@@ -10,17 +10,6 @@
     xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
     xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
     >
-
-    <SolidColorBrush x:Key="DemoPageBackgroundBrush" Color="#272727" />
-    <SolidColorBrush x:Key="DemoSampleCardBackgroundBrush" Color="#202020" />
-    <SolidColorBrush x:Key="DemoSampleRightRailBackgroundBrush" Color="#2B2B2B" />
-    <SolidColorBrush x:Key="DemoSampleSourceHeaderBackgroundBrush" Color="#323232" />
-    <SolidColorBrush x:Key="DemoSampleSourceContentBackgroundBrush" Color="#2E2E2E" />
-    <SolidColorBrush x:Key="DemoSampleContainerBackgroundBrush" Color="#373737" />
-    <SolidColorBrush x:Key="DemoSettingsCardBrush" Color="#323232" />
-    <SolidColorBrush x:Key="DemoSectionCardBrush" Color="#202020" />
-    <SolidColorBrush x:Key="DemoFieldLabelForegroundBrush" Color="#D6D6D6" />
-
     <Thickness x:Key="DemoPageContentMargin">36,24,36,48</Thickness>
     <Thickness x:Key="DemoPageTitleMargin">0,0,0,8</Thickness>
     <Thickness x:Key="DemoPageDescriptionMargin">0,0,0,24</Thickness>
@@ -39,16 +28,16 @@
     <Thickness x:Key="DemoCompactStackSpacingMargin">0,0,0,8</Thickness>
     <Thickness x:Key="DemoTextTopGapMargin">0,6,0,0</Thickness>
     <Thickness x:Key="DemoControlGroupItemMargin">0,0,12,12</Thickness>
-    <Thickness x:Key="DemoInlineControlGapMargin">0,0,16,0</Thickness>
-    <Thickness x:Key="DemoSmallInlineControlGapMargin">0,0,8,8</Thickness>
+    <Thickness x:Key="DemoInlineControlGapMargin">16,0,0,0</Thickness>
+    <Thickness x:Key="DemoSmallInlineControlGapMargin">6,0,8,8</Thickness>
     <Thickness x:Key="DemoWorkToggleProgressRingMargin">24,0,0,0</Thickness>
     <Thickness x:Key="DemoControlBottomGapMargin">0,0,0,12</Thickness>
     <Thickness x:Key="DemoSmallBottomGapMargin">0,0,0,8</Thickness>
     <Thickness x:Key="DemoMediumTopGapMargin">0,12,0,0</Thickness>
     <Thickness x:Key="DemoLargeTopGapMargin">0,16,0,0</Thickness>
     <Thickness x:Key="DemoOutputTopGapMargin">0,8,0,0</Thickness>
-    <Thickness x:Key="DemoProgressBarMargin">6,12,6,12</Thickness>
-    <Thickness x:Key="DemoProgressBarLabelMargin">6,0,6,6</Thickness>
+    <Thickness x:Key="DemoProgressBarMargin">8,16,16,16</Thickness>
+    <Thickness x:Key="DemoProgressBarLabelMargin">6,0,16,8</Thickness>
     <Thickness x:Key="DemoIndentedOptionMargin">24,0,0,8</Thickness>
     <Thickness x:Key="DemoSampleInnerCardPadding">12</Thickness>
     <Thickness x:Key="DemoTabContentMargin">20</Thickness>
@@ -267,7 +256,6 @@
     </Style>
 
     <Style x:Key="GalleryPageRootStyle" TargetType="{x:Type Grid}">
-        <Setter Property="Background" Value="{DynamicResource DemoPageBackgroundBrush}" />
         <Setter Property="ClipToBounds" Value="False" />
     </Style>
 
@@ -275,12 +263,17 @@
         x:Key="GalleryPageScrollViewerStyle"
         BasedOn="{StaticResource ScrollViewerStyle}"
         TargetType="{x:Type ui:SmoothScrollViewer}">
-        <Setter Property="Background" Value="{DynamicResource DemoPageBackgroundBrush}" />
+        <Setter Property="Background" Value="{DynamicResource ApplicationBackgroundBrush}" /> 
         <Setter Property="HorizontalScrollBarVisibility" Value="Disabled" />
         <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
     </Style>
 
     <Style x:Key="GalleryPageContentStackStyle" TargetType="{x:Type StackPanel}">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="Margin" Value="{DynamicResource DemoPageContentMargin}" />
+    </Style>
+
+    <Style x:Key="GalleryPageContentGridStyle" TargetType="{x:Type Grid}">
         <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="Margin" Value="{DynamicResource DemoPageContentMargin}" />
     </Style>
@@ -297,7 +290,7 @@
         <Setter Property="Margin" Value="0,0,0,6" />
         <Setter Property="Padding" Value="16,12" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
-        <Setter Property="Background" Value="{DynamicResource DemoSettingsCardBrush}" />
+        <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CornerRadius" Value="4" />
@@ -322,7 +315,7 @@
     </Style>
 
     <Style x:Key="FieldLabelStyle" BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="{x:Type TextBlock}">
-        <Setter Property="Foreground" Value="{DynamicResource DemoFieldLabelForegroundBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
         <Setter Property="Margin" Value="0,0,0,6" />
         <Setter Property="ui:TextBlockExtensions.Typography" Value="Caption" />
     </Style>

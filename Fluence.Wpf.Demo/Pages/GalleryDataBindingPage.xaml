@@ -182,7 +182,9 @@
                                             Text="{Binding Name}" />
                                         <TextBlock
                                             Margin="{DynamicResource DemoInlineControlGapMargin}"
-                                            VerticalAlignment="Center"
+                                            VerticalAlignment="Bottom"
+                                            
+                                            
                                             ui:TextBlockExtensions.Typography="Caption"
                                             Foreground="{DynamicResource TextFillColorTertiaryBrush}"
                                             Text="{Binding AddedAt}" />

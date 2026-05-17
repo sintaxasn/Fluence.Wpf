@@ -26,14 +26,14 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
+using System.Collections.ObjectModel;
 using System.Runtime.ExceptionServices;
 using System.Windows;
 using System.Windows.Threading;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluenceListView = Fluence.Wpf.Controls.ListView;
 using WpfListViewItem = System.Windows.Controls.ListViewItem;
-using System.Collections.ObjectModel;
 
 namespace Fluence.Wpf.Tests
 {

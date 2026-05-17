@@ -26,12 +26,12 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Fluent = Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Tests

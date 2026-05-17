@@ -413,17 +413,18 @@ ScrollViewer
 
 ### 14.2 Color layering
 
-These demo-owned resources are the source of truth. Keep them in `Fluence.Wpf.Demo/Resources/DemoSharedStyles.xaml` and refresh values through `Fluence.Wpf.Demo/DemoThemeResources.cs`. Do not add these sample-page-only roles to the public library theme dictionaries.
+Demo sample surfaces use the native Fluence brush resources and control defaults directly. Do not add demo-only brush aliases, do not shadow color-key names with brush resources, and do not reintroduce a demo refresh layer for surface promotion.
 
-| Layer | Brush resource | Light target | Dark target |
-| --- | --- | --- | --- |
-| Page background | `DemoPageBackgroundBrush` | `#F9F9F9` | `#272727` |
-| Sample card surface | `DemoSampleCardBackgroundBrush` | `#F3F3F3` | `#202020` |
-| Right rail / options pane | `DemoSampleRightRailBackgroundBrush` | `#FBFBFB` | `#2B2B2B` |
-| Expander header | `DemoSampleSourceHeaderBackgroundBrush` | `#FDFDFD` | `#323232` |
-| Expander expanded content | `DemoSampleSourceContentBackgroundBrush` | `#FFFFFF` | `#2E2E2E` |
+| Layer | Brush resource |
+| --- | --- |
+| Page background | Leave to `NavigationView` / `SmoothScrollViewer` control defaults unless a specific page has no host surface. |
+| Sample card surface | `CardBackgroundFillColorDefaultBrush` |
+| Right rail / options pane | `CardBackgroundFillColorSecondaryBrush` |
+| Expander header | `ControlFillColorDefaultBrush` |
+| Expander expanded content | `SolidBackgroundFillColorBaseBrush` |
+| Secondary labels | `TextFillColorSecondaryBrush` |
 
-Do not add compatibility aliases or transitional brush names for this unreleased demo surface. Sample pages use the five resource names in this table directly.
+Use `DynamicResource` for these role brushes so theme, accent, and high-contrast changes flow through the standard `ApplicationThemeManager` slots.
 
 ### 14.3 DemoSampleControl contract
 
@@ -465,3 +466,98 @@ A new or updated sample page is done only when:
 - `dotnet build Fluence.Wpf.sln -c Debug` and focused tests for the affected area pass with zero warnings.
 
 
+
+
+<claude-mem-context>
+# Memory Context
+
+# [Fluence.Wpf] recent context, 2026-05-15 3:59am EDT
+
+Legend: 🎯session 🔴bugfix 🟣feature 🔄refactor ✅change 🔵discovery ⚖️decision 🚨security_alert 🔐security_note
+Format: ID TIME TYPE TITLE
+Fetch details: get_observations([IDs]) | Search: mem-search skill
+
+Stats: 50 obs (17,085t read) | 129,849t work | 87% savings
+
+### May 11, 2026
+S80 Remove PSADT-related section (§13.2) from documentation; user asking about applying additional Change B (one-liner in §10 about docs/plans/ as transient plan files) (May 11, 4:09 PM)
+S81 Verification that AGENTS.md has been cleaned up after removing PSADT-related section (§13.2) (May 11, 4:18 PM)
+S82 User encountered ultraplan session creation failure with bundle upload 502 error; Claude advised connecting GitHub account on claude.ai/code (May 11, 4:18 PM)
+S83 Explore Fluence.Wpf demo application structure and create an implementation plan to bring all 17 gallery content pages into visual parity with GalleryHomePage, fix dark-mode contrast on GalleryColorsPage, and fix DemoSampleControl Expander border. (May 11, 4:46 PM)
+S85 Fix customization evaluation diagnostics (May 11, 4:58 PM)
+### May 12, 2026
+S86 Visual Design Polish — WinUI3 Look & Feel Alignment for Fluent.Wpf codebase. Revise all pages to use #272727 background, update DemoSampleControl with #202020 surfaces and #323232 code sections, replace top ToggleSwitch with Settings gear icon, redesign layout to match WinUI Settings patterns, fix Visual Focus state cutoff, and update KNOWN_ISSUES and CHANGELOG. (May 12, 12:44 AM)
+S87 WinUI 3 Visual Polish — DemoSampleControl Standardization: Refactor Fluence.Wpf Demo app to use a single reusable DemoSampleControl with WinUI 3 Gallery-consistent layout, spacing, color layering, and corner-radius treatment across all sample pages. (May 12, 1:10 AM)
+S88 Collapse public surface of theme runtime—consolidate ApplicationThemeManager, ApplicationAccentColorManager, and SystemThemeWatcher into unified entry points. (May 12, 2:06 PM)
+### May 14, 2026
+S89 Refactor MainWindow navigation state management by creating a dedicated DemoNavigationShellState module to centralize pane display mode, open/closed state, and chrome button visibility logic. (May 14, 10:45 AM)
+S90 User initiated quit command (t/quit/qi) to exit the Claude Code session (May 14, 3:02 PM)
+### May 15, 2026
+3737 12:41a 🔵 ProgressBar.cs ApplyFillBrushForMode() shows brush logic mismatch requiring correction
+3738 " 🔵 ProgressBar.cs UpdateFillWidth completes animation lifecycle with version tracking and completion handler
+3739 12:42a 🔵 NavigationView.xaml item template shows adaptive layout handling for Left/LeftCompact/Top pane modes
+3740 " 🔵 NavigationView_Left_ContentBorder test validates 8,0,0,0 corner radius and 1,1,0,0 stroke layer architecture
+3741 " 🔵 GalleryTabsPage_PlacementSampleUsesEqualHeaderWidths test validates both Left and Bottom TabControl placement samples
+3742 " 🔵 ControlTests.BackgroundParity defines comprehensive theme-aware brush resolution tests for demo surfaces
+3743 " 🔵 ProgressBar ProgressMode test coverage validates Paused and Error color modes in demo and tests
+3744 " 🔵 NavigationView LeftCompact template confirms 8,0,0,0 corner radius and stroke layer architecture
+3745 " 🔵 BackgroundParity test validates 19 system and demo brushes resolve across all three themes with deterministic accent
+3746 1:27a 🔵 Fluence.Wpf test suite passing with 34 tests
+3747 " 🔵 Fluence.Wpf.Tests project targets net472 and net10.0-windows
+3748 " 🔵 Fluence.Wpf.Demo application targets net472 and net10.0-windows
+3749 " 🔵 Fluence.Wpf net472 build artifacts present with test platform dependencies
+3750 " 🔵 vstest.console.exe not found in .NET 10.0.203 SDK directory
+3751 " 🔵 vstest.console.exe available in Visual Studio installations
+3752 1:28a 🔵 dotnet vstest command syntax error with path parameter format
+3753 " 🔵 dotnet vstest failed to load MSTest.TestAdapter.dll for net472 assembly
+3754 " 🔵 Test filter Name~ProgressBar_DefaultStyle_UsesThreePixelTrackHeight does not match any tests in net472
+3755 " 🔵 dotnet vstest cannot load System.Runtime v9.0.0.0 for net472 test discovery
+3756 " 🔵 dotnet test for net472 with isolated output path initiated; restore phase completed
+3757 " 🔵 Fluence.Wpf.Tests.dll not found in fluence-codex-isolated output directory
+3758 " 🔵 project.assets.json generated in isolated build directory
+3759 " 🔵 dotnet test command failed with PowerShell XML deserialization error
+3760 " 🔵 dotnet build failed: BaseIntermediateOutputPath requires trailing slash
+3761 " 🔵 dotnet build for net472 failed with 669 compiler errors related to WPF code generation
+3762 " 🔵 Git repository shows modified files across test, demo, and control implementations
+3763 " 🔵 Git whitespace and line ending issues detected in modified files
+3765 1:29a ✅ Git diff stat shows net 107 insertions across 19 modified files
+3767 " 🔵 ControlTests.BackgroundParity implements brush validation tests for shared demo resources
+3768 " 🔵 ProgressBar control implements 3-pixel track height and paused mode caution brush styling
+3769 " 🔵 GalleryTabsPage demonstrates TabStripPlacement with left-positioned tabs; test validates placement sample
+3770 " 🔵 Regex search failed due to unescaped quotes in pattern
+3771 " 🔵 ProgressRing applies SystemFillColorCautionBrush to both arc strokes in paused state
+3772 1:30a 🔵 Demo-specific brush promotion was removed; demo surfaces use native Fluence brush resources
+3773 " 🔵 NavigationView content border uses zero corner radius for square pane styling; tests validate visual properties
+3774 " 🔵 DemoSampleControl.xaml uses DemoSampleSourceExpanderStyle; PowerShell XML parsing error occurred
+3775 2:21a 🔵 Icons page uses unique Grid-based layout while other gallery pages use SmoothScrollViewer + StackPanel pattern
+3776 2:22a ✅ Added GalleryPageContentGridStyle to shared styles
+3777 " ✅ Icons page restructured to match standard gallery page layout pattern
+3778 " ✅ Updated Icons page code-behind to reference PageContent instead of PageRoot
+3779 2:23a ✅ Updated Icons page tests to validate new nested Grid structure
+3780 " ✅ Added catalog card styling validation to Icons page test
+3781 " ✅ Added AssertIconBrush helper method to test utilities
+3782 3:31a ✅ NavigationView XAML Corner Radius Updated to 8,0,0,0
+3783 " ✅ NavigationView Control Tests Updated for Rounded Corner Radius
+**3784** " 🔵 **Corner Radius Changes Verified Across NavigationView Implementation and Tests**
+Verification search confirmed that the NavigationView control theme file has been consistently updated with the 8,0,0,0 corner radius across all four border elements (spanning both CompactPaneDisplayMode and ExpandedPaneDisplayMode templates). The corresponding unit tests have been properly renamed and updated to validate the new rounded corner design. No remnants of the old square corner configuration remain in the modified files.
+~302t 🔍 831
+
+**3785** " 🔵 **NavigationView and GalleryIconsPage Tests Pass After Corner Radius Changes**
+Unit tests validating the NavigationView corner radius changes executed successfully. Both the Left and LeftCompact content border tests passed, confirming the 8,0,0,0 corner radius is correctly applied. Additionally, the GalleryIconsPage tests passed, indicating the icon catalog virtualization and shared gallery page layout functionality remain intact after the changes.
+~288t 🔍 1,107
+
+**3786** 3:59a 🔵 **Collapse button visibility control mechanism identified**
+The collapse button (PART_PaneToggleButton) visibility is controlled by the IsPaneToggleButtonVisible dependency property. The coercion logic in NavigationView.cs:687-690 correctly prevents visibility in Top mode but doesn't enforce it to always be true in Left or LeftCompact modes. The XAML templates have triggers that respect IsPaneToggleButtonVisible, meaning if this property is being set to false or coerced to false somewhere, the button will disappear even in Left/LeftCompact modes. The issue is likely that IsPaneToggleButtonVisible is being set to false programmatically or through binding in Left/LeftCompact contexts where it should remain visible, or the default value isn't being set to true when switching to these modes.
+~406t 🔍 10,141
+
+**3787** " 🔵 **IsPaneToggleButtonVisible default value is true**
+The IsPaneToggleButtonVisible property is correctly initialized with a default value of true and includes a coercion callback. Since the default is true and the coercion should only force false in Top mode, the button should remain visible in Left and LeftCompact modes unless something is explicitly setting it to false or the coercion logic has a bug that incorrectly forces false in these modes.
+~278t 🔍 3,714
+
+**3788** " 🔵 **CoerceIsPaneToggleButtonVisible logic verified correct**
+The coercion logic is correct: it only forces IsPaneToggleButtonVisible to false when in Top mode. For Left and LeftCompact modes, it preserves the baseValue. When the pane mode changes, CoerceTopPaneProperties is called which re-applies the coercion. The bug must be that something is setting IsPaneToggleButtonVisible to false as a base value in Left/LeftCompact contexts, or there's an issue with how the XAML template responds to the property change.
+~279t 🔍 1,729
+
+
+Access 130k tokens of past work via get_observations([IDs]) or mem-search skill.
+</claude-mem-context>

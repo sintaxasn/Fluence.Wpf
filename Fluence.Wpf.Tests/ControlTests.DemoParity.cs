@@ -26,11 +26,11 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Demo.Pages;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf.Demo.Pages;
 
 namespace Fluence.Wpf.Tests
 {

@@ -26,14 +26,14 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Demo.Pages;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf.Demo.Pages;
 
 namespace Fluence.Wpf.Tests
 {
@@ -239,7 +239,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void GalleryTabsPage_PlacementSampleUsesEqualHeaderWidths()
+        public void GalleryTabsPage_PlacementSampleUsesLeftPlacementOnly()
         {
             RunDemoPageTest(() => new GalleryTabsPage(), window =>
             {
@@ -249,26 +249,17 @@ namespace Fluence.Wpf.Tests
 
                 double infoWidth = GetExplicitHeaderWidth(items, "Inbox");
                 double archiveWidth = GetExplicitHeaderWidth(items, "Archive");
-                double previewWidth = GetExplicitHeaderWidth(items, "Preview");
-                double detailsWidth = GetExplicitHeaderWidth(items, "Details");
 
                 Assert.AreEqual(infoWidth, archiveWidth, 0.1);
-                Assert.AreEqual(infoWidth, previewWidth, 0.1);
-                Assert.AreEqual(infoWidth, detailsWidth, 0.1);
                 Assert.IsTrue(infoWidth > 0.0, "Placement sample tab headers should use an explicit shared width.");
 
+                TabControl? leftTabs = FindVisualChildByName<TabControl>(window, "LeftPlacementTabs");
+                Assert.IsNotNull(leftTabs, "Placement sample should keep the left TabControl.");
+                Assert.AreEqual(Dock.Left, leftTabs.TabStripPlacement,
+                    "Placement sample should demonstrate the left-hand TabStripPlacement.");
+
                 TabControl? bottomTabs = FindVisualChildByName<TabControl>(window, "BottomPlacementTabs");
-                Assert.IsNotNull(bottomTabs, "Placement sample should expose the bottom TabControl.");
-                Grid? detailsPanel = FindVisualChildByName<Grid>(bottomTabs, "DetailsTabContent");
-                StackPanel? actionArea = FindVisualChildByName<StackPanel>(bottomTabs, "DetailsActionArea");
-                Assert.IsNotNull(detailsPanel, "Bottom tab content should expose the Details fill panel.");
-                Assert.IsNotNull(actionArea, "Details tab should expose a named lower action area.");
-                Assert.AreEqual(GridUnitType.Star, detailsPanel.RowDefinitions[0].Height.GridUnitType,
-                    "The area above the lower action row should consume available height.");
-                Assert.AreEqual(GridUnitType.Auto, detailsPanel.RowDefinitions[1].Height.GridUnitType,
-                    "The lower Details action area should stay close to the buttons.");
-                Assert.AreEqual(1, Grid.GetRow(actionArea),
-                    "Details action area should be in the lower auto row.");
+                Assert.IsNull(bottomTabs, "Placement sample should not include the removed bottom-row TabControl.");
             });
         }
 

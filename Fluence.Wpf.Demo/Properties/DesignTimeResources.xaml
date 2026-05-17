@@ -1,0 +1,11 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <ResourceDictionary.MergedDictionaries>
+        <!--  Add a color theme so brushes resolve at design time  -->
+        <ResourceDictionary Source="pack://application:,,,/Fluence.Wpf;component/Themes/Colors/Theme.Light.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Fluence.Wpf;component/Themes/Accent/Accent.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Fluence.Wpf;component/Themes/Brushes/Brushes.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Fluence.Wpf;component/Themes/Typography/Typography.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Fluence.Wpf;component/Themes/Generic.xaml" />
+        <ResourceDictionary Source="/Resources/DemoSharedStyles.xaml" />
+    </ResourceDictionary.MergedDictionaries>
+</ResourceDictionary>

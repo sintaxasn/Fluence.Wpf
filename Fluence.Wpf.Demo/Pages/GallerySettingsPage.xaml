@@ -3,8 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
-    xmlns:demo="clr-namespace:Fluence.Wpf.Demo"
-    Background="{DynamicResource DemoPageBackgroundBrush}">
+    xmlns:demo="clr-namespace:Fluence.Wpf.Demo">
 
     <Grid Style="{StaticResource GalleryPageRootStyle}">
         <ui:SmoothScrollViewer

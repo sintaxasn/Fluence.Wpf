@@ -26,10 +26,10 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Controls;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Fluence.Wpf.Controls;
 using FluentButton = Fluence.Wpf.Controls.Button;
 using FluentMenuItem = Fluence.Wpf.Controls.MenuItem;
 using WpfBorder = System.Windows.Controls.Border;

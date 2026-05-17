@@ -26,14 +26,14 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Reflection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using FluenceTextBox = Fluence.Wpf.Controls.TextBox;
 using FluencePasswordBox = Fluence.Wpf.Controls.PasswordBox;
+using FluenceTextBox = Fluence.Wpf.Controls.TextBox;
 using WpfBorder = System.Windows.Controls.Border;
 using WpfTextBlock = System.Windows.Controls.TextBlock;
 

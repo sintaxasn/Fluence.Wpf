@@ -451,7 +451,7 @@ namespace Fluence.Wpf.Demo.Pages.Status
             InitializeComponent();
 
             DemoSampleControl.ApplySources(
-                (System.Windows.DependencyObject)Content,
+                (DependencyObject)Content,
                 ProgressBarValueXamlSource,
                 ProgressBarValueCSharpSource,
                 ProgressBarIndeterminateXamlSource,

@@ -219,7 +219,6 @@ namespace Fluence.Wpf.Demo.Pages
             }
 
             ApplicationThemeManager.Apply(MapTheme(option), _owner?.SystemBackdropType ?? BackdropType.Auto);
-            DemoThemeResources.RefreshForCurrentTheme();
             UpdateThemeStateLabel(ApplicationThemeManager.CurrentTheme);
         }
 
@@ -247,7 +246,6 @@ namespace Fluence.Wpf.Demo.Pages
             }
 
             ApplicationThemeManager.Apply(ApplicationThemeManager.CurrentTheme, backdrop);
-            DemoThemeResources.RefreshForCurrentTheme();
         }
 
         private void ThemeWatcherToggle_Toggled(object sender, RoutedEventArgs e)
@@ -283,13 +281,11 @@ namespace Fluence.Wpf.Demo.Pages
             }
 
             ApplicationAccentColorManager.ApplyCustomAccent(accentColor);
-            DemoThemeResources.RefreshForCurrentTheme();
         }
 
         private void SystemAccentButton_Click(object sender, RoutedEventArgs e)
         {
             ApplicationAccentColorManager.ApplySystemAccent();
-            DemoThemeResources.RefreshForCurrentTheme();
         }
 
         private void CaptionVisibilityCombo_SelectionChanged(object? sender, SelectionChangedEventArgs? e)

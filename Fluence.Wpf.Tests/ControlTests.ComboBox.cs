@@ -26,11 +26,11 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Collections;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using FluenceComboBox = Fluence.Wpf.Controls.ComboBox;
 using WpfBorder = System.Windows.Controls.Border;
 
