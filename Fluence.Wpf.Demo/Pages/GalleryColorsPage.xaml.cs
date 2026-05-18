@@ -48,7 +48,8 @@ namespace Fluence.Wpf.Demo.Pages
                 Text=""Aa"" />
         </color:ColorPageExample>
 
-        <WrapPanel Style=""{StaticResource ColorTileWrapPanelStyle}"">
+        <Border Style=""{StaticResource ColorTileRowBorderStyle}"">
+            <UniformGrid Columns=""3"" Style=""{StaticResource ColorTileUniformGridStyle}"">
             <color:ColorTile
                 Style=""{StaticResource ColorTileStyle}""
                 Title=""Text / Primary""
@@ -69,8 +70,10 @@ namespace Fluence.Wpf.Demo.Pages
                 Description=""High contrast foreground""
                 BrushResourceKey=""SystemColorWindowTextColorBrush""
                 ForegroundResourceKey=""SystemColorWindowColorBrush""
-                ResourceKey=""SystemColorWindowTextColorBrush"" />
-        </WrapPanel>
+                ResourceKey=""SystemColorWindowTextColorBrush""
+                ShowSeparator=""False"" />
+            </UniformGrid>
+        </Border>
     </StackPanel>
 </UserControl>
 ";

@@ -12,10 +12,7 @@
     <Grid>
         <Border
             x:Name="TileBorder"
-            Padding="{DynamicResource ColorTilePadding}"
-            BorderBrush="{DynamicResource ControlStrokeColorForStrongFillWhenOnImageBrush}"
-            BorderThickness="1"
-            CornerRadius="{DynamicResource OverlayCornerRadius}">
+            Padding="{DynamicResource ColorTilePadding}">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />

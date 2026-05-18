@@ -186,6 +186,7 @@
             x:Name="SampleCard"
             Grid.Row="1"
             Padding="{DynamicResource DemoSampleCardPadding}"
+            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
             BorderThickness="0"
             CornerRadius="8,8,0,0">

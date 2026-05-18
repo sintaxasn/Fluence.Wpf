@@ -446,6 +446,12 @@ namespace Fluence.Wpf.Tests
 
                     FluenceExpander? sourceExpander = sample.FindName("SourceExpander") as FluenceExpander;
                     Assert.IsNotNull(sourceExpander, "Colors page sample must keep the bottom source expander.");
+                    Assert.IsTrue(
+                        sample.XamlSource.IndexOf("ColorTileRowBorderStyle", StringComparison.Ordinal) >= 0,
+                        "Colors page source sample must teach the WinUI-style tile row pattern.");
+                    Assert.IsFalse(
+                        sample.XamlSource.IndexOf("ColorTileWrapPanelStyle", StringComparison.Ordinal) >= 0,
+                        "Colors page source sample must not teach the old WrapPanel tile pattern.");
 
                     TabControl? tabs = FindVisualChild<TabControl>(sample);
                     Assert.IsNotNull(tabs, "Colors page must expose a selector-style TabControl.");
@@ -475,6 +481,24 @@ namespace Fluence.Wpf.Tests
                         DrainDispatcher(window.Dispatcher);
                         window.UpdateLayout();
 
+                        List<WrapPanel> wrapPanels = [.. FindVisualChildren<WrapPanel>(tabs)];
+                        Assert.AreEqual(0, wrapPanels.Count, "Colors page tile sections must not use WrapPanel layout.");
+
+                        List<UniformGrid> tileRows = [];
+                        foreach (UniformGrid uniformGrid in FindVisualChildren<UniformGrid>(tabs))
+                        {
+                            if (IsColorTileRow(uniformGrid))
+                            {
+                                tileRows.Add(uniformGrid);
+                            }
+                        }
+
+                        Assert.IsTrue(tileRows.Count > 0, "Selected Colors page section must contain WinUI-style tile rows.");
+                        foreach (UniformGrid tileRow in tileRows)
+                        {
+                            AssertColorTileRowMatchesWinUiGallery(tileRow);
+                        }
+
                         List<ColorTile> tiles = [.. FindVisualChildren<ColorTile>(tabs)];
                         totalTiles += tiles.Count;
                         foreach (ColorTile tile in tiles)
@@ -500,6 +524,50 @@ namespace Fluence.Wpf.Tests
                     CloseWindowAndDrain(window);
                 }
             });
+        }
+
+        private static bool IsColorTileRow(UniformGrid uniformGrid)
+        {
+            if (uniformGrid.Children.Count == 0)
+            {
+                return false;
+            }
+
+            foreach (UIElement child in uniformGrid.Children)
+            {
+                if (child is not ColorTile)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private static void AssertColorTileRowMatchesWinUiGallery(UniformGrid tileRow)
+        {
+            Assert.AreEqual(tileRow.Children.Count, tileRow.Columns, "Each Colors tile row should declare one equal-width column per tile.");
+            Assert.IsInstanceOfType(tileRow.Parent, typeof(WpfBorder), "Each Colors tile row should sit inside a shared bordered row surface.");
+
+            double? expectedWidth = null;
+            foreach (UIElement child in tileRow.Children)
+            {
+                ColorTile tile = (ColorTile)child;
+                Assert.AreEqual(default, tile.Margin, "Color tiles should not create card gaps inside the shared row surface.");
+
+                if (tile.ActualWidth <= 0)
+                {
+                    continue;
+                }
+
+                if (expectedWidth is null)
+                {
+                    expectedWidth = tile.ActualWidth;
+                    continue;
+                }
+
+                Assert.AreEqual(expectedWidth.Value, tile.ActualWidth, 1.0, "Color tiles in the same row should share equal width.");
+            }
         }
 
         [TestMethod]

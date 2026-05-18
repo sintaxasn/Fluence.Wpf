@@ -39,31 +39,36 @@
                                         Text="Aa" />
                                 </color:ColorPageExample>
 
-                                <WrapPanel Style="{StaticResource ColorTileWrapPanelStyle}">
+                                <Border Style="{StaticResource ColorTileRowBorderStyle}">
+                                    <UniformGrid Columns="4" Style="{StaticResource ColorTileUniformGridStyle}">
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Text / Primary" Description="Primary content" BrushResourceKey="TextFillColorPrimaryBrush" ForegroundResourceKey="TextFillColorInverseBrush" ResourceKey="TextFillColorPrimaryBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Text / Secondary" Description="Secondary content" BrushResourceKey="TextFillColorSecondaryBrush" ForegroundResourceKey="TextFillColorInverseBrush" ResourceKey="TextFillColorSecondaryBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Text / Tertiary" Description="Pressed or low-emphasis text" BrushResourceKey="TextFillColorTertiaryBrush" ForegroundResourceKey="TextFillColorInverseBrush" ResourceKey="TextFillColorTertiaryBrush" />
-                                    <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Text / Disabled" Description="Disabled text" BrushResourceKey="TextFillColorDisabledBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="TextFillColorDisabledBrush" />
-                                </WrapPanel>
+                                        <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Text / Disabled" Description="Disabled text" BrushResourceKey="TextFillColorDisabledBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="TextFillColorDisabledBrush" ShowSeparator="False" />
+                                    </UniformGrid>
+                                </Border>
 
-                                
                                 <TextBlock Style="{StaticResource ColorSectionHeaderStyle}" Text="Accent Text" />
                                 <TextBlock Style="{StaticResource ColorSectionDescriptionStyle}" Text="Recommended for links and accent foreground states." />
-                                <WrapPanel Style="{StaticResource ColorTileWrapPanelStyle}">
+                                <Border Style="{StaticResource ColorTileRowBorderStyle}">
+                                    <UniformGrid Columns="4" Style="{StaticResource ColorTileUniformGridStyle}">
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Accent Text / Primary" Description="Rest or hover" BrushResourceKey="AccentTextFillColorPrimaryBrush" ForegroundResourceKey="TextFillColorInverseBrush" ResourceKey="AccentTextFillColorPrimaryBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Accent Text / Secondary" Description="Secondary accent text" BrushResourceKey="AccentTextFillColorSecondaryBrush" ForegroundResourceKey="TextFillColorInverseBrush" ResourceKey="AccentTextFillColorSecondaryBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Accent Text / Tertiary" Description="Pressed accent text" BrushResourceKey="AccentTextFillColorTertiaryBrush" ForegroundResourceKey="TextFillColorInverseBrush" ResourceKey="AccentTextFillColorTertiaryBrush" />
-                                    <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Accent Text / Disabled" Description="Disabled accent text" BrushResourceKey="AccentTextFillColorDisabledBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="AccentTextFillColorDisabledBrush" />
-                                </WrapPanel>
+                                        <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Accent Text / Disabled" Description="Disabled accent text" BrushResourceKey="AccentTextFillColorDisabledBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="AccentTextFillColorDisabledBrush" ShowSeparator="False" />
+                                    </UniformGrid>
+                                </Border>
 
                                 <TextBlock Style="{StaticResource ColorSectionHeaderStyle}" Text="Text On Accent" />
                                 <TextBlock Style="{StaticResource ColorSectionDescriptionStyle}" Text="Used when text sits on accent-colored fills." />
-                                <WrapPanel Style="{StaticResource ColorTileWrapPanelStyle}">
+                                <Border Style="{StaticResource ColorTileRowBorderStyle}">
+                                    <UniformGrid Columns="4" Style="{StaticResource ColorTileUniformGridStyle}">
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Text on Accent / Primary" Description="Rest or hover" BrushResourceKey="TextOnAccentFillColorPrimaryBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="TextOnAccentFillColorPrimaryBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Text on Accent / Secondary" Description="Pressed state" BrushResourceKey="TextOnAccentFillColorSecondaryBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="TextOnAccentFillColorSecondaryBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Text on Accent / Disabled" Description="Disabled state" BrushResourceKey="TextOnAccentFillColorDisabledBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="TextOnAccentFillColorDisabledBrush" />
-                                    <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Text on Accent / Selected" Description="Highlighted text" BrushResourceKey="TextOnAccentFillColorSelectedTextBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="TextOnAccentFillColorSelectedTextBrush" />
-                                </WrapPanel>
+                                        <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Text on Accent / Selected" Description="Highlighted text" BrushResourceKey="TextOnAccentFillColorSelectedTextBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="TextOnAccentFillColorSelectedTextBrush" ShowSeparator="False" />
+                                    </UniformGrid>
+                                </Border>
                             </StackPanel>
                         </TabItem>
 
@@ -77,49 +82,73 @@
 
                                 <TextBlock Style="{StaticResource ColorSectionHeaderStyle}" Text="Control Fill" />
                                 <TextBlock Style="{StaticResource ColorSectionDescriptionStyle}" Text="Fill used for standard controls." />
-                                <WrapPanel Style="{StaticResource ColorTileWrapPanelStyle}">
+                                <Border Style="{StaticResource ColorTileRowBorderStyle}">
+                                    <UniformGrid Columns="4" Style="{StaticResource ColorTileUniformGridStyle}">
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Control / Default" Description="Rest state" BrushResourceKey="ControlFillColorDefaultBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="ControlFillColorDefaultBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Control / Secondary" Description="Hover state" BrushResourceKey="ControlFillColorSecondaryBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="ControlFillColorSecondaryBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Control / Tertiary" Description="Pressed state" BrushResourceKey="ControlFillColorTertiaryBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="ControlFillColorTertiaryBrush" />
-                                    <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Control / Quarternary" Description="Secondary pressed state" BrushResourceKey="ControlFillColorQuarternaryBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="ControlFillColorQuarternaryBrush" />
+                                        <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Control / Quarternary" Description="Secondary pressed state" BrushResourceKey="ControlFillColorQuarternaryBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="ControlFillColorQuarternaryBrush" ShowSeparator="False" />
+                                    </UniformGrid>
+                                </Border>
+                                <Border Style="{StaticResource ColorTileRowBorderStyle}">
+                                    <UniformGrid Columns="3" Style="{StaticResource ColorTileUniformGridStyle}">
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Control / Input Active" Description="Active text input" BrushResourceKey="ControlFillColorInputActiveBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="ControlFillColorInputActiveBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Control / Disabled" Description="Disabled fill" BrushResourceKey="ControlFillColorDisabledBrush" ForegroundResourceKey="TextFillColorDisabledBrush" ResourceKey="ControlFillColorDisabledBrush" />
-                                    <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Control / Transparent" Description="Transparent state" BrushResourceKey="ControlFillColorTransparentBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="ControlFillColorTransparentBrush" />
-                                </WrapPanel>
+                                        <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Control / Transparent" Description="Transparent state" BrushResourceKey="ControlFillColorTransparentBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="ControlFillColorTransparentBrush" ShowSeparator="False" />
+                                    </UniformGrid>
+                                </Border>
 
                                 <TextBlock Style="{StaticResource ColorSectionHeaderStyle}" Text="Subtle and Solid Fill" />
                                 <TextBlock Style="{StaticResource ColorSectionDescriptionStyle}" Text="Low-emphasis and solid-state fills." />
-                                <WrapPanel Style="{StaticResource ColorTileWrapPanelStyle}">
+                                <Border Style="{StaticResource ColorTileRowBorderStyle}">
+                                    <UniformGrid Columns="4" Style="{StaticResource ColorTileUniformGridStyle}">
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Subtle / Transparent" Description="Transparent rest state" BrushResourceKey="SubtleFillColorTransparentBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="SubtleFillColorTransparentBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Subtle / Secondary" Description="Hover state" BrushResourceKey="SubtleFillColorSecondaryBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="SubtleFillColorSecondaryBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Subtle / Tertiary" Description="Pressed state" BrushResourceKey="SubtleFillColorTertiaryBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="SubtleFillColorTertiaryBrush" />
-                                    <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Control Strong / Default" Description="High-emphasis fill" BrushResourceKey="ControlStrongFillColorDefaultBrush" ForegroundResourceKey="TextFillColorInverseBrush" ResourceKey="ControlStrongFillColorDefaultBrush" />
+                                        <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Control Strong / Default" Description="High-emphasis fill" BrushResourceKey="ControlStrongFillColorDefaultBrush" ForegroundResourceKey="TextFillColorInverseBrush" ResourceKey="ControlStrongFillColorDefaultBrush" ShowSeparator="False" />
+                                    </UniformGrid>
+                                </Border>
+                                <Border Style="{StaticResource ColorTileRowBorderStyle}">
+                                    <UniformGrid Columns="2" Style="{StaticResource ColorTileUniformGridStyle}">
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Control Strong / Disabled" Description="Disabled high-emphasis fill" BrushResourceKey="ControlStrongFillColorDisabledBrush" ForegroundResourceKey="TextFillColorInverseBrush" ResourceKey="ControlStrongFillColorDisabledBrush" />
-                                    <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Control Solid / Default" Description="Solid control fill" BrushResourceKey="ControlSolidFillColorDefaultBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="ControlSolidFillColorDefaultBrush" />
-                                </WrapPanel>
+                                        <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Control Solid / Default" Description="Solid control fill" BrushResourceKey="ControlSolidFillColorDefaultBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="ControlSolidFillColorDefaultBrush" ShowSeparator="False" />
+                                    </UniformGrid>
+                                </Border>
 
                                 <TextBlock Style="{StaticResource ColorSectionHeaderStyle}" Text="Control Alt Fill" />
                                 <TextBlock Style="{StaticResource ColorSectionDescriptionStyle}" Text="Fill used for alternate and off states." />
-                                <WrapPanel Style="{StaticResource ColorTileWrapPanelStyle}">
+                                <Border Style="{StaticResource ColorTileRowBorderStyle}">
+                                    <UniformGrid Columns="4" Style="{StaticResource ColorTileUniformGridStyle}">
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Alt / Transparent" Description="Transparent rest state" BrushResourceKey="ControlAltFillColorTransparentBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="ControlAltFillColorTransparentBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Alt / Secondary" Description="Rest state" BrushResourceKey="ControlAltFillColorSecondaryBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="ControlAltFillColorSecondaryBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Alt / Tertiary" Description="Hover state" BrushResourceKey="ControlAltFillColorTertiaryBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="ControlAltFillColorTertiaryBrush" />
-                                    <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Alt / Quarternary" Description="Pressed state" BrushResourceKey="ControlAltFillColorQuarternaryBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="ControlAltFillColorQuarternaryBrush" />
-                                    <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Alt / Disabled" Description="Disabled state" BrushResourceKey="ControlAltFillColorDisabledBrush" ForegroundResourceKey="TextFillColorDisabledBrush" ResourceKey="ControlAltFillColorDisabledBrush" />
-                                </WrapPanel>
+                                        <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Alt / Quarternary" Description="Pressed state" BrushResourceKey="ControlAltFillColorQuarternaryBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="ControlAltFillColorQuarternaryBrush" ShowSeparator="False" />
+                                    </UniformGrid>
+                                </Border>
+                                <Border Style="{StaticResource ColorTileRowBorderStyle}">
+                                    <UniformGrid Columns="1" Style="{StaticResource ColorTileUniformGridStyle}">
+                                        <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Alt / Disabled" Description="Disabled state" BrushResourceKey="ControlAltFillColorDisabledBrush" ForegroundResourceKey="TextFillColorDisabledBrush" ResourceKey="ControlAltFillColorDisabledBrush" ShowSeparator="False" />
+                                    </UniformGrid>
+                                </Border>
 
                                 <TextBlock Style="{StaticResource ColorSectionHeaderStyle}" Text="Accent and On Image Fill" />
                                 <TextBlock Style="{StaticResource ColorSectionDescriptionStyle}" Text="Accent fills and controls placed over image-like content." />
-                                <WrapPanel Style="{StaticResource ColorTileWrapPanelStyle}">
+                                <Border Style="{StaticResource ColorTileRowBorderStyle}">
+                                    <UniformGrid Columns="4" Style="{StaticResource ColorTileUniformGridStyle}">
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Accent / Default" Description="Primary accent fill" BrushResourceKey="AccentFillColorDefaultBrush" ForegroundResourceKey="TextOnAccentFillColorPrimaryBrush" ResourceKey="AccentFillColorDefaultBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Accent / Secondary" Description="Hover accent fill" BrushResourceKey="AccentFillColorSecondaryBrush" ForegroundResourceKey="TextOnAccentFillColorPrimaryBrush" ResourceKey="AccentFillColorSecondaryBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Accent / Tertiary" Description="Pressed accent fill" BrushResourceKey="AccentFillColorTertiaryBrush" ForegroundResourceKey="TextOnAccentFillColorPrimaryBrush" ResourceKey="AccentFillColorTertiaryBrush" />
-                                    <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Accent / Disabled" Description="Disabled accent fill" BrushResourceKey="AccentFillColorDisabledBrush" ForegroundResourceKey="TextOnAccentFillColorDisabledBrush" ResourceKey="AccentFillColorDisabledBrush" />
+                                        <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Accent / Disabled" Description="Disabled accent fill" BrushResourceKey="AccentFillColorDisabledBrush" ForegroundResourceKey="TextOnAccentFillColorDisabledBrush" ResourceKey="AccentFillColorDisabledBrush" ShowSeparator="False" />
+                                    </UniformGrid>
+                                </Border>
+                                <Border Style="{StaticResource ColorTileRowBorderStyle}">
+                                    <UniformGrid Columns="4" Style="{StaticResource ColorTileUniformGridStyle}">
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="On Image / Default" Description="Image-hosted control rest" BrushResourceKey="ControlOnImageFillColorDefaultBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="ControlOnImageFillColorDefaultBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="On Image / Secondary" Description="Image-hosted hover" BrushResourceKey="ControlOnImageFillColorSecondaryBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="ControlOnImageFillColorSecondaryBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="On Image / Tertiary" Description="Image-hosted pressed" BrushResourceKey="ControlOnImageFillColorTertiaryBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="ControlOnImageFillColorTertiaryBrush" />
-                                    <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="On Image / Disabled" Description="Image-hosted disabled" BrushResourceKey="ControlOnImageFillColorDisabledBrush" ForegroundResourceKey="TextFillColorDisabledBrush" ResourceKey="ControlOnImageFillColorDisabledBrush" />
-                                </WrapPanel>
+                                        <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="On Image / Disabled" Description="Image-hosted disabled" BrushResourceKey="ControlOnImageFillColorDisabledBrush" ForegroundResourceKey="TextFillColorDisabledBrush" ResourceKey="ControlOnImageFillColorDisabledBrush" ShowSeparator="False" />
+                                    </UniformGrid>
+                                </Border>
                             </StackPanel>
                         </TabItem>
 
@@ -145,31 +174,47 @@
 
                                 <TextBlock Style="{StaticResource ColorSectionHeaderStyle}" Text="Control Stroke" />
                                 <TextBlock Style="{StaticResource ColorSectionDescriptionStyle}" Text="Stroke used for standard and accent controls." />
-                                <WrapPanel Style="{StaticResource ColorTileWrapPanelStyle}">
+                                <Border Style="{StaticResource ColorTileRowBorderStyle}">
+                                    <UniformGrid Columns="4" Style="{StaticResource ColorTileUniformGridStyle}">
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Control Stroke / Default" Description="Control border" BrushResourceKey="ControlStrokeColorDefaultBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="ControlStrokeColorDefaultBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Control Stroke / Secondary" Description="Secondary border" BrushResourceKey="ControlStrokeColorSecondaryBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="ControlStrokeColorSecondaryBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Control Stroke / Tertiary" Description="Tertiary border" BrushResourceKey="ControlStrokeColorTertiaryBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="ControlStrokeColorTertiaryBrush" />
-                                    <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="On Accent / Default" Description="Accent control border" BrushResourceKey="ControlStrokeColorOnAccentDefaultBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="ControlStrokeColorOnAccentDefaultBrush" />
+                                        <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="On Accent / Default" Description="Accent control border" BrushResourceKey="ControlStrokeColorOnAccentDefaultBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="ControlStrokeColorOnAccentDefaultBrush" ShowSeparator="False" />
+                                    </UniformGrid>
+                                </Border>
+                                <Border Style="{StaticResource ColorTileRowBorderStyle}">
+                                    <UniformGrid Columns="4" Style="{StaticResource ColorTileUniformGridStyle}">
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="On Accent / Secondary" Description="Accent hover border" BrushResourceKey="ControlStrokeColorOnAccentSecondaryBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="ControlStrokeColorOnAccentSecondaryBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="On Accent / Tertiary" Description="Accent pressed border" BrushResourceKey="ControlStrokeColorOnAccentTertiaryBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="ControlStrokeColorOnAccentTertiaryBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="On Accent / Disabled" Description="Accent disabled border" BrushResourceKey="ControlStrokeColorOnAccentDisabledBrush" ForegroundResourceKey="TextFillColorDisabledBrush" ResourceKey="ControlStrokeColorOnAccentDisabledBrush" />
-                                    <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Strong Fill On Image" Description="Strong fill border on images" BrushResourceKey="ControlStrokeColorForStrongFillWhenOnImageBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="ControlStrokeColorForStrongFillWhenOnImageBrush" />
-                                </WrapPanel>
+                                        <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Strong Fill On Image" Description="Strong fill border on images" BrushResourceKey="ControlStrokeColorForStrongFillWhenOnImageBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="ControlStrokeColorForStrongFillWhenOnImageBrush" ShowSeparator="False" />
+                                    </UniformGrid>
+                                </Border>
 
                                 <TextBlock Style="{StaticResource ColorSectionHeaderStyle}" Text="Card, Surface, and Focus Stroke" />
                                 <TextBlock Style="{StaticResource ColorSectionDescriptionStyle}" Text="Strokes for surfaces, cards, dividers, and focus rings." />
-                                <WrapPanel Style="{StaticResource ColorTileWrapPanelStyle}">
+                                <Border Style="{StaticResource ColorTileRowBorderStyle}">
+                                    <UniformGrid Columns="4" Style="{StaticResource ColorTileUniformGridStyle}">
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Card Stroke / Default" Description="Card border" BrushResourceKey="CardStrokeColorDefaultBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="CardStrokeColorDefaultBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Card Stroke / Solid" Description="Solid card border" BrushResourceKey="CardStrokeColorDefaultSolidBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="CardStrokeColorDefaultSolidBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Control Strong / Default" Description="Radio and check rings" BrushResourceKey="ControlStrongStrokeColorDefaultBrush" ForegroundResourceKey="TextFillColorInverseBrush" ResourceKey="ControlStrongStrokeColorDefaultBrush" />
-                                    <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Control Strong / Disabled" Description="Disabled strong stroke" BrushResourceKey="ControlStrongStrokeColorDisabledBrush" ForegroundResourceKey="TextFillColorInverseBrush" ResourceKey="ControlStrongStrokeColorDisabledBrush" />
+                                        <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Control Strong / Disabled" Description="Disabled strong stroke" BrushResourceKey="ControlStrongStrokeColorDisabledBrush" ForegroundResourceKey="TextFillColorInverseBrush" ResourceKey="ControlStrongStrokeColorDisabledBrush" ShowSeparator="False" />
+                                    </UniformGrid>
+                                </Border>
+                                <Border Style="{StaticResource ColorTileRowBorderStyle}">
+                                    <UniformGrid Columns="4" Style="{StaticResource ColorTileUniformGridStyle}">
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Surface / Default" Description="Surface border" BrushResourceKey="SurfaceStrokeColorDefaultBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="SurfaceStrokeColorDefaultBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Surface / Flyout" Description="Flyout border" BrushResourceKey="SurfaceStrokeColorFlyoutBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="SurfaceStrokeColorFlyoutBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Surface / Inverse" Description="Inverse surface border" BrushResourceKey="SurfaceStrokeColorInverseBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="SurfaceStrokeColorInverseBrush" />
-                                    <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Divider / Default" Description="Divider stroke" BrushResourceKey="DividerStrokeColorDefaultBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="DividerStrokeColorDefaultBrush" />
+                                        <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Divider / Default" Description="Divider stroke" BrushResourceKey="DividerStrokeColorDefaultBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="DividerStrokeColorDefaultBrush" ShowSeparator="False" />
+                                    </UniformGrid>
+                                </Border>
+                                <Border Style="{StaticResource ColorTileRowBorderStyle}">
+                                    <UniformGrid Columns="2" Style="{StaticResource ColorTileUniformGridStyle}">
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Focus / Outer" Description="Outer focus stroke" BrushResourceKey="FocusStrokeColorOuterBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="FocusStrokeColorOuterBrush" />
-                                    <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Focus / Inner" Description="Inner focus stroke" BrushResourceKey="FocusStrokeColorInnerBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="FocusStrokeColorInnerBrush" />
-                                </WrapPanel>
+                                        <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Focus / Inner" Description="Inner focus stroke" BrushResourceKey="FocusStrokeColorInnerBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="FocusStrokeColorInnerBrush" ShowSeparator="False" />
+                                    </UniformGrid>
+                                </Border>
                             </StackPanel>
                         </TabItem>
 
@@ -195,39 +240,57 @@
 
                                 <TextBlock Style="{StaticResource ColorSectionHeaderStyle}" Text="Card and Layer" />
                                 <TextBlock Style="{StaticResource ColorSectionDescriptionStyle}" Text="Surfaces that sit on page backgrounds or material backdrops." />
-                                <WrapPanel Style="{StaticResource ColorTileWrapPanelStyle}">
+                                <Border Style="{StaticResource ColorTileRowBorderStyle}">
+                                    <UniformGrid Columns="4" Style="{StaticResource ColorTileUniformGridStyle}">
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Card / Default" Description="Card background" BrushResourceKey="CardBackgroundFillColorDefaultBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="CardBackgroundFillColorDefaultBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Card / Secondary" Description="Secondary card surface" BrushResourceKey="CardBackgroundFillColorSecondaryBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="CardBackgroundFillColorSecondaryBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Card / Tertiary" Description="Tertiary card surface" BrushResourceKey="CardBackgroundFillColorTertiaryBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="CardBackgroundFillColorTertiaryBrush" />
-                                    <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Smoke / Default" Description="Modal smoke overlay" BrushResourceKey="SmokeFillColorDefaultBrush" ForegroundResourceKey="TextFillColorInverseBrush" ResourceKey="SmokeFillColorDefaultBrush" />
+                                        <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Smoke / Default" Description="Modal smoke overlay" BrushResourceKey="SmokeFillColorDefaultBrush" ForegroundResourceKey="TextFillColorInverseBrush" ResourceKey="SmokeFillColorDefaultBrush" ShowSeparator="False" />
+                                    </UniformGrid>
+                                </Border>
+                                <Border Style="{StaticResource ColorTileRowBorderStyle}">
+                                    <UniformGrid Columns="4" Style="{StaticResource ColorTileUniformGridStyle}">
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Layer / Default" Description="Layer over background" BrushResourceKey="LayerFillColorDefaultBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="LayerFillColorDefaultBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Layer / Alt" Description="Alternate layer" BrushResourceKey="LayerFillColorAltBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="LayerFillColorAltBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Layer on Acrylic" Description="Layer over acrylic" BrushResourceKey="LayerOnAcrylicFillColorDefaultBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="LayerOnAcrylicFillColorDefaultBrush" />
-                                    <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Layer on Accent Acrylic" Description="Layer over accent acrylic" BrushResourceKey="LayerOnAccentAcrylicFillColorDefaultBrush" ForegroundResourceKey="TextOnAccentFillColorPrimaryBrush" ResourceKey="LayerOnAccentAcrylicFillColorDefaultBrush" />
-                                </WrapPanel>
+                                        <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Layer on Accent Acrylic" Description="Layer over accent acrylic" BrushResourceKey="LayerOnAccentAcrylicFillColorDefaultBrush" ForegroundResourceKey="TextOnAccentFillColorPrimaryBrush" ResourceKey="LayerOnAccentAcrylicFillColorDefaultBrush" ShowSeparator="False" />
+                                    </UniformGrid>
+                                </Border>
 
                                 <TextBlock Style="{StaticResource ColorSectionHeaderStyle}" Text="Layer on Mica Base Alt" />
                                 <TextBlock Style="{StaticResource ColorSectionDescriptionStyle}" Text="Layer colors tuned for mica base alt surfaces." />
-                                <WrapPanel Style="{StaticResource ColorTileWrapPanelStyle}">
+                                <Border Style="{StaticResource ColorTileRowBorderStyle}">
+                                    <UniformGrid Columns="4" Style="{StaticResource ColorTileUniformGridStyle}">
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Mica Base Alt / Default" Description="Default mica layer" BrushResourceKey="LayerOnMicaBaseAltFillColorDefaultBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="LayerOnMicaBaseAltFillColorDefaultBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Mica Base Alt / Secondary" Description="Secondary mica layer" BrushResourceKey="LayerOnMicaBaseAltFillColorSecondaryBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="LayerOnMicaBaseAltFillColorSecondaryBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Mica Base Alt / Tertiary" Description="Tertiary mica layer" BrushResourceKey="LayerOnMicaBaseAltFillColorTertiaryBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="LayerOnMicaBaseAltFillColorTertiaryBrush" />
-                                    <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Mica Base Alt / Transparent" Description="Transparent mica layer" BrushResourceKey="LayerOnMicaBaseAltFillColorTransparentBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="LayerOnMicaBaseAltFillColorTransparentBrush" />
-                                </WrapPanel>
+                                        <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Mica Base Alt / Transparent" Description="Transparent mica layer" BrushResourceKey="LayerOnMicaBaseAltFillColorTransparentBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="LayerOnMicaBaseAltFillColorTransparentBrush" ShowSeparator="False" />
+                                    </UniformGrid>
+                                </Border>
 
                                 <TextBlock Style="{StaticResource ColorSectionHeaderStyle}" Text="Solid and Acrylic Background" />
                                 <TextBlock Style="{StaticResource ColorSectionDescriptionStyle}" Text="Page, base, and acrylic backing fills." />
-                                <WrapPanel Style="{StaticResource ColorTileWrapPanelStyle}">
+                                <Border Style="{StaticResource ColorTileRowBorderStyle}">
+                                    <UniformGrid Columns="4" Style="{StaticResource ColorTileUniformGridStyle}">
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Solid / Base" Description="Page base" BrushResourceKey="SolidBackgroundFillColorBaseBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="SolidBackgroundFillColorBaseBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Solid / Secondary" Description="Secondary background" BrushResourceKey="SolidBackgroundFillColorSecondaryBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="SolidBackgroundFillColorSecondaryBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Solid / Tertiary" Description="Tertiary background" BrushResourceKey="SolidBackgroundFillColorTertiaryBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="SolidBackgroundFillColorTertiaryBrush" />
-                                    <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Solid / Quarternary" Description="Quarternary background" BrushResourceKey="SolidBackgroundFillColorQuarternaryBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="SolidBackgroundFillColorQuarternaryBrush" />
+                                        <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Solid / Quarternary" Description="Quarternary background" BrushResourceKey="SolidBackgroundFillColorQuarternaryBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="SolidBackgroundFillColorQuarternaryBrush" ShowSeparator="False" />
+                                    </UniformGrid>
+                                </Border>
+                                <Border Style="{StaticResource ColorTileRowBorderStyle}">
+                                    <UniformGrid Columns="4" Style="{StaticResource ColorTileUniformGridStyle}">
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Solid / Quinary" Description="Quinary background" BrushResourceKey="SolidBackgroundFillColorQuinaryBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="SolidBackgroundFillColorQuinaryBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Solid / Senary" Description="Senary background" BrushResourceKey="SolidBackgroundFillColorSenaryBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="SolidBackgroundFillColorSenaryBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Solid / Base Alt" Description="Alternate base background" BrushResourceKey="SolidBackgroundFillColorBaseAltBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="SolidBackgroundFillColorBaseAltBrush" />
-                                    <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Acrylic / Default" Description="Default acrylic fill" BrushResourceKey="AcrylicBackgroundFillColorDefaultBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="AcrylicBackgroundFillColorDefaultBrush" />
-                                    <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Acrylic / Base" Description="Acrylic base fill" BrushResourceKey="AcrylicBackgroundFillColorBaseBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="AcrylicBackgroundFillColorBaseBrush" />
-                                </WrapPanel>
+                                        <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Acrylic / Default" Description="Default acrylic fill" BrushResourceKey="AcrylicBackgroundFillColorDefaultBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="AcrylicBackgroundFillColorDefaultBrush" ShowSeparator="False" />
+                                    </UniformGrid>
+                                </Border>
+                                <Border Style="{StaticResource ColorTileRowBorderStyle}">
+                                    <UniformGrid Columns="1" Style="{StaticResource ColorTileUniformGridStyle}">
+                                        <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Acrylic / Base" Description="Acrylic base fill" BrushResourceKey="AcrylicBackgroundFillColorBaseBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="AcrylicBackgroundFillColorBaseBrush" ShowSeparator="False" />
+                                    </UniformGrid>
+                                </Border>
                             </StackPanel>
                         </TabItem>
 
@@ -246,27 +309,39 @@
 
                                 <TextBlock Style="{StaticResource ColorSectionHeaderStyle}" Text="System Fill" />
                                 <TextBlock Style="{StaticResource ColorSectionDescriptionStyle}" Text="Status color tokens used by badges, InfoBar, and validation states." />
-                                <WrapPanel Style="{StaticResource ColorTileWrapPanelStyle}">
+                                <Border Style="{StaticResource ColorTileRowBorderStyle}">
+                                    <UniformGrid Columns="4" Style="{StaticResource ColorTileUniformGridStyle}">
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="System / Attention" Description="Attention accent" BrushResourceKey="SystemFillColorAttentionBrush" ForegroundResourceKey="TextOnAccentFillColorPrimaryBrush" ResourceKey="SystemFillColorAttentionBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="System / Informational" Description="Informational signal" BrushResourceKey="SystemFillColorInformationalBrush" ForegroundResourceKey="TextFillColorInverseBrush" ResourceKey="SystemFillColorInformationalBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="System / Success" Description="Success signal" BrushResourceKey="SystemFillColorSuccessBrush" ForegroundResourceKey="TextFillColorInverseBrush" ResourceKey="SystemFillColorSuccessBrush" />
-                                    <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="System / Caution" Description="Caution signal" BrushResourceKey="SystemFillColorCautionBrush" ForegroundResourceKey="TextFillColorInverseBrush" ResourceKey="SystemFillColorCautionBrush" />
+                                        <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="System / Caution" Description="Caution signal" BrushResourceKey="SystemFillColorCautionBrush" ForegroundResourceKey="TextFillColorInverseBrush" ResourceKey="SystemFillColorCautionBrush" ShowSeparator="False" />
+                                    </UniformGrid>
+                                </Border>
+                                <Border Style="{StaticResource ColorTileRowBorderStyle}">
+                                    <UniformGrid Columns="3" Style="{StaticResource ColorTileUniformGridStyle}">
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="System / Critical" Description="Critical signal" BrushResourceKey="SystemFillColorCriticalBrush" ForegroundResourceKey="TextFillColorInverseBrush" ResourceKey="SystemFillColorCriticalBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="System / Neutral" Description="Neutral signal" BrushResourceKey="SystemFillColorNeutralBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="SystemFillColorNeutralBrush" />
-                                    <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="System / Solid Neutral" Description="Solid neutral signal" BrushResourceKey="SystemFillColorSolidNeutralBrush" ForegroundResourceKey="TextFillColorInverseBrush" ResourceKey="SystemFillColorSolidNeutralBrush" />
-                                </WrapPanel>
+                                        <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="System / Solid Neutral" Description="Solid neutral signal" BrushResourceKey="SystemFillColorSolidNeutralBrush" ForegroundResourceKey="TextFillColorInverseBrush" ResourceKey="SystemFillColorSolidNeutralBrush" ShowSeparator="False" />
+                                    </UniformGrid>
+                                </Border>
 
                                 <TextBlock Style="{StaticResource ColorSectionHeaderStyle}" Text="System Background" />
                                 <TextBlock Style="{StaticResource ColorSectionDescriptionStyle}" Text="Status background fills for quiet message surfaces." />
-                                <WrapPanel Style="{StaticResource ColorTileWrapPanelStyle}">
+                                <Border Style="{StaticResource ColorTileRowBorderStyle}">
+                                    <UniformGrid Columns="4" Style="{StaticResource ColorTileUniformGridStyle}">
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Attention Background" Description="Attention surface" BrushResourceKey="SystemFillColorAttentionBackgroundBrush" ForegroundResourceKey="TextOnAccentFillColorPrimaryBrush" ResourceKey="SystemFillColorAttentionBackgroundBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Success Background" Description="Success surface" BrushResourceKey="SystemFillColorSuccessBackgroundBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="SystemFillColorSuccessBackgroundBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Caution Background" Description="Caution surface" BrushResourceKey="SystemFillColorCautionBackgroundBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="SystemFillColorCautionBackgroundBrush" />
-                                    <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Critical Background" Description="Critical surface" BrushResourceKey="SystemFillColorCriticalBackgroundBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="SystemFillColorCriticalBackgroundBrush" />
+                                        <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Critical Background" Description="Critical surface" BrushResourceKey="SystemFillColorCriticalBackgroundBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="SystemFillColorCriticalBackgroundBrush" ShowSeparator="False" />
+                                    </UniformGrid>
+                                </Border>
+                                <Border Style="{StaticResource ColorTileRowBorderStyle}">
+                                    <UniformGrid Columns="3" Style="{StaticResource ColorTileUniformGridStyle}">
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Neutral Background" Description="Neutral surface" BrushResourceKey="SystemFillColorNeutralBackgroundBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="SystemFillColorNeutralBackgroundBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Solid Attention Background" Description="Solid attention surface" BrushResourceKey="SystemFillColorSolidAttentionBackgroundBrush" ForegroundResourceKey="TextOnAccentFillColorPrimaryBrush" ResourceKey="SystemFillColorSolidAttentionBackgroundBrush" />
-                                    <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Solid Neutral Background" Description="Solid neutral surface" BrushResourceKey="SystemFillColorSolidNeutralBackgroundBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="SystemFillColorSolidNeutralBackgroundBrush" />
-                                </WrapPanel>
+                                        <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Solid Neutral Background" Description="Solid neutral surface" BrushResourceKey="SystemFillColorSolidNeutralBackgroundBrush" ForegroundResourceKey="TextFillColorPrimaryBrush" ResourceKey="SystemFillColorSolidNeutralBackgroundBrush" ShowSeparator="False" />
+                                    </UniformGrid>
+                                </Border>
                             </StackPanel>
                         </TabItem>
 
@@ -292,16 +367,22 @@
 
                                 <TextBlock Style="{StaticResource ColorSectionHeaderStyle}" Text="SystemColor Aliases" />
                                 <TextBlock Style="{StaticResource ColorSectionDescriptionStyle}" Text="Brush aliases for Windows high contrast colors exposed as reusable Fluence resources." />
-                                <WrapPanel Style="{StaticResource ColorTileWrapPanelStyle}">
+                                <Border Style="{StaticResource ColorTileRowBorderStyle}">
+                                    <UniformGrid Columns="4" Style="{StaticResource ColorTileUniformGridStyle}">
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Window Text Color" Description="Foreground text color" BrushResourceKey="SystemColorWindowTextColorBrush" ForegroundResourceKey="SystemColorWindowColorBrush" ResourceKey="SystemColorWindowTextColorBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Window Color" Description="Window background color" BrushResourceKey="SystemColorWindowColorBrush" ForegroundResourceKey="SystemColorWindowTextColorBrush" ResourceKey="SystemColorWindowColorBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Button Face Color" Description="Button background" BrushResourceKey="SystemColorButtonFaceColorBrush" ForegroundResourceKey="SystemColorButtonTextColorBrush" ResourceKey="SystemColorButtonFaceColorBrush" />
-                                    <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Button Text Color" Description="Button foreground" BrushResourceKey="SystemColorButtonTextColorBrush" ForegroundResourceKey="SystemColorButtonFaceColorBrush" ResourceKey="SystemColorButtonTextColorBrush" />
+                                        <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Button Text Color" Description="Button foreground" BrushResourceKey="SystemColorButtonTextColorBrush" ForegroundResourceKey="SystemColorButtonFaceColorBrush" ResourceKey="SystemColorButtonTextColorBrush" ShowSeparator="False" />
+                                    </UniformGrid>
+                                </Border>
+                                <Border Style="{StaticResource ColorTileRowBorderStyle}">
+                                    <UniformGrid Columns="4" Style="{StaticResource ColorTileUniformGridStyle}">
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Highlight Color" Description="Selection and accent color" BrushResourceKey="SystemColorHighlightColorBrush" ForegroundResourceKey="SystemColorHighlightTextColorBrush" ResourceKey="SystemColorHighlightColorBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Highlight Text Color" Description="Selection foreground color" BrushResourceKey="SystemColorHighlightTextColorBrush" ForegroundResourceKey="SystemColorHighlightColorBrush" ResourceKey="SystemColorHighlightTextColorBrush" />
                                     <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Hotlight Color" Description="Hyperlink foreground color" BrushResourceKey="SystemColorHotlightColorBrush" ForegroundResourceKey="SystemColorWindowColorBrush" ResourceKey="SystemColorHotlightColorBrush" />
-                                    <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Gray Text Color" Description="Disabled text color" BrushResourceKey="SystemColorGrayTextColorBrush" ForegroundResourceKey="SystemColorWindowColorBrush" ResourceKey="SystemColorGrayTextColorBrush" />
-                                </WrapPanel>
+                                        <color:ColorTile Style="{StaticResource ColorTileStyle}" Title="Gray Text Color" Description="Disabled text color" BrushResourceKey="SystemColorGrayTextColorBrush" ForegroundResourceKey="SystemColorWindowColorBrush" ResourceKey="SystemColorGrayTextColorBrush" ShowSeparator="False" />
+                                    </UniformGrid>
+                                </Border>
                             </StackPanel>
                         </TabItem>
                     </TabControl>

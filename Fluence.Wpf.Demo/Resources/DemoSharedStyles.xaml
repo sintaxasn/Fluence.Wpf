@@ -61,15 +61,12 @@
     <!--  Demo Pages *** Design \ Color  -->
 
     <sys:Double x:Key="ColorSectionSpacing">4</sys:Double>
-    <sys:Double x:Key="ColorTileWidth">200</sys:Double>
-    <sys:Double x:Key="ColorTileMinWidth">120</sys:Double>
     <sys:Double x:Key="ColorTileMinHeight">100</sys:Double>
-    <sys:Double x:Key="ColorTileHeight">120</sys:Double>
     <Thickness x:Key="ColorSelectorMargin">0,20,0,0</Thickness>
     <Thickness x:Key="ColorSectionContentMargin">0,20,0,0</Thickness>
     <Thickness x:Key="ColorSectionHeaderMargin">0,20,0,4</Thickness>
     <Thickness x:Key="ColorSectionDescriptionMargin">0,0,0,12</Thickness>
-    <Thickness x:Key="ColorTileMargin">0,0,4,4</Thickness>
+    <Thickness x:Key="ColorTileMargin">0</Thickness>
     <Thickness x:Key="ColorTilePadding">12</Thickness>
     <Thickness x:Key="ColorTileTitleMargin">0,0,4,4</Thickness>
     <Thickness x:Key="ColorTileDescriptionMargin">0,2,0,0</Thickness>
@@ -344,11 +341,10 @@
 
     <Style
         x:Key="FieldLabelStyle"
-        BasedOn="{StaticResource {x:Type TextBlock}}"
+        BasedOn="{StaticResource CaptionTextBlockStyle}"
         TargetType="{x:Type TextBlock}">
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
         <Setter Property="Margin" Value="0,0,0,6" />
-        <Setter Property="Style" Value="{DynamicResource CaptionTextBlockStyle}" />
     </Style>
 
     <Style
@@ -458,8 +454,17 @@
         <Setter Property="Margin" Value="{DynamicResource ColorSectionContentMargin}" />
     </Style>
 
-    <Style x:Key="ColorTileWrapPanelStyle" TargetType="{x:Type WrapPanel}">
+    <Style x:Key="ColorTileRowBorderStyle" TargetType="{x:Type Border}">
+        <Setter Property="Background" Value="{DynamicResource GalleryBackgroundBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource GalleryBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="{DynamicResource OverlayCornerRadius}" />
         <Setter Property="Margin" Value="0,0,0,12" />
+    </Style>
+
+    <Style x:Key="ColorTileUniformGridStyle" TargetType="{x:Type UniformGrid}">
+        <Setter Property="Rows" Value="1" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
     </Style>
 
     <Style
@@ -485,11 +490,10 @@
 
     <Style x:Key="ColorTileStyle" TargetType="{x:Type color:ColorTile}">
         <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
         <Setter Property="Margin" Value="{DynamicResource ColorTileMargin}" />
-        <Setter Property="Height" Value="Auto" />
         <Setter Property="MinHeight" Value="{DynamicResource ColorTileMinHeight}" />
-        <Setter Property="MinWidth" Value="{DynamicResource ColorTileMinWidth}" />
-        <Setter Property="Width" Value="Auto" />
+        <Setter Property="ShowSeparator" Value="True" />
 
     </Style>
 
