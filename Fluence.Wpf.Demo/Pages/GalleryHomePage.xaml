@@ -22,13 +22,13 @@
                 <TextBlock
                     Margin="0,0,0,0"
                     HorizontalAlignment="Center"
-                    ui:TextBlockExtensions.Typography="Subtitle"
+                    Style="{StaticResource SubtitleTextBlockStyle}"
                     Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                     Text="Windows 11 Fluent Design controls for WPF" />
                 <TextBlock
                     Margin="0,8,0,0"
                     HorizontalAlignment="Center"
-                    ui:TextBlockExtensions.Typography="Body"
+                    Style="{StaticResource BodyTextBlockStyle}"
                     Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}">
                     <Hyperlink NavigateUri="https://github.com/sintaxasn/fluence.wpf" RequestNavigate="GitHubLink_RequestNavigate">
                         <Run Text="https://github.com/sintaxasn/fluence.wpf" />
@@ -55,12 +55,12 @@
                                 IconFontSize="24" />
                             <TextBlock
                                 VerticalAlignment="Center"
-                                ui:TextBlockExtensions.Typography="Subtitle"
+                                Style="{StaticResource SubtitleTextBlockStyle}"
                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                 Text="Theming" />
                         </StackPanel>
                         <TextBlock
-                            ui:TextBlockExtensions.Typography="Body"
+                            Style="{StaticResource BodyTextBlockStyle}"
                             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                             Text="Light, Dark, High Contrast, and Auto - follows the OS accent. Brushes map to WinUI 3 themeresource key names."
                             TextWrapping="Wrap" />
@@ -84,12 +84,12 @@
                                 IconFontSize="24" />
                             <TextBlock
                                 VerticalAlignment="Center"
-                                ui:TextBlockExtensions.Typography="Subtitle"
+                                Style="{StaticResource SubtitleTextBlockStyle}"
                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                 Text="Shell" />
                         </StackPanel>
                         <TextBlock
-                            ui:TextBlockExtensions.Typography="Body"
+                            Style="{StaticResource BodyTextBlockStyle}"
                             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                             Text="Mica, Acrylic, and Tabbed DWM backdrops. Rounded corners, caption extension, and icon + title bar controls on FluenceWindow."
                             TextWrapping="Wrap" />
@@ -101,7 +101,7 @@
             <!--  Featured controls  -->
             <TextBlock
                 Margin="0,8,0,12"
-                ui:TextBlockExtensions.Typography="Subtitle"
+                Style="{StaticResource SubtitleTextBlockStyle}"
                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                 Text="Featured controls" />
 
@@ -123,12 +123,12 @@
                                 IconFontSize="20" />
                             <TextBlock
                                 VerticalAlignment="Center"
-                                ui:TextBlockExtensions.Typography="BodyStrong"
+                                Style="{StaticResource BodyStrongTextBlockStyle}"
                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                 Text="Buttons" />
                         </StackPanel>
                         <TextBlock
-                            ui:TextBlockExtensions.Typography="Caption"
+                            Style="{StaticResource CaptionTextBlockStyle}"
                             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                             Text="Primary, secondary, accent, hyperlink."
                             TextWrapping="Wrap" />
@@ -152,12 +152,12 @@
                                 IconFontSize="20" />
                             <TextBlock
                                 VerticalAlignment="Center"
-                                ui:TextBlockExtensions.Typography="BodyStrong"
+                                Style="{StaticResource BodyStrongTextBlockStyle}"
                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                 Text="Selection" />
                         </StackPanel>
                         <TextBlock
-                            ui:TextBlockExtensions.Typography="Caption"
+                            Style="{StaticResource CaptionTextBlockStyle}"
                             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                             Text="Checkbox, radio, toggle switch."
                             TextWrapping="Wrap" />
@@ -181,12 +181,12 @@
                                 IconFontSize="20" />
                             <TextBlock
                                 VerticalAlignment="Center"
-                                ui:TextBlockExtensions.Typography="BodyStrong"
+                                Style="{StaticResource BodyStrongTextBlockStyle}"
                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                 Text="Inputs" />
                         </StackPanel>
                         <TextBlock
-                            ui:TextBlockExtensions.Typography="Caption"
+                            Style="{StaticResource CaptionTextBlockStyle}"
                             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                             Text="Text, password, combo, slider, number."
                             TextWrapping="Wrap" />
@@ -210,12 +210,12 @@
                                 IconFontSize="20" />
                             <TextBlock
                                 VerticalAlignment="Center"
-                                ui:TextBlockExtensions.Typography="BodyStrong"
+                                Style="{StaticResource BodyStrongTextBlockStyle}"
                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                 Text="Status" />
                         </StackPanel>
                         <TextBlock
-                            ui:TextBlockExtensions.Typography="Caption"
+                            Style="{StaticResource CaptionTextBlockStyle}"
                             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                             Text="InfoBar, progress ring, progress bar."
                             TextWrapping="Wrap" />
@@ -239,12 +239,12 @@
                                 IconFontSize="20" />
                             <TextBlock
                                 VerticalAlignment="Center"
-                                ui:TextBlockExtensions.Typography="BodyStrong"
+                                Style="{StaticResource BodyStrongTextBlockStyle}"
                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                 Text="Collections" />
                         </StackPanel>
                         <TextBlock
-                            ui:TextBlockExtensions.Typography="Caption"
+                            Style="{StaticResource CaptionTextBlockStyle}"
                             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                             Text="List views, cards, layout panels."
                             TextWrapping="Wrap" />
@@ -268,12 +268,12 @@
                                 IconFontSize="20" />
                             <TextBlock
                                 VerticalAlignment="Center"
-                                ui:TextBlockExtensions.Typography="BodyStrong"
+                                Style="{StaticResource BodyStrongTextBlockStyle}"
                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                 Text="Navigation" />
                         </StackPanel>
                         <TextBlock
-                            ui:TextBlockExtensions.Typography="Caption"
+                            Style="{StaticResource CaptionTextBlockStyle}"
                             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                             Text="Pane layouts, selection, header."
                             TextWrapping="Wrap" />
@@ -297,12 +297,12 @@
                                 IconFontSize="20" />
                             <TextBlock
                                 VerticalAlignment="Center"
-                                ui:TextBlockExtensions.Typography="BodyStrong"
+                                Style="{StaticResource BodyStrongTextBlockStyle}"
                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                 Text="Tabs" />
                         </StackPanel>
                         <TextBlock
-                            ui:TextBlockExtensions.Typography="Caption"
+                            Style="{StaticResource CaptionTextBlockStyle}"
                             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                             Text="TabView, tab strip, close buttons."
                             TextWrapping="Wrap" />
@@ -326,12 +326,12 @@
                                 IconFontSize="20" />
                             <TextBlock
                                 VerticalAlignment="Center"
-                                ui:TextBlockExtensions.Typography="BodyStrong"
+                                Style="{StaticResource BodyStrongTextBlockStyle}"
                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                 Text="Menus" />
                         </StackPanel>
                         <TextBlock
-                            ui:TextBlockExtensions.Typography="Caption"
+                            Style="{StaticResource CaptionTextBlockStyle}"
                             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                             Text="ContextMenu, MenuItem, flyout."
                             TextWrapping="Wrap" />
@@ -355,12 +355,12 @@
                                 IconFontSize="20" />
                             <TextBlock
                                 VerticalAlignment="Center"
-                                ui:TextBlockExtensions.Typography="BodyStrong"
+                                Style="{StaticResource BodyStrongTextBlockStyle}"
                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                 Text="Trees" />
                         </StackPanel>
                         <TextBlock
-                            ui:TextBlockExtensions.Typography="Caption"
+                            Style="{StaticResource CaptionTextBlockStyle}"
                             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                             Text="TreeView, expand, indent, chevron."
                             TextWrapping="Wrap" />

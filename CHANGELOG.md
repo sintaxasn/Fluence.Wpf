@@ -11,7 +11,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Accent application now raises `AccentColorChanged` once per apply after accent-dependent resources are updated.
 - `PasswordBox` now stops Caps Lock polling when unloaded.
 - `TitleBar` now detaches command `CanExecuteChanged` handlers while unloaded.
-- Colors gallery swatches now use resolving brush keys and theme-aware foregrounds.
+- Colors gallery now follows the WinUI Gallery Design > Colors structure with reusable live resource tiles, resolving brush keys, and theme-aware foregrounds.
+- PowerShell demo scripts now declare their strict-mode smoke-test parameters and use current `FluenceWindow` backdrop/corner properties.
 - Typography and Settings demo pages now keep source snippets and compact settings layouts aligned with the live UI.
 - Status and Navigation demo source snippets now match the live ProgressBar, ProgressRing, and compact navigation samples.
 - `NavigationView` now keeps its pane collapse button visible in Left and LeftCompact modes without duplicating shell title-bar chrome.

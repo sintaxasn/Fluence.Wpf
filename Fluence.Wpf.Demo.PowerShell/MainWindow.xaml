@@ -10,8 +10,8 @@
     ExtendsContentIntoTitleBar="False"
     SnapsToDevicePixels="True"
     UseLayoutRounding="True"
-    WindowCorners="Round"
-    WindowBackdrop="Mica"
+    CornerStyle="Round"
+    SystemBackdropType="Mica"
     >
 
     <Grid Margin="24,20,24,20">

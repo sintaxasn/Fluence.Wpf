@@ -67,7 +67,7 @@
                                         <StackPanel Grid.Column="1">
                                             <TextBlock FontWeight="SemiBold" Text="Ana Bowman" />
                                             <TextBlock
-                                                ui:TextBlockExtensions.Typography="Caption"
+                                                Style="{StaticResource CaptionTextBlockStyle}"
                                                 Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                                 Text="Support Engineer" />
                                         </StackPanel>
@@ -87,7 +87,7 @@
                                         <StackPanel Grid.Column="1">
                                             <TextBlock FontWeight="SemiBold" Text="Shawn Hughes" />
                                             <TextBlock
-                                                ui:TextBlockExtensions.Typography="Caption"
+                                                Style="{StaticResource CaptionTextBlockStyle}"
                                                 Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                                 Text="Platform Specialist" />
                                         </StackPanel>
@@ -107,7 +107,7 @@
                                         <StackPanel Grid.Column="1">
                                             <TextBlock FontWeight="SemiBold" Text="Oscar Ward" />
                                             <TextBlock
-                                                ui:TextBlockExtensions.Typography="Caption"
+                                                Style="{StaticResource CaptionTextBlockStyle}"
                                                 Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                                 Text="DevOps Lead" />
                                         </StackPanel>

@@ -8,7 +8,7 @@
         <Style x:Key="DemoSampleSourceHeaderToggleButtonStyle" TargetType="{x:Type ToggleButton}">
             <Setter Property="UseLayoutRounding" Value="True" />
             <Setter Property="Padding" Value="0" />
-            <Setter Property="Background" Value="{DynamicResource DemoSampleSourceHeaderBackgroundBrush}" />
+            <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
             <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
             <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
             <Setter Property="Padding" Value="{DynamicResource DemoSampleSourceHeaderPadding}" />
@@ -101,7 +101,7 @@
 
         <Style x:Key="DemoSampleSourceExpanderStyle" TargetType="{x:Type fluence:Expander}">
             <Setter Property="UseLayoutRounding" Value="True" />
-            <Setter Property="Background" Value="{DynamicResource DemoSampleSourceHeaderBackgroundBrush}" />
+            <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
             <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
             <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
             <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
@@ -140,7 +140,7 @@
                                 <Border
                                     x:Name="SourceContentBorder"
                                     Grid.Row="1"
-                                    Background="{DynamicResource DemoSampleSourceContentBackgroundBrush}"
+                                    Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                                     ClipToBounds="True"
                                     CornerRadius="0,0,8,8">
                                     <ContentPresenter
@@ -186,9 +186,8 @@
             x:Name="SampleCard"
             Grid.Row="1"
             Padding="{DynamicResource DemoSampleCardPadding}"
-            Background="{DynamicResource DemoSampleCardBackgroundBrush}"
             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-            BorderThickness="1"
+            BorderThickness="0"
             CornerRadius="8,8,0,0">
             <Grid x:Name="SampleContentGrid">
                 <Grid.ColumnDefinitions>
@@ -213,7 +212,7 @@
                         Margin="{DynamicResource DemoSampleOutputMargin}"
                         Padding="{DynamicResource DemoSampleOutputPadding}"
                         VerticalAlignment="Center"
-                        Background="{DynamicResource DemoSampleCardBackgroundBrush}"
+                        Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"
                         CornerRadius="{DynamicResource ControlCornerRadius}">
                         <StackPanel>
                             <TextBlock Text="Output:" />
@@ -226,7 +225,7 @@
                     x:Name="RightRailBorder"
                     Grid.Column="1"
                     Padding="{DynamicResource DemoSampleRightRailPadding}"
-                    Background="{DynamicResource DemoSampleRightRailBackgroundBrush}"
+                    Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}"
                     BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                     BorderThickness="1,0,0,0"
                     CornerRadius="0,8,0,0">

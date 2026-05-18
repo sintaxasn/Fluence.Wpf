@@ -105,7 +105,7 @@ namespace Fluence.Wpf.Demo.Pages
                             <TextBlock
                                 Margin=""{DynamicResource DemoDataBindingSecondaryTextMargin}""
                                 VerticalAlignment=""Center""
-                                ui:TextBlockExtensions.Typography=""Caption""
+                                Style=""{StaticResource CaptionTextBlockStyle}""
                                 Foreground=""{DynamicResource TextFillColorTertiaryBrush}""
                                 Text=""{Binding AddedAt}"" />
                         </StackPanel>

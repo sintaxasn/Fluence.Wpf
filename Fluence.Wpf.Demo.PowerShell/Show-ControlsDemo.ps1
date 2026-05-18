@@ -13,7 +13,7 @@ $isSta = [System.Threading.Thread]::CurrentThread.GetApartmentState() -eq [Syste
 
 ## If not running in-process, re-launch this script under Windows PowerShell 5.1 in STA mode.
 if (-not $RunInProcess) {
-    if (-not $PSCommandPath) {  throw 'Run this script from a file with Windows PowerShell 5.1 using: powershell.exe -STA -ExecutionPolicy Bypass -File .\Show-FluenceDemo.ps1' }
+    if (-not $PSCommandPath) {  throw 'Run this script from a file with Windows PowerShell 5.1 using: powershell.exe -STA -ExecutionPolicy Bypass -File .\Show-ControlsDemo.ps1' }
     if (-not (Test-Path -LiteralPath $windowsPowerShell)) { throw "Windows PowerShell 5.1 was not found at '$windowsPowerShell'." }
     $arguments = @('-NoProfile', '-STA', '-ExecutionPolicy', 'Bypass', '-File', $PSCommandPath, '-RunInProcess')
     if ($SmokeTest) {  $arguments += '-SmokeTest' }

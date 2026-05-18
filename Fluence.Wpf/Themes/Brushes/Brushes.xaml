@@ -137,6 +137,16 @@
     <SolidColorBrush x:Key="SystemFillColorSolidAttentionBackgroundBrush" Color="{DynamicResource SystemFillColorSolidAttentionBackground}" />
     <SolidColorBrush x:Key="SystemFillColorSolidNeutralBackgroundBrush" Color="{DynamicResource SystemFillColorSolidNeutralBackground}" />
 
+    <!--  High contrast SystemColor aliases used by the WinUI Gallery color guidance page.  -->
+    <SolidColorBrush x:Key="SystemColorWindowTextColorBrush" Color="{DynamicResource {x:Static SystemColors.WindowTextColorKey}}" />
+    <SolidColorBrush x:Key="SystemColorWindowColorBrush" Color="{DynamicResource {x:Static SystemColors.WindowColorKey}}" />
+    <SolidColorBrush x:Key="SystemColorButtonFaceColorBrush" Color="{DynamicResource {x:Static SystemColors.ControlColorKey}}" />
+    <SolidColorBrush x:Key="SystemColorButtonTextColorBrush" Color="{DynamicResource {x:Static SystemColors.ControlTextColorKey}}" />
+    <SolidColorBrush x:Key="SystemColorHighlightColorBrush" Color="{DynamicResource {x:Static SystemColors.HighlightColorKey}}" />
+    <SolidColorBrush x:Key="SystemColorHighlightTextColorBrush" Color="{DynamicResource {x:Static SystemColors.HighlightTextColorKey}}" />
+    <SolidColorBrush x:Key="SystemColorHotlightColorBrush" Color="{DynamicResource {x:Static SystemColors.HotTrackColorKey}}" />
+    <SolidColorBrush x:Key="SystemColorGrayTextColorBrush" Color="{DynamicResource {x:Static SystemColors.GrayTextColorKey}}" />
+
     <!--  Window Chrome - Close Button  -->
     <SolidColorBrush x:Key="WindowCloseButtonBackgroundPointerOverBrush" Color="{DynamicResource WindowCloseButtonBackgroundPointerOver}" />
     <SolidColorBrush x:Key="WindowCloseButtonBackgroundPressedBrush" Color="{DynamicResource WindowCloseButtonBackgroundPressed}" />

@@ -91,7 +91,10 @@
                                 Margin="{DynamicResource DemoInlineControlGapMargin}"
                                 Content="Option B"
                                 GroupName="BasicGroup" />
-                            <ui:RadioButton Content="Option C" GroupName="BasicGroup" />
+                            <ui:RadioButton
+                                Margin="{DynamicResource DemoInlineControlGapMargin}"
+                                Content="Option C"
+                                GroupName="BasicGroup" />
                         </StackPanel>
                         <TextBlock
                             FontWeight="SemiBold"

@@ -14,7 +14,7 @@
         <StackPanel Style="{StaticResource GalleryPageContentStackStyle}">
             <TextBlock
                 Margin="0,0,0,4"
-                ui:TextBlockExtensions.Typography="Title"
+                Style="{DynamicResource TitleTextBlockStyle}"
                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                 Text="Accessibility" />
             <TextBlock
@@ -115,7 +115,7 @@
 
                         <TextBlock
                             Margin="0,12,0,8"
-                            ui:TextBlockExtensions.Typography="Caption"
+                            Style="{DynamicResource CaptionTextBlockStyle}"
                             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                             Text="The buttons below have an explicit reverse tab order: 3, 2, 1." />
                         <Grid x:Name="KeyboardSupportExplicitOrderControls" Margin="0,0,0,8">
@@ -171,17 +171,17 @@
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <TextBlock
-                                    ui:TextBlockExtensions.Typography="BodyStrong"
+                                    Style="{DynamicResource BodyStrongTextBlockStyle}"
                                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                     Text="Fluence key" />
                                 <TextBlock
                                     Grid.Column="1"
-                                    ui:TextBlockExtensions.Typography="BodyStrong"
+                                    Style="{StaticResource BodyStrongTextBlockStyle}"
                                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                     Text="HC system color" />
                                 <TextBlock
                                     Grid.Column="2"
-                                    ui:TextBlockExtensions.Typography="BodyStrong"
+                                    Style="{StaticResource BodyStrongTextBlockStyle}"
                                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                     Text="Live swatch" />
                             </Grid>
@@ -200,12 +200,12 @@
                                                 <ColumnDefinition Width="*" />
                                             </Grid.ColumnDefinitions>
                                             <TextBlock
-                                                ui:TextBlockExtensions.Typography="Caption"
+                                                Style="{StaticResource CaptionTextBlockStyle}"
                                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                                 Text="{Binding Key}" />
                                             <TextBlock
                                                 Grid.Column="1"
-                                                ui:TextBlockExtensions.Typography="Caption"
+                                                Style="{StaticResource CaptionTextBlockStyle}"
                                                 Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                                 Text="{Binding HcMapping}" />
                                             <Border
@@ -240,7 +240,7 @@
                     <StackPanel>
                         <TextBlock
                             Margin="0,0,0,8"
-                            ui:TextBlockExtensions.Typography="Body"
+                            Style="{StaticResource BodyTextBlockStyle}"
                             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                             Text="These icon-only buttons all have AutomationProperties.Name so Narrator announces their purpose:"
                             TextWrapping="Wrap" />
@@ -275,7 +275,7 @@
                         </StackPanel>
                         <TextBlock
                             Margin="0,12,0,0"
-                            ui:TextBlockExtensions.Typography="Caption"
+                            Style="{StaticResource CaptionTextBlockStyle}"
                             Foreground="{DynamicResource TextFillColorTertiaryBrush}"
                             Text="Tip: use Windows Narrator or Inspect.exe to verify automation names at runtime."
                             TextWrapping="Wrap" />
@@ -310,7 +310,7 @@
                             <StackPanel>
                                 <TextBlock
                                     Margin="0,0,0,8"
-                                    ui:TextBlockExtensions.Typography="BodyStrong"
+                                    Style="{StaticResource BodyStrongTextBlockStyle}"
                                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                     Text="نموذج عنصر تحكم" />
                                 <StackPanel Orientation="Horizontal">

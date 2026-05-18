@@ -27,6 +27,7 @@
  */
 
 using Fluence.Wpf.Demo.Pages;
+using Fluence.Wpf.Demo.Pages.ColorGuidance;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -362,6 +363,34 @@ namespace Fluence.Wpf.Tests
                     "ControlFillColorDefaultBrush",
                     "TextFillColorSecondaryBrush",
                     "AccentFillColorDefaultBrush",
+                    "SubtleFillColorTransparentBrush",
+                    "SubtleFillColorSecondaryBrush",
+                    "SubtleFillColorTertiaryBrush",
+                    "ControlOnImageFillColorDefaultBrush",
+                    "ControlOnImageFillColorSecondaryBrush",
+                    "ControlOnImageFillColorTertiaryBrush",
+                    "ControlOnImageFillColorDisabledBrush",
+                    "SurfaceStrokeColorDefaultBrush",
+                    "SurfaceStrokeColorFlyoutBrush",
+                    "SurfaceStrokeColorInverseBrush",
+                    "DividerStrokeColorDefaultBrush",
+                    "LayerOnAcrylicFillColorDefaultBrush",
+                    "LayerOnAccentAcrylicFillColorDefaultBrush",
+                    "LayerOnMicaBaseAltFillColorDefaultBrush",
+                    "LayerOnMicaBaseAltFillColorSecondaryBrush",
+                    "LayerOnMicaBaseAltFillColorTertiaryBrush",
+                    "LayerOnMicaBaseAltFillColorTransparentBrush",
+                    "AcrylicBackgroundFillColorDefaultBrush",
+                    "AcrylicBackgroundFillColorBaseBrush",
+                    "SystemFillColorInformationalBrush",
+                    "SystemColorWindowTextColorBrush",
+                    "SystemColorWindowColorBrush",
+                    "SystemColorButtonFaceColorBrush",
+                    "SystemColorButtonTextColorBrush",
+                    "SystemColorHighlightColorBrush",
+                    "SystemColorHighlightTextColorBrush",
+                    "SystemColorHotlightColorBrush",
+                    "SystemColorGrayTextColorBrush",
                 ];
 
                 ApplicationTheme[] themes =
@@ -386,6 +415,94 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void GalleryColorsPage_UsesWinUiGalleryColorStructure()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                Application? application = EnsureApplication();
+                _ = MergeGenericDictionary(application);
+                MergeDemoSharedStyles(application);
+
+                GalleryColorsPage page = new();
+                Window window = new()
+                {
+                    Content = page,
+                    Width = 980,
+                    Height = 720
+                };
+
+                try
+                {
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    DemoSampleControl? sample = FindVisualChild<DemoSampleControl>(window);
+                    Assert.IsNotNull(sample, "Colors page must keep DemoSampleControl as the reusable sample surface.");
+                    Assert.AreEqual(
+                        "Theme brushes and accent resources available to Fluence controls.",
+                        sample.SampleDescription,
+                        "Colors page sample description should describe the Fluence color system.");
+
+                    FluenceExpander? sourceExpander = sample.FindName("SourceExpander") as FluenceExpander;
+                    Assert.IsNotNull(sourceExpander, "Colors page sample must keep the bottom source expander.");
+
+                    TabControl? tabs = FindVisualChild<TabControl>(sample);
+                    Assert.IsNotNull(tabs, "Colors page must expose a selector-style TabControl.");
+                    Assert.AreEqual(6, tabs.Items.Count, "Colors page must keep the six WinUI Gallery color sections.");
+
+                    string[] expectedHeaders =
+                    [
+                        "Text",
+                        "Fill",
+                        "Stroke",
+                        "Background",
+                        "Signal",
+                        "High Contrast"
+                    ];
+                    for (int i = 0; i < expectedHeaders.Length; i++)
+                    {
+                        TabItem item = (TabItem)tabs.Items[i];
+                        Assert.AreEqual(expectedHeaders[i], item.Header, "Unexpected Colors page section at index " + i + ".");
+                    }
+
+                    int totalTiles = 0;
+                    bool sawSystemColorAlias = false;
+                    bool sawColorPageExample = false;
+                    for (int i = 0; i < tabs.Items.Count; i++)
+                    {
+                        tabs.SelectedIndex = i;
+                        DrainDispatcher(window.Dispatcher);
+                        window.UpdateLayout();
+
+                        List<ColorTile> tiles = [.. FindVisualChildren<ColorTile>(tabs)];
+                        totalTiles += tiles.Count;
+                        foreach (ColorTile tile in tiles)
+                        {
+                            if (tile.BrushResourceKey.Equals("SystemColorWindowTextColorBrush", StringComparison.Ordinal))
+                            {
+                                sawSystemColorAlias = true;
+                            }
+                        }
+
+                        if (FindVisualChild<ColorPageExample>(tabs) is not null)
+                        {
+                            sawColorPageExample = true;
+                        }
+                    }
+
+                    Assert.IsTrue(totalTiles >= 70, "Colors page should expose the WinUI-style brush catalogue through ColorTile controls.");
+                    Assert.IsTrue(sawSystemColorAlias, "High Contrast section must use the new SystemColor alias resources.");
+                    Assert.IsTrue(sawColorPageExample, "Colors page sections must include WinUI Gallery-style example surfaces.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                }
+            });
+        }
+
+        [TestMethod]
         public void GalleryColorsPage_DynamicResourceKeys_ResolveAcrossThemes()
         {
             WpfTestSta.Invoke(() =>
@@ -394,8 +511,7 @@ namespace Fluence.Wpf.Tests
                 _ = MergeGenericDictionary(application);
                 MergeDemoSharedStyles(application);
 
-                string colorsPagePath = Path.Combine(FindRepoRoot(), "Fluence.Wpf.Demo", "Pages", "GalleryColorsPage.xaml");
-                SortedSet<string> resourceKeys = GetDynamicResourceKeysFromXaml(colorsPagePath);
+                SortedSet<string> resourceKeys = GetColorGuidanceResourceKeys();
                 List<string> unresolved = [];
 
                 ApplicationTheme[] themes =
@@ -420,16 +536,17 @@ namespace Fluence.Wpf.Tests
                 }
 
                 Assert.AreEqual(0, unresolved.Count,
-                    "GalleryColorsPage.xaml must only reference DynamicResource keys that resolve: " +
+                    "Colors page guidance must only reference resource keys that resolve: " +
                     string.Join("; ", unresolved));
             });
         }
 
         [TestMethod]
-        public void GalleryColorsPage_Foregrounds_AvoidLiteralBlackAndWhite()
+        public void GalleryColorsPage_Foregrounds_AvoidLiteralBlackAndWhiteInXamlAndSourceSnippets()
         {
             string colorsPagePath = Path.Combine(FindRepoRoot(), "Fluence.Wpf.Demo", "Pages", "GalleryColorsPage.xaml");
-            string source = File.ReadAllText(colorsPagePath);
+            string colorsPageCodePath = Path.Combine(FindRepoRoot(), "Fluence.Wpf.Demo", "Pages", "GalleryColorsPage.xaml.cs");
+            string source = File.ReadAllText(colorsPagePath) + Environment.NewLine + File.ReadAllText(colorsPageCodePath);
             string[] forbiddenForegrounds =
             [
                 "Foreground=\"Black\"",
@@ -449,6 +566,60 @@ namespace Fluence.Wpf.Tests
             Assert.AreEqual(0, violations.Count,
                 "GalleryColorsPage foregrounds must use theme-aware resources: " +
                 string.Join("; ", violations));
+        }
+
+        [TestMethod]
+        public void PowerShellDemoScripts_DeclareStrictModeParameters()
+        {
+            string scriptsRoot = Path.Combine(FindRepoRoot(), "Fluence.Wpf.Demo.PowerShell");
+            string[] scriptNames =
+            [
+                "Show-ControlsDemo.ps1",
+                "Show-ThemeDemo.ps1",
+                "Show-ProgressDemo.ps1"
+            ];
+            List<string> violations = [];
+
+            foreach (string scriptName in scriptNames)
+            {
+                string path = Path.Combine(scriptsRoot, scriptName);
+                string source = File.ReadAllText(path);
+
+                if (ContainsOrdinal(source, "$SmokeTest") &&
+                    !ContainsOrdinal(source, "[switch]$SmokeTest"))
+                {
+                    violations.Add(scriptName + " references $SmokeTest without declaring a switch parameter.");
+                }
+
+                if (ContainsOrdinal(source, "$RunInProcess") &&
+                    !ContainsOrdinal(source, "[switch]$RunInProcess"))
+                {
+                    violations.Add(scriptName + " references $RunInProcess without declaring a switch parameter.");
+                }
+
+                if (ContainsOrdinal(source, "Show-FluenceDemo.ps1"))
+                {
+                    violations.Add(scriptName + " still reports the stale Show-FluenceDemo.ps1 script name.");
+                }
+            }
+
+            Assert.AreEqual(0, violations.Count, string.Join("; ", violations));
+        }
+
+        [TestMethod]
+        public void PowerShellDemoXaml_UsesCurrentFluenceWindowProperties()
+        {
+            string path = Path.Combine(FindRepoRoot(), "Fluence.Wpf.Demo.PowerShell", "MainWindow.xaml");
+            string source = File.ReadAllText(path);
+
+            Assert.IsFalse(ContainsOrdinal(source, "WindowCorners"),
+                "PowerShell demo XAML must not use the old WindowCorners property.");
+            Assert.IsFalse(ContainsOrdinal(source, "WindowBackdrop"),
+                "PowerShell demo XAML must not use the old WindowBackdrop property.");
+            Assert.IsTrue(ContainsOrdinal(source, "CornerStyle=\"Round\""),
+                "PowerShell demo XAML should use CornerStyle.");
+            Assert.IsTrue(ContainsOrdinal(source, "SystemBackdropType=\"Mica\""),
+                "PowerShell demo XAML should use SystemBackdropType.");
         }
 
         [TestMethod]
@@ -521,20 +692,57 @@ namespace Fluence.Wpf.Tests
             }
         }
 
-        private static SortedSet<string> GetDynamicResourceKeysFromXaml(string path)
+        private static SortedSet<string> GetColorGuidanceResourceKeys()
+        {
+            string repoRoot = FindRepoRoot();
+            SortedSet<string> keys = [];
+            AddColorGuidanceResourceKeysFromXaml(
+                Path.Combine(repoRoot, "Fluence.Wpf.Demo", "Pages", "GalleryColorsPage.xaml"),
+                keys);
+
+            string guidanceRoot = Path.Combine(repoRoot, "Fluence.Wpf.Demo", "Pages", "ColorGuidance");
+            foreach (string path in Directory.EnumerateFiles(guidanceRoot, "*.xaml", SearchOption.TopDirectoryOnly))
+            {
+                AddColorGuidanceResourceKeysFromXaml(path, keys);
+            }
+
+            return keys;
+        }
+
+        private static bool ContainsOrdinal(string source, string value)
+        {
+            return source.IndexOf(value, StringComparison.Ordinal) >= 0;
+        }
+
+        private static void AddColorGuidanceResourceKeysFromXaml(string path, SortedSet<string> keys)
         {
             XDocument document = XDocument.Load(path);
-            SortedSet<string> keys = [];
 
             foreach (XElement element in document.Descendants())
             {
                 foreach (XAttribute attribute in element.Attributes())
                 {
                     CollectDynamicResourceKeys(attribute.Value, keys);
+                    CollectColorTileResourceKey(attribute, keys);
                 }
             }
+        }
 
-            return keys;
+        private static void CollectColorTileResourceKey(XAttribute attribute, SortedSet<string> keys)
+        {
+            string localName = attribute.Name.LocalName;
+            if (!localName.Equals("BrushResourceKey", StringComparison.Ordinal) &&
+                !localName.Equals("ForegroundResourceKey", StringComparison.Ordinal) &&
+                !localName.Equals("ResourceKey", StringComparison.Ordinal))
+            {
+                return;
+            }
+
+            string value = attribute.Value.Trim();
+            if (value.Length > 0)
+            {
+                _ = keys.Add(value);
+            }
         }
 
         private static void CollectDynamicResourceKeys(string value, SortedSet<string> keys)
@@ -650,7 +858,6 @@ namespace Fluence.Wpf.Tests
             return fileName.Equals("fluence-wpf-banner-light.xaml", StringComparison.OrdinalIgnoreCase) ||
                 fileName.Equals("fluence-wpf-banner-dark.xaml", StringComparison.OrdinalIgnoreCase) ||
                 fileName.Equals("GallerySettingsPage.xaml", StringComparison.OrdinalIgnoreCase) ||
-                fileName.Equals("GalleryColorsPage.xaml", StringComparison.OrdinalIgnoreCase) ||
                 fileName.Equals("GalleryAccessibilityPage.xaml", StringComparison.OrdinalIgnoreCase);
         }
 

@@ -192,17 +192,17 @@ namespace Fluence.Wpf.Demo.Pages.Accessibility
                     <ColumnDefinition Width=""*"" />
                 </Grid.ColumnDefinitions>
                 <TextBlock
-                    ui:TextBlockExtensions.Typography=""BodyStrong""
+                    Style=""{StaticResource BodyStrongTextBlockStyle}""
                     Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
                     Text=""Fluence key"" />
                 <TextBlock
                     Grid.Column=""1""
-                    ui:TextBlockExtensions.Typography=""BodyStrong""
+                    Style=""{StaticResource BodyStrongTextBlockStyle}""
                     Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
                     Text=""HC system color"" />
                 <TextBlock
                     Grid.Column=""2""
-                    ui:TextBlockExtensions.Typography=""BodyStrong""
+                    Style=""{StaticResource BodyStrongTextBlockStyle}""
                     Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
                     Text=""Live swatch"" />
             </Grid>
@@ -221,12 +221,12 @@ namespace Fluence.Wpf.Demo.Pages.Accessibility
                                 <ColumnDefinition Width=""*"" />
                             </Grid.ColumnDefinitions>
                             <TextBlock
-                                ui:TextBlockExtensions.Typography=""Caption""
+                                Style=""{StaticResource CaptionTextBlockStyle}""
                                 Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
                                 Text=""{Binding Key}"" />
                             <TextBlock
                                 Grid.Column=""1""
-                                ui:TextBlockExtensions.Typography=""Caption""
+                                Style=""{StaticResource CaptionBlockStyle}""
                                 Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
                                 Text=""{Binding HcMapping}"" />
                             <Border
@@ -384,7 +384,7 @@ namespace Fluence.Wpf.Demo.Pages.Accessibility
             <StackPanel>
                 <TextBlock
                     Margin=""0,0,0,8""
-                    ui:TextBlockExtensions.Typography=""BodyStrong""
+                    Style=""{StaticResource BodyStrongTextBlockStyle}""
                     Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
                     Text=""نموذج عنصر تحكم"" />
                 <StackPanel Orientation=""Horizontal"">

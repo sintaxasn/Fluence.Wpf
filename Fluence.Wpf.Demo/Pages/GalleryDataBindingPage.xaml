@@ -49,13 +49,13 @@
                                         Orientation="Horizontal">
                                         <TextBlock
                                             VerticalAlignment="Center"
-                                            ui:TextBlockExtensions.Typography="Body"
+                                            Style="{StaticResource BodyTextBlockStyle}"
                                             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                             Text="{Binding Name}" />
                                         <TextBlock
                                             Margin="{DynamicResource DemoDataBindingSecondaryTextMargin}"
                                             VerticalAlignment="Center"
-                                            ui:TextBlockExtensions.Typography="Caption"
+                                            Style="{StaticResource CaptionTextBlockStyle}"
                                             Foreground="{DynamicResource TextFillColorTertiaryBrush}"
                                             Text="{Binding AddedAt}" />
                                     </StackPanel>
@@ -115,7 +115,7 @@
                 Visibility="Collapsed">
 <TextBlock
                         x:Name="SelectionCountLabel"
-                        ui:TextBlockExtensions.Typography="Caption"
+                        Style="{StaticResource CaptionTextBlockStyle}"
                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                         Text="Selected: none" />
             </ContentControl>
@@ -177,7 +177,7 @@
                                         Orientation="Horizontal">
                                         <TextBlock
                                             VerticalAlignment="Center"
-                                            ui:TextBlockExtensions.Typography="Body"
+                                            Style="{StaticResource BodyTextBlockStyle}"
                                             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                             Text="{Binding Name}" />
                                         <TextBlock
@@ -185,7 +185,7 @@
                                             VerticalAlignment="Bottom"
                                             
                                             
-                                            ui:TextBlockExtensions.Typography="Caption"
+                                            Style="{StaticResource CaptionTextBlockStyle}"
                                             Foreground="{DynamicResource TextFillColorTertiaryBrush}"
                                             Text="{Binding AddedAt}" />
                                     </StackPanel>
@@ -198,7 +198,7 @@
                 x:Name="DemoSampleSlot03OutputContentHost"
                 Visibility="Collapsed">
 <TextBlock
-                        ui:TextBlockExtensions.Typography="Caption"
+                        Style="{StaticResource CaptionTextBlockStyle}"
                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                         Text="Name and AddedAt are simple properties on each bound item." />
             </ContentControl>

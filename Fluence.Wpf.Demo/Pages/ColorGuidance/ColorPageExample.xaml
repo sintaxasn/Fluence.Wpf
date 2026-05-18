@@ -1,0 +1,36 @@
+﻿<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.ColorGuidance.ColorPageExample"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    x:Name="Root"
+    d:DesignHeight="180"
+    d:DesignWidth="640"
+    mc:Ignorable="d">
+    <Border
+        Margin="{DynamicResource ColorPageExampleMargin}"
+        Padding="{DynamicResource ColorPageExamplePadding}"
+        Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"
+        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+        BorderThickness="1"
+        CornerRadius="{DynamicResource OverlayCornerRadius}">
+        <StackPanel>
+            <TextBlock
+                Margin="{DynamicResource ColorPageExampleTitleMargin}"
+                Style="{StaticResource SubtitleTextBlockStyle}"
+                Text="{Binding Title, ElementName=Root}"
+                TextWrapping="Wrap" />
+            <TextBlock
+                Margin="{DynamicResource ColorPageExampleDescriptionMargin}"
+                Opacity="0.8"
+                Style="{StaticResource CaptionTextBlockStyle}"
+                Text="{Binding Description, ElementName=Root}"
+                TextWrapping="Wrap" />
+            <ContentPresenter
+                Margin="{DynamicResource ColorPageExampleContentMargin}"
+                HorizontalAlignment="Center"
+                Content="{Binding ExampleContent, ElementName=Root}" />
+        </StackPanel>
+    </Border>
+</UserControl>

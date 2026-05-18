@@ -90,7 +90,7 @@
                 Visibility="Collapsed">
 <TextBlock
                         x:Name="MenuBarResultLabel"
-                        ui:TextBlockExtensions.Typography="Caption"
+                        Style="{StaticResource CaptionTextBlockStyle}"
                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                         Text="Last menu action: None" />
             </ContentControl>

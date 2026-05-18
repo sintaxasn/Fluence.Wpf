@@ -1,30 +1,21 @@
 ﻿<!--
     Copyright (C) 2026 Dan Cunningham. All rights reserved.
-
+    
     Shared demo gallery styles (merged by App.xaml and test host).
 -->
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:color="clr-namespace:Fluence.Wpf.Demo.Pages.ColorGuidance"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
-    xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
-    >
+    xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf">
+
+    <!--  **** Demo App Layout  -->
+
     <Thickness x:Key="DemoPageContentMargin">36,24,36,48</Thickness>
     <Thickness x:Key="DemoPageTitleMargin">0,0,0,8</Thickness>
     <Thickness x:Key="DemoPageDescriptionMargin">0,0,0,24</Thickness>
-    <Thickness x:Key="DemoSampleBlockMargin">0,0,0,24</Thickness>
-    <Thickness x:Key="DemoSampleDescriptionMargin">0,0,0,8</Thickness>
-    <Thickness x:Key="DemoSampleCardPadding">16</Thickness>
-    <Thickness x:Key="DemoSampleOutputMargin">16,0,0,0</Thickness>
-    <Thickness x:Key="DemoSampleOutputPadding">16</Thickness>
-    <Thickness x:Key="DemoSampleRightRailPadding">24,20</Thickness>
-    <Thickness x:Key="DemoSampleSourceHeaderPadding">24,14</Thickness>
-    <Thickness x:Key="DemoSampleSourceTabMargin">16,8,16,16</Thickness>
-    <Thickness x:Key="DemoSourceCodeDocumentPadding">12</Thickness>
-    <Thickness x:Key="DemoSourceCopyButtonHostMargin">0,8,8,0</Thickness>
-    <Thickness x:Key="DemoSourceCopyButtonPadding">8,4</Thickness>
-    <Thickness x:Key="DemoSourceChevronMargin">8,0,0,0</Thickness>
     <Thickness x:Key="DemoCompactStackSpacingMargin">0,0,0,8</Thickness>
     <Thickness x:Key="DemoTextTopGapMargin">0,6,0,0</Thickness>
     <Thickness x:Key="DemoControlGroupItemMargin">0,0,12,12</Thickness>
@@ -50,6 +41,46 @@
     <Thickness x:Key="DemoDataBindingSecondaryTextMargin">32,0,0,0</Thickness>
     <sys:Double x:Key="DemoPlacementTabHeaderWidth">112</sys:Double>
 
+
+    <!--  **** Demo Sample Control  -->
+
+    <Thickness x:Key="DemoSampleBlockMargin">0,0,0,24</Thickness>
+    <Thickness x:Key="DemoSampleDescriptionMargin">0,0,0,8</Thickness>
+    <Thickness x:Key="DemoSampleCardPadding">16</Thickness>
+    <Thickness x:Key="DemoSampleOutputMargin">16,0,0,0</Thickness>
+    <Thickness x:Key="DemoSampleOutputPadding">16</Thickness>
+    <Thickness x:Key="DemoSampleRightRailPadding">24,20</Thickness>
+    <Thickness x:Key="DemoSampleSourceHeaderPadding">24,14</Thickness>
+    <Thickness x:Key="DemoSampleSourceTabMargin">16,8,16,16</Thickness>
+    <Thickness x:Key="DemoSourceCodeDocumentPadding">12</Thickness>
+    <Thickness x:Key="DemoSourceCopyButtonHostMargin">0,8,8,0</Thickness>
+    <Thickness x:Key="DemoSourceCopyButtonPadding">8,4</Thickness>
+    <Thickness x:Key="DemoSourceChevronMargin">8,0,0,0</Thickness>
+
+
+    <!--  Demo Pages *** Design \ Color  -->
+
+    <sys:Double x:Key="ColorSectionSpacing">4</sys:Double>
+    <sys:Double x:Key="ColorTileWidth">200</sys:Double>
+    <sys:Double x:Key="ColorTileMinWidth">120</sys:Double>
+    <sys:Double x:Key="ColorTileMinHeight">100</sys:Double>
+    <sys:Double x:Key="ColorTileHeight">120</sys:Double>
+    <Thickness x:Key="ColorSelectorMargin">0,20,0,0</Thickness>
+    <Thickness x:Key="ColorSectionContentMargin">0,20,0,0</Thickness>
+    <Thickness x:Key="ColorSectionHeaderMargin">0,20,0,4</Thickness>
+    <Thickness x:Key="ColorSectionDescriptionMargin">0,0,0,12</Thickness>
+    <Thickness x:Key="ColorTileMargin">0,0,4,4</Thickness>
+    <Thickness x:Key="ColorTilePadding">12</Thickness>
+    <Thickness x:Key="ColorTileTitleMargin">0,0,4,4</Thickness>
+    <Thickness x:Key="ColorTileDescriptionMargin">0,2,0,0</Thickness>
+    <Thickness x:Key="ColorTileResourceKeyMargin">0,10,0,0</Thickness>
+    <Thickness x:Key="ColorTileWarningIconMargin">0,1,4,0</Thickness>
+    <Thickness x:Key="ColorPageExampleMargin">0,16,0,8</Thickness>
+    <Thickness x:Key="ColorPageExamplePadding">12</Thickness>
+    <Thickness x:Key="ColorPageExampleTitleMargin">0,0,0,4</Thickness>
+    <Thickness x:Key="ColorPageExampleDescriptionMargin">0,0,0,8</Thickness>
+    <Thickness x:Key="ColorPageExampleContentMargin">0,8,0,0</Thickness>
+
     <Style x:Key="AccentSwatchStyle" TargetType="{x:Type ui:Button}">
         <Setter Property="Width" Value="42" />
         <Setter Property="Height" Value="42" />
@@ -67,8 +98,7 @@
                     Direction="270"
                     Opacity="0.25"
                     ShadowDepth="3"
-                    Color="Black"
-                    />
+                    Color="Black" />
             </Setter.Value>
         </Setter>
         <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
@@ -92,8 +122,7 @@
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
                         CornerRadius="{TemplateBinding CornerRadius}"
-                        UseLayoutRounding="True"
-                        />
+                        UseLayoutRounding="True" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -107,13 +136,11 @@
                             <DoubleAnimation
                                 Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
                                 To="1.08"
-                                Duration="0:0:0.12"
-                                />
+                                Duration="0:0:0.12" />
                             <DoubleAnimation
                                 Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)"
                                 To="1.08"
-                                Duration="0:0:0.12"
-                                />
+                                Duration="0:0:0.12" />
                         </Storyboard>
                     </BeginStoryboard>
                 </Trigger.EnterActions>
@@ -123,13 +150,11 @@
                             <DoubleAnimation
                                 Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleX)"
                                 To="1"
-                                Duration="0:0:0.12"
-                                />
+                                Duration="0:0:0.12" />
                             <DoubleAnimation
                                 Storyboard.TargetProperty="RenderTransform.(ScaleTransform.ScaleY)"
                                 To="1"
-                                Duration="0:0:0.12"
-                                />
+                                Duration="0:0:0.12" />
                         </Storyboard>
                     </BeginStoryboard>
                 </Trigger.ExitActions>
@@ -161,8 +186,7 @@
                     <Border
                         x:Name="MainBorder"
                         Background="{TemplateBinding Background}"
-                        CornerRadius="{TemplateBinding CornerRadius}"
-                        >
+                        CornerRadius="{TemplateBinding CornerRadius}">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*" />
@@ -175,8 +199,7 @@
                                     Padding="{TemplateBinding Padding}"
                                     Focusable="False"
                                     HorizontalScrollBarVisibility="Hidden"
-                                    VerticalScrollBarVisibility="Hidden"
-                                    />
+                                    VerticalScrollBarVisibility="Hidden" />
                                 <TextBlock
                                     x:Name="PlaceholderTextBlock"
                                     Margin="13,0,0,0"
@@ -186,8 +209,7 @@
                                     Foreground="{DynamicResource TextFillColorTertiaryBrush}"
                                     IsHitTestVisible="False"
                                     Text="{TemplateBinding PlaceholderText}"
-                                    Visibility="Collapsed"
-                                    />
+                                    Visibility="Collapsed" />
                             </Grid>
 
                             <!--  Rest underline: grey stroke  -->
@@ -195,8 +217,7 @@
                                 x:Name="RestLine"
                                 Grid.Row="1"
                                 HorizontalAlignment="Stretch"
-                                Background="{DynamicResource ControlStrokeColorDefaultBrush}"
-                                />
+                                Background="{DynamicResource ControlStrokeColorDefaultBrush}" />
 
                             <!--  Focus underline: accent colour, overlays rest line when focused  -->
                             <Border
@@ -204,8 +225,7 @@
                                 Grid.Row="1"
                                 HorizontalAlignment="Stretch"
                                 Background="{DynamicResource AccentFillColorDefaultBrush}"
-                                Opacity="0"
-                                />
+                                Opacity="0" />
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
@@ -247,8 +267,7 @@
     <Style
         x:Key="PageTitleStyle"
         BasedOn="{StaticResource {x:Type TextBlock}}"
-        TargetType="{x:Type TextBlock}"
-        >
+        TargetType="{x:Type TextBlock}">
         <Setter Property="FontSize" Value="28" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
@@ -263,7 +282,7 @@
         x:Key="GalleryPageScrollViewerStyle"
         BasedOn="{StaticResource ScrollViewerStyle}"
         TargetType="{x:Type ui:SmoothScrollViewer}">
-        <Setter Property="Background" Value="{DynamicResource ApplicationBackgroundBrush}" /> 
+        <Setter Property="Background" Value="{DynamicResource ApplicationBackgroundBrush}" />
         <Setter Property="HorizontalScrollBarVisibility" Value="Disabled" />
         <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
     </Style>
@@ -278,7 +297,10 @@
         <Setter Property="Margin" Value="{DynamicResource DemoPageContentMargin}" />
     </Style>
 
-    <Style x:Key="SettingsSectionHeaderStyle" BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="{x:Type TextBlock}">
+    <Style
+        x:Key="SettingsSectionHeaderStyle"
+        BasedOn="{StaticResource {x:Type TextBlock}}"
+        TargetType="{x:Type TextBlock}">
         <Setter Property="FontSize" Value="16" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
@@ -303,28 +325,36 @@
         <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
-    <Style x:Key="SettingsRowTitleStyle" BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="{x:Type TextBlock}">
+    <Style
+        x:Key="SettingsRowTitleStyle"
+        BasedOn="{StaticResource {x:Type TextBlock}}"
+        TargetType="{x:Type TextBlock}">
         <Setter Property="FontSize" Value="15" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
 
-    <Style x:Key="SettingsRowDescriptionStyle" BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="{x:Type TextBlock}">
+    <Style
+        x:Key="SettingsRowDescriptionStyle"
+        BasedOn="{StaticResource {x:Type TextBlock}}"
+        TargetType="{x:Type TextBlock}">
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
 
-    <Style x:Key="FieldLabelStyle" BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="{x:Type TextBlock}">
+    <Style
+        x:Key="FieldLabelStyle"
+        BasedOn="{StaticResource {x:Type TextBlock}}"
+        TargetType="{x:Type TextBlock}">
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
         <Setter Property="Margin" Value="0,0,0,6" />
-        <Setter Property="ui:TextBlockExtensions.Typography" Value="Caption" />
+        <Setter Property="Style" Value="{DynamicResource CaptionTextBlockStyle}" />
     </Style>
 
     <Style
         x:Key="SectionHeaderStyle"
         BasedOn="{StaticResource {x:Type TextBlock}}"
-        TargetType="{x:Type TextBlock}"
-        >
+        TargetType="{x:Type TextBlock}">
         <Setter Property="FontSize" Value="20" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
@@ -334,8 +364,7 @@
     <Style
         x:Key="SectionDescriptionStyle"
         BasedOn="{StaticResource {x:Type TextBlock}}"
-        TargetType="{x:Type TextBlock}"
-        >
+        TargetType="{x:Type TextBlock}">
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
         <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="Margin" Value="{DynamicResource DemoPageDescriptionMargin}" />
@@ -344,8 +373,7 @@
     <Style
         x:Key="StateLabelStyle"
         BasedOn="{StaticResource {x:Type TextBlock}}"
-        TargetType="{x:Type TextBlock}"
-        >
+        TargetType="{x:Type TextBlock}">
         <Setter Property="FontSize" Value="12" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorTertiaryBrush}" />
         <Setter Property="Margin" Value="0,4,0,0" />
@@ -368,8 +396,7 @@
                             <DoubleAnimation
                                 Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
                                 To="1.15"
-                                Duration="0:0:0.100"
-                                >
+                                Duration="0:0:0.100">
                                 <DoubleAnimation.EasingFunction>
                                     <CubicEase EasingMode="EaseOut" />
                                 </DoubleAnimation.EasingFunction>
@@ -377,8 +404,7 @@
                             <DoubleAnimation
                                 Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
                                 To="1.15"
-                                Duration="0:0:0.100"
-                                >
+                                Duration="0:0:0.100">
                                 <DoubleAnimation.EasingFunction>
                                     <CubicEase EasingMode="EaseOut" />
                                 </DoubleAnimation.EasingFunction>
@@ -392,8 +418,7 @@
                             <DoubleAnimation
                                 Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
                                 To="1"
-                                Duration="0:0:0.100"
-                                >
+                                Duration="0:0:0.100">
                                 <DoubleAnimation.EasingFunction>
                                     <CubicEase EasingMode="EaseOut" />
                                 </DoubleAnimation.EasingFunction>
@@ -401,8 +426,7 @@
                             <DoubleAnimation
                                 Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
                                 To="1"
-                                Duration="0:0:0.100"
-                                >
+                                Duration="0:0:0.100">
                                 <DoubleAnimation.EasingFunction>
                                     <CubicEase EasingMode="EaseOut" />
                                 </DoubleAnimation.EasingFunction>
@@ -414,72 +438,62 @@
         </Style.Triggers>
     </Style>
 
-    <!--  Color swatch cell for Colors gallery tab  -->
-    <Style x:Key="ColorSwatchCellStyle" TargetType="{x:Type Border}">
-        <Setter Property="MinHeight" Value="88" />
-        <Setter Property="Padding" Value="12,8" />
-        <Setter Property="CornerRadius" Value="4" />
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+    <!--  **** Design \ Colors  -->
+
+    <Style
+        x:Key="ColorSelectorTabControlStyle"
+        BasedOn="{StaticResource TabControlStyle}"
+        TargetType="{x:Type TabControl}">
+        <Setter Property="Margin" Value="{DynamicResource ColorSelectorMargin}" />
     </Style>
 
-    <!--  Swatch section header (category name inside the Colors tab)  -->
     <Style
-        x:Key="SwatchSectionHeaderStyle"
-        BasedOn="{StaticResource {x:Type TextBlock}}"
-        TargetType="{x:Type TextBlock}"
-        >
-        <Setter Property="FontSize" Value="20" />
-        <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-        <Setter Property="Margin" Value="0,0,0,4" />
+        x:Key="ColorSelectorTabItemStyle"
+        BasedOn="{StaticResource TabItemStyle}"
+        TargetType="{x:Type TabItem}">
+        <Setter Property="Padding" Value="12,4,12,4" />
     </Style>
 
-    <!--  Swatch section description  -->
-    <Style
-        x:Key="SwatchSectionDescStyle"
-        BasedOn="{StaticResource {x:Type TextBlock}}"
-        TargetType="{x:Type TextBlock}"
-        >
-        <Setter Property="FontSize" Value="13" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+    <Style x:Key="ColorSectionStackStyle" TargetType="{x:Type StackPanel}">
+        <Setter Property="Margin" Value="{DynamicResource ColorSectionContentMargin}" />
+    </Style>
+
+    <Style x:Key="ColorTileWrapPanelStyle" TargetType="{x:Type WrapPanel}">
         <Setter Property="Margin" Value="0,0,0,12" />
     </Style>
 
-    <!--  Swatch cell: brush name label  -->
     <Style
-        x:Key="SwatchNameStyle"
+        x:Key="ColorSectionHeaderStyle"
         BasedOn="{StaticResource {x:Type TextBlock}}"
-        TargetType="{x:Type TextBlock}"
-        >
-        <Setter Property="FontSize" Value="13" />
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize" Value="20" />
         <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="Margin" Value="{DynamicResource ColorSectionHeaderMargin}" />
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
 
-    <!--  Swatch cell: usage description  -->
     <Style
-        x:Key="SwatchUsageStyle"
-        BasedOn="{StaticResource {x:Type TextBlock}}"
-        TargetType="{x:Type TextBlock}"
-        >
-        <Setter Property="FontSize" Value="11" />
-        <Setter Property="Opacity" Value="0.7" />
+        x:Key="ColorSectionDescriptionStyle"
+        BasedOn="{StaticResource CaptionTextBlockStyle}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+        <Setter Property="Margin" Value="{DynamicResource ColorSectionDescriptionMargin}" />
+        <Setter Property="Opacity" Value="0.8" />
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
 
-    <!--  Swatch cell: resource key label at bottom  -->
-    <Style
-        x:Key="SwatchKeyStyle"
-        BasedOn="{StaticResource {x:Type TextBlock}}"
-        TargetType="{x:Type TextBlock}"
-        >
-        <Setter Property="FontSize" Value="11" />
-        <Setter Property="Opacity" Value="0.6" />
-        <Setter Property="Margin" Value="0,8,0,0" />
-        <Setter Property="TextWrapping" Value="Wrap" />
-        <Setter Property="VerticalAlignment" Value="Bottom" />
+    <Style x:Key="ColorTileStyle" TargetType="{x:Type color:ColorTile}">
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="Margin" Value="{DynamicResource ColorTileMargin}" />
+        <Setter Property="Height" Value="Auto" />
+        <Setter Property="MinHeight" Value="{DynamicResource ColorTileMinHeight}" />
+        <Setter Property="MinWidth" Value="{DynamicResource ColorTileMinWidth}" />
+        <Setter Property="Width" Value="Auto" />
+
     </Style>
+
+    <!--  **** Design \ Iconography  -->
 
     <Style x:Key="IconGalleryCardStyle" TargetType="{x:Type ui:Border}">
         <Setter Property="Variant" Value="{x:Static uicore:BorderVariant.Subtle}" />
@@ -502,8 +516,7 @@
                             <DoubleAnimation
                                 Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
                                 To="1.12"
-                                Duration="0:0:0.100"
-                                >
+                                Duration="0:0:0.100">
                                 <DoubleAnimation.EasingFunction>
                                     <CubicEase EasingMode="EaseOut" />
                                 </DoubleAnimation.EasingFunction>
@@ -511,8 +524,7 @@
                             <DoubleAnimation
                                 Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
                                 To="1.12"
-                                Duration="0:0:0.100"
-                                >
+                                Duration="0:0:0.100">
                                 <DoubleAnimation.EasingFunction>
                                     <CubicEase EasingMode="EaseOut" />
                                 </DoubleAnimation.EasingFunction>
@@ -526,8 +538,7 @@
                             <DoubleAnimation
                                 Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleX)"
                                 To="1"
-                                Duration="0:0:0.100"
-                                >
+                                Duration="0:0:0.100">
                                 <DoubleAnimation.EasingFunction>
                                     <CubicEase EasingMode="EaseOut" />
                                 </DoubleAnimation.EasingFunction>
@@ -535,8 +546,7 @@
                             <DoubleAnimation
                                 Storyboard.TargetProperty="(UIElement.RenderTransform).(ScaleTransform.ScaleY)"
                                 To="1"
-                                Duration="0:0:0.100"
-                                >
+                                Duration="0:0:0.100">
                                 <DoubleAnimation.EasingFunction>
                                     <CubicEase EasingMode="EaseOut" />
                                 </DoubleAnimation.EasingFunction>

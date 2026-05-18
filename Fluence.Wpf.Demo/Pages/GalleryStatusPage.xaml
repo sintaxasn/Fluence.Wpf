@@ -77,7 +77,7 @@
                         Header="Value"
                         Maximum="100"
                         Minimum="0"
-                        SmallChange="5"
+                        SmallChange="1"
                         SpinButtonPlacementMode="{x:Static uicore:SpinButtonPlacementMode.Inline}"
                         Value="50" />
             </ContentControl>
