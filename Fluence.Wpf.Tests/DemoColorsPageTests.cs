@@ -40,8 +40,6 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using System.Windows.Threading;
-using FluenceStackPanel = Fluence.Wpf.Controls.StackPanel;
-using FluenceToggleButton = Fluence.Wpf.Controls.ToggleButton;
 
 namespace Fluence.Wpf.Tests
 {
@@ -97,17 +95,25 @@ namespace Fluence.Wpf.Tests
                     SmoothScrollViewer? scrollViewer = FindVisualChild<SmoothScrollViewer>(page);
                     Assert.IsNotNull(scrollViewer, "Colors page should use the shared gallery SmoothScrollViewer.");
 
-                    FluenceStackPanel? selectorHost = FindByName<FluenceStackPanel>(page, "SectionSelectorHost");
-                    Assert.IsNotNull(selectorHost, "Colors page should expose a selector host.");
-                    List<FluenceToggleButton> selectorButtons = [.. selectorHost.Children.OfType<FluenceToggleButton>()];
-                    Assert.AreEqual(SectionNames.Length, selectorButtons.Count,
-                        "Colors page should expose the six WinUI Gallery color sections.");
+                    TabControl? colorTabs = FindByName<TabControl>(page, "ColorSectionTabs");
+                    Assert.IsNotNull(colorTabs, "Colors page should use a TabControl for the color sections.");
+                    Assert.AreEqual(SectionNames.Length, colorTabs.Items.Count,
+                        "Colors page should expose the six WinUI Gallery color sections as tabs.");
 
                     for (int i = 0; i < SectionNames.Length; i++)
                     {
-                        Assert.AreEqual(SectionNames[i], selectorButtons[i].Content as string,
+                        TabItem tabItem = (TabItem)colorTabs.Items[i];
+                        Assert.AreEqual(SectionNames[i], tabItem.Header as string,
                             "Unexpected Colors page section at index " + i + ".");
                     }
+
+                    List<string> exampleTitles = [.. FindVisualChildren<System.Windows.Controls.TextBlock>(page)
+                        .Where(static text => string.Equals(text.Tag as string, "ColorExampleTitle", StringComparison.Ordinal))
+                        .Select(static text => text.Text)];
+                    CollectionAssert.AreEqual(
+                        new[] { "Text", "Accent Text", "Text On Accent" },
+                        exampleTitles,
+                        "The Text tab should lead with the primary WPF Gallery color examples.");
 
                     Assert.AreEqual(0, FindVisualChildren<WrapPanel>(page).Count(),
                         "Colors page tile sections should not use WrapPanel layout.");
@@ -117,9 +123,9 @@ namespace Fluence.Wpf.Tests
                     int totalTiles = 0;
                     bool sawSystemColorAlias = false;
                     bool sawAccentFill = false;
-                    for (int i = 0; i < selectorButtons.Count; i++)
+                    for (int i = 0; i < colorTabs.Items.Count; i++)
                     {
-                        ClickSelector(selectorButtons[i], window.Dispatcher);
+                        SelectTab(colorTabs, i, window.Dispatcher);
 
                         List<UniformGrid> rows = [.. FindVisualChildren<UniformGrid>(page)
                             .Where(static row => string.Equals((row.Parent as FrameworkElement)?.Tag as string, "ColorTokenRow", StringComparison.Ordinal))];
@@ -214,7 +220,9 @@ namespace Fluence.Wpf.Tests
                 "Foreground=\"Black\"",
                 "Foreground=\"White\"",
                 "Foreground=\"#",
-                "WrapPanel"
+                "WrapPanel",
+                "SectionSelectorHost",
+                "FluenceToggleButton"
             ];
 
             List<string> violations = [];
@@ -234,13 +242,12 @@ namespace Fluence.Wpf.Tests
         private static SortedSet<string> CollectColorTokenResourceKeys(GalleryColorsPage page, Dispatcher dispatcher)
         {
             SortedSet<string> resourceKeys = [];
-            FluenceStackPanel? selectorHost = FindByName<FluenceStackPanel>(page, "SectionSelectorHost");
-            Assert.IsNotNull(selectorHost, "Colors page should expose a selector host.");
-            List<FluenceToggleButton> selectorButtons = [.. selectorHost.Children.OfType<FluenceToggleButton>()];
+            TabControl? colorTabs = FindByName<TabControl>(page, "ColorSectionTabs");
+            Assert.IsNotNull(colorTabs, "Colors page should expose color section tabs.");
 
-            foreach (FluenceToggleButton button in selectorButtons)
+            for (int index = 0; index < colorTabs.Items.Count; index++)
             {
-                ClickSelector(button, dispatcher);
+                SelectTab(colorTabs, index, dispatcher);
                 foreach (UniformGrid row in FindVisualChildren<UniformGrid>(page)
                     .Where(static row => string.Equals((row.Parent as FrameworkElement)?.Tag as string, "ColorTokenRow", StringComparison.Ordinal)))
                 {
@@ -258,11 +265,11 @@ namespace Fluence.Wpf.Tests
             return resourceKeys;
         }
 
-        private static void ClickSelector(FluenceToggleButton button, Dispatcher dispatcher)
+        private static void SelectTab(TabControl colorTabs, int index, Dispatcher dispatcher)
         {
-            button.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, button));
+            colorTabs.SelectedIndex = index;
             Drain(dispatcher);
-            button.UpdateLayout();
+            colorTabs.UpdateLayout();
             Drain(dispatcher);
         }
 

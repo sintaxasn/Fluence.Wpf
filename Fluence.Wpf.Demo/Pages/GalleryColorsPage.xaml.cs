@@ -27,16 +27,14 @@
  */
 
 using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
 using FluenceBorder = Fluence.Wpf.Controls.Border;
 using FluenceButton = Fluence.Wpf.Controls.Button;
 using FluenceFontIcon = Fluence.Wpf.Controls.FontIcon;
 using FluenceStackPanel = Fluence.Wpf.Controls.StackPanel;
-using FluenceToggleButton = Fluence.Wpf.Controls.ToggleButton;
 
 namespace Fluence.Wpf.Demo.Pages
 {
@@ -204,112 +202,182 @@ namespace Fluence.Wpf.Demo.Pages
         {
             InitializeComponent();
             CopyCodeSampleButton.Tag = SampleMarkup;
-            BuildSectionSelector();
-            ShowSection(0, false);
+            BuildSectionTabs();
         }
 
-        private void BuildSectionSelector()
+        private void BuildSectionTabs()
         {
             for (int i = 0; i < Sections.Length; i++)
             {
-                FluenceToggleButton button = new()
+                TabItem tabItem = new()
                 {
-                    Content = Sections[i].Title,
-                    CornerRadius = new CornerRadius(16),
-                    IsChecked = i == 0,
-                    MinWidth = 0,
-                    Padding = new Thickness(23, 5, 23, 6),
-                    Tag = i
+                    Header = Sections[i].Title,
+                    Content = CreateSection(Sections[i]),
+                    Tag = "ColorSectionTab"
                 };
-                button.Click += SectionButton_Click;
-                _ = SectionSelectorHost.Children.Add(button);
+                _ = ColorSectionTabs.Items.Add(tabItem);
             }
+
+            ColorSectionTabs.SelectedIndex = 0;
         }
 
         private UIElement CreateSection(ColorSection section)
         {
             FluenceStackPanel sectionPanel = new()
             {
+                Margin = new Thickness(0, 20, 0, 0),
                 Orientation = Orientation.Vertical,
-                Spacing = 4
+                Spacing = 20
             };
+            if (section.IsTextSection)
+            {
+                _ = sectionPanel.Children.Add(CreateTextExamples());
+                return sectionPanel;
+            }
+
             _ = sectionPanel.Children.Add(CreateExamplePanel(section));
             _ = sectionPanel.Children.Add(CreateTokenRows(section.Tokens));
             return sectionPanel;
         }
 
-        private void SectionButton_Click(object sender, RoutedEventArgs e)
+        private UIElement CreateTextExamples()
         {
-            if (sender is not FluenceToggleButton button || button.Tag is not int selectedIndex)
+            FluenceStackPanel examples = new()
             {
-                return;
-            }
+                Orientation = Orientation.Vertical,
+                Spacing = 20
+            };
 
-            ShowSection(selectedIndex, true);
+            _ = examples.Children.Add(CreateTextExampleGroup(
+                "Text",
+                "For UI labels and static text.",
+                "TextFillColorPrimaryBrush",
+                "SolidBackgroundFillColorBaseBrush",
+                "CardStrokeColorDefaultBrush",
+                [
+                    new("Text / Primary", "Rest or hover.", "TextFillColorPrimaryBrush"),
+                    new("Text / Secondary", "Body text and supporting details.", "TextFillColorSecondaryBrush"),
+                    new("Text / Tertiary", "Pressed or low emphasis.", "TextFillColorTertiaryBrush"),
+                    new("Text / Disabled", "Disabled only.", "TextFillColorDisabledBrush")
+                ]));
+
+            _ = examples.Children.Add(CreateTextExampleGroup(
+                "Accent Text",
+                "Recommended for links.",
+                "AccentTextFillColorPrimaryBrush",
+                "SolidBackgroundFillColorBaseBrush",
+                "CardStrokeColorDefaultBrush",
+                [
+                    new("Accent Text / Primary", "Rest or hover.", "AccentTextFillColorPrimaryBrush"),
+                    new("Accent Text / Secondary", "Secondary accent text.", "AccentTextFillColorSecondaryBrush"),
+                    new("Accent Text / Tertiary", "Pressed accent text.", "AccentTextFillColorTertiaryBrush"),
+                    new("Accent Text / Disabled", "Disabled accent text.", "AccentTextFillColorDisabledBrush")
+                ]));
+
+            _ = examples.Children.Add(CreateTextExampleGroup(
+                "Text On Accent",
+                "Used for text on accent colored controls or fills.",
+                "TextOnAccentFillColorPrimaryBrush",
+                "AccentFillColorDefaultBrush",
+                "AccentControlElevationBorderBrush",
+                [
+                    new("Text on Accent / Primary", "Rest or hover.", "TextOnAccentFillColorPrimaryBrush"),
+                    new("Text on Accent / Secondary", "Pressed only.", "TextOnAccentFillColorSecondaryBrush"),
+                    new("Text on Accent / Disabled", "Disabled only.", "TextOnAccentFillColorDisabledBrush"),
+                    new("Text on Accent / Selected Text", "Highlighted text in text entry experiences.", "TextOnAccentFillColorSelectedTextBrush")
+                ]));
+
+            _ = examples.Children.Add(CreateTextSectionAdditionalTokens());
+            return examples;
         }
 
-        private void ShowSection(int selectedIndex, bool animate)
+        private UIElement CreateTextSectionAdditionalTokens()
         {
-            int previousIndex = GetSelectedIndex();
-            for (int i = 0; i < SectionSelectorHost.Children.Count; i++)
-            {
-                if (SectionSelectorHost.Children[i] is FluenceToggleButton button)
-                {
-                    button.IsChecked = i == selectedIndex;
-                }
-            }
+            ColorToken[] additionalTokens =
+            [
+                new("Placeholder text", "Input placeholder content.", "TextPlaceholderColorBrush"),
+                new("Inverse text", "Text placed on inverse surfaces.", "TextFillColorInverseBrush")
+            ];
 
-            UIElement sectionContent = CreateSection(Sections[selectedIndex]);
-            SectionContentHost.Content = sectionContent;
-
-            if (animate)
+            FluenceBorder panel = new()
             {
-                AnimateSectionContent(sectionContent, selectedIndex >= previousIndex);
-            }
+                Padding = new Thickness(16),
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(8)
+            };
+            panel.SetResourceReference(Border.BackgroundProperty, "CardBackgroundFillColorDefaultBrush");
+            panel.SetResourceReference(Border.BorderBrushProperty, "CardStrokeColorDefaultBrush");
+
+            FluenceStackPanel stack = new()
+            {
+                Orientation = Orientation.Vertical,
+                Spacing = 12
+            };
+            _ = stack.Children.Add(CreateText("Additional text tokens", "BodyStrongTextBlockStyle", "TextFillColorPrimaryBrush"));
+            _ = stack.Children.Add(CreateTokenRows(additionalTokens));
+            panel.Child = stack;
+            return panel;
         }
 
-        private int GetSelectedIndex()
+        private UIElement CreateTextExampleGroup(
+            string title,
+            string description,
+            string exampleForegroundKey,
+            string exampleBackgroundKey,
+            string exampleBorderKey,
+            ColorToken[] tokens)
         {
-            for (int i = 0; i < SectionSelectorHost.Children.Count; i++)
+            FluenceBorder panel = new()
             {
-                if (SectionSelectorHost.Children[i] is FluenceToggleButton { IsChecked: true })
-                {
-                    return i;
-                }
-            }
+                Padding = new Thickness(16),
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(8)
+            };
+            panel.SetResourceReference(Border.BackgroundProperty, "CardBackgroundFillColorDefaultBrush");
+            panel.SetResourceReference(Border.BorderBrushProperty, "CardStrokeColorDefaultBrush");
 
-            return 0;
+            FluenceStackPanel stack = new()
+            {
+                Orientation = Orientation.Vertical,
+                Spacing = 12
+            };
+            TextBlock titleBlock = CreateText(title, "BodyStrongTextBlockStyle", "TextFillColorPrimaryBrush");
+            titleBlock.Tag = "ColorExampleTitle";
+            _ = stack.Children.Add(titleBlock);
+            _ = stack.Children.Add(CreateText(description, null, "TextFillColorSecondaryBrush"));
+            _ = stack.Children.Add(CreateTextPreviewSurface(title, exampleForegroundKey, exampleBackgroundKey, exampleBorderKey));
+            _ = stack.Children.Add(CreateTokenRows(tokens));
+            panel.Child = stack;
+            return panel;
         }
 
-        private static void AnimateSectionContent(UIElement element, bool forward)
+        private static UIElement CreateTextPreviewSurface(
+            string title,
+            string foregroundKey,
+            string backgroundKey,
+            string borderKey)
         {
-            element.BeginAnimation(OpacityProperty, null);
-            TranslateTransform transform = new(forward ? 20.0 : -20.0, 0.0);
-            element.RenderTransform = transform;
-            element.Opacity = 0.0;
+            FluenceBorder preview = new()
+            {
+                MinHeight = 104,
+                Padding = new Thickness(18),
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(8)
+            };
+            preview.SetResourceReference(Border.BackgroundProperty, backgroundKey);
+            preview.SetResourceReference(Border.BorderBrushProperty, borderKey);
 
-            CubicEase easing = new() { EasingMode = EasingMode.EaseOut };
-            DoubleAnimation opacityAnimation = new(0.0, 1.0, new Duration(TimeSpan.FromMilliseconds(167)))
+            TextBlock sample = new()
             {
-                EasingFunction = easing
+                Text = "Aa",
+                FontSize = 42,
+                FontWeight = FontWeights.SemiBold,
+                Tag = title + " Preview",
+                VerticalAlignment = VerticalAlignment.Center
             };
-            opacityAnimation.Completed += delegate
-            {
-                element.BeginAnimation(OpacityProperty, null);
-                element.Opacity = 1.0;
-            };
-            element.BeginAnimation(OpacityProperty, opacityAnimation);
-
-            DoubleAnimation slideAnimation = new(transform.X, 0.0, new Duration(TimeSpan.FromMilliseconds(167)))
-            {
-                EasingFunction = easing
-            };
-            slideAnimation.Completed += delegate
-            {
-                transform.BeginAnimation(TranslateTransform.XProperty, null);
-                transform.X = 0.0;
-            };
-            transform.BeginAnimation(TranslateTransform.XProperty, slideAnimation);
+            sample.SetResourceReference(TextBlock.ForegroundProperty, foregroundKey);
+            preview.Child = sample;
+            return preview;
         }
 
         private UIElement CreateExamplePanel(ColorSection section)
@@ -380,85 +448,83 @@ namespace Fluence.Wpf.Demo.Pages
 
                 for (int offset = 0; offset < count; offset++)
                 {
-                    _ = rowGrid.Children.Add(CreateTokenTile(tokens[start + offset], offset < count - 1));
+                    _ = rowGrid.Children.Add(CreateTokenTile(tokens[start + offset], offset, count));
                 }
 
                 FluenceBorder rowBorder = new()
                 {
-                    BorderThickness = new Thickness(1),
                     CornerRadius = new CornerRadius(8),
                     Child = rowGrid,
                     Tag = "ColorTokenRow"
                 };
-                rowBorder.SetResourceReference(Border.BackgroundProperty, "SolidBackgroundFillColorBaseBrush");
-                rowBorder.SetResourceReference(Border.BorderBrushProperty, "CardStrokeColorDefaultBrush");
                 _ = rows.Children.Add(rowBorder);
             }
 
             return rows;
         }
 
-        private UIElement CreateTokenTile(ColorToken token, bool showSeparator)
+        private UIElement CreateTokenTile(ColorToken token, int index, int count)
         {
-            Grid tile = new()
+            CornerRadius cornerRadius = GetGroupedTileCornerRadius(index, count);
+            FluenceBorder tile = new()
             {
-                MinHeight = 132,
+                MinHeight = 166,
+                Margin = new Thickness(2),
+                BorderThickness = new Thickness(1),
+                CornerRadius = cornerRadius,
                 Tag = token.ResourceKey
             };
-            tile.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            tile.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            tile.SetResourceReference(Border.BackgroundProperty, "CardBackgroundFillColorDefaultBrush");
+            tile.SetResourceReference(Border.BorderBrushProperty, "CardStrokeColorDefaultBrush");
 
             FluenceStackPanel content = new()
             {
-                Margin = new Thickness(12),
+                Margin = new Thickness(10),
                 Orientation = Orientation.Vertical,
-                Spacing = 6
+                Spacing = 8
             };
-            _ = content.Children.Add(CreateTokenHeader(token));
-            _ = content.Children.Add(CreateText(token.Description, null, "TextFillColorSecondaryBrush", 12));
-            _ = content.Children.Add(CreateResourceKeyRow(token.ResourceKey));
-            Grid.SetColumn(content, 0);
-            _ = tile.Children.Add(content);
-
-            if (showSeparator)
-            {
-                Border separator = new()
-                {
-                    Width = 1,
-                    HorizontalAlignment = HorizontalAlignment.Right
-                };
-                separator.SetResourceReference(Border.BackgroundProperty, "DividerStrokeColorDefaultBrush");
-                Grid.SetColumn(separator, 1);
-                _ = tile.Children.Add(separator);
-            }
-
-            return tile;
-        }
-
-        private UIElement CreateTokenHeader(ColorToken token)
-        {
-            Grid header = new();
-            header.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            header.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            header.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
             Border swatch = new()
             {
-                Width = 24,
-                Height = 24,
-                Margin = new Thickness(0, 1, 10, 0),
+                Height = 78,
                 BorderThickness = new Thickness(1),
-                CornerRadius = new CornerRadius(4),
-                VerticalAlignment = VerticalAlignment.Top
+                CornerRadius = cornerRadius
             };
             swatch.SetResourceReference(Border.BackgroundProperty, token.ResourceKey);
             swatch.SetResourceReference(Border.BorderBrushProperty, "DividerStrokeColorDefaultBrush");
-            Grid.SetColumn(swatch, 0);
-            _ = header.Children.Add(swatch);
+            _ = content.Children.Add(swatch);
+
+            _ = content.Children.Add(CreateTokenDetails(token));
+            _ = content.Children.Add(CreateText(token.Description, null, "TextFillColorSecondaryBrush", 12));
+            _ = content.Children.Add(CreateResourceKeyRow(token.ResourceKey));
+            tile.Child = content;
+            return tile;
+        }
+
+        private static CornerRadius GetGroupedTileCornerRadius(int index, int count)
+        {
+            const double outerRadius = 8.0;
+            const double innerRadius = 4.0;
+
+            return (count, index) switch
+            {
+                (1, _) => new CornerRadius(outerRadius),
+                (_, 0) => new CornerRadius(outerRadius, innerRadius, innerRadius, outerRadius),
+                _ when index == count - 1 => new CornerRadius(innerRadius, outerRadius, outerRadius, innerRadius),
+                _ => new CornerRadius(innerRadius)
+            };
+        }
+
+        private UIElement CreateTokenDetails(ColorToken token)
+        {
+            Grid header = new();
+            header.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            header.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
             TextBlock title = CreateText(token.Title, null, "TextFillColorPrimaryBrush", 13);
             title.FontWeight = FontWeights.SemiBold;
-            Grid.SetColumn(title, 1);
+            title.VerticalAlignment = VerticalAlignment.Center;
+            Grid.SetColumn(title, 0);
             _ = header.Children.Add(title);
 
             FluenceButton copyButton = new()
@@ -472,7 +538,7 @@ namespace Fluence.Wpf.Demo.Pages
                 ToolTip = "Copy " + token.ResourceKey
             };
             copyButton.Click += CopyTokenButton_Click;
-            Grid.SetColumn(copyButton, 2);
+            Grid.SetColumn(copyButton, 1);
             _ = header.Children.Add(copyButton);
 
             return header;
@@ -532,6 +598,8 @@ namespace Fluence.Wpf.Demo.Pages
             public string Title { get; } = title;
 
             public string Description { get; } = description;
+
+            public bool IsTextSection => string.Equals(Title, "Text", StringComparison.Ordinal);
 
             public string ExampleForegroundKey { get; } = exampleForegroundKey;
 

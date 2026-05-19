@@ -49,18 +49,9 @@
                 </Grid>
             </ui:Border>
 
-            <ScrollViewer
-                HorizontalScrollBarVisibility="Auto"
-                VerticalScrollBarVisibility="Disabled">
-                <ui:StackPanel
-                    x:Name="SectionSelectorHost"
-                    Orientation="Horizontal"
-                    Spacing="8" />
-            </ScrollViewer>
-
-            <ContentControl
-                x:Name="SectionContentHost"
-                Margin="0,24,0,0" />
+            <TabControl
+                x:Name="ColorSectionTabs"
+                Margin="0,12,0,0" />
         </StackPanel>
     </ui:SmoothScrollViewer>
 </UserControl>
