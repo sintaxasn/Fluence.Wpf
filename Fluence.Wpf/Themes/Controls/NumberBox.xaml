@@ -205,21 +205,24 @@
                             <Setter TargetName="SpinPanel" Property="Visibility" Value="Collapsed" />
                         </Trigger>
                         <Trigger Property="SpinButtonPlacementMode" Value="{x:Static fluence:SpinButtonPlacementMode.Compact}">
-                            <Setter TargetName="SpinPanel" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="SpinPanel" Property="Opacity" Value="0" />
+                            <Setter TargetName="SpinPanel" Property="IsHitTestVisible" Value="False" />
                         </Trigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="SpinButtonPlacementMode" Value="{x:Static fluence:SpinButtonPlacementMode.Compact}" />
                                 <Condition Property="IsMouseOver" Value="True" />
                             </MultiTrigger.Conditions>
-                            <Setter TargetName="SpinPanel" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="SpinPanel" Property="Opacity" Value="1" />
+                            <Setter TargetName="SpinPanel" Property="IsHitTestVisible" Value="True" />
                         </MultiTrigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="SpinButtonPlacementMode" Value="{x:Static fluence:SpinButtonPlacementMode.Compact}" />
                                 <Condition Property="IsKeyboardFocusWithin" Value="True" />
                             </MultiTrigger.Conditions>
-                            <Setter TargetName="SpinPanel" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="SpinPanel" Property="Opacity" Value="1" />
+                            <Setter TargetName="SpinPanel" Property="IsHitTestVisible" Value="True" />
                         </MultiTrigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="MainBorder" Property="Background" Value="{DynamicResource ControlFillColorDisabledBrush}" />

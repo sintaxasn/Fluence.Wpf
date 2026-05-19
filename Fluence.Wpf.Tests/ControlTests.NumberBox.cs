@@ -32,6 +32,7 @@ using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 using Fluent = Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Tests
@@ -229,6 +230,68 @@ namespace Fluence.Wpf.Tests
                         "SpinPanel.Margin.Right must be 2 (WinUI canonical right inset from border edge).");
                     Assert.AreEqual(1.0, spinPanel.Margin.Bottom,
                         "SpinPanel.Margin.Bottom must be 1 (WinUI canonical vertical inset).");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary is not null)
+                    {
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void NumberBox_CompactSpinPanel_ReservesLayoutWhenHidden()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+
+                try
+                {
+                    Fluent.NumberBox numberBox = new()
+                    {
+                        SpinButtonPlacementMode = SpinButtonPlacementMode.Compact,
+                        Width = 180
+                    };
+                    window.Content = numberBox;
+                    window.Width = 260;
+                    window.Height = 120;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    _ = numberBox.ApplyTemplate();
+                    StackPanel? spinPanel = numberBox.Template.FindName("SpinPanel", numberBox) as StackPanel;
+                    TextBox? textBox = numberBox.Template.FindName("PART_TextBox", numberBox) as TextBox;
+                    Assert.IsNotNull(spinPanel, "NumberBox template must expose SpinPanel.");
+                    Assert.IsNotNull(textBox, "NumberBox template must expose PART_TextBox.");
+                    Assert.AreEqual(Visibility.Visible, spinPanel.Visibility,
+                        "Compact mode should reserve spin-panel layout space while the buttons are hidden.");
+                    Assert.AreEqual(0.0, spinPanel.Opacity,
+                        "Compact mode should hide the reserved spin panel visually before hover or focus.");
+                    Assert.IsFalse(spinPanel.IsHitTestVisible,
+                        "Invisible compact spin buttons should not receive pointer input.");
+
+                    double heightBeforeFocus = numberBox.ActualHeight;
+                    Assert.IsTrue(spinPanel.ActualWidth > 0.0,
+                        "Compact mode should reserve the spin-button width to avoid layout shifts.");
+
+                    _ = textBox.Focus();
+                    _ = Keyboard.Focus(textBox);
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.AreEqual(heightBeforeFocus, numberBox.ActualHeight, 0.1,
+                        "Showing compact spin buttons on focus should not change NumberBox height.");
+                    Assert.AreEqual(1.0, spinPanel.Opacity,
+                        "Compact spin buttons should become visible while the NumberBox has keyboard focus.");
+                    Assert.IsTrue(spinPanel.IsHitTestVisible,
+                        "Visible compact spin buttons should receive pointer input.");
                 }
                 finally
                 {
