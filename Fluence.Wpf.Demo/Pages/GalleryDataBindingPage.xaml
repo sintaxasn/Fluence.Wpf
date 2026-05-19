@@ -67,9 +67,10 @@
             <ContentControl
                 x:Name="DemoSampleSlot01RightRailContentHost"
                 Visibility="Collapsed">
-<StackPanel>
+<StackPanel MinWidth="320">
                         <ui:TextBox
                             x:Name="NewItemBox"
+                            Width="320"
                             Margin="{DynamicResource DemoControlBottomGapMargin}"
                             KeyDown="NewItemBox_KeyDown"
                             PlaceholderText="New item name..." />

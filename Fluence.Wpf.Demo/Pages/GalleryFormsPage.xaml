@@ -45,7 +45,7 @@
                         <StackPanel Orientation="Horizontal">
                             <ui:Button
                                 x:Name="SignInButton"
-                                Margin="{DynamicResource DemoInlineControlGapMargin}"
+                                Margin="{DynamicResource DemoInlineControlTrailingGapMargin}"
                                 Appearance="Accent"
                                 Click="SignInButton_Click"
                                 Content="Sign in"
@@ -122,7 +122,7 @@
                             x:Name="CheckoutButtonsPanel"
                             Orientation="Horizontal">
                             <ui:Button
-                                Margin="{DynamicResource DemoInlineControlGapMargin}"
+                                Margin="{DynamicResource DemoInlineControlTrailingGapMargin}"
                                 Appearance="Accent"
                                 Content="Place order" />
                             <ui:Button Content="Save for later" />

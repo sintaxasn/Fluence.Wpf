@@ -90,6 +90,151 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void GalleryIconsPage_FontIconDescriptionIsUniqueAndSampleRowIsCentered()
+        {
+            RunDemoPageTest(() => new GalleryIconsPage(), window =>
+            {
+                List<TextBlock> duplicateDescriptions = [.. FindVisualChildren<TextBlock>(window)
+                    .Where(static text => string.Equals(
+                        text.Text,
+                        "FontIcon uses glyph codes to render icons from the 'Segoe Fluent Icons' font.",
+                        StringComparison.Ordinal))];
+                Grid? sampleRow = FindVisualChildByName<Grid>(window, "FontIconSampleContent");
+
+                Assert.AreEqual(1, duplicateDescriptions.Count,
+                    "Icons page should show the FontIcon guidance sentence once.");
+                Assert.IsNotNull(sampleRow, "Icons page should expose the FontIcon sample row.");
+                Assert.AreEqual(VerticalAlignment.Center, sampleRow.VerticalAlignment,
+                    "FontIcon sample row should be centered inside the sample surface.");
+                Assert.IsTrue(sampleRow.MinHeight >= 48.0,
+                    "FontIcon sample row should reserve enough height for vertical centering.");
+
+                Controls.FontIcon? glyph = FindVisualChildren<Controls.FontIcon>(sampleRow)
+                    .FirstOrDefault(static icon => string.Equals(icon.Glyph, "\uE713", StringComparison.Ordinal));
+                TextBlock? label = FindVisualChildren<TextBlock>(sampleRow)
+                    .FirstOrDefault(static text => string.Equals(text.Text, "Settings", StringComparison.Ordinal));
+
+                Assert.IsNotNull(glyph, "Settings glyph should exist.");
+                Assert.IsNotNull(label, "Settings text should exist.");
+                Assert.AreEqual(VerticalAlignment.Center, glyph.VerticalAlignment,
+                    "Settings glyph should be vertically centered.");
+                Assert.AreEqual(VerticalAlignment.Center, label.VerticalAlignment,
+                    "Settings text should be vertically centered.");
+            });
+        }
+
+        [TestMethod]
+        public void GalleryButtonsPage_DemoContentPresenterCentersButtonGroups()
+        {
+            RunDemoPageTest(() => new GalleryButtonsPage(), window =>
+            {
+                List<DemoSampleControl> samples = [.. FindVisualChildren<DemoSampleControl>(window)];
+                Assert.IsTrue(samples.Count > 0, "Buttons page should render DemoSampleControl samples.");
+
+                foreach (DemoSampleControl sample in samples)
+                {
+                    ContentPresenter? presenter = sample.FindName("DemoContentPresenter") as ContentPresenter;
+                    Assert.IsNotNull(presenter, "DemoSampleControl should expose DemoContentPresenter.");
+                    Assert.AreEqual(VerticalAlignment.Center, presenter.VerticalAlignment,
+                        "Button sample content should be vertically centered in the sample surface.");
+                    Assert.AreEqual(HorizontalAlignment.Stretch, presenter.HorizontalAlignment,
+                        "Button sample content should keep equal horizontal room from the sample edges.");
+                }
+            });
+        }
+
+        [TestMethod]
+        public void GallerySelectionPage_BasicRadioGroupStartsAtGroupLeftEdge()
+        {
+            RunDemoPageTest(() => new GallerySelectionPage(), window =>
+            {
+                Controls.RadioButton? optionA = FindRadioButtonByContent(window, "Option A");
+                Controls.RadioButton? optionB = FindRadioButtonByContent(window, "Option B");
+                Controls.RadioButton? optionC = FindRadioButtonByContent(window, "Option C");
+
+                Assert.IsNotNull(optionA, "Basic radio option A should exist.");
+                Assert.IsNotNull(optionB, "Basic radio option B should exist.");
+                Assert.IsNotNull(optionC, "Basic radio option C should exist.");
+                Assert.AreEqual(0.0, optionA.Margin.Left,
+                    "The first Basic group radio button should align to the group label.");
+                Assert.AreEqual(16.0, optionA.Margin.Right,
+                    "Basic group radio buttons should keep a trailing gap.");
+                Assert.AreEqual(0.0, optionB.Margin.Left,
+                    "Subsequent Basic group radio buttons should use trailing gaps instead of left indentation.");
+                Assert.AreEqual(0.0, optionC.Margin.Left,
+                    "The final Basic group radio button should not be left-indented.");
+            });
+        }
+
+        [TestMethod]
+        public void GalleryDataBindingPage_AddItemRailIsWider()
+        {
+            RunDemoPageTest(() => new GalleryDataBindingPage(), window =>
+            {
+                Controls.TextBox? newItemBox = FindVisualChildByName<Controls.TextBox>(window, "NewItemBox");
+                StackPanel? rightRailStack = newItemBox?.Parent as StackPanel;
+
+                Assert.IsNotNull(newItemBox, "Data Binding add-item TextBox should exist.");
+                Assert.IsNotNull(rightRailStack, "Data Binding add-item controls should live in a right rail stack.");
+                Assert.AreEqual(320.0, rightRailStack.MinWidth, 0.1,
+                    "Data Binding right rail should be widened by 100px.");
+                Assert.AreEqual(320.0, newItemBox.Width, 0.1,
+                    "Data Binding add-item TextBox should use the wider right rail width.");
+            });
+        }
+
+        [TestMethod]
+        public void GalleryNavigationPage_CompactSampleShowsBackAndPaneToggleButtons()
+        {
+            RunDemoPageTest(() => new GalleryNavigationPage(), window =>
+            {
+                Controls.NavigationView? compact = FindVisualChildByName<Controls.NavigationView>(window, "CompactNavigationDemo");
+                Controls.CheckBox? backEnabled = FindVisualChildByName<Controls.CheckBox>(window, "BackEnabledToggle");
+
+                Assert.IsNotNull(compact, "Navigation page should expose CompactNavigationDemo.");
+                Assert.IsNotNull(backEnabled, "Navigation compact sample should expose the back-enabled toggle.");
+                Assert.IsTrue(backEnabled.IsChecked.GetValueOrDefault(),
+                    "Compact navigation sample should start with the back button enabled.");
+                Assert.IsTrue(compact.IsPaneToggleButtonVisible,
+                    "Compact navigation sample should explicitly show the pane toggle button.");
+
+                System.Windows.Controls.Button? back = compact.Template.FindName(Controls.NavigationView.PartBackButton, compact) as System.Windows.Controls.Button;
+                System.Windows.Controls.Button? paneToggle = compact.Template.FindName(Controls.NavigationView.PartPaneToggleButton, compact) as System.Windows.Controls.Button;
+                Assert.IsNotNull(back, "Compact NavigationView template should expose PART_BackButton.");
+                Assert.IsNotNull(paneToggle, "Compact NavigationView template should expose PART_PaneToggleButton.");
+                Assert.AreEqual(Visibility.Visible, back.Visibility,
+                    "Compact navigation sample should show the back button.");
+                Assert.AreEqual(Visibility.Visible, paneToggle.Visibility,
+                    "Compact navigation sample should show the pane toggle/collapse button.");
+            });
+        }
+
+        [TestMethod]
+        public void GalleryFormsPage_ActionsAlignAndOutputHasStableSpace()
+        {
+            RunDemoPageTest(() => new GalleryFormsPage(), window =>
+            {
+                Controls.Button? signIn = FindVisualChildByName<Controls.Button>(window, "SignInButton");
+                StackPanel? checkoutButtons = FindVisualChildByName<StackPanel>(window, "CheckoutButtonsPanel");
+                Controls.Button? placeOrder = checkoutButtons?.Children.OfType<Controls.Button>().FirstOrDefault();
+                List<Border> outputRegions = [.. FindVisualChildren<DemoSampleControl>(window)
+                    .Select(static sample => sample.FindName("OutputRegion") as Border)
+                    .Where(static border => border is not null)
+                    .Cast<Border>()];
+
+                Assert.IsNotNull(signIn, "Forms sign-in sample should expose SignInButton.");
+                Assert.IsNotNull(placeOrder, "Forms checkout sample should expose the primary checkout button.");
+                Assert.AreEqual(0.0, signIn.Margin.Left,
+                    "First sign-in action should align with the form fields.");
+                Assert.AreEqual(0.0, placeOrder.Margin.Left,
+                    "First checkout action should align with the form fields.");
+                Assert.IsTrue(outputRegions.Count > 0, "Forms page should expose output regions.");
+                Assert.IsTrue(outputRegions.All(static region => region.MinWidth >= 220.0),
+                    "Output regions should reserve enough room for status text.");
+            });
+        }
+
+        [TestMethod]
         public void GalleryPages_RemoveRequestedOutputRegions()
         {
             RunDemoPageTest(() => new GalleryInputsPage(), window =>
@@ -325,6 +470,19 @@ namespace Fluence.Wpf.Tests
                 if (string.Equals(button.Content as string, content, StringComparison.Ordinal))
                 {
                     return button;
+                }
+            }
+
+            return null;
+        }
+
+        private static Controls.RadioButton? FindRadioButtonByContent(DependencyObject root, string content)
+        {
+            foreach (Controls.RadioButton radioButton in FindVisualChildren<Controls.RadioButton>(root))
+            {
+                if (string.Equals(radioButton.Content as string, content, StringComparison.Ordinal))
+                {
+                    return radioButton;
                 }
             }
 

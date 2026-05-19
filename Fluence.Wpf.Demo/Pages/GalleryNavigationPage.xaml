@@ -103,7 +103,8 @@
                         <ui:NavigationView
                             x:Name="CompactNavigationDemo"
                             IsBackButtonVisible="True"
-                            IsBackEnabled="{Binding IsChecked, ElementName=BackEnabledToggle}"
+                            IsBackEnabled="{Binding IsChecked, Source={x:Reference BackEnabledToggle}}"
+                            IsPaneToggleButtonVisible="True"
                             IsPaneOpen="False"
                             ItemInvoked="NavigationDemo_ItemInvoked"
                             PaneDisplayMode="LeftCompact">
@@ -139,6 +140,7 @@
                         <ui:CheckBox
                             x:Name="BackEnabledToggle"
                             Content="Back enabled"
+                            IsChecked="True"
                             />
                     </StackPanel>
             </ContentControl>

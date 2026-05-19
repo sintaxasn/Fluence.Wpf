@@ -45,7 +45,9 @@ namespace Fluence.Wpf.Demo.Pages
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
-    <Grid>
+    <Grid
+        MinHeight=""48""
+        VerticalAlignment=""Center"">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width=""56"" />
             <ColumnDefinition Width=""*"" />
@@ -59,11 +61,13 @@ namespace Fluence.Wpf.Demo.Pages
             IconFontSize=""24"" />
         <TextBlock
             Grid.Column=""1""
+            HorizontalAlignment=""Left""
             VerticalAlignment=""Center""
             Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
             Text=""Settings"" />
         <TextBlock
             Grid.Column=""2""
+            HorizontalAlignment=""Left""
             VerticalAlignment=""Center""
             FontFamily=""Consolas""
             Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
@@ -108,7 +112,7 @@ namespace Fluence.Wpf.Demo.Pages.Icons
 
             DemoSampleControl sample = new()
             {
-                SampleDescription = "FontIcon uses glyph codes to render icons from the 'Segoe Fluent Icons' font.",
+                SampleDescription = string.Empty,
                 XamlSource = IconCatalogXamlSource,
                 CSharpSource = IconCatalogCSharpSource,
                 DemoContent = FontIconSampleContent

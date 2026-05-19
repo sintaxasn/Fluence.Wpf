@@ -145,6 +145,7 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
                 x:Name=""CompactNavigationDemo""
                 IsBackButtonVisible=""True""
                 IsBackEnabled=""{Binding IsChecked, ElementName=BackEnabledToggle}""
+                IsPaneToggleButtonVisible=""True""
                 IsPaneOpen=""False""
                 PaneDisplayMode=""LeftCompact"">
                 <ui:NavigationView.PaneFooter>
@@ -170,7 +171,8 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
         </Border>
             <ui:CheckBox
                 x:Name=""BackEnabledToggle""
-                Content=""Back enabled"" />
+                Content=""Back enabled""
+                IsChecked=""True"" />
     </StackPanel>
 </UserControl>
 ";
@@ -248,16 +250,12 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
         {
             InitializeComponent();
 
-            DemoSampleControl.ApplySources(
-                (System.Windows.DependencyObject)Content,
-                LeftNavigationViewXamlSource,
-                LeftNavigationViewCSharpSource,
-                TopNavigationViewXamlSource,
-                TopNavigationViewCSharpSource,
-                CompactNavigationViewXamlSource,
-                CompactNavigationViewCSharpSource,
-                InfoBadgeNavigationXamlSource,
-                InfoBadgeNavigationCSharpSource);
+            DemoSamplePageWiring.Apply(
+                (DependencyObject)Content,
+                new DemoSampleSource(1, LeftNavigationViewXamlSource, LeftNavigationViewCSharpSource),
+                new DemoSampleSource(2, TopNavigationViewXamlSource, TopNavigationViewCSharpSource),
+                new DemoSampleSource(3, CompactNavigationViewXamlSource, CompactNavigationViewCSharpSource),
+                new DemoSampleSource(4, InfoBadgeNavigationXamlSource, InfoBadgeNavigationCSharpSource));
 
             Loaded += GalleryNavigationPage_Loaded;
         }

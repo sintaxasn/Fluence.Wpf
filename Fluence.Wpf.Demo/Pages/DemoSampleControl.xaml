@@ -184,11 +184,12 @@
 
         <Border
             x:Name="SampleCard"
+
             Grid.Row="1"
-            Padding="{DynamicResource DemoSampleCardPadding}"
             Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+            Padding="{DynamicResource DemoSampleCardPadding}"
             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-            BorderThickness="0"
+            BorderThickness="1"
             CornerRadius="8,8,0,0">
             <Grid x:Name="SampleContentGrid">
                 <Grid.ColumnDefinitions>
@@ -205,15 +206,17 @@
                     <ContentPresenter
                         x:Name="DemoContentPresenter"
                         Grid.Column="0"
+                        HorizontalAlignment="Stretch"
+                        VerticalAlignment="Center"
                         Content="{Binding DemoContent, ElementName=Root}" />
 
                     <Border
                         x:Name="OutputRegion"
                         Grid.Column="1"
                         Margin="{DynamicResource DemoSampleOutputMargin}"
+                        MinWidth="{DynamicResource DemoSampleOutputMinWidth}"
                         Padding="{DynamicResource DemoSampleOutputPadding}"
                         VerticalAlignment="Center"
-                        Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"
                         CornerRadius="{DynamicResource ControlCornerRadius}">
                         <StackPanel>
                             <TextBlock Text="Output:" />
@@ -225,10 +228,11 @@
                 <Border
                     x:Name="RightRailBorder"
                     Grid.Column="1"
+                    MinWidth="{DynamicResource DemoSampleRightRailMinWidth}"
                     Padding="{DynamicResource DemoSampleRightRailPadding}"
                     Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}"
                     BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                    BorderThickness="1,0,0,0"
+                    BorderThickness="0,1,1,1"
                     CornerRadius="0,8,0,0">
                     <ContentPresenter x:Name="RightRailContentPresenter" Content="{Binding RightRailContent, ElementName=Root}" />
                 </Border>

@@ -83,16 +83,15 @@
                             Text="Basic group" />
                         <StackPanel Orientation="Horizontal">
                             <ui:RadioButton
-                                Margin="{DynamicResource DemoInlineControlGapMargin}"
+                                Margin="{DynamicResource DemoInlineControlTrailingGapMargin}"
                                 Content="Option A"
                                 GroupName="BasicGroup"
                                 IsChecked="True" />
                             <ui:RadioButton
-                                Margin="{DynamicResource DemoInlineControlGapMargin}"
+                                Margin="{DynamicResource DemoInlineControlTrailingGapMargin}"
                                 Content="Option B"
                                 GroupName="BasicGroup" />
                             <ui:RadioButton
-                                Margin="{DynamicResource DemoInlineControlGapMargin}"
                                 Content="Option C"
                                 GroupName="BasicGroup" />
                         </StackPanel>

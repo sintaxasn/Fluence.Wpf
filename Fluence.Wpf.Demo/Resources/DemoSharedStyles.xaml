@@ -6,12 +6,11 @@
 <ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:color="clr-namespace:Fluence.Wpf.Demo.Pages.ColorGuidance"
     xmlns:sys="clr-namespace:System;assembly=mscorlib"
     xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
     xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf">
 
-    <!--  **** Demo App Layout  -->
+    <!--  **** Demo App Layout ****  -->
 
     <Thickness x:Key="DemoPageContentMargin">36,24,36,48</Thickness>
     <Thickness x:Key="DemoPageTitleMargin">0,0,0,8</Thickness>
@@ -20,6 +19,7 @@
     <Thickness x:Key="DemoTextTopGapMargin">0,6,0,0</Thickness>
     <Thickness x:Key="DemoControlGroupItemMargin">0,0,12,12</Thickness>
     <Thickness x:Key="DemoInlineControlGapMargin">16,0,0,0</Thickness>
+    <Thickness x:Key="DemoInlineControlTrailingGapMargin">0,0,16,0</Thickness>
     <Thickness x:Key="DemoSmallInlineControlGapMargin">6,0,8,8</Thickness>
     <Thickness x:Key="DemoWorkToggleProgressRingMargin">24,0,0,0</Thickness>
     <Thickness x:Key="DemoControlBottomGapMargin">0,0,0,12</Thickness>
@@ -41,8 +41,7 @@
     <Thickness x:Key="DemoDataBindingSecondaryTextMargin">32,0,0,0</Thickness>
     <sys:Double x:Key="DemoPlacementTabHeaderWidth">112</sys:Double>
 
-
-    <!--  **** Demo Sample Control  -->
+    <!--  **** Demo Sample Control ***  -->
 
     <Thickness x:Key="DemoSampleBlockMargin">0,0,0,24</Thickness>
     <Thickness x:Key="DemoSampleDescriptionMargin">0,0,0,8</Thickness>
@@ -56,38 +55,15 @@
     <Thickness x:Key="DemoSourceCopyButtonHostMargin">0,8,8,0</Thickness>
     <Thickness x:Key="DemoSourceCopyButtonPadding">8,4</Thickness>
     <Thickness x:Key="DemoSourceChevronMargin">8,0,0,0</Thickness>
+    <sys:Double x:Key="DemoSampleOutputMinWidth">220</sys:Double>
+    <sys:Double x:Key="DemoSampleRightRailMinWidth">220</sys:Double>
 
-
-    <!--  Demo Pages *** Design \ Color  -->
-
-    <sys:Double x:Key="ColorSectionSpacing">4</sys:Double>
-    <sys:Double x:Key="ColorTileMinHeight">100</sys:Double>
-    <Thickness x:Key="ColorSelectorMargin">0,20,0,0</Thickness>
-    <Thickness x:Key="ColorSectionContentMargin">0,20,0,0</Thickness>
-    <Thickness x:Key="ColorSectionHeaderMargin">0,20,0,4</Thickness>
-    <Thickness x:Key="ColorSectionDescriptionMargin">0,0,0,12</Thickness>
-    <Thickness x:Key="ColorTileMargin">0</Thickness>
-    <Thickness x:Key="ColorTilePadding">12</Thickness>
-    <Thickness x:Key="ColorTileTitleMargin">0,0,4,4</Thickness>
-    <Thickness x:Key="ColorTileDescriptionMargin">0,2,0,0</Thickness>
-    <Thickness x:Key="ColorTileResourceKeyMargin">0,10,0,0</Thickness>
-    <Thickness x:Key="ColorTileWarningIconMargin">0,1,4,0</Thickness>
-    <Thickness x:Key="ColorPageExampleMargin">0,16,0,8</Thickness>
-    <Thickness x:Key="ColorPageExamplePadding">12</Thickness>
-    <Thickness x:Key="ColorPageExampleTitleMargin">0,0,0,4</Thickness>
-    <Thickness x:Key="ColorPageExampleDescriptionMargin">0,0,0,8</Thickness>
-    <Thickness x:Key="ColorPageExampleContentMargin">0,8,0,0</Thickness>
+    <!--  **** Demo Styles *** Settings \ Accent Color  -->
 
     <Style x:Key="AccentSwatchStyle" TargetType="{x:Type ui:Button}">
-        <Setter Property="Width" Value="42" />
-        <Setter Property="Height" Value="42" />
-        <Setter Property="MinWidth" Value="42" />
-        <Setter Property="MinHeight" Value="42" />
-        <Setter Property="Margin" Value="0,0,10,0" />
-        <Setter Property="Padding" Value="0" />
-        <Setter Property="CornerRadius" Value="8" />
-        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorSecondaryBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="8" />
         <Setter Property="Effect">
             <Setter.Value>
                 <DropShadowEffect
@@ -98,12 +74,17 @@
                     Color="Black" />
             </Setter.Value>
         </Setter>
-        <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
+        <Setter Property="Height" Value="42" />
+        <Setter Property="Margin" Value="0,0,10,0" />
+        <Setter Property="MinHeight" Value="42" />
+        <Setter Property="MinWidth" Value="42" />
+        <Setter Property="Padding" Value="0" />
         <Setter Property="RenderTransform">
             <Setter.Value>
                 <ScaleTransform ScaleX="1" ScaleY="1" />
             </Setter.Value>
         </Setter>
+        <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
         <!--
             Custom template: paint Background directly without any VSM hover overrides.
             The default ui:Button template re-colours the background on PointerOver via
@@ -123,10 +104,11 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="Width" Value="42" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="BorderThickness" Value="2" />
                 <Setter Property="BorderBrush" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+                <Setter Property="BorderThickness" Value="2" />
                 <Trigger.EnterActions>
                     <BeginStoryboard>
                         <Storyboard>
@@ -159,24 +141,25 @@
         </Style.Triggers>
     </Style>
 
+
+    <!--  **** Demo Styles *** Navigaation \ Title-Bear Search  -->
+
     <!--
         Title-bar search box: transparent box, bottom-only underline.
         Grey (ControlStrokeColorDefaultBrush) at rest; accent on focus.
         Matches WinUI 3 AutoSuggestBox title-bar treatment.
     -->
     <Style x:Key="TitleBarSearchBoxStyle" TargetType="{x:Type ui:TextBox}">
-        <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="CaretBrush" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-        <Setter Property="SelectionBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
-        <Setter Property="Padding" Value="10,2,6,2" />
-        <Setter Property="HorizontalAlignment" Value="Center" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Center" />
+        <Setter Property="Padding" Value="10,2,6,2" />
+        <Setter Property="SelectionBrush" Value="{DynamicResource AccentFillColorDefaultBrush}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ui:TextBox}">
@@ -259,7 +242,11 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
+
+    <!--  **** Demo Styles *** Shared Genereal  -->
 
     <Style
         x:Key="PageTitleStyle"
@@ -271,6 +258,8 @@
         <Setter Property="Margin" Value="{DynamicResource DemoPageTitleMargin}" />
     </Style>
 
+    <!--  **** Demo Styles *** Gallery Page Shared  -->
+
     <Style x:Key="GalleryPageRootStyle" TargetType="{x:Type Grid}">
         <Setter Property="ClipToBounds" Value="False" />
     </Style>
@@ -279,7 +268,6 @@
         x:Key="GalleryPageScrollViewerStyle"
         BasedOn="{StaticResource ScrollViewerStyle}"
         TargetType="{x:Type ui:SmoothScrollViewer}">
-        <Setter Property="Background" Value="{DynamicResource ApplicationBackgroundBrush}" />
         <Setter Property="HorizontalScrollBarVisibility" Value="Disabled" />
         <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
     </Style>
@@ -294,6 +282,8 @@
         <Setter Property="Margin" Value="{DynamicResource DemoPageContentMargin}" />
     </Style>
 
+    <!--  **** Demo Styles *** Settings  -->
+
     <Style
         x:Key="SettingsSectionHeaderStyle"
         BasedOn="{StaticResource {x:Type TextBlock}}"
@@ -305,21 +295,21 @@
     </Style>
 
     <Style x:Key="SettingsRowCardStyle" TargetType="{x:Type Border}">
-        <Setter Property="MinHeight" Value="76" />
-        <Setter Property="Margin" Value="0,0,0,6" />
-        <Setter Property="Padding" Value="16,12" />
-        <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="CornerRadius" Value="4" />
+        <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="Margin" Value="0,0,0,6" />
+        <Setter Property="MinHeight" Value="76" />
+        <Setter Property="Padding" Value="16,12" />
     </Style>
 
     <Style x:Key="SettingsRowIconStyle" TargetType="{x:Type ui:FontIcon}">
-        <Setter Property="Width" Value="36" />
-        <Setter Property="IconFontSize" Value="20" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="IconFontSize" Value="20" />
         <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="Width" Value="36" />
     </Style>
 
     <Style
@@ -338,6 +328,7 @@
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
+
 
     <Style
         x:Key="FieldLabelStyle"
@@ -362,8 +353,8 @@
         BasedOn="{StaticResource {x:Type TextBlock}}"
         TargetType="{x:Type TextBlock}">
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
-        <Setter Property="TextWrapping" Value="Wrap" />
         <Setter Property="Margin" Value="{DynamicResource DemoPageDescriptionMargin}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
 
     <Style
@@ -377,12 +368,12 @@
 
     <!--  Icon cell hover: accent foreground + scale-up on hover  -->
     <Style x:Key="IconCellStyle" TargetType="{x:Type StackPanel}">
-        <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
         <Setter Property="RenderTransform">
             <Setter.Value>
                 <ScaleTransform ScaleX="1" ScaleY="1" />
             </Setter.Value>
         </Setter>
+        <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentFillColorDefaultBrush}" />
@@ -434,83 +425,20 @@
         </Style.Triggers>
     </Style>
 
-    <!--  **** Design \ Colors  -->
-
-    <Style
-        x:Key="ColorSelectorTabControlStyle"
-        BasedOn="{StaticResource TabControlStyle}"
-        TargetType="{x:Type TabControl}">
-        <Setter Property="Margin" Value="{DynamicResource ColorSelectorMargin}" />
-    </Style>
-
-    <Style
-        x:Key="ColorSelectorTabItemStyle"
-        BasedOn="{StaticResource TabItemStyle}"
-        TargetType="{x:Type TabItem}">
-        <Setter Property="Padding" Value="12,4,12,4" />
-    </Style>
-
-    <Style x:Key="ColorSectionStackStyle" TargetType="{x:Type StackPanel}">
-        <Setter Property="Margin" Value="{DynamicResource ColorSectionContentMargin}" />
-    </Style>
-
-    <Style x:Key="ColorTileRowBorderStyle" TargetType="{x:Type Border}">
-        <Setter Property="Background" Value="{DynamicResource GalleryBackgroundBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource GalleryBorderBrush}" />
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="CornerRadius" Value="{DynamicResource OverlayCornerRadius}" />
-        <Setter Property="Margin" Value="0,0,0,12" />
-    </Style>
-
-    <Style x:Key="ColorTileUniformGridStyle" TargetType="{x:Type UniformGrid}">
-        <Setter Property="Rows" Value="1" />
-        <Setter Property="HorizontalAlignment" Value="Stretch" />
-    </Style>
-
-    <Style
-        x:Key="ColorSectionHeaderStyle"
-        BasedOn="{StaticResource {x:Type TextBlock}}"
-        TargetType="{x:Type TextBlock}">
-        <Setter Property="FontSize" Value="20" />
-        <Setter Property="FontWeight" Value="SemiBold" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-        <Setter Property="Margin" Value="{DynamicResource ColorSectionHeaderMargin}" />
-        <Setter Property="TextWrapping" Value="Wrap" />
-    </Style>
-
-    <Style
-        x:Key="ColorSectionDescriptionStyle"
-        BasedOn="{StaticResource CaptionTextBlockStyle}"
-        TargetType="{x:Type TextBlock}">
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
-        <Setter Property="Margin" Value="{DynamicResource ColorSectionDescriptionMargin}" />
-        <Setter Property="Opacity" Value="0.8" />
-        <Setter Property="TextWrapping" Value="Wrap" />
-    </Style>
-
-    <Style x:Key="ColorTileStyle" TargetType="{x:Type color:ColorTile}">
-        <Setter Property="HorizontalAlignment" Value="Stretch" />
-        <Setter Property="VerticalAlignment" Value="Stretch" />
-        <Setter Property="Margin" Value="{DynamicResource ColorTileMargin}" />
-        <Setter Property="MinHeight" Value="{DynamicResource ColorTileMinHeight}" />
-        <Setter Property="ShowSeparator" Value="True" />
-
-    </Style>
-
     <!--  **** Design \ Iconography  -->
 
     <Style x:Key="IconGalleryCardStyle" TargetType="{x:Type ui:Border}">
-        <Setter Property="Variant" Value="{x:Static uicore:BorderVariant.Subtle}" />
-        <Setter Property="Padding" Value="12" />
         <Setter Property="CornerRadius" Value="8" />
-        <Setter Property="Width" Value="100" />
         <Setter Property="Height" Value="80" />
-        <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
+        <Setter Property="Padding" Value="12" />
         <Setter Property="RenderTransform">
             <Setter.Value>
                 <ScaleTransform ScaleX="1" ScaleY="1" />
             </Setter.Value>
         </Setter>
+        <Setter Property="RenderTransformOrigin" Value="0.5,0.5" />
+        <Setter Property="Variant" Value="{x:Static uicore:BorderVariant.Subtle}" />
+        <Setter Property="Width" Value="100" />
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
                 <Setter Property="TextElement.Foreground" Value="{DynamicResource AccentFillColorDefaultBrush}" />
