@@ -71,7 +71,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void GalleryButtonsPage_SubtleButtonsKeepVisibleBorderAndToggleButtonSampleIsRemoved()
+        public void GalleryButtonsPage_SubtleButtonsUseWinUiTransparentRestBorderAndToggleButtonSampleIsRemoved()
         {
             RunDemoPageTest(() => new GalleryButtonsPage(), window =>
             {
@@ -80,8 +80,8 @@ namespace Fluence.Wpf.Tests
 
                 Assert.IsNotNull(subtle, "Subtle button sample should exist.");
                 Assert.IsNotNull(refresh, "Refresh button sample should exist.");
-                AssertBrushIsVisible(subtle.BorderBrush, "Subtle button should keep a themed border.");
-                AssertBrushIsVisible(refresh.BorderBrush, "Refresh button should keep a themed border.");
+                AssertBrushIsTransparent(subtle.BorderBrush, "Subtle button should use the WinUI transparent rest border.");
+                AssertBrushIsTransparent(refresh.BorderBrush, "Refresh subtle button should use the WinUI transparent rest border.");
                 Assert.IsNull(FindToggleButtonByContent(window, "Bold"),
                     "Buttons page should remove the Bold ToggleButton sample.");
                 Assert.IsNull(FindToggleButtonByContent(window, "Pinned"),
@@ -309,12 +309,12 @@ namespace Fluence.Wpf.Tests
             return double.IsNaN(item.Width) ? item.MinWidth : item.Width;
         }
 
-        private static void AssertBrushIsVisible(Brush? brush, string message)
+        private static void AssertBrushIsTransparent(Brush? brush, string message)
         {
             Assert.IsNotNull(brush, message);
             if (brush is SolidColorBrush solid)
             {
-                Assert.AreNotEqual(0, solid.Color.A, message);
+                Assert.AreEqual(0, solid.Color.A, message);
             }
         }
 
