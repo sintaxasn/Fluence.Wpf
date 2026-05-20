@@ -27,7 +27,6 @@
  */
 
 using Fluence.Wpf.Demo.Pages;
-using Fluence.Wpf.Demo.Pages.ColorGuidance;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
@@ -36,7 +35,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
-using System.Xml.Linq;
 using FluenceCheckBox = Fluence.Wpf.Controls.CheckBox;
 using FluenceExpander = Fluence.Wpf.Controls.Expander;
 using FluenceProgressBar = Fluence.Wpf.Controls.ProgressBar;
@@ -259,13 +257,21 @@ namespace Fluence.Wpf.Tests
 
                     Assert.AreEqual(new CornerRadius(8, 8, 0, 0), sampleCard.CornerRadius,
                         "Demo sample display should attach to the source section with WinUI Gallery corners.");
+                    Grid? demoRegionGrid = sample.FindName("DemoRegionGrid") as Grid;
                     WpfBorder? rightRail = sample.FindName("RightRailBorder") as WpfBorder;
                     WpfBorder? outputRegion = sample.FindName("OutputRegion") as WpfBorder;
+                    Assert.IsNotNull(demoRegionGrid, "DemoSampleControl must expose DemoRegionGrid.");
                     Assert.IsNotNull(rightRail, "DemoSampleControl must expose RightRailBorder.");
                     Assert.IsNotNull(outputRegion, "DemoSampleControl must expose OutputRegion.");
 
-                    AssertBrushColor(sampleCard.Background, "CardBackgroundFillColorDefaultBrush",
-                        "Demo sample display should use the WinUI Gallery control-example surface.");
+                    AssertBrushColor(sampleCard.Background, "SolidBackgroundFillColorBaseBrush",
+                        "Demo sample display should use the requested base surface.");
+                    Assert.AreEqual(new Thickness(0), sampleCard.Padding,
+                        "Demo sample display should not inset the right rail away from the sample border.");
+                    Assert.AreEqual((Thickness)sample.FindResource("DemoSampleCardPadding"), demoRegionGrid.Margin,
+                        "Demo sample content should retain the standard sample padding after the card padding moves inward.");
+                    Assert.AreEqual(new Thickness(0), rightRail.Margin,
+                        "Demo right rail should sit flush against the sample border.");
                     AssertBrushColor(rightRail.Background, "CardBackgroundFillColorSecondaryBrush",
                         "Demo right rail should use the WinUI Gallery options-pane surface.");
                     AssertBrushColor(sourceExpander.Background, "ControlFillColorDefaultBrush",
@@ -415,228 +421,6 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void GalleryColorsPage_UsesWinUiGalleryColorStructure()
-        {
-            WpfTestSta.Invoke(() =>
-            {
-                Application? application = EnsureApplication();
-                _ = MergeGenericDictionary(application);
-                MergeDemoSharedStyles(application);
-
-                GalleryColorsPage page = new();
-                Window window = new()
-                {
-                    Content = page,
-                    Width = 980,
-                    Height = 720
-                };
-
-                try
-                {
-                    window.Show();
-                    DrainDispatcher(window.Dispatcher);
-                    window.UpdateLayout();
-
-                    DemoSampleControl? sample = FindVisualChild<DemoSampleControl>(window);
-                    Assert.IsNotNull(sample, "Colors page must keep DemoSampleControl as the reusable sample surface.");
-                    Assert.AreEqual(
-                        "Theme brushes and accent resources available to Fluence controls.",
-                        sample.SampleDescription,
-                        "Colors page sample description should describe the Fluence color system.");
-
-                    FluenceExpander? sourceExpander = sample.FindName("SourceExpander") as FluenceExpander;
-                    Assert.IsNotNull(sourceExpander, "Colors page sample must keep the bottom source expander.");
-                    Assert.IsTrue(
-                        sample.XamlSource.IndexOf("ColorTileRowBorderStyle", StringComparison.Ordinal) >= 0,
-                        "Colors page source sample must teach the WinUI-style tile row pattern.");
-                    Assert.IsFalse(
-                        sample.XamlSource.IndexOf("ColorTileWrapPanelStyle", StringComparison.Ordinal) >= 0,
-                        "Colors page source sample must not teach the old WrapPanel tile pattern.");
-
-                    TabControl? tabs = FindVisualChild<TabControl>(sample);
-                    Assert.IsNotNull(tabs, "Colors page must expose a selector-style TabControl.");
-                    Assert.AreEqual(6, tabs.Items.Count, "Colors page must keep the six WinUI Gallery color sections.");
-
-                    string[] expectedHeaders =
-                    [
-                        "Text",
-                        "Fill",
-                        "Stroke",
-                        "Background",
-                        "Signal",
-                        "High Contrast"
-                    ];
-                    for (int i = 0; i < expectedHeaders.Length; i++)
-                    {
-                        TabItem item = (TabItem)tabs.Items[i];
-                        Assert.AreEqual(expectedHeaders[i], item.Header, "Unexpected Colors page section at index " + i + ".");
-                    }
-
-                    int totalTiles = 0;
-                    bool sawSystemColorAlias = false;
-                    bool sawColorPageExample = false;
-                    for (int i = 0; i < tabs.Items.Count; i++)
-                    {
-                        tabs.SelectedIndex = i;
-                        DrainDispatcher(window.Dispatcher);
-                        window.UpdateLayout();
-
-                        List<WrapPanel> wrapPanels = [.. FindVisualChildren<WrapPanel>(tabs)];
-                        Assert.AreEqual(0, wrapPanels.Count, "Colors page tile sections must not use WrapPanel layout.");
-
-                        List<UniformGrid> tileRows = [];
-                        foreach (UniformGrid uniformGrid in FindVisualChildren<UniformGrid>(tabs))
-                        {
-                            if (IsColorTileRow(uniformGrid))
-                            {
-                                tileRows.Add(uniformGrid);
-                            }
-                        }
-
-                        Assert.IsTrue(tileRows.Count > 0, "Selected Colors page section must contain WinUI-style tile rows.");
-                        foreach (UniformGrid tileRow in tileRows)
-                        {
-                            AssertColorTileRowMatchesWinUiGallery(tileRow);
-                        }
-
-                        List<ColorTile> tiles = [.. FindVisualChildren<ColorTile>(tabs)];
-                        totalTiles += tiles.Count;
-                        foreach (ColorTile tile in tiles)
-                        {
-                            if (tile.BrushResourceKey.Equals("SystemColorWindowTextColorBrush", StringComparison.Ordinal))
-                            {
-                                sawSystemColorAlias = true;
-                            }
-                        }
-
-                        if (FindVisualChild<ColorPageExample>(tabs) is not null)
-                        {
-                            sawColorPageExample = true;
-                        }
-                    }
-
-                    Assert.IsTrue(totalTiles >= 70, "Colors page should expose the WinUI-style brush catalogue through ColorTile controls.");
-                    Assert.IsTrue(sawSystemColorAlias, "High Contrast section must use the new SystemColor alias resources.");
-                    Assert.IsTrue(sawColorPageExample, "Colors page sections must include WinUI Gallery-style example surfaces.");
-                }
-                finally
-                {
-                    CloseWindowAndDrain(window);
-                }
-            });
-        }
-
-        private static bool IsColorTileRow(UniformGrid uniformGrid)
-        {
-            if (uniformGrid.Children.Count == 0)
-            {
-                return false;
-            }
-
-            foreach (UIElement child in uniformGrid.Children)
-            {
-                if (child is not ColorTile)
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        private static void AssertColorTileRowMatchesWinUiGallery(UniformGrid tileRow)
-        {
-            Assert.AreEqual(tileRow.Children.Count, tileRow.Columns, "Each Colors tile row should declare one equal-width column per tile.");
-            Assert.IsInstanceOfType(tileRow.Parent, typeof(WpfBorder), "Each Colors tile row should sit inside a shared bordered row surface.");
-
-            double? expectedWidth = null;
-            foreach (UIElement child in tileRow.Children)
-            {
-                ColorTile tile = (ColorTile)child;
-                Assert.AreEqual(default, tile.Margin, "Color tiles should not create card gaps inside the shared row surface.");
-
-                if (tile.ActualWidth <= 0)
-                {
-                    continue;
-                }
-
-                if (expectedWidth is null)
-                {
-                    expectedWidth = tile.ActualWidth;
-                    continue;
-                }
-
-                Assert.AreEqual(expectedWidth.Value, tile.ActualWidth, 1.0, "Color tiles in the same row should share equal width.");
-            }
-        }
-
-        [TestMethod]
-        public void GalleryColorsPage_DynamicResourceKeys_ResolveAcrossThemes()
-        {
-            WpfTestSta.Invoke(() =>
-            {
-                Application? application = EnsureApplication();
-                _ = MergeGenericDictionary(application);
-                MergeDemoSharedStyles(application);
-
-                SortedSet<string> resourceKeys = GetColorGuidanceResourceKeys();
-                List<string> unresolved = [];
-
-                ApplicationTheme[] themes =
-                [
-                    ApplicationTheme.Light,
-                    ApplicationTheme.Dark,
-                    ApplicationTheme.HighContrast
-                ];
-
-                foreach (ApplicationTheme theme in themes)
-                {
-                    ApplicationThemeManager.Apply(theme, BackdropType.None, true);
-                    ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
-
-                    foreach (string resourceKey in resourceKeys)
-                    {
-                        if (application?.TryFindResource(resourceKey) is null)
-                        {
-                            unresolved.Add(theme + ": " + resourceKey);
-                        }
-                    }
-                }
-
-                Assert.AreEqual(0, unresolved.Count,
-                    "Colors page guidance must only reference resource keys that resolve: " +
-                    string.Join("; ", unresolved));
-            });
-        }
-
-        [TestMethod]
-        public void GalleryColorsPage_Foregrounds_AvoidLiteralBlackAndWhiteInXamlAndSourceSnippets()
-        {
-            string colorsPagePath = Path.Combine(FindRepoRoot(), "Fluence.Wpf.Demo", "Pages", "GalleryColorsPage.xaml");
-            string colorsPageCodePath = Path.Combine(FindRepoRoot(), "Fluence.Wpf.Demo", "Pages", "GalleryColorsPage.xaml.cs");
-            string source = File.ReadAllText(colorsPagePath) + Environment.NewLine + File.ReadAllText(colorsPageCodePath);
-            string[] forbiddenForegrounds =
-            [
-                "Foreground=\"Black\"",
-                "Foreground=\"White\"",
-                "Foreground=\"#"
-            ];
-            List<string> violations = [];
-
-            foreach (string forbiddenForeground in forbiddenForegrounds)
-            {
-                if (source.Contains(forbiddenForeground))
-                {
-                    violations.Add(forbiddenForeground);
-                }
-            }
-
-            Assert.AreEqual(0, violations.Count,
-                "GalleryColorsPage foregrounds must use theme-aware resources: " +
-                string.Join("; ", violations));
-        }
-
-        [TestMethod]
         public void PowerShellDemoScripts_DeclareStrictModeParameters()
         {
             string scriptsRoot = Path.Combine(FindRepoRoot(), "Fluence.Wpf.Demo.PowerShell");
@@ -756,91 +540,18 @@ namespace Fluence.Wpf.Tests
                     continue;
                 }
 
+                if (IsBackgroundLiteralAllowedValue(path, value))
+                {
+                    continue;
+                }
+
                 violations.Add(GetRepoRelativePath(path) + ": " + attributeName + "=\"" + value + "\"");
             }
-        }
-
-        private static SortedSet<string> GetColorGuidanceResourceKeys()
-        {
-            string repoRoot = FindRepoRoot();
-            SortedSet<string> keys = [];
-            AddColorGuidanceResourceKeysFromXaml(
-                Path.Combine(repoRoot, "Fluence.Wpf.Demo", "Pages", "GalleryColorsPage.xaml"),
-                keys);
-
-            string guidanceRoot = Path.Combine(repoRoot, "Fluence.Wpf.Demo", "Pages", "ColorGuidance");
-            foreach (string path in Directory.EnumerateFiles(guidanceRoot, "*.xaml", SearchOption.TopDirectoryOnly))
-            {
-                AddColorGuidanceResourceKeysFromXaml(path, keys);
-            }
-
-            return keys;
         }
 
         private static bool ContainsOrdinal(string source, string value)
         {
             return source.IndexOf(value, StringComparison.Ordinal) >= 0;
-        }
-
-        private static void AddColorGuidanceResourceKeysFromXaml(string path, SortedSet<string> keys)
-        {
-            XDocument document = XDocument.Load(path);
-
-            foreach (XElement element in document.Descendants())
-            {
-                foreach (XAttribute attribute in element.Attributes())
-                {
-                    CollectDynamicResourceKeys(attribute.Value, keys);
-                    CollectColorTileResourceKey(attribute, keys);
-                }
-            }
-        }
-
-        private static void CollectColorTileResourceKey(XAttribute attribute, SortedSet<string> keys)
-        {
-            string localName = attribute.Name.LocalName;
-            if (!localName.Equals("BrushResourceKey", StringComparison.Ordinal) &&
-                !localName.Equals("ForegroundResourceKey", StringComparison.Ordinal) &&
-                !localName.Equals("ResourceKey", StringComparison.Ordinal))
-            {
-                return;
-            }
-
-            string value = attribute.Value.Trim();
-            if (value.Length > 0)
-            {
-                _ = keys.Add(value);
-            }
-        }
-
-        private static void CollectDynamicResourceKeys(string value, SortedSet<string> keys)
-        {
-            const string prefix = "{DynamicResource ";
-            int searchIndex = 0;
-
-            while (searchIndex < value.Length)
-            {
-                int matchIndex = value.IndexOf(prefix, searchIndex, StringComparison.Ordinal);
-                if (matchIndex < 0)
-                {
-                    break;
-                }
-
-                int keyStart = matchIndex + prefix.Length;
-                int keyEnd = value.IndexOf('}', keyStart);
-                if (keyEnd < 0)
-                {
-                    break;
-                }
-
-                string key = value.Substring(keyStart, keyEnd - keyStart).Trim();
-                if (key.Length > 0 && key[0] != '{')
-                {
-                    _ = keys.Add(key);
-                }
-
-                searchIndex = keyEnd + 1;
-            }
         }
 
         private static bool IsWholeXamlAttribute(string source, int attributeIndex)
@@ -925,8 +636,37 @@ namespace Fluence.Wpf.Tests
             string fileName = Path.GetFileName(path);
             return fileName.Equals("fluence-wpf-banner-light.xaml", StringComparison.OrdinalIgnoreCase) ||
                 fileName.Equals("fluence-wpf-banner-dark.xaml", StringComparison.OrdinalIgnoreCase) ||
-                fileName.Equals("GallerySettingsPage.xaml", StringComparison.OrdinalIgnoreCase) ||
                 fileName.Equals("GalleryAccessibilityPage.xaml", StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool IsBackgroundLiteralAllowedValue(string path, string value)
+        {
+            string fileName = Path.GetFileName(path);
+            if (!fileName.Equals("GallerySettingsPage.xaml", StringComparison.OrdinalIgnoreCase))
+            {
+                return false;
+            }
+
+            string[] accentSwatches =
+            [
+                "#E80000",
+                "#F58809",
+                "#F5E70C",
+                "#2BDE11",
+                "#09C4DE",
+                "#AA04DE",
+                "#FF00E8"
+            ];
+
+            foreach (string accentSwatch in accentSwatches)
+            {
+                if (string.Equals(accentSwatch, value, StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private static string GetRepoRelativePath(string path)

@@ -74,11 +74,13 @@
                 Visibility="Collapsed">
 <ui:NumberBox
                         x:Name="ProgressValueNumberBox"
-                        Header="Value"
+                        Header="% Complete"
+                        Description="Controls the Progress Bar Value"
                         Maximum="100"
                         Minimum="0"
                         SmallChange="1"
                         SpinButtonPlacementMode="{x:Static uicore:SpinButtonPlacementMode.Inline}"
+
                         Value="50" />
             </ContentControl>
             <local:DemoSampleControl

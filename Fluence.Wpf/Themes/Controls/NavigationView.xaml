@@ -528,7 +528,8 @@
                 <Setter TargetName="PART_PaneToggleButton" Property="Visibility" Value="Collapsed" />
             </MultiDataTrigger>
             <Trigger Property="IsPaneOpen" Value="False">
-                <Setter TargetName="PaneFooterHost" Property="Padding" Value="4,0,4,8" />
+                <Setter TargetName="PART_PaneItemsScrollViewer" Property="Padding" Value="0,4,0,4" />
+                <Setter TargetName="PaneFooterHost" Property="Padding" Value="0,0,0,8" />
             </Trigger>
         </ControlTemplate.Triggers>
     </ControlTemplate>

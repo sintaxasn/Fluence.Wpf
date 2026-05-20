@@ -3,7 +3,6 @@
 The **Fluence.Wpf.Demo** gallery is the live inventory: `FluenceWindow` chrome with a search box in the title bar, a left `NavigationView` (compact / expanded), and grouped `UserControl` pages under `Fluence.Wpf.Demo/Pages/`:
 
 - Home (clickable hero cards)
-- Colors (accent ramp, theme brush swatches)
 - Icons (FontIcon and virtualized Segoe Fluent Icons catalog)
 - Typography (Fluent type ramp and TextBlock usage)
 - Accessibility (focus order, high contrast, automation, RTL)
@@ -21,7 +20,7 @@ The **Fluence.Wpf.Demo** gallery is the live inventory: `FluenceWindow` chrome w
 - Status (InfoBar, InfoBadge, ProgressBar, ProgressRing)
 - Settings (theme, navigation style, colors, backdrop, caption buttons)
 
-Each non-Home gallery page renders examples inline and exposes source through `DemoSampleControl`. Source tabs are backed by page-local `XamlSource` and optional `CSharpSource` strings so examples can be debugged directly with their page code-behind.
+Most non-Home gallery pages render discrete examples through `DemoSampleControl`. Source tabs are backed by page-local `XamlSource` and optional `CSharpSource` strings so examples can be debugged directly with their page code-behind. Fixed XAML samples keep named live content in page-owned hidden slots and transfer it with the demo-only `DemoSamplePageWiring` helper. Direct reference pages such as Typography mirror WinUI Gallery catalog surfaces and do not add a trailing source expander.
 
 **Fluence.Wpf.Demo.Mvvm** is a minimal Task Manager demonstrating `FluenceWindow` + Fluence controls with zero code-behind (CommunityToolkit.Mvvm). See [AGENTS.md](../AGENTS.md) for architecture notes.
 

@@ -159,7 +159,7 @@ namespace Fluence.Wpf.Tests
                 Controls.TreeView? treeView = FindVisualChildByName<Controls.TreeView>(window, "MultiSelectTreeView");
 
                 Assert.IsNotNull(treeView, "Trees page should include a TreeView with multi-select checkboxes.");
-                Assert.AreEqual(Fluence.Wpf.TreeViewSelectionMode.Multiple, treeView.SelectionMode);
+                Assert.AreEqual(TreeViewSelectionMode.Multiple, treeView.SelectionMode);
             });
         }
 

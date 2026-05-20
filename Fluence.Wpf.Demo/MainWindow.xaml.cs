@@ -77,7 +77,6 @@ namespace Fluence.Wpf.Demo
 
             Title = GalleryWindowTitle;
             SystemThemeWatcher.Watch(this);
-            ApplicationThemeManager.Apply(ApplicationTheme.Auto, BackdropType.Mica);
 
             _userShowIcon = ShowIcon;
             _userShowTitle = ShowTitle;
@@ -589,7 +588,7 @@ namespace Fluence.Wpf.Demo
                 Title = _userTitle;
             }
 
-            _ = (NavSearchBox?.Visibility = Visibility.Visible);
+            _ = NavSearchBox?.Visibility = Visibility.Visible;
 
             if (ShellTitleBar is not null)
             {
@@ -857,7 +856,7 @@ namespace Fluence.Wpf.Demo
             }
 
             _ = ShellTitleBar.ApplyTemplate();
-            return ShellTitleBar.Template is null ? null : ShellTitleBar.Template.FindName(partName, ShellTitleBar) as T;
+            return ShellTitleBar.Template?.FindName(partName, ShellTitleBar) as T;
         }
 
     }

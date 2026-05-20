@@ -273,14 +273,11 @@ namespace Fluence.Wpf.Demo.Pages.Menus
         {
             InitializeComponent();
 
-            DemoSampleControl.ApplySources(
-                (System.Windows.DependencyObject)Content,
-                MenuBarXamlSource,
-                MenuBarCSharpSource,
-                ContextMenuXamlSource,
-                ContextMenuCSharpSource,
-                ToolTipsXamlSource,
-                ToolTipsCSharpSource);
+            DemoSamplePageWiring.Apply(
+                (DependencyObject)Content,
+                new DemoSampleSource(1, MenuBarXamlSource, MenuBarCSharpSource),
+                new DemoSampleSource(2, ContextMenuXamlSource, ContextMenuCSharpSource),
+                new DemoSampleSource(3, ToolTipsXamlSource, ToolTipsCSharpSource));
         }
 
         private void MenuBar_Click(object sender, RoutedEventArgs e)

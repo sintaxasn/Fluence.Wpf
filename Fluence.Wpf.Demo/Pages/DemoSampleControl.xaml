@@ -186,8 +186,7 @@
             x:Name="SampleCard"
 
             Grid.Row="1"
-            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
-            Padding="{DynamicResource DemoSampleCardPadding}"
+            Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
             BorderThickness="1"
             CornerRadius="8,8,0,0">
@@ -197,7 +196,10 @@
                     <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
-                <Grid x:Name="DemoRegionGrid" Grid.Column="0">
+                <Grid
+                    x:Name="DemoRegionGrid"
+                    Grid.Column="0"
+                    Margin="{DynamicResource DemoSampleCardPadding}">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />

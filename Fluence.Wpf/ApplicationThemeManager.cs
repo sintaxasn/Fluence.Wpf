@@ -268,7 +268,7 @@ namespace Fluence.Wpf
 
         private static void EnsureAcrylicNoiseBrush()
         {
-            _ = (Application.Current?.Resources["AcrylicNoiseBrush"] ??= AcrylicNoiseHelper.GetNoiseBrush());
+            _ = Application.Current?.Resources["AcrylicNoiseBrush"] ??= AcrylicNoiseHelper.GetNoiseBrush();
         }
 
         private static void OnChanged(ApplicationTheme resolvedTheme)

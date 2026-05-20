@@ -352,7 +352,7 @@ namespace Fluence.Wpf.Controls
                 }
                 return;
             }
-            _ = (icon?.Visibility = Visibility.Collapsed);
+            _ = icon?.Visibility = Visibility.Collapsed;
             helper.Text = HelperText;
             helper.Visibility = string.IsNullOrWhiteSpace(HelperText) ? Visibility.Collapsed : Visibility.Visible;
             helper.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "TextFillColorSecondaryBrush");

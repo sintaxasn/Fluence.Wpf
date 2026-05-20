@@ -36,8 +36,8 @@ namespace Fluence.Wpf.Controls
     /// and WinUI 3-canonical background brush states.
     /// Authority: WinUI 3 TreeView_themeresources.xaml + TreeViewItem.xaml.
     /// </summary>
-    [TemplatePart(Name = PART_Header, Type = typeof(System.Windows.Controls.ContentPresenter))]
-    [TemplatePart(Name = PART_ItemsHost, Type = typeof(System.Windows.Controls.ItemsPresenter))]
+    [TemplatePart(Name = PART_Header, Type = typeof(ContentPresenter))]
+    [TemplatePart(Name = PART_ItemsHost, Type = typeof(ItemsPresenter))]
     public class TreeViewItem : System.Windows.Controls.TreeViewItem
     {
         // Template part names for the header and items host elements in the control template.
@@ -155,11 +155,11 @@ namespace Fluence.Wpf.Controls
 
         private TreeView? FindOwningTreeView()
         {
-            ItemsControl? owner = ItemsControl.ItemsControlFromItemContainer(this);
+            ItemsControl? owner = ItemsControlFromItemContainer(this);
 
             while (owner is TreeViewItem treeViewItem)
             {
-                owner = ItemsControl.ItemsControlFromItemContainer(treeViewItem);
+                owner = ItemsControlFromItemContainer(treeViewItem);
             }
 
             return owner as TreeView;

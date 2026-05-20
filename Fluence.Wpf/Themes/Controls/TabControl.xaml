@@ -162,6 +162,7 @@
                             Grid.Row="1"
                             Grid.Column="0"
                             Grid.ColumnSpan="2"
+                            Background="{TemplateBinding Background}"
                             BorderBrush="Transparent"
                             BorderThickness="0"
                             CornerRadius="{DynamicResource OverlayCornerRadius}"

@@ -400,14 +400,11 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
         {
             InitializeComponent();
 
-            DemoSampleControl.ApplySources(
-                (System.Windows.DependencyObject)Content,
-                ObservableCollectionListViewXamlSource,
-                ObservableCollectionListViewCSharpSource,
-                ListViewSelectionModeXamlSource,
-                ListViewSelectionModeCSharpSource,
-                DataTemplateRowXamlSource,
-                DataTemplateRowCSharpSource);
+            DemoSamplePageWiring.Apply(
+                (DependencyObject)Content,
+                new DemoSampleSource(1, ObservableCollectionListViewXamlSource, ObservableCollectionListViewCSharpSource),
+                new DemoSampleSource(2, ListViewSelectionModeXamlSource, ListViewSelectionModeCSharpSource),
+                new DemoSampleSource(3, DataTemplateRowXamlSource, DataTemplateRowCSharpSource));
 
             Loaded += OnLoaded;
         }

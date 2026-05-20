@@ -196,14 +196,11 @@ namespace Fluence.Wpf.Demo.Pages.Forms
         {
             InitializeComponent();
 
-            DemoSampleControl.ApplySources(
-                (System.Windows.DependencyObject)Content,
-                SignInFormXamlSource,
-                SignInFormCSharpSource,
-                CheckoutFormXamlSource,
-                CheckoutFormCSharpSource,
-                SettingsFormXamlSource,
-                SettingsFormCSharpSource);
+            DemoSamplePageWiring.Apply(
+                (DependencyObject)Content,
+                new DemoSampleSource(1, SignInFormXamlSource, SignInFormCSharpSource),
+                new DemoSampleSource(2, CheckoutFormXamlSource, CheckoutFormCSharpSource),
+                new DemoSampleSource(3, SettingsFormXamlSource, SettingsFormCSharpSource));
 
             Loaded += GalleryFormsPage_Loaded;
         }
@@ -235,12 +232,12 @@ namespace Fluence.Wpf.Demo.Pages.Forms
 
         private void SignInButton_Click(object sender, RoutedEventArgs e)
         {
-            _ = (SignInStatusBar?.IsOpen = true);
+            _ = SignInStatusBar?.IsOpen = true;
         }
 
         private void SaveSettingsButton_Click(object sender, RoutedEventArgs e)
         {
-            _ = (SettingsSavedBar?.IsOpen = true);
+            _ = SettingsSavedBar?.IsOpen = true;
         }
     }
 }

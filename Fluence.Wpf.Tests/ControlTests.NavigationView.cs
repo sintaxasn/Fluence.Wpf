@@ -283,6 +283,60 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void NavigationView_LeftClosedPaneItemsKeepFullIconWidth()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+
+                try
+                {
+                    NavigationViewItem messages = new()
+                    {
+                        Content = "Messages",
+                        Icon = new FontIcon { Glyph = "\uE8BD", IconFontSize = 20 },
+                        IsSelected = true
+                    };
+                    NavigationView nav = new()
+                    {
+                        Width = 420,
+                        Height = 320,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left,
+                        IsPaneOpen = false
+                    };
+                    _ = nav.Items.Add(messages);
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.AreEqual(48.0, nav.GetPaneColumnWidthForTesting(), 0.01,
+                        "Closed Left pane should reserve the canonical 48px compact width.");
+                    Assert.IsTrue(messages.ActualWidth >= 48.0 - 0.5,
+                        "Closed Left navigation items should receive the full compact pane width so icons are not clipped.");
+
+                    ContentPresenter? iconPresenter = FindVisualChildByName<ContentPresenter>(messages, "IconPresenter");
+                    Assert.IsNotNull(iconPresenter, "NavigationViewItem template should expose the icon presenter.");
+                    Point iconOffset = iconPresenter.TransformToAncestor(messages).Transform(new Point(0, 0));
+                    Assert.IsTrue(iconOffset.X >= 4.0 - 0.5,
+                        "Closed Left icon should not be clipped on the left edge.");
+                    Assert.IsTrue(iconOffset.X + iconPresenter.ActualWidth <= 44.0 + 0.5,
+                        "Closed Left icon should stay inside the 40px icon slot.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary is not null)
+                    {
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
         public void NavigationView_LeftCompact_ClosedPaneItemsKeepFullIconWidth()
         {
             RunOnStaThread(() =>

@@ -1177,7 +1177,7 @@ namespace Fluence.Wpf.Controls
         private void HideIndicator()
         {
             StopAnimation();
-            _ = (_selectionIndicator?.Opacity = 0);
+            _ = _selectionIndicator?.Opacity = 0;
             _indicatorPositioned = false;
         }
 

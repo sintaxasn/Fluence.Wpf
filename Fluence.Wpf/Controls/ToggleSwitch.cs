@@ -435,13 +435,13 @@ namespace Fluence.Wpf.Controls
                         return;
                     }
 
-                    _switchThumb.BeginAnimation(FrameworkElement.WidthProperty, null);
-                    _switchThumb.BeginAnimation(FrameworkElement.HeightProperty, null);
+                    _switchThumb.BeginAnimation(WidthProperty, null);
+                    _switchThumb.BeginAnimation(HeightProperty, null);
                 };
             }
 
-            _switchThumb.BeginAnimation(FrameworkElement.WidthProperty, widthAnimation, HandoffBehavior.SnapshotAndReplace);
-            _switchThumb.BeginAnimation(FrameworkElement.HeightProperty, heightAnimation, HandoffBehavior.SnapshotAndReplace);
+            _switchThumb.BeginAnimation(WidthProperty, widthAnimation, HandoffBehavior.SnapshotAndReplace);
+            _switchThumb.BeginAnimation(HeightProperty, heightAnimation, HandoffBehavior.SnapshotAndReplace);
         }
 
         private double GetReleasedThumbSize()

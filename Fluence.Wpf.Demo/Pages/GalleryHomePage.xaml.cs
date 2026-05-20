@@ -99,10 +99,7 @@ namespace Fluence.Wpf.Demo.Pages
         private static bool IsCurrentBackgroundDark()
         {
             Application app = Application.Current;
-            SolidColorBrush? brush = app is not null
-                ? app.TryFindResource("SolidBackgroundFillColorBaseBrush") as SolidColorBrush
-                : null;
-            if (brush is null)
+            if (app?.TryFindResource("SolidBackgroundFillColorBaseBrush") is not SolidColorBrush brush)
             {
                 return ApplicationThemeManager.CurrentTheme != ApplicationTheme.Light;
             }

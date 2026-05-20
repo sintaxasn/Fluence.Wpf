@@ -265,7 +265,7 @@ namespace Fluence.Wpf.Tests
 
                     FluentButton? overflowButton = FindVisualChildByName<FluentButton>(nav, "PART_TopOverflowButton");
                     Assert.IsNotNull(overflowButton, "Top pane should expose a three-dot overflow button.");
-                    Assert.AreEqual(Fluence.Wpf.ControlAppearance.Subtle, overflowButton.Appearance,
+                    Assert.AreEqual(ControlAppearance.Subtle, overflowButton.Appearance,
                         "Top pane overflow button should use the same subtle Fluence button chrome as other navigation strip buttons.");
                     Assert.AreEqual(Visibility.Visible, overflowButton.Visibility,
                         "Top pane overflow button should become visible when items do not fit.");

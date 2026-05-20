@@ -86,16 +86,12 @@ namespace Fluence.Wpf.Demo.Pages
         public GalleryLayoutPage()
         {
             InitializeComponent();
-            DemoSampleControl.ApplySources(
+            DemoSamplePageWiring.Apply(
                 (System.Windows.DependencyObject)Content,
-                BorderStackPanelXamlSource,
-                string.Empty,
-                DockPanelXamlSource,
-                string.Empty,
-                ExpanderXamlSource,
-                string.Empty,
-                DockPanelExpanderXamlSource,
-                string.Empty);
+                new DemoSampleSource(1, BorderStackPanelXamlSource, string.Empty),
+                new DemoSampleSource(2, DockPanelXamlSource, string.Empty),
+                new DemoSampleSource(3, ExpanderXamlSource, string.Empty),
+                new DemoSampleSource(4, DockPanelExpanderXamlSource, string.Empty));
         }
     }
 }

@@ -28,7 +28,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -320,6 +319,10 @@ namespace Fluence.Wpf.Demo.Pages
             SourceTabControl?.Items.Clear();
 
             UpdateSourceVisibility();
+            if (SourceExpander is not null && SourceExpander.IsExpanded)
+            {
+                LoadSourceTabs();
+            }
         }
 
         private void SourceExpander_Expanded(object sender, RoutedEventArgs e)
@@ -664,134 +667,6 @@ namespace Fluence.Wpf.Demo.Pages
                    value == ':' ||
                    value == '.' ||
                    value == '-';
-        }
-
-        internal static void ApplySources(DependencyObject root, params string[] sourcePairs)
-        {
-#if NET6_0_OR_GREATER
-            ArgumentNullException.ThrowIfNull(root);
-#else
-            if (root is null)
-            {
-                throw new ArgumentNullException(nameof(root));
-            }
-#endif
-
-            if (sourcePairs.Length % 2 != 0)
-            {
-                throw new ArgumentException("Source pairs must contain XAML and C# values.", nameof(sourcePairs));
-            }
-
-            List<DemoSampleControl> samples = [];
-            CollectDemoSampleControls(root, samples);
-            ApplyContentSlots(root, samples);
-
-            int sampleCount = sourcePairs.Length / 2;
-            if (samples.Count < sampleCount)
-            {
-                throw new InvalidOperationException("The page has fewer DemoSampleControl instances than source pairs.");
-            }
-
-            for (int i = 0; i < sampleCount; i++)
-            {
-                DemoSampleControl sample = samples[i];
-                sample.XamlSource = sourcePairs[i * 2];
-                sample.CSharpSource = sourcePairs[(i * 2) + 1];
-            }
-        }
-
-        private static void ApplyContentSlots(DependencyObject root, IList<DemoSampleControl> samples)
-        {
-            Dictionary<int, ContentControl> demoSlots = [];
-            Dictionary<int, ContentControl> outputSlots = [];
-            Dictionary<int, ContentControl> rightRailSlots = [];
-            CollectContentSlots(root, demoSlots, outputSlots, rightRailSlots);
-
-            for (int i = 0; i < samples.Count; i++)
-            {
-                int slotIndex = i + 1;
-                DemoSampleControl sample = samples[i];
-                if (demoSlots.TryGetValue(slotIndex, out ContentControl? demoSlot))
-                {
-                    sample.DemoContent = TakeSlotContent(demoSlot);
-                }
-
-                if (outputSlots.TryGetValue(slotIndex, out ContentControl? outputSlot))
-                {
-                    sample.OutputContent = TakeSlotContent(outputSlot);
-                }
-
-                if (rightRailSlots.TryGetValue(slotIndex, out ContentControl? rightRailSlot))
-                {
-                    sample.RightRailContent = TakeSlotContent(rightRailSlot);
-                }
-            }
-        }
-
-        private static object? TakeSlotContent(ContentControl slot)
-        {
-            object? content = slot.Content;
-            slot.Content = null;
-            return content;
-        }
-
-        private static void CollectContentSlots(
-            DependencyObject current,
-            IDictionary<int, ContentControl> demoSlots,
-            IDictionary<int, ContentControl> outputSlots,
-            IDictionary<int, ContentControl> rightRailSlots)
-        {
-            if (current is ContentControl contentControl && !string.IsNullOrWhiteSpace(contentControl.Name))
-            {
-                AddSlotIfMatched(contentControl, "DemoContentHost", demoSlots);
-                AddSlotIfMatched(contentControl, "OutputContentHost", outputSlots);
-                AddSlotIfMatched(contentControl, "RightRailContentHost", rightRailSlots);
-            }
-
-            foreach (object child in LogicalTreeHelper.GetChildren(current))
-            {
-                if (child is DependencyObject childObject)
-                {
-                    CollectContentSlots(childObject, demoSlots, outputSlots, rightRailSlots);
-                }
-            }
-        }
-
-        private static void AddSlotIfMatched(
-            ContentControl slot,
-            string suffix,
-            IDictionary<int, ContentControl> slots)
-        {
-            const string prefix = "DemoSampleSlot";
-            string name = slot.Name;
-            if (!name.StartsWith(prefix, StringComparison.Ordinal) ||
-                !name.EndsWith(suffix, StringComparison.Ordinal))
-            {
-                return;
-            }
-
-            string indexText = name.Substring(prefix.Length, name.Length - prefix.Length - suffix.Length);
-            if (int.TryParse(indexText, NumberStyles.None, CultureInfo.InvariantCulture, out int index))
-            {
-                slots[index] = slot;
-            }
-        }
-
-        private static void CollectDemoSampleControls(DependencyObject current, ICollection<DemoSampleControl> samples)
-        {
-            if (current is DemoSampleControl sample)
-            {
-                samples.Add(sample);
-                return;
-            }
-
-            foreach (object child in LogicalTreeHelper.GetChildren(current))
-            {
-                if (child is DependencyObject childObject)
-                {
-                    CollectDemoSampleControls(childObject, samples);
-                }
-            }
         }
 
         private static Thickness GetThicknessResource(string key, Thickness fallback)

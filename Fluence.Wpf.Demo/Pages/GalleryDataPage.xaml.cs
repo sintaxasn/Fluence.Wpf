@@ -360,16 +360,12 @@ namespace Fluence.Wpf.Demo.Pages.Data
         {
             InitializeComponent();
 
-            DemoSampleControl.ApplySources(
-                (System.Windows.DependencyObject)Content,
-                ListViewItemsXamlSource,
-                ListViewItemsCSharpSource,
-                ListViewEmptyStateXamlSource,
-                ListViewEmptyStateCSharpSource,
-                PersonPictureXamlSource,
-                PersonPictureCSharpSource,
-                CardVariantsXamlSource,
-                CardVariantsCSharpSource);
+            DemoSamplePageWiring.Apply(
+                (DependencyObject)Content,
+                new DemoSampleSource(1, ListViewItemsXamlSource, ListViewItemsCSharpSource),
+                new DemoSampleSource(2, ListViewEmptyStateXamlSource, ListViewEmptyStateCSharpSource),
+                new DemoSampleSource(3, PersonPictureXamlSource, PersonPictureCSharpSource),
+                new DemoSampleSource(4, CardVariantsXamlSource, CardVariantsCSharpSource));
         }
 
         private void AddListItem_Click(object sender, RoutedEventArgs e)

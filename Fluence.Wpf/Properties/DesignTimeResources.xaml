@@ -5,11 +5,11 @@
     <!--  Used for XAML designer preview  -->
 
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="Colors/Theme.Light.xaml" />
-        <ResourceDictionary Source="Accent/Accent.xaml" />
-        <ResourceDictionary Source="Brushes/Brushes.xaml" />
-        <ResourceDictionary Source="Typography/Typography.xaml" />
-        <ResourceDictionary Source="Generic.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Fluence.Wpf;component/Themes/Colors/Theme.Light.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Fluence.Wpf;component/Themes/Accent/Accent.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Fluence.Wpf;component/Themes/Brushes/Brushes.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Fluence.Wpf;component/Themes/Typography/Typography.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Fluence.Wpf;component/Themes/Generic.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

@@ -130,8 +130,10 @@ namespace Fluence.Wpf.Demo.Mvvm.ViewModels
         }
 
         // Source-generated partial callback - fires after NewTaskText setter runs.
-        partial void OnNewTaskTextChanged(string value) =>
+        partial void OnNewTaskTextChanged(string value)
+        {
             AddCommand.NotifyCanExecuteChanged();
+        }
 
         /// <summary>
         /// Removes a specific task. Bound in the DataTemplate via
@@ -164,7 +166,10 @@ namespace Fluence.Wpf.Demo.Mvvm.ViewModels
         // ---------------------------------------------------------------
 
         // Source-generated partial callback - fires when ActiveFilter changes.
-        partial void OnActiveFilterChanged(FilterMode value) => Refresh();
+        partial void OnActiveFilterChanged(FilterMode value)
+        {
+            Refresh();
+        }
 
         // Propagate IsCompleted change on any item → rebuild filter + derived props.
         private void OnItemPropertyChanged(object sender, PropertyChangedEventArgs e)

@@ -400,7 +400,7 @@ namespace Fluence.Wpf.Controls
                 // null out determinate arc data.  Code-driven angle animations render the
                 // caterpillar arc when the control is active.
                 ring.BeginAnimation(AnimatedFractionProperty, null);
-                _ = (ring._arcPath?.Data = null);
+                _ = ring._arcPath?.Data = null;
                 ring.UpdateIndeterminateAnimationState();
             }
             else
@@ -530,7 +530,7 @@ namespace Fluence.Wpf.Controls
             _isIndeterminateAnimationRunning = false;
             IndeterminateStartAngle = IndeterminateStartAngleDefault;
             IndeterminateSweepAngle = IndeterminateMinimumSweepAngle;
-            _ = (_indeterminateArcPath?.Data = null);
+            _ = _indeterminateArcPath?.Data = null;
         }
 
         private static DoubleAnimationUsingKeyFrames CreateIndeterminateStartAnimation()
@@ -685,7 +685,7 @@ namespace Fluence.Wpf.Controls
             }
             Point startPoint = GetArcPoint(center, radius, startAngle);
             Point endPoint = GetArcPoint(center, radius, startAngle + angle);
-            _ = (figure?.StartPoint = startPoint);
+            _ = figure?.StartPoint = startPoint;
             if (segment is not null)
             {
                 segment.Point = endPoint;

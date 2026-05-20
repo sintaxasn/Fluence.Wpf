@@ -450,18 +450,13 @@ namespace Fluence.Wpf.Demo.Pages.Status
         {
             InitializeComponent();
 
-            DemoSampleControl.ApplySources(
+            DemoSamplePageWiring.Apply(
                 (DependencyObject)Content,
-                ProgressBarValueXamlSource,
-                ProgressBarValueCSharpSource,
-                ProgressBarIndeterminateXamlSource,
-                ProgressBarIndeterminateCSharpSource,
-                ProgressBarStepsXamlSource,
-                ProgressBarStepsCSharpSource,
-                ProgressRingsXamlSource,
-                ProgressRingsCSharpSource,
-                InfoBarsXamlSource,
-                InfoBarsCSharpSource);
+                new DemoSampleSource(1, ProgressBarValueXamlSource, ProgressBarValueCSharpSource),
+                new DemoSampleSource(2, ProgressBarIndeterminateXamlSource, ProgressBarIndeterminateCSharpSource),
+                new DemoSampleSource(3, ProgressBarStepsXamlSource, ProgressBarStepsCSharpSource),
+                new DemoSampleSource(4, ProgressRingsXamlSource, ProgressRingsCSharpSource),
+                new DemoSampleSource(5, InfoBarsXamlSource, InfoBarsCSharpSource));
 
             Loaded += GalleryStatusPage_Loaded;
         }

@@ -9,7 +9,7 @@ Self-contained persistent memory for engineers (human and AI) working in this re
 ## 1. Project overview
 
 - **Fluence.Wpf** is a WPF control library that recreates the **Windows 11 Fluent / WinUI 3** visual language and interaction patterns on WPF.
-- **Target frameworks** (library + tests): `net472` (primary) and `net10.0-windows`. Gallery demo (`Fluence.Wpf.Demo`) targets `net472`; MVVM demo (`Fluence.Wpf.Demo.Mvvm`) targets `net10.0-windows`.
+- **Target frameworks** (library + tests): `net472` (primary) and `net10.0-windows`. Gallery demo (`Fluence.Wpf.Demo`) targets `net472` and `net10.0-windows10.0.26100.0`; MVVM demo (`Fluence.Wpf.Demo.Mvvm`) targets `net10.0-windows`.
 - **Language**: `LangVersion=latest` across all TFMs, set centrally in `Directory.Build.props` - no per-TFM language restriction. `net472` still constrains **runtime API** availability (see §4.3); avoid APIs that don't ship in `net472`, but C# language features themselves are not restricted. Nullable reference types are **enabled** (`Nullable=enable` in `Directory.Build.props`); individual projects may override with `<Nullable>disable</Nullable>` (e.g. `Fluence.Wpf.Demo.Mvvm`).
 - **License**: BSD 3-Clause. Every `.cs` file begins with the same 27-line header; copy it verbatim from any existing library file when adding new sources. Do not edit the copyright year unless the user asks.
 - **OS**: Windows 10 1809+ baseline. Mica and rounded-corner extras light up on Windows 11.
@@ -20,7 +20,7 @@ Self-contained persistent memory for engineers (human and AI) working in this re
 ```text
 Fluence.Wpf.sln
 ├── Fluence.Wpf/             Control library (multi-TFM: net472 + net10.0-windows)
-├── Fluence.Wpf.Demo/        Gallery app (net472) - visual verification for all controls
+├── Fluence.Wpf.Demo/        Gallery app (net472 + net10.0-windows10.0.26100.0) - visual verification for all controls
 ├── Fluence.Wpf.Demo.Mvvm/   MVVM Task Manager demo (net10.0-windows) - CommunityToolkit.Mvvm example
 └── Fluence.Wpf.Tests/       MSTest v3.2 suite (multi-TFM)
 ```
@@ -251,21 +251,21 @@ dotnet test    Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug
 ```
 
 - Zero errors, zero warnings - the library is `TreatWarningsAsErrors`.
-- The demo is run with `dotnet run -p Fluence.Wpf.Demo` (net472, Windows).
+- The gallery demo is run with `dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -f net472` or the matching `net10.0-windows10.0.26100.0` TFM.
 - For visual verification: exercise Light / Dark / High Contrast / Auto, a couple of accent swatches, Mica / Acrylic / Tabbed / None backdrops, and at least one control per gallery page.
 
 ---
 
 ## 8. Demo applications
 
-### Fluence.Wpf.Demo (gallery, net472)
+### Fluence.Wpf.Demo (gallery, net472 + net10.0-windows10.0.26100.0)
 
-- `MainWindow` is a `FluenceWindow` with `ExtendsContentIntoTitleBar="True"`; the title bar hosts the app icon, title, a `TextBox` **search** bound to filter menu items, and caption buttons.
+- `MainWindow` is a `FluenceWindow` with `ExtendsContentIntoTitleBar="False"` in source, `SystemBackdropType="Mica"`, and a custom `TitleBar` slot hosting the app icon, title, a `TextBox` **search** bound to filter menu items, and caption buttons.
 - `NavigationView` named `DemoNav`: default `PaneDisplayMode="Left"` in source and opens expanded with `IsPaneOpen="True"` to showcase the full pane.
-- Menu items carry `Tag` strings; `MainWindow.NavigateTo(string tag)` does a switch to the matching `Gallery*Page` inside the content frame. The back stack has been intentionally removed; navigation is tag-driven.
-- `GalleryHomePage` shows a theme-aware hero banner (`BannerLight.png` / `BannerDark.png`) and four large **clickable `Card`** tiles that route to Buttons, Selection, Navigation, and Window pages via the same `NavigateTo` helper.
-- 17 gallery pages: Home, Colors, Icons, Typography, Buttons, Selection, Inputs, Forms, Data, Data binding, Trees, Menus, Navigation, Tabs, Layout, Status, and Accessibility.
-- Run: `dotnet run -p Fluence.Wpf.Demo` (net472, Windows).
+- Menu items carry `Tag` strings; `MainWindow.NavigateTo(string tag)` does a switch to the matching `Gallery*Page` inside the content frame. Navigation remains tag-driven, with a lightweight visited-page stack only for the shell Back button.
+- `GalleryHomePage` shows a theme-aware hero banner (`BannerLight.png` / `BannerDark.png`) and large **clickable `Card`** tiles that route through the same `NavigateTo` helper. Window controls and app-level theme/navigation/backdrop options live on the Settings page.
+- 16 gallery pages: Home, Icons, Typography, Buttons, Selection, Inputs, Forms, Data, Data binding, Trees, Menus, Navigation, Tabs, Layout, Status, and Accessibility.
+- Run: `dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -f net472` or `dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -f net10.0-windows10.0.26100.0`.
 
 ### Fluence.Wpf.Demo.Mvvm (MVVM Task Manager, net10.0-windows)
 
@@ -287,7 +287,7 @@ dotnet test    Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug
 - **Skipping `[assembly: DoNotParallelize]`** on a new test project / renaming the file ⇒ intermittent `ResourceReferenceExpression` / sealed-storyboard failures.
 - **Assuming the old "subtle stroke" for selection rings** ⇒ RadioButton / CheckBox rings disappear in light theme. Fix: use `ControlStrongStrokeColorDefaultBrush` (and `…Disabled` for disabled state).
 - **Hard-coding caption metrics or backdrop flags in child controls** ⇒ breaks on Windows 10 / unsupported DWM builds. Fix: read `OsVersionHelper` and honour `FluenceWindow` policy.
-- **Navigating via an external back-stack** in the demo ⇒ divergence with the current tag-based `NavigateTo`. The back stack is intentionally not wired up.
+- **Replacing the demo's tag navigation with an external navigation service** ⇒ divergence with the current `NavigateTo` contract. Keep routes tag-driven; the only stack is the lightweight shell Back history in `MainWindow`.
 - **Holding designer-only brushes as immutable resources** ⇒ designer no longer matches runtime after a theme change. Fix: keep `DesignTime.xaml` minimal and aligned with Light + `#0078D4`.
 - **Relying on a previous test's theme state leaking into yours** ⇒ intermittent color-alpha mismatches when tests run as a suite but pass in isolation. Fix: always call `MergeGenericDictionary(Application.Current)` (which resets managers, clears dictionaries, and applies a known theme) as the first step of any control test body.
 - **Using `string.IsNullOrEmpty()`** ⇒ build error RS0030 (banned via `BannedApiAnalyzers` + `BannedSymbols.txt`). Fix: always use `string.IsNullOrWhiteSpace()`.
@@ -393,7 +393,7 @@ STOP CONDITION: working tree is "git-clean minus your intended diff"; wait for e
 
 ## 14. Demo Sample Pages
 
-All control samples in `Fluence.Wpf.Demo` render through `DemoSampleControl`. The pattern mirrors WinUI Gallery `ControlExample` composition and is the source of truth for future sample pages.
+Control samples in `Fluence.Wpf.Demo` render through `DemoSampleControl`. Design reference pages that mirror WinUI Gallery catalog surfaces, such as Typography, may render directly when a trailing source expander would diverge from the reference.
 
 ### 14.1 Page skeleton
 
@@ -446,17 +446,17 @@ Composition requirements:
 - Source content uses a `TabControl` with `XAML` and `C#` tabs. Each tab hosts the syntax-highlighted, copy-enabled RichTextBox viewer owned by `DemoSampleControl`.
 - Do not use or reintroduce legacy `Title`, `Description`, `SampleContent`, `ReplaceSourceLink(...)`, obsolete forwarding members, or source-link placeholder buttons.
 
-Named live controls must not be declared directly inside `DemoSampleControl` property elements because WPF raises `MC3093`. Keep named content in page-owned hidden `ContentControl` slots and move it into `DemoSampleControl` from code-behind using the existing demo helper pattern.
+Named live controls must not be declared directly inside `DemoSampleControl` property elements because WPF raises `MC3093`. Prefer page-owned hidden `ContentControl` slots plus `DemoSamplePageWiring.Apply(...)` from code-behind with typed `DemoSampleSource` registrations. The helper owns slot discovery, content transfer, source assignment, duplicate-slot detection, missing-source detection, and clearing the hidden slots after handoff. Catalog pages may stay outside `DemoSampleControl` when the WinUI Gallery reference itself is a direct catalog or guidance surface.
 
 ### 14.4 Catalog surfaces
 
-Colors, Icons, Typography, and Accessibility are part of this standard. Discrete demonstrations on those pages use `DemoSampleControl` and real source tabs. The virtualized Icons catalog may stay outside `DemoSampleControl` because it is a catalog surface, not a single control sample.
+Icons and Accessibility are part of this standard for discrete demonstrations. Typography is a direct WinUI Gallery-style reference page and does not add a trailing source expander.
 
 ### 14.5 Definition of done
 
 A new or updated sample page is done only when:
 
-- Every demonstration uses `DemoSampleControl`.
+- Every discrete control demonstration uses `DemoSampleControl`; direct catalog/reference pages document their exception in tests and docs.
 - All five surface tokens resolve in Light, Dark, and High Contrast after runtime theme changes.
 - Card and source expander corners follow the `8,8,0,0` plus `0,0,8,8` pattern with no visible seam artifact.
 - The source expander shows copy-enabled XAML and C# tabs that match the visible sample.
@@ -483,7 +483,6 @@ Stats: 50 obs (17,085t read) | 129,849t work | 87% savings
 S80 Remove PSADT-related section (§13.2) from documentation; user asking about applying additional Change B (one-liner in §10 about docs/plans/ as transient plan files) (May 11, 4:09 PM)
 S81 Verification that AGENTS.md has been cleaned up after removing PSADT-related section (§13.2) (May 11, 4:18 PM)
 S82 User encountered ultraplan session creation failure with bundle upload 502 error; Claude advised connecting GitHub account on claude.ai/code (May 11, 4:18 PM)
-S83 Explore Fluence.Wpf demo application structure and create an implementation plan to bring all 17 gallery content pages into visual parity with GalleryHomePage, fix dark-mode contrast on GalleryColorsPage, and fix DemoSampleControl Expander border. (May 11, 4:46 PM)
 S85 Fix customization evaluation diagnostics (May 11, 4:58 PM)
 ### May 12, 2026
 S86 Visual Design Polish — WinUI3 Look & Feel Alignment for Fluent.Wpf codebase. Revise all pages to use #272727 background, update DemoSampleControl with #202020 surfaces and #323232 code sections, replace top ToggleSwitch with Settings gear icon, redesign layout to match WinUI Settings patterns, fix Visual Focus state cutoff, and update KNOWN_ISSUES and CHANGELOG. (May 12, 12:44 AM)

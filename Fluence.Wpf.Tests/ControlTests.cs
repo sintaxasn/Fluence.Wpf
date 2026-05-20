@@ -2607,9 +2607,9 @@ namespace Fluence.Wpf.Tests
                     radio2.IsChecked = true;
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.IsFalse(radio1.IsChecked == true, "Radio1 should be unchecked after Radio2 is checked.");
-                    Assert.IsTrue(radio2.IsChecked == true);
-                    Assert.IsFalse(radio3.IsChecked == true);
+                    Assert.AreEqual(false, radio1.IsChecked, "Radio1 should be unchecked after Radio2 is checked.");
+                    Assert.AreEqual(true, radio2.IsChecked, "Radio2 should be checked after being set.");
+                    Assert.AreEqual(false, radio3.IsChecked, "Radio3 should be unchecked.");
                 }
                 finally
                 {
@@ -2681,14 +2681,14 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Assert.IsFalse(toggle.IsChecked == true, "ToggleSwitch should start unchecked.");
+                    Assert.AreEqual(false, toggle.IsChecked, "ToggleSwitch should start unchecked.");
 
                     ToggleButtonAutomationPeer peer = new(toggle);
                     IToggleProvider toggleProvider = peer;
                     toggleProvider.Toggle();
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.IsTrue(toggle.IsChecked == true, "ToggleSwitch should be checked after toggle.");
+                    Assert.AreEqual(true, toggle.IsChecked, "ToggleSwitch should be checked after toggle.");
                 }
                 finally
                 {

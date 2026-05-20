@@ -281,18 +281,13 @@ namespace Fluence.Wpf.Demo.Pages.Inputs
         {
             InitializeComponent();
 
-            DemoSampleControl.ApplySources(
+            DemoSamplePageWiring.Apply(
                 (System.Windows.DependencyObject)Content,
-                TextBoxInputXamlSource,
-                TextBoxInputCSharpSource,
-                TextBoxValidationXamlSource,
-                TextBoxValidationCSharpSource,
-                PasswordBoxInputXamlSource,
-                PasswordBoxInputCSharpSource,
-                NumberBoxInputXamlSource,
-                NumberBoxInputCSharpSource,
-                SliderInputXamlSource,
-                SliderInputCSharpSource);
+                new DemoSampleSource(1, TextBoxInputXamlSource, TextBoxInputCSharpSource),
+                new DemoSampleSource(2, TextBoxValidationXamlSource, TextBoxValidationCSharpSource),
+                new DemoSampleSource(3, PasswordBoxInputXamlSource, PasswordBoxInputCSharpSource),
+                new DemoSampleSource(4, NumberBoxInputXamlSource, NumberBoxInputCSharpSource),
+                new DemoSampleSource(5, SliderInputXamlSource, SliderInputCSharpSource));
         }
 
     }

@@ -57,7 +57,6 @@ namespace Fluence.Wpf.Tests
     {
         private static readonly DemoPageExpectation[] PageExpectations =
         [
-            new("colors", typeof(GalleryColorsPage)),
             new("icons", typeof(GalleryIconsPage)),
             new("typography", typeof(GalleryTypographyPage)),
             new("accessibility", typeof(GalleryAccessibilityPage)),
@@ -315,7 +314,7 @@ namespace Fluence.Wpf.Tests
         public void MainWindow_NavigationCatalog_RemovesWindowingPage()
         {
             List<DemoNavigationItem> items = [.. DemoNavigationCatalog.Items];
-            Assert.IsTrue(items.Count >= 1, "Navigation catalog should contain at least one entry.");
+            Assert.IsGreaterThanOrEqualTo(1, items.Count, "Navigation catalog should contain at least one entry.");
             Assert.AreEqual("Accessibility", items[items.Count - 1].Title,
                 "Accessibility should be the final regular NavigationView item after Windowing moves into Settings.");
             Assert.IsFalse(items.Any(item => string.Equals(item.Title, "Windowing", StringComparison.Ordinal)),
@@ -344,7 +343,6 @@ namespace Fluence.Wpf.Tests
                 UserControl[] pages =
                 [
                     new GalleryHomePage(),
-                    new GalleryColorsPage(),
                     new GalleryIconsPage(),
                     new GalleryTypographyPage(),
                     new GalleryAccessibilityPage(),
@@ -534,7 +532,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(titleBarBack, "Extended title bar should expose a back button slot.");
                     Assert.AreEqual(Visibility.Visible, titleBarBack.Visibility,
                         "Visited-page history should make the title-bar back slot visible in Left mode.");
-                    Assert.IsTrue((GetVisualX(titleBarBack, window) ?? double.MaxValue) < (GetVisualX(titleBarToggle, window) ?? double.MaxValue),
+                    Assert.IsLessThan(GetVisualX(titleBarToggle, window) ?? double.MaxValue, GetVisualX(titleBarBack, window) ?? double.MaxValue,
                         "Back should occupy the first title-bar navigation slot.");
                     WpfTextBlock? titleBarBackGlyph = FindVisualChild<WpfTextBlock>(titleBarBack);
                     Assert.IsNotNull(titleBarBackGlyph, "Title-bar back button should render a Segoe Fluent Icons glyph.");
@@ -603,7 +601,7 @@ namespace Fluence.Wpf.Tests
                         "Back should be visible in the title bar when back navigation is enabled.");
                     Assert.AreEqual(Visibility.Visible, titleBarToggle.Visibility,
                         "Pane toggle should remain visible after back appears.");
-                    Assert.IsTrue((GetVisualX(titleBarBack, window) ?? double.MaxValue) < (GetVisualX(titleBarToggle, window) ?? double.MaxValue),
+                    Assert.IsLessThan(GetVisualX(titleBarToggle, window) ?? double.MaxValue, GetVisualX(titleBarBack, window) ?? double.MaxValue,
                         "Back should occupy the first title-bar navigation slot.");
                     Assert.AreEqual(GetVisualCenterY(titleBarBack, window) ?? double.MaxValue, GetVisualCenterY(titleBarToggle, window) ?? double.MaxValue, 1.0,
                         "Back and pane toggle should be vertically centered in the same title-bar row.");
@@ -719,9 +717,9 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(search, "Demo search box must be present.");
                     Assert.AreEqual(Visibility.Visible, titleIcon.Visibility,
                         "Top mode should keep the title-bar app icon visible after the back slot.");
-                    Assert.IsTrue((GetVisualX(titleBarBack, window) ?? double.MaxValue) < (GetVisualX(titleIcon, window) ?? double.MaxValue),
+                    Assert.IsLessThan(GetVisualX(titleIcon, window) ?? double.MaxValue, GetVisualX(titleBarBack, window) ?? double.MaxValue,
                         "Top mode back should be the first visible title-bar item.");
-                    Assert.IsTrue((GetVisualX(titleBarBack, window) ?? double.MaxValue) < (GetVisualX(search, window) ?? double.MaxValue),
+                    Assert.IsLessThan(GetVisualX(search, window) ?? double.MaxValue, GetVisualX(titleBarBack, window) ?? double.MaxValue,
                         "Top mode back should appear before centered title-bar content.");
 
                     _ = nav.ApplyTemplate();
@@ -858,7 +856,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsFalse(nav.IsPaneOpen,
                         "Opening Settings must preserve the real collapsed pane state.");
 
-                    Fluence.Wpf.Controls.ComboBox? navigationStyle = FindByName<Fluence.Wpf.Controls.ComboBox>(
+                    Controls.ComboBox? navigationStyle = FindByName<Controls.ComboBox>(
                         nav.Content as DependencyObject,
                         "NavigationStyleComboBox");
                     Assert.IsNotNull(navigationStyle, "Settings page should expose the navigation-style selector.");
@@ -889,7 +887,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
-                    Fluence.Wpf.Controls.ComboBox? navigationStyle = FindByName<Fluence.Wpf.Controls.ComboBox>(
+                    Controls.ComboBox? navigationStyle = FindByName<Controls.ComboBox>(
                         nav.Content as DependencyObject,
                         "NavigationStyleComboBox");
                     Assert.IsNotNull(navigationStyle, "Settings page should expose the navigation-style selector.");
@@ -950,7 +948,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(settings, "Settings footer item should exist.");
                     double overflowRight = (GetVisualX(overflowButton, nav) ?? double.MaxValue) + overflowButton.ActualWidth;
                     double settingsLeft = GetVisualX(settings, nav) ?? double.MinValue;
-                    Assert.IsTrue(overflowRight <= settingsLeft - 4.0 + 1.5,
+                    Assert.IsLessThanOrEqualTo(settingsLeft - 4.0 + 1.5, overflowRight,
                         "The three-dot overflow entry should stop before it overlaps the Settings item.");
 
                     NavigationViewItem? trees = null;
@@ -969,7 +967,7 @@ namespace Fluence.Wpf.Tests
                     {
                         double treesRight = (GetVisualX(trees, nav) ?? double.MinValue) + trees.ActualWidth;
                         double overflowLeft = GetVisualX(overflowButton, nav) ?? double.MaxValue;
-                        Assert.IsTrue(treesRight <= overflowLeft - 4.0 + 1.5,
+                        Assert.IsLessThanOrEqualTo(overflowLeft - 4.0 + 1.5, treesRight,
                             "Trees must not overlap the three-dot overflow entry.");
                     }
                 }
@@ -999,7 +997,7 @@ namespace Fluence.Wpf.Tests
 
                     object settingsPage = nav.Content
                         ?? throw new InvalidOperationException("Settings navigation should create a live Settings page.");
-                    Fluence.Wpf.Controls.ComboBox? navigationStyle = FindByName<Fluence.Wpf.Controls.ComboBox>(
+                    Controls.ComboBox? navigationStyle = FindByName<Controls.ComboBox>(
                         settingsPage as DependencyObject,
                         "NavigationStyleComboBox");
                     Assert.IsNotNull(navigationStyle, "Settings page should expose the navigation-style selector.");
@@ -1057,7 +1055,7 @@ namespace Fluence.Wpf.Tests
 
                     object settingsPage = nav.Content
                         ?? throw new InvalidOperationException("Settings navigation should create a live Settings page.");
-                    Fluence.Wpf.Controls.ComboBox? navigationStyle = FindByName<Fluence.Wpf.Controls.ComboBox>(
+                    Controls.ComboBox? navigationStyle = FindByName<Controls.ComboBox>(
                         settingsPage as DependencyObject,
                         "NavigationStyleComboBox");
                     Assert.IsNotNull(navigationStyle, "Settings page should expose the navigation-style selector.");
@@ -1099,7 +1097,7 @@ namespace Fluence.Wpf.Tests
                     Drain(window.Dispatcher);
 
                     titleBarToggle.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, titleBarToggle));
-                    Assert.IsTrue(nav.GetPaneColumnWidthForTesting() < 280.0,
+                    Assert.IsLessThan(280.0, nav.GetPaneColumnWidthForTesting(),
                         "Expanding Left navigation should start from the current compact width instead of snapping open.");
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
@@ -1135,13 +1133,31 @@ namespace Fluence.Wpf.Tests
 
                     WpfButton? paneToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as WpfButton;
                     Assert.IsNotNull(paneToggle, "Compact sample should expose the pane toggle button.");
-                    paneToggle.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, paneToggle));
+
+                    Controls.Button? sampleToggle = FindByName<Controls.Button>(page, "CompactPaneToggleButton");
+                    Assert.IsNotNull(sampleToggle, "Compact sample should expose a visible pane toggle in the sample controls.");
+                    Assert.AreEqual("Expand pane", sampleToggle.Content as string,
+                        "Compact sample toggle should describe the next pane action.");
+
+                    sampleToggle.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, sampleToggle));
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
                     Assert.IsTrue(nav.IsPaneOpen,
-                        "Clicking the compact sample pane toggle should open the sample pane.");
+                        "Clicking the compact sample toggle should open the sample pane.");
+                    Assert.AreEqual("Collapse pane", sampleToggle.Content as string,
+                        "Compact sample toggle should update after opening the pane.");
+
+                    paneToggle.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, paneToggle));
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.IsFalse(nav.IsPaneOpen,
+                        "Clicking the built-in compact pane toggle should close the sample pane.");
+                    Assert.AreEqual("Expand pane", sampleToggle.Content as string,
+                        "Compact sample toggle should stay in sync with the built-in pane toggle.");
                 }
                 finally
                 {
@@ -1184,7 +1200,7 @@ namespace Fluence.Wpf.Tests
                     double titleRight = (GetVisualX(titleText, window) ?? double.MinValue) + titleText.ActualWidth;
                     double searchLeft = GetVisualX(search, window) ?? double.MaxValue;
                     double titleClearanceRight = searchLeft - 12.0;
-                    Assert.IsTrue(titleRight <= titleClearanceRight,
+                    Assert.IsLessThanOrEqualTo(titleClearanceRight, titleRight,
                         "The title text should not cross the 12px search clearance.");
                     Assert.AreEqual(titleClearanceRight, titleRight, 4.0,
                         "The title text should extend to the 12px search clearance before trimming.");
@@ -1236,7 +1252,7 @@ namespace Fluence.Wpf.Tests
                         Assert.IsNotNull(search, "Demo search box must be present.");
                         double titleRight = (GetVisualX(titleText, window) ?? double.MinValue) + titleText.ActualWidth;
                         double searchLeft = GetVisualX(search, window) ?? double.MaxValue;
-                        Assert.IsTrue(titleRight <= searchLeft - 12.0,
+                        Assert.IsLessThanOrEqualTo(searchLeft - 12.0, titleRight,
                             "Visible title text must keep a 12px clearance before the search box.");
                     }
                 }
@@ -1286,7 +1302,7 @@ namespace Fluence.Wpf.Tests
                     {
                         double titleRight = (GetVisualX(titleText, window) ?? double.MinValue) + titleText.ActualWidth;
                         double searchLeft = GetVisualX(search, window) ?? double.MaxValue;
-                        Assert.IsTrue(titleRight <= searchLeft - 12.0,
+                        Assert.IsLessThanOrEqualTo(searchLeft - 12.0, titleRight,
                             "Visible title text must keep a 12px clearance before the centered search box.");
                     }
                 }
@@ -1333,7 +1349,7 @@ namespace Fluence.Wpf.Tests
                         Assert.IsNotNull(setupSearch, "Demo search box must be present.");
                         double titleRight = (GetVisualX(titleText, window) ?? double.MinValue) + titleText.ActualWidth;
                         double searchLeft = GetVisualX(setupSearch, window) ?? double.MaxValue;
-                        Assert.IsTrue(titleRight <= searchLeft - 12.0,
+                        Assert.IsLessThanOrEqualTo(searchLeft - 12.0, titleRight,
                             "Setup should hide or trim title text before it crosses the 12px search clearance.");
                     }
 
@@ -1505,7 +1521,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     FluenceExpander? expander = FindByName<FluenceExpander>(sample, "SourceExpander");
-                    _ = (expander?.IsExpanded = true);
+                    _ = expander?.IsExpanded = true;
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
 
@@ -1531,6 +1547,11 @@ namespace Fluence.Wpf.Tests
                 {
                     foreach (DemoPageExpectation expectation in PageExpectations)
                     {
+                        if (expectation.PageType == typeof(GalleryTypographyPage))
+                        {
+                            continue;
+                        }
+
                         window.NavigateTo(expectation.Tag);
                         Drain(window.Dispatcher);
                         window.UpdateLayout();
@@ -1605,7 +1626,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     NumberBox? valueBox = FindByName<NumberBox>(page, "ProgressValueNumberBox");
-                    Fluence.Wpf.Controls.ProgressBar? progressBar = FindByName<Fluence.Wpf.Controls.ProgressBar>(page, "StandardProgressBar");
+                    Controls.ProgressBar? progressBar = FindByName<Controls.ProgressBar>(page, "StandardProgressBar");
                     Assert.IsNotNull(valueBox, "Status page should expose the ProgressBar NumberBox.");
                     Assert.IsNotNull(progressBar, "Status page should expose the standard ProgressBar.");
 
@@ -1660,7 +1681,7 @@ namespace Fluence.Wpf.Tests
 
                     int pausedRingIndex = ringSample.XamlSource.IndexOf("x:Name=\"PausedProgressRing\"", StringComparison.Ordinal);
                     int errorRingIndex = ringSample.XamlSource.IndexOf("x:Name=\"ErrorProgressRing\"", StringComparison.Ordinal);
-                    Assert.IsTrue(pausedRingIndex >= 0, "ProgressRing source should include PausedProgressRing.");
+                    Assert.IsGreaterThanOrEqualTo(0, pausedRingIndex, "ProgressRing source should include PausedProgressRing.");
                     Assert.IsTrue(errorRingIndex > pausedRingIndex, "ProgressRing source should place ErrorProgressRing after PausedProgressRing.");
                     string pausedRingSource = ringSample.XamlSource.Substring(pausedRingIndex, errorRingIndex - pausedRingIndex);
 
@@ -1688,7 +1709,7 @@ namespace Fluence.Wpf.Tests
                 Window window = CreateHostWindow(page);
                 try
                 {
-                    Fluence.Wpf.Controls.ProgressBar? progressBar = FindByName<Fluence.Wpf.Controls.ProgressBar>(page, "StepProgressBar");
+                    Controls.ProgressBar? progressBar = FindByName<Controls.ProgressBar>(page, "StepProgressBar");
                     Assert.IsNotNull(progressBar, "Status page should expose the step ProgressBar.");
 
                     WpfBorder? track = FindByName<WpfBorder>(progressBar, "PART_Track");
@@ -1696,8 +1717,8 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(track, "Step ProgressBar should expose PART_Track.");
                     Assert.IsNotNull(fill, "Step ProgressBar should expose PART_Fill.");
 
-                    Fluence.Wpf.Controls.Button? backButton = FindStepButton(page, "Back");
-                    Fluence.Wpf.Controls.Button? nextButton = FindStepButton(page, "Next");
+                    Controls.Button? backButton = FindStepButton(page, "Back");
+                    Controls.Button? nextButton = FindStepButton(page, "Next");
                     Assert.IsNotNull(backButton, "Status page should expose the Back step button.");
                     Assert.IsNotNull(nextButton, "Status page should expose the Next step button.");
 
@@ -1737,12 +1758,60 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(sample, "Navigation page should expose the compact NavigationView source sample.");
 
                     StringAssert.Contains(sample.XamlSource, "IsBackEnabled=\"{Binding IsChecked, ElementName=BackEnabledToggle}\"");
+                    StringAssert.Contains(sample.XamlSource, "IsPaneToggleButtonVisible=\"True\"");
+                    StringAssert.Contains(sample.XamlSource, "PaneOpening=\"CompactNavigationDemo_PaneStateChanged\"");
+                    StringAssert.Contains(sample.XamlSource, "PaneClosed=\"CompactNavigationDemo_PaneStateChanged\"");
+                    StringAssert.Contains(sample.XamlSource, "CompactPaneToggleButton");
+                    StringAssert.Contains(sample.CSharpSource, "CompactPaneToggleButton_Click");
                     StringAssert.Contains(sample.XamlSource, "<ui:NavigationViewItem");
                     StringAssert.Contains(sample.XamlSource, "Content=\"Settings\"");
                     Assert.AreEqual(-1, sample.XamlSource.IndexOf("IsBackEnabled=\"False\"", StringComparison.Ordinal),
                         "Compact Navigation source should not hard-code back availability.");
                     Assert.AreEqual(-1, sample.XamlSource.IndexOf("Footer content", StringComparison.Ordinal),
                         "Compact Navigation source should show the live Settings footer item.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void GalleryTabsPage_TabViewContentUsesLayerFillSurface()
+        {
+            RunOnSta(delegate
+            {
+                EnsureTheme();
+                GalleryTabsPage page = new();
+                Window window = CreateHostWindow(page);
+                try
+                {
+                    TabView? tabView = FindByName<TabView>(page, "DemoTabView");
+                    Assert.IsNotNull(tabView, "Tabs page should expose the TabView sample.");
+
+                    foreach (TabViewItem item in tabView.Items.OfType<TabViewItem>())
+                    {
+                        AssertTabViewItemContentSurface(item);
+                    }
+
+                    ButtonBase? addButton = tabView.Template.FindName("PART_AddTabButton", tabView) as ButtonBase;
+                    Assert.IsNotNull(addButton, "TabView sample should expose the add-tab button.");
+                    addButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, addButton));
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Assert.AreEqual(4, tabView.Items.Count, "Adding a document should append a fourth tab.");
+                    TabViewItem? selectedTab = tabView.SelectedItem as TabViewItem;
+                    Assert.IsNotNull(selectedTab, "Added document should become the selected tab.");
+                    AssertTabViewItemContentSurface(selectedTab);
+
+                    DemoSampleControl? sample = FindAllVisualChildren<DemoSampleControl>(page)
+                        .FirstOrDefault(control => control.XamlSource.Contains("TabViewDocuments"));
+                    Assert.IsNotNull(sample, "Tabs page should expose the TabView source sample.");
+                    StringAssert.Contains(sample.XamlSource, "LayerFillColorDefaultBrush");
+                    StringAssert.Contains(sample.CSharpSource, "LayerFillColorDefaultBrush");
                 }
                 finally
                 {
@@ -1786,7 +1855,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void GalleryTypographyPage_SourceUsesCompactRowSpacingAndCopyColumn()
+        public void GalleryTypographyPage_DirectTableKeepsCopyColumnWithoutSourceExpander()
         {
             RunOnSta(delegate
             {
@@ -1795,22 +1864,16 @@ namespace Fluence.Wpf.Tests
                 Window window = CreateHostWindow(page);
                 try
                 {
-                    DemoSampleControl? sample = FindAllVisualChildren<DemoSampleControl>(page).FirstOrDefault();
-                    Assert.IsNotNull(sample, "Typography page should wrap the table in DemoSampleControl.");
+                    List<DemoSampleControl> samples = [.. FindAllVisualChildren<DemoSampleControl>(page)];
+                    Assert.AreEqual(0, samples.Count, "Typography page should be a direct reference table without a trailing source expander.");
 
-                    string xamlSource = sample.XamlSource;
-                    StringAssert.Contains(xamlSource, "<ColumnDefinition Width=\"Auto\" MinWidth=\"180\" />");
-                    StringAssert.Contains(xamlSource, "<ColumnDefinition Width=\"Auto\" />");
-                    StringAssert.Contains(xamlSource, "ToolTip=\"Copy style key\"");
-                    StringAssert.Contains(xamlSource, "Tag=\"BodyTextBlockStyle\"");
-                    StringAssert.Contains(xamlSource, "Click=\"CopyStyleKey_Click\"");
-                    StringAssert.Contains(xamlSource, "Margin=\"12,8,16,8\"");
-                    Assert.AreEqual(-1, xamlSource.IndexOf("Margin=\"12,0,16,8\"", StringComparison.Ordinal),
-                        "Typography source should use the same compact header spacing as the live table.");
+                    Grid? table = FindByName<Grid>(page, "TypographyTable");
+                    Assert.IsNotNull(table, "Typography page should expose TypographyTable.");
 
-                    StringAssert.Contains(sample.CSharpSource, "Copyright 2026 Dan Cunningham");
-                    StringAssert.Contains(sample.CSharpSource, "private static void CopyStyleKey_Click");
-                    StringAssert.Contains(sample.CSharpSource, "public partial class TypographyTable");
+                    List<Controls.Button> copyButtons = [.. FindAllVisualChildren<Controls.Button>(table)];
+                    Assert.IsNotEmpty(copyButtons, "Typography table should keep the copy column in the live table.");
+                    Assert.IsTrue(copyButtons.Any(static button => "BodyTextBlockStyle".Equals(button.Tag as string, StringComparison.Ordinal)),
+                        "Typography table should keep per-row style-key copy actions.");
                 }
                 finally
                 {
@@ -2068,6 +2131,20 @@ namespace Fluence.Wpf.Tests
                         "Explicit tab order buttons should line up in equal columns.");
                     Assert.AreEqual(3, tabOrder.Children.Count,
                         "Explicit tab order sample should contain three aligned buttons.");
+                    Assert.AreEqual(KeyboardNavigationMode.Local, KeyboardNavigation.GetTabNavigation(tabOrder),
+                        "Explicit tab order buttons must be a local keyboard navigation group.");
+
+                    HyperlinkButton? hyperlink = FindAllVisualChildren<HyperlinkButton>(primary).FirstOrDefault();
+                    Controls.Button? tabOrderFirst = FindByName<Controls.Button>(page, "ExplicitTabOrderFirstButton");
+                    Controls.Button? tabOrderSecond = FindByName<Controls.Button>(page, "ExplicitTabOrderSecondButton");
+                    Controls.Button? tabOrderThird = FindByName<Controls.Button>(page, "ExplicitTabOrderThirdButton");
+                    Assert.IsNotNull(hyperlink, "Primary keyboard sample should end with a focusable hyperlink button.");
+                    AssertTabOrderButton(tabOrderFirst, 1, "Tab order: 1 (first)");
+                    AssertTabOrderButton(tabOrderSecond, 2, "Tab order: 2");
+                    AssertTabOrderButton(tabOrderThird, 3, "Tab order: 3");
+                    AssertNextFocus(window, hyperlink, tabOrderFirst, "Tab should enter the explicit tab-order group after the preceding hyperlink.");
+                    AssertNextFocus(window, tabOrderFirst, tabOrderSecond, "Explicit tab-order group should move from 1 to 2.");
+                    AssertNextFocus(window, tabOrderSecond, tabOrderThird, "Explicit tab-order group should move from 2 to 3.");
 
                     List<DemoSampleControl> samples = [.. FindAllVisualChildren<DemoSampleControl>(page)];
                     Assert.AreEqual(4, samples.Count,
@@ -2087,7 +2164,7 @@ namespace Fluence.Wpf.Tests
                     Card? rtlCard = FindByName<Card>(page, "RtlDemoCard");
                     Assert.IsNotNull(rtlToggle, "RTL sample should expose the toggle.");
                     Assert.IsNotNull(rtlCard, "RTL sample should expose the demo card.");
-                    Assert.AreEqual(true, rtlToggle.IsChecked, "Accessibility RTL should be enabled by default.");
+                    Assert.IsTrue(rtlToggle.IsChecked, "Accessibility RTL should be enabled by default.");
                     Assert.AreEqual(FlowDirection.RightToLeft, rtlCard.FlowDirection,
                         "Accessibility RTL demo card should default to mirrored layout.");
                 }
@@ -2135,7 +2212,7 @@ namespace Fluence.Wpf.Tests
 
                     int realizedBeforeScroll = CountVisualChildren<ListViewItem>(list);
                     Assert.IsTrue(realizedBeforeScroll > 0, "Initial viewport should realize some row containers.");
-                    Assert.IsTrue(realizedBeforeScroll < list.Items.Count / 2, "Initial layout should not realize most icon rows.");
+                    Assert.IsLessThan(list.Items.Count / 2, realizedBeforeScroll, "Initial layout should not realize most icon rows.");
                     Assert.IsNull(list.ItemContainerGenerator.ContainerFromIndex(list.Items.Count - 1), "Last row should stay unrealized before scrolling.");
 
                     list.ScrollIntoView(list.Items[list.Items.Count - 1]);
@@ -2150,6 +2227,14 @@ namespace Fluence.Wpf.Tests
                     window.Close();
                 }
             });
+        }
+
+        private static void AssertTabViewItemContentSurface(TabViewItem item)
+        {
+            WpfBorder? surface = item.Content as WpfBorder;
+            Assert.IsNotNull(surface, "TabView document content should use a layer-fill surface.");
+            AssertIconBrush(surface.Background, "LayerFillColorDefaultBrush",
+                "TabView document content should use LayerFillColorDefaultBrush.");
         }
 
         private static void AssertIconBrush(Brush? actualBrush, string resourceKey, string message)
@@ -2363,15 +2448,60 @@ namespace Fluence.Wpf.Tests
             Assert.Fail("Expected control was not found in the grid: " + name);
         }
 
-        private static Fluence.Wpf.Controls.Button? FindStepButton(DependencyObject root, string tag)
+        private static void AssertTabOrderButton(Controls.Button? button, int expectedTabIndex, string expectedContent)
         {
-            return FindAllVisualChildren<Fluence.Wpf.Controls.Button>(root)
+            if (button is null)
+            {
+                Assert.Fail("Expected explicit tab-order button was not found: " + expectedContent);
+                return;
+            }
+
+            Assert.AreEqual(expectedContent, button.Content as string, "Explicit tab-order button content should match.");
+            Assert.AreEqual(expectedTabIndex, button.TabIndex, "Explicit tab-order button should keep its documented TabIndex.");
+            Assert.IsTrue(button.Focusable, "Explicit tab-order button should accept keyboard focus.");
+            Assert.IsTrue(button.IsTabStop, "Explicit tab-order button should participate in keyboard tab navigation.");
+        }
+
+        private static void AssertNextFocus(
+            Window window,
+            FrameworkElement? source,
+            FrameworkElement? expected,
+            string message)
+        {
+            if (source is null)
+            {
+                Assert.Fail("Focus source was not found. " + message);
+                return;
+            }
+
+            if (expected is null)
+            {
+                Assert.Fail("Expected next focus target was not found. " + message);
+                return;
+            }
+
+            _ = source.Focus();
+            FocusManager.SetFocusedElement(window, source);
+            _ = Keyboard.Focus(source);
+            Drain(window.Dispatcher);
+
+            TraversalRequest request = new(FocusNavigationDirection.Next);
+            bool moved = source.MoveFocus(request);
+            Drain(window.Dispatcher);
+
+            Assert.IsTrue(moved, "Keyboard focus should move to the next tab stop. " + message);
+            Assert.AreSame(expected, Keyboard.FocusedElement, message);
+        }
+
+        private static Controls.Button? FindStepButton(DependencyObject root, string tag)
+        {
+            return FindAllVisualChildren<Controls.Button>(root)
                 .FirstOrDefault(button => string.Equals(button.Tag as string, tag, StringComparison.Ordinal));
         }
 
         private static void AssertStepClickStartsAwayFromTarget(
-            Fluence.Wpf.Controls.Button button,
-            Fluence.Wpf.Controls.ProgressBar progressBar,
+            Controls.Button button,
+            Controls.ProgressBar progressBar,
             FrameworkElement fill,
             FrameworkElement track,
             Dispatcher dispatcher,
@@ -2386,8 +2516,8 @@ namespace Fluence.Wpf.Tests
             double animatedWidth = fill.Width;
             if (forward)
             {
-                Assert.IsTrue(
-                    animatedWidth < targetWidth,
+                Assert.IsLessThan(
+                    targetWidth, animatedWidth,
                     string.Format(CultureInfo.InvariantCulture,
                         "Forward step animation should start before the target width. Animated={0}, Target={1}, Step={2}.",
                         animatedWidth,

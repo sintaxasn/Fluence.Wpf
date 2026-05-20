@@ -142,7 +142,7 @@
     </Style>
 
 
-    <!--  **** Demo Styles *** Navigaation \ Title-Bear Search  -->
+    <!--  **** Demo Styles *** Navigation \ Title-Bear Search  -->
 
     <!--
         Title-bar search box: transparent box, bottom-only underline.
@@ -246,7 +246,7 @@
         <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
 
-    <!--  **** Demo Styles *** Shared Genereal  -->
+    <!--  **** Demo Styles *** Shared General  -->
 
     <Style
         x:Key="PageTitleStyle"
@@ -345,7 +345,7 @@
         <Setter Property="FontSize" Value="20" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-        <Setter Property="Margin" Value="0,36,0,4" />
+        <Setter Property="Margin" Value="0,0,0,8" />
     </Style>
 
     <Style

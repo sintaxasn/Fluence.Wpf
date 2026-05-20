@@ -232,7 +232,7 @@ namespace Fluence.Wpf.Controls
         {
             base.OnDropDownClosed(e);
             IsDropDownOpenedUpward = false;
-            _ = (_popup?.Placement = PlacementMode.Bottom);
+            _ = _popup?.Placement = PlacementMode.Bottom;
         }
 
         /// <inheritdoc />

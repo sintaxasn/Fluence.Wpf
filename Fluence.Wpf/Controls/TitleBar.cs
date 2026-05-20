@@ -418,12 +418,12 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateBackButtonCommandState()
         {
-            _ = (_backButton?.IsEnabled = IsEnabled && CanExecuteCommand(BackCommand, BackCommandParameter));
+            _ = _backButton?.IsEnabled = IsEnabled && CanExecuteCommand(BackCommand, BackCommandParameter);
         }
 
         private void UpdatePaneToggleButtonCommandState()
         {
-            _ = (_paneToggleButton?.IsEnabled = IsEnabled && CanExecuteCommand(PaneToggleCommand, PaneToggleCommandParameter));
+            _ = _paneToggleButton?.IsEnabled = IsEnabled && CanExecuteCommand(PaneToggleCommand, PaneToggleCommandParameter);
         }
 
         private static bool TryExecuteCommand(ICommand command, object parameter)

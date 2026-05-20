@@ -61,7 +61,7 @@
                     Text="Installed icon catalog" />
                 <TextBlock
                     x:Name="IconCatalogCountText"
-                    Margin="0,0,0,12"
+                    Margin="0,0,0,24"
                     Style="{StaticResource SectionDescriptionStyle}" />
             </StackPanel>
 
@@ -69,7 +69,7 @@
                 x:Name="IconCatalogCard"
                 Grid.Row="4"
                 Padding="{DynamicResource DemoSampleCardPadding}"
-                Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                Background="{DynamicResource ControlFillColorInputActiveBrush}"
                 BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="8">

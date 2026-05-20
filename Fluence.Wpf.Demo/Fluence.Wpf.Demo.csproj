@@ -17,6 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Page Update="Properties\DesignTimeResources.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <ContainsDesignTimeResources>true</ContainsDesignTimeResources>
+    </Page>
     <Resource Include="Resources\ControlImages\*.png" />
     <Resource Include="Resources\fluence-wpf-appicon-256.ico" />
     <Resource Include="Resources\fluence-wpf-banner-*.png" />

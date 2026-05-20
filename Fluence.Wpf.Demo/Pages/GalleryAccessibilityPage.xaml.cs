@@ -127,13 +127,17 @@ namespace Fluence.Wpf.Demo.Pages
             Margin=""0,12,0,8""
             Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
             Text=""The buttons below have an explicit reverse tab order: 3, 2, 1."" />
-        <Grid x:Name=""KeyboardSupportExplicitOrderControls"" Margin=""0,0,0,8"">
+        <Grid
+            x:Name=""KeyboardSupportExplicitOrderControls""
+            Margin=""0,0,0,8""
+            KeyboardNavigation.TabNavigation=""Local"">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width=""*"" />
                 <ColumnDefinition Width=""*"" />
                 <ColumnDefinition Width=""*"" />
             </Grid.ColumnDefinitions>
             <ui:Button
+                x:Name=""ExplicitTabOrderThirdButton""
                 Grid.Column=""0""
                 Margin=""0,0,12,0""
                 HorizontalAlignment=""Stretch""
@@ -141,6 +145,7 @@ namespace Fluence.Wpf.Demo.Pages
                 Content=""Tab order: 3""
                 TabIndex=""3"" />
             <ui:Button
+                x:Name=""ExplicitTabOrderSecondButton""
                 Grid.Column=""1""
                 Margin=""0,0,12,0""
                 HorizontalAlignment=""Stretch""
@@ -148,6 +153,7 @@ namespace Fluence.Wpf.Demo.Pages
                 Content=""Tab order: 2""
                 TabIndex=""2"" />
             <ui:Button
+                x:Name=""ExplicitTabOrderFirstButton""
                 Grid.Column=""2""
                 HorizontalAlignment=""Stretch""
                 VerticalAlignment=""Center""
@@ -446,16 +452,12 @@ namespace Fluence.Wpf.Demo.Pages.Accessibility
         {
             InitializeComponent();
 
-            DemoSampleControl.ApplySources(
+            DemoSamplePageWiring.Apply(
                 (DependencyObject)Content,
-                FocusAndTabOrderXamlSource,
-                FocusAndTabOrderCSharpSource,
-                HighContrastMappingXamlSource,
-                HighContrastMappingCSharpSource,
-                AutomationPropertiesXamlSource,
-                AutomationPropertiesCSharpSource,
-                RtlLayoutXamlSource,
-                RtlLayoutCSharpSource);
+                new DemoSampleSource(1, FocusAndTabOrderXamlSource, FocusAndTabOrderCSharpSource),
+                new DemoSampleSource(2, HighContrastMappingXamlSource, HighContrastMappingCSharpSource),
+                new DemoSampleSource(3, AutomationPropertiesXamlSource, AutomationPropertiesCSharpSource),
+                new DemoSampleSource(4, RtlLayoutXamlSource, RtlLayoutCSharpSource));
 
             Loaded += OnLoaded;
         }

@@ -48,7 +48,7 @@ namespace Fluence.Wpf.Tests
                 {
                     FluentTreeView treeView = new();
 
-                    Assert.AreEqual(Fluence.Wpf.TreeViewSelectionMode.Single, treeView.SelectionMode);
+                    Assert.AreEqual(TreeViewSelectionMode.Single, treeView.SelectionMode);
                     Assert.IsNotNull(treeView.SelectedItems, "SelectedItems should be a live collection.");
                     Assert.AreEqual(0, treeView.SelectedItems.Count);
                 }
@@ -77,7 +77,7 @@ namespace Fluence.Wpf.Tests
                     FluentTreeViewItem second = new() { Header = "Second" };
                     FluentTreeView treeView = new()
                     {
-                        SelectionMode = Fluence.Wpf.TreeViewSelectionMode.Multiple
+                        SelectionMode = TreeViewSelectionMode.Multiple
                     };
                     _ = treeView.Items.Add(first);
                     _ = treeView.Items.Add(second);
@@ -135,7 +135,7 @@ namespace Fluence.Wpf.Tests
                     FluentTreeViewItem item = new() { Header = "Leaf" };
                     FluentTreeView treeView = new()
                     {
-                        SelectionMode = Fluence.Wpf.TreeViewSelectionMode.Multiple
+                        SelectionMode = TreeViewSelectionMode.Multiple
                     };
                     _ = treeView.Items.Add(item);
                     window.Content = treeView;
@@ -148,7 +148,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     Assert.AreEqual(1, treeView.SelectedItems.Count);
 
-                    treeView.SelectionMode = Fluence.Wpf.TreeViewSelectionMode.None;
+                    treeView.SelectionMode = TreeViewSelectionMode.None;
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
@@ -193,7 +193,7 @@ namespace Fluence.Wpf.Tests
 
                     FluentTreeView treeView = new()
                     {
-                        SelectionMode = Fluence.Wpf.TreeViewSelectionMode.Multiple
+                        SelectionMode = TreeViewSelectionMode.Multiple
                     };
                     _ = treeView.Items.Add(parent);
                     window.Content = treeView;

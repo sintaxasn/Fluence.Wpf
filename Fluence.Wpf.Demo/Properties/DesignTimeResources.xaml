@@ -6,6 +6,6 @@
         <ResourceDictionary Source="pack://application:,,,/Fluence.Wpf;component/Themes/Brushes/Brushes.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Fluence.Wpf;component/Themes/Typography/Typography.xaml" />
         <ResourceDictionary Source="pack://application:,,,/Fluence.Wpf;component/Themes/Generic.xaml" />
-        <ResourceDictionary Source="/Resources/DemoSharedStyles.xaml" />
+        <ResourceDictionary Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/DemoSharedStyles.xaml" />
     </ResourceDictionary.MergedDictionaries>
 </ResourceDictionary>

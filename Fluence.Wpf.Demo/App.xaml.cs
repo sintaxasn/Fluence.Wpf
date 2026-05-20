@@ -46,7 +46,7 @@ namespace Fluence.Wpf.Demo
         {
             base.OnStartup(e);
 
-            ApplicationThemeManager.Apply(ApplicationTheme.Auto);
+            ApplicationThemeManager.Apply(ApplicationTheme.Auto, BackdropType.Mica);
             ApplicationAccentColorManager.ApplySystemAccent();
             LoadDemoSharedStyles();
 

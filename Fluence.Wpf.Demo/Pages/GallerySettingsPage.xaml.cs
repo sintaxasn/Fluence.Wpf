@@ -371,12 +371,12 @@ namespace Fluence.Wpf.Demo.Pages
             };
         }
 
-        private static object? GetSelectedTag(System.Windows.Controls.ComboBox comboBox)
+        private static object? GetSelectedTag(ComboBox comboBox)
         {
             return comboBox.SelectedItem is ComboBoxItem item ? item.Tag : null;
         }
 
-        private static void SelectComboItemByTag(System.Windows.Controls.ComboBox comboBox, object tag)
+        private static void SelectComboItemByTag(ComboBox comboBox, object tag)
         {
             foreach (object item in comboBox.Items)
             {
@@ -414,7 +414,7 @@ namespace Fluence.Wpf.Demo.Pages
         }
 
         private static void ApplyCaptionVisibility(
-            System.Windows.Controls.ComboBox combo,
+            ComboBox combo,
             Action<Visibility> setVisibility,
             Action<bool> setEnabled)
         {

@@ -326,18 +326,13 @@ namespace Fluence.Wpf.Demo.Pages.Selection
         {
             InitializeComponent();
 
-            DemoSampleControl.ApplySources(
-                (System.Windows.DependencyObject)Content,
-                CheckBoxStatesXamlSource,
-                CheckBoxStatesCSharpSource,
-                RadioButtonGroupsXamlSource,
-                RadioButtonGroupsCSharpSource,
-                ToggleSwitchStatesXamlSource,
-                ToggleSwitchStatesCSharpSource,
-                RatingControlXamlSource,
-                RatingControlCSharpSource,
-                ComboBoxSelectionXamlSource,
-                ComboBoxSelectionCSharpSource);
+            DemoSamplePageWiring.Apply(
+                (DependencyObject)Content,
+                new DemoSampleSource(1, CheckBoxStatesXamlSource, CheckBoxStatesCSharpSource),
+                new DemoSampleSource(2, RadioButtonGroupsXamlSource, RadioButtonGroupsCSharpSource),
+                new DemoSampleSource(3, ToggleSwitchStatesXamlSource, ToggleSwitchStatesCSharpSource),
+                new DemoSampleSource(4, RatingControlXamlSource, RatingControlCSharpSource),
+                new DemoSampleSource(5, ComboBoxSelectionXamlSource, ComboBoxSelectionCSharpSource));
         }
 
         private void SelectAllCheckBox_Changed(object? sender, RoutedEventArgs? e)

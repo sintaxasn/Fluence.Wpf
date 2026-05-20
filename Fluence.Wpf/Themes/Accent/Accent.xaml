@@ -56,6 +56,11 @@
     <SolidColorBrush x:Key="AccentFillColorTertiaryBrush" Color="{DynamicResource AccentFillColorTertiary}" />
     <SolidColorBrush x:Key="AccentFillColorDisabledBrush" Color="{DynamicResource AccentFillColorDisabled}" />
 
+    <!-- Accent Text Fill Colors -->
+    <SolidColorBrush x:Key="AccentTextFillColorPrimaryBrush" Color="{DynamicResource SystemAccentColorPrimary}" />
+    <SolidColorBrush x:Key="AccentTextFillColorSecondaryBrush" Color="{DynamicResource SystemAccentColorSecondary}" />
+    <SolidColorBrush x:Key="AccentTextFillColorTertiaryBrush" Color="{DynamicResource AccentFillColorDefault}" />
+
     <!--  Accent selection highlight  -->
     <SolidColorBrush x:Key="AccentFillColorSelectedTextBackgroundBrush" Color="{DynamicResource SystemAccentColor}" />
 

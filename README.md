@@ -12,13 +12,11 @@ Windows 11 Fluent Design controls and theming for WPF applications targeting **.
 - **Typography** - Attached properties on `TextBlock` for the WinUI type ramp (Caption / Body / BodyStrong / Title / TitleLarge / Display).
 - **TabView** - Multi-document surface over `TabControl` with per-tab close (`CloseRequested` / `TabCloseRequested`), trailing add-tab button (`AddTabButtonClick`), per-tab icons, `TabWidthMode`, `CloseButtonOverlayMode`, and horizontal overflow scroll.
 - **NavigationView** - `Top`, `Left`, and `LeftCompact` pane modes with animated shared selection indicator, pane toggle + back button in the 48 px rail, and WinUI 3 content-region border (`CornerRadius="8,0,0,0"`, `CardStrokeColorDefault` top/left stroke).
-- **Gallery demo** - Simple WPF code-behind visual-verification app with theme swatches, accent picker, DWM backdrops, grouped control pages (Data Binding, Accessibility, Buttons, Selection, Inputs, Forms, Data, Trees, Navigation, Tabs, Menus, Status, Colors, Icons, Window), inline examples, and embedded source for every example.
+- **Gallery demo** - Simple WPF code-behind visual-verification app with theme swatches, accent picker, DWM backdrops, grouped control pages (Data Binding, Accessibility, Buttons, Selection, Inputs, Forms, Data, Trees, Navigation, Tabs, Menus, Status, Icons, Settings), inline examples, and embedded source for every example.
 - **MVVM demo** - Minimal Task Manager (`Fluence.Wpf.Demo.Mvvm`) built with CommunityToolkit.Mvvm, showcasing `[ObservableProperty]`, `[RelayCommand]`, filter bindings, and progress reporting with zero code-behind.
-- **PowerShell demo** Build modern interfaces for your scripts using Windows PowerShell 5.1 without having to install PowerShell 7, .NET 9 / 10 or the Windows App SDK!
+- **PowerShell demo** - Build modern interfaces for your scripts using Windows PowerShell 5.1 without having to install PowerShell 7, .NET 9 / 10 or the Windows App SDK!
 - **Incredibly small footprint** at just 600kb!
--
 - **Tests** - MSTest suite covering theme stability, accent resolution, window policy, template parts, and control behavior (including `TabView` close / add-tab routing, `RatingControl`, `PersonPicture`).
--
 
 ## Quick Start
 
@@ -103,6 +101,8 @@ dotnet test Fluence.Wpf.sln -c Release
 ```powershell
 dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -c Release
 ```
+
+Use `-f net472` or `-f net10.0-windows10.0.26100.0` to force a specific gallery target framework.
 
 **MVVM Task Manager demo** - minimal `FluenceWindow` + CommunityToolkit.Mvvm example with zero code-behind:
 

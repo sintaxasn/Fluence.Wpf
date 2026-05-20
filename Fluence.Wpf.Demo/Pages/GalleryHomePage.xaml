@@ -9,7 +9,7 @@
     d:DesignHeight="800"
     d:DesignWidth="900"
     mc:Ignorable="d">
-    <ui:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
+    <ui:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}">
         <StackPanel Style="{StaticResource GalleryPageContentStackStyle}">
             <!--  Hero brand graphic  -->
             <StackPanel Margin="0,8,0,28" HorizontalAlignment="Center">

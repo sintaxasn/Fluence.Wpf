@@ -232,11 +232,11 @@ namespace Fluence.Wpf.Controls
 
         private static TreeView? FindOwningTreeView(DependencyObject item)
         {
-            ItemsControl? owner = ItemsControl.ItemsControlFromItemContainer(item);
+            ItemsControl? owner = ItemsControlFromItemContainer(item);
 
             while (owner is TreeViewItem treeViewItem)
             {
-                owner = ItemsControl.ItemsControlFromItemContainer(treeViewItem);
+                owner = ItemsControlFromItemContainer(treeViewItem);
             }
 
             return owner as TreeView;
@@ -261,11 +261,11 @@ namespace Fluence.Wpf.Controls
 
         private static void UpdateAncestorSelectionStates(TreeViewItem item)
         {
-            ItemsControl? owner = ItemsControl.ItemsControlFromItemContainer(item);
+            ItemsControl? owner = ItemsControlFromItemContainer(item);
             while (owner is TreeViewItem parent)
             {
                 parent.SetCurrentValue(TreeViewItem.IsSelectionCheckedProperty, GetChildSelectionState(parent));
-                owner = ItemsControl.ItemsControlFromItemContainer(parent);
+                owner = ItemsControlFromItemContainer(parent);
             }
         }
 
@@ -338,7 +338,7 @@ namespace Fluence.Wpf.Controls
 
         private static object GetSelectedItemValue(TreeViewItem item)
         {
-            ItemsControl? owner = ItemsControl.ItemsControlFromItemContainer(item);
+            ItemsControl? owner = ItemsControlFromItemContainer(item);
             object? generatedItem = owner?.ItemContainerGenerator.ItemFromContainer(item);
 
             return generatedItem is not null && generatedItem != DependencyProperty.UnsetValue

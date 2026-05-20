@@ -266,7 +266,7 @@ namespace Fluence.Wpf.Controls
             if (ProfilePicture is not null)
             {
                 // Photo state: fill the image ellipse
-                _ = (_imageEllipse?.Fill = new ImageBrush(ProfilePicture) { Stretch = Stretch.UniformToFill });
+                _ = _imageEllipse?.Fill = new ImageBrush(ProfilePicture) { Stretch = Stretch.UniformToFill };
 
                 _ = VisualStateManager.GoToState(this, StatePhoto, useTransitions);
                 return;
@@ -295,7 +295,7 @@ namespace Fluence.Wpf.Controls
         private void UpdateBadge()
         {
             bool hasBadge = !string.IsNullOrWhiteSpace(BadgeGlyph) || BadgeNumber > 0;
-            _ = (_badgeGrid?.Visibility = hasBadge ? Visibility.Visible : Visibility.Collapsed);
+            _ = _badgeGrid?.Visibility = hasBadge ? Visibility.Visible : Visibility.Collapsed;
             if (_badgeText is not null)
             {
                 if (!string.IsNullOrWhiteSpace(BadgeGlyph))

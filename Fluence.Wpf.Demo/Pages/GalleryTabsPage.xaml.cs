@@ -156,35 +156,39 @@ namespace Fluence.Wpf.Demo.Pages.Tabs
                 <ui:TabViewItem.Icon>
                     <ui:FontIcon Glyph=""&#xE8A5;"" IconFontSize=""16"" />
                 </ui:TabViewItem.Icon>
-                <StackPanel Margin=""20"">
-                    <TextBlock
-                        FontSize=""18""
-                        FontWeight=""SemiBold""
-                        Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-                        Text=""Document 1"" />
-                    <TextBlock
-                        Margin=""0,6,0,0""
-                        Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                        Text=""Close document tabs or add another document from the tab row.""
-                        TextWrapping=""Wrap"" />
-                </StackPanel>
+                <Border Background=""{DynamicResource LayerFillColorDefaultBrush}"">
+                    <StackPanel Margin=""20"">
+                        <TextBlock
+                            FontSize=""18""
+                            FontWeight=""SemiBold""
+                            Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                            Text=""Document 1"" />
+                        <TextBlock
+                            Margin=""0,6,0,0""
+                            Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                            Text=""Close document tabs or add another document from the tab row.""
+                            TextWrapping=""Wrap"" />
+                    </StackPanel>
+                </Border>
             </ui:TabViewItem>
             <ui:TabViewItem Header=""Document 2"">
                 <ui:TabViewItem.Icon>
                     <ui:FontIcon Glyph=""&#xE8A5;"" IconFontSize=""16"" />
                 </ui:TabViewItem.Icon>
-                <StackPanel Margin=""20"">
-                    <TextBlock
-                        FontSize=""18""
-                        FontWeight=""SemiBold""
-                        Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-                        Text=""Document 2"" />
-                    <TextBlock
-                        Margin=""0,6,0,0""
-                        Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                        Text=""Each tab hosts independent content.""
-                        TextWrapping=""Wrap"" />
-                </StackPanel>
+                <Border Background=""{DynamicResource LayerFillColorDefaultBrush}"">
+                    <StackPanel Margin=""20"">
+                        <TextBlock
+                            FontSize=""18""
+                            FontWeight=""SemiBold""
+                            Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                            Text=""Document 2"" />
+                        <TextBlock
+                            Margin=""0,6,0,0""
+                            Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                            Text=""Each tab hosts independent content.""
+                            TextWrapping=""Wrap"" />
+                    </StackPanel>
+                </Border>
             </ui:TabViewItem>
             <ui:TabViewItem
                 Header=""Pinned""
@@ -192,18 +196,20 @@ namespace Fluence.Wpf.Demo.Pages.Tabs
                 <ui:TabViewItem.Icon>
                     <ui:FontIcon Glyph=""&#xE718;"" IconFontSize=""16"" />
                 </ui:TabViewItem.Icon>
-                <StackPanel Margin=""20"">
-                    <TextBlock
-                        FontSize=""18""
-                        FontWeight=""SemiBold""
-                        Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-                        Text=""Pinned"" />
-                    <TextBlock
-                        Margin=""0,6,0,0""
-                        Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                        Text=""Set IsClosable to false when a tab should stay available.""
-                        TextWrapping=""Wrap"" />
-                </StackPanel>
+                <Border Background=""{DynamicResource LayerFillColorDefaultBrush}"">
+                    <StackPanel Margin=""20"">
+                        <TextBlock
+                            FontSize=""18""
+                            FontWeight=""SemiBold""
+                            Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                            Text=""Pinned"" />
+                        <TextBlock
+                            Margin=""0,6,0,0""
+                            Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                            Text=""Set IsClosable to false when a tab should stay available.""
+                            TextWrapping=""Wrap"" />
+                    </StackPanel>
+                </Border>
             </ui:TabViewItem>
         </ui:TabView>
         <TextBlock
@@ -233,17 +239,25 @@ namespace Fluence.Wpf.Demo.Pages.Tabs
         private void DemoTabView_AddTabButtonClick(object sender, RoutedEventArgs e)
         {
             var number = ++_nextDocumentNumber;
-            var tab = new TabViewItem
+            System.Windows.Controls.TextBlock body = new()
+            {
+                Margin = new Thickness(20),
+                Text = string.Format(""Fresh document {0} content."", number),
+                TextWrapping = TextWrapping.Wrap
+            };
+            body.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, ""TextFillColorSecondaryBrush"");
+
+            System.Windows.Controls.Border bodySurface = new()
+            {
+                Child = body
+            };
+            bodySurface.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, ""LayerFillColorDefaultBrush"");
+
+            TabViewItem tab = new()
             {
                 Header = string.Format(""Document {0}"", number),
                 Icon = new FontIcon { Glyph = ""\uE8A5"", IconFontSize = 16 },
-                Content = new TextBlock
-                {
-                    Margin = new Thickness(20),
-                    Foreground = (System.Windows.Media.Brush)FindResource(""TextFillColorSecondaryBrush""),
-                    Text = string.Format(""Fresh document {0} content."", number),
-                    TextWrapping = TextWrapping.Wrap
-                }
+                Content = bodySurface
             };
 
             DemoTabView.Items.Add(tab);
@@ -277,14 +291,11 @@ namespace Fluence.Wpf.Demo.Pages.Tabs
         {
             InitializeComponent();
 
-            DemoSampleControl.ApplySources(
-                (System.Windows.DependencyObject)Content,
-                TabControlBasicsXamlSource,
-                TabControlBasicsCSharpSource,
-                TabControlPlacementXamlSource,
-                TabControlPlacementCSharpSource,
-                TabViewDocumentsXamlSource,
-                TabViewDocumentsCSharpSource);
+            DemoSamplePageWiring.Apply(
+                (DependencyObject)Content,
+                new DemoSampleSource(1, TabControlBasicsXamlSource, TabControlBasicsCSharpSource),
+                new DemoSampleSource(2, TabControlPlacementXamlSource, TabControlPlacementCSharpSource),
+                new DemoSampleSource(3, TabViewDocumentsXamlSource, TabViewDocumentsCSharpSource));
         }
 
         private void DemoTabView_AddTabButtonClick(object sender, RoutedEventArgs e)
@@ -299,16 +310,22 @@ namespace Fluence.Wpf.Demo.Pages.Tabs
             System.Windows.Controls.TextBlock body = new()
             {
                 Margin = new Thickness(16),
-                Foreground = (System.Windows.Media.Brush)FindResource("TextFillColorSecondaryBrush"),
                 Text = string.Format(CultureInfo.CurrentCulture, "Fresh document {0} content.", number),
                 TextWrapping = TextWrapping.Wrap
             };
+            body.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "TextFillColorSecondaryBrush");
+
+            System.Windows.Controls.Border bodySurface = new()
+            {
+                Child = body
+            };
+            bodySurface.SetResourceReference(System.Windows.Controls.Border.BackgroundProperty, "LayerFillColorDefaultBrush");
 
             TabViewItem tab = new()
             {
                 Header = string.Format(CultureInfo.CurrentCulture, "Document {0}", number),
                 Icon = icon,
-                Content = body
+                Content = bodySurface
             };
 
             _ = DemoTabView.Items.Add(tab);

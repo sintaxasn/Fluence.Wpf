@@ -107,6 +107,8 @@
                             IsPaneToggleButtonVisible="True"
                             IsPaneOpen="False"
                             ItemInvoked="NavigationDemo_ItemInvoked"
+                            PaneClosed="CompactNavigationDemo_PaneStateChanged"
+                            PaneOpening="CompactNavigationDemo_PaneStateChanged"
                             PaneDisplayMode="LeftCompact">
                             <ui:NavigationView.PaneFooter>
                                 <ui:NavigationViewItem
@@ -142,6 +144,11 @@
                             Content="Back enabled"
                             IsChecked="True"
                             />
+                        <ui:Button
+                            x:Name="CompactPaneToggleButton"
+                            Margin="{DynamicResource DemoMediumTopGapMargin}"
+                            Click="CompactPaneToggleButton_Click"
+                            Content="Expand pane" />
                     </StackPanel>
             </ContentControl>
             <local:DemoSampleControl

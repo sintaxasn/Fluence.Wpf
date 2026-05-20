@@ -250,12 +250,12 @@ namespace Fluence.Wpf.Controls
             bool hasOverflow = _tabContentScroller.ScrollableWidth > 0;
             bool canScrollBack = _tabContentScroller.HorizontalOffset > 0;
             bool canScrollForward = _tabContentScroller.HorizontalOffset < _tabContentScroller.ScrollableWidth;
-            _ = (_scrollBackButton?.Visibility = (hasOverflow && canScrollBack)
-                    ? Visibility.Visible
-                    : Visibility.Collapsed);
-            _ = (_scrollForwardButton?.Visibility = (hasOverflow && canScrollForward)
-                    ? Visibility.Visible
-                    : Visibility.Collapsed);
+            _ = _scrollBackButton?.Visibility = (hasOverflow && canScrollBack)
+                ? Visibility.Visible
+                : Visibility.Collapsed;
+            _ = _scrollForwardButton?.Visibility = (hasOverflow && canScrollForward)
+                ? Visibility.Visible
+                : Visibility.Collapsed;
         }
 
         private void OnChildCloseRequested(object sender, RoutedEventArgs e)

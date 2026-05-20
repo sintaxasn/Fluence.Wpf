@@ -267,7 +267,7 @@ namespace Fluence.Wpf.Controls
                 StopIndeterminate();
                 _fill.Visibility = Visibility.Visible;
                 _indeterminateBar.Visibility = Visibility.Collapsed;
-                _ = (_indeterminateBar2?.Visibility = Visibility.Collapsed);
+                _ = _indeterminateBar2?.Visibility = Visibility.Collapsed;
                 ApplyFillBrushForMode();
                 _ = Dispatcher.BeginInvoke(() => UpdateFillWidth(false), DispatcherPriority.Loaded);
             }
@@ -275,7 +275,7 @@ namespace Fluence.Wpf.Controls
             {
                 _fill.Visibility = Visibility.Collapsed;
                 _indeterminateBar.Visibility = Visibility.Visible;
-                _ = (_indeterminateBar2?.Visibility = Visibility.Visible);
+                _ = _indeterminateBar2?.Visibility = Visibility.Visible;
                 RefreshIndeterminateLayout();
             }
         }
@@ -317,7 +317,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
             _indeterminateBar.Width = trackWidth * 0.4;
-            _ = (_indeterminateBar2?.Width = trackWidth * 0.55);
+            _ = _indeterminateBar2?.Width = trackWidth * 0.55;
             StartIndeterminate(trackWidth);
         }
 

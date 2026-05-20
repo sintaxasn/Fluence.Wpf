@@ -244,16 +244,12 @@ namespace Fluence.Wpf.Demo.Pages.Trees
         {
             InitializeComponent();
 
-            DemoSampleControl.ApplySources(
-                (System.Windows.DependencyObject)Content,
-                TreeViewHierarchyXamlSource,
-                TreeViewHierarchyCSharpSource,
-                TreeViewSelectionXamlSource,
-                TreeViewSelectionCSharpSource,
-                TreeViewMultiSelectXamlSource,
-                TreeViewMultiSelectCSharpSource,
-                TreeViewExpansionXamlSource,
-                TreeViewExpansionCSharpSource);
+            DemoSamplePageWiring.Apply(
+                (DependencyObject)Content,
+                new DemoSampleSource(1, TreeViewHierarchyXamlSource, TreeViewHierarchyCSharpSource),
+                new DemoSampleSource(2, TreeViewSelectionXamlSource, TreeViewSelectionCSharpSource),
+                new DemoSampleSource(3, TreeViewMultiSelectXamlSource, TreeViewMultiSelectCSharpSource),
+                new DemoSampleSource(4, TreeViewExpansionXamlSource, TreeViewExpansionCSharpSource));
         }
 
         private void ExpandAll_Click(object sender, RoutedEventArgs e)
@@ -280,7 +276,7 @@ namespace Fluence.Wpf.Demo.Pages.Trees
         {
             foreach (object? obj in items)
             {
-                if (obj is not Fluence.Wpf.Controls.TreeViewItem tvi)
+                if (obj is not Controls.TreeViewItem tvi)
                 {
                     continue;
                 }
