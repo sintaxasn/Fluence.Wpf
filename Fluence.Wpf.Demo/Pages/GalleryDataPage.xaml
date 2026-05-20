@@ -142,15 +142,20 @@
             <ContentControl
                 x:Name="DemoSampleSlot02RightRailContentHost"
                 Visibility="Collapsed">
-<StackPanel>
+<StackPanel
+                        x:Name="EmptyStateActionsPanel"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
                         <ui:Button
                             Appearance="Accent"
                             Click="AddListItem_Click"
-                            Content="Add item" />
+                            Content="Add item"
+                            MinWidth="140" />
                         <ui:Button
                             Margin="{DynamicResource DemoTextTopGapMargin}"
                             Click="RemoveListItem_Click"
-                            Content="Remove item" />
+                            Content="Remove item"
+                            MinWidth="140" />
                     </StackPanel>
             </ContentControl>
             <local:DemoSampleControl
@@ -160,7 +165,9 @@
             <ContentControl
                 x:Name="DemoSampleSlot03DemoContentHost"
                 Visibility="Collapsed">
-<WrapPanel>
+<WrapPanel
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
                         <ui:PersonPicture
                             Width="56"
                             Height="56"
@@ -192,27 +199,10 @@
                             Margin="{DynamicResource DemoControlGroupItemMargin}"
                             DisplayName="Madison Butler"
                             ProfilePicture="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureMadisonButler.png" />
-                        <ui:PersonPicture
-                            Width="56"
-                            Height="56"
-                            Margin="{DynamicResource DemoControlGroupItemMargin}"
-                            DisplayName="Oscar Ward"
-                            ProfilePicture="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureOscarWard.png" />
-                        <ui:PersonPicture
-                            Width="56"
-                            Height="56"
-                            Margin="{DynamicResource DemoControlGroupItemMargin}"
-                            Initials="NB" />
-                        <ui:PersonPicture
-                            Width="56"
-                            Height="56"
-                            Margin="{DynamicResource DemoControlGroupItemMargin}"
-                            IsGroup="True"
-                            BadgeGlyph="&#xE73E;" />
                     </WrapPanel>
             </ContentControl>
             <local:DemoSampleControl
-                SampleDescription="Use PersonPicture to represent people, groups, and contact status in data-heavy views." />
+                SampleDescription="Use PersonPicture to represent people and contact status in data-heavy views." />
 
 
             <ContentControl

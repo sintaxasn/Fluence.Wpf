@@ -189,12 +189,20 @@ namespace Fluence.Wpf.Demo.Pages.Trees
                 </ui:TreeViewItem>
             </ui:TreeViewItem>
         </ui:TreeView>
-        <StackPanel Orientation=""Horizontal"">
+        <StackPanel
+            x:Name=""TreeExpansionActionsPanel""
+            HorizontalAlignment=""Center""
+            VerticalAlignment=""Center""
+            Orientation=""Horizontal"">
             <ui:Button
                 Margin=""0,0,8,0""
                 Click=""ExpandAll_Click""
-                Content=""Expand all"" />
-            <ui:Button Click=""CollapseAll_Click"" Content=""Collapse all"" />
+                Content=""Expand all""
+                MinWidth=""140"" />
+            <ui:Button
+                Click=""CollapseAll_Click""
+                Content=""Collapse all""
+                MinWidth=""140"" />
         </StackPanel>
     </StackPanel>
 </UserControl>
@@ -224,10 +232,9 @@ namespace Fluence.Wpf.Demo.Pages.Trees
 
         private static void SetExpanded(ItemCollection items, bool expanded)
         {
-            foreach (var obj in items)
+            foreach (object obj in items)
             {
-                var item = obj as Fluence.Wpf.Controls.TreeViewItem;
-                if (item is null)
+                if (obj is not Fluence.Wpf.Controls.TreeViewItem item)
                 {
                     continue;
                 }

@@ -168,13 +168,21 @@ namespace Fluence.Wpf.Demo.Pages.Data
                     Text=""No items. Add one to begin."" />
             </ui:ListView.EmptyContent>
         </ui:ListView>
-        <StackPanel Orientation=""Horizontal"">
+        <StackPanel
+            x:Name=""EmptyStateActionsPanel""
+            HorizontalAlignment=""Center""
+            VerticalAlignment=""Center""
+            Orientation=""Horizontal"">
             <ui:Button
                 Margin=""0,0,8,0""
                 Appearance=""Accent""
                 Click=""AddListItem_Click""
-                Content=""Add item"" />
-            <ui:Button Click=""RemoveListItem_Click"" Content=""Remove item"" />
+                Content=""Add item""
+                MinWidth=""140"" />
+            <ui:Button
+                Click=""RemoveListItem_Click""
+                Content=""Remove item""
+                MinWidth=""140"" />
         </StackPanel>
     </StackPanel>
 </UserControl>
@@ -205,7 +213,7 @@ namespace Fluence.Wpf.Demo.Pages.Data
 
         private void AddListItem_Click(object sender, RoutedEventArgs e)
         {
-            var name = SampleNames[_addCounter % SampleNames.Length];
+            string name = SampleNames[_addCounter % SampleNames.Length];
             _addCounter++;
 
             EmptyStateListView.Items.Add(new ListViewItem { Content = name });
@@ -218,7 +226,7 @@ namespace Fluence.Wpf.Demo.Pages.Data
                 return;
             }
 
-            var lastItem = EmptyStateListView.Items[EmptyStateListView.Items.Count - 1];
+            object lastItem = EmptyStateListView.Items[EmptyStateListView.Items.Count - 1];
             EmptyStateListView.AnimateRemove(lastItem, null);
         }
     }
@@ -279,56 +287,47 @@ namespace Fluence.Wpf.Demo.Pages.Data
     }
 }
 ";
-        private const string PersonPictureXamlSource = @"<WrapPanel>
-    <ui:PersonPicture
-        Width=""56""
-        Height=""56""
-        Margin=""0,0,12,12""
-        DisplayName=""Ana Bowman""
-        ProfilePicture=""pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureAnaBowman.png"" />
-    <ui:PersonPicture
-        Width=""56""
-        Height=""56""
-        Margin=""0,0,12,12""
-        DisplayName=""Shawn Hughes""
-        ProfilePicture=""pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureShawnHughes.png""
-        BadgeNumber=""3"" />
-    <ui:PersonPicture
-        Width=""56""
-        Height=""56""
-        Margin=""0,0,12,12""
-        DisplayName=""Priya Kapoor""
-        ProfilePicture=""pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPicturePriyaKapoor.png"" />
-    <ui:PersonPicture
-        Width=""56""
-        Height=""56""
-        Margin=""0,0,12,12""
-        DisplayName=""Mateo Rivera""
-        ProfilePicture=""pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureMateoRivera.png"" />
-    <ui:PersonPicture
-        Width=""56""
-        Height=""56""
-        Margin=""0,0,12,12""
-        DisplayName=""Madison Butler""
-        ProfilePicture=""pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureMadisonButler.png"" />
-    <ui:PersonPicture
-        Width=""56""
-        Height=""56""
-        Margin=""0,0,12,12""
-        DisplayName=""Oscar Ward""
-        ProfilePicture=""pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureOscarWard.png"" />
-    <ui:PersonPicture
-        Width=""56""
-        Height=""56""
-        Margin=""0,0,12,12""
-        Initials=""NB"" />
-    <ui:PersonPicture
-        Width=""56""
-        Height=""56""
-        Margin=""0,0,12,12""
-        IsGroup=""True""
-        BadgeGlyph=""&#xE73E;"" />
-</WrapPanel>
+        private const string PersonPictureXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Data.PersonPictureSample""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <WrapPanel
+        HorizontalAlignment=""Center""
+        VerticalAlignment=""Center"">
+        <ui:PersonPicture
+            Width=""56""
+            Height=""56""
+            Margin=""0,0,12,12""
+            DisplayName=""Ana Bowman""
+            ProfilePicture=""pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureAnaBowman.png"" />
+        <ui:PersonPicture
+            Width=""56""
+            Height=""56""
+            Margin=""0,0,12,12""
+            DisplayName=""Shawn Hughes""
+            ProfilePicture=""pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureShawnHughes.png""
+            BadgeNumber=""3"" />
+        <ui:PersonPicture
+            Width=""56""
+            Height=""56""
+            Margin=""0,0,12,12""
+            DisplayName=""Priya Kapoor""
+            ProfilePicture=""pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPicturePriyaKapoor.png"" />
+        <ui:PersonPicture
+            Width=""56""
+            Height=""56""
+            Margin=""0,0,12,12""
+            DisplayName=""Mateo Rivera""
+            ProfilePicture=""pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureMateoRivera.png"" />
+        <ui:PersonPicture
+            Width=""56""
+            Height=""56""
+            Margin=""0,0,12,12""
+            DisplayName=""Madison Butler""
+            ProfilePicture=""pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureMadisonButler.png"" />
+    </WrapPanel>
+</UserControl>
 ";
 
         private const string PersonPictureCSharpSource = @"using System.Windows.Controls;
@@ -362,9 +361,9 @@ namespace Fluence.Wpf.Demo.Pages.Data
 
             DemoSamplePageWiring.Apply(
                 (DependencyObject)Content,
-                new DemoSampleSource(1, ListViewItemsXamlSource, ListViewItemsCSharpSource),
-                new DemoSampleSource(2, ListViewEmptyStateXamlSource, ListViewEmptyStateCSharpSource),
-                new DemoSampleSource(3, PersonPictureXamlSource, PersonPictureCSharpSource),
+            new DemoSampleSource(1, ListViewItemsXamlSource, ListViewItemsCSharpSource),
+            new DemoSampleSource(2, ListViewEmptyStateXamlSource, ListViewEmptyStateCSharpSource),
+            new DemoSampleSource(3, PersonPictureXamlSource, PersonPictureCSharpSource),
                 new DemoSampleSource(4, CardVariantsXamlSource, CardVariantsCSharpSource));
         }
 

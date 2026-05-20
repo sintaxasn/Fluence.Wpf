@@ -73,12 +73,12 @@ namespace Fluence.Wpf
         public static Color SystemAccentColor { get; private set; }
 
         /// <summary>
-        /// Gets the lightest tint on the generated accent ramp. Default matches <see cref="SystemAccentColor"/> until the ramp is loaded.
+        /// Gets the first light tint on the generated accent ramp. Default matches <see cref="SystemAccentColor"/> until the ramp is loaded.
         /// </summary>
         public static Color SystemAccentColorLight1 { get; private set; }
 
         /// <summary>
-        /// Gets the second lightest tint on the generated accent ramp.
+        /// Gets the second light tint on the generated accent ramp.
         /// </summary>
         public static Color SystemAccentColorLight2 { get; private set; }
 

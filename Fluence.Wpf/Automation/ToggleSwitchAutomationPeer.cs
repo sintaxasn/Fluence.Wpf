@@ -37,6 +37,7 @@ namespace Fluence.Wpf.Automation
     /// Exposes <see cref="ToggleSwitch"/> to UI Automation with the Toggle pattern.
     /// </summary>
     /// <remarks>Initializes a new instance.</remarks>
+    /// <param name="owner">The <see cref="ToggleSwitch"/> control represented by this automation peer.</param>
     public class ToggleSwitchAutomationPeer(ToggleSwitch owner) : FrameworkElementAutomationPeer(owner), IToggleProvider
     {
         /// <inheritdoc />

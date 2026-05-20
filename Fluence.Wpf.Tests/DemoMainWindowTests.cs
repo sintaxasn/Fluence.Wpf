@@ -1135,19 +1135,16 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(paneToggle, "Compact sample should expose the pane toggle button.");
 
                     Controls.Button? sampleToggle = FindByName<Controls.Button>(page, "CompactPaneToggleButton");
-                    Assert.IsNotNull(sampleToggle, "Compact sample should expose a visible pane toggle in the sample controls.");
-                    Assert.AreEqual("Expand pane", sampleToggle.Content as string,
-                        "Compact sample toggle should describe the next pane action.");
+                    Assert.IsNull(sampleToggle,
+                        "Compact sample should use NavigationView's built-in pane toggle instead of a right-rail button.");
 
-                    sampleToggle.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, sampleToggle));
+                    paneToggle.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, paneToggle));
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
                     Assert.IsTrue(nav.IsPaneOpen,
-                        "Clicking the compact sample toggle should open the sample pane.");
-                    Assert.AreEqual("Collapse pane", sampleToggle.Content as string,
-                        "Compact sample toggle should update after opening the pane.");
+                        "Clicking the built-in compact pane toggle should open the sample pane.");
 
                     paneToggle.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, paneToggle));
                     Drain(window.Dispatcher);
@@ -1156,8 +1153,6 @@ namespace Fluence.Wpf.Tests
 
                     Assert.IsFalse(nav.IsPaneOpen,
                         "Clicking the built-in compact pane toggle should close the sample pane.");
-                    Assert.AreEqual("Expand pane", sampleToggle.Content as string,
-                        "Compact sample toggle should stay in sync with the built-in pane toggle.");
                 }
                 finally
                 {
@@ -1759,10 +1754,10 @@ namespace Fluence.Wpf.Tests
 
                     StringAssert.Contains(sample.XamlSource, "IsBackEnabled=\"{Binding IsChecked, ElementName=BackEnabledToggle}\"");
                     StringAssert.Contains(sample.XamlSource, "IsPaneToggleButtonVisible=\"True\"");
-                    StringAssert.Contains(sample.XamlSource, "PaneOpening=\"CompactNavigationDemo_PaneStateChanged\"");
-                    StringAssert.Contains(sample.XamlSource, "PaneClosed=\"CompactNavigationDemo_PaneStateChanged\"");
-                    StringAssert.Contains(sample.XamlSource, "CompactPaneToggleButton");
-                    StringAssert.Contains(sample.CSharpSource, "CompactPaneToggleButton_Click");
+                    Assert.AreEqual(-1, sample.XamlSource.IndexOf("CompactPaneToggleButton", StringComparison.Ordinal),
+                        "Compact Navigation source should use the built-in pane toggle only.");
+                    Assert.AreEqual(-1, sample.CSharpSource.IndexOf("CompactPaneToggleButton_Click", StringComparison.Ordinal),
+                        "Compact Navigation source should not contain a duplicate right-rail pane toggle handler.");
                     StringAssert.Contains(sample.XamlSource, "<ui:NavigationViewItem");
                     StringAssert.Contains(sample.XamlSource, "Content=\"Settings\"");
                     Assert.AreEqual(-1, sample.XamlSource.IndexOf("IsBackEnabled=\"False\"", StringComparison.Ordinal),

@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 
 namespace Fluence.Wpf.Tests
@@ -206,6 +207,19 @@ namespace Fluence.Wpf.Tests
                     "Compact navigation sample should show the back button.");
                 Assert.AreEqual(Visibility.Visible, paneToggle.Visibility,
                     "Compact navigation sample should show the pane toggle/collapse button.");
+                Assert.IsNull(FindVisualChildByName<Controls.Button>(window, "CompactPaneToggleButton"),
+                    "Compact navigation sample should use NavigationView's built-in pane toggle button.");
+
+                Assert.IsFalse(compact.IsPaneOpen,
+                    "Compact navigation sample should start with the compact pane closed.");
+                paneToggle.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, paneToggle));
+                DrainDispatcher(window.Dispatcher);
+                Assert.IsTrue(compact.IsPaneOpen,
+                    "The built-in pane toggle should open the compact pane.");
+                paneToggle.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, paneToggle));
+                DrainDispatcher(window.Dispatcher);
+                Assert.IsFalse(compact.IsPaneOpen,
+                    "The built-in pane toggle should close the compact pane on subsequent clicks.");
             });
         }
 
@@ -270,10 +284,22 @@ namespace Fluence.Wpf.Tests
                 Controls.NumberBox? numberBox = FindVisualChildByName<Controls.NumberBox>(window, "ProgressValueNumberBox");
                 Controls.ProgressBar? progressBar = FindVisualChildByName<Controls.ProgressBar>(window, "StandardProgressBar");
                 Controls.ToggleSwitch? indeterminateToggle = FindVisualChildByName<Controls.ToggleSwitch>(window, "IndeterminateToggle");
+                Controls.NumberBox? progressRingValueBox = FindVisualChildByName<Controls.NumberBox>(window, "ProgressRingValueBox");
 
                 Assert.IsNotNull(numberBox, "Status page should use a NumberBox for the first ProgressBar value.");
                 Assert.IsNotNull(progressBar, "Status page should expose the first ProgressBar.");
                 Assert.IsNotNull(indeterminateToggle, "Status page should expose the indeterminate ProgressBar toggle.");
+                Assert.IsNotNull(progressRingValueBox, "Status page should expose the determinate ProgressRing NumberBox.");
+                Assert.AreEqual(HorizontalAlignment.Center, numberBox.HorizontalAlignment,
+                    "Progress value NumberBox should be centered in the right rail.");
+                Assert.AreEqual(VerticalAlignment.Center, numberBox.VerticalAlignment,
+                    "Progress value NumberBox should be vertically centered in the right rail.");
+                Assert.AreEqual(HorizontalAlignment.Center, indeterminateToggle.HorizontalAlignment,
+                    "Indeterminate toggle should be centered in the right rail.");
+                Assert.AreEqual(VerticalAlignment.Center, indeterminateToggle.VerticalAlignment,
+                    "Indeterminate toggle should be vertically centered in the right rail.");
+                Assert.AreEqual(HorizontalAlignment.Center, progressRingValueBox.HorizontalAlignment,
+                    "ProgressRing value NumberBox should remain centered.");
                 Assert.AreEqual("On / Off", indeterminateToggle.OnContent as string,
                     "Indeterminate toggle text should not switch to a state-specific label.");
                 Assert.AreEqual("On / Off", indeterminateToggle.OffContent as string,
@@ -340,23 +366,89 @@ namespace Fluence.Wpf.Tests
             {
                 Border? simpleBackground = FindVisualChildByName<Border>(window, "SimpleListViewBackground");
                 Border? richBackground = FindVisualChildByName<Border>(window, "RichListViewBackground");
+                StackPanel? emptyStateActions = FindVisualChildByName<StackPanel>(window, "EmptyStateActionsPanel");
 
                 Assert.IsNotNull(simpleBackground, "Simple ListView sample should have a named background wrapper.");
                 Assert.IsNotNull(richBackground, "Rich ListView sample should have a named background wrapper.");
+                Assert.IsNotNull(emptyStateActions, "EmptyContent sample should expose the action button panel.");
+                Assert.AreEqual(HorizontalAlignment.Center, emptyStateActions.HorizontalAlignment,
+                    "EmptyContent action buttons should be horizontally centered.");
+                Assert.AreEqual(VerticalAlignment.Center, emptyStateActions.VerticalAlignment,
+                    "EmptyContent action buttons should be vertically centered.");
+                Assert.IsTrue(emptyStateActions.Children.OfType<Controls.Button>().All(static button => button.MinWidth >= 140.0),
+                    "EmptyContent action buttons should be wider than the default compact command width.");
 
                 List<Controls.PersonPicture> personPictures = [.. FindVisualChildren<Controls.PersonPicture>(window)];
-                Assert.IsTrue(personPictures.Count(picture => picture.ProfilePicture is not null) >= 6,
-                    "PersonPicture sample should include several image-backed portraits.");
+                WrapPanel? personPicturePanel = personPictures.FirstOrDefault()?.Parent as WrapPanel;
+                Assert.AreEqual(5, personPictures.Count,
+                    "PersonPicture sample should be reduced to five people.");
+                Assert.AreEqual(5, personPictures.Count(static picture => picture.ProfilePicture is not null),
+                    "PersonPicture sample should show five image-backed portraits.");
+                Assert.IsNotNull(personPicturePanel, "PersonPicture sample should render in a WrapPanel.");
+                Assert.AreEqual(HorizontalAlignment.Center, personPicturePanel.HorizontalAlignment,
+                    "PersonPicture sample should be horizontally centered.");
+                Assert.AreEqual(VerticalAlignment.Center, personPicturePanel.VerticalAlignment,
+                    "PersonPicture sample should be vertically centered.");
                 Assert.IsTrue(personPictures.Any(picture => picture.ProfilePicture is not null &&
                     picture.ProfilePicture.ToString().IndexOf("PersonPictureMadisonButler.png", StringComparison.Ordinal) >= 0),
                     "PersonPicture sample should include the Madison Butler portrait asset.");
-                Assert.IsTrue(personPictures.Any(picture => picture.ProfilePicture is not null &&
+                Assert.IsFalse(personPictures.Any(picture => picture.ProfilePicture is not null &&
                     picture.ProfilePicture.ToString().IndexOf("PersonPictureOscarWard.png", StringComparison.Ordinal) >= 0),
-                    "PersonPicture sample should include the Oscar Ward portrait asset.");
-                Assert.IsTrue(personPictures.Any(picture => string.Equals(picture.Initials, "NB", StringComparison.Ordinal)),
-                    "PersonPicture sample should preserve the initials fallback example.");
-                Assert.IsTrue(personPictures.Any(picture => picture.IsGroup),
-                    "PersonPicture sample should preserve the group example.");
+                    "PersonPicture sample should remove the extra Oscar Ward portrait.");
+                Assert.IsFalse(personPictures.Any(picture => !string.IsNullOrWhiteSpace(picture.Initials)),
+                    "PersonPicture sample should remove the initials fallback entry.");
+                Assert.IsFalse(personPictures.Any(static picture => picture.IsGroup),
+                    "PersonPicture sample should remove the invalid group glyph entry.");
+            });
+        }
+
+        [TestMethod]
+        public void GalleryPages_RightRailControlsUseRequestedAlignment()
+        {
+            RunDemoPageTest(() => new GalleryDataBindingPage(), window =>
+            {
+                StackPanel? selectionRail = FindVisualChildByName<StackPanel>(window, "SelectionModeRail");
+                Assert.IsNotNull(selectionRail, "Data Binding selection sample should expose its right rail.");
+                Assert.AreEqual(VerticalAlignment.Center, selectionRail.VerticalAlignment,
+                    "Data Binding selection options should be vertically centered.");
+            });
+
+            RunDemoPageTest(() => new GalleryTreesPage(), window =>
+            {
+                StackPanel? treeExpansionActions = FindVisualChildByName<StackPanel>(window, "TreeExpansionActionsPanel");
+                Assert.IsNotNull(treeExpansionActions, "Tree expansion sample should expose the action button panel.");
+                Assert.AreEqual(HorizontalAlignment.Center, treeExpansionActions.HorizontalAlignment,
+                    "Tree expansion buttons should be horizontally centered.");
+                Assert.AreEqual(VerticalAlignment.Center, treeExpansionActions.VerticalAlignment,
+                    "Tree expansion buttons should be vertically centered.");
+                Assert.IsTrue(treeExpansionActions.Children.OfType<Controls.Button>().All(static button => button.MinWidth >= 140.0),
+                    "Tree expansion buttons should be wider than the default compact command width.");
+            });
+
+            RunDemoPageTest(() => new GalleryAccessibilityPage(), window =>
+            {
+                string[] buttonNames =
+                [
+                    "AutomationNewDocumentButton",
+                    "AutomationOpenFileButton",
+                    "AutomationSaveButton",
+                    "AutomationDeleteButton",
+                    "AutomationShareButton"
+                ];
+
+                foreach (string buttonName in buttonNames)
+                {
+                    Controls.Button? button = FindVisualChildByName<Controls.Button>(window, buttonName);
+                    Assert.IsNotNull(button, "Automation properties sample should expose " + buttonName + ".");
+                    Assert.AreEqual(36.0, button.Width, 0.1,
+                        "Automation properties icon buttons should use a square width.");
+                    Assert.AreEqual(36.0, button.Height, 0.1,
+                        "Automation properties icon buttons should use a square height.");
+                    Assert.AreEqual(36.0, button.MinWidth, 0.1,
+                        "Automation properties icon buttons should avoid the default text button MinWidth.");
+                    Assert.AreEqual(0.0, button.Padding.Left, 0.1,
+                        "Automation properties icon buttons should center the glyph within the focus visual.");
+                }
             });
         }
 

@@ -14,6 +14,7 @@
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Padding" Value="12,0,8,0" />
+        <Setter Property="IsTabStop" Value="True" />
         <Setter Property="MinHeight" Value="40" />
         <Setter Property="MinWidth" Value="100" />
         <Setter Property="MaxWidth" Value="240" />
@@ -223,7 +224,9 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:TabView}">
-                    <Grid KeyboardNavigation.TabNavigation="Local">
+                    <Grid
+                        x:Name="RootGrid"
+                        KeyboardNavigation.TabNavigation="Continue">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
@@ -396,7 +399,7 @@
                             CornerRadius="0,0,8,8"
                             KeyboardNavigation.DirectionalNavigation="Contained"
                             KeyboardNavigation.TabIndex="2"
-                            KeyboardNavigation.TabNavigation="Local">
+                            KeyboardNavigation.TabNavigation="Continue">
                             <ContentPresenter
                                 x:Name="PART_SelectedContentHost"
                                 HorizontalAlignment="Stretch"

@@ -8,7 +8,7 @@ dotnet build Fluence.Wpf.sln
 dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj
 ```
 
-Test project targets **net472** and **net10.0-windows**; both must pass. WPF tests run on a shared STA dispatcher (`WpfTestSta`); the assembly uses `[assembly: DoNotParallelize]` to avoid cross-thread resource issues. The branch's current test count is the floor: add coverage for new behavior and do not remove tests without documenting the replacement rationale.
+Test project targets **net472** and **net10.0-windows10.0.26100.0**; both must pass. WPF tests run on a shared STA dispatcher (`WpfTestSta`); the assembly uses `[assembly: DoNotParallelize]` to avoid cross-thread resource issues. The branch's current test count is the floor: add coverage for new behavior and do not remove tests without documenting the replacement rationale.
 
 ## Language and style
 

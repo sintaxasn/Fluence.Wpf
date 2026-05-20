@@ -348,7 +348,7 @@ namespace Fluence.Wpf.Controls
                     case ValidationState.None:
                         break;
                     default:
-                        break;
+                        return;
                 }
                 return;
             }

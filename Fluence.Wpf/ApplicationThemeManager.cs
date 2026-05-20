@@ -35,10 +35,12 @@ using System.Windows.Media;
 namespace Fluence.Wpf
 {
     /// <summary>
-    /// Manages theme initialization and switching for the Fluence.Wpf control library.
-    /// Call <see cref="Apply"/> once at application startup to initialize all resource dictionaries.
-    /// Subsequent calls swap only the theme color dictionary.
+    /// Manages Fluence.Wpf theme resource dictionaries, accent coordination, and runtime theme changes.
     /// </summary>
+    /// <remarks>
+    /// The first <see cref="Apply"/> call initializes the fixed resource dictionary slots. Later calls replace
+    /// the active color dictionary, promote theme keys, and reload promoted brushes when leaving high contrast.
+    /// </remarks>
     public static class ApplicationThemeManager
     {
         /// <summary>
@@ -69,10 +71,16 @@ namespace Fluence.Wpf
         public static event EventHandler<ThemeChangedEventArgs>? Changed;
 
         /// <summary>
-        /// Initialize the theme system and apply the specified theme.
-        /// The first call loads all resource dictionaries (Colors, Accent, Brushes, Typography, Controls).
-        /// Subsequent calls only swap the theme color dictionary.
+        /// Initializes the theme resource stack or applies a later theme change.
         /// </summary>
+        /// <param name="theme">The requested application theme. Use <see cref="ApplicationTheme.Auto"/> to follow Windows app theme settings.</param>
+        /// <param name="backdrop">The requested window backdrop policy retained for <see cref="CurrentBackdrop"/> consumers.</param>
+        /// <param name="updateAccent"><c>true</c> to update accent resources with the full theme-adaptive path; otherwise <c>false</c> to refresh only theme-dependent accent colors.</param>
+        /// <remarks>
+        /// The first call loads the Colors, Accent, Brushes, Typography, and Generic dictionaries into stable slots.
+        /// Later calls replace the Colors slot, promote color keys into application resources, and reload the Brushes
+        /// slot on non-high-contrast themes so <c>DynamicResource</c> brush chains re-evaluate.
+        /// </remarks>
         public static void Apply(ApplicationTheme theme, BackdropType backdrop = BackdropType.Auto, bool updateAccent = true)
         {
             if (_isApplying)
@@ -82,6 +90,7 @@ namespace Fluence.Wpf
             _isApplying = true;
             try
             {
+                TabKeyboardNavigation.EnsureRegistered();
                 ApplicationTheme resolvedTheme = ResolveTheme(theme);
                 CurrentTheme = theme;
                 CurrentBackdrop = backdrop;
@@ -316,5 +325,77 @@ namespace Fluence.Wpf
         private static bool _isInitialized;
         private static bool _isApplying;
         private static System.Collections.Generic.List<object>? _promotedHighContrastBrushKeys;
+    }
+
+    internal static class TabKeyboardNavigation
+    {
+        private static bool _registered;
+
+        internal static void EnsureRegistered()
+        {
+            if (_registered)
+            {
+                return;
+            }
+
+            EventManager.RegisterClassHandler(
+                typeof(System.Windows.Controls.TabItem),
+                UIElement.PreviewKeyDownEvent,
+                new System.Windows.Input.KeyEventHandler(OnTabItemPreviewKeyDown));
+            _registered = true;
+        }
+
+        private static void OnTabItemPreviewKeyDown(object sender, System.Windows.Input.KeyEventArgs e)
+        {
+            if (e.Key != System.Windows.Input.Key.Tab)
+            {
+                return;
+            }
+
+            System.Windows.Input.ModifierKeys modifiers = System.Windows.Input.Keyboard.Modifiers;
+            if ((modifiers & ~System.Windows.Input.ModifierKeys.Shift) != 0)
+            {
+                return;
+            }
+
+            if (sender is not System.Windows.Controls.TabItem tabItem)
+            {
+                return;
+            }
+
+            System.Windows.Controls.ItemsControl? owner =
+                System.Windows.Controls.ItemsControl.ItemsControlFromItemContainer(tabItem);
+            if (owner is not System.Windows.Controls.TabControl tabControl)
+            {
+                return;
+            }
+
+            int currentIndex = tabControl.ItemContainerGenerator.IndexFromContainer(tabItem);
+            if (currentIndex < 0)
+            {
+                return;
+            }
+
+            int direction = (modifiers & System.Windows.Input.ModifierKeys.Shift) == System.Windows.Input.ModifierKeys.Shift ? -1 : 1;
+            int nextIndex = currentIndex + direction;
+            if (nextIndex < 0 || nextIndex >= tabControl.Items.Count)
+            {
+                return;
+            }
+
+            System.Windows.Controls.TabItem? nextTabItem =
+                tabControl.ItemContainerGenerator.ContainerFromIndex(nextIndex) as System.Windows.Controls.TabItem;
+            nextTabItem ??= tabControl.Items[nextIndex] as System.Windows.Controls.TabItem;
+            if (nextTabItem is null)
+            {
+                return;
+            }
+
+            object item = tabControl.ItemContainerGenerator.ItemFromContainer(nextTabItem);
+            tabControl.SelectedItem = item != DependencyProperty.UnsetValue ? item : nextTabItem;
+            _ = nextTabItem.Focus();
+            _ = System.Windows.Input.Keyboard.Focus(nextTabItem);
+            e.Handled = true;
+        }
     }
 }

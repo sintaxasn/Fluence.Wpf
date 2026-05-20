@@ -166,6 +166,8 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Sets the parent list's <see cref="IsItemSelectable"/> value on an item container for template triggers.
         /// </summary>
+        /// <param name="element">The item container that receives the mirrored selection state.</param>
+        /// <param name="value"><c>true</c> when the parent list allows item selection; otherwise <c>false</c>.</param>
         public static void SetParentIsItemSelectable(DependencyObject element, bool value)
         {
             element.SetValue(ParentIsItemSelectableProperty, value);
@@ -174,6 +176,8 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Gets whether the parent list allows item selection (for template triggers).
         /// </summary>
+        /// <param name="element">The item container that stores the mirrored selection state.</param>
+        /// <returns><c>true</c> when the parent list allows item selection; otherwise <c>false</c>.</returns>
         public static bool GetParentIsItemSelectable(DependencyObject element)
         {
             return (bool)element.GetValue(ParentIsItemSelectableProperty);
@@ -210,6 +214,8 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Animates out the item and then calls the provided callback.
         /// </summary>
+        /// <param name="item">The item to remove from the list or bound <see cref="IList"/> after the exit animation.</param>
+        /// <param name="onCompleted">An optional callback invoked after removal completes.</param>
         public void AnimateRemove(object item, Action? onCompleted)
         {
             if (!ItemAnimationsEnabled)

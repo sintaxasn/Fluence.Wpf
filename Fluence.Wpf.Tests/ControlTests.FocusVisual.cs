@@ -31,6 +31,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Windows;
 using System.Windows.Input;
+using WpfBorder = System.Windows.Controls.Border;
+using WpfButton = System.Windows.Controls.Button;
+using WpfGrid = System.Windows.Controls.Grid;
+using WpfStackPanel = System.Windows.Controls.StackPanel;
 using WpfTabControl = System.Windows.Controls.TabControl;
 using WpfTabItem = System.Windows.Controls.TabItem;
 using WpfTextBlock = System.Windows.Controls.TextBlock;
@@ -211,6 +215,162 @@ namespace Fluence.Wpf.Tests
                     w.Close();
                 }
             });
+        }
+
+        [TestMethod]
+        public void TabControl_TabKeySelectsNextHeaderThenContinuesOut()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                WpfTabControl tabControl = new()
+                {
+                    Width = 320,
+                    Height = 140
+                };
+                _ = tabControl.Items.Add(new WpfTabItem { Header = "First", Content = new WpfTextBlock { Text = "One" } });
+                _ = tabControl.Items.Add(new WpfTabItem { Header = "Second", Content = new WpfTextBlock { Text = "Two" } });
+
+                WpfButton afterButton = new() { Content = "After" };
+                WpfStackPanel root = new();
+                _ = root.Children.Add(tabControl);
+                _ = root.Children.Add(afterButton);
+
+                Window window = new() { Content = root, Width = 420, Height = 240 };
+
+                try
+                {
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    WpfTabItem? first = tabControl.ItemContainerGenerator.ContainerFromIndex(0) as WpfTabItem;
+                    WpfTabItem? second = tabControl.ItemContainerGenerator.ContainerFromIndex(1) as WpfTabItem;
+                    Assert.IsNotNull(first, "The first TabControl header should be generated.");
+                    Assert.IsNotNull(second, "The second TabControl header should be generated.");
+
+                    _ = Keyboard.Focus(first);
+                    DrainDispatcher(window.Dispatcher);
+                    Assert.AreSame(first, Keyboard.FocusedElement,
+                        "Test setup should put keyboard focus on the first TabControl header.");
+
+                    KeyEventArgs firstTabArgs = RaiseTabKey(first, window);
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.IsTrue(firstTabArgs.Handled,
+                        "Tab on the first TabControl header should be handled as header navigation.");
+                    Assert.AreSame(second, Keyboard.FocusedElement,
+                        "Tab should move focus to the next TabControl header.");
+                    Assert.AreSame(second, tabControl.SelectedItem,
+                        "Tabbing to the next TabControl header should select that tab.");
+
+                    KeyEventArgs secondTabArgs = RaiseTabKey(second, window);
+                    Assert.IsFalse(secondTabArgs.Handled,
+                        "Tab on the final TabControl header should be left for normal focus navigation.");
+                    bool movedOut = second.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+                    DrainDispatcher(window.Dispatcher);
+
+                    Assert.IsTrue(movedOut, "Tab should be able to move past the last TabControl header.");
+                    Assert.AreSame(afterButton, Keyboard.FocusedElement,
+                        "Tab should continue out of the TabControl after the final header.");
+                }
+                finally
+                {
+                    Keyboard.ClearFocus();
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void TabView_TabKeySelectsNextHeaderThenContinuesOut()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                TabViewItem first = new() { Header = "First", Content = new WpfTextBlock { Text = "One" } };
+                TabViewItem second = new() { Header = "Second", Content = new WpfTextBlock { Text = "Two" } };
+                TabView tabView = new()
+                {
+                    Width = 340,
+                    Height = 150,
+                    IsAddTabButtonVisible = false
+                };
+                _ = tabView.Items.Add(first);
+                _ = tabView.Items.Add(second);
+
+                WpfButton afterButton = new() { Content = "After" };
+                WpfStackPanel root = new();
+                _ = root.Children.Add(tabView);
+                _ = root.Children.Add(afterButton);
+
+                Window window = new() { Content = root, Width = 440, Height = 250 };
+
+                try
+                {
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    WpfGrid? rootGrid = tabView.Template.FindName("RootGrid", tabView) as WpfGrid;
+                    WpfBorder? contentPanel = tabView.Template.FindName("ContentPanel", tabView) as WpfBorder;
+                    Assert.IsNotNull(rootGrid, "TabView template should expose RootGrid for keyboard navigation.");
+                    Assert.IsNotNull(contentPanel, "TabView template should expose ContentPanel for keyboard navigation.");
+                    Assert.AreEqual(KeyboardNavigationMode.Continue, KeyboardNavigation.GetTabNavigation(rootGrid),
+                        "TabView should not trap tab navigation inside the control template.");
+                    Assert.AreEqual(KeyboardNavigationMode.Continue, KeyboardNavigation.GetTabNavigation(contentPanel),
+                        "TabView content should continue tab navigation out of the control.");
+
+                    _ = Keyboard.Focus(first);
+                    DrainDispatcher(window.Dispatcher);
+                    Assert.AreSame(first, Keyboard.FocusedElement,
+                        "Test setup should put keyboard focus on the first TabView header.");
+
+                    KeyEventArgs firstTabArgs = RaiseTabKey(first, window);
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.IsTrue(firstTabArgs.Handled,
+                        "Tab on the first TabView header should be handled as header navigation.");
+                    Assert.AreSame(second, Keyboard.FocusedElement,
+                        "Tab should move focus to the next TabView header.");
+                    Assert.AreSame(second, tabView.SelectedItem,
+                        "Tabbing to the next TabView header should select that tab.");
+
+                    KeyEventArgs secondTabArgs = RaiseTabKey(second, window);
+                    Assert.IsFalse(secondTabArgs.Handled,
+                        "Tab on the final TabView header should be left for normal focus navigation.");
+                    bool movedOut = second.MoveFocus(new TraversalRequest(FocusNavigationDirection.Next));
+                    DrainDispatcher(window.Dispatcher);
+
+                    Assert.IsTrue(movedOut, "Tab should be able to move past the last TabView header.");
+                    Assert.AreSame(afterButton, Keyboard.FocusedElement,
+                        "Tab should continue out of the TabView after the final header.");
+                }
+                finally
+                {
+                    Keyboard.ClearFocus();
+                    window.Close();
+                }
+            });
+        }
+
+        private static KeyEventArgs RaiseTabKey(UIElement target, Window window)
+        {
+            PresentationSource source = PresentationSource.FromVisual(window)
+                ?? throw new InvalidOperationException("Window must have a presentation source before raising keyboard input.");
+            KeyEventArgs args = new(Keyboard.PrimaryDevice, source, 0, Key.Tab)
+            {
+                RoutedEvent = UIElement.PreviewKeyDownEvent,
+                Source = target
+            };
+            target.RaiseEvent(args);
+            return args;
         }
 
         [TestMethod]

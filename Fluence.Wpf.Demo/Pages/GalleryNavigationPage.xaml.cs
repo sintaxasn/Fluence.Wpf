@@ -26,7 +26,6 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System;
 using System.Windows;
 using System.Windows.Controls;
 using NavigationView = Fluence.Wpf.Controls.NavigationView;
@@ -148,8 +147,6 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
                 IsBackEnabled=""{Binding IsChecked, ElementName=BackEnabledToggle}""
                 IsPaneToggleButtonVisible=""True""
                 IsPaneOpen=""False""
-                PaneClosed=""CompactNavigationDemo_PaneStateChanged""
-                PaneOpening=""CompactNavigationDemo_PaneStateChanged""
                 PaneDisplayMode=""LeftCompact"">
                 <ui:NavigationView.PaneFooter>
                     <ui:NavigationViewItem Content=""Settings"">
@@ -176,18 +173,11 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
                 x:Name=""BackEnabledToggle""
                 Content=""Back enabled""
                 IsChecked=""True"" />
-            <ui:Button
-                x:Name=""CompactPaneToggleButton""
-                Margin=""0,12,0,0""
-                Click=""CompactPaneToggleButton_Click""
-                Content=""Expand pane"" />
     </StackPanel>
 </UserControl>
 ";
 
-        private const string CompactNavigationViewCSharpSource = @"using System;
-using System.Windows;
-using System.Windows.Controls;
+        private const string CompactNavigationViewCSharpSource = @"using System.Windows.Controls;
 
 namespace Fluence.Wpf.Demo.Pages.Navigation
 {
@@ -196,22 +186,6 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
         public CompactNavigationView()
         {
             InitializeComponent();
-        }
-
-        private void CompactPaneToggleButton_Click(object sender, RoutedEventArgs e)
-        {
-            CompactNavigationDemo.IsPaneOpen = !CompactNavigationDemo.IsPaneOpen;
-            UpdateCompactPaneToggleButtonContent();
-        }
-
-        private void CompactNavigationDemo_PaneStateChanged(object sender, EventArgs e)
-        {
-            UpdateCompactPaneToggleButtonContent();
-        }
-
-        private void UpdateCompactPaneToggleButtonContent()
-        {
-            CompactPaneToggleButton.Content = CompactNavigationDemo.IsPaneOpen ? ""Collapse pane"" : ""Expand pane"";
         }
     }
 }
@@ -296,33 +270,6 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
             SetNavigationDemoContent(LeftNavigationDemo, LeftNavigationHomeItem);
             SetNavigationDemoContent(TopNavigationDemo, TopNavigationOverviewItem);
             SetNavigationDemoContent(CompactNavigationDemo, CompactNavigationDashboardItem);
-            UpdateCompactPaneToggleButtonContent();
-        }
-
-        private void CompactPaneToggleButton_Click(object sender, RoutedEventArgs e)
-        {
-            if (CompactNavigationDemo is null)
-            {
-                return;
-            }
-
-            CompactNavigationDemo.IsPaneOpen = !CompactNavigationDemo.IsPaneOpen;
-            UpdateCompactPaneToggleButtonContent();
-        }
-
-        private void CompactNavigationDemo_PaneStateChanged(object? sender, EventArgs e)
-        {
-            UpdateCompactPaneToggleButtonContent();
-        }
-
-        private void UpdateCompactPaneToggleButtonContent()
-        {
-            if (CompactPaneToggleButton is null || CompactNavigationDemo is null)
-            {
-                return;
-            }
-
-            CompactPaneToggleButton.Content = CompactNavigationDemo.IsPaneOpen ? "Collapse pane" : "Expand pane";
         }
 
         private void NavigationDemo_ItemInvoked(object sender, NavigationViewItemInvokedEventArgs e)

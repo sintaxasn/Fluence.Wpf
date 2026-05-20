@@ -28,6 +28,7 @@
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows;
+using System.Windows.Input;
 using FluentTreeView = Fluence.Wpf.Controls.TreeView;
 using FluentTreeViewItem = Fluence.Wpf.Controls.TreeViewItem;
 using WpfCheckBox = System.Windows.Controls.CheckBox;
@@ -109,6 +110,69 @@ namespace Fluence.Wpf.Tests
                     Assert.AreEqual(1, treeView.SelectedItems.Count);
                     CollectionAssert.DoesNotContain(treeView.SelectedItems, first);
                     CollectionAssert.Contains(treeView.SelectedItems, second);
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary is not null)
+                    {
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void TreeView_MultipleSelectionSpaceTogglesItemCheckState()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+
+                try
+                {
+                    FluentTreeViewItem item = new() { Header = "Contracts" };
+                    FluentTreeView treeView = new()
+                    {
+                        SelectionMode = TreeViewSelectionMode.Multiple
+                    };
+                    _ = treeView.Items.Add(item);
+                    window.Content = treeView;
+                    window.Width = 300;
+                    window.Height = 200;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+                    _ = treeView.ApplyTemplate();
+                    _ = item.ApplyTemplate();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    FluentTreeViewItem keyboardItem =
+                        treeView.ItemContainerGenerator.ContainerFromItem(item) as FluentTreeViewItem ?? item;
+
+                    _ = keyboardItem.ApplyTemplate();
+                    _ = keyboardItem.Focus();
+                    _ = Keyboard.Focus(keyboardItem);
+                    DrainDispatcher(window.Dispatcher);
+                    keyboardItem.IsSelectionChecked = false;
+                    DrainDispatcher(window.Dispatcher);
+
+                    Assert.IsTrue(keyboardItem.ToggleMultipleSelectionFromKeyboard(),
+                        "Focused TreeViewItem should accept Space in Multiple selection mode.");
+
+                    Assert.AreEqual(true, keyboardItem.IsSelectionChecked,
+                        "Space should check a focused TreeViewItem in Multiple selection mode.");
+                    CollectionAssert.Contains(treeView.SelectedItems, item);
+
+                    Assert.IsTrue(keyboardItem.ToggleMultipleSelectionFromKeyboard(),
+                        "Focused TreeViewItem should accept Space again in Multiple selection mode.");
+
+                    Assert.AreEqual(false, keyboardItem.IsSelectionChecked,
+                        "Space should uncheck a focused TreeViewItem in Multiple selection mode.");
+                    CollectionAssert.DoesNotContain(treeView.SelectedItems, item);
                 }
                 finally
                 {

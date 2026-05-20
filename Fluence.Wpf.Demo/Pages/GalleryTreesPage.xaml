@@ -125,14 +125,19 @@
             <ContentControl
                 x:Name="DemoSampleSlot04RightRailContentHost"
                 Visibility="Collapsed">
-<StackPanel>
+<StackPanel
+                        x:Name="TreeExpansionActionsPanel"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center">
                         <ui:Button
                             Click="ExpandAll_Click"
-                            Content="Expand all" />
+                            Content="Expand all"
+                            MinWidth="140" />
                         <ui:Button
                             Margin="{DynamicResource DemoTextTopGapMargin}"
                             Click="CollapseAll_Click"
-                            Content="Collapse all" />
+                            Content="Collapse all"
+                            MinWidth="140" />
                     </StackPanel>
             </ContentControl>
             <local:DemoSampleControl

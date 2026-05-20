@@ -53,6 +53,8 @@ namespace Fluence.Wpf.Demo.Pages
         <ui:NumberBox
             x:Name=""ProgressValueNumberBox""
             Header=""Value""
+            HorizontalAlignment=""Center""
+            VerticalAlignment=""Center""
             Maximum=""100""
             Minimum=""0""
             SmallChange=""5""
@@ -126,6 +128,8 @@ namespace Fluence.Wpf.Demo.Pages.Status
                 x:Name=""IndeterminateToggle""
                 Margin=""0,0,12,0""
                 Checked=""IndeterminateToggle_Toggled""
+                HorizontalAlignment=""Center""
+                VerticalAlignment=""Center""
                 IsChecked=""True""
                 OffContent=""On / Off""
                 OnContent=""On / Off""
@@ -213,8 +217,7 @@ namespace Fluence.Wpf.Demo.Pages.Status
 
         private void ProgressStep_Click(object sender, RoutedEventArgs e)
         {
-            FrameworkElement? button = sender as FrameworkElement;
-            string tag = button is not null && button.Tag is not null ? button.Tag.ToString() : string.Empty;
+            string tag = sender is FrameworkElement button && button.Tag is not null ? button.Tag.ToString() : string.Empty;
 
             if (string.Equals(tag, ""Next"", StringComparison.OrdinalIgnoreCase))
             {

@@ -63,6 +63,8 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Gets the typography style for the specified TextBlock.
         /// </summary>
+        /// <param name="obj">The target <see cref="System.Windows.Controls.TextBlock"/>.</param>
+        /// <returns>The requested Fluent typography style.</returns>
         public static FluentTypography GetTypography(DependencyObject obj)
         {
             return (FluentTypography)obj.GetValue(TypographyProperty);
@@ -71,6 +73,8 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Sets the typography style for the specified TextBlock.
         /// </summary>
+        /// <param name="obj">The target <see cref="System.Windows.Controls.TextBlock"/>.</param>
+        /// <param name="value">The Fluent typography style to apply.</param>
         public static void SetTypography(DependencyObject obj, FluentTypography value)
         {
             obj.SetValue(TypographyProperty, value);
@@ -281,6 +285,8 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Gets the placeholder text for the specified element.
         /// </summary>
+        /// <param name="obj">The target dependency object.</param>
+        /// <returns>The placeholder text.</returns>
         public static string GetPlaceholderText(DependencyObject obj)
         {
             return (string)obj.GetValue(PlaceholderTextProperty);
@@ -289,6 +295,8 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Sets the placeholder text for the specified element.
         /// </summary>
+        /// <param name="obj">The target dependency object.</param>
+        /// <param name="value">The placeholder text to store.</param>
         public static void SetPlaceholderText(DependencyObject obj, string value)
         {
             obj.SetValue(PlaceholderTextProperty, value);
@@ -311,6 +319,8 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Gets whether the placeholder should be shown.
         /// </summary>
+        /// <param name="obj">The target dependency object.</param>
+        /// <returns><c>true</c> when the placeholder should be shown; otherwise <c>false</c>.</returns>
         public static bool GetShowPlaceholder(DependencyObject obj)
         {
             return (bool)obj.GetValue(ShowPlaceholderProperty);
@@ -319,6 +329,8 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Sets whether the placeholder should be shown.
         /// </summary>
+        /// <param name="obj">The target dependency object.</param>
+        /// <param name="value"><c>true</c> to show the placeholder; otherwise <c>false</c>.</param>
         public static void SetShowPlaceholder(DependencyObject obj, bool value)
         {
             obj.SetValue(ShowPlaceholderProperty, value);
@@ -341,6 +353,8 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Gets the icon for the specified element.
         /// </summary>
+        /// <param name="obj">The target dependency object.</param>
+        /// <returns>The icon content.</returns>
         public static object GetIcon(DependencyObject obj)
         {
             return obj.GetValue(IconProperty);
@@ -349,6 +363,8 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Sets the icon for the specified element.
         /// </summary>
+        /// <param name="obj">The target dependency object.</param>
+        /// <param name="value">The icon content to store.</param>
         public static void SetIcon(DependencyObject obj, object value)
         {
             obj.SetValue(IconProperty, value);
@@ -371,6 +387,8 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Gets the icon placement for the specified element.
         /// </summary>
+        /// <param name="obj">The target dependency object.</param>
+        /// <returns>The requested icon placement.</returns>
         public static ElementPlacement GetIconPlacement(DependencyObject obj)
         {
             return (ElementPlacement)obj.GetValue(IconPlacementProperty);
@@ -379,6 +397,8 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Sets the icon placement for the specified element.
         /// </summary>
+        /// <param name="obj">The target dependency object.</param>
+        /// <param name="value">The icon placement to apply.</param>
         public static void SetIconPlacement(DependencyObject obj, ElementPlacement value)
         {
             obj.SetValue(IconPlacementProperty, value);

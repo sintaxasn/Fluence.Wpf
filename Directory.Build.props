@@ -1,5 +1,5 @@
 ﻿<Project>
-  <!-- Common properties for all PSADT projects -->
+  <!-- Common properties for all Fluence.Wpf projects -->
   <PropertyGroup>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
@@ -59,11 +59,11 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <AdditionalFiles Include="$(MSBuildProjectDirectory)\..\BannedSymbols.txt" />
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)BannedSymbols.txt" />
   </ItemGroup>
 
   <!-- Common embedded resource for license -->
   <ItemGroup>
-    <EmbeddedResource Include="$(MSBuildProjectDirectory)\..\LICENSE" />
+    <EmbeddedResource Include="$(MSBuildThisFileDirectory)LICENSE" />
   </ItemGroup>
 </Project>

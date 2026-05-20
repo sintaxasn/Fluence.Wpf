@@ -238,7 +238,7 @@ namespace Fluence.Wpf.Demo.Pages.Tabs
 
         private void DemoTabView_AddTabButtonClick(object sender, RoutedEventArgs e)
         {
-            var number = ++_nextDocumentNumber;
+            int number = ++_nextDocumentNumber;
             System.Windows.Controls.TextBlock body = new()
             {
                 Margin = new Thickness(20),
@@ -267,8 +267,7 @@ namespace Fluence.Wpf.Demo.Pages.Tabs
 
         private void DemoTabView_TabCloseRequested(object sender, RoutedEventArgs e)
         {
-            var args = e as TabViewTabCloseRequestedEventArgs;
-            if (args is null || args.Tab is null)
+            if (e is not TabViewTabCloseRequestedEventArgs args || args.Tab is null)
             {
                 return;
             }

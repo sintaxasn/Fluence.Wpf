@@ -319,6 +319,9 @@ namespace Fluence.Wpf.Tests
                 System.Windows.Controls.TextBlock customElement = new() { Text = "Custom Title" };
                 w.SetTitleBar(customElement);
                 Assert.IsNotNull(w.TitleBar);
+                w.SetTitleBar(null);
+                Assert.IsNull(w.TitleBar,
+                    "SetTitleBar(null) should clear the custom TitleBar content.");
             });
         }
 

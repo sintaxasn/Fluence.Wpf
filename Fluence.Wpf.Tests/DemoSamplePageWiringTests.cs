@@ -33,6 +33,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Xml;
+using System.Xml.Linq;
 using FluenceExpander = Fluence.Wpf.Controls.Expander;
 using WpfButton = System.Windows.Controls.Button;
 using WpfTextBlock = System.Windows.Controls.TextBlock;
@@ -42,6 +44,9 @@ namespace Fluence.Wpf.Tests
     [TestClass]
     public sealed class DemoSamplePageWiringTests
     {
+        private const string IntentionalPartialSnippetMarker = "Intentionally partial layout snippet";
+        private static readonly XNamespace XamlNamespace = "http://schemas.microsoft.com/winfx/2006/xaml";
+
         private static readonly Func<UIElement>[] SamplePageFactories =
         [
             static () => new GalleryIconsPage(),
@@ -232,6 +237,64 @@ namespace Fluence.Wpf.Tests
             });
         }
 
+        [TestMethod]
+        public void GallerySamplePages_SourceContractsMatchDisplayedClasses()
+        {
+            DemoTestHost.RunOnSta(delegate
+            {
+                foreach (DemoSampleControl sample in CreateVisibleSamples())
+                {
+                    string xamlSource = sample.XamlSource.Trim();
+                    string csharpSource = sample.CSharpSource.Trim();
+                    if (IsIntentionalPartialSnippet(xamlSource))
+                    {
+                        Assert.IsTrue(
+                            string.IsNullOrWhiteSpace(csharpSource),
+                            "Intentional partial snippets should not display a code-behind class.");
+                        continue;
+                    }
+
+                    XDocument document = ParseXamlSource(xamlSource, sample.SampleDescription);
+                    Assert.AreEqual(
+                        "UserControl",
+                        document.Root?.Name.LocalName,
+                        "Self-contained displayed XAML should use a UserControl root: " + sample.SampleDescription);
+
+                    string xamlClass = document.Root?.Attribute(XamlNamespace + "Class")?.Value
+                        ?? throw new AssertFailedException("Displayed UserControl XAML must declare x:Class: " + sample.SampleDescription);
+                    Assert.IsFalse(
+                        string.IsNullOrWhiteSpace(csharpSource),
+                        "Displayed UserControl XAML should include matching C# source: " + sample.SampleDescription);
+                    Assert.IsTrue(
+                        csharpSource.Contains("InitializeComponent();"),
+                        "Displayed C# source should use the UserControl InitializeComponent pattern: " + sample.SampleDescription);
+                    Assert.AreEqual(
+                        xamlClass,
+                        GetDeclaredPartialClassName(csharpSource),
+                        "Displayed XAML x:Class must match the C# namespace and partial class: " + sample.SampleDescription);
+                }
+            });
+        }
+
+        [TestMethod]
+        public void GallerySamplePages_CSharpSourcesUseReleaseReadySnippetStyle()
+        {
+            DemoTestHost.RunOnSta(delegate
+            {
+                foreach (DemoSampleControl sample in CreateVisibleSamples())
+                {
+                    string csharpSource = sample.CSharpSource;
+                    if (string.IsNullOrWhiteSpace(csharpSource))
+                    {
+                        continue;
+                    }
+
+                    AssertDoesNotContainVar(csharpSource, sample.SampleDescription);
+                    AssertNoUninitializedNonNullableSnippetProperties(csharpSource, sample.SampleDescription);
+                }
+            });
+        }
+
         private static ContentControl CreateSlot(string name, object content)
         {
             return new ContentControl
@@ -251,6 +314,144 @@ namespace Fluence.Wpf.Tests
             WpfButton? copy = DemoTestHost.FindByName<WpfButton>(tab.Content as DependencyObject, "CopySourceButton");
             Assert.IsNotNull(copy, "Source tab should expose the copy button.");
             Assert.AreEqual(expectedSource, copy.Tag as string);
+        }
+
+        private static List<DemoSampleControl> CreateVisibleSamples()
+        {
+            List<DemoSampleControl> samples = [];
+            foreach (Func<UIElement> factory in SamplePageFactories)
+            {
+                _ = DemoTestHost.EnsureDemoTheme();
+                UIElement page = factory();
+                Window window = DemoTestHost.CreateHostWindow(page);
+                try
+                {
+                    samples.AddRange(DemoTestHost.FindVisualChildren<DemoSampleControl>(page)
+                        .Where(static sample => sample.Visibility == Visibility.Visible));
+                }
+                finally
+                {
+                    DemoTestHost.CloseWindow(window);
+                }
+            }
+
+            return samples;
+        }
+
+        private static bool IsIntentionalPartialSnippet(string xamlSource)
+        {
+            return xamlSource.StartsWith("<!--", StringComparison.Ordinal) &&
+                xamlSource.Contains(IntentionalPartialSnippetMarker);
+        }
+
+        private static XDocument ParseXamlSource(string xamlSource, string sampleDescription)
+        {
+            try
+            {
+                return XDocument.Parse(xamlSource);
+            }
+            catch (XmlException exception)
+            {
+                throw new AssertFailedException("Displayed XAML source must be well formed: " + sampleDescription, exception);
+            }
+        }
+
+        private static string GetDeclaredPartialClassName(string csharpSource)
+        {
+            string namespaceName = GetNamespaceName(csharpSource);
+            foreach (string line in SplitLines(csharpSource))
+            {
+                string trimmed = line.Trim();
+                const string classPrefix = "public partial class ";
+                if (!trimmed.StartsWith(classPrefix, StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                string classRemainder = trimmed.Substring(classPrefix.Length);
+                int classNameEnd = classRemainder.IndexOfAny([' ', ':']);
+                string className = classNameEnd < 0 ? classRemainder : classRemainder.Substring(0, classNameEnd);
+                return namespaceName + "." + className;
+            }
+
+            throw new AssertFailedException("Displayed C# source must declare a public partial class.");
+        }
+
+        private static string GetNamespaceName(string csharpSource)
+        {
+            foreach (string line in SplitLines(csharpSource))
+            {
+                string trimmed = line.Trim();
+                const string namespacePrefix = "namespace ";
+                if (trimmed.StartsWith(namespacePrefix, StringComparison.Ordinal))
+                {
+                    return trimmed.Substring(namespacePrefix.Length).Trim();
+                }
+            }
+
+            throw new AssertFailedException("Displayed C# source must declare a namespace.");
+        }
+
+        private static void AssertDoesNotContainVar(string csharpSource, string sampleDescription)
+        {
+            int lineNumber = 0;
+            foreach (string line in SplitLines(csharpSource))
+            {
+                lineNumber++;
+                if (ContainsWord(line, "var"))
+                {
+                    Assert.Fail("Displayed C# source should use explicit types: " + sampleDescription + " line " + lineNumber);
+                }
+            }
+        }
+
+        private static void AssertNoUninitializedNonNullableSnippetProperties(string csharpSource, string sampleDescription)
+        {
+            int lineNumber = 0;
+            foreach (string line in SplitLines(csharpSource))
+            {
+                lineNumber++;
+                string trimmed = line.Trim();
+                bool isNonNullableAutoProperty =
+                    (trimmed.StartsWith("public string ", StringComparison.Ordinal) ||
+                     trimmed.StartsWith("public Brush ", StringComparison.Ordinal)) &&
+                    trimmed.Contains("{ get; set; }") &&
+                    !trimmed.Contains("=");
+
+                if (isNonNullableAutoProperty)
+                {
+                    Assert.Fail("Displayed C# source should initialize non-nullable auto properties: " + sampleDescription + " line " + lineNumber);
+                }
+            }
+        }
+
+        private static string[] SplitLines(string text)
+        {
+            return text.Split(["\r\n", "\n"], StringSplitOptions.None);
+        }
+
+        private static bool ContainsWord(string text, string word)
+        {
+            int index = text.IndexOf(word, StringComparison.Ordinal);
+            while (index >= 0)
+            {
+                bool startsOnBoundary = index == 0 || !IsWordCharacter(text[index - 1]);
+                int end = index + word.Length;
+                bool endsOnBoundary = end == text.Length || !IsWordCharacter(text[end]);
+                if (startsOnBoundary && endsOnBoundary)
+                {
+                    return true;
+                }
+
+                index = text.IndexOf(word, index + word.Length, StringComparison.Ordinal);
+            }
+
+            return false;
+        }
+
+        private static bool IsWordCharacter(char value)
+        {
+            return char.IsLetterOrDigit(value) || value == '_';
         }
 
         private static void AssertThrowsInvalidOperation(Action action)

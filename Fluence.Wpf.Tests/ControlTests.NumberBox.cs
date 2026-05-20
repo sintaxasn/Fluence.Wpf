@@ -193,6 +193,51 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void NumberBox_SpinButtons_AreNotTabStops()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+
+                try
+                {
+                    Fluent.NumberBox numberBox = new()
+                    {
+                        SpinButtonPlacementMode = SpinButtonPlacementMode.Inline,
+                        Width = 160
+                    };
+                    window.Content = numberBox;
+                    window.Width = 240;
+                    window.Height = 120;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    _ = numberBox.ApplyTemplate();
+
+                    RepeatButton? upButton = numberBox.Template.FindName("PART_UpButton", numberBox) as RepeatButton;
+                    RepeatButton? downButton = numberBox.Template.FindName("PART_DownButton", numberBox) as RepeatButton;
+                    Assert.IsNotNull(upButton, "NumberBox template must expose PART_UpButton.");
+                    Assert.IsNotNull(downButton, "NumberBox template must expose PART_DownButton.");
+                    Assert.IsFalse(upButton.IsTabStop,
+                        "Inline spin increment button should not become a separate tab stop.");
+                    Assert.IsFalse(downButton.IsTabStop,
+                        "Inline spin decrement button should not become a separate tab stop.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary is not null)
+                    {
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
         public void NumberBox_SpinPanel_HasWinUiCanonicalMargin()
         {
             // WI-3 A7: WinUI canonical SpinPanel margin is "0,1,2,1" (2px right inset from

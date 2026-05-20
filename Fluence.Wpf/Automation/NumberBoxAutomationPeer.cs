@@ -36,6 +36,7 @@ namespace Fluence.Wpf.Automation
     /// Exposes <see cref="NumberBox"/> to UI Automation as a spinner with range value.
     /// </summary>
     /// <remarks>Initializes a new instance.</remarks>
+    /// <param name="owner">The <see cref="NumberBox"/> control represented by this automation peer.</param>
     public class NumberBoxAutomationPeer(NumberBox owner) : FrameworkElementAutomationPeer(owner), IRangeValueProvider
     {
         /// <inheritdoc />

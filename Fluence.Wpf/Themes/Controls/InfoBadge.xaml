@@ -9,7 +9,7 @@
         <Setter Property="MinWidth" Value="34" />
         <Setter Property="MinHeight" Value="24" />
         <Setter Property="MaxHeight" Value="24" />
-        <Setter Property="Padding" Value="0,0,0,1" />
+        <Setter Property="Padding" Value="0,2,0,2" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="FontWeight" Value="SemiBold" />

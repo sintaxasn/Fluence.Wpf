@@ -9,7 +9,7 @@ Self-contained persistent memory for engineers (human and AI) working in this re
 ## 1. Project overview
 
 - **Fluence.Wpf** is a WPF control library that recreates the **Windows 11 Fluent / WinUI 3** visual language and interaction patterns on WPF.
-- **Target frameworks** (library + tests): `net472` (primary) and `net10.0-windows`. Gallery demo (`Fluence.Wpf.Demo`) targets `net472` and `net10.0-windows10.0.26100.0`; MVVM demo (`Fluence.Wpf.Demo.Mvvm`) targets `net10.0-windows`.
+- **Target frameworks** (library + tests): `net472` (primary) and `net10.0-windows10.0.26100.0`. Gallery demo (`Fluence.Wpf.Demo`) targets `net472` and `net10.0-windows10.0.26100.0`; MVVM demo (`Fluence.Wpf.Demo.Mvvm`) targets `net10.0-windows10.0.26100.0`.
 - **Language**: `LangVersion=latest` across all TFMs, set centrally in `Directory.Build.props` - no per-TFM language restriction. `net472` still constrains **runtime API** availability (see §4.3); avoid APIs that don't ship in `net472`, but C# language features themselves are not restricted. Nullable reference types are **enabled** (`Nullable=enable` in `Directory.Build.props`); individual projects may override with `<Nullable>disable</Nullable>` (e.g. `Fluence.Wpf.Demo.Mvvm`).
 - **License**: BSD 3-Clause. Every `.cs` file begins with the same 27-line header; copy it verbatim from any existing library file when adding new sources. Do not edit the copyright year unless the user asks.
 - **OS**: Windows 10 1809+ baseline. Mica and rounded-corner extras light up on Windows 11.
@@ -19,9 +19,9 @@ Self-contained persistent memory for engineers (human and AI) working in this re
 
 ```text
 Fluence.Wpf.sln
-├── Fluence.Wpf/             Control library (multi-TFM: net472 + net10.0-windows)
+├── Fluence.Wpf/             Control library (multi-TFM: net472 + net10.0-windows10.0.26100.0)
 ├── Fluence.Wpf.Demo/        Gallery app (net472 + net10.0-windows10.0.26100.0) - visual verification for all controls
-├── Fluence.Wpf.Demo.Mvvm/   MVVM Task Manager demo (net10.0-windows) - CommunityToolkit.Mvvm example
+├── Fluence.Wpf.Demo.Mvvm/   MVVM Task Manager demo (net10.0-windows10.0.26100.0) - CommunityToolkit.Mvvm example
 └── Fluence.Wpf.Tests/       MSTest v3.2 suite (multi-TFM)
 ```
 
@@ -68,13 +68,15 @@ Every `.cs` file in the library, demo, and tests starts with the BSD 3-Clause he
 **Suppressions in `.editorconfig`** - do not re-enable without discussion:
 - `IDE0056` / `IDE0057` - index/range operators (net472 runtime gap)
 - `CA1307` / `CA1310` / `CA1847` / `CA1866` - string ordinal/span overloads (net472 API gap)
-- SonarAnalyzer: `S103`, `S104`, `S107`, `S109`, `S1067`, `S1121`, `S1449`, `S1659`, `S3358`, `S3458`, `S3532`, `S3869`
+- SonarAnalyzer: `S103`, `S104`, `S107`, `S109`, `S1067`, `S1121`, `S1449`, `S1659`, `S3358`, `S3458`, `S3869`
 
 **Per-library suppressions** (in `Fluence.Wpf.csproj` `<NoWarn>`):
 - `SYSLIB1045` - regex source generator (not available on `net472`)
-- `IDE0330` - `using` alias preference (style override)
+- `IDE0330` - `System.Threading.Lock` preference (not available on `net472`)
 - `S1244` - floating-point equality (necessary for pixel math)
 - `VSTHRD001` - task/thread analyzer (WPF dispatcher pattern conflict)
+
+Project-level `<NoWarn>` entries must be preceded by a `slopwatch-ignore: SW005` comment explaining why the suppression is still necessary. Remove obsolete suppressions instead of documenting them.
 
 Prefer `EventArgs.Empty`, `nameof(...)`, explicit `readonly`, and immutable helpers. **Never** use inline `#pragma warning disable` except in exceptional third-party interop cases.
 
@@ -223,7 +225,7 @@ When adding a new control or materially changing an existing one:
 ## 6. Testing
 
 - **Framework**: MSTest v3.2 via `Microsoft.NET.Test.Sdk`.
-- **TFMs**: `net472` **and** `net10.0-windows`; both must pass.
+- **TFMs**: `net472` **and** `net10.0-windows10.0.26100.0`; both must pass.
 - **Parallelization**: `[assembly: DoNotParallelize]` (`DisableParallelization.cs`). WPF's shared `ResourceDictionary` / storyboard sealing is not thread-safe across parallel fixtures.
 - **STA**: `WpfTestSta` in the test project owns a single STA thread + `Dispatcher`. All UI-touching work goes through `WpfTestSta.Invoke(...)` / `RunOnStaThread(...)`.
 - **Application**: `WpfTestSta.EnsureApplication()` creates an `Application` with `ShutdownMode.OnExplicitShutdown` so tests do not tear it down.
@@ -267,7 +269,7 @@ dotnet test    Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug
 - 16 gallery pages: Home, Icons, Typography, Buttons, Selection, Inputs, Forms, Data, Data binding, Trees, Menus, Navigation, Tabs, Layout, Status, and Accessibility.
 - Run: `dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -f net472` or `dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -f net10.0-windows10.0.26100.0`.
 
-### Fluence.Wpf.Demo.Mvvm (MVVM Task Manager, net10.0-windows)
+### Fluence.Wpf.Demo.Mvvm (MVVM Task Manager, net10.0-windows10.0.26100.0)
 
 - Minimal Task Manager demonstrating `FluenceWindow` + Fluence controls with **zero code-behind**.
 - Uses **CommunityToolkit.Mvvm** 8.4: `[ObservableProperty]`, `[RelayCommand(CanExecute=nameof(CanAdd))]`, `partial void OnXxxChanged` source-generated callbacks.
@@ -330,11 +332,17 @@ When you are editing this repository, you are acting as a **senior C#/.NET WPF e
 6. **Docs synced**: public changes update `CHANGELOG.md`, and any of `README.md` / `docs/controls.md` / `docs/theming.md` that a consumer would rely on.
 7. **Scope discipline**: do not touch unrelated files or rename things unless explicitly asked; do not commit without the user's explicit request.
 
+### Consumer build compatibility
+
+`Fluence.Wpf` has adopted the stricter consumer build requirements used by PSADT for release gating: warnings as errors, `latest-all` analyzers, code style enforcement, banned APIs, XML documentation generation, and the `net472` plus `net10.0-windows10.0.26100.0` build matrix. Treat the stricter consumer policy as authoritative for release conformance. If this repo drifts from it, correct the drift unless an exception is explicit, documented in this handbook or the affected project file, and approved by the user.
+
+Consumer build compatibility is a release gate. For build-policy, public API, project metadata, resource-copy, or packaging changes that can affect downstream consumption, verify the standalone Fluence build and the current release-gate consumer build. PSADT-specific paths or build artifacts may be cited only as release-gate evidence; do not make this handbook depend on consumer-local layout.
+
 ---
 
 ## 12. Exclusions (apply to _this_ handbook)
 
-- No filesystem paths, build steps, or deployment artifacts specific to a downstream consumer product.
+- No filesystem paths, build steps, or deployment artifacts specific to a downstream consumer product, except concise release-gate evidence when validating consumer build compatibility.
 - No endorsement of, or dependency on, any particular third-party WPF library; keep comparisons, migration notes, and naming advice generic.
 - No references to external agent bundles, skill packs, or remote tooling that are not already part of this repository.
 - No speculative roadmap items; everything in this file must reflect code that exists on the current branch.
@@ -373,8 +381,8 @@ WORKFLOW:
  3. If the change is visual or behavioural, cite the authority from §4 that justifies it.
  4. For any new control, follow §5 (Control authoring checklist) exactly.
  5. For any theme / brush change, update the matching entries in Theme.{Light|Dark|HighContrast}.xaml AND Brushes.xaml together; never one without the other.
- 6. TDD: add or extend an MSTest before writing implementation. Run just that test on net10 first (fast feedback), then both TFMs.
- 7. dotnet build Fluence.Wpf.sln -c Debug - 0 errors / 0 warnings on net472 + net10.0-windows.
+ 6. TDD: add or extend an MSTest before writing implementation. Run just that test on `net10.0-windows10.0.26100.0` first (fast feedback), then both TFMs.
+ 7. dotnet build Fluence.Wpf.sln -c Debug - 0 errors / 0 warnings on net472 + net10.0-windows10.0.26100.0.
  8. dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug - all tests pass on both TFMs; pre-existing KNOWN_ISSUES.md failures unchanged.
  9. Update docs: CHANGELOG.md (always), docs/*.md (when the public surface changes), KNOWN_ISSUES.md (when a gap is opened or closed).
 10. Stage changes; show diffs; wait for the user's explicit commit instruction.
@@ -471,18 +479,19 @@ A new or updated sample page is done only when:
 <claude-mem-context>
 # Memory Context
 
-# [Fluence.Wpf] recent context, 2026-05-15 3:59am EDT
+# [Fluence.Wpf] recent context, 2026-05-20 1:45pm EDT
 
 Legend: 🎯session 🔴bugfix 🟣feature 🔄refactor ✅change 🔵discovery ⚖️decision 🚨security_alert 🔐security_note
 Format: ID TIME TYPE TITLE
 Fetch details: get_observations([IDs]) | Search: mem-search skill
 
-Stats: 50 obs (17,085t read) | 129,849t work | 87% savings
+Stats: 50 obs (28,785t read) | 212,724t work | 86% savings
 
 ### May 11, 2026
 S80 Remove PSADT-related section (§13.2) from documentation; user asking about applying additional Change B (one-liner in §10 about docs/plans/ as transient plan files) (May 11, 4:09 PM)
 S81 Verification that AGENTS.md has been cleaned up after removing PSADT-related section (§13.2) (May 11, 4:18 PM)
 S82 User encountered ultraplan session creation failure with bundle upload 502 error; Claude advised connecting GitHub account on claude.ai/code (May 11, 4:18 PM)
+S83 Explore Fluence.Wpf demo application structure and create an implementation plan to bring all 17 gallery content pages into visual parity with GalleryHomePage, fix dark-mode contrast on GalleryColorsPage, and fix DemoSampleControl Expander border. (May 11, 4:46 PM)
 S85 Fix customization evaluation diagnostics (May 11, 4:58 PM)
 ### May 12, 2026
 S86 Visual Design Polish — WinUI3 Look & Feel Alignment for Fluent.Wpf codebase. Revise all pages to use #272727 background, update DemoSampleControl with #202020 surfaces and #323232 code sections, replace top ToggleSwitch with Settings gear icon, redesign layout to match WinUI Settings patterns, fix Visual Focus state cutoff, and update KNOWN_ISSUES and CHANGELOG. (May 12, 12:44 AM)
@@ -491,72 +500,117 @@ S88 Collapse public surface of theme runtime—consolidate ApplicationThemeManag
 ### May 14, 2026
 S89 Refactor MainWindow navigation state management by creating a dedicated DemoNavigationShellState module to centralize pane display mode, open/closed state, and chrome button visibility logic. (May 14, 10:45 AM)
 S90 User initiated quit command (t/quit/qi) to exit the Claude Code session (May 14, 3:02 PM)
-### May 15, 2026
-3737 12:41a 🔵 ProgressBar.cs ApplyFillBrushForMode() shows brush logic mismatch requiring correction
-3738 " 🔵 ProgressBar.cs UpdateFillWidth completes animation lifecycle with version tracking and completion handler
-3739 12:42a 🔵 NavigationView.xaml item template shows adaptive layout handling for Left/LeftCompact/Top pane modes
-3740 " 🔵 NavigationView_Left_ContentBorder test validates 8,0,0,0 corner radius and 1,1,0,0 stroke layer architecture
-3741 " 🔵 GalleryTabsPage_PlacementSampleUsesEqualHeaderWidths test validates both Left and Bottom TabControl placement samples
-3742 " 🔵 ControlTests.BackgroundParity defines comprehensive theme-aware brush resolution tests for demo surfaces
-3743 " 🔵 ProgressBar ProgressMode test coverage validates Paused and Error color modes in demo and tests
-3744 " 🔵 NavigationView LeftCompact template confirms 8,0,0,0 corner radius and stroke layer architecture
-3745 " 🔵 BackgroundParity test validates 19 system and demo brushes resolve across all three themes with deterministic accent
-3746 1:27a 🔵 Fluence.Wpf test suite passing with 34 tests
-3747 " 🔵 Fluence.Wpf.Tests project targets net472 and net10.0-windows
-3748 " 🔵 Fluence.Wpf.Demo application targets net472 and net10.0-windows
-3749 " 🔵 Fluence.Wpf net472 build artifacts present with test platform dependencies
-3750 " 🔵 vstest.console.exe not found in .NET 10.0.203 SDK directory
-3751 " 🔵 vstest.console.exe available in Visual Studio installations
-3752 1:28a 🔵 dotnet vstest command syntax error with path parameter format
-3753 " 🔵 dotnet vstest failed to load MSTest.TestAdapter.dll for net472 assembly
-3754 " 🔵 Test filter Name~ProgressBar_DefaultStyle_UsesThreePixelTrackHeight does not match any tests in net472
-3755 " 🔵 dotnet vstest cannot load System.Runtime v9.0.0.0 for net472 test discovery
-3756 " 🔵 dotnet test for net472 with isolated output path initiated; restore phase completed
-3757 " 🔵 Fluence.Wpf.Tests.dll not found in fluence-codex-isolated output directory
-3758 " 🔵 project.assets.json generated in isolated build directory
-3759 " 🔵 dotnet test command failed with PowerShell XML deserialization error
-3760 " 🔵 dotnet build failed: BaseIntermediateOutputPath requires trailing slash
-3761 " 🔵 dotnet build for net472 failed with 669 compiler errors related to WPF code generation
-3762 " 🔵 Git repository shows modified files across test, demo, and control implementations
-3763 " 🔵 Git whitespace and line ending issues detected in modified files
-3765 1:29a ✅ Git diff stat shows net 107 insertions across 19 modified files
-3767 " 🔵 ControlTests.BackgroundParity implements brush validation tests for shared demo resources
-3768 " 🔵 ProgressBar control implements 3-pixel track height and paused mode caution brush styling
-3769 " 🔵 GalleryTabsPage demonstrates TabStripPlacement with left-positioned tabs; test validates placement sample
-3770 " 🔵 Regex search failed due to unescaped quotes in pattern
-3771 " 🔵 ProgressRing applies SystemFillColorCautionBrush to both arc strokes in paused state
-3772 1:30a 🔵 Demo-specific brush promotion was removed; demo surfaces use native Fluence brush resources
-3773 " 🔵 NavigationView content border uses zero corner radius for square pane styling; tests validate visual properties
-3774 " 🔵 DemoSampleControl.xaml uses DemoSampleSourceExpanderStyle; PowerShell XML parsing error occurred
-3775 2:21a 🔵 Icons page uses unique Grid-based layout while other gallery pages use SmoothScrollViewer + StackPanel pattern
-3776 2:22a ✅ Added GalleryPageContentGridStyle to shared styles
-3777 " ✅ Icons page restructured to match standard gallery page layout pattern
-3778 " ✅ Updated Icons page code-behind to reference PageContent instead of PageRoot
-3779 2:23a ✅ Updated Icons page tests to validate new nested Grid structure
-3780 " ✅ Added catalog card styling validation to Icons page test
-3781 " ✅ Added AssertIconBrush helper method to test utilities
-3782 3:31a ✅ NavigationView XAML Corner Radius Updated to 8,0,0,0
-3783 " ✅ NavigationView Control Tests Updated for Rounded Corner Radius
-**3784** " 🔵 **Corner Radius Changes Verified Across NavigationView Implementation and Tests**
-Verification search confirmed that the NavigationView control theme file has been consistently updated with the 8,0,0,0 corner radius across all four border elements (spanning both CompactPaneDisplayMode and ExpandedPaneDisplayMode templates). The corresponding unit tests have been properly renamed and updated to validate the new rounded corner design. No remnants of the old square corner configuration remain in the modified files.
-~302t 🔍 831
+### May 20, 2026
+3900 12:02p 🔵 GitHub Actions CI/CD pipeline configured for multi-TFM build, test, pack, and artifact storage
+3901 " 🔵 Getting-started and documentation workflows confirmed
+3902 " 🔵 Test Coverage of Demo Sample Sources and WinUI Parity References
+3903 " 🔵 Screenshot generation and documentation gap identified
+3904 " 🔵 BSD 3-Clause license configured and enforced across source files
+3905 12:03p 🔵 GalleryColorsPage Demo Infrastructure - Fluence.Wpf Color Token Organization
+3906 " 🔵 GalleryColorsPage Demo - Resource Reference Binding Pattern Throughout UI Construction
+3907 " 🔵 Fluence.Wpf AGENTS.md fully read - comprehensive handbook for WPF control library
+3908 " 🔵 PSADT repository contains copy-of-Fluence.Wpf under lib/Fluence.Wpf
+3909 " 🔵 Library Brush Resources Defined in Themes/Brushes/Brushes.xaml - Two-Level Indirection Pattern
+3910 12:04p 🔵 Fluence.Wpf build policy configuration in Directory.Build.props
+3911 " 🔵 Button Control Template - Comprehensive State Management via Appearance Property and Multi-Triggers
+3912 " 🔵 PSADT root Directory.Build.props mirrors Fluence.Wpf build policy identically
+3913 " 🔵 Button Code-Behind - Appearance/Icon/CornerRadius Properties and Text Truncation ToolTip Logic
+3914 " 🔵 Fluence.Wpf project-level .editorconfig hardening: all analyzer categories set to error severity
+3916 " 🔵 PSADT BannedSymbols.txt extends Fluence.Wpf's ban list with PSADT-specific overrides
+3917 " 🔵 Test Suite: DemoResourceCleanupTests - Validates Demo Styles Don't Shadow Library Color Tokens
+3918 " 🔵 Test Infrastructure: MergeDemoSharedStyles Helper Loads Demo ResourceDictionary via Pack URI
+3919 " 🔵 Fluence.Wpf copy in PSADT lib/ inherits PSADT root policy via MSBuild hierarchy; local props files are overrides
+3920 " 🔵 Test Suite: DemoResourceCleanupTests - Validates Demo Styles Appended After 5 Fluence Theme Dictionaries
+3921 " 🔵 PSADT.UserInterface is the sole PSADT consumer of Fluence.Wpf via ProjectReference at relative path
+3924 12:05p 🔵 Fluence.Wpf copy in PSADT lib/ contains violations of both Fluence.Wpf and PSADT BannedSymbols constraints
+3925 " ✅ PSADT copy of Directory.Build.targets deletes all XML docs unconditionally; Fluence.Wpf standalone preserves library docs
+3926 " ✅ PSADT copy of Fluence.Wpf.csproj removes version/packaging metadata and design-time resources
+3927 " 🔵 Fluence.Wpf copy in PSADT lib/ is a complete snapshot with identical core build infrastructure except targeted deletions and overrides
+3928 " 🔵 Fluence.Wpf AGENTS.md contains explicit portability rule but no PSADT-specific build guidance
+3929 12:06p 🔵 PSADT root Directory.Build.props differs from Fluence.Wpf in company metadata, version, and resource paths
+3930 " 🔵 PSADT.slnx solution file explicitly includes lib/Fluence.Wpf/Fluence.Wpf.csproj at project slot [0]
+3931 " 🔵 Internal helper classes identified in Fluence.Wpf Controls
+3932 " 🔵 Fluence.Wpf public control catalog mapped across 9 functional areas
+3933 " 🔵 README.md defines Fluence.Wpf library scope and feature set across 40+ Fluent-styled controls
+3934 12:07p 🔵 docs/controls.md provides detailed feature documentation for key Fluence controls
+3935 " 🔵 Documentation cross-references confirm control inventory and styling patterns
+3936 " 🔵 Fluence.Wpf/README.md defines library structure and maintenance conventions
+3937 " 🔵 Fluence.Wpf.csproj configured for XML documentation generation and NuGet packaging
+3938 12:08p 🔵 Docs Site Architecture: Hugo + DocFX + GitHub Pages Feasible
+3939 " 🔵 XMLDoc audit reveals systematic gaps in parameter and return-value documentation across public API
+3940 " 🔵 PSADT Conformance: Build Config Mismatches Prevent Direct Fluence Copy
+3941 " 🔵 Automation peer methods use inheritdoc to delegate documentation to base class
+3942 " 🔵 DropDownButtonAutomationPeer constructor has summary but missing owner parameter documentation
+3943 " 🔵 Demo-to-Library Promotion Audit: No Release Blockers Found
+3944 " 🔵 Refined XMLDoc gap analysis (inheritdoc-aware) reveals 25 methods with documentation gaps across 5 types
+3945 " 🔵 Source Code Sample Accuracy: 49/50 Complete, 1 Critical Broken
+3946 " 🔵 Automation peer classes use primary constructor syntax (C# 12) with undocumented owner parameters
+3947 12:09p 🔵 Fluence.Wpf public API surface inventory: 84 types, 701 declared members across 5 namespaces
+**3948** " 🔵 **XMLDoc Coverage: 701 Members Enumerated, 8 High-Severity Gaps Found**
+Workstream 5 completed the XMLDoc coverage audit. The library's public surface is substantial: 84 types and 701 members across five namespaces. Compiler enforcement is in place and builds pass cleanly, but content quality has gaps.
 
-**3785** " 🔵 **NavigationView and GalleryIconsPage Tests Pass After Corner Radius Changes**
-Unit tests validating the NavigationView corner radius changes executed successfully. Both the Left and LeftCompact content border tests passed, confirming the 8,0,0,0 corner radius is correctly applied. Additionally, the GalleryIconsPage tests passed, indicating the icon catalog virtualization and shared gallery page layout functionality remain intact after the changes.
-~288t 🔍 1,107
+Three high-severity issues require attention:
 
-**3786** 3:59a 🔵 **Collapse button visibility control mechanism identified**
-The collapse button (PART_PaneToggleButton) visibility is controlled by the IsPaneToggleButtonVisible dependency property. The coercion logic in NavigationView.cs:687-690 correctly prevents visibility in Top mode but doesn't enforce it to always be true in Left or LeftCompact modes. The XAML templates have triggers that respect IsPaneToggleButtonVisible, meaning if this property is being set to false or coerced to false somewhere, the button will disappear even in Left/LeftCompact modes. The issue is likely that IsPaneToggleButtonVisible is being set to false programmatically or through binding in Left/LeftCompact contexts where it should remain visible, or the default value isn't being set to true when switching to these modes.
-~406t 🔍 10,141
+1. **ApplicationThemeManager.Apply() stale docs**: The documentation states later calls "only swap the theme color dictionary," but the actual implementation reloads and promotes brushes during non-high-contrast swaps. The method parameters (theme, backdrop, updateAccent) lack param documentation entirely, making the method's exact behavior opaque to API consumers.
 
-**3787** " 🔵 **IsPaneToggleButtonVisible default value is true**
-The IsPaneToggleButtonVisible property is correctly initialized with a default value of true and includes a coercion callback. Since the default is true and the coercion should only force false in Top mode, the button should remain visible in Left and LeftCompact modes unless something is explicitly setting it to false or the coercion logic has a bug that incorrectly forces false in these modes.
-~278t 🔍 3,714
+2. **FluenceWindow.TitleBar nullability conflict**: The dependency property defaults to null, the setter accepts null in implementation, but the public property and SetTitleBar() method are typed as non-null UIElement. This creates a contract ambiguity—can the API accept null or not? Documentation must clarify whether null means "clear the title bar" or if a separate API is needed.
 
-**3788** " 🔵 **CoerceIsPaneToggleButtonVisible logic verified correct**
-The coercion logic is correct: it only forces IsPaneToggleButtonVisible to false when in Top mode. For Left and LeftCompact modes, it preserves the baseValue. When the pane mode changes, CoerceTopPaneProperties is called which re-applies the coercion. The bug must be that something is setting IsPaneToggleButtonVisible to false as a base value in Left/LeftCompact contexts, or there's an issue with how the XAML template responds to the property change.
-~279t 🔍 1,729
+3. **Automation peer constructor param gaps**: Eight automation peers use C# 12 primary constructors but omit the owner parameter from their XMLDoc (only a summary appears, no param tag). This makes it unclear what "owner" represents in UI Automation context.
+
+Four medium-severity gaps round out the findings:
+- Attached property accessors in TextBlockExtensions are inconsistently documented (some complete, others missing param/returns).
+- ListView helper accessors (AnimateRemove, ParentIsItemSelectable) have summaries but no param/returns documentation.
+- ApplicationAccentColorManager light-ramp naming (Light1, Light3 both "lightest") conflicts with actual palette order.
+- Public documentation incorrectly lists two internal helpers (CaptionButtonChrome, WindowPolicy) as consumer-facing API, and one source reference (FluentTypography) points to a stale path.
+
+A recommended XMLDoc style template is provided covering controls, dependency properties, events, enums, attached properties, and automation patterns aligned with WinUI conventions already used in Fluence.
+
+No source edits or docs changes were made; findings are ready for a follow-up documentation pass.
+~1159t 🔍 5,753
+
+**3949** " 🔵 **ApplicationAccentColorManager exposes accent color ramp with Light1/Light2/Light3 variants and brush resources**
+ApplicationAccentColorManager implements a comprehensive accent color management system generating a ramp of tints/shades from a base accent color. The public Color properties (SystemAccentColorLight1/2/3) expose the generated ramp, while private GenerateAccentRamp method orchestrates HsvColorHelper to compute the variants. Resource dictionaries are populated with both Color and Brush (SolidColorBrush) variants for XAML consumption. This establishes a pattern: core managers (ApplicationAccentColorManager, ApplicationThemeManager) should have complete parameter and return documentation as they define public properties and lifecycle methods consumed by application initialization code.
+~518t 🔍 1,416
+
+**3950** " ✅ **Orchestration Plan: Four Workstreams Completed, Reconciliation In Progress**
+The orchestration plan tracked five major phases. The first four phases have completed: orchestrator loaded skills, spawned six audit sub-agents across independent workstreams, and collected reports from all five agents who returned (Workstream 3 Slopwatch status not yet visible in this message).
+
+All sub-agent audits are now complete with evidence-backed tables and prioritized findings. The orchestrator is now in the reconciliation phase, where overlaps between workstreams will be identified, PSADT conformance risks will be elevated, and a consolidated prioritized fix queue will be assembled for the final report.
+
+Key inter-workstream dependencies identified so far:
+- Workstream 2 (sample drift) and Workstream 5 (XMLDoc naming) have overlap: stale sample API names cross-check against current public types.
+- Workstream 4 (PSADT conformance) flags SDK floor and build-artifact mismatches as release blockers that override lower-priority polish.
+- Workstream 5 XMLDoc findings feed into Workstream 6 API reference generation readiness.
+- Workstream 1 (demo promotion) and Workstream 2 (sample correctness) share governance of what belongs in the library vs. what stays demo-only.
+
+No implementation, commits, or source edits have been made; all work remains audit-only as scoped.
+~649t 🛠️ 2,401
+
+**3951** " 🔵 **Slopwatch Hygiene Scan: 1 Warning Found in Project-Level Suppressions**
+Workstream 3 ran the slopwatch static hygiene analyzer on Fluence.Wpf with no-baseline mode. The scan found exactly one warning: project-level NoWarn suppressions in Fluence.Wpf.csproj lack a slopwatch-ignore justification comment.
+
+The suppressed diagnostics are SYSLIB1045 (likely System library warning), IDE0330 (code style), S1244 (Sonar rule), and VSTHRD001 (threading). While the suppressions may have been intentional at the time they were added, their current purpose is unclear. Because they apply at project level, they can mask underlying issues across the entire control library package.
+
+The recommendation is a three-step policy review: first, decide whether the suppressions are still required for release; second, if intentional, add a slopwatch-ignore comment to document the accepted policy; third, if any suppression is obsolete, remove it and fix the underlying diagnostic through normal build gates.
+
+This is a medium-risk item because suppressed diagnostics can hide problems in a shipped library, but it is not a release blocker—the build currently succeeds cleanly with the suppressions in place.
+
+No implementation was performed; the audit is complete.
+~515t 🔍 925
+
+**3952** " ✅ **Orchestration Plan: Reconciliation Complete, Consolidated Report Generation In Progress**
+The orchestration plan has reached its final phase. All six sub-agent workstreams have returned their audit reports. The orchestrator has now completed the reconciliation phase and is assembling the consolidated release-prep audit report.
+
+Key cross-workstream reconciliation findings:
+- Workstream 2 (PersonPicture sample broken) and Workstream 5 (XMLDoc naming) have minimal overlap; PersonPicture is a sample-structure bug, not a docs issue.
+- Workstream 4 (PSADT SDK floor mismatch) is elevated as a release blocker that must be addressed before PSADT can successfully consume the Fluence release.
+- Workstream 5 XMLDoc findings (ApplicationThemeManager stale behavior, FluenceWindow nullability conflict) are high-severity but not release blockers if documented accurately.
+- Workstream 6 docs-site blockers (migration-guide.md missing, release.md broken link) must be fixed before public docs launch.
+- Workstream 2 nullable warnings in displayed code samples (GalleryDataBindingPage, GalleryStatusPage, GalleryAccessibilityPage) are polish items for a post-release sample-quality pass.
+
+No implementation has been performed; all findings remain audit-only as scoped.
+~592t 🛠️ 330
 
 
-Access 130k tokens of past work via get_observations([IDs]) or mem-search skill.
+Access 213k tokens of past work via get_observations([IDs]) or mem-search skill.
 </claude-mem-context>

@@ -47,7 +47,7 @@ The banner above is checked in under `assets/`. Theme-specific gallery captures 
 
 | Area                | Types                                                                                                                                       |
 |---------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
-| Window              | `FluenceWindow`, `TitleBar`, `CaptionButtonChrome`, `WindowPolicy`                                                                          |
+| Window              | `FluenceWindow`, `TitleBar`                                                                                                                  |
 | Basic actions       | `Button`, `HyperlinkButton`, `DropDownButton`, `SplitButton`, `RepeatButton`, `ToggleButton`                                                |
 | Selection           | `CheckBox`, `RadioButton`, `ToggleSwitch`, `ComboBox`, `Slider`, `NumberBox`                                                                |
 | Text                | `TextBox`, `PasswordBox`, `TextBlockExtensions`                                                                                             |
@@ -62,6 +62,8 @@ The banner above is checked in under `assets/`. Theme-specific gallery captures 
 | Icons               | `FontIcon`                                                                                                                                  |
 
 ## Theming
+
+`CaptionButtonChrome` and `WindowPolicy` are internal implementation details used by `FluenceWindow`; they are not consumer-facing controls.
 
 - **ApplicationTheme**: `Light`, `Dark`, `HighContrast`, `Auto`.
 - **BackdropType**: `None`, `Auto`, `Mica`, `Acrylic`, `Tabbed` (for `FluenceWindow`).

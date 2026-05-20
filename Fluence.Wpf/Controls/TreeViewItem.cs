@@ -28,6 +28,9 @@
 
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Media3D;
 
 namespace Fluence.Wpf.Controls
 {
@@ -43,6 +46,7 @@ namespace Fluence.Wpf.Controls
         // Template part names for the header and items host elements in the control template.
         private const string PART_Header = "PART_Header";
         private const string PART_ItemsHost = "ItemsHost";
+        private const string SelectionCheckBoxPart = "SelectionCheckBox";
 
         /// <summary>
         /// Initializes static members of the TreeViewItem class and overrides the default style metadata.
@@ -113,6 +117,30 @@ namespace Fluence.Wpf.Controls
             }
         }
 
+        /// <inheritdoc />
+        protected override void OnPreviewKeyDown(KeyEventArgs e)
+        {
+            if (e.Key == Key.Space && ToggleMultipleSelectionFromKeyboard())
+            {
+                e.Handled = true;
+                return;
+            }
+
+            base.OnPreviewKeyDown(e);
+        }
+
+        /// <inheritdoc />
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            if (e.Key == Key.Space && ToggleMultipleSelectionFromKeyboard())
+            {
+                e.Handled = true;
+                return;
+            }
+
+            base.OnKeyDown(e);
+        }
+
         internal void CoerceSelectionForOwner(TreeView? owner)
         {
             if (owner is null)
@@ -142,7 +170,7 @@ namespace Fluence.Wpf.Controls
             bool? isChecked = (bool?)e.NewValue;
             if (owner.SelectionMode != TreeViewSelectionMode.Multiple)
             {
-                if (isChecked != false)
+                if (isChecked != false && !item._isKeyboardSelectionToggle)
                 {
                     item.SetCurrentValue(IsSelectionCheckedProperty, false);
                 }
@@ -153,16 +181,79 @@ namespace Fluence.Wpf.Controls
             owner.UpdateSelectionFromItem(item, isChecked);
         }
 
+        internal bool ToggleMultipleSelectionFromKeyboard()
+        {
+            TreeView? owner = FindOwningTreeView();
+            if (owner is null)
+            {
+                CheckBox? selectionCheckBox = GetTemplateChild(SelectionCheckBoxPart) as CheckBox;
+                if (selectionCheckBox?.Visibility != Visibility.Visible)
+                {
+                    return false;
+                }
+            }
+            else if (owner.SelectionMode != TreeViewSelectionMode.Multiple)
+            {
+                return false;
+            }
+
+            bool nextState = IsSelectionChecked != true;
+            _isKeyboardSelectionToggle = true;
+            try
+            {
+                SetValue(IsSelectionCheckedProperty, nextState);
+                if (GetTemplateChild(SelectionCheckBoxPart) is CheckBox checkBox)
+                {
+                    checkBox.SetValue(System.Windows.Controls.Primitives.ToggleButton.IsCheckedProperty, nextState);
+                }
+            }
+            finally
+            {
+                _isKeyboardSelectionToggle = false;
+            }
+
+            return true;
+        }
+
         private TreeView? FindOwningTreeView()
         {
             ItemsControl? owner = ItemsControlFromItemContainer(this);
+            if (owner is null)
+            {
+                return FindAncestorTreeView(this);
+            }
 
             while (owner is TreeViewItem treeViewItem)
             {
                 owner = ItemsControlFromItemContainer(treeViewItem);
             }
 
-            return owner as TreeView;
+            return owner as TreeView ?? FindAncestorTreeView(this);
         }
+
+        private static TreeView? FindAncestorTreeView(DependencyObject source)
+        {
+            DependencyObject? current = LogicalTreeHelper.GetParent(source) ?? GetVisualParent(source);
+            while (current is not null)
+            {
+                if (current is TreeView treeView)
+                {
+                    return treeView;
+                }
+
+                current = LogicalTreeHelper.GetParent(current) ?? GetVisualParent(current);
+            }
+
+            return null;
+        }
+
+        private static DependencyObject? GetVisualParent(DependencyObject source)
+        {
+            return source is Visual or Visual3D
+                ? VisualTreeHelper.GetParent(source)
+                : null;
+        }
+
+        private bool _isKeyboardSelectionToggle;
     }
 }

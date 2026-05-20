@@ -32,7 +32,8 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryLayoutPage : UserControl
     {
-        private const string BorderStackPanelXamlSource = @"<ui:Border
+        private const string BorderStackPanelXamlSource = @"<!-- Intentionally partial layout snippet for a page that already declares the Fluence xmlns. -->
+<ui:Border
     Padding=""14""
     Background=""{DynamicResource CardBackgroundFillColorSecondaryBrush}""
     BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
@@ -48,7 +49,8 @@ namespace Fluence.Wpf.Demo.Pages
     </ui:StackPanel>
 </ui:Border>";
 
-        private const string DockPanelXamlSource = @"<DockPanel LastChildFill=""True"">
+        private const string DockPanelXamlSource = @"<!-- Intentionally partial layout snippet for a page that already declares the Fluence xmlns. -->
+<DockPanel LastChildFill=""True"">
     <ui:Button DockPanel.Dock=""Right""
                Appearance=""Accent""
                Content=""Apply"" />
@@ -56,7 +58,8 @@ namespace Fluence.Wpf.Demo.Pages
                Text=""DockPanel keeps the command aligned to the edge."" />
 </DockPanel>";
 
-        private const string ExpanderXamlSource = @"<ui:Expander
+        private const string ExpanderXamlSource = @"<!-- Intentionally partial layout snippet for a page that already declares the Fluence xmlns. -->
+<ui:Expander
     x:Name=""AdvancedOptionsExpander""
     Header=""Advanced options"">
     <TextBlock Text=""Expander shows secondary settings only when useful.""
@@ -64,7 +67,8 @@ namespace Fluence.Wpf.Demo.Pages
                TextWrapping=""Wrap"" />
 </ui:Expander>";
 
-        private const string DockPanelExpanderXamlSource = @"<ui:Expander x:Name=""DockPanelOptionsExpander"">
+        private const string DockPanelExpanderXamlSource = @"<!-- Intentionally partial layout snippet for a page that already declares the Fluence xmlns. -->
+<ui:Expander x:Name=""DockPanelOptionsExpander"">
     <ui:Expander.Header>
         <DockPanel LastChildFill=""True"">
             <ui:Button DockPanel.Dock=""Right""

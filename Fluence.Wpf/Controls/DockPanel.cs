@@ -119,7 +119,7 @@ namespace Fluence.Wpf.Controls
                         available = new Size(available.Width, Math.Max(0, available.Height - desired.Height - Spacing));
                         break;
                     default:
-                        break;
+                        continue;
                 }
             }
             maxWidth = Math.Max(maxWidth, accumulatedWidth);
@@ -194,7 +194,7 @@ namespace Fluence.Wpf.Controls
                             break;
                         }
                     default:
-                        break;
+                        continue;
                 }
             }
             if (lastFill && count > 0)

@@ -85,7 +85,7 @@ namespace Fluence.Wpf.Demo.Pages
 
         private void UpdateBrandBanner(ApplicationTheme theme)
         {
-            Uri bannerUri = theme == ApplicationTheme.Light ? LightBannerUri : DarkBannerUri;
+            Uri bannerUri = theme is ApplicationTheme.Light or ApplicationTheme.HighContrast ? LightBannerUri : DarkBannerUri;
             if (Equals(_currentBannerUri, bannerUri))
             {
                 return;

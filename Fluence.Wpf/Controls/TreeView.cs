@@ -29,6 +29,9 @@
 using System.Collections;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Media3D;
 
 namespace Fluence.Wpf.Controls
 {
@@ -132,6 +135,18 @@ namespace Fluence.Wpf.Controls
             }
         }
 
+        /// <inheritdoc />
+        protected override void OnPreviewKeyDown(KeyEventArgs e)
+        {
+            if (e.Key == Key.Space && ToggleMultipleSelectionItem(e.OriginalSource as DependencyObject))
+            {
+                e.Handled = true;
+                return;
+            }
+
+            base.OnPreviewKeyDown(e);
+        }
+
         internal void UpdateSelectionFromItem(TreeViewItem item, bool? isSelected)
         {
             if (_updatingSelectionChecks)
@@ -205,6 +220,46 @@ namespace Fluence.Wpf.Controls
             {
                 treeView.ApplySelectionModeToItems();
             }
+        }
+
+        private bool ToggleMultipleSelectionItem(DependencyObject? source)
+        {
+            if (SelectionMode != TreeViewSelectionMode.Multiple)
+            {
+                return false;
+            }
+
+            TreeViewItem? item = FindTreeViewItemFromSource(source);
+            if (item is null)
+            {
+                return false;
+            }
+
+            item.SetCurrentValue(TreeViewItem.IsSelectionCheckedProperty, item.IsSelectionChecked != true);
+            return true;
+        }
+
+        private static TreeViewItem? FindTreeViewItemFromSource(DependencyObject? source)
+        {
+            DependencyObject? current = source;
+            while (current is not null)
+            {
+                if (current is TreeViewItem item)
+                {
+                    return item;
+                }
+
+                current = LogicalTreeHelper.GetParent(current) ?? GetVisualParent(current);
+            }
+
+            return null;
+        }
+
+        private static DependencyObject? GetVisualParent(DependencyObject source)
+        {
+            return source is Visual or Visual3D
+                ? VisualTreeHelper.GetParent(source)
+                : null;
         }
 
         private static void ApplySelectionModeToContainers(ItemsControl owner)

@@ -120,8 +120,7 @@ namespace Fluence.Wpf.Demo.Pages.Menus
 
         private void MenuBar_Click(object sender, RoutedEventArgs e)
         {
-            var element = sender as FrameworkElement;
-            var action = element is not null ? element.Tag as string : null;
+            string action = sender is FrameworkElement element && element.Tag is string tag ? tag : string.Empty;
             MenuBarResultLabel.Text = string.Format(""Last menu action: {0}"", string.IsNullOrWhiteSpace(action) ? ""None"" : action);
         }
     }
@@ -204,8 +203,7 @@ namespace Fluence.Wpf.Demo.Pages.Menus
 
         private void ContextMenu_Click(object sender, RoutedEventArgs e)
         {
-            var element = sender as FrameworkElement;
-            var action = element is not null ? element.Tag as string : null;
+            string action = sender is FrameworkElement element && element.Tag is string tag ? tag : string.Empty;
             ContextMenuResultLabel.Text = string.Format(""Last action: {0}"", string.IsNullOrWhiteSpace(action) ? ""None"" : action);
         }
     }

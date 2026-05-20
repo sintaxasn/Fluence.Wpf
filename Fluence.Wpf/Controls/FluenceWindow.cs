@@ -288,12 +288,15 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Gets or sets custom content displayed in the title bar region.
-        /// When null and <see cref="ExtendsContentIntoTitleBar"/> is true, a default title bar with icon and title is shown.
+        /// Gets or sets custom content displayed in the title bar region, or <see langword="null"/> to use the default title bar.
         /// </summary>
-        public UIElement TitleBar
+        /// <remarks>
+        /// Assigning <see langword="null"/> clears custom title-bar content. When <see cref="ExtendsContentIntoTitleBar"/>
+        /// is <c>true</c>, the control template falls back to the built-in icon and title presentation.
+        /// </remarks>
+        public UIElement? TitleBar
         {
-            get => (UIElement)GetValue(TitleBarProperty);
+            get => (UIElement?)GetValue(TitleBarProperty);
             set => SetValue(TitleBarProperty, value);
         }
 
@@ -439,10 +442,10 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Sets a UIElement as the custom title bar content. The element becomes the
-        /// drag region for the window. Call with null to revert to the default title bar.
+        /// Sets custom title-bar content, or clears it to restore the default title bar.
         /// </summary>
-        public void SetTitleBar(UIElement titleBar)
+        /// <param name="titleBar">The custom title-bar element, or <see langword="null"/> to clear custom content.</param>
+        public void SetTitleBar(UIElement? titleBar)
         {
             TitleBar = titleBar;
         }

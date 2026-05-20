@@ -29,8 +29,12 @@
 using Fluence.Wpf.Controls;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using WpfBorder = System.Windows.Controls.Border;
+using WpfButton = System.Windows.Controls.Button;
+using WpfToggleButton = System.Windows.Controls.Primitives.ToggleButton;
 
 namespace Fluence.Wpf.Tests
 {
@@ -97,6 +101,72 @@ namespace Fluence.Wpf.Tests
                 Assert.IsNotNull(divider, "Divider (Rectangle) must be present in SplitButton template.");
                 Assert.IsNotNull(divider.Fill, "Divider.Fill must not be null.");
                 w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void SplitButton_KeyboardFocusShowsFocusedHalfVisual()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                SplitButton button = new()
+                {
+                    Content = "Send",
+                    Width = 160
+                };
+                Window window = new() { Content = button, Width = 260, Height = 120 };
+
+                try
+                {
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    _ = button.ApplyTemplate();
+                    WpfButton? primaryButton = button.Template.FindName("PART_PrimaryButton", button) as WpfButton;
+                    WpfToggleButton? secondaryButton = button.Template.FindName("PART_SecondaryButton", button) as WpfToggleButton;
+                    WpfBorder? primaryOuter = FindVisualChildByName<WpfBorder>(button, "PrimaryFocusOuter");
+                    WpfBorder? primaryInner = FindVisualChildByName<WpfBorder>(button, "PrimaryFocusInner");
+                    WpfBorder? secondaryOuter = FindVisualChildByName<WpfBorder>(button, "SecondaryFocusOuter");
+                    WpfBorder? secondaryInner = FindVisualChildByName<WpfBorder>(button, "SecondaryFocusInner");
+
+                    Assert.IsNotNull(primaryButton, "SplitButton template should expose PART_PrimaryButton.");
+                    Assert.IsNotNull(secondaryButton, "SplitButton template should expose PART_SecondaryButton.");
+                    Assert.IsNotNull(primaryOuter, "SplitButton template should expose PrimaryFocusOuter.");
+                    Assert.IsNotNull(primaryInner, "SplitButton template should expose PrimaryFocusInner.");
+                    Assert.IsNotNull(secondaryOuter, "SplitButton template should expose SecondaryFocusOuter.");
+                    Assert.IsNotNull(secondaryInner, "SplitButton template should expose SecondaryFocusInner.");
+
+                    _ = Keyboard.Focus(primaryButton);
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.AreEqual(1.0, primaryOuter.Opacity, 0.1,
+                        "Keyboard focus on the primary half should show the primary outer focus visual.");
+                    Assert.AreEqual(1.0, primaryInner.Opacity, 0.1,
+                        "Keyboard focus on the primary half should show the primary inner focus visual.");
+                    Assert.AreEqual(0.0, secondaryOuter.Opacity, 0.1,
+                        "Keyboard focus on the primary half should not show the secondary focus visual.");
+
+                    _ = Keyboard.Focus(secondaryButton);
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.AreEqual(0.0, primaryOuter.Opacity, 0.1,
+                        "Keyboard focus on the secondary half should hide the primary focus visual.");
+                    Assert.AreEqual(1.0, secondaryOuter.Opacity, 0.1,
+                        "Keyboard focus on the secondary half should show the secondary outer focus visual.");
+                    Assert.AreEqual(1.0, secondaryInner.Opacity, 0.1,
+                        "Keyboard focus on the secondary half should show the secondary inner focus visual.");
+                }
+                finally
+                {
+                    Keyboard.ClearFocus();
+                    window.Close();
+                }
             });
         }
 

@@ -41,6 +41,7 @@ namespace Fluence.Wpf.Automation
     /// (primary half) and the ExpandCollapse pattern (flyout half).
     /// </summary>
     /// <remarks>Initializes a new instance.</remarks>
+    /// <param name="owner">The <see cref="SplitButton"/> control represented by this automation peer.</param>
     public class SplitButtonAutomationPeer(SplitButton owner) : FrameworkElementAutomationPeer(owner), IInvokeProvider, IExpandCollapseProvider
     {
         /// <inheritdoc />

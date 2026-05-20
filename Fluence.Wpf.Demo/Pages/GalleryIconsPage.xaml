@@ -69,7 +69,7 @@
                 x:Name="IconCatalogCard"
                 Grid.Row="4"
                 Padding="{DynamicResource DemoSampleCardPadding}"
-                Background="{DynamicResource ControlFillColorInputActiveBrush}"
+                Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
                 CornerRadius="8">

@@ -41,6 +41,8 @@
         TargetType="TextBlock">
         <Setter Property="FontSize" Value="12" />
         <Setter Property="FontWeight" Value="Regular" />
+        <Setter Property="LineHeight" Value="16" />
+        <Setter Property="LineStackingStrategy" Value="BlockLineHeight" />
     </Style>
 
     <!--  Body - 14 / Regular  -->
@@ -48,8 +50,9 @@
         x:Key="BodyTextBlockStyle"
         BasedOn="{StaticResource {x:Type TextBlock}}"
         TargetType="TextBlock">
-        <Setter Property="LineHeight" Value="14" />
         <Setter Property="FontWeight" Value="Regular" />
+        <Setter Property="LineHeight" Value="20" />
+        <Setter Property="LineStackingStrategy" Value="BlockLineHeight" />
     </Style>
 
     <!--  Body Strong - 14 / SemiBold  -->
@@ -57,17 +60,20 @@
         x:Key="BodyStrongTextBlockStyle"
         BasedOn="{StaticResource {x:Type TextBlock}}"
         TargetType="TextBlock">
-        <Setter Property="LineHeight" Value="14" />
         <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="LineHeight" Value="20" />
+        <Setter Property="LineStackingStrategy" Value="BlockLineHeight" />
     </Style>
 
-    <!--  Body Large - 18 / SemiBold  -->
+    <!--  Body Large - 18 / Regular  -->
     <Style
         x:Key="BodyLargeTextBlockStyle"
         BasedOn="{StaticResource {x:Type TextBlock}}"
         TargetType="TextBlock">
         <Setter Property="FontSize" Value="18" />
-        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="FontWeight" Value="Regular" />
+        <Setter Property="LineHeight" Value="24" />
+        <Setter Property="LineStackingStrategy" Value="BlockLineHeight" />
     </Style>
 
     <!--  Subtitle - 20 / SemiBold  -->
@@ -77,6 +83,8 @@
         TargetType="TextBlock">
         <Setter Property="FontSize" Value="20" />
         <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="LineHeight" Value="28" />
+        <Setter Property="LineStackingStrategy" Value="BlockLineHeight" />
     </Style>
 
     <!--  Title - 28 / SemiBold  -->
@@ -86,6 +94,8 @@
         TargetType="TextBlock">
         <Setter Property="FontSize" Value="28" />
         <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="LineHeight" Value="36" />
+        <Setter Property="LineStackingStrategy" Value="BlockLineHeight" />
     </Style>
 
     <!--  Title Large - 40 / SemiBold  -->
@@ -95,6 +105,8 @@
         TargetType="TextBlock">
         <Setter Property="FontSize" Value="40" />
         <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="LineHeight" Value="52" />
+        <Setter Property="LineStackingStrategy" Value="BlockLineHeight" />
     </Style>
 
     <!--  Display - 68 / SemiBold  -->
@@ -104,6 +116,8 @@
         TargetType="TextBlock">
         <Setter Property="FontSize" Value="68" />
         <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="LineHeight" Value="92" />
+        <Setter Property="LineStackingStrategy" Value="BlockLineHeight" />
     </Style>
 
 </ResourceDictionary>

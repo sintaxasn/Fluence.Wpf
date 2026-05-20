@@ -15,6 +15,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - PowerShell demo scripts now declare their strict-mode smoke-test parameters and use current `FluenceWindow` backdrop/corner properties.
 - Typography and Settings demo pages now keep source snippets and compact settings layouts aligned with the live UI.
 - Status and Navigation demo source snippets now match the live ProgressBar, ProgressRing, and compact navigation samples.
+- Data page PersonPicture source now uses a self-contained `UserControl` XAML root that matches its displayed C# code-behind.
+- Demo sample source validation now catches displayed XAML/C# namespace, class, and snippet hygiene regressions.
+- XML documentation now clarifies theme-apply behavior, title-bar null clearing, accent ramp naming, automation peer owners, and attached-property accessors.
+- Public docs now resolve the migration and release checklist links and keep internal window-chrome helpers out of the consumer control catalog.
 - `NavigationView` now keeps its pane collapse button visible in Left and LeftCompact modes without duplicating shell title-bar chrome.
 - Removed tracked C# Dev Kit `.lscache` files and ignored them.
 

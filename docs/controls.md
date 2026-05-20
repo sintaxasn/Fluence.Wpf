@@ -44,7 +44,7 @@ xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
 
 | Area                | Types                                                                                                                              |
 |---------------------|------------------------------------------------------------------------------------------------------------------------------------|
-| Window              | `FluenceWindow`, `TitleBar`, `CaptionButtonChrome`, `WindowPolicy`                                                                 |
+| Window              | `FluenceWindow`, `TitleBar`                                                                                                         |
 | Basic actions       | `Button`, `HyperlinkButton`, `DropDownButton`, `SplitButton`, `RepeatButton`, `ToggleButton`                                       |
 | Selection           | `CheckBox`, `RadioButton`, `ToggleSwitch`, `ComboBox`, `Slider`, `NumberBox`                                                       |
 | Text                | `TextBox`, `PasswordBox`, `TextBlock` + `TextBlockExtensions`                                                                      |
@@ -63,6 +63,8 @@ Tab strip and scroll bar styling are provided via merged themes (see `Themes/Gen
 ## FluenceWindow
 
 `FluenceWindow` provides the Fluent window chrome, caption buttons, backdrop, and title-bar content slot. `MinWidth` is caller-controlled and remains unset by default; the default title bar height is 68 px. When `ExtendsContentIntoTitleBar="True"`, app content can render behind the title bar; NavigationView left panes reserve title-bar height before their first item when no explicit header is provided.
+
+`CaptionButtonChrome` and `WindowPolicy` are internal implementation details behind `FluenceWindow` caption button and DWM policy decisions. They are covered by tests, but they are not normal consumer controls.
 
 `TitleBar` is the reusable shell title-bar control used by the gallery. It provides back and pane-toggle buttons (`BackRequested`, `PaneToggleRequested`, and matching command properties), icon/title/subtitle presentation, and left/right/content slots. Interactive template buttons opt into `WindowChrome.IsHitTestVisibleInChrome`; app-specific content such as search boxes should do the same.
 
@@ -116,7 +118,7 @@ When `IsClickable` is true:
            Text="Fluence.Wpf" />
 ```
 
-Supported values: `Caption`, `Body`, `BodyStrong`, `BodyLarge`, `Subtitle`, `Title`, `TitleLarge`, `Display` (see `Fluence.Wpf/Enums/FluentTypography.cs`).
+Supported values: `Caption`, `Body`, `BodyStrong`, `BodyLarge`, `Subtitle`, `Title`, `TitleLarge`, `Display` (see `Fluence.Wpf/FluentTypography.cs`).
 
 The attached property applies the corresponding named style from `Themes/Typography/Typography.xaml` (`BodyTextBlockStyle`, `TitleTextBlockStyle`, and so on). Keep type-ramp metrics in that dictionary so code, templates, and consumers share one source of truth.
 

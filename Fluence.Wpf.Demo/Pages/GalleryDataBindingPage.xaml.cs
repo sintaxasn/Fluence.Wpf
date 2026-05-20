@@ -119,6 +119,7 @@ namespace Fluence.Wpf.Demo.Pages
 
         private const string ObservableCollectionListViewCSharpSource = @"using System;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -146,7 +147,7 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
                 return;
             }
 
-            var text = (NewItemBox.Text ?? string.Empty).Trim();
+            string text = (NewItemBox.Text ?? string.Empty).Trim();
             if (string.IsNullOrWhiteSpace(text))
             {
                 return;
@@ -168,8 +169,7 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
 
         private void RemoveItem_Click(object sender, RoutedEventArgs e)
         {
-            var selected = BoundListView.SelectedItem as DataBindingSampleItem;
-            if (selected is not null)
+            if (BoundListView.SelectedItem is DataBindingSampleItem selected)
             {
                 BoundListView.AnimateRemove(selected, null);
             }
@@ -180,7 +180,7 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
             _items.Add(new DataBindingSampleItem
             {
                 Name = name,
-                AddedAt = DateTime.Now.ToString(""HH:mm:ss"")
+                AddedAt = DateTime.Now.ToString(""HH:mm:ss"", CultureInfo.CurrentCulture)
             });
         }
 
@@ -188,9 +188,9 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
 
     public sealed class DataBindingSampleItem
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
-        public string AddedAt { get; set; }
+        public string AddedAt { get; set; } = string.Empty;
     }
 }
 ";
@@ -294,7 +294,7 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
                 return;
             }
 
-            var count = SelectionModeListView.SelectedItems.Count;
+            int count = SelectionModeListView.SelectedItems.Count;
             if (count == 0)
             {
                 SelectionCountLabel.Text = ""Selected: none"";
@@ -383,9 +383,9 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
 
     public sealed class DataBindingTemplateItem
     {
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
-        public string AddedAt { get; set; }
+        public string AddedAt { get; set; } = string.Empty;
     }
 }
 ";

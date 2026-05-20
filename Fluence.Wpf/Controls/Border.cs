@@ -85,7 +85,7 @@ namespace Fluence.Wpf.Controls
                     CornerRadius = new CornerRadius(0);
                     break;
                 default:
-                    break;
+                    return;
             }
         }
     }
