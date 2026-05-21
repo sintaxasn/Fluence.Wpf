@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-05-21
+
+### Added
+
+- Documentation site project under `docs-site/` that publishes the conceptual docs in `docs/` together with a DocFX API reference to GitHub Pages at [sintaxasn.github.io/Fluence.Wpf](https://sintaxasn.github.io/Fluence.Wpf/). The Hugo Hextra theme is themed to match the Fluence Win11 visual identity and the deploy workflow `.github/workflows/docs.yml` runs independently of the existing build pipeline.
+
 ### Fixed
 
 - Accent application now raises `AccentColorChanged` once per apply after accent-dependent resources are updated.
@@ -59,5 +65,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Mica and Acrylic are not captured by `RenderTargetBitmap`.
 - `NavigationView` exposes routing events and back events, but library-owned page history remains consumer-owned by design.
 
-[Unreleased]: https://github.com/sintaxasn/fluence.wpf/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/sintaxasn/fluence.wpf/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/sintaxasn/fluence.wpf/compare/v0.1.0...v0.5.0
 [0.1.0]: https://github.com/sintaxasn/fluence.wpf/releases/tag/v0.1.0

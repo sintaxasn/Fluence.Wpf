@@ -1,6 +1,11 @@
-﻿# Theming
+﻿---
+title: Theming
+linkTitle: Theming
+description: Dictionary slots, canonical token families, accent ramps, backdrops, and high contrast in Fluence.Wpf.
+weight: 20
+---
 
-Design reference: **WinUI 3** resource key names and state behaviour. Fluence.Wpf targets WPF, not WinUI, but keys, state tables, and brush roles mirror `Common_themeresources.xaml` so XAML you read in the WinUI source tree maps one-to-one.
+Fluence.Wpf follows WinUI 3 naming and state behavior for theme resources, while staying fully WPF-native. If you already work with WinUI keys, most token names and control roles will look familiar.
 
 ## Merge order (application resources)
 
@@ -32,7 +37,7 @@ Fluence.Wpf defines the full WinUI 3 token ramp; these are the ones most commonl
 - **Fill**: `ControlFillColorDefault`, `ControlFillColorSecondary`, `ControlFillColorTertiary`, `ControlFillColorInputActive`, `ControlFillColorDisabled`, `AccentFillColorDefault` / `Secondary` / `Tertiary` / `Disabled`, `SubtleFillColorSecondary` / `Tertiary`, `LayerFillColorDefault`, `CardBackgroundFillColorDefault`.
 - **Stroke**: `ControlStrokeColorDefault` / `Secondary`, **`ControlStrongStrokeColorDefault`** (radio / check-box rings), **`ControlStrongStrokeColorDisabled`**, `CardStrokeColorDefault`, `DividerStrokeColorDefault`, `FocusStrokeColorOuter` / `Inner`.
 - **Background**: `SolidBackgroundFillColorBase`, `ApplicationBackgroundColor`.
-- **Window chrome**: `WindowCloseButtonBackgroundPointerOver`, `WindowCloseButtonBackgroundPressed`, `WindowCloseButtonForegroundPointerOver`.
+- **Window controls**: `WindowCloseButtonBackgroundPointerOver`, `WindowCloseButtonBackgroundPressed`, `WindowCloseButtonForegroundPointerOver`.
 - **High contrast aliases**: `SystemColorWindowTextColorBrush`, `SystemColorWindowColorBrush`, `SystemColorButtonFaceColorBrush`, `SystemColorButtonTextColorBrush`, `SystemColorHighlightColorBrush`, `SystemColorHighlightTextColorBrush`, `SystemColorHotlightColorBrush`, `SystemColorGrayTextColorBrush`. These brush-only aliases map directly to WPF `SystemColors` so consumers can preview or bind Windows high contrast roles without hard-coding platform resources.
 
 Each color token has a matching `*Brush` resource in `Brushes.xaml` (for example `ControlStrongStrokeColorDefaultBrush`) that binds back to the color via `DynamicResource` - consume the brush keys from XAML, not the raw color keys.

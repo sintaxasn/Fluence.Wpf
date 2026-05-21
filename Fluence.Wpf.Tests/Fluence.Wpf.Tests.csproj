@@ -23,4 +23,8 @@
     <ProjectReference Include="..\Fluence.Wpf.Demo\Fluence.Wpf.Demo.csproj" />
   </ItemGroup>
 
+  <ItemGroup Condition="'$(TargetFramework)' == 'net10.0-windows10.0.26100.0'">
+    <ProjectReference Include="..\Fluence.Wpf.Demo.Mvvm\Fluence.Wpf.Demo.Mvvm.csproj" />
+  </ItemGroup>
+
 </Project>

@@ -13,8 +13,6 @@
     <Product>Fluence.Wpf</Product>
     <Title>Fluence.Wpf</Title>
     <PackageId>Fluence.Wpf</PackageId>
-    <VersionPrefix>0.4.0</VersionPrefix>
-    <VersionSuffix>preview</VersionSuffix>
     <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/sintaxasn/Fluence.Wpf</PackageProjectUrl>
     <RepositoryUrl>https://github.com/sintaxasn/Fluence.Wpf</RepositoryUrl>

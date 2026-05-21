@@ -1,0 +1,33 @@
+{{- /*
+  readroot - inline a markdown file from the repository root.
+
+  Parameters
+    file              Repository-relative path of the file to include
+                      (e.g. "CHANGELOG.md" or "KNOWN_ISSUES.md").
+                      The file must be exposed through the
+                      assets/_root mount declared in hugo.toml.
+    skipFirstHeading  Optional. When "true", the leading H1 heading
+                      is stripped before rendering so the page's own
+                      front-matter title is the only document title.
+
+  Usage:
+    {{< readroot file="CHANGELOG.md" skipFirstHeading="true" >}}
+*/ -}}
+
+{{- $file := .Get "file" -}}
+{{- $skip := eq (.Get "skipFirstHeading") "true" -}}
+{{- $resource := resources.Get (printf "_root/%s" $file) -}}
+
+{{- if $resource -}}
+  {{- $content := $resource.Content -}}
+  {{- if $skip -}}
+    {{- $content = replaceRE `^\s*#\s+[^\n]+\n+` "" $content -}}
+  {{- end -}}
+  {{- $.Page.RenderString $content -}}
+{{- else -}}
+  <div class="hextra-callout hextra-callout-warning">
+    <strong>Missing source:</strong> <code>{{ $file }}</code> could not be loaded.
+    Confirm the file is mounted under <code>assets/_root</code> in
+    <code>hugo.toml</code>.
+  </div>
+{{- end -}}

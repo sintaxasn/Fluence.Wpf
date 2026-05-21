@@ -1,0 +1,30 @@
+# DocFX API filter for Fluence.Wpf.
+#
+# Includes the public Fluence.Wpf namespaces and intentionally hides
+# internal helpers (CaptionButtonChrome, WindowPolicy, etc.) that the
+# library's public docs already declare as implementation details.
+
+apiRules:
+  - include:
+      uidRegex: ^Fluence\.Wpf$
+      type: Namespace
+  - include:
+      uidRegex: ^Fluence\.Wpf\.Controls$
+      type: Namespace
+  - include:
+      uidRegex: ^Fluence\.Wpf\.Helpers$
+      type: Namespace
+  - include:
+      uidRegex: ^Fluence\.Wpf\.Automation$
+      type: Namespace
+  - exclude:
+      uidRegex: ^Fluence\.Wpf\.Native(\.|$)
+      type: Namespace
+  - exclude:
+      uidRegex: ^System\.
+      type: Namespace
+  - exclude:
+      hasAttribute:
+        uid: System.ComponentModel.EditorBrowsableAttribute
+        ctorArguments:
+          - System.ComponentModel.EditorBrowsableState.Never

@@ -1,0 +1,73 @@
+{
+  "$schema": "https://raw.githubusercontent.com/dotnet/docfx/main/schemas/docfx.schema.json",
+  "metadata": [
+    {
+      "src": [
+        {
+          "src": "../..",
+          "files": [
+            "Fluence.Wpf/Fluence.Wpf.csproj"
+          ]
+        }
+      ],
+      "dest": "obj/api",
+      "outputFormat": "mref",
+      "properties": {
+        "TargetFramework": "net10.0-windows10.0.26100.0",
+        "Configuration": "Release"
+      },
+      "filter": "filterConfig.yml",
+      "memberLayout": "samePage",
+      "namespaceLayout": "nested",
+      "noRestore": false,
+      "shouldSkipMarkup": false
+    }
+  ],
+  "build": {
+    "content": [
+      {
+        "src": "obj/api",
+        "files": [
+          "**.yml"
+        ]
+      },
+      {
+        "files": [
+          "index.md"
+        ]
+      }
+    ],
+    "output": "_site",
+    "template": [
+      "default",
+      "modern",
+      "templates/fluence"
+    ],
+    "globalMetadata": {
+      "_appName": "Fluence.Wpf",
+      "_appTitle": "Fluence.Wpf API Reference",
+      "_appLogoPath": "../assets/fluence-wpf-banner-light.svg",
+      "_appFaviconPath": "../favicon.svg",
+      "_appFooter": "<span>Generated from <a href=\"https://github.com/sintaxasn/Fluence.Wpf\">Fluence.Wpf</a> XML documentation. Conceptual docs at <a href=\"../docs/\">/docs/</a>.</span>",
+      "_enableSearch": true,
+      "_disableContribution": false,
+      "_gitContribute": {
+        "repo": "https://github.com/sintaxasn/Fluence.Wpf",
+        "branch": "main"
+      },
+      "pdf": false
+    },
+    "globalMetadataFiles": [],
+    "fileMetadataFiles": [],
+    "markdownEngineName": "markdig",
+    "noLangKeyword": false,
+    "keepFileLink": false,
+    "cleanupCacheHistory": false,
+    "disableGitFeatures": false,
+    "sitemap": {
+      "baseUrl": "https://sintaxasn.github.io/Fluence.Wpf/api/",
+      "changefreq": "weekly",
+      "priority": 0.6
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{{- /*
+  Custom link render hook for Fluence.Wpf docs.
+
+  Goals:
+    1. Source docs under ../docs/ keep using plain markdown links such
+       as [text](theming.md). Resolve them through Page.GetPage so Hugo
+       returns the correct pretty URL (e.g. /docs/theming/).
+    2. Repo-root references such as [AGENTS.md](../AGENTS.md) become
+       absolute GitHub links because the consumer docs site does not
+       publish maintainer-only content.
+    3. Known repo-root files that ARE published (CHANGELOG.md,
+       KNOWN_ISSUES.md) are rewritten to their site URLs.
+    4. External links open in a new tab with rel="noopener noreferrer".
+*/ -}}
+
+{{- $url := .Destination -}}
+{{- $title := .Title -}}
+{{- $text := .Text -}}
+{{- $page := .Page -}}
+
+{{- /* Detect anchor fragment, if any. */ -}}
+{{- $parts := split $url "#" -}}
+{{- $path := index $parts 0 -}}
+{{- $anchor := "" -}}
+{{- if gt (len $parts) 1 -}}
+  {{- $anchor = printf "#%s" (index $parts 1) -}}
+{{- end -}}
+
+{{- $isExternal := or (hasPrefix $url "http://") (hasPrefix $url "https://") (hasPrefix $url "mailto:") (hasPrefix $url "tel:") -}}
+
+{{- if not $isExternal -}}
+  {{- if hasPrefix $path "../" -}}
+    {{- $stripped := strings.TrimPrefix "../" $path -}}
+    {{- if eq $stripped "CHANGELOG.md" -}}
+      {{- $url = printf "/changelog/%s" $anchor -}}
+    {{- else if eq $stripped "KNOWN_ISSUES.md" -}}
+      {{- $url = printf "/docs/known-issues/%s" $anchor -}}
+    {{- else -}}
+      {{- /* Maintainer-only or out-of-section file: link back to GitHub. */ -}}
+      {{- $url = printf "https://github.com/sintaxasn/Fluence.Wpf/blob/main/%s%s" $stripped $anchor -}}
+      {{- $isExternal = true -}}
+    {{- end -}}
+  {{- else if and (ne $path "") (hasSuffix (lower $path) ".md") -}}
+    {{- /* Same-section markdown reference. Resolve via Hugo so pretty
+           URLs and section-relative pathing work consistently. */ -}}
+    {{- $target := $page.GetPage $path -}}
+    {{- if $target -}}
+      {{- $url = printf "%s%s" $target.RelPermalink $anchor -}}
+    {{- else -}}
+      {{- /* Fallback: strip .md and trust the rendered URL. */ -}}
+      {{- $clean := strings.TrimSuffix ".md" $path -}}
+      {{- $url = printf "%s/%s" $clean $anchor -}}
+    {{- end -}}
+  {{- end -}}
+{{- end -}}
+
+<a href="{{ $url | safeURL }}"
+{{- with $title }} title="{{ . }}"{{ end -}}
+{{- if $isExternal }} target="_blank" rel="noopener noreferrer"{{ end -}}>
+{{- $text | safeHTML -}}
+</a>

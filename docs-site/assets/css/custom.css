@@ -1,0 +1,1131 @@
+/* ============================================================================
+ * Fluence.Wpf documentation site - brand overlay for Hextra.
+ *
+ * Tokens here are mirrored from the runtime library so the docs site stays
+ * visually coherent with the WPF gallery:
+ *
+ *   - Color tokens          : Fluence.Wpf/Themes/Colors/Theme.{Light,Dark}.xaml
+ *   - Default accent        : Fluence.Wpf/Themes/Accent/Accent.xaml  (#0078D4)
+ *   - Typography            : Fluence.Wpf/Themes/Typography/Typography.xaml
+ *   - Control corner radius : Fluence.Wpf/Themes/Brushes/Brushes.xaml
+ *
+ * Keep this file thin: only override what Hextra resolves to non-Fluent
+ * defaults. Anything else should stay on the Hextra defaults so we inherit
+ * upstream improvements.
+ * ========================================================================== */
+
+/* --------------------------------------------------------------------------
+ * 1. Brand accent (Hextra primary HSL trio).
+ * -------------------------------------------------------------------------- */
+:root {
+  --primary-hue: 207;
+  --primary-saturation: 100%;
+  --primary-lightness: 41%;
+}
+
+/* --------------------------------------------------------------------------
+ * 2. Typography - match the Fluent Segoe UI Variable stack used in the
+ *    WPF library. Web-safe fallbacks cover non-Windows hosts.
+ * -------------------------------------------------------------------------- */
+:root {
+  --hextra-font-family-sans: "Segoe UI Variable Display", "Segoe UI Variable",
+    "Segoe UI", -apple-system, BlinkMacSystemFont, system-ui, "Inter",
+    "Helvetica Neue", Arial, sans-serif;
+  --hextra-font-family-mono: "Cascadia Code", "Cascadia Mono", "JetBrains Mono",
+    SFMono-Regular, Menlo, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+html,
+body {
+  font-family: var(--hextra-font-family-sans);
+  font-feature-settings: "ss01", "cv01";
+  max-width: 100%;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+code,
+kbd,
+pre,
+samp,
+.font-mono {
+  font-family: var(--hextra-font-family-mono);
+}
+
+/* Fluent type-ramp tweaks for headings and body. */
+.content h1,
+.hextra-hero-headline {
+  letter-spacing: 0;
+  font-weight: 600;
+  text-wrap: balance;
+}
+
+.content h2 {
+  letter-spacing: 0;
+  text-wrap: balance;
+}
+
+.content p,
+.content li {
+  line-height: 1.6;
+}
+
+/* --------------------------------------------------------------------------
+ * 3. Surface tokens - background, card, and border alignment to WinUI 3.
+ *
+ *    Light bases (#FAFAFA / #F3F3F3 / #FFFFFF) come from Theme.Light.xaml.
+ *    Dark base (#202020), elevated card (#272727), and translucent border
+ *    overlays come from Theme.Dark.xaml.
+ * -------------------------------------------------------------------------- */
+:root,
+html.light {
+  --hextra-bg: 0 0% 99%;
+  --hextra-bg-soft: 0 0% 96%;
+  --hextra-card-bg: 0 0% 100%;
+  --hextra-card-border: 220 13% 91%;
+  --hextra-divider: 220 13% 91%;
+  --hextra-text-strong: 220 14% 11%;
+  --hextra-text-default: 220 14% 17%;
+  --hextra-text-muted: 220 8% 38%;
+  --hextra-code-bg: 220 14% 96%;
+  --fluence-accent: 207 100% 41%;
+  --fluence-accent-hover: 207 100% 36%;
+  --fluence-hero-surface: 0 0% 100%;
+  --fluence-soft-surface: 210 20% 98%;
+  --fluence-shadow: 220 20% 20% / 0.12;
+}
+
+html.dark {
+  --hextra-bg: 0 0% 13%;          /* #202020 SolidBackgroundFillColorBase */
+  --hextra-bg-soft: 0 0% 10%;
+  --hextra-card-bg: 0 0% 15%;     /* card elevation ~ #272727 */
+  --hextra-card-border: 0 0% 25%;
+  --hextra-divider: 0 0% 23%;
+  --hextra-text-strong: 0 0% 100%;
+  --hextra-text-default: 0 0% 95%;
+  --hextra-text-muted: 0 0% 70%;
+  --hextra-code-bg: 0 0% 11%;
+  --fluence-accent: 207 78% 61%;
+  --fluence-accent-hover: 207 86% 68%;
+  --fluence-hero-surface: 0 0% 15%;
+  --fluence-soft-surface: 0 0% 10%;
+  --fluence-shadow: 0 0% 0% / 0.45;
+}
+
+/* Apply tokens to Hextra-rendered surfaces. */
+body {
+  background-color: hsl(var(--hextra-bg));
+  color: hsl(var(--hextra-text-default));
+}
+
+.hextra-card,
+.hextra-feature-card,
+.callout,
+.hextra-callout,
+blockquote {
+  background-color: hsl(var(--hextra-card-bg));
+  border-color: hsl(var(--hextra-card-border));
+  border-radius: 8px; /* OverlayCornerRadius from Brushes.xaml */
+  box-shadow: 0 1px 2px hsl(var(--fluence-shadow));
+}
+
+pre code,
+.highlight pre {
+  background-color: hsl(var(--hextra-code-bg)) !important;
+  border-radius: 8px;
+}
+
+#content,
+.content,
+.hextra-code-block,
+.highlight,
+pre {
+  max-width: 100%;
+}
+
+#content {
+  overflow-x: clip;
+  width: 100%;
+}
+
+.hextra-code-block,
+.highlight,
+pre {
+  overflow-x: auto;
+}
+
+.hextra-nav-container,
+.hextra-max-navbar-width,
+.hextra-max-page-width {
+  max-width: 100%;
+  min-width: 0;
+}
+
+.content a,
+.content :not(pre) > code {
+  overflow-wrap: anywhere;
+}
+
+:not(pre) > code {
+  background-color: hsl(var(--hextra-code-bg));
+  border-radius: 4px; /* ControlCornerRadius */
+  padding: 0.125rem 0.375rem;
+  font-size: 0.875em;
+}
+
+/* --------------------------------------------------------------------------
+ * 4. Buttons and interactive surfaces - Fluent corner radius and accent.
+ * -------------------------------------------------------------------------- */
+.hextra-hero-button,
+.btn,
+button,
+input[type="submit"] {
+  border-radius: 4px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  transition: background-color 167ms cubic-bezier(0.8, 0, 0, 1),
+    transform 167ms cubic-bezier(0.8, 0, 0, 1);
+}
+
+.hextra-hero-button:hover {
+  transform: none;
+}
+
+/* --------------------------------------------------------------------------
+ * 5. Focus ring - mirror ControlStrongStrokeColorDefault for keyboard nav.
+ * -------------------------------------------------------------------------- */
+:focus-visible {
+  outline: 2px solid hsl(var(--primary-hue), var(--primary-saturation),
+    var(--primary-lightness));
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* --------------------------------------------------------------------------
+ * 6. Navbar wordmark - keep the SVG banner crisp at any density.
+ * -------------------------------------------------------------------------- */
+.hextra-navbar .hextra-logo img,
+.hextra-navbar .hextra-logo svg {
+  height: 28px;
+  width: auto;
+  image-rendering: -webkit-optimize-contrast;
+}
+
+/* Rainbow accent bar that mirrors the Fluence wordmark stripes and the DocFX
+ * navbar. Hextra wraps the navbar in <nav class="hextra-nav-container">, but
+ * older releases use a plain <nav>; target both so the strip survives upstream
+ * markup changes. */
+.hextra-nav-container::after,
+header > nav:first-of-type::after {
+  content: "";
+  display: block;
+  height: 2px;
+  background-image: linear-gradient(
+    to right,
+    #d63b3b 0%,
+    #e0561e 14%,
+    #f2b600 28%,
+    #3fa86a 42%,
+    #1f7bc8 56%,
+    #3a46c8 70%,
+    #7a2dc8 84%,
+    #d63b3b 100%
+  );
+  opacity: 0.85;
+}
+
+/* --------------------------------------------------------------------------
+ * 7. Tables - Fluent surface treatment with subtle row separators.
+ * -------------------------------------------------------------------------- */
+.content table {
+  border-collapse: separate;
+  border-spacing: 0;
+  border: 1px solid hsl(var(--hextra-card-border));
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.content table th,
+.content table td {
+  border-bottom: 1px solid hsl(var(--hextra-divider));
+  padding: 0.625rem 0.875rem;
+}
+
+.content table thead th {
+  background-color: hsl(var(--hextra-bg-soft));
+  font-weight: 600;
+}
+
+.content table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* --------------------------------------------------------------------------
+ * 8. Screenshot framing - drop shadow matches WinUI Card stroke + elevation.
+ * -------------------------------------------------------------------------- */
+.content img[src*="images/screenshots/"] {
+  border-radius: 8px;
+  border: 1px solid hsl(var(--hextra-card-border));
+  box-shadow: 0 6px 18px hsl(0 0% 0% / 0.18);
+  max-width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+ * 9. Home page - documentation-first product surface using real gallery
+ *    captures from docs/screenshots/.
+ * -------------------------------------------------------------------------- */
+.fluence-home {
+  margin: 0 auto;
+  max-width: 1180px;
+  width: 100%;
+}
+
+.fluence-home > section + section {
+  margin-top: 2.75rem;
+}
+
+.fluence-front-brand {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0 0.75rem;
+}
+
+.fluence-front-brand img {
+  display: block;
+  height: auto;
+  max-width: min(520px, 90vw);
+  width: 100%;
+}
+
+.fluence-front-brand-dark {
+  display: none !important;
+}
+
+html.dark .fluence-front-brand-light {
+  display: none !important;
+}
+
+html.dark .fluence-front-brand-dark {
+  display: block !important;
+}
+
+.fluence-hero {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 1rem 0 3rem;
+  text-align: center;
+}
+
+.fluence-eyebrow {
+  align-items: center;
+  align-self: center;
+  background: hsl(var(--hextra-bg-soft));
+  border: 1px solid hsl(var(--hextra-card-border));
+  border-radius: 999px;
+  color: hsl(var(--hextra-text-muted));
+  display: inline-flex;
+  font-size: 0.875rem;
+  font-weight: 600;
+  gap: 0.5rem;
+  line-height: 1;
+  padding: 0.5rem 0.75rem;
+}
+
+.fluence-eyebrow span {
+  background: hsl(var(--fluence-accent));
+  border-radius: 999px;
+  display: inline-block;
+  height: 0.5rem;
+  width: 0.5rem;
+}
+
+.fluence-hero h1 {
+  color: hsl(var(--hextra-text-strong));
+  font-size: clamp(2.15rem, 3.8vw, 3.2rem);
+  font-weight: 650;
+  letter-spacing: 0;
+  line-height: 1.05;
+  margin: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  text-wrap: balance;
+}
+
+@media (min-width: 1100px) {
+  .fluence-hero h1 {
+    white-space: nowrap;
+  }
+}
+
+.fluence-hero-lede {
+  color: hsl(var(--hextra-text-muted));
+  font-size: 1.25rem;
+  line-height: 1.55;
+  margin: 0;
+  max-width: 880px;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.fluence-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.fluence-button {
+  align-items: center;
+  border-radius: 4px;
+  cursor: pointer;
+  display: inline-flex;
+  font-weight: 650;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0.75rem 1rem;
+  text-decoration: none;
+  transition:
+    background-color 167ms cubic-bezier(0.8, 0, 0, 1),
+    border-color 167ms cubic-bezier(0.8, 0, 0, 1),
+    color 167ms cubic-bezier(0.8, 0, 0, 1);
+}
+
+.fluence-button-primary {
+  background: hsl(var(--fluence-accent));
+  border: 1px solid hsl(var(--fluence-accent));
+  color: #ffffff;
+}
+
+.fluence-button-primary:hover {
+  background: hsl(var(--fluence-accent-hover));
+  border-color: hsl(var(--fluence-accent-hover));
+  color: #ffffff;
+}
+
+.fluence-button-secondary {
+  background: hsl(var(--fluence-hero-surface));
+  border: 1px solid hsl(var(--hextra-card-border));
+  color: hsl(var(--hextra-text-default));
+}
+
+.fluence-button-secondary:hover {
+  border-color: hsl(var(--fluence-accent));
+  color: hsl(var(--fluence-accent));
+}
+
+.fluence-hero-facts {
+  border-bottom: 1px solid hsl(var(--hextra-card-border));
+  border-top: 1px solid hsl(var(--hextra-card-border));
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0.75rem 0 0;
+  max-width: 880px;
+}
+
+.fluence-hero-facts div {
+  padding: 1rem 1.25rem;
+}
+
+.fluence-hero-facts div + div {
+  border-left: 1px solid hsl(var(--hextra-card-border));
+}
+
+.fluence-hero-facts dt {
+  color: hsl(var(--hextra-text-strong));
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.fluence-hero-facts dd {
+  color: hsl(var(--hextra-text-muted));
+  font-size: 0.925rem;
+  margin: 0.125rem 0 0;
+}
+
+.fluence-hero-visual {
+  aspect-ratio: 16 / 9;
+  background: hsl(var(--fluence-soft-surface));
+  border: 1px solid hsl(var(--hextra-card-border));
+  border-radius: 8px;
+  box-shadow: 0 18px 45px hsl(var(--fluence-shadow));
+  margin-top: 0.75rem;
+  max-height: 520px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.fluence-shot {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  width: 100%;
+}
+
+.fluence-shot-dark {
+  display: none;
+}
+
+html.dark .fluence-shot-light {
+  display: none;
+}
+
+html.dark .fluence-shot-dark {
+  display: block;
+}
+
+.fluence-paths,
+.fluence-screenshots {
+  padding: 1.5rem 0 0;
+}
+
+.fluence-section-heading {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 1rem;
+  max-width: 760px;
+  text-align: center;
+}
+
+.fluence-section-heading p {
+  color: hsl(var(--fluence-accent));
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  margin: 0 0 0.25rem;
+  text-transform: uppercase;
+}
+
+.fluence-section-heading h2 {
+  color: hsl(var(--hextra-text-strong));
+  font-size: 2rem;
+  font-weight: 650;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.fluence-path-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.fluence-card {
+  background: hsl(var(--fluence-hero-surface));
+  border: 1px solid hsl(var(--hextra-card-border));
+  border-radius: 8px;
+  box-shadow: 0 1px 2px hsl(var(--fluence-shadow));
+  color: hsl(var(--hextra-text-default));
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  min-height: 180px;
+  padding: 1.25rem;
+  text-decoration: none;
+  transition:
+    background-color 167ms cubic-bezier(0.8, 0, 0, 1),
+    border-color 167ms cubic-bezier(0.8, 0, 0, 1),
+    box-shadow 167ms cubic-bezier(0.8, 0, 0, 1);
+}
+
+.fluence-card:hover {
+  border-color: hsl(var(--fluence-accent));
+  box-shadow: 0 8px 22px hsl(var(--fluence-shadow));
+}
+
+.fluence-card-kicker {
+  color: hsl(var(--fluence-accent));
+  font-size: 0.8rem;
+  font-weight: 700;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.fluence-card strong {
+  color: hsl(var(--hextra-text-strong));
+  font-size: 1.1rem;
+  line-height: 1.3;
+}
+
+.fluence-card span:last-child {
+  color: hsl(var(--hextra-text-muted));
+  font-size: 0.925rem;
+  line-height: 1.55;
+}
+
+.fluence-screenshot-grid,
+.fluence-screenshot-row {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+.fluence-screenshot-grid figure,
+.fluence-screenshot-row figure {
+  background: hsl(var(--fluence-hero-surface));
+  border: 1px solid hsl(var(--hextra-card-border));
+  border-radius: 8px;
+  box-shadow: 0 1px 2px hsl(var(--fluence-shadow));
+  margin: 0;
+  overflow: hidden;
+}
+
+.fluence-screenshot-grid img,
+.fluence-screenshot-row img {
+  aspect-ratio: 16 / 10;
+  display: block;
+  height: auto;
+  object-fit: cover;
+  object-position: top center;
+  width: 100%;
+}
+
+.fluence-screenshot-grid figcaption,
+.fluence-screenshot-row figcaption {
+  color: hsl(var(--hextra-text-muted));
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.75rem 0.875rem;
+}
+
+.fluence-screenshot-row {
+  margin: 1rem 0 1.5rem;
+}
+
+.fluence-section-link {
+  margin: 1rem 0 0;
+}
+
+.fluence-home-capture-grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: 1fr;
+}
+
+.fluence-home-compare-grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.fluence-home-capture {
+  background: hsl(var(--fluence-hero-surface));
+  border: 1px solid hsl(var(--hextra-card-border));
+  border-radius: 8px;
+  box-shadow: 0 1px 2px hsl(var(--fluence-shadow));
+  overflow: hidden;
+}
+
+.fluence-home-capture h3 {
+  color: hsl(var(--hextra-text-strong));
+  font-size: 1rem;
+  font-weight: 650;
+  margin: 0;
+  padding: 0.85rem 1rem;
+}
+
+.fluence-home-capture-pair {
+  border-top: 1px solid hsl(var(--hextra-card-border));
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.fluence-home-capture-pair figure,
+.fluence-app-shot-grid figure {
+  margin: 0;
+  min-width: 0;
+}
+
+.fluence-home-capture-pair figure + figure {
+  border-left: 1px solid hsl(var(--hextra-card-border));
+}
+
+.fluence-home-capture-pair img {
+  aspect-ratio: 16 / 9;
+  display: block;
+  object-fit: cover;
+  object-position: top center;
+  width: 100%;
+}
+
+.fluence-home-capture-pair figcaption,
+.fluence-app-shot-grid figcaption {
+  color: hsl(var(--hextra-text-muted));
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.625rem 0.875rem;
+}
+
+.fluence-app-shot-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: 1.25rem;
+}
+
+.fluence-shot-instruction {
+  color: hsl(var(--hextra-text-muted));
+  font-size: 0.9rem;
+  margin: 0 0 1rem;
+}
+
+.fluence-app-shot-grid figure {
+  background: hsl(var(--fluence-hero-surface));
+  border: 1px solid hsl(var(--hextra-card-border));
+  border-radius: 8px;
+  box-shadow: 0 1px 2px hsl(var(--fluence-shadow));
+  overflow: hidden;
+}
+
+.fluence-app-shot-grid img {
+  aspect-ratio: 16 / 10;
+  display: block;
+  object-fit: cover;
+  object-position: top center;
+  width: 100%;
+}
+
+.fluence-quickstart {
+  background: hsl(var(--fluence-hero-surface));
+  border: 1px solid hsl(var(--hextra-card-border));
+  border-radius: 8px;
+  box-shadow: 0 1px 2px hsl(var(--fluence-shadow));
+  margin-top: 1rem;
+  padding: 1.5rem;
+}
+
+.fluence-quickstart h2 {
+  font-size: 2.25rem;
+  font-weight: 700;
+  line-height: 1.15;
+  margin-top: 0;
+}
+
+.fluence-control-shot-pair {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 1rem 0 1.25rem;
+}
+
+.fluence-control-shot-pair figure {
+  background: hsl(var(--fluence-hero-surface));
+  border: 1px solid hsl(var(--hextra-card-border));
+  border-radius: 8px;
+  box-shadow: 0 1px 2px hsl(var(--fluence-shadow));
+  margin: 0;
+  overflow: hidden;
+}
+
+.fluence-control-shot-pair img {
+  aspect-ratio: 16 / 9;
+  display: block;
+  object-fit: cover;
+  object-position: top center;
+  width: 100%;
+}
+
+.fluence-control-shot-pair figcaption {
+  color: hsl(var(--hextra-text-muted));
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.625rem 0.875rem;
+}
+
+.fluence-api-list {
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  margin: 0.75rem 0 1.5rem;
+}
+
+.fluence-api-list a,
+.fluence-api-list span {
+  background: hsl(var(--fluence-hero-surface));
+  border: 1px solid hsl(var(--hextra-card-border));
+  border-radius: 8px;
+  color: hsl(var(--hextra-text-default));
+  display: block;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.6rem 0.75rem;
+  text-decoration: none;
+}
+
+.fluence-api-list a:hover {
+  border-color: hsl(var(--fluence-accent));
+  color: hsl(var(--fluence-accent));
+}
+
+/* --------------------------------------------------------------------------
+ * 10. Screenshot index - dense reference gallery with paired Light/Dark shots.
+ * -------------------------------------------------------------------------- */
+.fluence-capture-page {
+  margin: 0 auto;
+  max-width: 1180px;
+  width: 100%;
+}
+
+.fluence-capture-intro {
+  border-bottom: 1px solid hsl(var(--hextra-card-border));
+  margin-bottom: 2rem;
+  padding: 1rem 0 1.5rem;
+  text-align: center;
+}
+
+.fluence-capture-intro p {
+  color: hsl(var(--fluence-accent));
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0;
+  margin: 0 0 0.25rem;
+  text-transform: uppercase;
+}
+
+.fluence-capture-intro h1 {
+  color: hsl(var(--hextra-text-strong));
+  font-size: 3rem;
+  font-weight: 650;
+  letter-spacing: 0;
+  line-height: 1.08;
+  margin: 0 0 0.75rem;
+  text-wrap: balance;
+}
+
+.fluence-capture-intro span {
+  color: hsl(var(--hextra-text-muted));
+  display: block;
+  font-size: 1.0625rem;
+  line-height: 1.55;
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 760px;
+}
+
+.fluence-home-capture h3,
+.fluence-capture-card h2 {
+  white-space: nowrap;
+}
+
+.fluence-app-capture-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  margin-bottom: 2.5rem;
+}
+
+.fluence-app-capture-grid figure,
+.fluence-capture-card {
+  background: hsl(var(--fluence-hero-surface));
+  border: 1px solid hsl(var(--hextra-card-border));
+  border-radius: 8px;
+  box-shadow: 0 1px 2px hsl(var(--fluence-shadow));
+  margin: 0;
+  overflow: hidden;
+}
+
+.fluence-app-capture-grid img {
+  aspect-ratio: 16 / 12;
+  display: block;
+  object-fit: cover;
+  object-position: top center;
+  width: 100%;
+}
+
+.fluence-app-capture-grid figcaption {
+  color: hsl(var(--hextra-text-muted));
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.75rem 0.875rem;
+}
+
+.fluence-capture-grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: 1fr;
+}
+
+.fluence-capture-card h2 {
+  color: hsl(var(--hextra-text-strong));
+  font-size: 1rem;
+  font-weight: 650;
+  margin: 0;
+  padding: 0.85rem 1rem;
+}
+
+.fluence-capture-pair {
+  border-top: 1px solid hsl(var(--hextra-card-border));
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.fluence-capture-pair figure {
+  margin: 0;
+  min-width: 0;
+}
+
+.fluence-capture-pair figure + figure {
+  border-left: 1px solid hsl(var(--hextra-card-border));
+}
+
+.fluence-capture-pair img {
+  aspect-ratio: 16 / 9;
+  display: block;
+  object-fit: cover;
+  object-position: top center;
+  width: 100%;
+}
+
+.fluence-capture-pair figcaption {
+  color: hsl(var(--hextra-text-muted));
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: 0.625rem 0.875rem;
+}
+
+.fluence-zoomable-image {
+  cursor: zoom-in;
+}
+
+.fluence-lightbox {
+  background: transparent;
+  border: 0;
+  height: 100dvh;
+  max-height: none;
+  max-width: none;
+  padding: 1.5rem;
+  width: 100dvw;
+}
+
+.fluence-lightbox::backdrop {
+  background: hsl(0 0% 0% / 0.75);
+}
+
+.fluence-lightbox-image {
+  border-radius: 8px;
+  display: block;
+  margin: auto;
+  max-height: calc(100dvh - 3rem);
+  max-width: min(96dvw, 1800px);
+  object-fit: contain;
+  width: auto;
+}
+
+.fluence-lightbox-close {
+  background: hsl(var(--hextra-card-bg));
+  border: 1px solid hsl(var(--hextra-card-border));
+  border-radius: 4px;
+  color: hsl(var(--hextra-text-strong));
+  cursor: pointer;
+  font-size: 1.25rem;
+  line-height: 1;
+  padding: 0.35rem 0.55rem;
+  position: fixed;
+  right: 1.5rem;
+  top: 1.5rem;
+}
+
+@media (max-width: 1024px) {
+  .fluence-path-grid,
+  .fluence-screenshot-grid,
+  .fluence-screenshot-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  html,
+  body {
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+  }
+
+  .hextra-max-navbar-width {
+    padding-left: max(env(safe-area-inset-left), 1rem);
+    padding-right: max(env(safe-area-inset-right), 1rem);
+  }
+
+  .hextra-max-page-width,
+  #content {
+    max-width: 100vw !important;
+    min-width: 0 !important;
+    width: 100vw !important;
+  }
+
+  .hextra-nav-container a[href*="github.com/sintaxasn/Fluence.Wpf"] {
+    display: none;
+  }
+
+  #content {
+    overflow-x: hidden !important;
+    padding-left: max(env(safe-area-inset-left), 1rem) !important;
+    padding-right: max(env(safe-area-inset-right), 1rem) !important;
+  }
+
+  #content > * {
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  .content,
+  .fluence-home,
+  .fluence-capture-page {
+    max-width: 100% !important;
+    min-width: 0 !important;
+    overflow-x: clip !important;
+    width: 100% !important;
+  }
+
+  .content h1,
+  .content h2,
+  .content h3,
+  .content p,
+  .content li {
+    overflow-wrap: anywhere;
+  }
+
+  .content table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .fluence-hero {
+    align-items: center;
+    gap: 1rem;
+    max-width: 100%;
+    padding: 0.75rem 0 2rem;
+    text-align: center;
+    width: 100%;
+  }
+
+  .fluence-hero h1 {
+    font-size: 2.45rem;
+    line-height: 1.08;
+  }
+
+  .fluence-hero-lede {
+    font-size: 1.0625rem;
+    max-width: 24rem;
+  }
+
+  .fluence-actions {
+    flex-direction: column;
+    justify-content: center;
+  }
+
+  .fluence-button {
+    width: 100%;
+  }
+
+  .fluence-hero-facts {
+    grid-template-columns: 1fr;
+  }
+
+  .fluence-hero-facts div {
+    text-align: center;
+  }
+
+  .fluence-hero-facts div + div {
+    border-left: 0;
+    border-top: 1px solid hsl(var(--hextra-card-border));
+  }
+
+  .fluence-hero-visual {
+    aspect-ratio: 4 / 3;
+    max-height: 340px;
+  }
+
+  .fluence-paths,
+  .fluence-screenshots {
+    padding-top: 1rem;
+  }
+
+  .fluence-home > section + section {
+    margin-top: 2rem;
+  }
+
+  .fluence-section-heading h2 {
+    font-size: 1.55rem;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    white-space: normal;
+  }
+
+  .fluence-capture-intro h1 {
+    font-size: 2.25rem;
+    white-space: normal;
+  }
+
+  .fluence-quickstart h2 {
+    font-size: 1.9rem;
+    line-height: 1.2;
+  }
+
+  .fluence-path-grid,
+  .fluence-screenshot-grid,
+  .fluence-screenshot-row,
+  .fluence-home-compare-grid,
+  .fluence-home-capture-pair,
+  .fluence-app-shot-grid,
+  .fluence-control-shot-pair,
+  .fluence-capture-pair {
+    grid-template-columns: 1fr;
+  }
+
+  .fluence-home-capture-pair figure + figure {
+    border-left: 0;
+    border-top: 1px solid hsl(var(--hextra-card-border));
+  }
+
+  .fluence-capture-pair figure + figure {
+    border-left: 0;
+    border-top: 1px solid hsl(var(--hextra-card-border));
+  }
+}
+
+/* --------------------------------------------------------------------------
+ * 11. High-contrast and reduced-motion respect Windows accessibility prefs.
+ * -------------------------------------------------------------------------- */
+@media (prefers-contrast: more) {
+  :root,
+  html.light {
+    --hextra-text-default: 0 0% 0%;
+    --hextra-text-muted: 0 0% 20%;
+    --hextra-card-border: 0 0% 0%;
+  }
+
+  html.dark {
+    --hextra-text-default: 0 0% 100%;
+    --hextra-text-muted: 0 0% 85%;
+    --hextra-card-border: 0 0% 100%;
+  }
+
+  :focus-visible {
+    outline-width: 3px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+  }
+}

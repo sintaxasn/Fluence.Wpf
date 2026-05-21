@@ -5,7 +5,7 @@ Use this checklist before publishing a package or tagging a release.
 ## Package Readiness
 
 - Confirm `README.md`, `CHANGELOG.md`, and public docs under `docs/` describe the current public surface.
-- Confirm every public API has XML documentation and that generated `Fluence.Wpf.xml` is included in package output.
+- Confirm every public API has XML documentation and that `Fluence.Wpf.xml` is included in package output.
 - Confirm internal helpers such as `CaptionButtonChrome` and `WindowPolicy` are not documented as consumer-facing controls.
 - Confirm screenshots under `docs/screenshots/` are current when visual changes affect the gallery banner.
 
@@ -20,11 +20,10 @@ dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug
 slopwatch.exe analyze --no-baseline --exclude ".history/**, **/obj/**, **/bin/**"
 ```
 
-When demo source samples change, also build the gallery on both supported target frameworks:
+When demo source samples change, also build the gallery:
 
 ```powershell
-dotnet build Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -c Debug -f net472
-dotnet build Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -c Debug -f net10.0-windows10.0.26100.0
+dotnet build Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -c Debug
 ```
 
 ## Pack Check
@@ -35,10 +34,17 @@ dotnet pack Fluence.Wpf/Fluence.Wpf.csproj -c Release -o ./artifacts
 
 Inspect the package for the assembly, XML documentation file, license, README, and theme resources.
 
-## Future Docs Site Direction
+## Docs Site
 
-- Use Hextra for Hugo for conceptual docs.
-- Use DocFX for API reference from XML documentation.
-- Publish the combined site with GitHub Pages Actions.
+The hosted docs site is built and deployed by [`.github/workflows/docs.yml`](../.github/workflows/docs.yml):
 
-Do not add a docs-site build to release gating until the repo has an explicit docs-site project and publishing workflow.
+- Conceptual docs are rendered by Hugo + the Hextra theme. Source markdown stays under [`docs/`](.) and is mounted into the site at build time.
+- API reference is rendered by DocFX from `Fluence.Wpf.xml`.
+- Hugo and DocFX outputs are merged into a single static artifact and published to GitHub Pages.
+
+Release rules:
+
+- A failing docs build does **not** block the existing build/test pipeline ([`.github/workflows/build.yml`](../.github/workflows/build.yml)). Treat the docs workflow as a follow-up signal, not a release gate, until intentionally promoted.
+- When visual changes affect the gallery banner, regenerate `docs/screenshots/` and run `pwsh ./docs-site/scripts/build-docs.ps1` locally before tagging to make sure the published site has fresh assets.
+
+See [`docs-site/README.md`](../docs-site/README.md) for local preview and customization guidance.

@@ -2,6 +2,10 @@
 
 Windows 11 Fluent Design controls and theming for WPF applications targeting **.NET Framework 4.7.2** and **Windows 10** (1809+), with enhanced visuals on **Windows 11**.
 
+**Current build:** `0.5.0` (2026-05-21).
+
+**Docs:** [https://sintaxasn.github.io/Fluence.Wpf/](https://sintaxasn.github.io/Fluence.Wpf/) - browsable conceptual guides plus the auto-generated API reference. Markdown sources for the docs site still live under [`docs/`](docs/).
+
 ## Features
 
 - **Theming with auto Light / Dark mode** - Auto (follow Windows theme), Light, Dark or High Contrast theming, with stable `MergedDictionaries` ordering and no dictionary accumulation.
@@ -16,7 +20,7 @@ Windows 11 Fluent Design controls and theming for WPF applications targeting **.
 - **MVVM demo** - Minimal Task Manager (`Fluence.Wpf.Demo.Mvvm`) built with CommunityToolkit.Mvvm, showcasing `[ObservableProperty]`, `[RelayCommand]`, filter bindings, and progress reporting with zero code-behind.
 - **PowerShell demo** - Build modern interfaces for your scripts using Windows PowerShell 5.1 without having to install PowerShell 7, .NET 9 / 10 or the Windows App SDK!
 - **Incredibly small footprint** at just 600kb!
-- **Tests** - MSTest suite covering theme stability, accent resolution, window policy, template parts, and control behavior (including `TabView` close / add-tab routing, `RatingControl`, `PersonPicture`).
+- **Tests** - MSTest suite covering theme stability, accent resolution, window policy, template parts, and control behavior.
 
 ## Quick Start
 
@@ -118,8 +122,9 @@ Or set either project as the startup project in Visual Studio and press F5.
 
 Refer to the [README.md](./Fluence.Wpf.Demo.PowerShell/README.md) for more details.
 
-
 ## Documentation
+
+The hosted docs site is at [sintaxasn.github.io/Fluence.Wpf](https://sintaxasn.github.io/Fluence.Wpf/). Markdown sources live in [`docs/`](docs/) and are mounted into the site at build time.
 
 - [Getting started](docs/getting-started.md) - reference, startup calls, local pack
 - [Theming](docs/theming.md) - merge order, accent, backdrop, watcher
@@ -127,6 +132,8 @@ Refer to the [README.md](./Fluence.Wpf.Demo.PowerShell/README.md) for more detai
 - [Migration guide](docs/migration-guide.md) - generic move from other Fluent-style stacks
 - [Contributing](docs/contributing.md) - build matrix, tests, PR notes
 - [Release checklist](docs/release.md) - package, CI, screenshots, and tag flow
+
+The static site itself is built with Hugo + Hextra and DocFX. Local preview and CI deployment are documented in [`docs-site/README.md`](docs-site/README.md).
 
 ## Contributing
 

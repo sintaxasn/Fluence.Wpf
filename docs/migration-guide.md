@@ -1,10 +1,15 @@
-# Migration Guide
+---
+title: Migration guide
+linkTitle: Migration guide
+description: Move an existing WPF application from standard WPF controls or another Fluent-style library to Fluence.Wpf.
+weight: 40
+---
 
-This guide covers moving an existing WPF application from standard WPF controls or another Fluent-style WPF library to `Fluence.Wpf`.
+Use this guide when moving an existing WPF app from stock controls or another Fluent-style library to `Fluence.Wpf`.
 
 ## Scope
 
-`Fluence.Wpf` targets WPF applications on `net472` and `net10.0-windows10.0.26100.0`. It mirrors the Windows 11 Fluent / WinUI 3 visual language while staying in WPF primitives. It does not require the Windows App SDK.
+`Fluence.Wpf` supports WPF applications on .NET Framework 4.7.2 and .NET 10 for Windows. It mirrors the Windows 11 Fluent / WinUI 3 visual language while staying in WPF primitives. It does not require the Windows App SDK.
 
 ## Basic Steps
 
@@ -34,7 +39,7 @@ This guide covers moving an existing WPF application from standard WPF controls 
 - Do not manually merge `Themes/Generic.xaml` when using `ApplicationThemeManager.Apply`; the manager owns the fixed resource dictionary slots.
 - Consume brush resources such as `TextFillColorPrimaryBrush` and `ControlFillColorDefaultBrush`, not raw color resources, from control templates and application XAML.
 
-## Window Chrome
+## Title bar and window controls
 
 `FluenceWindow` owns DWM and caption-button behavior. Use its public properties such as `SystemBackdropType`, `CornerStyle`, `ExtendsContentIntoTitleBar`, `TitleBar`, and caption button visibility properties. Internal helpers such as `CaptionButtonChrome` and `WindowPolicy` are implementation details and should not be referenced by applications.
 

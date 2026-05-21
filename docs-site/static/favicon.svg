@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Fluence.Wpf">
+  <defs>
+    <linearGradient id="fl-red" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FF6B6B"/>
+      <stop offset="100%" stop-color="#D63B3B"/>
+    </linearGradient>
+    <linearGradient id="fl-orange" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FF9550"/>
+      <stop offset="100%" stop-color="#E0561E"/>
+    </linearGradient>
+    <linearGradient id="fl-yellow" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFE34A"/>
+      <stop offset="100%" stop-color="#F2B600"/>
+    </linearGradient>
+    <linearGradient id="fl-green" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7FD89A"/>
+      <stop offset="100%" stop-color="#3FA86A"/>
+    </linearGradient>
+    <linearGradient id="fl-blue" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#5FB6F2"/>
+      <stop offset="100%" stop-color="#1F7BC8"/>
+    </linearGradient>
+    <linearGradient id="fl-indigo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#8A98FF"/>
+      <stop offset="100%" stop-color="#3A46C8"/>
+    </linearGradient>
+    <linearGradient id="fl-violet" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#C58BFF"/>
+      <stop offset="100%" stop-color="#7A2DC8"/>
+    </linearGradient>
+    <linearGradient id="fl-sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.55"/>
+      <stop offset="60%" stop-color="#FFFFFF" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="64" height="64" rx="12" fill="#0B0B0F"/>
+
+  <g transform="translate(32 48)">
+    <g transform="rotate(-39)">
+      <rect x="-4" y="-30" width="8" height="38" rx="2" fill="url(#fl-red)"/>
+    </g>
+    <g transform="rotate(-26)">
+      <rect x="-4" y="-30" width="8" height="38" rx="2" fill="url(#fl-orange)"/>
+      <rect x="-4" y="-30" width="8" height="38" rx="2" fill="url(#fl-sheen)"/>
+    </g>
+    <g transform="rotate(-13)">
+      <rect x="-4" y="-30" width="8" height="38" rx="2" fill="url(#fl-yellow)"/>
+      <rect x="-4" y="-30" width="8" height="38" rx="2" fill="url(#fl-sheen)"/>
+    </g>
+    <g transform="rotate(0)">
+      <rect x="-4" y="-30" width="8" height="38" rx="2" fill="url(#fl-green)"/>
+      <rect x="-4" y="-30" width="8" height="38" rx="2" fill="url(#fl-sheen)"/>
+    </g>
+    <g transform="rotate(13)">
+      <rect x="-4" y="-30" width="8" height="38" rx="2" fill="url(#fl-blue)"/>
+      <rect x="-4" y="-30" width="8" height="38" rx="2" fill="url(#fl-sheen)"/>
+    </g>
+    <g transform="rotate(26)">
+      <rect x="-4" y="-30" width="8" height="38" rx="2" fill="url(#fl-indigo)"/>
+      <rect x="-4" y="-30" width="8" height="38" rx="2" fill="url(#fl-sheen)"/>
+    </g>
+    <g transform="rotate(39)">
+      <rect x="-4" y="-30" width="8" height="38" rx="2" fill="url(#fl-violet)"/>
+      <rect x="-4" y="-30" width="8" height="38" rx="2" fill="url(#fl-sheen)"/>
+    </g>
+  </g>
+</svg>

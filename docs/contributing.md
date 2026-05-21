@@ -1,4 +1,9 @@
-﻿# Contributing
+﻿---
+title: Contributing
+linkTitle: Contributing
+description: Build matrix, test policy, and PR conventions for Fluence.Wpf contributors.
+weight: 50
+---
 
 ## Build and test
 
@@ -8,11 +13,11 @@ dotnet build Fluence.Wpf.sln
 dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj
 ```
 
-Test project targets **net472** and **net10.0-windows10.0.26100.0**; both must pass. WPF tests run on a shared STA dispatcher (`WpfTestSta`); the assembly uses `[assembly: DoNotParallelize]` to avoid cross-thread resource issues. The branch's current test count is the floor: add coverage for new behavior and do not remove tests without documenting the replacement rationale.
+The test project runs on .NET Framework 4.7.2 and .NET 10 for Windows, and both must pass. WPF tests run on a shared STA dispatcher (`WpfTestSta`); the assembly uses `[assembly: DoNotParallelize]` to avoid cross-thread resource issues. The branch's current test count is the floor: add coverage for new behavior and do not remove tests without documenting the replacement rationale.
 
 ## Language and style
 
-- **Fluence.Wpf** library: `LangVersion=latest` and nullable reference types are enabled centrally. Modern C# syntax is allowed on every target framework, but runtime APIs must remain available on `net472` unless the code is already isolated to a newer target.
+- **Fluence.Wpf** library: `LangVersion=latest` and nullable reference types are enabled centrally. Modern C# syntax is allowed on every target framework, but runtime APIs must remain available on .NET Framework 4.7.2 unless the code is already isolated to a newer target.
 - Every `.cs` file starts with the standard BSD 3-Clause header used across the repo; match an existing file exactly.
 - Public APIs carry `///` XML comments. The library builds with `<DocumentationFile>` and does **not** suppress `CS1591` / `CS1574` - a missing comment becomes a build error.
 - XAML lives in `Fluence.Wpf/Themes/Controls/<ControlName>.xaml` and is merged from `Themes/Generic.xaml`.
@@ -21,7 +26,7 @@ Test project targets **net472** and **net10.0-windows10.0.26100.0**; both must p
 
 - Run **Fluence.Wpf.Demo** and exercise: theme (Light / Dark / High Contrast / Auto), accent swatches, backdrop, and representative controls per gallery section.
 - Prefer `DynamicResource` for theme-bound properties in XAML.
-- Reference the authoritative WinUI 3 CommonStyles sources when choosing resource keys, state tables, or animation timings; use .NET WPF theme sources for WPF-native chrome and interop patterns.
+- Use WinUI 3 CommonStyles as the visual reference for resource keys, states, and animation timing. For WPF-specific chrome or interop behavior, follow .NET WPF theme sources.
 
 ## Tests
 
@@ -42,4 +47,13 @@ Test project targets **net472** and **net10.0-windows10.0.26100.0**; both must p
 ## Documentation
 
 - Public guides live in `docs/*.md`. Maintainer-only notes live under `docs/_internal/`; do not link them from `README.md` or public guides.
-- AI-assisted edits should read [AGENTS.md](../AGENTS.md) and [.github/copilot-instructions.md](../.github/copilot-instructions.md) for project standards and quality gates.
+- AI-assisted edits should read [AGENTS.md](../AGENTS.md) for project standards and quality gates.
+
+## Documentation site
+
+The hosted docs site at [sintaxasn.github.io/Fluence.Wpf](https://sintaxasn.github.io/Fluence.Wpf/) is built from this repository by [`.github/workflows/docs.yml`](../.github/workflows/docs.yml).
+
+- Source markdown still lives under `docs/`. The site mounts those files at build time via Hugo Modules, so editing a file under `docs/` is the only thing needed to update the corresponding page on the site.
+- The wrapper site project lives in [`docs-site/`](../docs-site). It carries Hugo + Hextra theme config, DocFX configuration, custom branding CSS, and the build/merge pipeline.
+- Preview locally with `pwsh ./docs-site/scripts/build-docs.ps1` (see [`docs-site/README.md`](../docs-site/README.md) for prerequisites). For conceptual-only iteration use `hugo server --source ./docs-site`.
+- Cross-doc links: prefer `[text](other-doc.md)`. The site's link render hook strips `.md`, rewrites repo-root references such as `../CHANGELOG.md` to the corresponding site URL, and points unpublished maintainer files at GitHub.

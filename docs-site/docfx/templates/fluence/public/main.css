@@ -1,0 +1,261 @@
+/* ============================================================================
+ * Fluence.Wpf DocFX template - visual parity with the Hugo conceptual site.
+ *
+ * DocFX `default + modern` template is the baseline; this CSS only overrides
+ * the values that would otherwise drift from the Hugo Hextra theme. Token
+ * mapping mirrors docs-site/assets/css/custom.css so colors, typography,
+ * radii, and motion stay consistent across both halves of the docs site.
+ * ========================================================================== */
+
+:root {
+  /* Brand wordmark accent: matches Fluence.Wpf default accent (#0078D4). */
+  --bs-primary: #0078d4;
+  --bs-primary-rgb: 0, 120, 212;
+  --bs-link-color: #0078d4;
+  --bs-link-hover-color: #0067c0;
+
+  /* Surfaces: WinUI 3 light tokens (Theme.Light.xaml). */
+  --bs-body-bg: #fafafa;
+  --bs-body-color: #1c1c1c;
+  --bs-secondary-bg: #f3f3f3;
+  --bs-tertiary-bg: #ffffff;
+  --bs-border-color: #e4e4e4;
+
+  /* Fluent typography. */
+  --bs-font-sans-serif: "Segoe UI Variable Display", "Segoe UI Variable",
+    "Segoe UI", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --bs-font-monospace: "Cascadia Code", "Cascadia Mono", "JetBrains Mono",
+    SFMono-Regular, Consolas, Menlo, monospace;
+  --bs-body-font-family: var(--bs-font-sans-serif);
+  --bs-body-line-height: 1.6;
+}
+
+[data-bs-theme="dark"] {
+  /* WinUI 3 dark tokens (Theme.Dark.xaml). */
+  --bs-body-bg: #202020;
+  --bs-body-color: #f5f5f5;
+  --bs-secondary-bg: #272727;
+  --bs-tertiary-bg: #323232;
+  --bs-border-color: rgba(255, 255, 255, 0.16);
+  --bs-link-color: #4fa3e8;
+  --bs-link-hover-color: #7cbeef;
+}
+
+html,
+body {
+  font-family: var(--bs-font-sans-serif);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code,
+kbd,
+pre,
+samp {
+  font-family: var(--bs-font-monospace);
+}
+
+/* --- Top navigation ------------------------------------------------------ */
+.navbar {
+  background-color: var(--bs-tertiary-bg);
+  border-bottom: 1px solid var(--bs-border-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.navbar-brand img {
+  height: 28px;
+}
+
+[data-bs-theme="dark"] .navbar {
+  background-color: rgba(32, 32, 32, 0.92);
+  backdrop-filter: saturate(180%) blur(20px);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+}
+
+/* Rainbow accent bar that matches the Fluence wordmark stripes. */
+.navbar::after {
+  content: "";
+  display: block;
+  height: 2px;
+  background-image: linear-gradient(
+    to right,
+    #d63b3b 0%,
+    #e0561e 14%,
+    #f2b600 28%,
+    #3fa86a 42%,
+    #1f7bc8 56%,
+    #3a46c8 70%,
+    #7a2dc8 84%,
+    #d63b3b 100%
+  );
+  opacity: 0.85;
+}
+
+/* --- Sidebar ------------------------------------------------------------ */
+.sidenav,
+.toc {
+  background-color: var(--bs-secondary-bg);
+  border-right: 1px solid var(--bs-border-color);
+}
+
+.sidenav a,
+.toc a {
+  color: var(--bs-body-color);
+}
+
+.sidenav a:hover,
+.toc a:hover,
+.sidenav a.active,
+.toc a.active {
+  background-color: rgba(0, 120, 212, 0.08);
+  color: var(--bs-primary);
+}
+
+[data-bs-theme="dark"] .sidenav a:hover,
+[data-bs-theme="dark"] .toc a:hover,
+[data-bs-theme="dark"] .sidenav a.active,
+[data-bs-theme="dark"] .toc a.active {
+  background-color: rgba(79, 163, 232, 0.18);
+  color: #4fa3e8;
+}
+
+/* --- Headings ----------------------------------------------------------- */
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+h1 {
+  letter-spacing: 0;
+}
+
+/* --- Code blocks -------------------------------------------------------- */
+pre,
+.hljs {
+  background-color: var(--bs-secondary-bg) !important;
+  border: 1px solid var(--bs-border-color);
+  border-radius: 8px;
+}
+
+:not(pre) > code {
+  background-color: var(--bs-secondary-bg);
+  border-radius: 4px;
+  padding: 0.125rem 0.375rem;
+  font-size: 0.875em;
+  color: var(--bs-body-color);
+}
+
+/* --- Tables ------------------------------------------------------------- */
+.table {
+  border: 1px solid var(--bs-border-color);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.table thead th {
+  background-color: var(--bs-secondary-bg);
+  border-bottom: 1px solid var(--bs-border-color);
+  font-weight: 600;
+}
+
+.table td,
+.table th {
+  border-color: var(--bs-border-color);
+}
+
+/* --- Buttons ------------------------------------------------------------ */
+.btn,
+button {
+  border-radius: 4px;
+  font-weight: 600;
+  transition:
+    background-color 167ms cubic-bezier(0.8, 0, 0, 1),
+    border-color 167ms cubic-bezier(0.8, 0, 0, 1);
+}
+
+.btn-primary {
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+}
+
+.btn-primary:hover,
+.btn-primary:focus {
+  background-color: #0067c0;
+  border-color: #0067c0;
+}
+
+/* --- Search ------------------------------------------------------------- */
+#search-query {
+  border-radius: 4px;
+  border: 1px solid var(--bs-border-color);
+  background-color: var(--bs-tertiary-bg);
+}
+
+#search-query:focus {
+  border-color: var(--bs-primary);
+  box-shadow: 0 0 0 2px rgba(0, 120, 212, 0.25);
+  outline: none;
+}
+
+/* --- Affix (right rail) ------------------------------------------------- */
+.affix ul li.active > a {
+  color: var(--bs-primary);
+  font-weight: 600;
+}
+
+[data-bs-theme="dark"] .affix ul li.active > a {
+  color: #4fa3e8;
+}
+
+/* --- Article content --------------------------------------------------- */
+article p,
+article li {
+  line-height: 1.6;
+}
+
+article blockquote {
+  border-left: 3px solid var(--bs-primary);
+  background-color: var(--bs-secondary-bg);
+  padding: 0.875rem 1rem;
+  border-radius: 0 8px 8px 0;
+}
+
+/* --- Focus ring (WinUI 3 ControlStrongStrokeColorDefault parity) -------- */
+:focus-visible {
+  outline: 2px solid var(--bs-primary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* --- Footer ------------------------------------------------------------ */
+footer {
+  border-top: 1px solid var(--bs-border-color);
+  background-color: var(--bs-secondary-bg);
+}
+
+/* --- Reduced motion / contrast ----------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  :focus-visible {
+    outline-width: 3px;
+  }
+
+  :root {
+    --bs-border-color: #000000;
+  }
+
+  [data-bs-theme="dark"] {
+    --bs-border-color: #ffffff;
+  }
+}

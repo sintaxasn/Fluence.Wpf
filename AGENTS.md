@@ -474,18 +474,16 @@ A new or updated sample page is done only when:
 - `dotnet build Fluence.Wpf.sln -c Debug` and focused tests for the affected area pass with zero warnings.
 
 
-
-
 <claude-mem-context>
 # Memory Context
 
-# [Fluence.Wpf] recent context, 2026-05-20 1:45pm EDT
+# [Fluence.Wpf] recent context, 2026-05-20 8:36pm EDT
 
 Legend: 🎯session 🔴bugfix 🟣feature 🔄refactor ✅change 🔵discovery ⚖️decision 🚨security_alert 🔐security_note
 Format: ID TIME TYPE TITLE
 Fetch details: get_observations([IDs]) | Search: mem-search skill
 
-Stats: 50 obs (28,785t read) | 212,724t work | 86% savings
+Stats: 50 obs (16,201t read) | 376,293t work | 96% savings
 
 ### May 11, 2026
 S80 Remove PSADT-related section (§13.2) from documentation; user asking about applying additional Change B (one-liner in §10 about docs/plans/ as transient plan files) (May 11, 4:09 PM)
@@ -501,116 +499,71 @@ S88 Collapse public surface of theme runtime—consolidate ApplicationThemeManag
 S89 Refactor MainWindow navigation state management by creating a dedicated DemoNavigationShellState module to centralize pane display mode, open/closed state, and chrome button visibility logic. (May 14, 10:45 AM)
 S90 User initiated quit command (t/quit/qi) to exit the Claude Code session (May 14, 3:02 PM)
 ### May 20, 2026
-3900 12:02p 🔵 GitHub Actions CI/CD pipeline configured for multi-TFM build, test, pack, and artifact storage
-3901 " 🔵 Getting-started and documentation workflows confirmed
-3902 " 🔵 Test Coverage of Demo Sample Sources and WinUI Parity References
-3903 " 🔵 Screenshot generation and documentation gap identified
-3904 " 🔵 BSD 3-Clause license configured and enforced across source files
-3905 12:03p 🔵 GalleryColorsPage Demo Infrastructure - Fluence.Wpf Color Token Organization
-3906 " 🔵 GalleryColorsPage Demo - Resource Reference Binding Pattern Throughout UI Construction
-3907 " 🔵 Fluence.Wpf AGENTS.md fully read - comprehensive handbook for WPF control library
-3908 " 🔵 PSADT repository contains copy-of-Fluence.Wpf under lib/Fluence.Wpf
-3909 " 🔵 Library Brush Resources Defined in Themes/Brushes/Brushes.xaml - Two-Level Indirection Pattern
-3910 12:04p 🔵 Fluence.Wpf build policy configuration in Directory.Build.props
-3911 " 🔵 Button Control Template - Comprehensive State Management via Appearance Property and Multi-Triggers
-3912 " 🔵 PSADT root Directory.Build.props mirrors Fluence.Wpf build policy identically
-3913 " 🔵 Button Code-Behind - Appearance/Icon/CornerRadius Properties and Text Truncation ToolTip Logic
-3914 " 🔵 Fluence.Wpf project-level .editorconfig hardening: all analyzer categories set to error severity
-3916 " 🔵 PSADT BannedSymbols.txt extends Fluence.Wpf's ban list with PSADT-specific overrides
-3917 " 🔵 Test Suite: DemoResourceCleanupTests - Validates Demo Styles Don't Shadow Library Color Tokens
-3918 " 🔵 Test Infrastructure: MergeDemoSharedStyles Helper Loads Demo ResourceDictionary via Pack URI
-3919 " 🔵 Fluence.Wpf copy in PSADT lib/ inherits PSADT root policy via MSBuild hierarchy; local props files are overrides
-3920 " 🔵 Test Suite: DemoResourceCleanupTests - Validates Demo Styles Appended After 5 Fluence Theme Dictionaries
-3921 " 🔵 PSADT.UserInterface is the sole PSADT consumer of Fluence.Wpf via ProjectReference at relative path
-3924 12:05p 🔵 Fluence.Wpf copy in PSADT lib/ contains violations of both Fluence.Wpf and PSADT BannedSymbols constraints
-3925 " ✅ PSADT copy of Directory.Build.targets deletes all XML docs unconditionally; Fluence.Wpf standalone preserves library docs
-3926 " ✅ PSADT copy of Fluence.Wpf.csproj removes version/packaging metadata and design-time resources
-3927 " 🔵 Fluence.Wpf copy in PSADT lib/ is a complete snapshot with identical core build infrastructure except targeted deletions and overrides
-3928 " 🔵 Fluence.Wpf AGENTS.md contains explicit portability rule but no PSADT-specific build guidance
-3929 12:06p 🔵 PSADT root Directory.Build.props differs from Fluence.Wpf in company metadata, version, and resource paths
-3930 " 🔵 PSADT.slnx solution file explicitly includes lib/Fluence.Wpf/Fluence.Wpf.csproj at project slot [0]
-3931 " 🔵 Internal helper classes identified in Fluence.Wpf Controls
-3932 " 🔵 Fluence.Wpf public control catalog mapped across 9 functional areas
-3933 " 🔵 README.md defines Fluence.Wpf library scope and feature set across 40+ Fluent-styled controls
-3934 12:07p 🔵 docs/controls.md provides detailed feature documentation for key Fluence controls
-3935 " 🔵 Documentation cross-references confirm control inventory and styling patterns
-3936 " 🔵 Fluence.Wpf/README.md defines library structure and maintenance conventions
-3937 " 🔵 Fluence.Wpf.csproj configured for XML documentation generation and NuGet packaging
-3938 12:08p 🔵 Docs Site Architecture: Hugo + DocFX + GitHub Pages Feasible
-3939 " 🔵 XMLDoc audit reveals systematic gaps in parameter and return-value documentation across public API
-3940 " 🔵 PSADT Conformance: Build Config Mismatches Prevent Direct Fluence Copy
-3941 " 🔵 Automation peer methods use inheritdoc to delegate documentation to base class
-3942 " 🔵 DropDownButtonAutomationPeer constructor has summary but missing owner parameter documentation
-3943 " 🔵 Demo-to-Library Promotion Audit: No Release Blockers Found
-3944 " 🔵 Refined XMLDoc gap analysis (inheritdoc-aware) reveals 25 methods with documentation gaps across 5 types
-3945 " 🔵 Source Code Sample Accuracy: 49/50 Complete, 1 Critical Broken
-3946 " 🔵 Automation peer classes use primary constructor syntax (C# 12) with undocumented owner parameters
-3947 12:09p 🔵 Fluence.Wpf public API surface inventory: 84 types, 701 declared members across 5 namespaces
-**3948** " 🔵 **XMLDoc Coverage: 701 Members Enumerated, 8 High-Severity Gaps Found**
-Workstream 5 completed the XMLDoc coverage audit. The library's public surface is substantial: 84 types and 701 members across five namespaces. Compiler enforcement is in place and builds pass cleanly, but content quality has gaps.
+4187 6:42p 🔵 Hugo dev server rebuild triggered by CSS changes
+4188 " 🔵 Hugo documentation site styling work plan progressing
+4189 6:43p 🔵 Screenshot harness tests passing successfully
+4190 6:44p 🔵 Screenshot harness tests passing on .NET 10.0 target
+4191 " 🔵 Hugo documentation build successful with updated CSS
+4192 " 🔵 Documentation build script completed successfully with CSS changes
+4193 6:45p 🔵 Screenshot asset references verified complete
+4194 " ✅ Screenshot integration and documentation updates committed to working directory
+4195 " 🔵 Hugo documentation site refresh project completed
+4196 " ✅ Screenshot harness implementation and documentation expansion
+4197 " 🔵 Screenshot gallery generated with comprehensive coverage
+4198 " 🔵 Screenshot library covers accessibility, controls, themes, MVVM, and PowerShell patterns
+4199 6:54p ⚖️ Design System Selected for Fluence.Wpf Documentation Frontend
+4200 6:55p 🔵 Fluence.Wpf Documentation Artifacts and Demo Infrastructure Identified
+4201 " 🔵 Fluence.Wpf Documentation Site Structure and Screenshot Placeholders Identified
+4202 " 🔵 Repository Working State: Modified Docs and New Screenshots Directories
+4203 " 🔵 DocFX API Reference Generated with 40+ Control Definitions
+4204 " 🔵 Documentation Site Built and Deployed with Complete Navigation and API Reference
+4205 " 🔵 Complete Screenshot Set Captured: 40 Gallery Pages + MVVM and PowerShell Demos in Light/Dark
+4206 6:56p 🔵 API Reference Enumerations and Configuration Types Generated for Fluence Controls
+4207 " ✅ Front Page Updated with Fluence Banner and Expanded Screenshots Section
+4208 6:57p ✅ CSS Styling Added for Front Page Brand Banner and Screenshot Sections
+4209 6:58p 🟣 Control Documentation Enhanced with Screenshots and API References for All 18 Gallery Categories
+4210 7:00p 🔵 Repository Changes Confirmed: Documentation Files Updated and Screenshot Directories Created
+4211 7:04p 🔵 PowerShell Profile Import Error During Chrome Screenshot Execution
+4212 " 🔵 Screenshot Generated Successfully from Hugo Site
+4214 7:05p 🔵 Hugo Site Structure: Home Page and Controls Page Mismatch Detected
+4215 " 🔵 Controls Documentation Page Structure: 16 Themed Control Galleries with API References
+4216 " 🔵 Hugo Site Configuration: Hextra Theme with DocFX API Integration
+4217 7:06p 🔴 Fixed Broken Screenshot Set Documentation Link
+4218 " 🔵 Hugo Build Successful After Link Fix
+4219 " 🔵 Complete Documentation Build Pipeline Verification
+4220 " 🔵 Corrected Screenshot Link Successfully Rendered in Built HTML
+4221 " 🔵 Screenshot Documentation Link Now Resolves to GitHub Repository
+4222 7:07p ✅ Improved Screenshot Documentation Link with Absolute Hugo Site Path
+4223 " 🔵 Hugo Rebuild Successful After HTML Link Enhancement
+4224 " 🔵 Final Site Structure Verification: All Components Rendered Correctly
+4225 " 🔵 Tall Controls Page Screenshot Captured Successfully
+4226 7:09p 🔴 Fixed horizontal overflow and responsive layout issues in Hugo site CSS
+4227 " 🔵 Hugo build completed successfully after CSS fixes
+4228 " 🔵 Mobile home page screenshot captured successfully
+4229 " 🔵 Mobile controls documentation page screenshot captured successfully
+4230 " 🔵 Mobile home page screenshot verified with responsive layout fixes applied
+4231 7:10p 🔵 Hugo Site DOM Structure Inspection
+4232 " 🔵 Hugo Site Head and Structure Analysis
+**4233** " 🔵 **Hugo Dev Server Build Activity Log**
+The Hugo development server is actively running with hot-reload enabled. Recent activity shows the controls documentation was being edited and custom CSS was modified. Build times are fast (6-482 ms), indicating a healthy development environment. The controls.md file appears to be a key documentation file being actively worked on, with multiple save-and-rebuild cycles suggesting iterative editing.
+~251t 🔍 1,096
 
-Three high-severity issues require attention:
+**4234** 7:11p 🔴 **Mobile Viewport Overflow and Width Issues Fixed**
+Fixed mobile responsiveness issues where content was overflowing horizontally on smaller viewports. The changes constrain the root html and body elements to viewport width with hidden overflow, then explicitly set content container widths to 100vw with !important flags to override any competing styles. Child elements are also constrained with max-width: 100% and min-width: 0 to prevent content from expanding beyond the viewport. Heading text now wraps properly with overflow-wrap: anywhere to prevent long text from causing layout shifts on mobile devices.
+~358t 🛠️ 1,329
 
-1. **ApplicationThemeManager.Apply() stale docs**: The documentation states later calls "only swap the theme color dictionary," but the actual implementation reloads and promotes brushes during non-high-contrast swaps. The method parameters (theme, backdrop, updateAccent) lack param documentation entirely, making the method's exact behavior opaque to API consumers.
+**4235** " 🔵 **Hugo Build Verification Successful**
+The Hugo build verification ran successfully after CSS changes were applied. The site builds cleanly with 14 pages and no errors, indicating that the mobile viewport overflow fixes did not break the build system or create any template/content issues. The build is efficient with fast render times, suggesting the Hextra theme is properly configured. Static file handling and image processing completed without issues.
+~253t 🔍 738
 
-2. **FluenceWindow.TitleBar nullability conflict**: The dependency property defaults to null, the setter accepts null in implementation, but the public property and SetTitleBar() method are typed as non-null UIElement. This creates a contract ambiguity—can the API accept null or not? Documentation must clarify whether null means "clear the title bar" or if a separate API is needed.
+**4236** " 🔵 **Hugo Dev Server Hot Reload of CSS Changes**
+The Hugo development server detected the mobile viewport CSS fixes applied to custom.css and hot-reloaded the site automatically. The fast 8ms rebuild time indicates the asset change was quickly processed and served to connected browsers via live reload, making the UI/UX fixes immediately visible during development.
+~168t 🔍 817
 
-3. **Automation peer constructor param gaps**: Eight automation peers use C# 12 primary constructors but omit the owner parameter from their XMLDoc (only a summary appears, no param tag). This makes it unclear what "owner" represents in UI Automation context.
-
-Four medium-severity gaps round out the findings:
-- Attached property accessors in TextBlockExtensions are inconsistently documented (some complete, others missing param/returns).
-- ListView helper accessors (AnimateRemove, ParentIsItemSelectable) have summaries but no param/returns documentation.
-- ApplicationAccentColorManager light-ramp naming (Light1, Light3 both "lightest") conflicts with actual palette order.
-- Public documentation incorrectly lists two internal helpers (CaptionButtonChrome, WindowPolicy) as consumer-facing API, and one source reference (FluentTypography) points to a stale path.
-
-A recommended XMLDoc style template is provided covering controls, dependency properties, events, enums, attached properties, and automation patterns aligned with WinUI conventions already used in Fluence.
-
-No source edits or docs changes were made; findings are ready for a follow-up documentation pass.
-~1159t 🔍 5,753
-
-**3949** " 🔵 **ApplicationAccentColorManager exposes accent color ramp with Light1/Light2/Light3 variants and brush resources**
-ApplicationAccentColorManager implements a comprehensive accent color management system generating a ramp of tints/shades from a base accent color. The public Color properties (SystemAccentColorLight1/2/3) expose the generated ramp, while private GenerateAccentRamp method orchestrates HsvColorHelper to compute the variants. Resource dictionaries are populated with both Color and Brush (SolidColorBrush) variants for XAML consumption. This establishes a pattern: core managers (ApplicationAccentColorManager, ApplicationThemeManager) should have complete parameter and return documentation as they define public properties and lifecycle methods consumed by application initialization code.
-~518t 🔍 1,416
-
-**3950** " ✅ **Orchestration Plan: Four Workstreams Completed, Reconciliation In Progress**
-The orchestration plan tracked five major phases. The first four phases have completed: orchestrator loaded skills, spawned six audit sub-agents across independent workstreams, and collected reports from all five agents who returned (Workstream 3 Slopwatch status not yet visible in this message).
-
-All sub-agent audits are now complete with evidence-backed tables and prioritized findings. The orchestrator is now in the reconciliation phase, where overlaps between workstreams will be identified, PSADT conformance risks will be elevated, and a consolidated prioritized fix queue will be assembled for the final report.
-
-Key inter-workstream dependencies identified so far:
-- Workstream 2 (sample drift) and Workstream 5 (XMLDoc naming) have overlap: stale sample API names cross-check against current public types.
-- Workstream 4 (PSADT conformance) flags SDK floor and build-artifact mismatches as release blockers that override lower-priority polish.
-- Workstream 5 XMLDoc findings feed into Workstream 6 API reference generation readiness.
-- Workstream 1 (demo promotion) and Workstream 2 (sample correctness) share governance of what belongs in the library vs. what stays demo-only.
-
-No implementation, commits, or source edits have been made; all work remains audit-only as scoped.
-~649t 🛠️ 2,401
-
-**3951** " 🔵 **Slopwatch Hygiene Scan: 1 Warning Found in Project-Level Suppressions**
-Workstream 3 ran the slopwatch static hygiene analyzer on Fluence.Wpf with no-baseline mode. The scan found exactly one warning: project-level NoWarn suppressions in Fluence.Wpf.csproj lack a slopwatch-ignore justification comment.
-
-The suppressed diagnostics are SYSLIB1045 (likely System library warning), IDE0330 (code style), S1244 (Sonar rule), and VSTHRD001 (threading). While the suppressions may have been intentional at the time they were added, their current purpose is unclear. Because they apply at project level, they can mask underlying issues across the entire control library package.
-
-The recommendation is a three-step policy review: first, decide whether the suppressions are still required for release; second, if intentional, add a slopwatch-ignore comment to document the accepted policy; third, if any suppression is obsolete, remove it and fix the underlying diagnostic through normal build gates.
-
-This is a medium-risk item because suppressed diagnostics can hide problems in a shipped library, but it is not a release blocker—the build currently succeeds cleanly with the suppressions in place.
-
-No implementation was performed; the audit is complete.
-~515t 🔍 925
-
-**3952** " ✅ **Orchestration Plan: Reconciliation Complete, Consolidated Report Generation In Progress**
-The orchestration plan has reached its final phase. All six sub-agent workstreams have returned their audit reports. The orchestrator has now completed the reconciliation phase and is assembling the consolidated release-prep audit report.
-
-Key cross-workstream reconciliation findings:
-- Workstream 2 (PersonPicture sample broken) and Workstream 5 (XMLDoc naming) have minimal overlap; PersonPicture is a sample-structure bug, not a docs issue.
-- Workstream 4 (PSADT SDK floor mismatch) is elevated as a release blocker that must be addressed before PSADT can successfully consume the Fluence release.
-- Workstream 5 XMLDoc findings (ApplicationThemeManager stale behavior, FluenceWindow nullability conflict) are high-severity but not release blockers if documented accurately.
-- Workstream 6 docs-site blockers (migration-guide.md missing, release.md broken link) must be fixed before public docs launch.
-- Workstream 2 nullable warnings in displayed code samples (GalleryDataBindingPage, GalleryStatusPage, GalleryAccessibilityPage) are polish items for a post-release sample-quality pass.
-
-No implementation has been performed; all findings remain audit-only as scoped.
-~592t 🛠️ 330
+**4237** 7:12p 🔵 **Mobile Screenshot of Fluence.Wpf Homepage**
+Mobile screenshot verification of the Fluence.Wpf homepage captured at 390x1600px resolution shows the site rendering properly on mobile devices. The hero section with "Windows 11 Fluent controls for WPF" messaging is displayed, and the layout appears to respect the mobile viewport constraints. This screenshot serves as visual verification that the CSS mobile overflow fixes applied earlier are functioning correctly and the site displays without horizontal scrolling issues on mobile devices.
+~272t 🔍 130,669
 
 
-Access 213k tokens of past work via get_observations([IDs]) or mem-search skill.
+Access 376k tokens of past work via get_observations([IDs]) or mem-search skill.
 </claude-mem-context>
