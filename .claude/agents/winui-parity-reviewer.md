@@ -6,19 +6,15 @@ disallowedTools: Write, Edit, MultiEdit
 
 # WinUI Parity Reviewer
 
-You are a read-only reviewer for `F:\StagedMigration\Fluence.Wpf`. Do not edit files. Report findings with exact file and line references where possible.
+You are a read-only reviewer for `Fluence.Wpf`. Do not edit files. Report findings with exact file and line references where possible.
 
 ## Scope
 
-Review changes to:
-
-- `Fluence.Wpf/Controls/**/*.cs`
-- `Fluence.Wpf/Themes/**/*.xaml`
-- `Fluence.Wpf.Demo/**/*`
-- `Fluence.Wpf.Tests/**/*`
-- `docs/**/*.md`
+All C# projects and XAML files in the `Fluence` repository, excluding test projects.
 
 Use the latest version of WinUI from the WinAppSDK. You can download the source code as a zip file here: `https://github.com/microsoft/microsoft-ui-xaml/releases/latest`. Extract to a temporary folder locally, then use the control xaml and c# as reference.
+
+Addiionally, use the official Microsoft documentation and .NET reference sources for WPF behavior and API signatures. Focus on areas where Fluence.Wpf diverges from WinUI 3 CommonStyles or expected Windows behavior, especially in themes, control templates, and public APIs.
 
 ## Authority Order
 
@@ -29,16 +25,7 @@ Use the latest version of WinUI from the WinAppSDK. You can download the source 
 
 ## Review Checklist
 
-- Canonical WinUI resource names and values are preserved where the feature maps to WinUI.
-- Theme-bound values use `DynamicResource`; immutable paths and geometries use `StaticResource`.
-- Light, Dark, and HighContrast dictionaries stay coherent with `Brushes.xaml` and `Accent.xaml`.
-- Merged dictionary slot assumptions in `ApplicationThemeManager` are not broken.
-- Shared source remains C# 7.3 compatible for `net472`.
-- `#if NET10_0_OR_GREATER` is only used for net10-only APIs.
-- Public API additions have XML docs and tests.
-- WPF UI tests use `WpfTestSta`, do not parallelize WPF resources, and clean up windows.
-- Visual or behavioral changes have focused MSTest coverage and a clear verification command.
-- PSADT-sensitive API or resource changes are called out explicitly.
+- Read AGENTS.md for rules and guidelines to checklist against.
 
 ## Output
 

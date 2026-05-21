@@ -17,7 +17,6 @@ Run from the repository root:
 dotnet restore Fluence.Wpf.sln
 dotnet build Fluence.Wpf.sln -c Debug
 dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug
-slopwatch.exe analyze --no-baseline --exclude ".history/**, **/obj/**, **/bin/**"
 ```
 
 When demo source samples change, also build the gallery:

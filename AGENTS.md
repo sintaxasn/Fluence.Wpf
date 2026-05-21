@@ -1,4 +1,4 @@
-﻿# Fluence.Wpf - Developer Handbook
+# Fluence.Wpf - Developer Handbook
 
 Self-contained persistent memory for engineers (human and AI) working in this repository. Read top-to-bottom before touching code. This file is the single source of truth for conventions, architecture, reference authority, testing policy, and workflow; do **not** rely on out-of-repo agent bundles, external skill packs, or downstream-consumer-specific paths.
 
@@ -49,6 +49,7 @@ Every `.cs` file in the library, demo, and tests starts with the BSD 3-Clause he
 ### Language features
 
 - Avoid em dash or en dash characters anywhere in documentation or comments.
+- Avoid § links anywhere in documentation or comments. use anchor tags instead. E.g.  ```Go to [Section 3](#troubleshooting)```.
 - All TFMs use `LangVersion=latest` (set in `Directory.Build.props`). Use modern C# features freely; verify any runtime API is available in `net472` before using it.
 - Do not guard blocks with `#if NET10_0_OR_GREATER` to gain runtime APIs not present in `net472`; instead apply §4.3 guidance.
 - Nullable reference types are **enabled** (`Nullable=enable` in `Directory.Build.props`). Library and test code must be nullable-clean - annotate parameters and returns with `?` only where genuinely nullable.
@@ -75,8 +76,6 @@ Every `.cs` file in the library, demo, and tests starts with the BSD 3-Clause he
 - `IDE0330` - `System.Threading.Lock` preference (not available on `net472`)
 - `S1244` - floating-point equality (necessary for pixel math)
 - `VSTHRD001` - task/thread analyzer (WPF dispatcher pattern conflict)
-
-Project-level `<NoWarn>` entries must be preceded by a `slopwatch-ignore: SW005` comment explaining why the suppression is still necessary. Remove obsolete suppressions instead of documenting them.
 
 Prefer `EventArgs.Empty`, `nameof(...)`, explicit `readonly`, and immutable helpers. **Never** use inline `#pragma warning disable` except in exceptional third-party interop cases.
 
@@ -472,98 +471,4 @@ A new or updated sample page is done only when:
 - Right-rail options mutate the demo control through binding where the target property allows it. Code-behind is acceptable for command-style results such as click counters.
 - The page renders without binding errors or resource-resolution warnings in Light and Dark.
 - `dotnet build Fluence.Wpf.sln -c Debug` and focused tests for the affected area pass with zero warnings.
-
-
-<claude-mem-context>
-# Memory Context
-
-# [Fluence.Wpf] recent context, 2026-05-20 8:36pm EDT
-
-Legend: 🎯session 🔴bugfix 🟣feature 🔄refactor ✅change 🔵discovery ⚖️decision 🚨security_alert 🔐security_note
-Format: ID TIME TYPE TITLE
-Fetch details: get_observations([IDs]) | Search: mem-search skill
-
-Stats: 50 obs (16,201t read) | 376,293t work | 96% savings
-
-### May 11, 2026
-S80 Remove PSADT-related section (§13.2) from documentation; user asking about applying additional Change B (one-liner in §10 about docs/plans/ as transient plan files) (May 11, 4:09 PM)
-S81 Verification that AGENTS.md has been cleaned up after removing PSADT-related section (§13.2) (May 11, 4:18 PM)
-S82 User encountered ultraplan session creation failure with bundle upload 502 error; Claude advised connecting GitHub account on claude.ai/code (May 11, 4:18 PM)
-S83 Explore Fluence.Wpf demo application structure and create an implementation plan to bring all 17 gallery content pages into visual parity with GalleryHomePage, fix dark-mode contrast on GalleryColorsPage, and fix DemoSampleControl Expander border. (May 11, 4:46 PM)
-S85 Fix customization evaluation diagnostics (May 11, 4:58 PM)
-### May 12, 2026
-S86 Visual Design Polish — WinUI3 Look & Feel Alignment for Fluent.Wpf codebase. Revise all pages to use #272727 background, update DemoSampleControl with #202020 surfaces and #323232 code sections, replace top ToggleSwitch with Settings gear icon, redesign layout to match WinUI Settings patterns, fix Visual Focus state cutoff, and update KNOWN_ISSUES and CHANGELOG. (May 12, 12:44 AM)
-S87 WinUI 3 Visual Polish — DemoSampleControl Standardization: Refactor Fluence.Wpf Demo app to use a single reusable DemoSampleControl with WinUI 3 Gallery-consistent layout, spacing, color layering, and corner-radius treatment across all sample pages. (May 12, 1:10 AM)
-S88 Collapse public surface of theme runtime—consolidate ApplicationThemeManager, ApplicationAccentColorManager, and SystemThemeWatcher into unified entry points. (May 12, 2:06 PM)
-### May 14, 2026
-S89 Refactor MainWindow navigation state management by creating a dedicated DemoNavigationShellState module to centralize pane display mode, open/closed state, and chrome button visibility logic. (May 14, 10:45 AM)
-S90 User initiated quit command (t/quit/qi) to exit the Claude Code session (May 14, 3:02 PM)
-### May 20, 2026
-4187 6:42p 🔵 Hugo dev server rebuild triggered by CSS changes
-4188 " 🔵 Hugo documentation site styling work plan progressing
-4189 6:43p 🔵 Screenshot harness tests passing successfully
-4190 6:44p 🔵 Screenshot harness tests passing on .NET 10.0 target
-4191 " 🔵 Hugo documentation build successful with updated CSS
-4192 " 🔵 Documentation build script completed successfully with CSS changes
-4193 6:45p 🔵 Screenshot asset references verified complete
-4194 " ✅ Screenshot integration and documentation updates committed to working directory
-4195 " 🔵 Hugo documentation site refresh project completed
-4196 " ✅ Screenshot harness implementation and documentation expansion
-4197 " 🔵 Screenshot gallery generated with comprehensive coverage
-4198 " 🔵 Screenshot library covers accessibility, controls, themes, MVVM, and PowerShell patterns
-4199 6:54p ⚖️ Design System Selected for Fluence.Wpf Documentation Frontend
-4200 6:55p 🔵 Fluence.Wpf Documentation Artifacts and Demo Infrastructure Identified
-4201 " 🔵 Fluence.Wpf Documentation Site Structure and Screenshot Placeholders Identified
-4202 " 🔵 Repository Working State: Modified Docs and New Screenshots Directories
-4203 " 🔵 DocFX API Reference Generated with 40+ Control Definitions
-4204 " 🔵 Documentation Site Built and Deployed with Complete Navigation and API Reference
-4205 " 🔵 Complete Screenshot Set Captured: 40 Gallery Pages + MVVM and PowerShell Demos in Light/Dark
-4206 6:56p 🔵 API Reference Enumerations and Configuration Types Generated for Fluence Controls
-4207 " ✅ Front Page Updated with Fluence Banner and Expanded Screenshots Section
-4208 6:57p ✅ CSS Styling Added for Front Page Brand Banner and Screenshot Sections
-4209 6:58p 🟣 Control Documentation Enhanced with Screenshots and API References for All 18 Gallery Categories
-4210 7:00p 🔵 Repository Changes Confirmed: Documentation Files Updated and Screenshot Directories Created
-4211 7:04p 🔵 PowerShell Profile Import Error During Chrome Screenshot Execution
-4212 " 🔵 Screenshot Generated Successfully from Hugo Site
-4214 7:05p 🔵 Hugo Site Structure: Home Page and Controls Page Mismatch Detected
-4215 " 🔵 Controls Documentation Page Structure: 16 Themed Control Galleries with API References
-4216 " 🔵 Hugo Site Configuration: Hextra Theme with DocFX API Integration
-4217 7:06p 🔴 Fixed Broken Screenshot Set Documentation Link
-4218 " 🔵 Hugo Build Successful After Link Fix
-4219 " 🔵 Complete Documentation Build Pipeline Verification
-4220 " 🔵 Corrected Screenshot Link Successfully Rendered in Built HTML
-4221 " 🔵 Screenshot Documentation Link Now Resolves to GitHub Repository
-4222 7:07p ✅ Improved Screenshot Documentation Link with Absolute Hugo Site Path
-4223 " 🔵 Hugo Rebuild Successful After HTML Link Enhancement
-4224 " 🔵 Final Site Structure Verification: All Components Rendered Correctly
-4225 " 🔵 Tall Controls Page Screenshot Captured Successfully
-4226 7:09p 🔴 Fixed horizontal overflow and responsive layout issues in Hugo site CSS
-4227 " 🔵 Hugo build completed successfully after CSS fixes
-4228 " 🔵 Mobile home page screenshot captured successfully
-4229 " 🔵 Mobile controls documentation page screenshot captured successfully
-4230 " 🔵 Mobile home page screenshot verified with responsive layout fixes applied
-4231 7:10p 🔵 Hugo Site DOM Structure Inspection
-4232 " 🔵 Hugo Site Head and Structure Analysis
-**4233** " 🔵 **Hugo Dev Server Build Activity Log**
-The Hugo development server is actively running with hot-reload enabled. Recent activity shows the controls documentation was being edited and custom CSS was modified. Build times are fast (6-482 ms), indicating a healthy development environment. The controls.md file appears to be a key documentation file being actively worked on, with multiple save-and-rebuild cycles suggesting iterative editing.
-~251t 🔍 1,096
-
-**4234** 7:11p 🔴 **Mobile Viewport Overflow and Width Issues Fixed**
-Fixed mobile responsiveness issues where content was overflowing horizontally on smaller viewports. The changes constrain the root html and body elements to viewport width with hidden overflow, then explicitly set content container widths to 100vw with !important flags to override any competing styles. Child elements are also constrained with max-width: 100% and min-width: 0 to prevent content from expanding beyond the viewport. Heading text now wraps properly with overflow-wrap: anywhere to prevent long text from causing layout shifts on mobile devices.
-~358t 🛠️ 1,329
-
-**4235** " 🔵 **Hugo Build Verification Successful**
-The Hugo build verification ran successfully after CSS changes were applied. The site builds cleanly with 14 pages and no errors, indicating that the mobile viewport overflow fixes did not break the build system or create any template/content issues. The build is efficient with fast render times, suggesting the Hextra theme is properly configured. Static file handling and image processing completed without issues.
-~253t 🔍 738
-
-**4236** " 🔵 **Hugo Dev Server Hot Reload of CSS Changes**
-The Hugo development server detected the mobile viewport CSS fixes applied to custom.css and hot-reloaded the site automatically. The fast 8ms rebuild time indicates the asset change was quickly processed and served to connected browsers via live reload, making the UI/UX fixes immediately visible during development.
-~168t 🔍 817
-
-**4237** 7:12p 🔵 **Mobile Screenshot of Fluence.Wpf Homepage**
-Mobile screenshot verification of the Fluence.Wpf homepage captured at 390x1600px resolution shows the site rendering properly on mobile devices. The hero section with "Windows 11 Fluent controls for WPF" messaging is displayed, and the layout appears to respect the mobile viewport constraints. This screenshot serves as visual verification that the CSS mobile overflow fixes applied earlier are functioning correctly and the site displays without horizontal scrolling issues on mobile devices.
-~272t 🔍 130,669
-
-
-Access 376k tokens of past work via get_observations([IDs]) or mem-search skill.
-</claude-mem-context>
+`

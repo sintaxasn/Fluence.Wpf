@@ -1,13 +1,7 @@
-{
+﻿{
   "permissions": {
     "allow": [
-      "mcp__microsoft-learn__*",
-      "mcp__claude_ai_Microsoft_Learn__*",
-      "mcp__HandMirrorMcp__*",
-      "Skill(microsoft-docs:*)",
       "Agent(winui-parity-reviewer)",
-      "Agent(wpf-code-reviewer)",
-      "Agent(wpf-performance-optimizer)"
     ]
   },
   "hooks": {

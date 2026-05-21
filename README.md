@@ -2,25 +2,29 @@
 
 Windows 11 Fluent Design controls and theming for WPF applications targeting **.NET Framework 4.7.2** and **Windows 10** (1809+), with enhanced visuals on **Windows 11**.
 
-**Current build:** `0.5.0` (2026-05-21).
+**Current build:** `0.5.0 preview` (2026-05-21).
 
-**Docs:** [https://sintaxasn.github.io/Fluence.Wpf/](https://sintaxasn.github.io/Fluence.Wpf/) - browsable conceptual guides plus the auto-generated API reference. Markdown sources for the docs site still live under [`docs/`](docs/).
+**Docs:** [https://sintaxasn.github.io/Fluence.Wpf/](https://sintaxasn.github.io/Fluence.Wpf/)
 
 ## Features
 
-- **Theming with auto Light / Dark mode** - Auto (follow Windows theme), Light, Dark or High Contrast theming, with stable `MergedDictionaries` ordering and no dictionary accumulation.
+- **Theming with auto Light / Dark mode** - Auto (follow Windows theme), Light, Dark or High Contrast theming.
 - **Accent colors** - System accent palette, app-defined accent, and custom accent ramps mapped to WinUI-style resource keys.
-- **System theme watcher** - Refresh resources when the user changes Windows theme or accent at runtime.
-- **FluenceWindow** - DWM **Mica**, **Acrylic**, and **Tabbed** backdrops; rounded corners; minimize / maximize / close button availability; extensible title bar for a WinUI-style search box or custom content.
+- **40+ Fluent-styled Controls** - 40+ Fluent-styled controls with accessibility, theming, and features aligned with their WinUI 3 counterparts.
+- **PowerShell / .NET Framework 4.7.2 support** - Build modern-styled UIs for scripts and legacy apps without having to migrate to .NET 5+ or the Windows App SDK.
+- **Incredibly small footprint** at just 600kb!
+
+## Controls
+- **FluenceWindow** - **Mica**, **Acrylic**, and **Tabbed (Mica Alt)** style window with rounded corners; minimize / maximize / close button availability; extensible title bar for a WinUI-style search box or custom content.
 - **Controls** - 40+ Fluent-styled controls: Button, HyperlinkButton, DropDownButton, SplitButton, RepeatButton, ToggleButton, CheckBox, RadioButton, ToggleSwitch, TextBox, PasswordBox, ComboBox, Slider, NumberBox, ProgressBar, ProgressRing, InfoBar, InfoBadge, RatingControl, PersonPicture, ListView, ListBox, Expander, Card (clickable), NavigationView, ContextMenu, MenuItem, Menu, ToolTip, TreeView, TreeViewItem, Separator, FontIcon, Border, StackPanel, DockPanel, SmoothScrollViewer, plus TabView and ScrollBar themes.
-- **Typography** - Attached properties on `TextBlock` for the WinUI type ramp (Caption / Body / BodyStrong / Title / TitleLarge / Display).
+- **Typography** - Styles or Attached properties on `TextBlock` for the WinUI type ramp (Caption / Body / BodyStrong / Title / TitleLarge / Display).
 - **TabView** - Multi-document surface over `TabControl` with per-tab close (`CloseRequested` / `TabCloseRequested`), trailing add-tab button (`AddTabButtonClick`), per-tab icons, `TabWidthMode`, `CloseButtonOverlayMode`, and horizontal overflow scroll.
 - **NavigationView** - `Top`, `Left`, and `LeftCompact` pane modes with animated shared selection indicator, pane toggle + back button in the 48 px rail, and WinUI 3 content-region border (`CornerRadius="8,0,0,0"`, `CardStrokeColorDefault` top/left stroke).
-- **Gallery demo** - Simple WPF code-behind visual-verification app with theme swatches, accent picker, DWM backdrops, grouped control pages (Data Binding, Accessibility, Buttons, Selection, Inputs, Forms, Data, Trees, Navigation, Tabs, Menus, Status, Icons, Settings), inline examples, and embedded source for every example.
-- **MVVM demo** - Minimal Task Manager (`Fluence.Wpf.Demo.Mvvm`) built with CommunityToolkit.Mvvm, showcasing `[ObservableProperty]`, `[RelayCommand]`, filter bindings, and progress reporting with zero code-behind.
-- **PowerShell demo** - Build modern interfaces for your scripts using Windows PowerShell 5.1 without having to install PowerShell 7, .NET 9 / 10 or the Windows App SDK!
-- **Incredibly small footprint** at just 600kb!
-- **Tests** - MSTest suite covering theme stability, accent resolution, window policy, template parts, and control behavior.
+
+## Demos
+- **Gallery** - Simple WPF code-behind visual-verification app with theme swatches, accent picker, DWM backdrops, grouped control pages (Data Binding, Accessibility, Buttons, Selection, Inputs, Forms, Data, Trees, Navigation, Tabs, Menus, Status, Icons, Settings), inline examples, and embedded source for every example.
+- **MVVM Pattern** - Minimal Task Manager (`Fluence.Wpf.Demo.Mvvm`) built with CommunityToolkit.Mvvm, showcasing `[ObservableProperty]`, `[RelayCommand]`, filter bindings, and progress reporting with zero code-behind.
+- **PowerShell** - Build modern interfaces for your scripts using Windows PowerShell 5.1 without having to install PowerShell 7, .NET 9 / 10 or the Windows App SDK!
 
 ## Quick Start
 
@@ -43,10 +47,6 @@ Optional XML namespace mapping:
 xmlns:fluence="http://schemas.fluencewpf.com"
 ```
 
-## Screenshots
-
-The banner above is checked in under `assets/`. Theme-specific gallery captures live under `docs/screenshots/` (`banner-{light|dark|highcontrast}-{1|1.5}x.png`) and are regenerated by `GalleryScreenshotHarness` during full test runs; see [docs/controls.md](docs/controls.md#screenshots) for details. Per-control screenshots for [docs/controls.md](docs/controls.md) are collected under `docs/images/`; capture at 100 % and 150 % scaling when documenting layout-sensitive controls.
-
 ## Controls
 
 | Area                | Types                                                                                                                                       |
@@ -65,24 +65,14 @@ The banner above is checked in under `assets/`. Theme-specific gallery captures 
 | Person / social     | `PersonPicture`                                                                                                                             |
 | Icons               | `FontIcon`                                                                                                                                  |
 
-## Theming
-
-`CaptionButtonChrome` and `WindowPolicy` are internal implementation details used by `FluenceWindow`; they are not consumer-facing controls.
-
-- **ApplicationTheme**: `Light`, `Dark`, `HighContrast`, `Auto`.
-- **BackdropType**: `None`, `Auto`, `Mica`, `Acrylic`, `Tabbed` (for `FluenceWindow`).
-- **Accent**: `ApplicationAccentColorManager.ApplySystemAccent()`, `ApplyApplicationAccent()`, or `ApplyCustomAccent(Color)`.
-- **Live OS changes**: `SystemThemeWatcher.Watch(window)` / `SystemThemeWatcher.UnWatch(window)`.
-
 ## Installation
 
-Clone or submodule this repository and add a **project reference** to `Fluence.Wpf/Fluence.Wpf.csproj`.
-
-NuGet package metadata is present for package id **`Fluence.Wpf`**. Until the first public package is published, use a project reference or a local package:
+NuGet package available soon. For now, use a project reference or a local package:
 
 ```powershell
 dotnet pack Fluence.Wpf/Fluence.Wpf.csproj -c Release -o ./artifacts
 ```
+Alternatively, clone or submodule this repository and add a **project reference** to `Fluence.Wpf/Fluence.Wpf.csproj`.
 
 ## Requirements
 
@@ -133,11 +123,11 @@ The hosted docs site is at [sintaxasn.github.io/Fluence.Wpf](https://sintaxasn.g
 - [Contributing](docs/contributing.md) - build matrix, tests, PR notes
 - [Release checklist](docs/release.md) - package, CI, screenshots, and tag flow
 
-The static site itself is built with Hugo + Hextra and DocFX. Local preview and CI deployment are documented in [`docs-site/README.md`](docs-site/README.md).
-
 ## Contributing
 
-Pull requests are welcome. Use modern C# syntax, keep runtime APIs compatible with `net472`, and match existing patterns for themes and controls. For AI-assisted edits, read [AGENTS.md](AGENTS.md).
+The contributor guide lives at [docs/contributing.md](docs/contributing.md). It covers the build matrix, WPF test harness, visual verification expectations, changelog policy, and documentation rules.
+
+For AI-assisted work, read [AGENTS.md](AGENTS.md) before editing.
 
 ## License
 
