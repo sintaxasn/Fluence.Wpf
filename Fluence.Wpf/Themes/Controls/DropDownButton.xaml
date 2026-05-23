@@ -5,18 +5,16 @@
 
     <Style TargetType="{x:Type controls:DropDownButton}">
         <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource ControlElevationBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Padding" Value="11,5,8,6" />
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
-        <Setter Property="MinHeight" Value="32" />
-        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="CornerRadius" Value="{DynamicResource ControlCornerRadius}" />
         <Setter Property="DropdownCornerRadius" Value="{DynamicResource OverlayCornerRadius}" />
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="Padding" Value="11,5,8,6" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:DropDownButton}">
@@ -102,8 +100,8 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="Appearance" Value="Accent">
                             <Setter Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
                             <Setter Property="BorderBrush" Value="{DynamicResource AccentControlElevationBorderBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
                             <Setter TargetName="Chevron" Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
                         </Trigger>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -119,8 +117,8 @@
                             </MultiTrigger.Conditions>
                             <Setter TargetName="RestFill" Property="Background" Value="{DynamicResource AccentFillColorSecondaryBrush}" />
                             <Setter Property="Background" Value="{DynamicResource AccentFillColorSecondaryBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
                             <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource AccentControlElevationBorderBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
                             <Setter TargetName="Chevron" Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
                         </MultiTrigger>
                         <MultiTrigger>
@@ -130,14 +128,14 @@
                             </MultiTrigger.Conditions>
                             <Setter TargetName="RestFill" Property="Background" Value="{DynamicResource AccentFillColorTertiaryBrush}" />
                             <Setter Property="Background" Value="{DynamicResource AccentFillColorTertiaryBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorSecondaryBrush}" />
                             <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource ControlFillColorTransparentBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorSecondaryBrush}" />
                             <Setter TargetName="Chevron" Property="Foreground" Value="{DynamicResource TextOnAccentFillColorSecondaryBrush}" />
                         </MultiTrigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="RestFill" Property="Background" Value="{DynamicResource ControlFillColorDisabledBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                             <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                             <Setter TargetName="Chevron" Property="Opacity" Value="0.4" />
                         </Trigger>
                         <MultiTrigger>
@@ -146,19 +144,21 @@
                                 <Condition Property="Appearance" Value="Accent" />
                             </MultiTrigger.Conditions>
                             <Setter TargetName="RestFill" Property="Background" Value="{DynamicResource AccentFillColorDisabledBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorDisabledBrush}" />
                             <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource ControlFillColorTransparentBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorDisabledBrush}" />
                             <Setter TargetName="Chevron" Property="Opacity" Value="0.4" />
                         </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
         <Style.Triggers>
             <Trigger Property="Appearance" Value="Accent">
                 <Setter Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}" />
-                <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
                 <Setter Property="BorderBrush" Value="{DynamicResource AccentControlElevationBorderBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
             </Trigger>
         </Style.Triggers>
     </Style>

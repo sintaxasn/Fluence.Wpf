@@ -7,25 +7,22 @@
 
     <!--  TabViewItem: header with icon, content, close button  -->
     <Style TargetType="{x:Type controls:TabViewItem}">
-        <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Padding" Value="12,0,8,0" />
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource DefaultCollectionFocusVisualStyle}" />
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
         <Setter Property="IsTabStop" Value="True" />
+        <Setter Property="Margin" Value="0,0,6,0" />
+        <Setter Property="MaxWidth" Value="240" />
         <Setter Property="MinHeight" Value="40" />
         <Setter Property="MinWidth" Value="100" />
-        <Setter Property="MaxWidth" Value="240" />
-        <Setter Property="Margin" Value="0,0,6,0" />
-        <Setter Property="FocusVisualStyle" Value="{DynamicResource DefaultCollectionFocusVisualStyle}" />
+        <Setter Property="Padding" Value="12,0,8,0" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:TabViewItem}">
-                    <Grid
-                        x:Name="Root"
-                        ClipToBounds="False">
+                    <Grid x:Name="Root" ClipToBounds="False">
                         <Border
                             x:Name="HoverBackground"
                             Background="{DynamicResource SubtleFillColorSecondaryBrush}"
@@ -126,9 +123,9 @@
                         </Trigger>
 
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter Property="Panel.ZIndex" Value="1" />
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
                             <Setter TargetName="SelectedBackground" Property="Opacity" Value="1" />
+                            <Setter Property="Panel.ZIndex" Value="1" />
                             <Trigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard>
@@ -202,6 +199,7 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
 
         <Style.Triggers>
             <DataTrigger Binding="{Binding TabWidthMode, RelativeSource={RelativeSource AncestorType={x:Type controls:TabView}}}" Value="Equal">
@@ -215,18 +213,15 @@
 
     <!--  TabView: horizontally scrollable strip + add button + content  -->
     <Style TargetType="{x:Type controls:TabView}">
-        <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:TabView}">
-                    <Grid
-                        x:Name="RootGrid"
-                        KeyboardNavigation.TabNavigation="Continue">
+                    <Grid x:Name="RootGrid" KeyboardNavigation.TabNavigation="Continue">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
@@ -410,6 +405,7 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
     </Style>
 
 </ResourceDictionary>

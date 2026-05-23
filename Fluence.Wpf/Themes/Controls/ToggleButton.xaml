@@ -5,19 +5,17 @@
     xmlns:fluence="clr-namespace:Fluence.Wpf">
 
     <Style TargetType="{x:Type controls:ToggleButton}">
-        <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource ControlElevationBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Padding" Value="11,5,11,6" />
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
-        <Setter Property="MinHeight" Value="32" />
-        <Setter Property="FontWeight" Value="Normal" />
-        <Setter Property="HorizontalContentAlignment" Value="Center" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="FocusVisualStyle" Value="{DynamicResource DefaultControlFocusVisualStyle}" />
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="Normal" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="Padding" Value="11,5,11,6" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:ToggleButton}">
@@ -84,8 +82,8 @@
                                 <Condition Property="Appearance" Value="{x:Static fluence:ControlAppearance.Standard}" />
                             </MultiTrigger.Conditions>
                             <Setter TargetName="RestFill" Property="Background" Value="{DynamicResource AccentFillColorTertiaryBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
                             <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource AccentControlElevationBorderBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
                             <MultiTrigger.EnterActions>
                                 <BeginStoryboard Storyboard="{StaticResource PressedScaleStoryboard}" />
                             </MultiTrigger.EnterActions>
@@ -102,8 +100,8 @@
                                 <Condition Property="Appearance" Value="{x:Static fluence:ControlAppearance.Standard}" />
                             </MultiTrigger.Conditions>
                             <Setter TargetName="RestFill" Property="Background" Value="{DynamicResource AccentFillColorSecondaryBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
                             <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource AccentControlElevationBorderBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
                         </MultiTrigger>
                         <!--  Checked rest  -->
                         <MultiTrigger>
@@ -112,8 +110,8 @@
                                 <Condition Property="Appearance" Value="{x:Static fluence:ControlAppearance.Standard}" />
                             </MultiTrigger.Conditions>
                             <Setter TargetName="RestFill" Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
                             <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource AccentControlElevationBorderBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
                         </MultiTrigger>
 
                         <!--  Unchecked + pressed  -->
@@ -124,8 +122,8 @@
                                 <Condition Property="Appearance" Value="{x:Static fluence:ControlAppearance.Standard}" />
                             </MultiTrigger.Conditions>
                             <Setter TargetName="RestFill" Property="Background" Value="{DynamicResource ControlFillColorTertiaryBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
                             <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
                             <MultiTrigger.EnterActions>
                                 <BeginStoryboard Storyboard="{StaticResource PressedScaleStoryboard}" />
                             </MultiTrigger.EnterActions>
@@ -151,8 +149,8 @@
                                 <Condition Property="IsEnabled" Value="False" />
                             </MultiTrigger.Conditions>
                             <Setter TargetName="RestFill" Property="Background" Value="{DynamicResource AccentFillColorDisabledBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorDisabledBrush}" />
                             <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource ControlFillColorTransparentBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorDisabledBrush}" />
                         </MultiTrigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
@@ -160,13 +158,15 @@
                                 <Condition Property="IsEnabled" Value="False" />
                             </MultiTrigger.Conditions>
                             <Setter TargetName="RestFill" Property="Background" Value="{DynamicResource ControlFillColorDisabledBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                             <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                         </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
 
 </ResourceDictionary>

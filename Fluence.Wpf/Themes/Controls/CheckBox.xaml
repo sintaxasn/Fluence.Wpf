@@ -4,14 +4,12 @@
     xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
 
     <Style TargetType="{x:Type controls:CheckBox}">
-        <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="FocusVisualStyle" Value="{DynamicResource DefaultControlFocusVisualStyle}" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="FontSize" Value="14" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:CheckBox}">
@@ -88,12 +86,12 @@
                                     Fill="{x:Null}"
                                     Opacity="0"
                                     RenderTransformOrigin="0.5,0.5"
+                                    Stretch="Uniform"
                                     Stroke="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
                                     StrokeEndLineCap="Round"
                                     StrokeLineJoin="Round"
                                     StrokeStartLineCap="Round"
-                                    StrokeThickness="2"
-                                    Stretch="Uniform">
+                                    StrokeThickness="2">
                                     <Path.RenderTransform>
                                         <ScaleTransform ScaleX="1" ScaleY="1" />
                                     </Path.RenderTransform>
@@ -244,11 +242,11 @@
                                 <Condition Property="IsChecked" Value="True" />
                                 <Condition Property="IsEnabled" Value="False" />
                             </MultiTrigger.Conditions>
-                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                             <Setter TargetName="IndicatorChecked" Property="Background" Value="{DynamicResource AccentFillColorDisabledBrush}" />
-                            <Setter TargetName="IndicatorChecked" Property="BorderBrush" Value="{DynamicResource AccentFillColorDisabledBrush}" />
                             <Setter TargetName="IndicatorCheckedHover" Property="Background" Value="{DynamicResource AccentFillColorDisabledBrush}" />
                             <Setter TargetName="IndicatorCheckedPressed" Property="Background" Value="{DynamicResource AccentFillColorDisabledBrush}" />
+                            <Setter TargetName="IndicatorChecked" Property="BorderBrush" Value="{DynamicResource AccentFillColorDisabledBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                             <Setter TargetName="CheckGlyph" Property="Stroke" Value="{DynamicResource TextOnAccentFillColorDisabledBrush}" />
                         </MultiTrigger>
                         <MultiTrigger>
@@ -256,25 +254,27 @@
                                 <Condition Property="IsChecked" Value="{x:Null}" />
                                 <Condition Property="IsEnabled" Value="False" />
                             </MultiTrigger.Conditions>
-                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                             <Setter TargetName="IndicatorChecked" Property="Background" Value="{DynamicResource AccentFillColorDisabledBrush}" />
-                            <Setter TargetName="IndicatorChecked" Property="BorderBrush" Value="{DynamicResource AccentFillColorDisabledBrush}" />
                             <Setter TargetName="IndicatorCheckedHover" Property="Background" Value="{DynamicResource AccentFillColorDisabledBrush}" />
                             <Setter TargetName="IndicatorCheckedPressed" Property="Background" Value="{DynamicResource AccentFillColorDisabledBrush}" />
                             <Setter TargetName="IndeterminateDash" Property="Background" Value="{DynamicResource TextOnAccentFillColorDisabledBrush}" />
+                            <Setter TargetName="IndicatorChecked" Property="BorderBrush" Value="{DynamicResource AccentFillColorDisabledBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                         </MultiTrigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsChecked" Value="False" />
                                 <Condition Property="IsEnabled" Value="False" />
                             </MultiTrigger.Conditions>
-                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                             <Setter TargetName="IndicatorFill" Property="Background" Value="{DynamicResource ControlAltFillColorDisabledBrush}" />
                             <Setter TargetName="IndicatorFill" Property="BorderBrush" Value="{DynamicResource ControlStrongStrokeColorDisabledBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                         </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
 </ResourceDictionary>

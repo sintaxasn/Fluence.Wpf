@@ -13,19 +13,17 @@
         Default size 40×40; override Width/Height for other sizes.
     -->
     <Style TargetType="{x:Type controls:PersonPicture}">
-        <Setter Property="Width" Value="40" />
-        <Setter Property="Height" Value="40" />
-        <Setter Property="MinWidth" Value="24" />
-        <Setter Property="MinHeight" Value="24" />
         <Setter Property="Background" Value="{DynamicResource ControlAltFillColorQuarternaryBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="Height" Value="40" />
         <Setter Property="IsTabStop" Value="False" />
-        <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="MinHeight" Value="24" />
+        <Setter Property="MinWidth" Value="24" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:PersonPicture}">
@@ -53,16 +51,16 @@
                         <!--  Badge: bottom-right corner, AccentFillColorDefaultBrush background.  -->
                         <Grid
                             x:Name="PART_BadgeGrid"
-                            MinWidth="16"
                             Height="16"
+                            MinWidth="16"
                             Margin="0,0,-2,-2"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Bottom"
                             Visibility="Collapsed">
                             <Border
                                 x:Name="PART_BadgeBackground"
-                                MinWidth="16"
                                 Height="16"
+                                MinWidth="16"
                                 Background="{DynamicResource AccentFillColorDefaultBrush}"
                                 BorderBrush="{TemplateBinding Background}"
                                 BorderThickness="2"
@@ -112,6 +110,8 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="Width" Value="40" />
     </Style>
 
 </ResourceDictionary>

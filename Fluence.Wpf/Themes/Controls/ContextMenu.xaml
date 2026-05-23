@@ -16,13 +16,12 @@
     <!--  ContextMenu container  -->
     <!--  ═══════════════════════════════════════════════════════════  -->
     <Style TargetType="{x:Type controls:ContextMenu}">
-        <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorTertiaryBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource SurfaceStrokeColorFlyoutBrush}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="HasDropShadow" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
@@ -42,6 +41,7 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
     </Style>
 
     <!--  ═══════════════════════════════════════════════════════════  -->
@@ -51,12 +51,11 @@
     <!--  appropriate visibility triggers.  -->
     <!--  ═══════════════════════════════════════════════════════════  -->
     <Style TargetType="{x:Type controls:MenuItem}">
-        <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="Background" Value="{DynamicResource SubtleFillColorTransparentBrush}" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="FontSize" Value="14" />
-        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:MenuItem}">
@@ -78,6 +77,34 @@
                                 <!--  Gap + submenu arrow  -->
                                 <ColumnDefinition Width="20" />
                             </Grid.ColumnDefinitions>
+
+                            <!--  Submenu popup  -->
+                            <Popup
+                                x:Name="PART_Popup"
+                                AllowsTransparency="True"
+                                Focusable="False"
+                                IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
+                                Placement="Right"
+                                PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
+                                PopupAnimation="None">
+                                <!--  SubMenuBorder: slide-in from X=-8 on open (167ms ControlFastOutSlowIn).  -->
+                                <Border
+                                    x:Name="SubMenuBorder"
+                                    MinWidth="180"
+                                    Padding="2"
+                                    Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"
+                                    BorderBrush="{DynamicResource SurfaceStrokeColorFlyoutBrush}"
+                                    BorderThickness="1"
+                                    CornerRadius="{DynamicResource OverlayCornerRadius}"
+                                    UseLayoutRounding="True">
+                                    <Border.RenderTransform>
+                                        <TranslateTransform x:Name="SubMenuTranslate" X="-8" />
+                                    </Border.RenderTransform>
+                                    <Grid Grid.IsSharedSizeScope="True">
+                                        <ItemsPresenter x:Name="ItemsPresenter" KeyboardNavigation.DirectionalNavigation="Cycle" />
+                                    </Grid>
+                                </Border>
+                            </Popup>
 
                             <!--  Checkmark (visible when IsChecked=True and no custom Icon)  -->
                             <TextBlock
@@ -134,34 +161,6 @@
                                 Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                 Text="&#xE76C;"
                                 Visibility="Collapsed" />
-
-                            <!--  Submenu popup  -->
-                            <Popup
-                                x:Name="PART_Popup"
-                                AllowsTransparency="True"
-                                Focusable="False"
-                                IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
-                                Placement="Right"
-                                PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
-                                PopupAnimation="None">
-                                <!--  SubMenuBorder: slide-in from X=-8 on open (167ms ControlFastOutSlowIn).  -->
-                                <Border
-                                    x:Name="SubMenuBorder"
-                                    MinWidth="180"
-                                    Padding="2"
-                                    Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"
-                                    BorderBrush="{DynamicResource SurfaceStrokeColorFlyoutBrush}"
-                                    BorderThickness="1"
-                                    CornerRadius="{DynamicResource OverlayCornerRadius}"
-                                    UseLayoutRounding="True">
-                                    <Border.RenderTransform>
-                                        <TranslateTransform x:Name="SubMenuTranslate" X="-8" />
-                                    </Border.RenderTransform>
-                                    <Grid Grid.IsSharedSizeScope="True">
-                                        <ItemsPresenter x:Name="ItemsPresenter" KeyboardNavigation.DirectionalNavigation="Cycle" />
-                                    </Grid>
-                                </Border>
-                            </Popup>
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
@@ -223,15 +222,16 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
     </Style>
 
     <!--  ═══════════════════════════════════════════════════════════  -->
     <!--  Separator  -->
     <!--  ═══════════════════════════════════════════════════════════  -->
     <Style TargetType="{x:Type Separator}">
-        <Setter Property="Margin" Value="4,2" />
-        <Setter Property="Height" Value="1" />
         <Setter Property="Background" Value="{DynamicResource DividerStrokeColorDefaultBrush}" />
+        <Setter Property="Height" Value="1" />
+        <Setter Property="Margin" Value="4,2" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Separator}">

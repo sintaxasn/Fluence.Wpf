@@ -6,12 +6,11 @@
 
     <Style TargetType="{x:Type controls:Card}">
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
-        <Setter Property="Padding" Value="16" />
         <Setter Property="Focusable" Value="False" />
-        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="Padding" Value="16" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:Card}">
@@ -23,9 +22,7 @@
                             x:Name="ShadowHost"
                             Background="Transparent"
                             CornerRadius="{TemplateBinding CornerRadius}">
-                            <Border
-                                x:Name="CardRoot"
-                                CornerRadius="{TemplateBinding CornerRadius}">
+                            <Border x:Name="CardRoot" CornerRadius="{TemplateBinding CornerRadius}">
                                 <Grid>
                                     <Border
                                         x:Name="VariantBackground"
@@ -147,20 +144,20 @@
                                 <Condition Property="Header" Value="{x:Null}" />
                                 <Condition Property="Icon" Value="{x:Null}" />
                             </MultiTrigger.Conditions>
-                            <Setter TargetName="HeaderPanel" Property="Visibility" Value="Collapsed" />
                             <Setter TargetName="HeaderRow" Property="Height" Value="0" />
                             <Setter TargetName="HeaderPanel" Property="Margin" Value="0" />
+                            <Setter TargetName="HeaderPanel" Property="Visibility" Value="Collapsed" />
                         </MultiTrigger>
                         <Trigger Property="Icon" Value="{x:Null}">
-                            <Setter TargetName="IconPresenter" Property="Visibility" Value="Collapsed" />
                             <Setter TargetName="IconPresenter" Property="Margin" Value="0" />
+                            <Setter TargetName="IconPresenter" Property="Visibility" Value="Collapsed" />
                         </Trigger>
                         <Trigger Property="Header" Value="{x:Null}">
                             <Setter TargetName="HeaderPresenter" Property="Visibility" Value="Collapsed" />
                         </Trigger>
                         <Trigger Property="Footer" Value="{x:Null}">
-                            <Setter TargetName="FooterPresenter" Property="Visibility" Value="Collapsed" />
                             <Setter TargetName="FooterPresenter" Property="Margin" Value="0" />
+                            <Setter TargetName="FooterPresenter" Property="Visibility" Value="Collapsed" />
                         </Trigger>
 
                         <Trigger Property="Variant" Value="{x:Static ui:CardVariant.Default}">
@@ -217,8 +214,8 @@
                         </MultiTrigger>
                         <Trigger Property="IsClickable" Value="True">
                             <Setter Property="Cursor" Value="Hand" />
-                            <Setter Property="Focusable" Value="True" />
                             <Setter Property="FocusVisualStyle" Value="{DynamicResource DefaultControlFocusVisualStyle}" />
+                            <Setter Property="Focusable" Value="True" />
                         </Trigger>
 
                         <Trigger Property="IsEnabled" Value="False">
@@ -232,5 +229,6 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
     </Style>
 </ResourceDictionary>

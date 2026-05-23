@@ -13,11 +13,11 @@
     MinWidth="520"
     MinHeight="400"
     d:DataContext="{d:DesignInstance vm:MainViewModel}"
+    CornerStyle="Round"
     ExtendsContentIntoTitleBar="False"
     Icon="Resources/fluence-wpf-appicon-256.ico"
-    UseLayoutRounding="True"
     SystemBackdropType="Mica"
-    CornerStyle="Round"
+    UseLayoutRounding="True"
     mc:Ignorable="d">
 
     <ui:FluenceWindow.Resources>
@@ -105,8 +105,8 @@
                                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding IsCompleted}" Value="True">
-                                                    <Setter Property="TextDecorations" Value="Strikethrough" />
                                                     <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+                                                    <Setter Property="TextDecorations" Value="Strikethrough" />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>

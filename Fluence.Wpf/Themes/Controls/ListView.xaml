@@ -1,12 +1,10 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="clr-namespace:Fluence.Wpf.Controls"
-    >
+    xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
 
     <!--  Group header  -->
     <Style x:Key="ListViewGroupItemStyle" TargetType="{x:Type GroupItem}">
-        <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="Margin" Value="0,0,0,8" />
         <Setter Property="Template">
@@ -17,60 +15,54 @@
                             Margin="0,0,0,4"
                             Padding="12,8"
                             Background="{DynamicResource SubtleFillColorSecondaryBrush}"
-                            CornerRadius="4,4,0,0"
-                            >
+                            CornerRadius="4,4,0,0">
                             <TextBlock
                                 FontFamily="{DynamicResource FluentFontFamily}"
                                 FontSize="13"
                                 FontWeight="SemiBold"
                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Text="{Binding Name}"
-                                />
+                                Text="{Binding Name}" />
                         </Border>
                         <ItemsPresenter />
                     </StackPanel>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
     </Style>
 
     <!--  ListViewItem Style  -->
     <Style x:Key="ListViewItemStyle" TargetType="{x:Type ListViewItem}">
-        <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Padding" Value="12,0,12,0" />
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource DefaultCollectionFocusVisualStyle}" />
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="HorizontalContentAlignment" Value="Left" />
         <Setter Property="Margin" Value="0" />
         <Setter Property="MinHeight" Value="40" />
-        <Setter Property="HorizontalContentAlignment" Value="Left" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="FocusVisualStyle" Value="{DynamicResource DefaultCollectionFocusVisualStyle}" />
+        <Setter Property="Padding" Value="12,0,12,0" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListViewItem}">
                     <Border
                         x:Name="OuterBorder"
                         Background="{TemplateBinding Background}"
-                        CornerRadius="{DynamicResource ControlCornerRadius}"
-                        >
+                        CornerRadius="{DynamicResource ControlCornerRadius}">
                         <Grid>
                             <Border
                                 x:Name="SelectedOverlay"
                                 Background="{DynamicResource SubtleFillColorTransparentBrush}"
                                 CornerRadius="{DynamicResource ControlCornerRadius}"
-                                Opacity="1"
-                                />
+                                Opacity="1" />
                             <ContentPresenter
                                 Margin="{TemplateBinding Padding}"
                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                 VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                 TextElement.FontFamily="{TemplateBinding FontFamily}"
                                 TextElement.FontSize="{TemplateBinding FontSize}"
-                                TextElement.Foreground="{TemplateBinding Foreground}"
-                                />
+                                TextElement.Foreground="{TemplateBinding Foreground}" />
                             <!--  WI-3 C20: WinUI canonical 3×16 accent bar, CornerRadius=1.5.  -->
                             <Border
                                 x:Name="SelectionIndicator"
@@ -81,8 +73,7 @@
                                 Background="{DynamicResource AccentFillColorDefaultBrush}"
                                 CornerRadius="1.5"
                                 Opacity="0"
-                                RenderTransformOrigin="0.5,0.5"
-                                >
+                                RenderTransformOrigin="0.5,0.5">
                                 <Border.RenderTransform>
                                     <TranslateTransform x:Name="SelectionIndicatorTranslate" X="-4" />
                                 </Border.RenderTransform>
@@ -117,15 +108,13 @@
                                             <SplineDoubleKeyFrame
                                                 KeySpline="0.8,0,0,1"
                                                 KeyTime="0:0:0.167"
-                                                Value="1"
-                                                />
+                                                Value="1" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SelectionIndicatorTranslate" Storyboard.TargetProperty="X">
                                             <SplineDoubleKeyFrame
                                                 KeySpline="0.8,0,0,1"
                                                 KeyTime="0:0:0.167"
-                                                Value="0"
-                                                />
+                                                Value="0" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </BeginStoryboard>
@@ -137,14 +126,12 @@
                                             Storyboard.TargetName="SelectionIndicator"
                                             Storyboard.TargetProperty="Opacity"
                                             To="0"
-                                            Duration="0:0:0.12"
-                                            />
+                                            Duration="0:0:0.12" />
                                         <DoubleAnimation
                                             Storyboard.TargetName="SelectionIndicatorTranslate"
                                             Storyboard.TargetProperty="X"
                                             To="-4"
-                                            Duration="0:0:0.12"
-                                            />
+                                            Duration="0:0:0.12" />
                                     </Storyboard>
                                 </BeginStoryboard>
                             </MultiDataTrigger.ExitActions>
@@ -177,27 +164,25 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
 
     <!--  ListView Style  -->
     <Style TargetType="{x:Type controls:ListView}">
-        <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Padding" Value="0" />
-        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
-        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
-        <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
-        <Setter Property="ScrollViewer.PanningMode" Value="Both" />
-        <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
-        <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True" />
-        <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />
-        <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel" />
-        <Setter Property="ItemContainerStyle" Value="{StaticResource ListViewItemStyle}" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="ItemContainerStyle" Value="{StaticResource ListViewItemStyle}" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+        <Setter Property="ScrollViewer.PanningMode" Value="Both" />
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
+        <Setter Property="Stylus.IsFlicksEnabled" Value="False" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:ListView}">
@@ -206,8 +191,7 @@
                         Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="{TemplateBinding CornerRadius}"
-                        >
+                        CornerRadius="{TemplateBinding CornerRadius}">
                         <Grid>
                             <controls:SmoothScrollViewer
                                 Padding="{TemplateBinding Padding}"
@@ -215,16 +199,14 @@
                                 Focusable="False"
                                 HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
                                 PanningMode="{TemplateBinding ScrollViewer.PanningMode}"
-                                VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}"
-                                >
+                                VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}">
                                 <ItemsPresenter />
                             </controls:SmoothScrollViewer>
 
                             <ContentPresenter
                                 HorizontalAlignment="Center"
                                 VerticalAlignment="Center"
-                                Content="{TemplateBinding EmptyContent}"
-                                >
+                                Content="{TemplateBinding EmptyContent}">
                                 <ContentPresenter.Style>
                                     <Style TargetType="ContentPresenter">
                                         <Setter Property="Visibility" Value="Collapsed" />
@@ -244,6 +226,10 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True" />
+        <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel" />
+        <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling" />
     </Style>
 
 </ResourceDictionary>

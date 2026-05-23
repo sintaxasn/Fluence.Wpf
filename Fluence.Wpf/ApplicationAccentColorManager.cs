@@ -316,15 +316,35 @@ namespace Fluence.Wpf
             resources["SystemAccentColorDark1Brush"] = new SolidColorBrush(SystemAccentColorDark1);
             resources["SystemAccentColorDark2Brush"] = new SolidColorBrush(SystemAccentColorDark2);
             resources["SystemAccentColorDark3Brush"] = new SolidColorBrush(SystemAccentColorDark3);
-            resources["SystemAccentColorPrimaryBrush"] = new SolidColorBrush(SystemAccentColorPrimary);
-            resources["SystemAccentColorSecondaryBrush"] = new SolidColorBrush(SystemAccentColorSecondary);
-            resources["SystemAccentColorTertiaryBrush"] = new SolidColorBrush(SystemAccentColorTertiary);
-            resources["AccentFillColorDefault"] = SystemAccentColorPrimary;
-            resources["AccentFillColorSecondary"] = HsvColorHelper.WithAlpha(SystemAccentColorPrimary, 0xE6);
-            resources["AccentFillColorTertiary"] = HsvColorHelper.WithAlpha(SystemAccentColorPrimary, 0xCC);
-            resources["AccentFillColorDefaultBrush"] = new SolidColorBrush(SystemAccentColorPrimary);
-            resources["AccentFillColorSecondaryBrush"] = new SolidColorBrush(HsvColorHelper.WithAlpha(SystemAccentColorPrimary, 0xE6));
-            resources["AccentFillColorTertiaryBrush"] = new SolidColorBrush(HsvColorHelper.WithAlpha(SystemAccentColorPrimary, 0xCC));
+
+            bool isDark = ApplicationThemeManager.GetResolvedTheme() == ApplicationTheme.Dark;
+            if (isDark)
+            {
+                resources["SystemAccentColorPrimaryBrush"] = new SolidColorBrush(SystemAccentColorDark3);
+                resources["SystemAccentColorSecondaryBrush"] = new SolidColorBrush(SystemAccentColorDark3);
+                resources["SystemAccentColorTertiaryBrush"] = new SolidColorBrush(SystemAccentColorLight2);
+                resources["AccentFillColorDefault"] = SystemAccentColorLight2;
+                resources["AccentFillColorSecondary"] = HsvColorHelper.WithAlpha(SystemAccentColorLight2, 0xE6);
+                resources["AccentFillColorTertiary"] = HsvColorHelper.WithAlpha(SystemAccentColorLight2, 0xCC);
+                resources["AccentFillColorDefaultBrush"] = new SolidColorBrush(SystemAccentColorLight2);
+                resources["AccentFillColorSecondaryBrush"] =
+                    new SolidColorBrush(HsvColorHelper.WithAlpha(SystemAccentColorLight2, 0xE6));
+                resources["AccentFillColorTertiaryBrush"] =
+                    new SolidColorBrush(HsvColorHelper.WithAlpha(SystemAccentColorLight2, 0xCC));
+            }
+            else
+            {
+                resources["SystemAccentColorPrimaryBrush"] = new SolidColorBrush(SystemAccentColorDark2);
+                resources["SystemAccentColorSecondaryBrush"] = new SolidColorBrush(SystemAccentColorDark3);
+                resources["SystemAccentColorTertiaryBrush"] = new SolidColorBrush(SystemAccentColorDark1);
+                resources["AccentFillColorDefault"] = SystemAccentColorDark1;
+                resources["AccentFillColorSecondary"] = HsvColorHelper.WithAlpha(SystemAccentColorDark1, 0xE6);
+                resources["AccentFillColorTertiary"] = HsvColorHelper.WithAlpha(SystemAccentColorDark1, 0xCC);
+                resources["AccentFillColorDefaultBrush"] = new SolidColorBrush(SystemAccentColorDark1);
+                resources["AccentFillColorSecondaryBrush"] = new SolidColorBrush(HsvColorHelper.WithAlpha(SystemAccentColorDark1, 0xE6));
+                resources["AccentFillColorTertiaryBrush"] = new SolidColorBrush(HsvColorHelper.WithAlpha(SystemAccentColorDark1, 0xCC));
+            }
+
             ApplicationTheme resolvedTheme = ApplicationThemeManager.GetResolvedTheme();
             UpdateDisabledAccentFill(resources, resolvedTheme);
             UpdateSystemAttentionFill(resources, resolvedTheme);

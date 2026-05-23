@@ -4,21 +4,16 @@
     xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
 
     <Style x:Key="TitleBarGlyphButtonStyle" TargetType="{x:Type Button}">
-        <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="Background" Value="{DynamicResource SubtleFillColorTransparentBrush}" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Padding" Value="0" />
-        <Setter Property="Margin" Value="0" />
-        <Setter Property="Width" Value="42" />
-        <Setter Property="Height" Value="36" />
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource DefaultControlFocusVisualStyle}" />
         <Setter Property="FontFamily" Value="Segoe Fluent Icons" />
         <Setter Property="FontSize" Value="16" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="Height" Value="36" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
-        <Setter Property="FocusVisualStyle" Value="{DynamicResource DefaultControlFocusVisualStyle}" />
+        <Setter Property="Margin" Value="0" />
+        <Setter Property="Padding" Value="0" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
@@ -54,23 +49,26 @@
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                             <Setter TargetName="ButtonRoot" Property="Background" Value="{DynamicResource SubtleFillColorDisabledBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Width" Value="42" />
+        <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
     </Style>
 
     <Style TargetType="{x:Type controls:TitleBar}">
-        <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="Background" Value="{DynamicResource ControlFillColorTransparentBrush}" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="Height" Value="48" />
         <Setter Property="HorizontalAlignment" Value="Stretch" />
-        <Setter Property="VerticalAlignment" Value="Top" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:TitleBar}">
@@ -93,13 +91,25 @@
                             <ColumnDefinition x:Name="RightPaddingColumn" Width="0" />
                         </Grid.ColumnDefinitions>
 
+                        <ContentPresenter
+                            x:Name="PART_ContentPresenter"
+                            Grid.Column="0"
+                            Grid.ColumnSpan="11"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Panel.ZIndex="1"
+                            Content="{TemplateBinding Content}"
+                            ContentStringFormat="{TemplateBinding ContentStringFormat}"
+                            ContentTemplate="{TemplateBinding ContentTemplate}"
+                            ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}" />
+
                         <Button
                             x:Name="PART_BackButton"
                             Grid.Column="1"
-                            Content="&#xE72B;"
                             Width="36"
                             Height="32"
                             Margin="6,0,0,0"
+                            Content="&#xE72B;"
                             Style="{StaticResource TitleBarGlyphButtonStyle}"
                             ToolTip="Back"
                             Visibility="Collapsed" />
@@ -107,8 +117,8 @@
                         <Button
                             x:Name="PART_PaneToggleButton"
                             Grid.Column="2"
-                            Content="&#xE700;"
                             Margin="4,0,0,0"
+                            Content="&#xE700;"
                             Style="{StaticResource TitleBarGlyphButtonStyle}"
                             ToolTip="Navigation"
                             Visibility="Collapsed" />
@@ -157,18 +167,6 @@
                             TextWrapping="NoWrap" />
 
                         <ContentPresenter
-                            x:Name="PART_ContentPresenter"
-                            Grid.Column="0"
-                            Grid.ColumnSpan="11"
-                            Panel.ZIndex="1"
-                            HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Content="{TemplateBinding Content}"
-                            ContentStringFormat="{TemplateBinding ContentStringFormat}"
-                            ContentTemplate="{TemplateBinding ContentTemplate}"
-                            ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}" />
-
-                        <ContentPresenter
                             x:Name="PART_RightHeaderPresenter"
                             Grid.Column="9"
                             HorizontalAlignment="Right"
@@ -211,6 +209,8 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="VerticalAlignment" Value="Top" />
     </Style>
 
 </ResourceDictionary>

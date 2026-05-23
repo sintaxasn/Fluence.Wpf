@@ -5,17 +5,15 @@
     xmlns:fluence="clr-namespace:Fluence.Wpf">
 
     <Style x:Key="NumberBoxSpinButton" TargetType="{x:Type RepeatButton}">
-        <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Width" Value="32" />
-        <Setter Property="Height" Value="30" />
-        <Setter Property="Focusable" Value="True" />
-        <Setter Property="IsTabStop" Value="False" />
         <!--  Fire Click immediately on MouseDown so a quick press-release registers  -->
         <!--  (default Release mode waits for the internal timer's first tick).  -->
         <Setter Property="ClickMode" Value="Press" />
+        <Setter Property="Focusable" Value="True" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+        <Setter Property="Height" Value="30" />
+        <Setter Property="IsTabStop" Value="False" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
@@ -39,10 +37,19 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="Width" Value="32" />
     </Style>
 
     <Style TargetType="{x:Type controls:NumberBox}">
-        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource TextControlElevationBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
         <!--
             IsTabStop=False: the outer NumberBox shell must not be a tab stop.
             Focus is hosted by PART_TextBox (inner element).  Without this,
@@ -51,18 +58,9 @@
             that prevents Shift+Tab from escaping to the previous outer control.
         -->
         <Setter Property="IsTabStop" Value="False" />
-        <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource TextControlElevationBorderBrush}" />
-        <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Padding" Value="10,5,6,6" />
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="MinHeight" Value="32" />
         <Setter Property="MinWidth" Value="100" />
-        <Setter Property="HorizontalAlignment" Value="Left" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Padding" Value="10,5,6,6" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:NumberBox}">
@@ -206,34 +204,36 @@
                             <Setter TargetName="SpinPanel" Property="Visibility" Value="Collapsed" />
                         </Trigger>
                         <Trigger Property="SpinButtonPlacementMode" Value="{x:Static fluence:SpinButtonPlacementMode.Compact}">
-                            <Setter TargetName="SpinPanel" Property="Opacity" Value="0" />
                             <Setter TargetName="SpinPanel" Property="IsHitTestVisible" Value="False" />
+                            <Setter TargetName="SpinPanel" Property="Opacity" Value="0" />
                         </Trigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="SpinButtonPlacementMode" Value="{x:Static fluence:SpinButtonPlacementMode.Compact}" />
                                 <Condition Property="IsMouseOver" Value="True" />
                             </MultiTrigger.Conditions>
-                            <Setter TargetName="SpinPanel" Property="Opacity" Value="1" />
                             <Setter TargetName="SpinPanel" Property="IsHitTestVisible" Value="True" />
+                            <Setter TargetName="SpinPanel" Property="Opacity" Value="1" />
                         </MultiTrigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="SpinButtonPlacementMode" Value="{x:Static fluence:SpinButtonPlacementMode.Compact}" />
                                 <Condition Property="IsKeyboardFocusWithin" Value="True" />
                             </MultiTrigger.Conditions>
-                            <Setter TargetName="SpinPanel" Property="Opacity" Value="1" />
                             <Setter TargetName="SpinPanel" Property="IsHitTestVisible" Value="True" />
+                            <Setter TargetName="SpinPanel" Property="Opacity" Value="1" />
                         </MultiTrigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="MainBorder" Property="Background" Value="{DynamicResource ControlFillColorDisabledBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                             <Setter TargetName="MainBorder" Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
 </ResourceDictionary>

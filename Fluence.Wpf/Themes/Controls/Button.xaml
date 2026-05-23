@@ -4,28 +4,23 @@
     xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
 
     <Style TargetType="{x:Type controls:Button}">
-        <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource ControlElevationBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Padding" Value="11,5,11,6" />
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
-        <Setter Property="MinWidth" Value="110" />
-        <Setter Property="MinHeight" Value="32" />
-        <Setter Property="FontWeight" Value="Normal" />
-        <Setter Property="HorizontalAlignment" Value="Left" />
-        <Setter Property="VerticalAlignment" Value="Center" />
-        <Setter Property="HorizontalContentAlignment" Value="Center" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="FocusVisualStyle" Value="{DynamicResource DefaultControlFocusVisualStyle}" />
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="Normal" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Left" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="MinWidth" Value="110" />
+        <Setter Property="Padding" Value="11,5,11,6" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:Button}">
-                    <Grid
-                        x:Name="Root"
-                        RenderTransformOrigin="0.5,0.5">
+                    <Grid x:Name="Root" RenderTransformOrigin="0.5,0.5">
                         <Grid.RenderTransform>
                             <ScaleTransform x:Name="PressScale" ScaleX="1" ScaleY="1" />
                         </Grid.RenderTransform>
@@ -48,6 +43,14 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
                             <ContentPresenter
+                                x:Name="IconPresenter"
+                                Grid.Column="0"
+                                Margin="0,0,8,0"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"
+                                Content="{TemplateBinding Icon}"
+                                Visibility="Collapsed" />
+                            <ContentPresenter
                                 x:Name="MainContentPresenter"
                                 Grid.Column="1"
                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
@@ -63,14 +66,6 @@
                                     </Style>
                                 </ContentPresenter.Resources>
                             </ContentPresenter>
-                            <ContentPresenter
-                                x:Name="IconPresenter"
-                                Grid.Column="0"
-                                Margin="0,0,8,0"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Content="{TemplateBinding Icon}"
-                                Visibility="Collapsed" />
                         </Grid>
                     </Grid>
                     <ControlTemplate.Resources>
@@ -106,8 +101,8 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IconPlacement" Value="Left">
                             <Setter TargetName="IconPresenter" Property="Grid.Column" Value="0" />
-                            <Setter TargetName="IconPresenter" Property="Margin" Value="0,0,8,0" />
                             <Setter TargetName="MainContentPresenter" Property="Grid.Column" Value="1" />
+                            <Setter TargetName="IconPresenter" Property="Margin" Value="0,0,8,0" />
                             <Setter TargetName="IconPresenter" Property="Visibility" Value="Visible" />
                         </Trigger>
                         <Trigger Property="IconPlacement" Value="Right">
@@ -132,8 +127,8 @@
 
                         <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="RestFill" Property="Background" Value="{DynamicResource ControlFillColorTertiaryBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
                             <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
                             <Trigger.EnterActions>
                                 <BeginStoryboard Storyboard="{StaticResource PressedScaleStoryboard}" />
                             </Trigger.EnterActions>
@@ -148,8 +143,8 @@
                             </MultiTrigger.Conditions>
                             <Setter TargetName="RestFill" Property="Background" Value="{DynamicResource AccentFillColorSecondaryBrush}" />
                             <Setter Property="Background" Value="{DynamicResource AccentFillColorSecondaryBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
                             <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource AccentControlElevationBorderBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
                         </MultiTrigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
@@ -157,8 +152,8 @@
                                 <Condition Property="Appearance" Value="Subtle" />
                             </MultiTrigger.Conditions>
                             <Setter TargetName="RestFill" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
                             <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
                         </MultiTrigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
@@ -167,8 +162,8 @@
                             </MultiTrigger.Conditions>
                             <Setter TargetName="RestFill" Property="Background" Value="{DynamicResource AccentFillColorTertiaryBrush}" />
                             <Setter Property="Background" Value="{DynamicResource AccentFillColorTertiaryBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorSecondaryBrush}" />
                             <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource ControlFillColorTransparentBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorSecondaryBrush}" />
                         </MultiTrigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
@@ -176,14 +171,14 @@
                                 <Condition Property="Appearance" Value="Subtle" />
                             </MultiTrigger.Conditions>
                             <Setter TargetName="RestFill" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
                             <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
                         </MultiTrigger>
 
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="RestFill" Property="Background" Value="{DynamicResource ControlFillColorDisabledBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                             <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                             <Setter TargetName="IconPresenter" Property="Opacity" Value="0.4" />
                         </Trigger>
                         <MultiTrigger>
@@ -192,8 +187,8 @@
                                 <Condition Property="Appearance" Value="Accent" />
                             </MultiTrigger.Conditions>
                             <Setter TargetName="RestFill" Property="Background" Value="{DynamicResource AccentFillColorDisabledBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorDisabledBrush}" />
                             <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource ControlFillColorTransparentBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorDisabledBrush}" />
                             <Setter TargetName="IconPresenter" Property="Opacity" Value="0.4" />
                         </MultiTrigger>
                         <MultiTrigger>
@@ -202,24 +197,27 @@
                                 <Condition Property="Appearance" Value="Subtle" />
                             </MultiTrigger.Conditions>
                             <Setter TargetName="RestFill" Property="Background" Value="{DynamicResource SubtleFillColorTransparentBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                             <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource SubtleFillColorTransparentBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                             <Setter TargetName="IconPresenter" Property="Opacity" Value="0.4" />
                         </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
         <Style.Triggers>
             <Trigger Property="Appearance" Value="Accent">
                 <Setter Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}" />
-                <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
                 <Setter Property="BorderBrush" Value="{DynamicResource AccentControlElevationBorderBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
             </Trigger>
             <Trigger Property="Appearance" Value="Subtle">
                 <Setter Property="Background" Value="{DynamicResource SubtleFillColorTransparentBrush}" />
-                <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
                 <Setter Property="BorderBrush" Value="{DynamicResource SubtleFillColorTransparentBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
             </Trigger>
             <MultiTrigger>
                 <MultiTrigger.Conditions>
@@ -227,8 +225,8 @@
                     <Condition Property="Appearance" Value="Accent" />
                 </MultiTrigger.Conditions>
                 <Setter Property="Background" Value="{DynamicResource AccentFillColorDisabledBrush}" />
-                <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorDisabledBrush}" />
                 <Setter Property="BorderBrush" Value="{DynamicResource ControlFillColorTransparentBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorDisabledBrush}" />
             </MultiTrigger>
             <MultiTrigger>
                 <MultiTrigger.Conditions>
@@ -236,8 +234,8 @@
                     <Condition Property="Appearance" Value="Subtle" />
                 </MultiTrigger.Conditions>
                 <Setter Property="Background" Value="{DynamicResource SubtleFillColorTransparentBrush}" />
-                <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                 <Setter Property="BorderBrush" Value="{DynamicResource SubtleFillColorTransparentBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
             </MultiTrigger>
         </Style.Triggers>
     </Style>

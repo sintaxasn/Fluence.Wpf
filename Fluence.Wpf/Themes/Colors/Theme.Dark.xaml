@@ -141,6 +141,22 @@
     <Color x:Key="WindowCloseForegroundHover">#FFFFFFFF</Color>
     <Color x:Key="WindowCloseForegroundPressed">#FFFFFFFF</Color>
 
+    <!--  Accent fill brushes  -->
+    <SolidColorBrush x:Key="AccentFillColorDefaultBrush" Color="{DynamicResource SystemAccentColorLight2}" />
+    <SolidColorBrush x:Key="AccentFillColorSecondaryBrush" Color="{DynamicResource SystemAccentColorLight2}" Opacity=".9" />
+    <SolidColorBrush x:Key="AccentFillColorTertiaryBrush" Color="{DynamicResource SystemAccentColorLight2}" Opacity=".8" />
+    <SolidColorBrush x:Key="AccentFillColorDisabledBrush" Color="{DynamicResource AccentFillColorDisabled}" />
+
+    <!--  Accent Text Fill Colors  -->
+    <SolidColorBrush x:Key="AccentTextFillColorPrimaryBrush" Color="{DynamicResource SystemAccentColorLight3}" />
+    <SolidColorBrush x:Key="AccentTextFillColorSecondaryBrush" Color="{DynamicResource SystemAccentColorLight3}" />
+    <SolidColorBrush x:Key="AccentTextFillColorTertiaryBrush" Color="{DynamicResource AccentFillColorLight2}" />
+
+    <SolidColorBrush x:Key="SystemFillColorAttentionBrush" Color="{DynamicResource SystemAccentColorLight2}" />
+    <SolidColorBrush x:Key="SystemFillColorSuccessBrush" Color="{StaticResource SystemFillColorSuccess}" />
+    <SolidColorBrush x:Key="SystemFillColorCautionBrush" Color="{StaticResource SystemFillColorCaution}" />
+    <SolidColorBrush x:Key="SystemFillColorCriticalBrush" Color="{StaticResource SystemFillColorCritical}" />
+
     <!--  Accent Fill Colors  -->
     <Color x:Key="AccentFillColorDisabled">#28FFFFFF</Color>
 

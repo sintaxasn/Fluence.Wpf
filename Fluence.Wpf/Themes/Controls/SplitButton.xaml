@@ -6,28 +6,26 @@
     <!--
         WinUI 3 SplitButton reference:
         https://github.com/microsoft/microsoft-ui-xaml/blob/main/src/controls/dev/CommonStyles/SplitButton.xaml
-
+        
         Two halves share a single outer outline:
         * Primary half  (left)  - fires Click / Command.
         * Secondary half (right) - ToggleButton that opens PART_Popup containing Flyout.
-
+        
         The halves are separated by a 1px divider stroke. Each half has its own fill
         Border so IsMouseOver / IsPressed tints apply per-half without leaking.
     -->
     <Style TargetType="{x:Type controls:SplitButton}">
         <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource ControlElevationBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Padding" Value="11,5,11,6" />
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
-        <Setter Property="MinHeight" Value="32" />
-        <Setter Property="HorizontalContentAlignment" Value="Center" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="Focusable" Value="False" />
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="Padding" Value="11,5,11,6" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:SplitButton}">
@@ -49,10 +47,10 @@
                                     <Setter Property="Background" Value="Transparent" />
                                     <Setter Property="BorderBrush" Value="Transparent" />
                                     <Setter Property="BorderThickness" Value="0" />
-                                    <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type controls:SplitButton}}}" />
+                                    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
                                     <Setter Property="FontFamily" Value="{Binding FontFamily, RelativeSource={RelativeSource AncestorType={x:Type controls:SplitButton}}}" />
                                     <Setter Property="FontSize" Value="{Binding FontSize, RelativeSource={RelativeSource AncestorType={x:Type controls:SplitButton}}}" />
-                                    <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+                                    <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type controls:SplitButton}}}" />
                                     <Setter Property="Template">
                                         <Setter.Value>
                                             <ControlTemplate TargetType="{x:Type Button}">
@@ -95,6 +93,36 @@
                                 CornerRadius="4,0,0,4"
                                 IsHitTestVisible="False" />
 
+                            <Border
+                                x:Name="PrimaryFocusOuter"
+                                Grid.Column="0"
+                                Margin="-3"
+                                BorderBrush="{DynamicResource FocusStrokeColorOuterBrush}"
+                                BorderThickness="2"
+                                CornerRadius="4,0,0,4"
+                                IsHitTestVisible="False"
+                                Opacity="0" />
+                            <Border
+                                x:Name="PrimaryFocusInner"
+                                Grid.Column="0"
+                                Margin="-2"
+                                BorderBrush="{DynamicResource FocusStrokeColorInnerBrush}"
+                                BorderThickness="1"
+                                CornerRadius="4,0,0,4"
+                                IsHitTestVisible="False"
+                                Opacity="0" />
+
+                            <!--  Primary hit target. Stays transparent - visuals come from PrimaryFill.  -->
+                            <Button
+                                x:Name="PART_PrimaryButton"
+                                Grid.Column="0"
+                                Padding="{TemplateBinding Padding}"
+                                HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
+                                Content="{TemplateBinding Content}"
+                                ContentTemplate="{TemplateBinding ContentTemplate}"
+                                IsTabStop="True" />
+
                             <!--  Divider stroke between halves.  -->
                             <Rectangle
                                 x:Name="Divider"
@@ -115,25 +143,6 @@
                                 BorderThickness="0,1,1,1"
                                 CornerRadius="0,4,4,0"
                                 IsHitTestVisible="False" />
-
-                            <Border
-                                x:Name="PrimaryFocusOuter"
-                                Grid.Column="0"
-                                Margin="-3"
-                                BorderBrush="{DynamicResource FocusStrokeColorOuterBrush}"
-                                BorderThickness="2"
-                                CornerRadius="4,0,0,4"
-                                IsHitTestVisible="False"
-                                Opacity="0" />
-                            <Border
-                                x:Name="PrimaryFocusInner"
-                                Grid.Column="0"
-                                Margin="-2"
-                                BorderBrush="{DynamicResource FocusStrokeColorInnerBrush}"
-                                BorderThickness="1"
-                                CornerRadius="4,0,0,4"
-                                IsHitTestVisible="False"
-                                Opacity="0" />
                             <Border
                                 x:Name="SecondaryFocusOuter"
                                 Grid.Column="2"
@@ -152,17 +161,6 @@
                                 CornerRadius="0,4,4,0"
                                 IsHitTestVisible="False"
                                 Opacity="0" />
-
-                            <!--  Primary hit target. Stays transparent - visuals come from PrimaryFill.  -->
-                            <Button
-                                x:Name="PART_PrimaryButton"
-                                Grid.Column="0"
-                                Padding="{TemplateBinding Padding}"
-                                HorizontalContentAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                VerticalContentAlignment="{TemplateBinding VerticalContentAlignment}"
-                                Content="{TemplateBinding Content}"
-                                ContentTemplate="{TemplateBinding ContentTemplate}"
-                                IsTabStop="True" />
 
                             <!--  Secondary hit target (chevron toggles PART_Popup).  -->
                             <ToggleButton
@@ -264,11 +262,11 @@
                             stroke colours also shift to the accent palette.
                         -->
                         <Trigger Property="Appearance" Value="Accent">
-                            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
                             <Setter TargetName="PrimaryStroke" Property="BorderBrush" Value="{DynamicResource AccentControlElevationBorderBrush}" />
                             <Setter TargetName="SecondaryStroke" Property="BorderBrush" Value="{DynamicResource AccentControlElevationBorderBrush}" />
                             <!--  Core B17 fix: accent divider colour.  -->
                             <Setter TargetName="Divider" Property="Fill" Value="{DynamicResource ControlStrokeColorOnAccentSecondaryBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
                         </Trigger>
 
                         <!--  Accent + primary hover.  -->
@@ -319,19 +317,21 @@
                             </MultiTrigger.Conditions>
                             <Setter TargetName="PrimaryFill" Property="Background" Value="{DynamicResource AccentFillColorDisabledBrush}" />
                             <Setter TargetName="SecondaryFill" Property="Background" Value="{DynamicResource AccentFillColorDisabledBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorDisabledBrush}" />
                             <Setter TargetName="PrimaryStroke" Property="BorderBrush" Value="{DynamicResource ControlFillColorTransparentBrush}" />
                             <Setter TargetName="SecondaryStroke" Property="BorderBrush" Value="{DynamicResource ControlFillColorTransparentBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorDisabledBrush}" />
                         </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
         <Style.Triggers>
             <Trigger Property="Appearance" Value="Accent">
                 <Setter Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}" />
-                <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
                 <Setter Property="BorderBrush" Value="{DynamicResource AccentControlElevationBorderBrush}" />
+                <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
             </Trigger>
         </Style.Triggers>
     </Style>

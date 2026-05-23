@@ -26,19 +26,16 @@
     </Style>
 
     <Style TargetType="{x:Type controls:InfoBar}">
-        <Setter Property="UseLayoutRounding" Value="True" />
         <Setter Property="Background" Value="{DynamicResource SystemFillColorAttentionBackgroundBrush}" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Padding" Value="12,10" />
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
-        <Setter Property="HorizontalAlignment" Value="Stretch" />
-        <Setter Property="VerticalAlignment" Value="Top" />
         <Setter Property="Focusable" Value="False" />
-        <Setter Property="Visibility" Value="Collapsed" />
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
         <Setter Property="Opacity" Value="0" />
+        <Setter Property="Padding" Value="12,10" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:InfoBar}">
@@ -218,8 +215,8 @@
                     <ControlTemplate.Triggers>
                         <!--  IsOpen: visible state + open/close animation  -->
                         <Trigger Property="IsOpen" Value="True">
-                            <Setter Property="Visibility" Value="Visible" />
                             <Setter Property="Opacity" Value="1" />
+                            <Setter Property="Visibility" Value="Visible" />
                             <Trigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard>
@@ -260,8 +257,8 @@
 
                         <!--  IsIconVisible hidden  -->
                         <Trigger Property="IsIconVisible" Value="False">
-                            <Setter TargetName="IconArea" Property="Visibility" Value="Collapsed" />
                             <Setter TargetName="IconArea" Property="Margin" Value="0" />
+                            <Setter TargetName="IconArea" Property="Visibility" Value="Collapsed" />
                         </Trigger>
 
                         <!--  Custom icon override: when Icon is null show default, otherwise show custom  -->
@@ -280,50 +277,50 @@
 
                         <!--  Message empty → collapse  -->
                         <Trigger Property="Message" Value="{x:Null}">
-                            <Setter TargetName="MessageTextBlock" Property="Visibility" Value="Collapsed" />
                             <Setter TargetName="MessageTextBlock" Property="Margin" Value="0" />
+                            <Setter TargetName="MessageTextBlock" Property="Visibility" Value="Collapsed" />
                         </Trigger>
                         <Trigger Property="Message" Value="">
-                            <Setter TargetName="MessageTextBlock" Property="Visibility" Value="Collapsed" />
                             <Setter TargetName="MessageTextBlock" Property="Margin" Value="0" />
+                            <Setter TargetName="MessageTextBlock" Property="Visibility" Value="Collapsed" />
                         </Trigger>
 
                         <!--  ActionButton empty → collapse  -->
                         <Trigger Property="ActionButton" Value="{x:Null}">
-                            <Setter TargetName="ActionPresenter" Property="Visibility" Value="Collapsed" />
                             <Setter TargetName="ActionPresenter" Property="Margin" Value="0" />
+                            <Setter TargetName="ActionPresenter" Property="Visibility" Value="Collapsed" />
                         </Trigger>
 
                         <!--  Severity: Informational (default)  -->
                         <Trigger Property="Severity" Value="{x:Static ui:InfoBarSeverity.Informational}">
                             <Setter Property="Background" Value="{DynamicResource SystemFillColorAttentionBackgroundBrush}" />
                             <Setter TargetName="IndicatorBar" Property="Background" Value="{DynamicResource SystemFillColorAttentionBrush}" />
-                            <Setter TargetName="DefaultIcon" Property="Text" Value="&#xE946;" />
                             <Setter TargetName="DefaultIcon" Property="Foreground" Value="{DynamicResource SystemFillColorAttentionBrush}" />
+                            <Setter TargetName="DefaultIcon" Property="Text" Value="&#xE946;" />
                         </Trigger>
 
                         <!--  Severity: Success  -->
                         <Trigger Property="Severity" Value="{x:Static ui:InfoBarSeverity.Success}">
                             <Setter Property="Background" Value="{DynamicResource SystemFillColorSuccessBackgroundBrush}" />
                             <Setter TargetName="IndicatorBar" Property="Background" Value="{DynamicResource SystemFillColorSuccessBrush}" />
-                            <Setter TargetName="DefaultIcon" Property="Text" Value="&#xE73E;" />
                             <Setter TargetName="DefaultIcon" Property="Foreground" Value="{DynamicResource SystemFillColorSuccessBrush}" />
+                            <Setter TargetName="DefaultIcon" Property="Text" Value="&#xE73E;" />
                         </Trigger>
 
                         <!--  Severity: Warning  -->
                         <Trigger Property="Severity" Value="{x:Static ui:InfoBarSeverity.Warning}">
                             <Setter Property="Background" Value="{DynamicResource SystemFillColorCautionBackgroundBrush}" />
                             <Setter TargetName="IndicatorBar" Property="Background" Value="{DynamicResource SystemFillColorCautionBrush}" />
-                            <Setter TargetName="DefaultIcon" Property="Text" Value="&#xE7BA;" />
                             <Setter TargetName="DefaultIcon" Property="Foreground" Value="{DynamicResource SystemFillColorCautionBrush}" />
+                            <Setter TargetName="DefaultIcon" Property="Text" Value="&#xE7BA;" />
                         </Trigger>
 
                         <!--  Severity: Error  -->
                         <Trigger Property="Severity" Value="{x:Static ui:InfoBarSeverity.Error}">
                             <Setter Property="Background" Value="{DynamicResource SystemFillColorCriticalBackgroundBrush}" />
                             <Setter TargetName="IndicatorBar" Property="Background" Value="{DynamicResource SystemFillColorCriticalBrush}" />
-                            <Setter TargetName="DefaultIcon" Property="Text" Value="&#xEA39;" />
                             <Setter TargetName="DefaultIcon" Property="Foreground" Value="{DynamicResource SystemFillColorCriticalBrush}" />
+                            <Setter TargetName="DefaultIcon" Property="Text" Value="&#xEA39;" />
                         </Trigger>
 
                         <!--  Close button hover  -->
@@ -337,6 +334,9 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="VerticalAlignment" Value="Top" />
+        <Setter Property="Visibility" Value="Collapsed" />
     </Style>
 
 </ResourceDictionary>

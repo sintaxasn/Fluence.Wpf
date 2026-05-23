@@ -31,15 +31,13 @@
     xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
 
     <Style TargetType="{x:Type controls:RadioButton}">
-        <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
-        <Setter Property="Padding" Value="8,0,0,0" />
         <Setter Property="FocusVisualStyle" Value="{DynamicResource DefaultControlFocusVisualStyle}" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="FontSize" Value="14" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="Padding" Value="8,0,0,0" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:RadioButton}">
@@ -256,32 +254,34 @@
                                 <Condition Property="IsChecked" Value="True" />
                                 <Condition Property="IsPressed" Value="True" />
                             </MultiTrigger.Conditions>
+                            <Setter TargetName="InnerDot" Property="Height" Value="6" />
                             <Setter TargetName="CheckedEllipse" Property="Opacity" Value="0" />
                             <Setter TargetName="CheckedEllipseHover" Property="Opacity" Value="0" />
                             <Setter TargetName="CheckedEllipsePressed" Property="Opacity" Value="1" />
                             <Setter TargetName="InnerDot" Property="Width" Value="6" />
-                            <Setter TargetName="InnerDot" Property="Height" Value="6" />
                         </MultiTrigger>
 
                         <!--  Disabled  -->
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
-                            <Setter TargetName="DescriptionText" Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                             <Setter TargetName="OuterEllipse" Property="Fill" Value="{DynamicResource ControlAltFillColorDisabledBrush}" />
-                            <Setter TargetName="OuterEllipse" Property="Stroke" Value="{DynamicResource ControlStrongStrokeColorDisabledBrush}" />
                             <Setter TargetName="OuterEllipseHover" Property="Fill" Value="{DynamicResource ControlAltFillColorDisabledBrush}" />
-                            <Setter TargetName="OuterEllipseHover" Property="Stroke" Value="{DynamicResource ControlStrongStrokeColorDisabledBrush}" />
                             <Setter TargetName="OuterEllipsePressed" Property="Fill" Value="{DynamicResource ControlAltFillColorDisabledBrush}" />
-                            <Setter TargetName="OuterEllipsePressed" Property="Stroke" Value="{DynamicResource ControlStrongStrokeColorDisabledBrush}" />
                             <Setter TargetName="CheckedEllipse" Property="Fill" Value="{DynamicResource AccentFillColorDisabledBrush}" />
                             <Setter TargetName="CheckedEllipseHover" Property="Fill" Value="{DynamicResource AccentFillColorDisabledBrush}" />
                             <Setter TargetName="CheckedEllipsePressed" Property="Fill" Value="{DynamicResource AccentFillColorDisabledBrush}" />
                             <Setter TargetName="InnerDot" Property="Fill" Value="{DynamicResource TextFillColorDisabledBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+                            <Setter TargetName="DescriptionText" Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+                            <Setter TargetName="OuterEllipse" Property="Stroke" Value="{DynamicResource ControlStrongStrokeColorDisabledBrush}" />
+                            <Setter TargetName="OuterEllipseHover" Property="Stroke" Value="{DynamicResource ControlStrongStrokeColorDisabledBrush}" />
+                            <Setter TargetName="OuterEllipsePressed" Property="Stroke" Value="{DynamicResource ControlStrongStrokeColorDisabledBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
 
 </ResourceDictionary>

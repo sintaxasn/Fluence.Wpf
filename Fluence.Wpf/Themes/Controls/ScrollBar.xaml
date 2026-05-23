@@ -11,11 +11,10 @@
     <SolidColorBrush x:Key="ScrollBarTrackFillBrush" Color="{DynamicResource AcrylicBackgroundFillColorDefault}" />
 
     <Style x:Key="ScrollBarTrackButtonStyle" TargetType="{x:Type RepeatButton}">
-        <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Background" Value="Transparent" />
         <Setter Property="Focusable" Value="False" />
         <Setter Property="IsTabStop" Value="False" />
-        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
@@ -23,14 +22,14 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
     </Style>
 
     <Style x:Key="ScrollBarLineButtonStyle" TargetType="{x:Type RepeatButton}">
-        <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Background" Value="Transparent" />
         <Setter Property="Focusable" Value="False" />
         <Setter Property="IsTabStop" Value="False" />
-        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type RepeatButton}">
@@ -70,12 +69,12 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
     </Style>
 
     <Style x:Key="ScrollBarThumbStyle" TargetType="{x:Type Thumb}">
-        <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="IsTabStop" Value="False" />
+        <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Thumb}">
@@ -92,8 +91,8 @@
                             <Setter TargetName="ThumbBorder" Property="Opacity" Value="0.92" />
                         </Trigger>
                         <Trigger Property="IsDragging" Value="True">
-                            <Setter TargetName="ThumbBorder" Property="Opacity" Value="1" />
                             <Setter TargetName="ThumbBorder" Property="Margin" Value="1" />
+                            <Setter TargetName="ThumbBorder" Property="Opacity" Value="1" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="ThumbBorder" Property="Opacity" Value="0.35" />
@@ -102,6 +101,7 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
     </Style>
 
     <!--
@@ -150,19 +150,19 @@
                 x:Name="DecreaseButton"
                 Height="{StaticResource ScrollBarSize}"
                 VerticalAlignment="Top"
+                Panel.ZIndex="2"
                 Command="ScrollBar.LineUpCommand"
                 Content="&#xE70E;"
                 Opacity="0"
-                Panel.ZIndex="2"
                 Style="{StaticResource ScrollBarLineButtonStyle}" />
             <RepeatButton
                 x:Name="IncreaseButton"
                 Height="{StaticResource ScrollBarSize}"
                 VerticalAlignment="Bottom"
+                Panel.ZIndex="2"
                 Command="ScrollBar.LineDownCommand"
                 Content="&#xE70D;"
                 Opacity="0"
-                Panel.ZIndex="2"
                 Style="{StaticResource ScrollBarLineButtonStyle}" />
             <VisualStateManager.VisualStateGroups>
                 <VisualStateGroup x:Name="CommonStates">
@@ -345,19 +345,19 @@
                 x:Name="DecreaseButton"
                 Width="{StaticResource ScrollBarSize}"
                 HorizontalAlignment="Left"
+                Panel.ZIndex="2"
                 Command="ScrollBar.LineLeftCommand"
                 Content="&#xE76B;"
                 Opacity="0"
-                Panel.ZIndex="2"
                 Style="{StaticResource ScrollBarLineButtonStyle}" />
             <RepeatButton
                 x:Name="IncreaseButton"
                 Width="{StaticResource ScrollBarSize}"
                 HorizontalAlignment="Right"
+                Panel.ZIndex="2"
                 Command="ScrollBar.LineRightCommand"
                 Content="&#xE76C;"
                 Opacity="0"
-                Panel.ZIndex="2"
                 Style="{StaticResource ScrollBarLineButtonStyle}" />
             <VisualStateManager.VisualStateGroups>
                 <VisualStateGroup x:Name="CommonStates">
@@ -505,40 +505,39 @@
     </ControlTemplate>
 
     <Style x:Key="VerticalScrollBarStyle" TargetType="{x:Type ScrollBar}">
-        <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="OverridesDefaultStyle" Value="True" />
-        <Setter Property="Orientation" Value="Vertical" />
-        <Setter Property="Width" Value="{StaticResource ScrollBarSize}" />
-        <Setter Property="MinWidth" Value="{StaticResource ScrollBarSize}" />
         <Setter Property="Background" Value="Transparent" />
+        <Setter Property="MinWidth" Value="{StaticResource ScrollBarSize}" />
+        <Setter Property="Orientation" Value="Vertical" />
+        <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Template" Value="{StaticResource VerticalScrollBarTemplate}" />
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="Width" Value="{StaticResource ScrollBarSize}" />
     </Style>
 
     <Style x:Key="HorizontalScrollBarStyle" TargetType="{x:Type ScrollBar}">
-        <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="OverridesDefaultStyle" Value="True" />
-        <Setter Property="Orientation" Value="Horizontal" />
+        <Setter Property="Background" Value="Transparent" />
         <Setter Property="Height" Value="{StaticResource ScrollBarSize}" />
         <Setter Property="MinHeight" Value="{StaticResource ScrollBarSize}" />
-        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Orientation" Value="Horizontal" />
+        <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Template" Value="{StaticResource HorizontalScrollBarTemplate}" />
+        <Setter Property="UseLayoutRounding" Value="True" />
     </Style>
 
     <Style x:Key="ScrollViewerStyle" TargetType="{x:Type ScrollViewer}">
-        <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="OverridesDefaultStyle" Value="True" />
-        <Setter Property="Focusable" Value="False" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderBrush" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ScrollViewer}">
                     <Border
-                        CornerRadius="8,0,0,0"
                         BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}">
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        CornerRadius="8,0,0,0">
                         <Grid>
                             <ScrollContentPresenter
                                 x:Name="PART_ScrollContentPresenter"
@@ -577,6 +576,7 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
     </Style>
 
     <Style BasedOn="{StaticResource ScrollViewerStyle}" TargetType="{x:Type controls:SmoothScrollViewer}" />

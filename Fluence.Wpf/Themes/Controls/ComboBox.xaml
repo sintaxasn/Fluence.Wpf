@@ -4,11 +4,10 @@
     xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
 
     <Style x:Key="ComboBoxToggleStyle" TargetType="{x:Type ToggleButton}">
-        <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="OverridesDefaultStyle" Value="True" />
-        <Setter Property="Focusable" Value="False" />
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="Focusable" Value="False" />
+        <Setter Property="OverridesDefaultStyle" Value="True" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ToggleButton}">
@@ -16,18 +15,17 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
     </Style>
 
     <Style x:Key="ComboBoxItemStyle" TargetType="{x:Type ComboBoxItem}">
-        <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="Padding" Value="12,8" />
-        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Background" Value="Transparent" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="FontSize" Value="14" />
-        <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        <Setter Property="Padding" Value="12,8" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ComboBoxItem}">
@@ -75,8 +73,8 @@
                                 <Condition Property="IsEnabled" Value="False" />
                             </MultiTrigger.Conditions>
                             <Setter TargetName="OuterBorder" Property="Background" Value="{DynamicResource ControlFillColorDisabledBrush}" />
-                            <Setter TargetName="SelectionIndicator" Property="Opacity" Value="0.4" />
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+                            <Setter TargetName="SelectionIndicator" Property="Opacity" Value="0.4" />
                         </MultiTrigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
@@ -85,6 +83,8 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
 
     <Style x:Key="ComboBoxFocusVisual">
@@ -109,22 +109,21 @@
     </Style>
 
     <Style TargetType="{x:Type controls:ComboBox}">
-        <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="FocusVisualStyle" Value="{StaticResource ComboBoxFocusVisual}" />
         <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource TextControlElevationBorderBrush}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Padding" Value="10,5,6,6" />
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="DropdownCornerRadius" Value="{DynamicResource OverlayCornerRadius}" />
+        <Setter Property="FocusVisualStyle" Value="{StaticResource ComboBoxFocusVisual}" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="ItemContainerStyle" Value="{StaticResource ComboBoxItemStyle}" />
+        <Setter Property="MaxDropDownHeight" Value="480" />
         <Setter Property="MinHeight" Value="32" />
+        <Setter Property="Padding" Value="10,5,6,6" />
         <Setter Property="ScrollViewer.CanContentScroll" Value="True" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto" />
-        <Setter Property="MaxDropDownHeight" Value="480" />
-        <Setter Property="ItemContainerStyle" Value="{StaticResource ComboBoxItemStyle}" />
-        <Setter Property="DropdownCornerRadius" Value="{DynamicResource OverlayCornerRadius}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:ComboBox}">
@@ -256,7 +255,7 @@
                         </Popup>
                         <!--
                             WI-3 C18: FocusedStates + EditableFocusedStates VSM groups.
-                            Authority: WinUI 3 ComboBox_themeresources.xaml.
+                            Authority: WinUI 3 ComboBox_DynamicResources.xaml.
                             Fluence intentionally suppresses the ComboBox focus underline; selected
                             dropdown items retain their left selection indicator.
                             EditableFocusedStates mirrors FocusedStates for future IsEditable support.
@@ -289,8 +288,8 @@
                             </Trigger.EnterActions>
                         </Trigger>
                         <Trigger Property="Icon" Value="{x:Null}">
-                            <Setter TargetName="LeftIcon" Property="Visibility" Value="Collapsed" />
                             <Setter TargetName="LeftIcon" Property="Margin" Value="0" />
+                            <Setter TargetName="LeftIcon" Property="Visibility" Value="Collapsed" />
                         </Trigger>
                         <Trigger Property="SelectedItem" Value="{x:Null}">
                             <Setter TargetName="contentPresenter" Property="Visibility" Value="Collapsed" />
@@ -306,16 +305,16 @@
                         </Trigger>
                         <Trigger Property="IsDropDownOpenedUpward" Value="True">
                             <Setter TargetName="PART_DropdownBorder" Property="CornerRadius" Value="8,8,0,0" />
-                            <Setter TargetName="PART_DropdownBorder" Property="Margin" Value="0,0,0,4" />
-                            <Setter TargetName="PART_DropdownBorder" Property="RenderTransformOrigin" Value="0.5,1" />
                             <!--  Track the outer border's runtime shape - see NoiseOverlay comment above.  -->
                             <Setter TargetName="NoiseOverlay" Property="CornerRadius" Value="8,8,0,0" />
+                            <Setter TargetName="PART_DropdownBorder" Property="Margin" Value="0,0,0,4" />
+                            <Setter TargetName="PART_DropdownBorder" Property="RenderTransformOrigin" Value="0.5,1" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="MainBorder" Property="Background" Value="{DynamicResource ControlFillColorDisabledBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                             <Setter TargetName="MainBorder" Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
                             <Setter TargetName="MainBorder" Property="BorderThickness" Value="1" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                             <Setter TargetName="ChevronGlyph" Property="Opacity" Value="0.4" />
                             <Setter TargetName="LeftIcon" Property="Opacity" Value="0.4" />
                         </Trigger>
@@ -323,5 +322,6 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
     </Style>
 </ResourceDictionary>

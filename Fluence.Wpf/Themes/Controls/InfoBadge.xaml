@@ -5,18 +5,16 @@
     xmlns:fluence="clr-namespace:Fluence.Wpf">
 
     <Style TargetType="{x:Type controls:InfoBadge}">
-        <Setter Property="UseLayoutRounding" Value="True" />
-        <Setter Property="MinWidth" Value="34" />
-        <Setter Property="MinHeight" Value="24" />
-        <Setter Property="MaxHeight" Value="24" />
-        <Setter Property="Padding" Value="0,2,0,2" />
-        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Background" Value="{DynamicResource SystemFillColorAttentionBrush}" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="FontSize" Value="14" />
         <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorInverseBrush}" />
-        <Setter Property="Background" Value="{DynamicResource SystemFillColorAttentionBrush}" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
-        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="MaxHeight" Value="24" />
+        <Setter Property="MinHeight" Value="24" />
+        <Setter Property="MinWidth" Value="34" />
+        <Setter Property="Padding" Value="0,2,0,2" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:InfoBadge}">
@@ -88,6 +86,8 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
     </Style>
 
 </ResourceDictionary>
