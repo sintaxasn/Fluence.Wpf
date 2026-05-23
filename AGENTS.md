@@ -10,7 +10,7 @@ Self-contained persistent memory for engineers (human and AI) working in this re
 
 - **Fluence.Wpf** is a WPF control library that recreates the **Windows 11 Fluent / WinUI 3** visual language and interaction patterns on WPF.
 - **Target frameworks** (library + tests): `net472` (primary) and `net10.0-windows10.0.26100.0`. Gallery demo (`Fluence.Wpf.Demo`) targets `net472` and `net10.0-windows10.0.26100.0`; MVVM demo (`Fluence.Wpf.Demo.Mvvm`) targets `net10.0-windows10.0.26100.0`.
-- **Language**: `LangVersion=latest` across all TFMs, set centrally in `Directory.Build.props` - no per-TFM language restriction. `net472` still constrains **runtime API** availability (see §4.3); avoid APIs that don't ship in `net472`, but C# language features themselves are not restricted. Nullable reference types are **enabled** (`Nullable=enable` in `Directory.Build.props`); individual projects may override with `<Nullable>disable</Nullable>` (e.g. `Fluence.Wpf.Demo.Mvvm`).
+- **Language**: `LangVersion=latest` across all TFMs, set centrally in `Directory.Build.props` - no per-TFM language restriction. `net472` still constrains **runtime API** availability (see [Section 4.3](#43-feasibility-test-for-net472)); avoid APIs that don't ship in `net472`, but C# language features themselves are not restricted. Nullable reference types are **enabled** (`Nullable=enable` in `Directory.Build.props`); individual projects may override with `<Nullable>disable</Nullable>` (e.g. `Fluence.Wpf.Demo.Mvvm`).
 - **License**: BSD 3-Clause. Every `.cs` file begins with the same 27-line header; copy it verbatim from any existing library file when adding new sources. Do not edit the copyright year unless the user asks.
 - **OS**: Windows 10 1809+ baseline. Mica and rounded-corner extras light up on Windows 11.
 - **XML namespace URI**: `http://schemas.fluencewpf.com` - suggested prefix `fluence`.
@@ -22,18 +22,18 @@ Fluence.Wpf.sln
 ├── Fluence.Wpf/             Control library (multi-TFM: net472 + net10.0-windows10.0.26100.0)
 ├── Fluence.Wpf.Demo/        Gallery app (net472 + net10.0-windows10.0.26100.0) - visual verification for all controls
 ├── Fluence.Wpf.Demo.Mvvm/   MVVM Task Manager demo (net10.0-windows10.0.26100.0) - CommunityToolkit.Mvvm example
-└── Fluence.Wpf.Tests/       MSTest v3.2 suite (multi-TFM)
+└── Fluence.Wpf.Tests/       MSTest 4.2.2 suite (multi-TFM)
 ```
 
 ### CLR namespaces
 
-| Namespace              | Contents                                                                                                                                                                     |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `Fluence.Wpf`          | `ApplicationThemeManager`, `ApplicationAccentColorManager`, `SystemThemeWatcher`, `ThemeChangedEventArgs`, theme enums, `TabViewWidthMode` / `TabViewCloseButtonOverlayMode` |
-| `Fluence.Wpf.Controls` | Custom controls (`TabView`, `TabViewItem`, `Card`, `NavigationView`, …), `FluenceWindow`, `WindowPolicy`, navigation view family                                             |
-| `Fluence.Wpf.Enums`    | `ApplicationTheme`, `BackdropType`, `CardVariant`, `InfoBarSeverity`, `FluentTypography`, etc.                                                                               |
-| `Fluence.Wpf.Helpers`  | Internal helpers (`AcrylicNoiseHelper`, `HsvColorHelper`, `OsVersionHelper`, `RegistryHelper`)                                                                               |
-| `Fluence.Wpf.Native`   | P/Invoke constants, structs, methods                                                                                                                                         |
+| Namespace                | Contents                                                                                                                                                                                                  |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `Fluence.Wpf`            | `ApplicationThemeManager`, `ApplicationAccentColorManager`, `SystemThemeWatcher`, `ThemeChangedEventArgs`, theme enums, control enums, and event args such as `TabViewTabCloseRequestedEventArgs`         |
+| `Fluence.Wpf.Controls`   | Custom controls (`Button`, `TabView`, `Card`, `NavigationView`, etc.), `FluenceWindow`, `TitleBar`, `WindowPolicy`, layout controls, and navigation view family                                            |
+| `Fluence.Wpf.Automation` | UI Automation peers for controls such as `NavigationView`, `ToggleSwitch`, `DropDownButton`, `SplitButton`, `NumberBox`, `InfoBar`, and `ProgressRing`                                                     |
+| `Fluence.Wpf.Helpers`    | Internal helpers (`AcrylicNoiseHelper`, `BackdropPlan`, `FramePlan`, `GridLengthAnimation`, `HsvColorHelper`, `OsVersionHelper`, `RegistryHelper`, `WindowCapabilities`)                                  |
+| `Fluence.Wpf.Native`     | P/Invoke constants, structs, and methods                                                                                                                                                                  |
 
 XAML themes are under `Fluence.Wpf/Themes/` and are **not** a CLR namespace.
 
@@ -49,12 +49,11 @@ Every `.cs` file in the library, demo, and tests starts with the BSD 3-Clause he
 ### Language features
 
 - Avoid em dash or en dash characters anywhere in documentation or comments.
-- Avoid § links anywhere in documentation or comments. use anchor tags instead. E.g.  ```Go to [Section 3](#troubleshooting)```.
 - All TFMs use `LangVersion=latest` (set in `Directory.Build.props`). Use modern C# features freely; verify any runtime API is available in `net472` before using it.
-- Do not guard blocks with `#if NET10_0_OR_GREATER` to gain runtime APIs not present in `net472`; instead apply §4.3 guidance.
+- Do not guard blocks with `#if NET10_0_OR_GREATER` to gain runtime APIs not present in `net472`; instead apply [Section 4.3](#43-feasibility-test-for-net472) guidance.
 - Nullable reference types are **enabled** (`Nullable=enable` in `Directory.Build.props`). Library and test code must be nullable-clean - annotate parameters and returns with `?` only where genuinely nullable.
 - `public` API must have `///` XML doc comments. The library builds with `<DocumentationFile>` and does not suppress `CS1591` / `CS1574`; missing comments fail the build.
-- **File encoding**: All `.cs`, `.xaml`, and `.csproj` files must be saved as **UTF-8 with BOM** (EF BB BF). Never commit UTF-16 LE files - they produce spurious full-file diffs, break `grep`-based tooling, and may cause XML parser failures on some build agents. If your editor does not default to UTF-8 with BOM, configure it project-wide (Visual Studio: Tools → Advanced Save Options; VS Code: `"files.encoding": "utf8bom"`). Verify with `[System.IO.File]::ReadAllBytes($path)[0..2]` - must be `0xEF 0xBB 0xBF`.
+- **File encoding**: `.editorconfig` sets `charset = utf-8-bom` for all files. At minimum, all `.cs`, `.xaml`, `.csproj`, `.props`, `.targets`, and `.md` files must be saved as **UTF-8 with BOM** (EF BB BF). Never commit UTF-16 LE files - they produce spurious full-file diffs, break `grep`-based tooling, and may cause XML parser failures on some build agents. If your editor does not default to UTF-8 with BOM, configure it project-wide. Verify with `[System.IO.File]::ReadAllBytes($path)[0..2]` - must be `0xEF 0xBB 0xBF`.
 
 ### Warnings and analyzers
 
@@ -69,7 +68,7 @@ Every `.cs` file in the library, demo, and tests starts with the BSD 3-Clause he
 **Suppressions in `.editorconfig`** - do not re-enable without discussion:
 - `IDE0056` / `IDE0057` - index/range operators (net472 runtime gap)
 - `CA1307` / `CA1310` / `CA1847` / `CA1866` - string ordinal/span overloads (net472 API gap)
-- SonarAnalyzer: `S103`, `S104`, `S107`, `S109`, `S1067`, `S1121`, `S1449`, `S1659`, `S3358`, `S3458`, `S3869`
+- SonarAnalyzer: `S103`, `S104`, `S107`, `S109`, `S1067`, `S1121`, `S1449`, `S1659`, `S3358`, `S3458`, `S3532`, `S3869`
 
 **Per-library suppressions** (in `Fluence.Wpf.csproj` `<NoWarn>`):
 - `SYSLIB1045` - regex source generator (not available on `net472`)
@@ -144,9 +143,9 @@ Names align with WinUI 3. Families currently used:
 - **Background / layer**: `SolidBackgroundFillColorBase|Secondary|Tertiary|Quarternary`, `LayerFillColorDefault|Alt`.
 - **Accent fill**: `AccentFillColorDefault|Secondary|Tertiary|Disabled|SelectedTextBackground`.
 - **System**: `SystemFillColorSuccess|Caution|Critical|Neutral|NeutralBackground|SolidNeutral|SolidAttentionBackground`.
-- **Accent ramp**: `SystemAccentColor`, `SystemAccentColorPrimary|Secondary|Tertiary`, and `…Brush` pairs.
+- **Accent ramp**: `SystemAccentColor`, `SystemAccentColorPrimary|Secondary|Tertiary`, and matching `*Brush` pairs.
 
-Every color key generally has a sibling `…Brush` `SolidColorBrush`; template bindings almost always target the `Brush` version via `DynamicResource`.
+Every color key generally has a sibling `*Brush` `SolidColorBrush`; template bindings almost always target the `Brush` version via `DynamicResource`.
 
 ### Theme API surface
 
@@ -166,7 +165,7 @@ When a question arises about _"how should this look, behave, or be implemented?"
 ### 4.1 General priority (applies to every question)
 
 1. **In-tree precedent.** If a pattern already exists in `Fluence.Wpf/Themes/**/*.xaml`, `Fluence.Wpf/Controls/*.cs`, or `Fluence.Wpf.Tests/ThemeTestHelpers.cs`, follow it. Consistency with the shipped surface trumps outside sources.
-2. **Per-domain reference (see §4.2).** Select the correct authority for the concern at hand.
+2. **Per-domain reference (see [Section 4.2](#42-per-domain-authority)).** Select the correct authority for the concern at hand.
 3. **Published Windows 11 design guidance** on Microsoft Learn (Fluent Design docs, Windows App SDK docs). Use as a tie-breaker only, never as the primary spec.
 
 Undocumented "looks right" choices are not acceptable in a PR. If nothing in the three layers above covers a specific case, raise it and get explicit guidance before implementing.
@@ -180,16 +179,16 @@ Undocumented "looks right" choices are not acceptable in a PR. If nothing in the
 | Navigation patterns (`NavigationView` layout, selection indicator, pane modes)    | [**WinUI 3 CommonStyles**](https://github.com/microsoft/microsoft-ui-xaml/tree/main/src/controls/dev/CommonStyles) (visual) + [**.NET 10 WPF Themes**](https://github.com/dotnet/wpf/tree/main/src/Microsoft.DotNet.Wpf/src/Themes) (WPF translation) | Visuals are Fluent-canonical; composition must respect WPF templating constraints.   |
 | Accent ramp generation and HSV tint math                                          | [**.NET 10 WPF Themes**](https://github.com/dotnet/wpf/tree/main/src/Microsoft.DotNet.Wpf/src/Themes)                                                                                                                                                 | Includes a proven WPF implementation of the Windows accent ramp.                     |
 | System theme detection (Light/Dark/HighContrast)                                  | [**.NET 10 WPF Themes**](https://github.com/dotnet/wpf/tree/main/src/Microsoft.DotNet.Wpf/src/Themes)                                                                                                                                                 | WPF-compatible registry reads and `WM_SETTINGCHANGE` handling suitable for `net472`. |
-| Individual controls (Button, CheckBox, RadioButton, ComboBox, ToggleSwitch, …)    | [**WinUI 3 CommonStyles**](https://github.com/microsoft/microsoft-ui-xaml/tree/main/src/controls/dev/CommonStyles)                                                                                                                                    | Canonical Fluent templates and visual states.                                        |
+| Individual controls (Button, CheckBox, RadioButton, ComboBox, ToggleSwitch, etc.) | [**WinUI 3 CommonStyles**](https://github.com/microsoft/microsoft-ui-xaml/tree/main/src/controls/dev/CommonStyles)                                                                                                                                    | Canonical Fluent templates and visual states.                                        |
 | Acrylic / Mica backdrops, rounded corners                                         | [**.NET 10 WPF Themes**](https://github.com/dotnet/wpf/tree/main/src/Microsoft.DotNet.Wpf/src/Themes) + [DWM API docs on Microsoft Learn](https://learn.microsoft.com/windows/win32/api/dwmapi/)                                                      | DWM interop is the mechanism; .NET 10 WPF demonstrates the WPF hook.                 |
 | Accessibility / automation peers                                                  | WinUI 3 CommonStyles + Windows UI Automation docs on Microsoft Learn                                                                                                                                                                                  | Behavioural contract, not visual.                                                    |
 
 ### 4.3 Feasibility test for `net472`
 
-When a reference pattern depends on an API that is not available on `net472` (CsWinRT, WinUI runtime types, `System.Text.Json` source generators, `record`, etc.):
+When a reference pattern depends on an API that is not available on `net472` (CsWinRT, WinUI runtime types, `System.Text.Json` source generators, etc.):
 
 1. **Prefer** the closest idiomatic WPF translation using `System.Windows.*` primitives - this is why .NET 10 WPF is listed as the primary authority for WPF-native concerns.
-2. **Document** the gap in `KNOWN_ISSUES.md` with the specific API that is unavailable and what the chosen fallback gives up.
+2. **Document** the gap in `KNOWN_ISSUES.md` with the specific API that is unavailable and what the chosen fallback gives up; create the file first if this is the branch's first accepted known issue.
 3. **Never** add a new third-party runtime dependency to close a `net472` gap without explicit user approval.
 
 ---
@@ -205,10 +204,10 @@ When adding a new control or materially changing an existing one:
 2. **Template**
    - Add `Themes/Controls/MyControl.xaml` as a standalone `ResourceDictionary` and merge it from `Themes/Generic.xaml`.
    - Mark template parts with `[TemplatePart]` attributes and wire them in `OnApplyTemplate`.
-   - Wire up `VisualStateManager` groups (`CommonStates`, `FocusStates`, `CheckStates`, …) with Fluent timings (~100-167 ms).
+   - Wire up `VisualStateManager` groups (`CommonStates`, `FocusStates`, `CheckStates`, etc.) with Fluent timings (~100-167 ms).
 3. **Resources**
    - Reuse canonical WinUI keys. If a concept is new (e.g. a brand-specific state), add a **color** to each `Themes/Colors/Theme.*.xaml`, **then** add the `SolidColorBrush` to `Themes/Brushes/Brushes.xaml` binding via `DynamicResource`.
-   - Add a design-time preview entry in `Themes/DesignTime.xaml` assuming Light + `#0078D4`.
+   - Add a design-time preview entry in `Fluence.Wpf/Properties/DesignTimeResources.xaml` assuming Light + `#0078D4`; add the demo counterpart only when the demo also needs designer-time resource resolution.
 4. **Demo**
    - Add or extend a gallery page under `Fluence.Wpf.Demo/Pages/Gallery*.xaml`. Register the page in `MainWindow.NavigateTo(string tag)` if it should be navigable from the `NavigationView`.
 5. **Tests (mandatory)**
@@ -223,21 +222,21 @@ When adding a new control or materially changing an existing one:
 
 ## 6. Testing
 
-- **Framework**: MSTest v3.2 via `Microsoft.NET.Test.Sdk`.
+- **Framework**: MSTest 4.2.2 (`MSTest.TestFramework` / `MSTest.TestAdapter`) via `Microsoft.NET.Test.Sdk` 17.9.0.
 - **TFMs**: `net472` **and** `net10.0-windows10.0.26100.0`; both must pass.
-- **Parallelization**: `[assembly: DoNotParallelize]` (`DisableParallelization.cs`). WPF's shared `ResourceDictionary` / storyboard sealing is not thread-safe across parallel fixtures.
+- **Parallelization**: `[assembly: DoNotParallelize]` lives in `Fluence.Wpf.Tests/Properties/AssemblyInfo.cs`, and the test project sets `<TestTfmsInParallel>false</TestTfmsInParallel>`. WPF's shared `ResourceDictionary` / storyboard sealing is not thread-safe across parallel fixtures or target-framework lanes.
 - **STA**: `WpfTestSta` in the test project owns a single STA thread + `Dispatcher`. All UI-touching work goes through `WpfTestSta.Invoke(...)` / `RunOnStaThread(...)`.
 - **Application**: `WpfTestSta.EnsureApplication()` creates an `Application` with `ShutdownMode.OnExplicitShutdown` so tests do not tear it down.
-- **Theme helpers**: `ThemeTestHelpers.ApplyStandardThemeCycle` (Light→Dark→HighContrast→Light); `AssertKeyThemeBrushesResolve` for canonical key sanity.
+- **Theme helpers**: `ThemeTestHelpers.ApplyStandardThemeCycle` (Light -> Dark -> HighContrast -> Light); `AssertKeyThemeBrushesResolve` for canonical key sanity.
 - **Tests for controls** typically:
   1. Merge `Themes/Generic.xaml` via `MergeGenericDictionary(Application.Current.Resources)` (this also calls `Apply(Light)` to seed canonical keys).
   2. Create a minimal `Window`, attach the control, call `Window.Show()` so `ApplyTemplate` runs.
-  3. Drive the control (simulate mouse/keyboard by invoking protected `OnMouse…` via a small probe subclass if needed; see `ClickableCardProbe` in `ControlTests.FluentStroke.cs`).
+  3. Drive the control (simulate mouse/keyboard by invoking protected `OnMouse*` members via a small probe subclass if needed; see `ClickableCardProbe` in `ControlTests.FluentStroke.cs`).
   4. Assert via `VisualTreeHelper` / `FindVisualChildByName` and `TryFindResource`.
   5. Drain the dispatcher with `DrainDispatcher()` and close the window.
 - **InternalsVisibleTo**: the test assembly sees library internals; theme tests can call `ApplicationThemeManager.ResetForTesting()` to isolate fixtures.
 - **Baseline policy**: the HEAD-of-branch test count is the floor. Add tests, do not weaken it. If a test is legitimately obsoleted by a design change, remove the whole file in the same commit that supersedes it, record the rationale in `CHANGELOG.md`, and update this handbook if the testing pattern itself changed.
-- **Known pre-existing failures**: any currently-failing test must be tracked in `KNOWN_ISSUES.md` with a reproduction and the intended fix. A green local run is `total - skipped - known-failures = passed`; do not merge if your own changes add to the known-failure count.
+- **Known pre-existing failures**: no root `KNOWN_ISSUES.md` file exists on this branch at the time this handbook was reviewed. If a failing test is accepted instead of fixed, create `KNOWN_ISSUES.md` at the repository root with the reproduction, affected TFM, reason, owner, and intended fix. A green local run is `total - skipped - known-failures = passed`; do not merge if your own changes add to the known-failure count.
 - **Screenshot harness**: `Fluence.Wpf.Tests/GalleryScreenshotHarness.cs` regenerates `docs/screenshots/banner-{theme}-{scale}x.png` via `RenderTargetBitmap` during normal full test runs. DWM backdrops (Mica / Acrylic) are _not_ captured by `RenderTargetBitmap`, so the harness hosts `GalleryHomePage` inside a plain `Window` with a solid `SolidBackgroundFillColorBaseBrush`.
 
 ---
@@ -248,10 +247,12 @@ When adding a new control or materially changing an existing one:
 # from repo root
 dotnet restore Fluence.Wpf.sln
 dotnet build   Fluence.Wpf.sln -c Debug
-dotnet test    Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug
+dotnet test    Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug -f net472 --no-build
+dotnet test    Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug -f net10.0-windows10.0.26100.0 --no-build
 ```
 
 - Zero errors, zero warnings - the library is `TreatWarningsAsErrors`.
+- CI uses the same matrix in Release configuration, with separate `net472` and `net10.0-windows10.0.26100.0` test steps and TRX output. Keep local validation split by TFM unless there is a specific reason to run the combined multi-target command.
 - The gallery demo is run with `dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -f net472` or the matching `net10.0-windows10.0.26100.0` TFM.
 - For visual verification: exercise Light / Dark / High Contrast / Auto, a couple of accent swatches, Mica / Acrylic / Tabbed / None backdrops, and at least one control per gallery page.
 
@@ -265,55 +266,62 @@ dotnet test    Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug
 - `NavigationView` named `DemoNav`: default `PaneDisplayMode="Left"` in source and opens expanded with `IsPaneOpen="True"` to showcase the full pane.
 - Menu items carry `Tag` strings; `MainWindow.NavigateTo(string tag)` does a switch to the matching `Gallery*Page` inside the content frame. Navigation remains tag-driven, with a lightweight visited-page stack only for the shell Back button.
 - `GalleryHomePage` shows a theme-aware hero banner (`BannerLight.png` / `BannerDark.png`) and large **clickable `Card`** tiles that route through the same `NavigateTo` helper. Window controls and app-level theme/navigation/backdrop options live on the Settings page.
-- 16 gallery pages: Home, Icons, Typography, Buttons, Selection, Inputs, Forms, Data, Data binding, Trees, Menus, Navigation, Tabs, Layout, Status, and Accessibility.
+- 17 navigation-catalog pages: Home, Colors, Icons, Typography, Buttons, Selection, Inputs, Forms, Data, Data binding, Trees, Menus, Navigation, Tabs, Layout, Status, and Accessibility. Settings is a pane-footer route, not a `DemoNavigationCatalog` item.
 - Run: `dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -f net472` or `dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -f net10.0-windows10.0.26100.0`.
 
 ### Fluence.Wpf.Demo.Mvvm (MVVM Task Manager, net10.0-windows10.0.26100.0)
 
-- Minimal Task Manager demonstrating `FluenceWindow` + Fluence controls with **zero code-behind**.
+- Minimal Task Manager demonstrating `FluenceWindow` + Fluence controls with no interaction logic in code-behind. `MainWindow.xaml.cs` only sets `DataContext` and calls `InitializeComponent`; app startup remains in `App.xaml.cs`.
 - Uses **CommunityToolkit.Mvvm** 8.4: `[ObservableProperty]`, `[RelayCommand(CanExecute=nameof(CanAdd))]`, `partial void OnXxxChanged` source-generated callbacks.
 - `MainViewModel` owns an unfiltered `ObservableCollection<TaskItemViewModel>` and rebuilds `DisplayedTasks` on every filter or completion change. `StatusText` and `ProgressValue` are derived and notified after the rebuild - do **not** add `[NotifyPropertyChangedFor]` on `_activeFilter`; that would fire notifications before `DisplayedTasks` is rebuilt (stale read).
 - Filter radio buttons use `EnumToBoolConverter` with `ConverterParameter={x:Static vm:FilterMode.*}`.
 - Delete button inside `DataTemplate` reaches `MainViewModel.DeleteCommand` via `RelativeSource AncestorType=Window`; this is deliberate - keeps `TaskItemViewModel` free of parent references.
 - `App.xaml` contains **no `MergedDictionaries`**; `ApplicationThemeManager.Apply` (called from `App.xaml.cs`) seeds all five slots. A manual `Generic.xaml` merge would become a sixth stale entry and corrupt slot indices.
-- Run: `dotnet run -p Fluence.Wpf.Demo.Mvvm`.
+- Run: `dotnet run --project Fluence.Wpf.Demo.Mvvm/Fluence.Wpf.Demo.Mvvm.csproj`.
 
 ---
 
 ## 9. Common pitfalls
 
-- **`StaticResource` on a theme- or accent-bound brush** ⇒ stale colors after the first theme switch. Fix: change to `DynamicResource`.
-- **Clearing `Application.Current.Resources.MergedDictionaries`** directly, then adding your own, without going through `ApplicationThemeManager.Apply` ⇒ broken `DynamicResource` chains and missing templates. Fix: always go through the manager; the first call initializes all slots.
-- **Creating `FrameworkElement` instances on a worker thread** in tests ⇒ `InvalidOperationException`. Fix: route through `WpfTestSta.Invoke`.
-- **Skipping `[assembly: DoNotParallelize]`** on a new test project / renaming the file ⇒ intermittent `ResourceReferenceExpression` / sealed-storyboard failures.
-- **Assuming the old "subtle stroke" for selection rings** ⇒ RadioButton / CheckBox rings disappear in light theme. Fix: use `ControlStrongStrokeColorDefaultBrush` (and `…Disabled` for disabled state).
-- **Hard-coding caption metrics or backdrop flags in child controls** ⇒ breaks on Windows 10 / unsupported DWM builds. Fix: read `OsVersionHelper` and honour `FluenceWindow` policy.
-- **Replacing the demo's tag navigation with an external navigation service** ⇒ divergence with the current `NavigateTo` contract. Keep routes tag-driven; the only stack is the lightweight shell Back history in `MainWindow`.
-- **Holding designer-only brushes as immutable resources** ⇒ designer no longer matches runtime after a theme change. Fix: keep `DesignTime.xaml` minimal and aligned with Light + `#0078D4`.
-- **Relying on a previous test's theme state leaking into yours** ⇒ intermittent color-alpha mismatches when tests run as a suite but pass in isolation. Fix: always call `MergeGenericDictionary(Application.Current)` (which resets managers, clears dictionaries, and applies a known theme) as the first step of any control test body.
-- **Using `string.IsNullOrEmpty()`** ⇒ build error RS0030 (banned via `BannedApiAnalyzers` + `BannedSymbols.txt`). Fix: always use `string.IsNullOrWhiteSpace()`.
-- **Win32 bit-mask arithmetic without `unchecked`** ⇒ `OverflowException` at runtime; caught as a build error because `CheckForOverflowUnderflow=True`. Fix: wrap HIWORD/LOWORD extractions in `unchecked { }`. See `FluenceWindow.HitTestTitleBar` for the canonical pattern.
-- **Ignoring a return value from a non-void method** ⇒ build error CA1806. Fix: discard with `_ = method()`.
+- **`StaticResource` on a theme- or accent-bound brush** -> stale colors after the first theme switch. Fix: change to `DynamicResource`.
+- **Clearing `Application.Current.Resources.MergedDictionaries`** directly, then adding your own, without going through `ApplicationThemeManager.Apply` -> broken `DynamicResource` chains and missing templates. Fix: always go through the manager; the first call initializes all slots.
+- **Creating `FrameworkElement` instances on a worker thread** in tests -> `InvalidOperationException`. Fix: route through `WpfTestSta.Invoke`.
+- **Skipping `[assembly: DoNotParallelize]`** on a new test project / renaming the assembly-info entry -> intermittent `ResourceReferenceExpression` / sealed-storyboard failures.
+- **Assuming the old "subtle stroke" for selection rings** -> RadioButton / CheckBox rings disappear in light theme. Fix: use `ControlStrongStrokeColorDefaultBrush` (and `ControlStrongStrokeColorDisabledBrush` for disabled state).
+- **Hard-coding caption metrics or backdrop flags in child controls** -> breaks on Windows 10 / unsupported DWM builds. Fix: read `OsVersionHelper` and honour `FluenceWindow` policy.
+- **Replacing the demo's tag navigation with an external navigation service** -> divergence with the current `NavigateTo` contract. Keep routes tag-driven; the only stack is the lightweight shell Back history in `MainWindow`.
+- **Holding designer-only brushes as immutable resources** -> designer no longer matches runtime after a theme change. Fix: keep `Properties/DesignTimeResources.xaml` minimal and aligned with Light + `#0078D4`.
+- **Relying on a previous test's theme state leaking into yours** -> intermittent color-alpha mismatches when tests run as a suite but pass in isolation. Fix: always call `MergeGenericDictionary(Application.Current)` (which resets managers, clears dictionaries, and applies a known theme) as the first step of any control test body.
+- **Using `string.IsNullOrEmpty()`** -> build error RS0030 (banned via `BannedApiAnalyzers` + `BannedSymbols.txt`). Fix: always use `string.IsNullOrWhiteSpace()`.
+- **Win32 bit-mask arithmetic without `unchecked`** -> `OverflowException` at runtime; caught as a build error because `CheckForOverflowUnderflow=True`. Fix: wrap HIWORD/LOWORD extractions in `unchecked { }`. See `FluenceWindow.HitTestTitleBar` for the canonical pattern.
+- **Ignoring a return value from a non-void method** -> build error CA1806. Fix: discard with `_ = method()`.
 
 ---
 
 ## 10. Documentation map
 
-Public documentation (ship with the package):
+Public and repository documentation:
 
 - [README.md](README.md)
 - [CHANGELOG.md](CHANGELOG.md)
+- [CONTRIBUTING.md](CONTRIBUTING.md)
+- [SUPPORT.md](SUPPORT.md)
+- [SECURITY.md](SECURITY.md)
 - [docs/getting-started.md](docs/getting-started.md)
 - [docs/theming.md](docs/theming.md)
 - [docs/controls.md](docs/controls.md)
 - [docs/migration-guide.md](docs/migration-guide.md)
 - [docs/contributing.md](docs/contributing.md)
-- [KNOWN_ISSUES.md](KNOWN_ISSUES.md)
+- [docs/release.md](docs/release.md)
+- [docs-site/README.md](docs-site/README.md)
 
 Maintainer / AI context (this file and its siblings):
 
 - [AGENTS.md](AGENTS.md) - this handbook
-- [.github/copilot-instructions.md](.github/copilot-instructions.md) - condensed instructions for Copilot-class assistants
+- [CLAUDE.md](CLAUDE.md) - pointer to this handbook for Claude-class assistants
+- [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md) - PR checklist shown to contributors
+- [.github/workflows/build.yml](.github/workflows/build.yml) - Release build, split-TFM tests, package artifacts
+- [.github/workflows/docs.yml](.github/workflows/docs.yml) - docs-site build and GitHub Pages deployment
 
 Anything under `docs/_internal/` is not part of the public doc set. Do not link it from `README.md` or `docs/*.md`.
 
@@ -324,9 +332,9 @@ Anything under `docs/_internal/` is not part of the public doc set. Do not link 
 When you are editing this repository, you are acting as a **senior C#/.NET WPF engineer and Windows-theme specialist**. Every change must honour the following gates:
 
 1. **Standards respected**: BSD header, `LangVersion=latest` with nullable-clean code, XML docs on public API, `DynamicResource` for theme-bound values, no hard-coded RGB, canonical WinUI key names, no banned APIs (`string.IsNullOrEmpty` etc.).
-2. **Reference authority followed**: any visual or behavioural decision is backed by §4 (in-tree precedent → per-domain authority → Windows 11 docs). Fabricated design choices do not pass review.
-3. **Build clean**: `dotnet build Fluence.Wpf.sln` with **zero** errors and **zero** warnings after your change on every TFM.
-4. **Tests green, and extended**: `dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj` passes on every TFM; every new control, public API, or behaviour change ships with an MSTest that exercises it, including a theme cycle where relevant. No regressions against the HEAD-of-branch baseline (see §6).
+2. **Reference authority followed**: any visual or behavioural decision is backed by [Section 4](#4-reference-priority) (in-tree precedent -> per-domain authority -> Windows 11 docs). Fabricated design choices do not pass review.
+3. **Build clean**: `dotnet build Fluence.Wpf.sln -c Debug` with **zero** errors and **zero** warnings after your change on every TFM; Release must also remain clean for release and CI work.
+4. **Tests green, and extended**: split `dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug -f net472 --no-build` and `dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug -f net10.0-windows10.0.26100.0 --no-build` pass; every new control, public API, or behaviour change ships with an MSTest that exercises it, including a theme cycle where relevant. No regressions against the HEAD-of-branch baseline (see [Section 6](#6-testing)).
 5. **Visual parity**: any template / XAML change is confirmed in `Fluence.Wpf.Demo` across Light, Dark, High Contrast, accent swap, and at least one backdrop. Capture screenshots (100% and 150% DPI) when visuals change materially.
 6. **Docs synced**: public changes update `CHANGELOG.md`, and any of `README.md` / `docs/controls.md` / `docs/theming.md` that a consumer would rely on.
 7. **Scope discipline**: do not touch unrelated files or rename things unless explicitly asked; do not commit without the user's explicit request.
@@ -362,10 +370,10 @@ CONTEXT (read before touching code):
 - Fluence.Wpf/docs/controls.md - public control catalogue
 - Fluence.Wpf/docs/theming.md - canonical brush/color families
 - Fluence.Wpf/docs/contributing.md - contribution notes
-- Fluence.Wpf/KNOWN_ISSUES.md - known gaps and pre-existing regressions
+- Fluence.Wpf/docs/release.md - release validation and docs-site notes
 - Fluence.Wpf/CHANGELOG.md - recent scope
 
-Reference authority (see §4):
+Reference authority (see AGENTS.md Section 4):
   1. In-tree precedent (XAML, controls, tests)
   2. Per-domain authority:
      - WinUI 3 CommonStyles - https://github.com/microsoft/microsoft-ui-xaml/tree/main/src/controls/dev/CommonStyles
@@ -375,15 +383,15 @@ Reference authority (see §4):
 TASK: <one sentence describing the concrete change>
 
 WORKFLOW:
- 1. Re-read the relevant section(s) of AGENTS.md (§3 Theme architecture, §4 Reference priority, §5 Control authoring, §6 Testing).
+ 1. Re-read the relevant sections of AGENTS.md: Section 3 Theme architecture, Section 4 Reference priority, Section 5 Control authoring, and Section 6 Testing.
  2. Enumerate files and regions you plan to touch. Keep the diff minimal and name the slot/layer each file belongs to.
- 3. If the change is visual or behavioural, cite the authority from §4 that justifies it.
- 4. For any new control, follow §5 (Control authoring checklist) exactly.
+ 3. If the change is visual or behavioural, cite the authority from Section 4 that justifies it.
+ 4. For any new control, follow Section 5 (Control authoring checklist) exactly.
  5. For any theme / brush change, update the matching entries in Theme.{Light|Dark|HighContrast}.xaml AND Brushes.xaml together; never one without the other.
  6. TDD: add or extend an MSTest before writing implementation. Run just that test on `net10.0-windows10.0.26100.0` first (fast feedback), then both TFMs.
  7. dotnet build Fluence.Wpf.sln -c Debug - 0 errors / 0 warnings on net472 + net10.0-windows10.0.26100.0.
- 8. dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug - all tests pass on both TFMs; pre-existing KNOWN_ISSUES.md failures unchanged.
- 9. Update docs: CHANGELOG.md (always), docs/*.md (when the public surface changes), KNOWN_ISSUES.md (when a gap is opened or closed).
+ 8. dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug -f net472 --no-build, then dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug -f net10.0-windows10.0.26100.0 --no-build; all tests pass and known failures are unchanged.
+ 9. Update docs: CHANGELOG.md (always), docs/*.md (when the public surface changes), and create or update KNOWN_ISSUES.md only when an accepted known gap is opened or closed.
 10. Stage changes; show diffs; wait for the user's explicit commit instruction.
 
 ACCEPTANCE:
@@ -391,7 +399,7 @@ ACCEPTANCE:
 - Tests: no new regressions; net count +N for N new tests you added
 - Docs: synced with the change
 - No new third-party WPF runtime dependency introduced; no external agent bundles referenced
-- Every visual / behavioural choice has a cited authority from §4
+- Every visual / behavioural choice has a cited authority from Section 4
 
 STOP CONDITION: working tree is "git-clean minus your intended diff"; wait for explicit user approval before committing.
 ```
@@ -471,4 +479,3 @@ A new or updated sample page is done only when:
 - Right-rail options mutate the demo control through binding where the target property allows it. Code-behind is acceptable for command-style results such as click counters.
 - The page renders without binding errors or resource-resolution warnings in Light and Dark.
 - `dotnet build Fluence.Wpf.sln -c Debug` and focused tests for the affected area pass with zero warnings.
-`
