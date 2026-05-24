@@ -36,7 +36,7 @@
                 </TextBlock>
             </StackPanel>
 
-            <!--  Action cards  -->
+            <!--  Action cards: use the standard Card.Header / Card.Icon contract (same pattern as GalleryDataPage's Card.Variant samples).  -->
             <UniformGrid Margin="0,8,0,16" Columns="2">
                 <ui:Card
                     Margin="0,0,10,10"
@@ -45,26 +45,20 @@
                     IsClickable="True"
                     Tag="settings"
                     Variant="{x:Static uicore:CardVariant.Default}">
-                    <StackPanel>
-                        <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
-                            <ui:FontIcon
-                                Margin="0,0,12,0"
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Glyph="&#xE790;"
-                                IconFontSize="24" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Style="{StaticResource SubtitleTextBlockStyle}"
-                                Text="Theming" />
-                        </StackPanel>
-                        <TextBlock
-                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                            Style="{StaticResource BodyTextBlockStyle}"
-                            Text="Light, Dark, High Contrast, and Auto - follows the OS accent. Brushes map to WinUI 3 themeresource key names."
-                            TextWrapping="Wrap" />
-                    </StackPanel>
+                    <ui:Card.Icon>
+                        <ui:FontIcon
+                            Foreground="{DynamicResource AccentFillColorDefaultBrush}"
+                            Glyph="&#xE790;"
+                            IconFontSize="24" />
+                    </ui:Card.Icon>
+                    <ui:Card.Header>
+                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Theming" />
+                    </ui:Card.Header>
+                    <TextBlock
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        Text="Light, Dark, High Contrast, and Auto - follows the OS accent. Brushes map to WinUI 3 themeresource key names."
+                        TextWrapping="Wrap" />
                 </ui:Card>
 
                 <ui:Card
@@ -74,28 +68,21 @@
                     IsClickable="True"
                     Tag="settings"
                     Variant="{x:Static uicore:CardVariant.Default}">
-                    <StackPanel>
-                        <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
-                            <ui:FontIcon
-                                Margin="0,0,12,0"
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Glyph="&#xE737;"
-                                IconFontSize="24" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Style="{StaticResource SubtitleTextBlockStyle}"
-                                Text="Shell" />
-                        </StackPanel>
-                        <TextBlock
-                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                            Style="{StaticResource BodyTextBlockStyle}"
-                            Text="Mica, Acrylic, and Tabbed DWM backdrops. Rounded corners, caption extension, and icon + title bar controls on FluenceWindow."
-                            TextWrapping="Wrap" />
-                    </StackPanel>
+                    <ui:Card.Icon>
+                        <ui:FontIcon
+                            Foreground="{DynamicResource AccentFillColorDefaultBrush}"
+                            Glyph="&#xE737;"
+                            IconFontSize="24" />
+                    </ui:Card.Icon>
+                    <ui:Card.Header>
+                        <TextBlock Style="{StaticResource SubtitleTextBlockStyle}" Text="Shell" />
+                    </ui:Card.Header>
+                    <TextBlock
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource BodyTextBlockStyle}"
+                        Text="Mica, Acrylic, and Tabbed DWM backdrops. Rounded corners, caption extension, and icon + title bar controls on FluenceWindow."
+                        TextWrapping="Wrap" />
                 </ui:Card>
-
             </UniformGrid>
 
             <!--  Featured controls  -->
@@ -113,26 +100,20 @@
                     IsClickable="True"
                     Tag="buttons"
                     Variant="{x:Static uicore:CardVariant.Default}">
-                    <StackPanel>
-                        <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
-                            <ui:FontIcon
-                                Margin="0,0,12,0"
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Glyph="&#xE8E5;"
-                                IconFontSize="20" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Style="{StaticResource BodyStrongTextBlockStyle}"
-                                Text="Buttons" />
-                        </StackPanel>
-                        <TextBlock
-                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                            Style="{StaticResource CaptionTextBlockStyle}"
-                            Text="Primary, secondary, accent, hyperlink."
-                            TextWrapping="Wrap" />
-                    </StackPanel>
+                    <ui:Card.Icon>
+                        <ui:FontIcon
+                            Foreground="{DynamicResource AccentFillColorDefaultBrush}"
+                            Glyph="&#xE8E5;"
+                            IconFontSize="20" />
+                    </ui:Card.Icon>
+                    <ui:Card.Header>
+                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Buttons" />
+                    </ui:Card.Header>
+                    <TextBlock
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="Primary, secondary, accent, hyperlink."
+                        TextWrapping="Wrap" />
                 </ui:Card>
 
                 <ui:Card
@@ -142,26 +123,20 @@
                     IsClickable="True"
                     Tag="selection"
                     Variant="{x:Static uicore:CardVariant.Default}">
-                    <StackPanel>
-                        <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
-                            <ui:FontIcon
-                                Margin="0,0,12,0"
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Glyph="&#xE73E;"
-                                IconFontSize="20" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Style="{StaticResource BodyStrongTextBlockStyle}"
-                                Text="Selection" />
-                        </StackPanel>
-                        <TextBlock
-                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                            Style="{StaticResource CaptionTextBlockStyle}"
-                            Text="Checkbox, radio, toggle switch."
-                            TextWrapping="Wrap" />
-                    </StackPanel>
+                    <ui:Card.Icon>
+                        <ui:FontIcon
+                            Foreground="{DynamicResource AccentFillColorDefaultBrush}"
+                            Glyph="&#xE73E;"
+                            IconFontSize="20" />
+                    </ui:Card.Icon>
+                    <ui:Card.Header>
+                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Selection" />
+                    </ui:Card.Header>
+                    <TextBlock
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="Checkbox, radio, toggle switch."
+                        TextWrapping="Wrap" />
                 </ui:Card>
 
                 <ui:Card
@@ -171,26 +146,20 @@
                     IsClickable="True"
                     Tag="inputs"
                     Variant="{x:Static uicore:CardVariant.Default}">
-                    <StackPanel>
-                        <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
-                            <ui:FontIcon
-                                Margin="0,0,12,0"
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Glyph="&#xE70F;"
-                                IconFontSize="20" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Style="{StaticResource BodyStrongTextBlockStyle}"
-                                Text="Inputs" />
-                        </StackPanel>
-                        <TextBlock
-                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                            Style="{StaticResource CaptionTextBlockStyle}"
-                            Text="Text, password, combo, slider, number."
-                            TextWrapping="Wrap" />
-                    </StackPanel>
+                    <ui:Card.Icon>
+                        <ui:FontIcon
+                            Foreground="{DynamicResource AccentFillColorDefaultBrush}"
+                            Glyph="&#xE70F;"
+                            IconFontSize="20" />
+                    </ui:Card.Icon>
+                    <ui:Card.Header>
+                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Inputs" />
+                    </ui:Card.Header>
+                    <TextBlock
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="Text, password, combo, slider, number."
+                        TextWrapping="Wrap" />
                 </ui:Card>
 
                 <ui:Card
@@ -200,26 +169,20 @@
                     IsClickable="True"
                     Tag="status"
                     Variant="{x:Static uicore:CardVariant.Default}">
-                    <StackPanel>
-                        <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
-                            <ui:FontIcon
-                                Margin="0,0,12,0"
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Glyph="&#xE916;"
-                                IconFontSize="20" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Style="{StaticResource BodyStrongTextBlockStyle}"
-                                Text="Status" />
-                        </StackPanel>
-                        <TextBlock
-                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                            Style="{StaticResource CaptionTextBlockStyle}"
-                            Text="InfoBar, progress ring, progress bar."
-                            TextWrapping="Wrap" />
-                    </StackPanel>
+                    <ui:Card.Icon>
+                        <ui:FontIcon
+                            Foreground="{DynamicResource AccentFillColorDefaultBrush}"
+                            Glyph="&#xE916;"
+                            IconFontSize="20" />
+                    </ui:Card.Icon>
+                    <ui:Card.Header>
+                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Status" />
+                    </ui:Card.Header>
+                    <TextBlock
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="InfoBar, progress ring, progress bar."
+                        TextWrapping="Wrap" />
                 </ui:Card>
 
                 <ui:Card
@@ -229,26 +192,20 @@
                     IsClickable="True"
                     Tag="data"
                     Variant="{x:Static uicore:CardVariant.Default}">
-                    <StackPanel>
-                        <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
-                            <ui:FontIcon
-                                Margin="0,0,12,0"
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Glyph="&#xE80A;"
-                                IconFontSize="20" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Style="{StaticResource BodyStrongTextBlockStyle}"
-                                Text="Collections" />
-                        </StackPanel>
-                        <TextBlock
-                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                            Style="{StaticResource CaptionTextBlockStyle}"
-                            Text="List views, cards, layout panels."
-                            TextWrapping="Wrap" />
-                    </StackPanel>
+                    <ui:Card.Icon>
+                        <ui:FontIcon
+                            Foreground="{DynamicResource AccentFillColorDefaultBrush}"
+                            Glyph="&#xE80A;"
+                            IconFontSize="20" />
+                    </ui:Card.Icon>
+                    <ui:Card.Header>
+                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Collections" />
+                    </ui:Card.Header>
+                    <TextBlock
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="List views, cards, layout panels."
+                        TextWrapping="Wrap" />
                 </ui:Card>
 
                 <ui:Card
@@ -258,26 +215,20 @@
                     IsClickable="True"
                     Tag="navigation"
                     Variant="{x:Static uicore:CardVariant.Default}">
-                    <StackPanel>
-                        <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
-                            <ui:FontIcon
-                                Margin="0,0,12,0"
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Glyph="&#xE700;"
-                                IconFontSize="20" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Style="{StaticResource BodyStrongTextBlockStyle}"
-                                Text="Navigation" />
-                        </StackPanel>
-                        <TextBlock
-                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                            Style="{StaticResource CaptionTextBlockStyle}"
-                            Text="Pane layouts, selection, header."
-                            TextWrapping="Wrap" />
-                    </StackPanel>
+                    <ui:Card.Icon>
+                        <ui:FontIcon
+                            Foreground="{DynamicResource AccentFillColorDefaultBrush}"
+                            Glyph="&#xE700;"
+                            IconFontSize="20" />
+                    </ui:Card.Icon>
+                    <ui:Card.Header>
+                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Navigation" />
+                    </ui:Card.Header>
+                    <TextBlock
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="Pane layouts, selection, header."
+                        TextWrapping="Wrap" />
                 </ui:Card>
 
                 <ui:Card
@@ -287,26 +238,20 @@
                     IsClickable="True"
                     Tag="tabs"
                     Variant="{x:Static uicore:CardVariant.Default}">
-                    <StackPanel>
-                        <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
-                            <ui:FontIcon
-                                Margin="0,0,12,0"
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Glyph="&#xE748;"
-                                IconFontSize="20" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Style="{StaticResource BodyStrongTextBlockStyle}"
-                                Text="Tabs" />
-                        </StackPanel>
-                        <TextBlock
-                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                            Style="{StaticResource CaptionTextBlockStyle}"
-                            Text="TabView, tab strip, close buttons."
-                            TextWrapping="Wrap" />
-                    </StackPanel>
+                    <ui:Card.Icon>
+                        <ui:FontIcon
+                            Foreground="{DynamicResource AccentFillColorDefaultBrush}"
+                            Glyph="&#xE748;"
+                            IconFontSize="20" />
+                    </ui:Card.Icon>
+                    <ui:Card.Header>
+                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Tabs" />
+                    </ui:Card.Header>
+                    <TextBlock
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="TabView, tab strip, close buttons."
+                        TextWrapping="Wrap" />
                 </ui:Card>
 
                 <ui:Card
@@ -316,26 +261,20 @@
                     IsClickable="True"
                     Tag="buttons"
                     Variant="{x:Static uicore:CardVariant.Default}">
-                    <StackPanel>
-                        <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
-                            <ui:FontIcon
-                                Margin="0,0,12,0"
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Glyph="&#xE712;"
-                                IconFontSize="20" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Style="{StaticResource BodyStrongTextBlockStyle}"
-                                Text="Menus" />
-                        </StackPanel>
-                        <TextBlock
-                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                            Style="{StaticResource CaptionTextBlockStyle}"
-                            Text="ContextMenu, MenuItem, flyout."
-                            TextWrapping="Wrap" />
-                    </StackPanel>
+                    <ui:Card.Icon>
+                        <ui:FontIcon
+                            Foreground="{DynamicResource AccentFillColorDefaultBrush}"
+                            Glyph="&#xE712;"
+                            IconFontSize="20" />
+                    </ui:Card.Icon>
+                    <ui:Card.Header>
+                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Menus" />
+                    </ui:Card.Header>
+                    <TextBlock
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="ContextMenu, MenuItem, flyout."
+                        TextWrapping="Wrap" />
                 </ui:Card>
 
                 <ui:Card
@@ -345,26 +284,20 @@
                     IsClickable="True"
                     Tag="data"
                     Variant="{x:Static uicore:CardVariant.Default}">
-                    <StackPanel>
-                        <StackPanel Margin="0,0,0,8" Orientation="Horizontal">
-                            <ui:FontIcon
-                                Margin="0,0,12,0"
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Glyph="&#xE71C;"
-                                IconFontSize="20" />
-                            <TextBlock
-                                VerticalAlignment="Center"
-                                Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                Style="{StaticResource BodyStrongTextBlockStyle}"
-                                Text="Trees" />
-                        </StackPanel>
-                        <TextBlock
-                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                            Style="{StaticResource CaptionTextBlockStyle}"
-                            Text="TreeView, expand, indent, chevron."
-                            TextWrapping="Wrap" />
-                    </StackPanel>
+                    <ui:Card.Icon>
+                        <ui:FontIcon
+                            Foreground="{DynamicResource AccentFillColorDefaultBrush}"
+                            Glyph="&#xE71C;"
+                            IconFontSize="20" />
+                    </ui:Card.Icon>
+                    <ui:Card.Header>
+                        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}" Text="Trees" />
+                    </ui:Card.Header>
+                    <TextBlock
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="TreeView, expand, indent, chevron."
+                        TextWrapping="Wrap" />
                 </ui:Card>
             </UniformGrid>
         </StackPanel>
