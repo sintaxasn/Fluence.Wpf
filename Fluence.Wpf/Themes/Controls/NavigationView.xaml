@@ -305,11 +305,11 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <!--  Pane background: Transparent so DWM Mica/Acrylic backdrop shows through.  -->
+                <!--  Pane background: AcrylicInAppFillColorDefaultBrush per WinUI 3 NavigationViewDefaultPaneBackground.  -->
                 <Border
                     x:Name="PaneBorder"
                     Grid.Column="0"
-                    Background="Transparent">
+                    Background="{DynamicResource AcrylicInAppFillColorDefaultBrush}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -524,11 +524,11 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <!--  Pane background: Transparent so DWM Mica/Acrylic backdrop shows through.  -->
+                <!--  Pane background: AcrylicInAppFillColorDefaultBrush per WinUI 3 NavigationViewDefaultPaneBackground.  -->
                 <Border
                     x:Name="CompactPane"
                     Grid.Column="0"
-                    Background="Transparent">
+                    Background="{DynamicResource AcrylicInAppFillColorDefaultBrush}">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -738,12 +738,12 @@
                     <RowDefinition Height="48" />
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
-                <!--  Pane background: Transparent so DWM Mica/Acrylic backdrop shows through.  -->
+                <!--  Pane background: AcrylicInAppFillColorDefaultBrush per WinUI 3 NavigationViewDefaultPaneBackground.  -->
                 <Border
                     x:Name="PaneHeaderBorder"
                     Grid.Row="0"
                     Padding="4,0,8,0"
-                    Background="Transparent"
+                    Background="{DynamicResource AcrylicInAppFillColorDefaultBrush}"
                     BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
                     BorderThickness="0,0,0,1">
                     <Grid>

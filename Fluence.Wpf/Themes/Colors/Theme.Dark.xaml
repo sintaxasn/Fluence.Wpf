@@ -169,7 +169,15 @@
     <Color x:Key="TextOnAccentFillColorSecondary">#80000000</Color>
     <Color x:Key="TextOnAccentFillColorDisabled">#87FFFFFF</Color>
 
-    <!--  NavigationView content area tint (semi-transparent, shows Mica/Acrylic beneath)  -->
-    <Color x:Key="NavigationViewContentBackground">#AF2A2A2A</Color>
+    <!--
+        WinUI 3 canonical: NavigationViewContentBackground = LayerFillColorDefault
+        (#4C3A3A3A in dark = 30%-opaque grey #3A3A3A). This is a translucent "layer"
+        brush, NOT fully transparent. Layered over the Mica/Acrylic backdrop it gives
+        the content area a calm, slightly tinted surface while still letting some Mica
+        through so card lifts and brand colors stay visible. Fully transparent
+        (the previous overcorrection) lets raw Mica noise dominate the content area
+        and washes out card differentiation.
+    -->
+    <Color x:Key="NavigationViewContentBackground">#4C3A3A3A</Color>
 
 </ResourceDictionary>
