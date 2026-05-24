@@ -97,7 +97,7 @@ namespace Fluence.Wpf.Controls
         private const string PartPaneColumn = "PaneColumn";
         private const double PaneClosedWidth = 48.0;
         private const double PaneClosedWithBackWidth = 96.0;
-        private const double PaneOpenWidth = 280.0;
+        private const double PaneOpenWidth = 320.0;
         private const double PaneAnimationMilliseconds = 167.0;
 
         private static readonly DependencyProperty IsTopOverflowCollapsedProperty =

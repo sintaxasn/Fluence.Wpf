@@ -119,7 +119,7 @@
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="FocusVisualStyle" Value="{StaticResource NavigationViewItemFocusVisual}" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
-        <Setter Property="FontSize" Value="13" />
+        <Setter Property="FontSize" Value="14" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
         <Setter Property="Margin" Value="0" />
@@ -403,8 +403,10 @@
                         <Border
                             x:Name="PaneFooterHost"
                             Grid.Row="2"
-                            Padding="8,0,8,8">
-                            <ContentPresenter Content="{TemplateBinding PaneFooter}" />
+                            Padding="8,0,8,8"
+                            BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
+                            BorderThickness="0,1,0,0">
+                            <ContentPresenter Margin="0,4,0,0" Content="{TemplateBinding PaneFooter}" />
                         </Border>
                     </Grid>
                 </Border>
@@ -622,8 +624,10 @@
                         <Border
                             x:Name="PaneFooterHost"
                             Grid.Row="2"
-                            Padding="0,0,0,8">
-                            <ContentPresenter Content="{TemplateBinding PaneFooter}" />
+                            Padding="0,0,0,8"
+                            BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
+                            BorderThickness="0,1,0,0">
+                            <ContentPresenter Margin="0,4,0,0" Content="{TemplateBinding PaneFooter}" />
                         </Border>
                     </Grid>
                 </Border>
