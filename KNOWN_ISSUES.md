@@ -6,19 +6,6 @@ maintainers.
 
 ## Current follow-ups (not defects)
 
-- **OS-transform modeling for the accent ramp** - The Candidate F HSV ramp
-  algorithm in `HsvColorHelper` mirrors what Windows produces for
-  `SystemAccentColor -> Light1..Dark3` on the verbatim base inputs we
-  exercised. Boundary-probe captures showed that the OS aggressively
-  projects arbitrary user input into a Fluent-compatible subspace
-  (see `Fluence.Wpf.Tests/AccentRampScoreboard.cs` and the
-  `accent-capture-*.txt` artifacts under `docs/_internal/theme-rewrite/`).
-  We deliberately do not mirror that projection - we use the user-supplied
-  base verbatim - which means `ApplyCustomAccent(Color)` outputs diverge
-  from what the OS would produce if the same color were set as the system
-  accent. Re-evaluating whether we want to mirror the OS transform (or
-  expose a knob to opt in) is deferred until consumers report a divergence
-  that matters in practice.
 - **`TabView` drag-to-reorder** - `TabView` / `TabViewItem` ship with closable
   tabs, an add-tab button, per-tab icons, overflow scroll, and width / overlay
   modes. Drag-and-drop tab reordering (including cross-window tear-off) is **not**
@@ -42,6 +29,15 @@ maintainers.
 
 ## Resolved in 0.6.0-preview
 
+- **Accent ramp spread widened for usable control variation (task #8)** -
+  The Candidate F HSV ramp originally fitted to OS captures produced
+  tight near-base steps (Light1 +7%, Dark1 -4%) that left adjacent
+  rungs visually indistinguishable in control templates. Widened to
+  ~10-12% adjacent steps on the L axis (Light1 +12% / Dark1 -10% / etc.)
+  so controls that reference different rungs for hover / pressed /
+  focus surfaces now show useful variation. The decision to use the
+  user-supplied base verbatim instead of mirroring the Windows
+  perceptual projection (task #3) stands.
 - **`Themes/Shared.xaml` split (task #16)** - The three Windows close-button
   Color tokens (`WindowCloseButtonBackgroundPointerOver`, `...Pressed`,
   `WindowCloseButtonForegroundPointerOver`) are theme-independent (the

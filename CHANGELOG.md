@@ -8,6 +8,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [0.6.0-preview] - 2026-05-24
 
+### Changed
+
+- Widened the accent ramp spread in `HsvColorHelper.GenerateAccentRampWinaccent`. The previous Candidate F calibration produced near-base stops only 4-7 % away from the base on the L axis, leaving adjacent ramp rungs visually indistinguishable in control templates. New deltas are ~10-12 % per adjacent step (Light1 +12 %, Light2 +24 %, Light3 +36 %, Dark1 -10 %, Dark2 -20 %, Dark3 -30 %) so controls that reference different rungs for hover / pressed / focus states now show useful variation. The decision to use the user-supplied base verbatim instead of mirroring the Windows perceptual projection still stands; this is purely a spread adjustment, not an OS-transform model.
+- Demo `DemoSampleSourceExpanderStyle` background switched to `SolidBackgroundFillColorQuarternaryBrush` so the collapsed "Source code" header strip reads as a distinct dark band beneath the sample card (matches the WinUI Gallery visual reference).
+
 ### Added
 
 - `Themes/Shared.xaml` - a new merge slot (`[5]`, loaded once, never replaced) holding theme-independent Color tokens that are identical across Light, Dark, and HighContrast. Currently holds the three canonical Windows close-button brand reds (`WindowCloseButtonBackgroundPointerOver`, `...Pressed`, `WindowCloseButtonForegroundPointerOver`). Per-theme dictionaries no longer carry these keys. Slot count in `ApplicationThemeManager` is now 6; `DictionaryStabilityTests` updated accordingly.
