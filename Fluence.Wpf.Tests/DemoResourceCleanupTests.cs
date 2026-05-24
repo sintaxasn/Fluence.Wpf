@@ -75,22 +75,22 @@ namespace Fluence.Wpf.Tests
                     DemoTestHost.AddDemoSharedStyles(application);
 
                     Collection<ResourceDictionary> dictionaries = application.Resources.MergedDictionaries;
-                    Assert.AreEqual(6, dictionaries.Count, "Demo startup should append one demo dictionary after the five Fluence dictionaries.");
-                    for (int i = 0; i < 5; i++)
+                    Assert.AreEqual(7, dictionaries.Count, "Demo startup should append one demo dictionary after the six Fluence dictionaries.");
+                    for (int i = 0; i < 6; i++)
                     {
                         Assert.IsFalse(IsDemoSharedStyles(dictionaries[i]),
                             "Fluence theme slot " + i + " should not be occupied by demo styles.");
                     }
 
-                    Assert.IsTrue(IsDemoSharedStyles(dictionaries[5]),
+                    Assert.IsTrue(IsDemoSharedStyles(dictionaries[6]),
                         "DemoSharedStyles should be appended after the Fluence theme slots.");
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.Mica);
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.Mica);
 
-                    Assert.AreEqual(6, dictionaries.Count, "Theme changes should not duplicate demo styles.");
-                    Assert.IsTrue(IsDemoSharedStyles(dictionaries[5]),
-                        "DemoSharedStyles should stay after the five Fluence dictionaries.");
+                    Assert.AreEqual(7, dictionaries.Count, "Theme changes should not duplicate demo styles.");
+                    Assert.IsTrue(IsDemoSharedStyles(dictionaries[6]),
+                        "DemoSharedStyles should stay after the six Fluence dictionaries.");
                 }
                 finally
                 {

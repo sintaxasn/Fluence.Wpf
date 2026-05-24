@@ -197,6 +197,7 @@ namespace Fluence.Wpf
             ResourceDictionary brushesDict = LoadDictionary(PackBase + "Themes/Brushes/Brushes.xaml");
             ResourceDictionary typographyDict = LoadDictionary(PackBase + "Themes/Typography/Typography.xaml");
             ResourceDictionary genericDict = LoadDictionary(PackBase + "Themes/Generic.xaml");
+            ResourceDictionary sharedDict = LoadDictionary(PackBase + "Themes/Shared.xaml");
 
             // Remove any pre-existing Fluence dictionaries the consumer might have merged
             // before calling Apply; we always own the slot order.
@@ -210,12 +211,13 @@ namespace Fluence.Wpf
 
             // Insert into fixed slots instead of appending. Tests assert this shape because
             // theme swaps depend on replacing slot 0 while preserving accent, brushes,
-            // typography, and control-template dictionaries.
+            // typography, control-template, and shared dictionaries.
             dictionaries.Insert(SlotColors, themeDict);
             dictionaries.Insert(SlotAccent, accentDict);
             dictionaries.Insert(SlotBrushes, brushesDict);
             dictionaries.Insert(SlotTypography, typographyDict);
             dictionaries.Insert(SlotGeneric, genericDict);
+            dictionaries.Insert(SlotShared, sharedDict);
             PromoteThemeColors(resolvedTheme);
             EnsureAcrylicNoiseBrush();
             _isInitialized = true;
@@ -240,7 +242,8 @@ namespace Fluence.Wpf
                 || s.Contains("themes/accent/accent.xaml")
                 || s.Contains("themes/brushes/brushes.xaml")
                 || s.Contains("themes/typography/typography.xaml")
-                || s.Contains("themes/generic.xaml");
+                || s.Contains("themes/generic.xaml")
+                || s.Contains("themes/shared.xaml");
             return isFluencePath && s.Contains("fluence.wpf;component");
         }
 
@@ -389,17 +392,26 @@ namespace Fluence.Wpf
          *   [2] Brushes        - Brushes.xaml                          (reloaded on non-HC theme swaps)
          *   [3] Typography     - Typography.xaml                       (loaded once, never replaced)
          *   [4] Generic        - Generic.xaml                          (loaded once, never replaced)
+         *   [5] Shared         - Shared.xaml                           (loaded once, never replaced)
          *
          * For HighContrast, the theme dict at [0] contains both Color keys (static fallbacks)
          * and Brush keys (with live SystemColor DynamicResource bindings). These brush keys
          * override the equivalent keys from Brushes.xaml at [2] because we place them
          * directly into Application.Resources AFTER merging, ensuring correct precedence.
+         *
+         * Slot [5] (Shared.xaml) holds theme-independent Color tokens that are identical
+         * across Light, Dark, and HighContrast (canonical Windows close-button reds, the
+         * SmokeFillColorDefault dialog overlay, SurfaceStrokeColorDefault). It is loaded
+         * once and never replaced - the per-theme dictionaries at slot [0] no longer
+         * carry these keys, so PromoteThemeColors does not iterate over them (and it
+         * does not need to: shared values do not change with the theme).
          */
         private const int SlotColors = 0;
         private const int SlotAccent = 1;
         private const int SlotBrushes = 2;
         private const int SlotTypography = 3;
         private const int SlotGeneric = 4;
+        private const int SlotShared = 5;
 
         // Flags to prevent re-entrant calls to Apply() and to track whether the initial load has completed.
         private static bool _isInitialized;

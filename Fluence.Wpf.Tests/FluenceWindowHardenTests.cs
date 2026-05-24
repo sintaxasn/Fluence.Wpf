@@ -212,11 +212,18 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void FluenceWindowCloseButtonThemeTokens_AreDefinedForAllManagedThemes()
+        public void FluenceWindowCloseButtonThemeTokens_AreDefinedInSharedDictionary()
         {
-            AssertCloseButtonThemeTokens("Theme.Light.xaml");
-            AssertCloseButtonThemeTokens("Theme.Dark.xaml");
-            AssertCloseButtonThemeTokens("Theme.HighContrast.xaml");
+            // The three Windows close-button Color tokens are theme-independent - the
+            // Windows shell uses the same red across Light, Dark, and HighContrast - so
+            // they live in Themes/Shared.xaml (loaded as merge slot 5) rather than being
+            // duplicated across the three per-theme dictionaries. The brush layer still
+            // references them by key in Brushes.xaml; DynamicResource walks the merge
+            // chain and resolves through Shared.xaml.
+            string shared = ReadRepositoryFile("Fluence.Wpf", "Themes", "Shared.xaml");
+            StringAssert.Contains(shared, "<Color x:Key=\"WindowCloseButtonBackgroundPointerOver\">#FFC42B1C</Color>");
+            StringAssert.Contains(shared, "<Color x:Key=\"WindowCloseButtonBackgroundPressed\">#FFB4271C</Color>");
+            StringAssert.Contains(shared, "<Color x:Key=\"WindowCloseButtonForegroundPointerOver\">#FFFFFFFF</Color>");
 
             string brushes = ReadRepositoryFile("Fluence.Wpf", "Themes", "Brushes", "Brushes.xaml");
             StringAssert.Contains(brushes, "WindowCloseButtonBackgroundPointerOverBrush");
@@ -236,15 +243,6 @@ namespace Fluence.Wpf.Tests
             AssertTemplatePart(attributes, "PART_MaximizeButton");
             AssertTemplatePart(attributes, "PART_RestoreButton");
             AssertTemplatePart(attributes, "PART_CloseButton");
-        }
-
-        private static void AssertCloseButtonThemeTokens(string themeFileName)
-        {
-            string theme = ReadRepositoryFile("Fluence.Wpf", "Themes", "Colors", themeFileName);
-
-            StringAssert.Contains(theme, "<Color x:Key=\"WindowCloseButtonBackgroundPointerOver\">#FFC42B1C</Color>");
-            StringAssert.Contains(theme, "<Color x:Key=\"WindowCloseButtonBackgroundPressed\">#FFB4271C</Color>");
-            StringAssert.Contains(theme, "<Color x:Key=\"WindowCloseButtonForegroundPointerOver\">#FFFFFFFF</Color>");
         }
 
         private static void AssertTemplatePart(object[] attributes, string name)

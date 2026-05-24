@@ -109,15 +109,15 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void FirstApply_Loads5Dictionaries()
+        public void FirstApply_Loads6Dictionaries()
         {
             WpfTestSta.Invoke(() =>
             {
                 Application app = Application.Current;
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
 
-                Assert.AreEqual(5, app.Resources.MergedDictionaries.Count,
-                    "Initial Apply should load exactly 5 dictionaries (Colors, Accent, Brushes, Typography, Generic).");
+                Assert.AreEqual(6, app.Resources.MergedDictionaries.Count,
+                    "Initial Apply should load exactly 6 dictionaries (Colors, Accent, Brushes, Typography, Generic, Shared).");
             });
         }
 
@@ -206,7 +206,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void InitialApply_LoadsColorsAccentBrushesTypographyGeneric_InOrder()
+        public void InitialApply_LoadsColorsAccentBrushesTypographyGenericShared_InOrder()
         {
             WpfTestSta.Invoke(() =>
             {
@@ -214,7 +214,7 @@ namespace Fluence.Wpf.Tests
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
                 Collection<ResourceDictionary> dictionaries = app.Resources.MergedDictionaries;
 
-                Assert.AreEqual(5, dictionaries.Count);
+                Assert.AreEqual(6, dictionaries.Count);
 
                 string[] expectedFragments =
                 [
@@ -222,7 +222,8 @@ namespace Fluence.Wpf.Tests
                     "Accent",
                     "Brushes",
                     "Typography",
-                    "Generic"
+                    "Generic",
+                    "Shared"
                 ];
 
                 for (int i = 0; i < expectedFragments.Length; i++)

@@ -136,9 +136,6 @@
     <!--  These are the canonical Fluent close-button reds (#C42B1C / #B4271C).  -->
     <!--  Unlike SystemFillColorCritical they are identical in Light and Dark;  -->
     <!--  using tokens here lets High Contrast override via the resource system.  -->
-    <Color x:Key="WindowCloseButtonBackgroundPointerOver">#FFC42B1C</Color>
-    <Color x:Key="WindowCloseButtonBackgroundPressed">#FFB4271C</Color>
-    <Color x:Key="WindowCloseButtonForegroundPointerOver">#FFFFFFFF</Color>
     <Color x:Key="WindowCloseFillColorHover">#FFC42B1C</Color>
     <Color x:Key="WindowCloseFillColorPressed">#FFB4271C</Color>
     <Color x:Key="WindowCloseForegroundHover">#FFFFFFFF</Color>

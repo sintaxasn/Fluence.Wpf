@@ -133,9 +133,6 @@
     <Color x:Key="SystemFillColorSolidNeutralBackground">#FF2E2E2E</Color>
 
     <!--  Window Chrome - Close Button  -->
-    <Color x:Key="WindowCloseButtonBackgroundPointerOver">#FFC42B1C</Color>
-    <Color x:Key="WindowCloseButtonBackgroundPressed">#FFB4271C</Color>
-    <Color x:Key="WindowCloseButtonForegroundPointerOver">#FFFFFFFF</Color>
     <Color x:Key="WindowCloseFillColorHover">#FFC42B1C</Color>
     <Color x:Key="WindowCloseFillColorPressed">#FFB4271C</Color>
     <Color x:Key="WindowCloseForegroundHover">#FFFFFFFF</Color>
