@@ -147,8 +147,14 @@
 
     <!--  Accent fill brushes  -->
     <SolidColorBrush x:Key="AccentFillColorDefaultBrush" Color="{DynamicResource SystemAccentColorDark1}" />
-    <SolidColorBrush x:Key="AccentFillColorSecondaryBrush" Color="{DynamicResource SystemAccentColorDark1}" Opacity=".9" />
-    <SolidColorBrush x:Key="AccentFillColorTertiaryBrush" Color="{DynamicResource SystemAccentColorDark1}" Opacity=".8" />
+    <SolidColorBrush
+        x:Key="AccentFillColorSecondaryBrush"
+        Opacity=".9"
+        Color="{DynamicResource SystemAccentColorDark1}" />
+    <SolidColorBrush
+        x:Key="AccentFillColorTertiaryBrush"
+        Opacity=".8"
+        Color="{DynamicResource SystemAccentColorDark1}" />
     <SolidColorBrush x:Key="AccentFillColorDisabledBrush" Color="{DynamicResource AccentFillColorDisabled}" />
 
     <!--  Accent Text Fill Colors  -->
@@ -181,5 +187,16 @@
         through so card lifts and brand colors stay visible.
     -->
     <Color x:Key="NavigationViewContentBackground">#80FFFFFF</Color>
+
+    <!--
+        AccentFillBackdrop: opaque sub-layer sitting BEHIND the accent track inside the
+        ToggleSwitch template. The accent track uses AccentFillColor*Brush (Default at full
+        opacity, Secondary at 0.9, Tertiary at 0.8); composing those against the visible card
+        surface yields wallpaper-tinted hover/pressed shades on Mica that drift from
+        Notepad/WinUI 3 references by 2-3 RGB units per channel. Layering them over an
+        opaque white internal base in Light mode pins the composited result to the canonical
+        Windows accent palette regardless of how translucent the surrounding card is.
+    -->
+    <Color x:Key="AccentFillBackdrop">#FFFFFFFF</Color>
 
 </ResourceDictionary>

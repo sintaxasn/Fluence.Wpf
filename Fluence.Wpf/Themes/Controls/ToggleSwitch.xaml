@@ -119,6 +119,24 @@
                                     CornerRadius="10"
                                     Opacity="0" />
 
+                                <!--
+                                    Internal opaque sub-layer that sits beneath the accent track
+                                    when the switch is ON. The accent fill brushes
+                                    (AccentFillColorDefault at full opacity, Secondary at 0.9,
+                                    Tertiary at 0.8) composite against this opaque surface
+                                    rather than the visible card around the toggle, so hover
+                                    and pressed shades match the canonical Windows accent
+                                    palette regardless of whether the surrounding card is
+                                    translucent (CardBackgroundFillColorDefaultBrush over Mica)
+                                    or opaque (SolidBackgroundFillColorBaseBrush).
+                                    Opacity tracks the ON state via the same trigger as TrackOn.
+                                -->
+                                <Border
+                                    x:Name="TrackBase"
+                                    Background="{DynamicResource AccentFillBackdropBrush}"
+                                    CornerRadius="10"
+                                    Opacity="0" />
+
                                 <!--  On track: normal  -->
                                 <Border
                                     x:Name="TrackOn"
@@ -266,6 +284,7 @@
                             <Setter TargetName="TrackOff" Property="Opacity" Value="0" />
                             <Setter TargetName="TrackOffHover" Property="Opacity" Value="0" />
                             <Setter TargetName="TrackOffPressed" Property="Opacity" Value="0" />
+                            <Setter TargetName="TrackBase" Property="Opacity" Value="1" />
                             <Setter TargetName="TrackOn" Property="Opacity" Value="1" />
                             <Setter TargetName="OffContentPresenter" Property="Visibility" Value="Collapsed" />
                             <Setter TargetName="OnContentPresenter" Property="Visibility" Value="Visible" />

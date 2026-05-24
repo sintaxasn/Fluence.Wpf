@@ -117,6 +117,14 @@
     <!--  NavigationView content area (semi-transparent tint over Mica/Acrylic backdrop)  -->
     <SolidColorBrush x:Key="NavigationViewContentBackgroundBrush" Color="{DynamicResource NavigationViewContentBackground}" />
 
+    <!--
+        AccentFillBackdropBrush: theme-aware opaque base used inside ToggleSwitch's template
+        so the accent fill (Default at full opacity, Secondary at 0.9, Tertiary at 0.8)
+        composites against a predictable surface (Light: white; Dark: #202020) regardless of
+        whether the surrounding card is translucent or sitting on Mica. See Theme.Light.xaml.
+    -->
+    <SolidColorBrush x:Key="AccentFillBackdropBrush" Color="{DynamicResource AccentFillBackdrop}" />
+
     <!--  Acrylic Background Fill Colors  -->
     <SolidColorBrush x:Key="AcrylicBackgroundFillColorDefaultBrush" Color="{DynamicResource AcrylicBackgroundFillColorDefault}" />
     <SolidColorBrush x:Key="AcrylicBackgroundFillColorBaseBrush" Color="{DynamicResource AcrylicBackgroundFillColorBase}" />

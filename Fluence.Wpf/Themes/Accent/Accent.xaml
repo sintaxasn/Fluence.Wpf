@@ -10,32 +10,26 @@
     <!--  Base accent ramp (overwritten at runtime by AccentManager)  -->
     <!--  ================================================================  -->
 
-    <Color x:Key="SystemAccentColor">#FF0078D7</Color>
-    <Color x:Key="SystemAccentColorDark1">#FF005A9E</Color>
-    <Color x:Key="SystemAccentColorDark2">#FF004275</Color>
-    <Color x:Key="SystemAccentColorDark3">#FF002642</Color>
-    <Color x:Key="SystemAccentColorLight1">#FF429CE3</Color>
-    <Color x:Key="SystemAccentColorLight2">#FF76B9ED</Color>
-    <Color x:Key="SystemAccentColorLight3">#FFA6D8FF</Color>
-
-    <!--<Color x:Key="SystemAccentColor">#FF0078D4</Color>
+    <!--
+        Canonical Windows Default Blue ramp. Verbatim AccentPalette dump captured from
+        Windows 11 (HKCU\...\Explorer\Accent\AccentPalette) with the OS set to the
+        Default accent. AccentManager overwrites these at runtime for non-default
+        accents; these values matter only for the brief window before ApplySystemAccent
+        runs (mostly for designers).
+    -->
+    <Color x:Key="SystemAccentColor">#FF0078D4</Color>
     <Color x:Key="SystemAccentColorLight1">#FF0091F8</Color>
     <Color x:Key="SystemAccentColorLight2">#FF4CC2FF</Color>
     <Color x:Key="SystemAccentColorLight3">#FF99EBFF</Color>
     <Color x:Key="SystemAccentColorDark1">#FF0067C0</Color>
     <Color x:Key="SystemAccentColorDark2">#FF003E92</Color>
-    <Color x:Key="SystemAccentColorDark3">#FF001A68</Color>-->
-
-    <!--  AccentManager sets these per-theme at runtime. Defaults here are for Light.  -->
-    <!--<Color x:Key="SystemAccentColorPrimary">#FF005A9E</Color>
-    <Color x:Key="SystemAccentColorSecondary">#FF004275</Color>
-    <Color x:Key="SystemAccentColorTertiary">#FF002642</Color>-->
+    <Color x:Key="SystemAccentColorDark3">#FF001A68</Color>
 
     <!--  AccentFillColorDisabled, TextOnAccent*, and AccentTextFillColorDisabled are theme-dependent.  -->
     <Color x:Key="TextOnAccentFillColorSelectedText">#FFFFFFFF</Color>
 
 
-<!--  ================================================================  -->
+    <!--  ================================================================  -->
     <!--  Accent Brushes  -->
     <!--  ================================================================  -->
 

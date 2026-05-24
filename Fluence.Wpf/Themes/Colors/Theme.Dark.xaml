@@ -124,11 +124,11 @@
     <Color x:Key="SystemFillColorCritical">#FFFF99A4</Color>
     <Color x:Key="SystemFillColorNeutral">#8BFFFFFF</Color>
     <Color x:Key="SystemFillColorSolidNeutral">#FF9D9D9D</Color>
-    <Color x:Key="SystemFillColorAttentionBackground">#15FFFFFF</Color>
+    <Color x:Key="SystemFillColorAttentionBackground">#08FFFFFF</Color>
     <Color x:Key="SystemFillColorSuccessBackground">#FF393D1B</Color>
     <Color x:Key="SystemFillColorCautionBackground">#FF433519</Color>
     <Color x:Key="SystemFillColorCriticalBackground">#FF442726</Color>
-    <Color x:Key="SystemFillColorNeutralBackground">#15FFFFFF</Color>
+    <Color x:Key="SystemFillColorNeutralBackground">#08FFFFFF</Color>
     <Color x:Key="SystemFillColorSolidAttentionBackground">#FF2E2E2E</Color>
     <Color x:Key="SystemFillColorSolidNeutralBackground">#FF2E2E2E</Color>
 
@@ -143,14 +143,20 @@
 
     <!--  Accent fill brushes  -->
     <SolidColorBrush x:Key="AccentFillColorDefaultBrush" Color="{DynamicResource SystemAccentColorLight2}" />
-    <SolidColorBrush x:Key="AccentFillColorSecondaryBrush" Color="{DynamicResource SystemAccentColorLight2}" Opacity=".9" />
-    <SolidColorBrush x:Key="AccentFillColorTertiaryBrush" Color="{DynamicResource SystemAccentColorLight2}" Opacity=".8" />
+    <SolidColorBrush
+        x:Key="AccentFillColorSecondaryBrush"
+        Opacity=".9"
+        Color="{DynamicResource SystemAccentColorLight2}" />
+    <SolidColorBrush
+        x:Key="AccentFillColorTertiaryBrush"
+        Opacity=".8"
+        Color="{DynamicResource SystemAccentColorLight2}" />
     <SolidColorBrush x:Key="AccentFillColorDisabledBrush" Color="{DynamicResource AccentFillColorDisabled}" />
 
     <!--  Accent Text Fill Colors  -->
     <SolidColorBrush x:Key="AccentTextFillColorPrimaryBrush" Color="{DynamicResource SystemAccentColorLight3}" />
     <SolidColorBrush x:Key="AccentTextFillColorSecondaryBrush" Color="{DynamicResource SystemAccentColorLight3}" />
-    <SolidColorBrush x:Key="AccentTextFillColorTertiaryBrush" Color="{DynamicResource AccentFillColorLight2}" />
+    <SolidColorBrush x:Key="AccentTextFillColorTertiaryBrush" Color="{DynamicResource SystemAccentColorLight2}" />
 
     <SolidColorBrush x:Key="SystemFillColorAttentionBrush" Color="{DynamicResource SystemAccentColorLight2}" />
     <SolidColorBrush x:Key="SystemFillColorSuccessBrush" Color="{StaticResource SystemFillColorSuccess}" />
@@ -179,5 +185,13 @@
         and washes out card differentiation.
     -->
     <Color x:Key="NavigationViewContentBackground">#4C3A3A3A</Color>
+
+    <!--
+        AccentFillBackdrop: opaque sub-layer behind the accent track inside the ToggleSwitch
+        template. See Theme.Light.xaml for the rationale. Dark value matches
+        SolidBackgroundFillColorBase so accent composited at 0.9 opacity yields the canonical
+        Windows accent palette hover shade (e.g. #4CC2FF x 0.9 over #202020 = #48B2E9).
+    -->
+    <Color x:Key="AccentFillBackdrop">#FF202020</Color>
 
 </ResourceDictionary>

@@ -294,6 +294,15 @@
         <Setter Property="Margin" Value="1,30,0,12" />
     </Style>
 
+    <!--
+        Settings-row card uses the translucent CardBackgroundFillColorDefaultBrush so the
+        Mica/Acrylic backdrop tint shows through (WinUI Gallery aesthetic). Accent fidelity
+        for hover/pressed control states is preserved by an internal opaque sub-layer added
+        inside each affected control template (see Themes/Controls/ToggleSwitch.xaml's
+        ToggleSwitchTrackBaseBrush layer); the accent composites against that internal
+        layer rather than the visible card surface, so eyedrop readings match Notepad /
+        WinUI 3 references regardless of card translucency.
+    -->
     <Style x:Key="SettingsRowCardStyle" TargetType="{x:Type Border}">
         <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorDefaultBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
