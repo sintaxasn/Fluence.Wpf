@@ -133,9 +133,9 @@
                         <ContentPresenter
                             x:Name="PART_IconPresenter"
                             Grid.Column="5"
-                            MaxWidth="24"
-                            MaxHeight="24"
-                            Margin="4,0,20,0"
+                            MaxWidth="20"
+                            MaxHeight="20"
+                            Margin="8,0,12,0"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
                             Content="{TemplateBinding Icon}" />
@@ -148,7 +148,7 @@
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
                             Foreground="{TemplateBinding Foreground}"
-                            Style="{DynamicResource CaptionTextBlockStyle}"
+                            Style="{DynamicResource BodyTextBlockStyle}"
                             Text="{TemplateBinding Title}"
                             TextTrimming="CharacterEllipsis"
                             TextWrapping="NoWrap" />
