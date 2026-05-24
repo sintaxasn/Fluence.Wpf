@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -27,51 +27,26 @@
  */
 
 using Fluence.Wpf.Native;
-using System;
+using Microsoft.Win32;
 
 namespace Fluence.Wpf.Helpers
 {
-    internal static class OsVersionHelper
+    /// <summary>
+    /// Probes the per-user Windows 11 Snap Layout flyout preference. The flyout appears
+    /// when the user hovers a window's maximize button and Windows reports the hit-region
+    /// as <c>HTMAXBUTTON</c>. Without the preference check, returning <c>HTMAXBUTTON</c>
+    /// shows the flyout even for users who disabled it in Settings.
+    /// </summary>
+    internal static class SnapLayoutHelper
     {
-        static OsVersionHelper()
+        /// <summary>
+        /// Returns <c>true</c> when the user has the Windows 11 Snap Layout flyout enabled.
+        /// Defaults to <c>true</c> when the registry value is absent (Windows 11 default).
+        /// </summary>
+        internal static bool IsSnapLayoutEnabled()
         {
-            try
-            {
-                OsVersion = NativeMethods.GetRealOsVersion();
-            }
-            catch (InvalidOperationException)
-            {
-                OsVersion = Environment.OSVersion.Version;
-            }
-            OsBuild = OsVersion.Build;
+            using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.ExplorerAdvancedRegistryPath);
+            return key?.GetValue(NativeConstants.EnableSnapAssistFlyout) is not int value || value != 0;
         }
-
-        internal static Version OsVersion { get; }
-
-        internal static int OsBuild { get; }
-
-        internal static bool IsWindows10 => OsBuild >= 10240;
-
-        internal static bool IsWindows10_1809 => OsBuild >= 17763;
-
-        internal static bool IsWindows11 => OsBuild >= 22000;
-
-        internal static bool IsWindows11_22523_OrGreater => OsBuild >= 22523;
-
-        internal static bool IsWindows11_22H2 => OsBuild >= 22621;
-
-        internal static bool IsWindows11_23H2 => OsBuild >= 22631;
-
-        internal static bool SupportsBackdrop => IsWindows11;
-
-        internal static bool SupportsSystemBackdropType => IsWindows11_22H2;
-
-        internal static bool SupportsMicaEffect => IsWindows11 && !IsWindows11_22H2;
-
-        internal static bool SupportsRoundedCorners => IsWindows11;
-
-        internal static bool SupportsCaptionColor => IsWindows11;
-
-        internal static bool SupportsBorderColor => IsWindows11;
     }
 }

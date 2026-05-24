@@ -62,6 +62,23 @@ namespace Fluence.Wpf.Native
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool IsZoomed(IntPtr hWnd);
 
+        [DllImport(User32, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public static extern bool IsWindow(IntPtr hWnd);
+
+        [DllImport(User32, SetLastError = true, CharSet = CharSet.Unicode)]
+        public static extern IntPtr SendMessageTimeout(
+            IntPtr hWnd,
+            uint Msg,
+            IntPtr wParam,
+            string lParam,
+            uint fuFlags,
+            uint uTimeout,
+            out IntPtr lpdwResult);
+
+        public const int HWND_BROADCAST = 0xFFFF;
+        public const uint SMTO_ABORTIFHUNG = 0x0002;
+
         // SW_* constants for ShowWindow. See Win32 docs for full list.
         private const int SW_RESTORE = 9;
         private const int SW_MINIMIZE = 6;
@@ -136,6 +153,9 @@ namespace Fluence.Wpf.Native
 
         #region UxTheme APIs
 
+        [DllImport(UxTheme, EntryPoint = "#94", CharSet = CharSet.Unicode)]
+        public static extern uint GetImmersiveColorSetCount();
+
         [DllImport(UxTheme, EntryPoint = "#95", CharSet = CharSet.Unicode)]
         public static extern uint GetImmersiveColorFromColorSetEx(
             uint dwImmersiveColorSet,
@@ -150,6 +170,13 @@ namespace Fluence.Wpf.Native
         public static extern uint GetImmersiveUserColorSetPreference(
             bool bForceCheckRegistry,
             bool bSkipCheckOnFail);
+
+        [DllImport(UxTheme, ExactSpelling = true, PreserveSig = true)]
+        public static extern int SetWindowThemeAttribute(
+            IntPtr hwnd,
+            int eAttribute,
+            ref WTA_OPTIONS pvAttribute,
+            uint cbAttribute);
 
         #endregion
 
@@ -186,6 +213,26 @@ namespace Fluence.Wpf.Native
         public static bool SetCaptionColor(IntPtr hwnd, int color)
         {
             return SetWindowAttribute(hwnd, NativeConstants.DWMWA_CAPTION_COLOR, color);
+        }
+
+        /// <summary>
+        /// Suppresses Win32 default non-client caption drawing so the DWM backdrop shows
+        /// through cleanly. Best-effort: classic themes return <c>S_FALSE</c> which is treated
+        /// as a no-op success.
+        /// </summary>
+        public static bool SuppressNonClientCaptionDraw(IntPtr hwnd)
+        {
+            if (hwnd == IntPtr.Zero)
+            {
+                return false;
+            }
+            WTA_OPTIONS opts = new()
+            {
+                Flags = NativeConstants.WTNCA_NODRAWCAPTION,
+                Mask = NativeConstants.WTNCA_NODRAWCAPTION,
+            };
+            int hr = SetWindowThemeAttribute(hwnd, NativeConstants.WTA_NONCLIENT, ref opts, (uint)Marshal.SizeOf<WTA_OPTIONS>());
+            return hr >= 0; // S_OK or S_FALSE
         }
 
         public static bool SetBorderColor(IntPtr hwnd, int color)

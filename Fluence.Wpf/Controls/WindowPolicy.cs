@@ -49,6 +49,24 @@ namespace Fluence.Wpf.Controls
             };
         }
 
+        /// <summary>
+        /// Returns the glass-frame thickness appropriate for the given backdrop and shadow state.
+        /// When a DWM backdrop (Mica/Acrylic/Tabbed/Auto) is active the thickness is <c>-1</c>
+        /// so DWM extends the glass into the client area and the backdrop shows through. When
+        /// no backdrop is active and the user wants a shadow, the thickness is still <c>-1</c>
+        /// so WPF's <see cref="System.Windows.Shell.WindowChrome"/> draws the resize border with
+        /// a glass-frame fallback. When neither is active we use a very-thin-but-nonzero value
+        /// (<c>0.00001</c>) so the resize border continues to hit-test while WindowChrome's
+        /// renderer does not paint a visible glass-frame artifact - matching the pattern in
+        /// <c>wpfui-main\src\Wpf.Ui\Controls\FluentWindow\FluentWindow.cs</c>.
+        /// </summary>
+        internal static Thickness GetGlassFrameThickness(BackdropType backdrop, bool hasShadow)
+        {
+            return backdrop != BackdropType.None || hasShadow
+                ? new Thickness(-1)
+                : new Thickness(0.00001);
+        }
+
         internal static Thickness GetResizeBorderThickness(WindowState windowState, ResizeMode resizeMode)
         {
             return windowState == WindowState.Maximized || resizeMode == ResizeMode.NoResize || resizeMode == ResizeMode.CanMinimize

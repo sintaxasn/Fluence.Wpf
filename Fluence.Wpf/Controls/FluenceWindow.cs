@@ -592,6 +592,8 @@ namespace Fluence.Wpf.Controls
         {
             if (d is FluenceWindow window)
             {
+                // GlassFrameThickness depends on the backdrop too (dual-path); refresh chrome.
+                window.UpdateWindowChrome();
                 window.ApplyBackdrop();
             }
         }
@@ -630,7 +632,11 @@ namespace Fluence.Wpf.Controls
         {
             _windowChrome.CaptionHeight = 0;
             _windowChrome.UseAeroCaptionButtons = false;
-            _windowChrome.GlassFrameThickness = HasShadow ? new Thickness(-1) : new Thickness(0);
+            // GlassFrameThickness must reflect both the requested backdrop and shadow policy.
+            // When SystemBackdropType is None and HasShadow is false, an unconditional -1
+            // glass frame paints a visible artifact on Windows 11; using 0.00001 keeps the
+            // resize border alive without that artifact. See WindowPolicy.GetGlassFrameThickness.
+            _windowChrome.GlassFrameThickness = WindowPolicy.GetGlassFrameThickness(SystemBackdropType, HasShadow);
         }
 
         private void UpdateShellMetrics()
@@ -659,6 +665,10 @@ namespace Fluence.Wpf.Controls
                 _ = NativeMethods.SetCaptionColor(_handle, plan.CaptionColor);
             }
             _ = NativeMethods.SetImmersiveDarkMode(_handle, plan.UseImmersiveDarkMode);
+            // Suppress Win32 default caption painting so the DWM backdrop shows through cleanly.
+            // Best-effort: returns S_FALSE on classic themes and is treated as a no-op.
+            // Mirrors the Fischless ApplyBackdrop flow (WTA_NONCLIENT + WTNCA_NODRAWCAPTION).
+            _ = NativeMethods.SuppressNonClientCaptionDraw(_handle);
             if (capabilities.SupportsSystemBackdropType)
             {
                 _ = NativeMethods.SetSystemBackdropType(
@@ -964,17 +974,26 @@ namespace Fluence.Wpf.Controls
                 return 0;
             }
 
+            // HTMAXBUTTON is what triggers the Windows 11 Snap Layout flyout on hover.
+            // Returning it unconditionally surfaces the flyout even when the user has disabled
+            // it in Settings (HKCU\...\Explorer\Advanced\EnableSnapAssistFlyout=0), or on
+            // windows whose IsMaximizable=false, or on Windows 10 where the flyout doesn't
+            // exist at all. In those cases, fall through to 0 so WPF input routing handles
+            // the click as a normal button press.
+            bool shouldExposeSnapFlyout = SnapLayoutHelper.IsSnapLayoutEnabled()
+                && IsMaximizable
+                && OsVersionHelper.IsWindows11;
             if (_maximizeButton is not null && _maximizeButton.Visibility == Visibility.Visible &&
                 _maximizeButton.IsEnabled &&
                 IsOverElement(_maximizeButton, point))
             {
-                return NativeConstants.HTMAXBUTTON;
+                return shouldExposeSnapFlyout ? NativeConstants.HTMAXBUTTON : 0;
             }
             if (_restoreButton is not null && _restoreButton.Visibility == Visibility.Visible &&
                 _restoreButton.IsEnabled &&
                 IsOverElement(_restoreButton, point))
             {
-                return NativeConstants.HTMAXBUTTON;
+                return shouldExposeSnapFlyout ? NativeConstants.HTMAXBUTTON : 0;
             }
 
             // Minimize and close: return 0 so hit falls through to client area; WPF Button + Command fire.

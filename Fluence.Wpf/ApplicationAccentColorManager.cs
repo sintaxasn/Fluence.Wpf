@@ -269,6 +269,12 @@ namespace Fluence.Wpf
             }
         }
 
+        // Custom-accent design: the caller's color is the base, verbatim. Fluence runs its own
+        // ramp algorithm (HsvColorHelper.GenerateAccentRampWinaccent) on that color. We do
+        // NOT attempt to mirror the Windows OS transform - if the user sets accent to a brand
+        // color X, PSADT should show X (and a ramp derived from X), not what Windows would
+        // round X to. See docs/_internal/theme-rewrite/design.md for the rationale and the
+        // empirical OS-transform evidence in accent-capture-*.txt.
         private static void GenerateAccentRamp(Color baseColor)
         {
             HsvColorHelper.GenerateAccentRampWinaccent(baseColor,

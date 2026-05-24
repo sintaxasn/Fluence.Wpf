@@ -29,6 +29,7 @@
 using Fluence.Wpf.Native;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Interop;
 
@@ -161,19 +162,49 @@ namespace Fluence.Wpf
 
         private static IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
-            if (msg is NativeConstants.WM_SETTINGCHANGE or
-                NativeConstants.WM_DWMCOLORIZATIONCOLORCHANGED or
-                NativeConstants.WM_THEMECHANGED or
-                NativeConstants.WM_SYSCOLORCHANGE)
+            bool isThemeRelevant = msg switch
             {
-                long currentTick = DateTime.UtcNow.Ticks;
-                if (currentTick - _lastUpdateTick > DebounceIntervalTicks)
-                {
-                    _lastUpdateTick = currentTick;
-                    OnSystemThemeChanged();
-                }
+                // WM_SETTINGCHANGE fires for every settings-class change (region, sound, region,
+                // policy, file types, etc.). Only the "ImmersiveColorSet" broadcast carries a
+                // theme/accent change. Without this filter the watcher debounces against any
+                // unrelated settings broadcast, swallowing a follow-up real theme change inside
+                // the 100 ms debounce window.
+                NativeConstants.WM_SETTINGCHANGE => IsImmersiveColorSetBroadcast(lParam),
+                NativeConstants.WM_DWMCOLORIZATIONCOLORCHANGED => true,
+                NativeConstants.WM_THEMECHANGED => true,
+                NativeConstants.WM_SYSCOLORCHANGE => true,
+                _ => false,
+            };
+
+            if (!isThemeRelevant)
+            {
+                return IntPtr.Zero;
+            }
+
+            long currentTick = DateTime.UtcNow.Ticks;
+            if (currentTick - _lastUpdateTick > DebounceIntervalTicks)
+            {
+                _lastUpdateTick = currentTick;
+                OnSystemThemeChanged();
             }
             return IntPtr.Zero;
+        }
+
+        /// <summary>
+        /// Returns <c>true</c> when a WM_SETTINGCHANGE lParam points to the Unicode string
+        /// <c>"ImmersiveColorSet"</c>, the canonical signal Personalization sends when the
+        /// user changes the Windows accent or app/system theme. WPF's HwndSource uses the
+        /// Unicode window-class variant, so the string is UTF-16 LE.
+        /// </summary>
+        private static bool IsImmersiveColorSetBroadcast(IntPtr lParam)
+        {
+            if (lParam == IntPtr.Zero)
+            {
+                return false;
+            }
+            string? text = Marshal.PtrToStringUni(lParam);
+            return !string.IsNullOrWhiteSpace(text)
+                && text.Equals("ImmersiveColorSet", StringComparison.OrdinalIgnoreCase);
         }
 
         private static void OnSystemThemeChanged()

@@ -33,15 +33,6 @@ namespace Fluence.Wpf.Helpers
 {
     internal static class HsvColorHelper
     {
-        // Windows' blue accent color has a custom ramp that doesn't follow the normal algorithm, so we hardcode it here.
-        private static readonly Color WindowsBlueAccent = Color.FromRgb(0x00, 0x78, 0xD4);
-        private static readonly Color WindowsBlueAccentLight1 = Color.FromRgb(0x00, 0x91, 0xF8);
-        private static readonly Color WindowsBlueAccentLight2 = Color.FromRgb(0x4C, 0xC2, 0xFF);
-        private static readonly Color WindowsBlueAccentLight3 = Color.FromRgb(0x99, 0xEB, 0xFF);
-        private static readonly Color WindowsBlueAccentDark1 = Color.FromRgb(0x00, 0x67, 0xC0);
-        private static readonly Color WindowsBlueAccentDark2 = Color.FromRgb(0x00, 0x3E, 0x92);
-        private static readonly Color WindowsBlueAccentDark3 = Color.FromRgb(0x00, 0x1A, 0x68);
-
         internal static (double Hue, double Saturation, double Value) RgbToHsv(Color color)
         {
             double r = color.R / 255.0;
@@ -235,32 +226,87 @@ namespace Fluence.Wpf.Helpers
         }
 
         /// <summary>
-        /// Generates accent ramp using winaccent's algorithm: linear RGB blend toward white/black,
-        /// then HLS saturation doubled. Produces shades matching the Windows AccentPalette blob.
+        /// Generates a six-shade accent ramp from a base color by applying lightness deltas
+        /// in HSL space with saturation pinned to the chroma ceiling. For achromatic inputs
+        /// (HSL S near zero), the base is returned unchanged for every stop so greys do not
+        /// suddenly grow saturation.
+        /// <para>
+        /// Empirically derived against 21 OS-captured AccentPalette ramps (see
+        /// <c>docs/_internal/theme-rewrite/accent-capture-*.txt</c>). Mean per-stop RGB
+        /// error: ~63 across the captured dataset. The OS uses an undocumented perceptual
+        /// algorithm we cannot replicate without reverse engineering <c>themecpl.dll</c>;
+        /// this is a defensible approximation.
+        /// </para>
         /// </summary>
         internal static void GenerateAccentRampWinaccent(
             Color baseColor,
             out Color light1, out Color light2, out Color light3,
             out Color dark1, out Color dark2, out Color dark3)
         {
-            if (IsWindowsBlueAccent(baseColor))
+            light3 = ShiftHslMaxSat(baseColor, +0.384);
+            light2 = ShiftHslMaxSat(baseColor, +0.233);
+            light1 = ShiftHslMaxSat(baseColor, +0.070);
+            dark1 = ShiftHslMaxSat(baseColor, -0.040);
+            dark2 = ShiftHslMaxSat(baseColor, -0.130);
+            dark3 = ShiftHslMaxSat(baseColor, -0.212);
+        }
+
+        /// <summary>
+        /// Shifts a color's HSL lightness by <paramref name="dL"/> with saturation pinned to
+        /// the chroma ceiling (1.0). Achromatic inputs (S &lt; 0.05) are returned unchanged so
+        /// greys do not develop hue.
+        /// </summary>
+        internal static Color ShiftHslMaxSat(Color baseColor, double dL)
+        {
+            RgbToHsl(baseColor, out double h, out double s, out double l);
+            if (s < 0.05)
             {
-                light1 = WindowsBlueAccentLight1;
-                light2 = WindowsBlueAccentLight2;
-                light3 = WindowsBlueAccentLight3;
-                dark1 = WindowsBlueAccentDark1;
-                dark2 = WindowsBlueAccentDark2;
-                dark3 = WindowsBlueAccentDark3;
+                return baseColor;
+            }
+            l = Math.Max(0, Math.Min(1, l + dL));
+            return HslToRgb(h, 1.0, l);
+        }
+
+        /// <summary>
+        /// Converts <see cref="Color"/> to HSL space (Hue in degrees [0..360], Saturation
+        /// and Lightness in [0..1]).
+        /// </summary>
+        internal static void RgbToHsl(Color color, out double hue, out double saturation, out double lightness)
+        {
+            const double Epsilon = 1e-9;
+            double r = color.R / 255.0;
+            double g = color.G / 255.0;
+            double b = color.B / 255.0;
+            double max = Math.Max(r, Math.Max(g, b));
+            double min = Math.Min(r, Math.Min(g, b));
+            lightness = (max + min) / 2.0;
+            double d = max - min;
+            if (d < Epsilon)
+            {
+                hue = 0;
+                saturation = 0;
                 return;
             }
-            Color white = Color.FromRgb(0xFF, 0xFF, 0xFF);
-            Color black = Color.FromRgb(0x00, 0x00, 0x00);
-            light3 = IncreaseSaturationHls(BlendColors(white, baseColor, 75), 2);
-            light2 = IncreaseSaturationHls(BlendColors(white, baseColor, 50), 2);
-            light1 = IncreaseSaturationHls(BlendColors(white, baseColor, 25), 2);
-            dark1 = IncreaseSaturationHls(BlendColors(black, baseColor, 25), 2);
-            dark2 = IncreaseSaturationHls(BlendColors(black, baseColor, 50), 2);
-            dark3 = IncreaseSaturationHls(BlendColors(black, baseColor, 75), 2);
+            saturation = lightness > 0.5 ? d / (2 - max - min) : d / (max + min);
+            hue = Math.Abs(max - r) < Epsilon
+                ? ((g - b) / d) + (g < b ? 6 : 0)
+                : Math.Abs(max - g) < Epsilon
+                    ? ((b - r) / d) + 2
+                    : ((r - g) / d) + 4;
+            hue *= 60;
+        }
+
+        private static Color HslToRgb(double hue, double saturation, double lightness)
+        {
+            const double Epsilon = 1e-9;
+            if (saturation < Epsilon)
+            {
+                byte v = (byte)Math.Round(lightness * 255);
+                return Color.FromArgb(0xFF, v, v, v);
+            }
+            // HlsToRgb / HueToChannel below take hue in normalized [0..1] form (h / 6).
+            double normalizedHue = hue / 360.0;
+            return HlsToRgb(normalizedHue, lightness, saturation);
         }
 
         private static Color HlsToRgb(double h, double l, double s)
@@ -294,11 +340,5 @@ namespace Fluence.Wpf.Helpers
             return t < 1.0 / 6.0 ? p + ((q - p) * 6 * t) : t < 1.0 / 2.0 ? q : t < 2.0 / 3.0 ? p + ((q - p) * ((2.0 / 3.0) - t) * 6) : p;
         }
 
-        private static bool IsWindowsBlueAccent(Color color)
-        {
-            return color.R == WindowsBlueAccent.R &&
-                color.G == WindowsBlueAccent.G &&
-                color.B == WindowsBlueAccent.B;
-        }
     }
 }

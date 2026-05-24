@@ -31,6 +31,7 @@ namespace Fluence.Wpf.Native
     internal static class NativeConstants
     {
         // DWM Window Attributes
+        public const int DWMWA_USE_IMMERSIVE_DARK_MODE_OLD = 19;
         public const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
         public const int DWMWA_WINDOW_CORNER_PREFERENCE = 33;
         public const int DWMWA_BORDER_COLOR = 34;
@@ -39,6 +40,14 @@ namespace Fluence.Wpf.Native
         public const int DWMWA_VISIBLE_FRAME_BORDER_THICKNESS = 37;
         public const int DWMWA_SYSTEMBACKDROP_TYPE = 38;
         public const int DWMWA_MICA_EFFECT = 1029;
+
+        // UxTheme Window Theme Attributes
+        public const int WTA_NONCLIENT = 1;
+        public const uint WTNCA_NODRAWCAPTION = 0x00000001;
+        public const uint WTNCA_NODRAWICON = 0x00000002;
+        public const uint WTNCA_NOSYSMENU = 0x00000004;
+        public const uint WTNCA_NOMIRRORHELP = 0x00000008;
+        public const uint WTNCA_VALIDBITS = 0x0000000F;
 
         // DWM System Backdrop Types (DWMSBT_*)
         public const int DWMSBT_AUTO = 0;
@@ -97,8 +106,10 @@ namespace Fluence.Wpf.Native
 
         // Registry Paths
         public const string PersonalizeRegistryPath = @"Software\Microsoft\Windows\CurrentVersion\Themes\Personalize";
+        public const string ThemesRegistryPath = @"Software\Microsoft\Windows\CurrentVersion\Themes";
         public const string DwmRegistryPath = @"Software\Microsoft\Windows\DWM";
         public const string AccentRegistryPath = @"Software\Microsoft\Windows\CurrentVersion\Explorer\Accent";
+        public const string ExplorerAdvancedRegistryPath = @"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced";
 
         // Registry Value Names
         public const string AppsUseLightTheme = "AppsUseLightTheme";
@@ -109,5 +120,7 @@ namespace Fluence.Wpf.Native
         public const string AccentColorInactive = "AccentColorInactive";
         public const string ColorizationColor = "ColorizationColor";
         public const string ColorizationColorBalance = "ColorizationColorBalance";
+        public const string CurrentTheme = "CurrentTheme";
+        public const string EnableSnapAssistFlyout = "EnableSnapAssistFlyout";
     }
 }

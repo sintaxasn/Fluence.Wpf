@@ -122,4 +122,11 @@ namespace Fluence.Wpf.Native
         public byte ProductType;
         public byte Reserved;
     }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct WTA_OPTIONS
+    {
+        public uint Flags;
+        public uint Mask;
+    }
 }

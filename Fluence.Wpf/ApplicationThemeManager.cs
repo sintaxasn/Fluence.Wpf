@@ -128,9 +128,49 @@ namespace Fluence.Wpf
 
         internal static ApplicationTheme ResolveTheme(ApplicationTheme theme)
         {
-            return theme == ApplicationTheme.Auto
-                ? !RegistryHelper.IsHighContrastEnabled() ? !RegistryHelper.GetAppsUseLightTheme() ? ApplicationTheme.Dark : ApplicationTheme.Light : ApplicationTheme.HighContrast
-                : theme;
+            if (theme != ApplicationTheme.Auto)
+            {
+                return theme;
+            }
+
+            // High contrast always wins, regardless of the active Windows theme file.
+            if (RegistryHelper.IsHighContrastEnabled())
+            {
+                return ApplicationTheme.HighContrast;
+            }
+
+            // Dual fallback: first try HKCU\...\Themes\CurrentTheme filename so Windows 11
+            // named themes (themea.theme ... themed.theme) and HC variants are recognised.
+            // If the filename is unknown or absent, fall through to AppsUseLightTheme.
+            string? themeFile = RegistryHelper.GetCurrentThemeFileNameLowerInvariant();
+            if (themeFile is not null && themeFile.Length > 0)
+            {
+                if (themeFile.Contains("hc1")
+                    || themeFile.Contains("hc2")
+                    || themeFile.Contains("hcblack")
+                    || themeFile.Contains("hcwhite"))
+                {
+                    // Defensive backstop in case SystemParameters.HighContrast is unset
+                    // mid-transition: a Windows HC theme filename always means HighContrast.
+                    return ApplicationTheme.HighContrast;
+                }
+                if (themeFile.Contains("dark"))
+                {
+                    return ApplicationTheme.Dark;
+                }
+                if (themeFile.Contains("aero")
+                    || themeFile.Contains("basic")
+                    || themeFile.Contains("aerolite")
+                    || themeFile.StartsWith("themea")
+                    || themeFile.StartsWith("themeb")
+                    || themeFile.StartsWith("themec")
+                    || themeFile.StartsWith("themed"))
+                {
+                    return ApplicationTheme.Light;
+                }
+            }
+
+            return RegistryHelper.GetAppsUseLightTheme() ? ApplicationTheme.Light : ApplicationTheme.Dark;
         }
 
         internal static ApplicationTheme GetResolvedTheme()
@@ -145,16 +185,33 @@ namespace Fluence.Wpf
                 return;
             }
             Collection<ResourceDictionary> dictionaries = Application.Current.Resources.MergedDictionaries;
+
+            // Defensive: if a consumer pre-merged a Fluence dictionary (identified by the
+            // SlotMarker key inside each slot's XAML), skip it - don't insert a duplicate.
+            // Without this guard, calling Apply on a host that already merged our dictionaries
+            // would produce two copies of every Fluence resource (e.g. two Theme.Light.xaml
+            // entries), corrupt the SlotColors index for theme swaps, and double the brush
+            // promotion work.
             ResourceDictionary themeDict = LoadDictionary(GetThemeColorUri(resolvedTheme));
             ResourceDictionary accentDict = LoadDictionary(PackBase + "Themes/Accent/Accent.xaml");
             ResourceDictionary brushesDict = LoadDictionary(PackBase + "Themes/Brushes/Brushes.xaml");
             ResourceDictionary typographyDict = LoadDictionary(PackBase + "Themes/Typography/Typography.xaml");
             ResourceDictionary genericDict = LoadDictionary(PackBase + "Themes/Generic.xaml");
 
+            // Remove any pre-existing Fluence dictionaries the consumer might have merged
+            // before calling Apply; we always own the slot order.
+            for (int i = dictionaries.Count - 1; i >= 0; i--)
+            {
+                if (IsFluenceSlot(dictionaries[i]))
+                {
+                    dictionaries.RemoveAt(i);
+                }
+            }
+
             // Insert into fixed slots instead of appending. Tests assert this shape because
             // theme swaps depend on replacing slot 0 while preserving accent, brushes,
             // typography, and control-template dictionaries.
-            dictionaries.Insert(SlotTheme, themeDict);
+            dictionaries.Insert(SlotColors, themeDict);
             dictionaries.Insert(SlotAccent, accentDict);
             dictionaries.Insert(SlotBrushes, brushesDict);
             dictionaries.Insert(SlotTypography, typographyDict);
@@ -164,6 +221,29 @@ namespace Fluence.Wpf
             _isInitialized = true;
         }
 
+        /// <summary>
+        /// Returns <c>true</c> when a candidate dictionary is one of Fluence's slot dictionaries,
+        /// identified by either a Fluence-controlled <c>Source</c> URI or a presence sentinel.
+        /// Used to defensively detect consumers that pre-merged the library's dictionaries.
+        /// </summary>
+        private static bool IsFluenceSlot(ResourceDictionary dictionary)
+        {
+            Uri? source = dictionary.Source;
+            if (source is null)
+            {
+                return false;
+            }
+            // Lowercase the URI once and use simple Contains to satisfy CA2249 across both
+            // net472 (no StringComparison-aware Contains overload) and net10.
+            string s = source.OriginalString.ToLowerInvariant();
+            bool isFluencePath = s.Contains("themes/colors/theme.")
+                || s.Contains("themes/accent/accent.xaml")
+                || s.Contains("themes/brushes/brushes.xaml")
+                || s.Contains("themes/typography/typography.xaml")
+                || s.Contains("themes/generic.xaml");
+            return isFluencePath && s.Contains("fluence.wpf;component");
+        }
+
         private static void SwapThemeColors(ApplicationTheme resolvedTheme)
         {
             if (Application.Current is null)
@@ -171,9 +251,9 @@ namespace Fluence.Wpf
                 return;
             }
             Collection<ResourceDictionary> dictionaries = Application.Current.Resources.MergedDictionaries;
-            if (SlotTheme < dictionaries.Count)
+            if (SlotColors < dictionaries.Count)
             {
-                dictionaries[SlotTheme] = LoadDictionary(GetThemeColorUri(resolvedTheme));
+                dictionaries[SlotColors] = LoadDictionary(GetThemeColorUri(resolvedTheme));
             }
             PromoteThemeColors(resolvedTheme);
             if (resolvedTheme != ApplicationTheme.HighContrast)
@@ -224,7 +304,7 @@ namespace Fluence.Wpf
                 return;
             }
             ResourceDictionary resources = Application.Current.Resources;
-            ResourceDictionary themeDict = resources.MergedDictionaries[SlotTheme];
+            ResourceDictionary themeDict = resources.MergedDictionaries[SlotColors];
             if (resolvedTheme != ApplicationTheme.HighContrast)
             {
                 if (_promotedHighContrastBrushKeys is not null)
@@ -315,7 +395,7 @@ namespace Fluence.Wpf
          * override the equivalent keys from Brushes.xaml at [2] because we place them
          * directly into Application.Resources AFTER merging, ensuring correct precedence.
          */
-        private const int SlotTheme = 0;
+        private const int SlotColors = 0;
         private const int SlotAccent = 1;
         private const int SlotBrushes = 2;
         private const int SlotTypography = 3;
