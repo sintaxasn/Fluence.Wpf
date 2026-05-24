@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- Demo gallery home page (`GalleryHomePage.xaml`): removed the page-level `Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"` setter from the hosting `SmoothScrollViewer` so the canonical `NavigationView` layer / Mica composition reaches the page (the previous setter painted the same brush the cards use, flattening any visual lift). Card header icons changed from `AccentTextFillColorPrimaryBrush` to `TextFillColorPrimaryBrush` - WinUI Settings / `SettingsCard` use the primary text foreground for tile glyphs; accent-colored glyphs are not the default tile-icon role.
+
 ### Fixed
 
 - `NavigationView` now matches WinUI 3 canonical surface roles: the pane uses `AcrylicInAppFillColorDefaultBrush` (canonical `NavigationViewDefaultPaneBackground`) across Left / LeftCompact / Top templates instead of pure `Transparent`, and the content host uses `LayerFillColorDefault` values (dark `#4C3A3A3A`, light `#80FFFFFF`) - a translucent layer brush rather than the previous flat 65-69%-opaque Fluence-only tint. The pane now reads as a distinct surface vs the content area; Mica still passes through both as the translucent layer it is meant to be, giving cards composing on top the canonical Fluent "lift" they were missing.
