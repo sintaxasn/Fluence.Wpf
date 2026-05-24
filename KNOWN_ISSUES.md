@@ -19,15 +19,6 @@ maintainers.
   accent. Re-evaluating whether we want to mirror the OS transform (or
   expose a knob to opt in) is deferred until consumers report a divergence
   that matters in practice.
-- **Full `Theme.*` canonical rewrite + `Themes/Shared.xaml` split** - The
-  three theme dictionaries (`Theme.Light.xaml`, `Theme.Dark.xaml`,
-  `Theme.HighContrast.xaml`) currently each repeat the full canonical key
-  set with theme-specific values. Splitting the theme-independent keys
-  (typography time spans, token aliases, etc.) into a shared
-  `Themes/Shared.xaml` and trimming each theme dictionary to only the
-  values that actually differ would reduce duplication and make canonical
-  drift visible at review time. Deferred - the current duplication does
-  not produce defects, just maintenance friction.
 - **`TabView` drag-to-reorder** - `TabView` / `TabViewItem` ship with closable
   tabs, an add-tab button, per-tab icons, overflow scroll, and width / overlay
   modes. Drag-and-drop tab reordering (including cross-window tear-off) is **not**
@@ -48,6 +39,19 @@ maintainers.
   solid `SolidBackgroundFillColorBaseBrush`. Any future automated capture of the
   full `FluenceWindow` chrome will need a different approach (e.g. `PrintWindow`
   / GDI screen capture).
+
+## Resolved in 0.6.0-preview
+
+- **`Themes/Shared.xaml` split (task #16)** - The three Windows close-button
+  Color tokens (`WindowCloseButtonBackgroundPointerOver`, `...Pressed`,
+  `WindowCloseButtonForegroundPointerOver`) are theme-independent (the
+  Windows shell uses the same brand red across Light, Dark, and
+  HighContrast) and now live in `Themes/Shared.xaml` instead of being
+  duplicated in each per-theme dictionary. The merge stack is now six
+  slots. The audit also confirmed Unit 6's `Theme.*.xaml` refresh left the
+  per-theme dictionaries already canonical-clean vs WinUI 3's
+  `Common_themeresources_any.xaml` - the "full canonical rewrite" half of
+  the task was a no-op.
 
 ## Resolved (Unreleased)
 

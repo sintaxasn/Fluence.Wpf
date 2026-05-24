@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.6.0-preview] - 2026-05-24
+
+### Added
+
+- `Themes/Shared.xaml` - a new merge slot (`[5]`, loaded once, never replaced) holding theme-independent Color tokens that are identical across Light, Dark, and HighContrast. Currently holds the three canonical Windows close-button brand reds (`WindowCloseButtonBackgroundPointerOver`, `...Pressed`, `WindowCloseButtonForegroundPointerOver`). Per-theme dictionaries no longer carry these keys. Slot count in `ApplicationThemeManager` is now 6; `DictionaryStabilityTests` updated accordingly.
+
 ### Changed
 
 - `NavigationView` canonical sizing: open pane width 280 -> 320 px (canonical WinUI 3 `NavigationViewOpenPaneLength`); `NavigationViewItem` `FontSize` 13 -> 14 (canonical body type-ramp); `PaneFooter` slot gains a `DividerStrokeColorDefaultBrush` separator above its content in both Left and LeftCompact templates.
