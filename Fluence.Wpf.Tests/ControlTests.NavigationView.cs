@@ -1949,7 +1949,7 @@ namespace Fluence.Wpf.Tests
                     ContentPresenter? presenter = FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter);
                     Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in Left template.");
 
-                    AssertContentOffsetEventually(window, nav, presenter, 280.0, "Open Left pane: content begins at 280.");
+                    AssertContentOffsetEventually(window, nav, presenter, 320.0, "Open Left pane: content begins at 320.");
 
                     nav.IsPaneOpen = false;
                     Assert.IsTrue(nav.GetPaneColumnWidthForTesting() > 48.0,
@@ -1957,9 +1957,9 @@ namespace Fluence.Wpf.Tests
                     AssertContentOffsetEventually(window, nav, presenter, 48.0, "Closed Left pane: content begins at 48.");
 
                     nav.IsPaneOpen = true;
-                    Assert.IsTrue(nav.GetPaneColumnWidthForTesting() < 280.0,
-                        "Opening Left mode should animate from the compact width instead of snapping immediately to 280.");
-                    AssertContentOffsetEventually(window, nav, presenter, 280.0, "Reopened Left pane: content returns to 280.");
+                    Assert.IsTrue(nav.GetPaneColumnWidthForTesting() < 320.0,
+                        "Opening Left mode should animate from the compact width instead of snapping immediately to 320.");
+                    AssertContentOffsetEventually(window, nav, presenter, 320.0, "Reopened Left pane: content returns to 320.");
                 }
                 finally
                 {
@@ -1974,7 +1974,7 @@ namespace Fluence.Wpf.Tests
 
         // LeftCompact pane still resizes inline and pushes sibling content.
         [TestMethod]
-        public void NavigationView_LeftCompact_PaneOpen_ContentStartsAt280px_Inline()
+        public void NavigationView_LeftCompact_PaneOpen_ContentStartsAt320px_Inline()
         {
             RunOnStaThread(() =>
             {
@@ -2003,8 +2003,8 @@ namespace Fluence.Wpf.Tests
                     ContentPresenter? presenter = FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter);
                     Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in LeftCompact template.");
 
-                    AssertContentOffsetEventually(window, nav, presenter, 280.0,
-                        "When IsPaneOpen=true in LeftCompact, content must start inline at pane width 280.");
+                    AssertContentOffsetEventually(window, nav, presenter, 320.0,
+                        "When IsPaneOpen=true in LeftCompact, content must start inline at pane width 320.");
                 }
                 finally
                 {
@@ -2193,7 +2193,7 @@ namespace Fluence.Wpf.Tests
                     ContentPresenter? presenter = FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter);
                     Assert.IsNotNull(presenter, "PART_ContentPresenter must exist in LeftCompact template.");
 
-                    AssertContentOffsetEventually(window, nav, presenter, 280.0, "Open state: content begins at 280.");
+                    AssertContentOffsetEventually(window, nav, presenter, 320.0, "Open state: content begins at 320.");
 
                     nav.IsPaneOpen = false;
                     Assert.IsTrue(nav.GetPaneColumnWidthForTesting() > 48.0,
@@ -2201,9 +2201,9 @@ namespace Fluence.Wpf.Tests
                     AssertContentOffsetEventually(window, nav, presenter, 48.0, "Closed state: content begins at 48.");
 
                     nav.IsPaneOpen = true;
-                    Assert.IsTrue(nav.GetPaneColumnWidthForTesting() < 280.0,
-                        "Opening LeftCompact should animate from the current compact width instead of snapping immediately to 280.");
-                    AssertContentOffsetEventually(window, nav, presenter, 280.0, "Reopen state: content returns to 280.");
+                    Assert.IsTrue(nav.GetPaneColumnWidthForTesting() < 320.0,
+                        "Opening LeftCompact should animate from the current compact width instead of snapping immediately to 320.");
+                    AssertContentOffsetEventually(window, nav, presenter, 320.0, "Reopen state: content returns to 320.");
                 }
                 finally
                 {

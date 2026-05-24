@@ -6,6 +6,28 @@ maintainers.
 
 ## Current follow-ups (not defects)
 
+- **OS-transform modeling for the accent ramp** - The Candidate F HSV ramp
+  algorithm in `HsvColorHelper` mirrors what Windows produces for
+  `SystemAccentColor -> Light1..Dark3` on the verbatim base inputs we
+  exercised. Boundary-probe captures showed that the OS aggressively
+  projects arbitrary user input into a Fluent-compatible subspace
+  (see `Fluence.Wpf.Tests/AccentRampScoreboard.cs` and the
+  `accent-capture-*.txt` artifacts under `docs/_internal/theme-rewrite/`).
+  We deliberately do not mirror that projection - we use the user-supplied
+  base verbatim - which means `ApplyCustomAccent(Color)` outputs diverge
+  from what the OS would produce if the same color were set as the system
+  accent. Re-evaluating whether we want to mirror the OS transform (or
+  expose a knob to opt in) is deferred until consumers report a divergence
+  that matters in practice.
+- **Full `Theme.*` canonical rewrite + `Themes/Shared.xaml` split** - The
+  three theme dictionaries (`Theme.Light.xaml`, `Theme.Dark.xaml`,
+  `Theme.HighContrast.xaml`) currently each repeat the full canonical key
+  set with theme-specific values. Splitting the theme-independent keys
+  (typography time spans, token aliases, etc.) into a shared
+  `Themes/Shared.xaml` and trimming each theme dictionary to only the
+  values that actually differ would reduce duplication and make canonical
+  drift visible at review time. Deferred - the current duplication does
+  not produce defects, just maintenance friction.
 - **`TabView` drag-to-reorder** - `TabView` / `TabViewItem` ship with closable
   tabs, an add-tab button, per-tab icons, overflow scroll, and width / overlay
   modes. Drag-and-drop tab reordering (including cross-window tear-off) is **not**
@@ -29,6 +51,61 @@ maintainers.
 
 ## Resolved (Unreleased)
 
+- **Theme & accent system rewrite (Units 4 - 9)** - Rebuilt the theme,
+  accent, backdrop, and window-chrome machinery around canonical WinUI 3
+  + .NET 10 WPF Fluent references:
+  - `ApplicationThemeManager` ResolveTheme dual-fallback + sentinel
+    idempotency.
+  - `SystemThemeWatcher` filtered on `ImmersiveColorSet` (fires once per
+    logical OS theme change, not per setting churn).
+  - Candidate F HSV accent ramp in `HsvColorHelper`; removed the static
+    `KnownAccentRamps` lookup and the opportunistic system-palette path.
+  - Resource-dictionary refresh across `Theme.{Light,Dark,HighContrast}`
+    + `Brushes.xaml` + `Accent.xaml` against
+    `Common_themeresources_any.xaml`.
+  - New `WindowBackdrop` orchestrator (`WindowPolicy.BuildBackdropPlan`)
+    + Snap Layout coordination (`SnapLayoutHelper`); `FluenceWindow`
+    consumes both.
+  - `AccentFillBackdrop` opaque sub-layer: introduced on `ToggleSwitch`
+    (Unit 9.1) then extended to `Button`, `DropDownButton`,
+    `ToggleButton`, `SplitButton` (per-half), `CheckBox`, `RadioButton`,
+    and the `Slider` thumb so accent fills composite predictably against
+    translucent card / Mica surfaces.
+- **`NavigationView` canonical surface roles + sizing** - Pane background
+  switched to `AcrylicInAppFillColorDefaultBrush`
+  (canonical `NavigationViewDefaultPaneBackground`); content host uses
+  `LayerFillColorDefault` (`#4C3A3A3A` dark / `#80FFFFFF` light) instead
+  of the previous flat 65 - 69 %-opaque Fluence-only tint that was
+  blocking Mica. Open pane width set to the canonical 320 px (was 280).
+  `NavigationViewItem` font bumped to 14 pt (was 13). Footer slot draws a
+  `DividerStrokeColorDefault` separator above it (matches WinUI 3 Gallery).
+- **`ProgressBar` template** - Removed vestigial `BorderThickness` style
+  setter; corrected the unfilled-track `Background` from
+  `ControlStrokeColorDefaultBrush` (a stroke role) to
+  `ControlStrongStrokeColorDefaultBrush` (the canonical fill role); track
+  thickness 6 px with 3 px corner radius (full pill) to match the
+  WinUI 3 Gallery visual.
+- **Text-rendering policy** - `FluenceWindow` no longer forces
+  `RenderOptions.ClearTypeHint=Enabled` at the window root. The WPF
+  default (`Auto`) picks ClearType subpixel anti-aliasing on opaque
+  surfaces and grayscale AA on translucent surfaces (Mica / Acrylic,
+  `AccentFillBackdrop` layers) per surface, which is what .NET 10 WPF
+  Fluent does. The `TextRenderingPolicyTests` invariants (no
+  `TextOptions.*` in production sources, `SnapsToDevicePixels` only on
+  `FluenceWindow.xaml`) are preserved and aligned to the new
+  `ClearTypeHint.Auto` assertion.
+- **`TitleBar` canonical sizing** - App-title text moved from
+  `CaptionTextBlockStyle` (12 pt) to `BodyTextBlockStyle` (14 pt); app
+  icon shrunk from 24 x 24 to 20 x 20 with balanced 8 / 12 px margins
+  vs the previous 4 / 20.
+- **Demo gallery home page** - Cards rewritten to the standard
+  `Card.Header` / `Card.Icon` contract (matching `GalleryDataPage`'s
+  Variant samples) instead of the previous nested-StackPanel
+  reimplementation; card glyphs use `AccentFillColorDefaultBrush`
+  (saturated accent). `SettingsRowTitleStyle` -> `BodyStrongTextBlockStyle`
+  (14 pt SemiBold) and `SettingsRowDescriptionStyle` ->
+  `CaptionTextBlockStyle` (12 pt) match canonical WinUI 3 `SettingsCard`
+  text sizing.
 - **WinUI `TabView` parity (MVP)** - `Fluence.Wpf.Controls.TabView` /
   `TabViewItem` now ship with WinUI 3 close buttons (`CloseRequested` ->
   `TabCloseRequested` bubbling), add-tab button (`AddTabButtonClick`), per-tab

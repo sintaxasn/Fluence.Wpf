@@ -179,8 +179,8 @@ namespace Fluence.Wpf.Tests
                         "Top navigation item icon presenter should stay visible.");
                     Assert.AreEqual(Visibility.Visible, contentPresenter.Visibility,
                         "Top navigation item content presenter should stay visible.");
-                    Assert.AreEqual(13.0, item.FontSize, 0.01,
-                        "NavigationViewItem text should be one point smaller than the previous 14pt default.");
+                    Assert.AreEqual(14.0, item.FontSize, 0.01,
+                        "NavigationViewItem text should be 14 pt to match the WinUI 3 BodyTextBlockStyle type-ramp rung.");
                     FontIcon? itemIcon = item.Icon as FontIcon;
                     Assert.IsNotNull(itemIcon, "Test item should use a FontIcon.");
                     Assert.AreEqual(16.0, itemIcon.IconFontSize, 0.01,
