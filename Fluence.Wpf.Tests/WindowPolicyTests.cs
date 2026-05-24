@@ -545,5 +545,59 @@ namespace Fluence.Wpf.Tests
         }
 
         #endregion
+
+        #region GetGlassFrameThickness - dual-path
+
+        // WPF-UI's GlassFrameThickness convention: -1 for full DWM glass extension when a
+        // backdrop is active, 0.00001 for an invisible-but-resize-borderable frame when no
+        // backdrop is active and no shadow is requested. The combined check makes sure we
+        // don't render a visible glass-frame artifact when SystemBackdropType=None on Win11.
+
+        [TestMethod]
+        public void GetGlassFrameThickness_NoBackdrop_NoShadow_VeryThin()
+        {
+            Thickness t = WindowPolicy.GetGlassFrameThickness(BackdropType.None, hasShadow: false);
+            Assert.AreEqual(0.00001, t.Left, 1e-9, "No backdrop + no shadow must use the thin-but-nonzero glass frame.");
+            Assert.AreEqual(0.00001, t.Top, 1e-9);
+            Assert.AreEqual(0.00001, t.Right, 1e-9);
+            Assert.AreEqual(0.00001, t.Bottom, 1e-9);
+        }
+
+        [TestMethod]
+        public void GetGlassFrameThickness_NoBackdrop_WithShadow_FullGlass()
+        {
+            Thickness t = WindowPolicy.GetGlassFrameThickness(BackdropType.None, hasShadow: true);
+            Assert.AreEqual(-1, t.Left, 1e-9, "Shadow requested without backdrop still extends the DWM glass frame.");
+        }
+
+        [TestMethod]
+        public void GetGlassFrameThickness_MicaBackdrop_FullGlass()
+        {
+            Thickness t = WindowPolicy.GetGlassFrameThickness(BackdropType.Mica, hasShadow: false);
+            Assert.AreEqual(-1, t.Left, 1e-9, "Mica backdrop must extend the glass into the client area.");
+        }
+
+        [TestMethod]
+        public void GetGlassFrameThickness_AcrylicBackdrop_FullGlass()
+        {
+            Thickness t = WindowPolicy.GetGlassFrameThickness(BackdropType.Acrylic, hasShadow: false);
+            Assert.AreEqual(-1, t.Left, 1e-9, "Acrylic backdrop must extend the glass into the client area.");
+        }
+
+        [TestMethod]
+        public void GetGlassFrameThickness_TabbedBackdrop_FullGlass()
+        {
+            Thickness t = WindowPolicy.GetGlassFrameThickness(BackdropType.Tabbed, hasShadow: false);
+            Assert.AreEqual(-1, t.Left, 1e-9, "Tabbed backdrop must extend the glass into the client area.");
+        }
+
+        [TestMethod]
+        public void GetGlassFrameThickness_AutoBackdrop_FullGlass()
+        {
+            Thickness t = WindowPolicy.GetGlassFrameThickness(BackdropType.Auto, hasShadow: false);
+            Assert.AreEqual(-1, t.Left, 1e-9, "Auto backdrop is treated as backdrop-active for chrome purposes.");
+        }
+
+        #endregion
     }
 }

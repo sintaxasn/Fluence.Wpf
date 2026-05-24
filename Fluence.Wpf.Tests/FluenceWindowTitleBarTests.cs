@@ -347,18 +347,23 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void HasShadow_False_SetsGlassFrameToZero()
+        public void HasShadow_False_SetsGlassFrameToNearZero()
         {
             RunWithWindow(w =>
             {
                 WindowChrome chrome = WindowChrome.GetWindowChrome(w);
                 Assert.AreEqual(new Thickness(-1), chrome.GlassFrameThickness,
-                    "Default GlassFrameThickness should be -1 for shadow.");
+                    "Default GlassFrameThickness should be -1 (backdrop or shadow active).");
 
                 w.HasShadow = false;
+                w.SystemBackdropType = BackdropType.None;
 
-                Assert.AreEqual(new Thickness(0), chrome.GlassFrameThickness,
-                    "GlassFrameThickness should be 0 when HasShadow is false.");
+                // The dual-path GlassFrameThickness uses 0.00001 (not 0) when both backdrop
+                // is None AND HasShadow is false, so the WindowChrome resize border still
+                // hit-tests but no visible glass-frame artifact is painted on Windows 11.
+                // See WindowPolicy.GetGlassFrameThickness for the rationale.
+                Assert.AreEqual(new Thickness(0.00001), chrome.GlassFrameThickness,
+                    "GlassFrameThickness should be 0.00001 when HasShadow=false and SystemBackdropType=None.");
             });
         }
 

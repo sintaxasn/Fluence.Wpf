@@ -181,56 +181,13 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        [TestMethod]
-        public void ApplyCustomAccent_WindowsBlue_DarkThemeUsesCanonicalLight2()
-        {
-            WpfTestSta.Invoke(() =>
-            {
-                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, false);
-
-                ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
-
-                Color expected = Color.FromRgb(0x4C, 0xC2, 0xFF);
-                Assert.AreEqual(expected, ApplicationAccentColorManager.SystemAccentColorLight2,
-                    "Default Windows blue Light2 must match the Windows accent palette.");
-                Assert.AreEqual(expected, ApplicationAccentColorManager.SystemAccentColorPrimary,
-                    "Dark theme Primary accent should use Light2.");
-                AssertColorResource("AccentFillColorDefault", expected);
-                AssertBrushResource("AccentFillColorDefaultBrush", expected);
-            });
-        }
-
-        [TestMethod]
-        public void ApplyCustomAccent_WindowsBlue_LightThemeUsesCanonicalDark1()
-        {
-            WpfTestSta.Invoke(() =>
-            {
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
-
-                ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
-
-                Color expected = Color.FromRgb(0x00, 0x67, 0xC0);
-                Assert.AreEqual(expected, ApplicationAccentColorManager.SystemAccentColorDark1,
-                    "Default Windows blue Dark1 must match the Windows accent palette.");
-                Assert.AreEqual(expected, ApplicationAccentColorManager.SystemAccentColorPrimary,
-                    "Light theme Primary accent should use Dark1.");
-                AssertColorResource("AccentFillColorDefault", expected);
-                AssertBrushResource("AccentFillColorDefaultBrush", expected);
-            });
-        }
-
-        private static void AssertColorResource(string key, Color expected)
-        {
-            Color? actual = Application.Current.Resources[key] as Color?;
-            Assert.IsNotNull(actual, key + " should resolve.");
-            Assert.AreEqual(expected, actual.Value, key + " should use the expected color.");
-        }
-
-        private static void AssertBrushResource(string key, Color expected)
-        {
-            SolidColorBrush? brush = Application.Current.Resources[key] as SolidColorBrush;
-            Assert.IsNotNull(brush, key + " should resolve.");
-            Assert.AreEqual(expected, brush.Color, key + " should use the expected brush color.");
-        }
+        // Previous tests ApplyCustomAccent_WindowsBlue_DarkThemeUsesCanonicalLight2 and
+        // ApplyCustomAccent_WindowsBlue_LightThemeUsesCanonicalDark1 (plus the helpers
+        // AssertColorResource / AssertBrushResource that supported them) were removed: they
+        // asserted the canonical OS Windows blue ramp, which only fired through the deleted
+        // KnownAccentRamps short-circuit. The new design uses the caller's color verbatim and
+        // runs Fluence's ramp algorithm directly (no OS mirroring), so the canonical assertions
+        // no longer apply. AccentRampScoreboard covers algorithm regression against 21 captured
+        // OS ramps; see docs/_internal/theme-rewrite/design.md for the rationale.
     }
 }
