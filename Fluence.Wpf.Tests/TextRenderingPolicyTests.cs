@@ -65,9 +65,9 @@ namespace Fluence.Wpf.Tests
                     Assert.IsTrue(window.UseLayoutRounding, "FluenceWindow should enable layout rounding at the root.");
                     Assert.IsTrue(window.SnapsToDevicePixels, "FluenceWindow should snap device pixels at the root.");
                     Assert.AreEqual(
-                        ClearTypeHint.Enabled,
+                        ClearTypeHint.Auto,
                         RenderOptions.GetClearTypeHint(window),
-                        "FluenceWindow should enable ClearType only at the root subtree.");
+                        "FluenceWindow must leave RenderOptions.ClearTypeHint at the WPF default (Auto) so the renderer picks ClearType for opaque surfaces and grayscale anti-aliasing for translucent surfaces. Forcing Enabled blocks the fallback and produces soft text over Mica / Acrylic / accent-backdrop layers.");
                 }
                 finally
                 {

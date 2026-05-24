@@ -110,7 +110,15 @@
         <Setter Property="Focusable" Value="False" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-        <Setter Property="RenderOptions.ClearTypeHint" Value="Enabled" />
+        <!--
+            RenderOptions.ClearTypeHint is intentionally left at the WPF default (Auto). Forcing
+            Enabled at the window root forces ClearType subpixel rendering even over translucent
+            surfaces (Mica / Acrylic backdrops, the AccentFillBackdrop layer, etc.) where ClearType
+            cannot blend correctly against the DWM-composited result and falls back to a degraded
+            grayscale anti-aliasing that reads as "soft / fuzzy" at body and caption sizes. The
+            WPF default lets the renderer pick per-surface: ClearType on opaque, grayscale on
+            translucent. .NET 10 WPF Fluent theme also leaves this at the default.
+        -->
         <Setter Property="ResizeMode" Value="CanResize" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
         <Setter Property="Template">

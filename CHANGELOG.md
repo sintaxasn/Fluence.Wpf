@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- `FluenceWindow` no longer forces `RenderOptions.ClearTypeHint=Enabled` at the window root. The WPF default (`Auto`) lets the renderer select ClearType subpixel anti-aliasing on opaque surfaces and grayscale anti-aliasing on translucent surfaces (Mica / Acrylic, the `AccentFillBackdrop` layer, any other translucent compositing layer) per surface. Forcing `Enabled` overrode the fallback and produced visibly soft text at body / caption sizes whenever the parent surface was non-opaque - because ClearType subpixel rendering cannot blend correctly against a DWM-composited backdrop and degrades into a worse-than-grayscale fallback. .NET 10 WPF Fluent theme also leaves this at the default. `FluenceWindow_DefaultStyleOwnsCrispRootRenderingPolicy` updated to assert `ClearTypeHint.Auto`.
 - `ProgressBar` template: removed the vestigial `BorderThickness` style setter that did not affect the template; corrected the unfilled-track `Background` from `ControlStrokeColorDefaultBrush` (a stroke role) to `ControlStrongStrokeColorDefaultBrush` (the canonical WinUI 3 fill role); changed the default `TrackHeight` from 4 px to 6 px and `CornerRadius` to 3 (a full pill at the new track height, matching the WinUI 3 Gallery visual). Resolves the two pre-existing failing `ProgressBar_*` tests; `ProgressBar_DefaultStyle_UsesThreePixelTrackHeight` renamed to `ProgressBar_DefaultStyle_UsesSixPixelTrackHeight`.
 
 ### Changed
