@@ -35,6 +35,19 @@
                                 <ScaleTransform ScaleX="1" ScaleY="1" />
                             </Border.RenderTransform>
                             <Grid>
+                                <!--
+                                    Opaque sub-layer under the IndicatorChecked stack so accent
+                                    hover/press fills (AccentFillColorSecondary 0.9 / Tertiary 0.8
+                                    / Disabled) composite against a surface-matched solid rather
+                                    than whatever translucent form / card / Mica sits beneath
+                                    the checkbox. Visible only when IsChecked is True or null
+                                    (indeterminate).
+                                -->
+                                <Border
+                                    x:Name="IndicatorAccentBackdrop"
+                                    Background="{DynamicResource AccentFillBackdropBrush}"
+                                    CornerRadius="{TemplateBinding CornerRadius}"
+                                    Opacity="0" />
                                 <Border
                                     x:Name="IndicatorFill"
                                     Background="{DynamicResource ControlAltFillColorSecondaryBrush}"
@@ -192,6 +205,7 @@
                             <Setter TargetName="IndicatorHover" Property="Opacity" Value="0" />
                             <Setter TargetName="IndicatorPressed" Property="Opacity" Value="0" />
                             <Setter TargetName="IndicatorChecked" Property="Opacity" Value="1" />
+                            <Setter TargetName="IndicatorAccentBackdrop" Property="Opacity" Value="1" />
                             <Setter TargetName="CheckGlyph" Property="Opacity" Value="1" />
                             <Setter TargetName="IndeterminateDash" Property="Opacity" Value="0" />
                         </Trigger>
@@ -233,6 +247,7 @@
                             <Setter TargetName="IndicatorHover" Property="Opacity" Value="0" />
                             <Setter TargetName="IndicatorPressed" Property="Opacity" Value="0" />
                             <Setter TargetName="IndicatorChecked" Property="Opacity" Value="1" />
+                            <Setter TargetName="IndicatorAccentBackdrop" Property="Opacity" Value="1" />
                             <Setter TargetName="CheckGlyph" Property="Opacity" Value="0" />
                             <Setter TargetName="IndeterminateDash" Property="Opacity" Value="1" />
                         </Trigger>

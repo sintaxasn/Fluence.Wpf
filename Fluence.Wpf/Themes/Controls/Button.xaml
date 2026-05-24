@@ -24,6 +24,19 @@
                         <Grid.RenderTransform>
                             <ScaleTransform x:Name="PressScale" ScaleX="1" ScaleY="1" />
                         </Grid.RenderTransform>
+                        <!--
+                            AccentFillBackdrop: opaque sub-layer behind RestFill so the accent
+                            brush variants (AccentFillColorSecondary at 0.9 opacity on hover,
+                            Tertiary at 0.8 on press) composite predictably against an opaque
+                            surface (white in Light, #202020 in Dark) instead of whatever
+                            translucent card / Mica-backdrop surface sits beneath the button.
+                            Visible only when Appearance=Accent.
+                        -->
+                        <Border
+                            x:Name="AccentFillBackdrop"
+                            Background="{DynamicResource AccentFillBackdropBrush}"
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            Opacity="0" />
                         <Border
                             x:Name="RestFill"
                             Background="{TemplateBinding Background}"
@@ -118,6 +131,7 @@
                         <Trigger Property="Appearance" Value="Accent">
                             <Setter Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
+                            <Setter TargetName="AccentFillBackdrop" Property="Opacity" Value="1" />
                         </Trigger>
 
                         <Trigger Property="IsMouseOver" Value="True">

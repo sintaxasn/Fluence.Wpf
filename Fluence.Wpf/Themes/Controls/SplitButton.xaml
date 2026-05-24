@@ -79,6 +79,18 @@
                                 <ColumnDefinition Width="Auto" />
                             </Grid.ColumnDefinitions>
 
+                            <!--
+                                Opaque sub-layer behind PrimaryFill so accent hover/press
+                                (Secondary/Tertiary, 0.9/0.8 alpha) composite against a
+                                surface-matched solid rather than the translucent card or
+                                Mica beneath. Visible only when Appearance=Accent.
+                            -->
+                            <Border
+                                x:Name="PrimaryAccentFillBackdrop"
+                                Grid.Column="0"
+                                Background="{DynamicResource AccentFillBackdropBrush}"
+                                CornerRadius="4,0,0,4"
+                                Opacity="0" />
                             <!--  Primary-half fill + border (rounded left, flat right, no right-side stroke).  -->
                             <Border
                                 x:Name="PrimaryFill"
@@ -130,6 +142,13 @@
                                 Width="1"
                                 Fill="{DynamicResource ControlStrokeColorDefaultBrush}" />
 
+                            <!--  Opaque sub-layer behind SecondaryFill - see PrimaryAccentFillBackdrop note above.  -->
+                            <Border
+                                x:Name="SecondaryAccentFillBackdrop"
+                                Grid.Column="2"
+                                Background="{DynamicResource AccentFillBackdropBrush}"
+                                CornerRadius="0,4,4,0"
+                                Opacity="0" />
                             <!--  Secondary-half fill + border (flat left, rounded right, no left-side stroke).  -->
                             <Border
                                 x:Name="SecondaryFill"
@@ -264,6 +283,8 @@
                         <Trigger Property="Appearance" Value="Accent">
                             <Setter TargetName="PrimaryStroke" Property="BorderBrush" Value="{DynamicResource AccentControlElevationBorderBrush}" />
                             <Setter TargetName="SecondaryStroke" Property="BorderBrush" Value="{DynamicResource AccentControlElevationBorderBrush}" />
+                            <Setter TargetName="PrimaryAccentFillBackdrop" Property="Opacity" Value="1" />
+                            <Setter TargetName="SecondaryAccentFillBackdrop" Property="Opacity" Value="1" />
                             <!--  Core B17 fix: accent divider colour.  -->
                             <Setter TargetName="Divider" Property="Fill" Value="{DynamicResource ControlStrokeColorOnAccentSecondaryBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />

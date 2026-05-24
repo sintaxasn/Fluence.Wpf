@@ -65,6 +65,20 @@
                                 <ScaleTransform ScaleX="1" ScaleY="1" />
                             </Grid.RenderTransform>
 
+                            <!--
+                                Opaque sub-layer under the checked-state ellipses so the accent
+                                hover/press fills (AccentFillColorSecondary 0.9 / Tertiary 0.8 /
+                                Disabled) composite against a surface-matched solid rather than
+                                whatever translucent form / card / Mica sits beneath the radio
+                                indicator. Visible only when IsChecked=True.
+                            -->
+                            <Ellipse
+                                x:Name="IndicatorAccentBackdrop"
+                                Width="20"
+                                Height="20"
+                                Fill="{DynamicResource AccentFillBackdropBrush}"
+                                Opacity="0" />
+
                             <!--  Unchecked: normal  -->
                             <Ellipse
                                 x:Name="OuterEllipse"
@@ -199,6 +213,7 @@
                             <Setter TargetName="OuterEllipseHover" Property="Opacity" Value="0" />
                             <Setter TargetName="OuterEllipsePressed" Property="Opacity" Value="0" />
                             <Setter TargetName="CheckedEllipse" Property="Opacity" Value="1" />
+                            <Setter TargetName="IndicatorAccentBackdrop" Property="Opacity" Value="1" />
                             <Trigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard>

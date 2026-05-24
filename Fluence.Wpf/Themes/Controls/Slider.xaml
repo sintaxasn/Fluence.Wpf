@@ -14,6 +14,18 @@
                         <Grid.RenderTransform>
                             <ScaleTransform x:Name="ThumbScale" ScaleX="1" ScaleY="1" />
                         </Grid.RenderTransform>
+                        <!--
+                            Opaque sub-layer under the thumb fill so the hover/drag accent
+                            brushes (AccentFillColorSecondary 0.9 / Tertiary 0.8 / Disabled)
+                            composite against a surface-matched solid rather than the
+                            translucent card or Mica beneath the slider. Always visible
+                            because the thumb is always rendered.
+                        -->
+                        <Ellipse
+                            x:Name="ThumbAccentBackdrop"
+                            Width="20"
+                            Height="20"
+                            Fill="{DynamicResource AccentFillBackdropBrush}" />
                         <Ellipse
                             x:Name="ThumbEllipse"
                             Width="20"

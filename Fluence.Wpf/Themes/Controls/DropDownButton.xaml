@@ -31,6 +31,17 @@
                             BorderThickness="{TemplateBinding BorderThickness}"
                             CornerRadius="{TemplateBinding CornerRadius}">
                             <Grid>
+                                <!--
+                                    Opaque sub-layer behind RestFill so the Accent appearance's
+                                    Secondary/Tertiary fills (0.9/0.8 alpha) composite against a
+                                    surface-matched solid instead of the page/Mica beneath.
+                                    Visible only when Appearance=Accent.
+                                -->
+                                <Border
+                                    x:Name="AccentFillBackdrop"
+                                    Background="{DynamicResource AccentFillBackdropBrush}"
+                                    CornerRadius="{TemplateBinding CornerRadius}"
+                                    Opacity="0" />
                                 <Border
                                     x:Name="RestFill"
                                     Background="{TemplateBinding Background}"
