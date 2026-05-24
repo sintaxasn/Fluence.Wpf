@@ -274,8 +274,8 @@ namespace Fluence.Wpf.Tests
                         "Demo right rail should sit flush against the sample border.");
                     AssertBrushColor(rightRail.Background, "CardBackgroundFillColorSecondaryBrush",
                         "Demo right rail should use the WinUI Gallery options-pane surface.");
-                    AssertBrushColor(sourceExpander.Background, "ControlFillColorDefaultBrush",
-                        "Demo source header should use the WinUI Gallery source-code header background.");
+                    AssertBrushColor(sourceExpander.Background, "SolidBackgroundFillColorQuarternaryBrush",
+                        "Demo source header should use the WinUI Gallery source-code header background - the darker quarternary surface so the collapsed Source-Code strip reads as a distinct dark band beneath the sample card (matches the screenshots in docs/screenshots/gallery/).");
                     Assert.AreEqual("Source code", sourceExpander.Header,
                         "Demo source expander header should match the WinUI Gallery source label.");
 
