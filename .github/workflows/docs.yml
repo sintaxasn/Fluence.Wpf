@@ -51,7 +51,7 @@ jobs:
 
       - name: Setup Go
         # Hugo Modules require Go to resolve theme imports (github.com/imfing/hextra).
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@v6
         with:
           go-version: '1.22'
           cache: false
