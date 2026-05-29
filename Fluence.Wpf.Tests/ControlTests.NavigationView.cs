@@ -128,6 +128,72 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void DemoMainWindow_LeftPaneFooterIcon_StaysLeftAnchored_WhileCollapsed()
+        {
+            // Regression: the Settings footer item must keep its icon at the pane's left edge at every
+            // pane width. The footer is hosted in a ContentPresenter, which arranges its child at the
+            // child's desired size (it does not force-stretch like the menu items' StackPanel). In the
+            // collapsed icon-only state the item is ~48px, so a centered host let it slide laterally as
+            // the pane width animated between open (320) and compact (48). HorizontalAlignment=Left on
+            // the footer ContentPresenter anchors it. Reproduced against the real gallery MainWindow
+            // (a synthetic NavigationView host does not exhibit the centering); we force intermediate
+            // closed pane widths and assert the footer icon stays at the left.
+            RunOnStaThread(() =>
+            {
+                Application? application = EnsureApplication();
+                _ = MergeGenericDictionary(application);
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.Mica, true);
+
+                Fluence.Wpf.Demo.MainWindow mw = new()
+                {
+                    ShowInTaskbar = false,
+                    WindowStartupLocation = WindowStartupLocation.Manual,
+                    Left = -10000,
+                    Top = -10000
+                };
+                try
+                {
+                    mw.Show();
+                    DrainDispatcher(mw.Dispatcher);
+                    WaitForAnimationAndDrain(mw.Dispatcher, 300);
+                    mw.UpdateLayout();
+
+                    NavigationView? nav = FindVisualChildByName<NavigationView>(mw, "DemoNav");
+                    Assert.IsNotNull(nav, "Gallery MainWindow must host the DemoNav NavigationView.");
+                    NavigationViewItem? footer = nav!.PaneFooter as NavigationViewItem;
+                    Assert.IsNotNull(footer, "DemoNav must expose the Settings footer NavigationViewItem.");
+                    ContentPresenter? footerIcon = FindVisualChildByName<ContentPresenter>(footer!, "IconPresenter");
+                    Assert.IsNotNull(footerIcon, "Footer item must expose IconPresenter.");
+
+                    nav.IsPaneOpen = false;
+                    WaitForAnimationAndDrain(mw.Dispatcher, 300);
+                    mw.UpdateLayout();
+
+                    ColumnDefinition? paneColumn = nav.Template.FindName("PaneColumn", nav) as ColumnDefinition;
+                    Assert.IsNotNull(paneColumn, "Left template must expose PaneColumn.");
+
+                    foreach (double width in new[] { 96.0, 160.0, 240.0, 320.0 })
+                    {
+                        paneColumn!.BeginAnimation(ColumnDefinition.WidthProperty, null);
+                        paneColumn.Width = new GridLength(width);
+                        mw.UpdateLayout();
+                        double footerIconX = footerIcon!.TransformToAncestor(nav).Transform(new Point(0, 0)).X;
+                        Assert.IsLessThanOrEqualTo(28.0, footerIconX,
+                            "Collapsed footer icon must stay anchored near the pane left edge (not centered/sliding) at pane width " +
+                            width.ToString(System.Globalization.CultureInfo.InvariantCulture) + "; measured x=" +
+                            footerIconX.ToString(System.Globalization.CultureInfo.InvariantCulture) + ".");
+                    }
+                }
+                finally
+                {
+                    mw.Content = null;
+                    mw.Close();
+                    DrainDispatcher(mw.Dispatcher);
+                }
+            });
+        }
+
+        [TestMethod]
         public void NavigationView_PaneDisplayMode_Left_RendersVerticalPane()
         {
             RunOnStaThread(() =>
@@ -262,7 +328,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(footerHost, "LeftCompact template should expose PaneFooterHost.");
                     Assert.AreEqual(Visibility.Visible, footerHost.Visibility,
                         "LeftCompact footer should remain visible while the compact pane is closed so icon-only Settings entries stay reachable.");
-                    Assert.IsTrue(footer.ActualWidth >= 48.0 - 0.5,
+                    Assert.IsGreaterThanOrEqualTo(48.0 - 0.5, footer.ActualWidth,
                         "LeftCompact footer navigation items should receive the full compact pane width so their icons are visible.");
 
                     nav.IsPaneOpen = true;
@@ -314,15 +380,15 @@ namespace Fluence.Wpf.Tests
 
                     Assert.AreEqual(48.0, nav.GetPaneColumnWidthForTesting(), 0.01,
                         "Closed Left pane should reserve the canonical 48px compact width.");
-                    Assert.IsTrue(messages.ActualWidth >= 48.0 - 0.5,
+                    Assert.IsGreaterThanOrEqualTo(48.0 - 0.5, messages.ActualWidth,
                         "Closed Left navigation items should receive the full compact pane width so icons are not clipped.");
 
                     ContentPresenter? iconPresenter = FindVisualChildByName<ContentPresenter>(messages, "IconPresenter");
                     Assert.IsNotNull(iconPresenter, "NavigationViewItem template should expose the icon presenter.");
                     Point iconOffset = iconPresenter.TransformToAncestor(messages).Transform(new Point(0, 0));
-                    Assert.IsTrue(iconOffset.X >= 4.0 - 0.5,
+                    Assert.IsGreaterThanOrEqualTo(4.0 - 0.5, iconOffset.X,
                         "Closed Left icon should not be clipped on the left edge.");
-                    Assert.IsTrue(iconOffset.X + iconPresenter.ActualWidth <= 44.0 + 0.5,
+                    Assert.IsLessThanOrEqualTo(44.0 + 0.5, iconOffset.X + iconPresenter.ActualWidth,
                         "Closed Left icon should stay inside the 40px icon slot.");
                 }
                 finally
@@ -368,15 +434,15 @@ namespace Fluence.Wpf.Tests
 
                     Assert.AreEqual(48.0, nav.GetPaneColumnWidthForTesting(), 0.01,
                         "Closed LeftCompact pane should reserve the canonical 48px compact width.");
-                    Assert.IsTrue(messages.ActualWidth >= 48.0 - 0.5,
+                    Assert.IsGreaterThanOrEqualTo(48.0 - 0.5, messages.ActualWidth,
                         "Closed LeftCompact navigation items should receive the full compact pane width so icons are not clipped.");
 
                     ContentPresenter? iconPresenter = FindVisualChildByName<ContentPresenter>(messages, "IconPresenter");
                     Assert.IsNotNull(iconPresenter, "NavigationViewItem template should expose the icon presenter.");
                     Point iconOffset = iconPresenter.TransformToAncestor(messages).Transform(new Point(0, 0));
-                    Assert.IsTrue(iconOffset.X >= 4.0 - 0.5,
+                    Assert.IsGreaterThanOrEqualTo(4.0 - 0.5, iconOffset.X,
                         "Closed LeftCompact icon should not be clipped on the left edge.");
-                    Assert.IsTrue(iconOffset.X + iconPresenter.ActualWidth <= 44.0 + 0.5,
+                    Assert.IsLessThanOrEqualTo(44.0 + 0.5, iconOffset.X + iconPresenter.ActualWidth,
                         "Closed LeftCompact icon should stay inside the 40px icon slot.");
                 }
                 finally
@@ -470,7 +536,7 @@ namespace Fluence.Wpf.Tests
 
                     Point backPoint = back.TransformToAncestor(nav).Transform(new Point(0, 0));
                     Point paneTogglePoint = paneToggle.TransformToAncestor(nav).Transform(new Point(0, 0));
-                    Assert.IsTrue(backPoint.X < paneTogglePoint.X, "Back button should be the first glyph, before the pane toggle.");
+                    Assert.IsLessThan(paneTogglePoint.X, backPoint.X, "Back button should be the first glyph, before the pane toggle.");
                     Assert.AreEqual(backPoint.Y, paneTogglePoint.Y, 0.5,
                         "Back button and pane toggle should share the same pane chrome row.");
                 }
@@ -1153,7 +1219,7 @@ namespace Fluence.Wpf.Tests
                     FrameworkElement? indicator = nav.GetSelectionIndicatorForTesting();
                     Assert.IsNotNull(indicator, "PART_SelectionIndicator should exist in the NavigationView template.");
                     double iconItemX = GetSelectionIndicatorTranslate(indicator).X;
-                    Assert.AreEqual(4.0, iconItemX, 0.5,
+                    Assert.AreEqual(9.0, iconItemX, 0.5,
                         "Icon item indicator should sit inside the selected item background.");
 
                     nav.SelectedIndex = 1;
@@ -1162,7 +1228,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
 
                     double childItemX = GetSelectionIndicatorTranslate(indicator).X;
-                    Assert.AreEqual(48.0, childItemX, 0.5,
+                    Assert.AreEqual(53.0, childItemX, 0.5,
                         "Iconless child item indicator should move inward without overlapping the content column.");
                 }
                 finally
@@ -1290,17 +1356,17 @@ namespace Fluence.Wpf.Tests
                         1.0);
                     Assert.AreEqual(parentX, departPosition.X, 0.5,
                         "The downward depart leg should keep the parent item's X until the indicator fades out.");
-                    Assert.IsTrue(departPosition.Y > parentY,
+                    Assert.IsGreaterThan(parentY, departPosition.Y,
                         "The downward depart leg should move below the parent before the child inset X is applied.");
 
                     nav.SelectedIndex = 1;
                     Assert.IsTrue(
                         WaitUntil(window.Dispatcher, 3000, delegate
                         {
-                            return Math.Abs(translate.X - 48.0) <= 0.5 && Math.Abs(indicator.Opacity - 1.0) <= 0.01;
+                            return Math.Abs(translate.X - 53.0) <= 0.5 && Math.Abs(indicator.Opacity - 1.0) <= 0.01;
                         }),
                         "After the depart/arrive animation completes, the child item indicator should become visible at the child inset.");
-                    Assert.AreEqual(48.0, translate.X, 0.5,
+                    Assert.AreEqual(53.0, translate.X, 0.5,
                         "After the depart/arrive animation completes, the child item indicator should sit at the child inset.");
                     Assert.AreEqual(1.0, indicator.Opacity, 0.01,
                         "After the depart/arrive animation completes, the indicator should be visible on the new item.");
@@ -1367,17 +1433,17 @@ namespace Fluence.Wpf.Tests
                         -1.0);
                     Assert.AreEqual(childX, departPosition.X, 0.5,
                         "The upward depart leg should keep the child item's X until the indicator fades out.");
-                    Assert.IsTrue(departPosition.Y < childY,
+                    Assert.IsLessThan(childY, departPosition.Y,
                         "The upward depart leg should move above the child before the parent X is applied.");
 
                     nav.SelectedIndex = 0;
                     Assert.IsTrue(
                         WaitUntil(window.Dispatcher, 3000, delegate
                         {
-                            return Math.Abs(translate.X - 4.0) <= 0.5 && Math.Abs(indicator.Opacity - 1.0) <= 0.01;
+                            return Math.Abs(translate.X - 9.0) <= 0.5 && Math.Abs(indicator.Opacity - 1.0) <= 0.01;
                         }),
                         "After the depart/arrive animation completes, the parent item indicator should become visible at the parent inset.");
-                    Assert.AreEqual(4.0, translate.X, 0.5,
+                    Assert.AreEqual(9.0, translate.X, 0.5,
                         "After the depart/arrive animation completes, the parent item indicator should sit at the parent inset.");
                     Assert.AreEqual(1.0, indicator.Opacity, 0.01,
                         "After the depart/arrive animation completes, the indicator should be visible on the new item.");
@@ -1952,12 +2018,12 @@ namespace Fluence.Wpf.Tests
                     AssertContentOffsetEventually(window, nav, presenter, 320.0, "Open Left pane: content begins at 320.");
 
                     nav.IsPaneOpen = false;
-                    Assert.IsTrue(nav.GetPaneColumnWidthForTesting() > 48.0,
+                    Assert.IsGreaterThan(48.0, nav.GetPaneColumnWidthForTesting(),
                         "Closing Left mode should animate from the expanded width instead of snapping immediately to 48.");
                     AssertContentOffsetEventually(window, nav, presenter, 48.0, "Closed Left pane: content begins at 48.");
 
                     nav.IsPaneOpen = true;
-                    Assert.IsTrue(nav.GetPaneColumnWidthForTesting() < 320.0,
+                    Assert.IsLessThan(320.0, nav.GetPaneColumnWidthForTesting(),
                         "Opening Left mode should animate from the compact width instead of snapping immediately to 320.");
                     AssertContentOffsetEventually(window, nav, presenter, 320.0, "Reopened Left pane: content returns to 320.");
                 }
@@ -2196,12 +2262,12 @@ namespace Fluence.Wpf.Tests
                     AssertContentOffsetEventually(window, nav, presenter, 320.0, "Open state: content begins at 320.");
 
                     nav.IsPaneOpen = false;
-                    Assert.IsTrue(nav.GetPaneColumnWidthForTesting() > 48.0,
+                    Assert.IsGreaterThan(48.0, nav.GetPaneColumnWidthForTesting(),
                         "Closing LeftCompact should animate from the current expanded width instead of snapping immediately to 48.");
                     AssertContentOffsetEventually(window, nav, presenter, 48.0, "Closed state: content begins at 48.");
 
                     nav.IsPaneOpen = true;
-                    Assert.IsTrue(nav.GetPaneColumnWidthForTesting() < 320.0,
+                    Assert.IsLessThan(320.0, nav.GetPaneColumnWidthForTesting(),
                         "Opening LeftCompact should animate from the current compact width instead of snapping immediately to 320.");
                     AssertContentOffsetEventually(window, nav, presenter, 320.0, "Reopen state: content returns to 320.");
                 }
@@ -2596,7 +2662,7 @@ namespace Fluence.Wpf.Tests
         {
             TransformGroup? group = indicator.RenderTransform as TransformGroup;
             Assert.IsNotNull(group, "Selection indicator must use a TransformGroup.");
-            Assert.IsTrue(group.Children.Count >= 2, "Selection indicator TransformGroup must contain scale and translate transforms.");
+            Assert.IsGreaterThanOrEqualTo(2, group.Children.Count, "Selection indicator TransformGroup must contain scale and translate transforms.");
             TranslateTransform? translate = group.Children[1] as TranslateTransform;
             Assert.IsNotNull(translate, "Selection indicator transform index 1 must be a TranslateTransform.");
             return translate;

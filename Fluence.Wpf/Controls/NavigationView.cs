@@ -107,8 +107,11 @@ namespace Fluence.Wpf.Controls
                 typeof(NavigationView),
                 new PropertyMetadata(false));
 
-        // Margins and offsets used in indicator and top overflow positioning calculations
-        private const double NavigationItemOuterHorizontalMargin = 4.0;
+        // Margins and offsets used in indicator and top overflow positioning calculations.
+        // The indicator sits just inside the selected item's rounded OuterBorder (Margin 4 + 2px
+        // stroke), flush against the inner edge with no padding gap, rather than floating in the
+        // pane to the left of the item.
+        private const double NavigationItemOuterHorizontalMargin = 9.0;
         private const double NavigationItemChildIndicatorOffset = 44.0;
         private const double TopOverflowReservedEndPadding = 12.0;
 

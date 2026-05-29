@@ -28,6 +28,7 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock
                         x:Name="CodeSampleText"
+                        VerticalAlignment="Center"
                         FontFamily="Cascadia Mono, Consolas"
                         FontSize="13"
                         Foreground="{DynamicResource TextFillColorPrimaryBrush}"

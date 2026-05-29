@@ -31,6 +31,8 @@ namespace Fluence.Wpf.Native
     internal static class NativeConstants
     {
         // DWM Window Attributes
+        public const int DWMWA_CLOAK = 13;
+        public const int DWMWA_CLOAKED = 14;
         public const int DWMWA_USE_IMMERSIVE_DARK_MODE_OLD = 19;
         public const int DWMWA_USE_IMMERSIVE_DARK_MODE = 20;
         public const int DWMWA_WINDOW_CORNER_PREFERENCE = 33;
@@ -68,7 +70,12 @@ namespace Fluence.Wpf.Native
 
         // Window Messages
         public const int WM_NCHITTEST = 0x0084;
+        public const int WM_NCLBUTTONDOWN = 0x00A1;
         public const int WM_NCLBUTTONUP = 0x00A2;
+        public const int WM_NCMOUSEMOVE = 0x00A0;
+        public const int WM_DPICHANGED = 0x02E0;
+        public const int WM_WINDOWPOSCHANGING = 0x0046;
+        public const int WM_WINDOWPOSCHANGED = 0x0047;
         public const int WM_NCCALCSIZE = 0x0083;
         public const int WM_NCMOUSELEAVE = 0x02A2;
         public const int WM_GETMINMAXINFO = 0x0024;
@@ -99,6 +106,17 @@ namespace Fluence.Wpf.Native
 
         // Monitor Defaults
         public const uint MONITOR_DEFAULTTONEAREST = 2;
+
+        // AppBar (SHAppBarMessage) Messages and State
+        public const uint ABM_GETSTATE = 0x00000004;
+        public const uint ABM_GETTASKBARPOS = 0x00000005;
+        public const int ABS_AUTOHIDE = 0x0000001;
+
+        // AppBar Edges (ABE_*)
+        public const uint ABE_LEFT = 0;
+        public const uint ABE_TOP = 1;
+        public const uint ABE_RIGHT = 2;
+        public const uint ABE_BOTTOM = 3;
 
         // DWM Boolean Values
         public const int DWM_TRUE = 1;

@@ -202,7 +202,9 @@
                         x:Name="OuterBorder"
                         Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}">
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        ClipToBounds="True"
+                        CornerRadius="{DynamicResource ControlCornerRadius}">
                         <controls:SmoothScrollViewer
                             x:Name="PART_ScrollViewer"
                             CanContentScroll="False"

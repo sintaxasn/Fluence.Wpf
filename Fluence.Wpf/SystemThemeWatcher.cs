@@ -62,6 +62,10 @@ namespace Fluence.Wpf
                 }
                 WatchedWindow watched = new(window);
                 _watchedWindows.Add(watched);
+                // Auto-release on close so a consumer that forgets UnWatch (or an app that exits
+                // without an explicit teardown) cannot leak the window, its HwndSource hook, or
+                // this static registry entry.
+                window.Closed += OnWindowClosed;
                 if (!window.IsLoaded)
                 {
                     // HwndSource does not exist until SourceInitialized. Defer the native
@@ -95,6 +99,17 @@ namespace Fluence.Wpf
                 DetachHook(watched);
                 _ = _watchedWindows.Remove(watched);
                 window.SourceInitialized -= OnWindowSourceInitialized;
+                window.Closed -= OnWindowClosed;
+            }
+        }
+
+        private static void OnWindowClosed(object? sender, EventArgs e)
+        {
+            if (sender is Window window)
+            {
+                // UnWatch is idempotent: if FluenceWindow.OnClosed (or the consumer) already
+                // detached, FindWatchedWindow returns null and this is a no-op.
+                UnWatch(window);
             }
         }
 

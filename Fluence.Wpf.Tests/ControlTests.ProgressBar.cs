@@ -158,6 +158,43 @@ namespace Fluence.Wpf.Tests
             });
         }
 
+        [TestMethod]
+        public void ProgressBar_Track_IsClippedToRoundedGeometry()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                FluenceProgressBar progressBar = new()
+                {
+                    Width = 240,
+                    Height = 24,
+                    ProgressMode = ProgressBarMode.Indeterminate
+                };
+                Window w = new() { Content = progressBar, Width = 300, Height = 120 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                WpfBorder? track = FindVisualChildByName<WpfBorder>(progressBar, "PART_Track");
+                Assert.IsNotNull(track, "ProgressBar template must expose PART_Track.");
+
+                // ClipToBounds only clips rectangularly, so the translating indeterminate bars would
+                // show square ends at the track edge. The control must install a rounded RectangleGeometry
+                // clip matching CornerRadius so every fill/indeterminate child conforms to the rounded track.
+                RectangleGeometry? clip = track.Clip as RectangleGeometry;
+                Assert.IsNotNull(clip, "PART_Track must carry a rounded RectangleGeometry clip (not just ClipToBounds).");
+                Assert.AreEqual(progressBar.CornerRadius.TopLeft, clip.RadiusX, 0.01,
+                    "Track clip corner radius X must match the control CornerRadius.");
+                Assert.AreEqual(progressBar.CornerRadius.TopLeft, clip.RadiusY, 0.01,
+                    "Track clip corner radius Y must match the control CornerRadius.");
+                Assert.IsTrue(clip.Rect.Width > 0 && clip.Rect.Height > 0,
+                    "Track clip must be sized to the realised track bounds.");
+
+                w.Close();
+            });
+        }
+
         private static void AssertProgressBarModeBrush(ProgressBarMode mode, string brushKey)
         {
             WpfTestSta.Invoke(() =>

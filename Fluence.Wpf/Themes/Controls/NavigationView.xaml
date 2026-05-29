@@ -372,7 +372,7 @@
                         <controls:SmoothScrollViewer
                             x:Name="PART_PaneItemsScrollViewer"
                             Grid.Row="1"
-                            Padding="4,4,8,4"
+                            Padding="0,4,8,4"
                             Focusable="False"
                             HorizontalScrollBarVisibility="Disabled"
                             Style="{DynamicResource ScrollViewerStyle}"
@@ -403,10 +403,12 @@
                         <Border
                             x:Name="PaneFooterHost"
                             Grid.Row="2"
-                            Padding="8,0,8,8"
-                            BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
-                            BorderThickness="0,1,0,0">
-                            <ContentPresenter Margin="0,4,0,0" Content="{TemplateBinding PaneFooter}" />
+                            Padding="0,0,8,8">
+                            <!--  HorizontalAlignment=Left anchors the footer content to the pane's left edge. A ContentPresenter arranges its child at the child's desired size (it does not force-stretch like the menu items' StackPanel), so without this the icon-only collapsed footer item (~48px) is centered in the pane and slides laterally as the pane width animates between open and compact. Left keeps the footer icon column fixed at the same x as the menu item icons.  -->
+                            <ContentPresenter
+                                Margin="0,4,0,0"
+                                HorizontalAlignment="Left"
+                                Content="{TemplateBinding PaneFooter}" />
                         </Border>
                     </Grid>
                 </Border>
@@ -624,10 +626,12 @@
                         <Border
                             x:Name="PaneFooterHost"
                             Grid.Row="2"
-                            Padding="0,0,0,8"
-                            BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
-                            BorderThickness="0,1,0,0">
-                            <ContentPresenter Margin="0,4,0,0" Content="{TemplateBinding PaneFooter}" />
+                            Padding="0,0,0,8">
+                            <!--  HorizontalAlignment=Left anchors the footer content to the pane's left edge. A ContentPresenter arranges its child at the child's desired size (it does not force-stretch like the menu items' StackPanel), so without this the icon-only collapsed footer item (~48px) is centered in the pane and slides laterally as the pane width animates between open and compact. Left keeps the footer icon column fixed at the same x as the menu item icons.  -->
+                            <ContentPresenter
+                                Margin="0,4,0,0"
+                                HorizontalAlignment="Left"
+                                Content="{TemplateBinding PaneFooter}" />
                         </Border>
                     </Grid>
                 </Border>

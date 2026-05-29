@@ -33,11 +33,7 @@
                             LineHeight="16"
                             LineStackingStrategy="BlockLineHeight"
                             Text="{TemplateBinding Content}"
-                            TextAlignment="Center">
-                            <TextBlock.RenderTransform>
-                                <TranslateTransform X="4" />
-                            </TextBlock.RenderTransform>
-                        </TextBlock>
+                            TextAlignment="Center" />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">

@@ -36,11 +36,11 @@ namespace Fluence.Wpf.Controls
 {
     internal static class WindowPolicy
     {
-        internal static WindowChrome CreateWindowChrome(double captionHeight)
+        internal static WindowChrome CreateWindowChrome()
         {
             return new WindowChrome
             {
-                CaptionHeight = captionHeight,
+                CaptionHeight = 0,
                 CornerRadius = new CornerRadius(0),
                 GlassFrameThickness = new Thickness(-1),
                 ResizeBorderThickness = new Thickness(4),

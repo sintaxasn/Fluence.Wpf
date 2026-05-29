@@ -204,6 +204,7 @@ namespace Fluence.Wpf.Controls
             ApplyProgressMode();
             UpdateFillWidth(false);
             RefreshIndeterminateLayout();
+            UpdateTrackClip();
         }
 
         /// <inheritdoc />
@@ -251,6 +252,32 @@ namespace Fluence.Wpf.Controls
         {
             UpdateFillWidth(ProgressMode == ProgressBarMode.StepProgress);
             RefreshIndeterminateLayout();
+            UpdateTrackClip();
+        }
+
+        /// <summary>
+        /// Clips the track (and therefore every fill / indeterminate child) to its rounded-rectangle
+        /// geometry. WPF's <see cref="UIElement.ClipToBounds"/> clips only to the rectangular bounds, so
+        /// the translating indeterminate bars (which overshoot both track edges) would otherwise show
+        /// square ends where they cross the track edge. A geometry clip matching <see cref="CornerRadius"/>
+        /// keeps the accent conforming to the rounded track on every animation frame, exactly as the
+        /// left-anchored determinate fill already does.
+        /// </summary>
+        private void UpdateTrackClip()
+        {
+            if (_track is null)
+            {
+                return;
+            }
+            double width = _track.ActualWidth;
+            double height = _track.ActualHeight;
+            if (width <= 0 || height <= 0 || double.IsNaN(width) || double.IsNaN(height))
+            {
+                _track.Clip = null;
+                return;
+            }
+            double radius = CornerRadius.TopLeft;
+            _track.Clip = new RectangleGeometry(new Rect(0, 0, width, height), radius, radius);
         }
 
         private void ApplyProgressMode()

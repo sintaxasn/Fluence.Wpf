@@ -31,8 +31,10 @@ using Fluence.Wpf.Helpers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.IO;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Media;
+using System.Windows.Threading;
 
 namespace Fluence.Wpf.Tests
 {
@@ -320,6 +322,227 @@ namespace Fluence.Wpf.Tests
                 "Acrylic→Mica fallback must still use transparent background.");
             Assert.AreEqual(BackdropType.Mica, plan.EffectiveBackdrop,
                 "Acrylic request on Win10 MicaEffect-only OS must downgrade to Mica.");
+        }
+
+        // ---------------------------------------------------------------------------
+        // 6. C3: manager subscription leak guard.
+        //
+        // The static managers hold strong references to every subscribed FluenceWindow.
+        // Subscribing in the constructor leaked windows that were constructed but never
+        // shown (and therefore never reach OnClosed to unsubscribe). The fix moves the
+        // subscriptions to OnSourceInitialized (HWND realisation) so only shown windows
+        // subscribe, and they always reach OnClosed.
+        //
+        // A GC + WeakReference test cannot prove this here: Application.AddWindow roots
+        // every constructed Window for the lifetime of the Application. Instead we count
+        // subscribers directly via the compiler-emitted private static delegate backing
+        // fields for the two field-like events.
+        // ---------------------------------------------------------------------------
+
+        private static int GetEventSubscriberCount(Type declaringType, string eventName)
+        {
+            FieldInfo? field = declaringType.GetField(eventName, BindingFlags.NonPublic | BindingFlags.Static);
+            Assert.IsNotNull(field,
+                "Expected a compiler-emitted backing field '" + eventName + "' on " + declaringType.Name + ".");
+            Delegate? handler = field.GetValue(null) as Delegate;
+            return handler?.GetInvocationList().Length ?? 0;
+        }
+
+        private static (int Theme, int Accent) SnapshotManagerSubscriberCounts()
+        {
+            int theme = GetEventSubscriberCount(typeof(ApplicationThemeManager), "Changed");
+            int accent = GetEventSubscriberCount(typeof(ApplicationAccentColorManager), "AccentColorChanged");
+            return (theme, accent);
+        }
+
+        private static void DrainDispatcher()
+        {
+            WpfTestSta.Dispatcher?.Invoke(
+                new Action(() => { }),
+                DispatcherPriority.ContextIdle);
+        }
+
+        [TestMethod]
+        public void Constructor_DoesNotSubscribeToManagers()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApp();
+                ResetAndApply(ApplicationTheme.Light, app);
+
+                (int beforeTheme, int beforeAccent) = SnapshotManagerSubscriberCounts();
+                FluenceWindow w = new();
+                try
+                {
+                    (int afterTheme, int afterAccent) = SnapshotManagerSubscriberCounts();
+                    Assert.AreEqual(beforeTheme, afterTheme,
+                        "Constructing a FluenceWindow without showing it must not subscribe to ApplicationThemeManager.Changed.");
+                    Assert.AreEqual(beforeAccent, afterAccent,
+                        "Constructing a FluenceWindow without showing it must not subscribe to ApplicationAccentColorManager.AccentColorChanged.");
+                }
+                finally { w.Close(); }
+            });
+        }
+
+        [TestMethod]
+        public void ShowThenClose_LeavesNoNetManagerSubscriptions()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApp();
+                ResetAndApply(ApplicationTheme.Light, app);
+
+                (int baselineTheme, int baselineAccent) = SnapshotManagerSubscriberCounts();
+
+                FluenceWindow w = new()
+                {
+                    Width = 200,
+                    Height = 150,
+                    ShowInTaskbar = false,
+                    WindowStartupLocation = WindowStartupLocation.Manual,
+                    Left = -10000,
+                    Top = -10000
+                };
+                w.Show();
+                DrainDispatcher();
+                w.Close();
+                DrainDispatcher();
+
+                (int afterTheme, int afterAccent) = SnapshotManagerSubscriberCounts();
+                Assert.AreEqual(baselineTheme, afterTheme,
+                    "Show()+Close() must return ApplicationThemeManager.Changed subscriber count to the baseline.");
+                Assert.AreEqual(baselineAccent, afterAccent,
+                    "Show()+Close() must return ApplicationAccentColorManager.AccentColorChanged subscriber count to the baseline.");
+            });
+        }
+
+        // ---------------------------------------------------------------------------
+        // 7. First-paint cloak guard.
+        //
+        // FluenceWindow cloaks itself (DWMWA_CLOAK) in OnSourceInitialized before the DWM
+        // backdrop is applied so the empty client area does not flash black before WPF
+        // composes its first frame, then uncloaks after the first paint. The catastrophic
+        // failure mode of that fix is a window that is never uncloaked - permanently invisible.
+        // These tests pin the two invariants that prevent it: the window is not left cloaked
+        // after a Show()+drain, and the uncloak guard field is reset.
+        // ---------------------------------------------------------------------------
+
+        [TestMethod]
+        public void ShowThenDrain_DoesNotLeaveWindowCloaked()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApp();
+                ResetAndApply(ApplicationTheme.Light, app);
+
+                FluenceWindow w = new()
+                {
+                    Width = 320,
+                    Height = 240,
+                    ShowInTaskbar = false,
+                    SystemBackdropType = BackdropType.Mica,
+                    WindowStartupLocation = WindowStartupLocation.Manual,
+                    Left = -10000,
+                    Top = -10000
+                };
+                try
+                {
+                    w.Show();
+                    DrainDispatcher();
+
+                    nint handle = new System.Windows.Interop.WindowInteropHelper(w).Handle;
+                    Assert.AreEqual(0, Fluence.Wpf.Native.NativeMethods.GetWindowCloakedState(handle),
+                        "After Show()+dispatcher drain the window must not be left cloaked (DWMWA_CLOAKED == 0); a cloaked window is permanently invisible.");
+
+                    FieldInfo? cloakField = typeof(FluenceWindow).GetField("_isCloaked", BindingFlags.NonPublic | BindingFlags.Instance);
+                    Assert.IsNotNull(cloakField, "Expected the private '_isCloaked' guard field on FluenceWindow.");
+                    Assert.IsFalse((bool)cloakField.GetValue(w)!,
+                        "The first-paint cloak guard must be reset once the window has been uncloaked.");
+                }
+                finally
+                {
+                    w.Close();
+                    DrainDispatcher();
+                }
+            });
+        }
+
+        private static int GetWatchedWindowCount()
+        {
+            FieldInfo? field = typeof(SystemThemeWatcher).GetField("_watchedWindows", BindingFlags.NonPublic | BindingFlags.Static);
+            Assert.IsNotNull(field, "Expected the private static '_watchedWindows' registry on SystemThemeWatcher.");
+            return field.GetValue(null) is System.Collections.IList list ? list.Count : 0;
+        }
+
+        [TestMethod]
+        public void ShowThenClose_ReleasesHwndSourceHookAndThemeWatcherRegistration()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApp();
+                ResetAndApply(ApplicationTheme.Light, app);
+
+                int baselineWatched = GetWatchedWindowCount();
+
+                FluenceWindow w = new()
+                {
+                    Width = 200,
+                    Height = 150,
+                    ShowInTaskbar = false,
+                    WindowStartupLocation = WindowStartupLocation.Manual,
+                    Left = -10000,
+                    Top = -10000
+                };
+                w.Show();
+                DrainDispatcher();
+                w.Close();
+                DrainDispatcher();
+
+                // The HWND itself is owned and destroyed by WPF on close; the library must release
+                // its managed references to that HWND's source so nothing is pinned past teardown.
+                Assert.AreEqual(baselineWatched, GetWatchedWindowCount(),
+                    "Show()+Close() must remove the window from SystemThemeWatcher's static registry (releasing its HwndSource and Window references).");
+
+                FieldInfo? sourceField = typeof(FluenceWindow).GetField("_hwndSource", BindingFlags.NonPublic | BindingFlags.Instance);
+                Assert.IsNotNull(sourceField, "Expected the private '_hwndSource' field on FluenceWindow.");
+                Assert.IsNull(sourceField.GetValue(w),
+                    "OnClosed must RemoveHook and null the HwndSource reference (a FromHwnd source is WPF-owned and must not be disposed by the control).");
+            });
+        }
+
+        [TestMethod]
+        public void SystemThemeWatcher_AutoReleasesWatchedWindow_OnClose_WithoutExplicitUnWatch()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApp();
+                ResetAndApply(ApplicationTheme.Light, app);
+
+                int baselineWatched = GetWatchedWindowCount();
+
+                Window w = new()
+                {
+                    Width = 200,
+                    Height = 150,
+                    ShowInTaskbar = false,
+                    WindowStartupLocation = WindowStartupLocation.Manual,
+                    Left = -10000,
+                    Top = -10000
+                };
+                SystemThemeWatcher.Watch(w);
+                Assert.AreEqual(baselineWatched + 1, GetWatchedWindowCount(),
+                    "Watch must register the window in the static registry.");
+
+                w.Show();
+                DrainDispatcher();
+
+                // Deliberately do NOT call UnWatch: closing the window must auto-release it.
+                w.Close();
+                DrainDispatcher();
+
+                Assert.AreEqual(baselineWatched, GetWatchedWindowCount(),
+                    "Closing a watched window must auto-UnWatch it (release its HwndSource hook and registry entry) even without an explicit UnWatch call.");
+            });
         }
     }
 }

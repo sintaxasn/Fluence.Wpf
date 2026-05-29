@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
 using System.Runtime.InteropServices;
 
 namespace Fluence.Wpf.Native
@@ -128,5 +129,16 @@ namespace Fluence.Wpf.Native
     {
         public uint Flags;
         public uint Mask;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    internal struct APPBARDATA
+    {
+        public int cbSize;
+        public IntPtr hWnd;
+        public uint uCallbackMessage;
+        public uint uEdge;
+        public RECT rc;
+        public IntPtr lParam;
     }
 }

@@ -381,17 +381,17 @@ namespace Fluence.Wpf.Tests
         #region CreateWindowChrome - canonical FluenceWindow chrome contract
 
         [TestMethod]
-        public void CreateWindowChrome_CaptionHeight_IsPassedThrough()
+        public void CreateWindowChrome_CaptionHeight_IsZero()
         {
-            WindowChrome chrome = WindowPolicy.CreateWindowChrome(48d);
-            Assert.AreEqual(48d, chrome.CaptionHeight,
-                "CaptionHeight must reflect the caller-supplied value (FluenceWindow sets 0 to route all hits through WM_NCHITTEST).");
+            WindowChrome chrome = WindowPolicy.CreateWindowChrome();
+            Assert.AreEqual(0d, chrome.CaptionHeight,
+                "CaptionHeight is hard-coded to 0 so all title-bar hits route through WM_NCHITTEST.");
         }
 
         [TestMethod]
         public void CreateWindowChrome_GlassFrameThickness_IsMinusOneForShadow()
         {
-            WindowChrome chrome = WindowPolicy.CreateWindowChrome(0d);
+            WindowChrome chrome = WindowPolicy.CreateWindowChrome();
             Assert.AreEqual(new Thickness(-1), chrome.GlassFrameThickness,
                 "GlassFrameThickness = -1 opts into the full DWM glass frame, which is what gives Fluence windows their drop shadow.");
         }
@@ -399,7 +399,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void CreateWindowChrome_ResizeBorderThickness_Is4()
         {
-            WindowChrome chrome = WindowPolicy.CreateWindowChrome(0d);
+            WindowChrome chrome = WindowPolicy.CreateWindowChrome();
             Assert.AreEqual(new Thickness(4), chrome.ResizeBorderThickness,
                 "4dp resize border matches WinUI 3 / .NET 10 WPF FluentWindow - preserves the invisible hit-margin that lets users grab the edge.");
         }
@@ -407,7 +407,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void CreateWindowChrome_DisablesAeroCaptionButtons()
         {
-            WindowChrome chrome = WindowPolicy.CreateWindowChrome(0d);
+            WindowChrome chrome = WindowPolicy.CreateWindowChrome();
             Assert.IsFalse(chrome.UseAeroCaptionButtons,
                 "Fluence renders its own caption buttons; the native WPF Aero caption must stay off.");
         }
@@ -415,7 +415,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void CreateWindowChrome_NonClientFrameEdges_IsNone()
         {
-            WindowChrome chrome = WindowPolicy.CreateWindowChrome(0d);
+            WindowChrome chrome = WindowPolicy.CreateWindowChrome();
             Assert.AreEqual(NonClientFrameEdges.None, chrome.NonClientFrameEdges,
                 "NonClientFrameEdges.None is required so the client area extends into the caption strip and the custom caption paints.");
         }
@@ -423,7 +423,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void CreateWindowChrome_CornerRadius_IsZero()
         {
-            WindowChrome chrome = WindowPolicy.CreateWindowChrome(0d);
+            WindowChrome chrome = WindowPolicy.CreateWindowChrome();
             Assert.AreEqual(new CornerRadius(0), chrome.CornerRadius,
                 "WindowChrome.CornerRadius must be 0 - rounded corners are driven by DWMWA_WINDOW_CORNER_PREFERENCE, not the WPF chrome (WPF-side rounding would clip DWM's Mica).");
         }

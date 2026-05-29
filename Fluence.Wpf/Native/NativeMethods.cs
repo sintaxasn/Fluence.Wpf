@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Helpers;
 using System;
 using System.Runtime.InteropServices;
 
@@ -38,6 +39,7 @@ namespace Fluence.Wpf.Native
         private const string User32 = "user32.dll";
         private const string UxTheme = "uxtheme.dll";
         private const string Ntdll = "ntdll.dll";
+        private const string Shell32 = "shell32.dll";
 
         private const int GWL_STYLE = -16;
         private const int WS_SYSMENU = 0x80000;
@@ -151,6 +153,13 @@ namespace Fluence.Wpf.Native
 
         #endregion
 
+        #region Shell32 APIs
+
+        [DllImport(Shell32, SetLastError = true)]
+        public static extern IntPtr SHAppBarMessage(uint dwMessage, ref APPBARDATA pData);
+
+        #endregion
+
         #region UxTheme APIs
 
         [DllImport(UxTheme, EntryPoint = "#94", CharSet = CharSet.Unicode)]
@@ -193,15 +202,57 @@ namespace Fluence.Wpf.Native
             return SetWindowAttribute(hwnd, NativeConstants.DWMWA_WINDOW_CORNER_PREFERENCE, cornerPreference);
         }
 
+        /// <summary>
+        /// Selects the DWM immersive dark-mode window attribute id for a given OS build. The
+        /// attribute moved from <see cref="NativeConstants.DWMWA_USE_IMMERSIVE_DARK_MODE_OLD"/>
+        /// (19) to <see cref="NativeConstants.DWMWA_USE_IMMERSIVE_DARK_MODE"/> (20) starting at
+        /// Windows 10 build 18362 (version 1903). Builds 17763..18361 (1809 era) must use 19, or
+        /// the dark caption silently fails to apply. This selector is pure so it can be unit
+        /// tested without a window handle.
+        /// </summary>
+        /// <param name="osBuild">The OS build number (for example <c>18362</c>).</param>
+        /// <returns>The DWM attribute id to pass to <see cref="DwmSetWindowAttribute"/>.</returns>
+        public static int GetImmersiveDarkModeAttribute(int osBuild)
+        {
+            return osBuild >= 18362 ? NativeConstants.DWMWA_USE_IMMERSIVE_DARK_MODE : NativeConstants.DWMWA_USE_IMMERSIVE_DARK_MODE_OLD;
+        }
+
         public static bool SetImmersiveDarkMode(IntPtr hwnd, bool enabled)
         {
             int value = enabled ? NativeConstants.DWM_TRUE : NativeConstants.DWM_FALSE;
-            return SetWindowAttribute(hwnd, NativeConstants.DWMWA_USE_IMMERSIVE_DARK_MODE, value);
+            return SetWindowAttribute(hwnd, GetImmersiveDarkModeAttribute(OsVersionHelper.OsBuild), value);
         }
 
         public static bool SetSystemBackdropType(IntPtr hwnd, int backdropType)
         {
             return SetWindowAttribute(hwnd, NativeConstants.DWMWA_SYSTEMBACKDROP_TYPE, backdropType);
+        }
+
+        /// <summary>
+        /// Cloaks or uncloaks a window via <see cref="NativeConstants.DWMWA_CLOAK"/>. While cloaked,
+        /// DWM keeps the window fully composed off-screen and does not present it, so a window can be
+        /// shown, have its backdrop applied, and render its first frame without the empty client area
+        /// flashing black. Callers MUST guarantee a matching uncloak; a window left cloaked is invisible.
+        /// </summary>
+        public static bool SetWindowCloak(IntPtr hwnd, bool cloak)
+        {
+            int value = cloak ? NativeConstants.DWM_TRUE : NativeConstants.DWM_FALSE;
+            return SetWindowAttribute(hwnd, NativeConstants.DWMWA_CLOAK, value);
+        }
+
+        /// <summary>
+        /// Reads the read-only <see cref="NativeConstants.DWMWA_CLOAKED"/> attribute, returning the
+        /// reason flags for why the window is cloaked. Zero means the window is not cloaked. Returns
+        /// zero on any failure (for example when DWM composition is disabled).
+        /// </summary>
+        public static int GetWindowCloakedState(IntPtr hwnd)
+        {
+            if (hwnd == IntPtr.Zero)
+            {
+                return 0;
+            }
+            int result = DwmGetWindowAttribute(hwnd, NativeConstants.DWMWA_CLOAKED, out int cloaked, sizeof(int));
+            return result == 0 ? cloaked : 0;
         }
 
         public static bool SetMicaEffect(IntPtr hwnd, bool enabled)
@@ -307,6 +358,75 @@ namespace Fluence.Wpf.Native
                 versionInfo.MinorVersion,
                 versionInfo.BuildNumber,
                 versionInfo.Revision);
+        }
+
+        /// <summary>
+        /// Returns <see langword="true"/> when the Windows taskbar is currently in auto-hide
+        /// mode. Queries the shell with <see cref="NativeConstants.ABM_GETSTATE"/> and tests the
+        /// <see cref="NativeConstants.ABS_AUTOHIDE"/> bit of the returned state.
+        /// </summary>
+        public static bool IsTaskbarAutoHide()
+        {
+            APPBARDATA data = new() { cbSize = Marshal.SizeOf<APPBARDATA>() };
+            IntPtr state = SHAppBarMessage(NativeConstants.ABM_GETSTATE, ref data);
+            return (state.ToInt64() & NativeConstants.ABS_AUTOHIDE) != 0;
+        }
+
+        /// <summary>
+        /// Returns the screen edge (one of the <c>ABE_*</c> values) on which the auto-hide
+        /// taskbar is docked, or <see langword="null"/> when the taskbar is not auto-hide or the
+        /// query is unavailable.
+        /// </summary>
+        /// <param name="monitor">
+        /// The monitor a caller intends to match the taskbar against. <see cref="SHAppBarMessage"/>
+        /// with <see cref="NativeConstants.ABM_GETTASKBARPOS"/> reports only the primary taskbar,
+        /// so this implementation returns the primary taskbar edge and ignores the monitor on
+        /// multi-monitor setups. The parameter is retained so a future caller can match per
+        /// monitor without an API break.
+        /// </param>
+        public static uint? GetAutoHideTaskbarEdge(IntPtr monitor)
+        {
+            _ = monitor;
+            if (!IsTaskbarAutoHide())
+            {
+                return null;
+            }
+            APPBARDATA data = new() { cbSize = Marshal.SizeOf<APPBARDATA>() };
+            IntPtr result = SHAppBarMessage(NativeConstants.ABM_GETTASKBARPOS, ref data);
+            return result == IntPtr.Zero ? null : data.uEdge;
+        }
+
+        /// <summary>
+        /// Shifts a maximized window rect inward by 2 px on the auto-hide taskbar edge so the
+        /// maximized window does not fully cover the taskbar, which would block its hover-reveal.
+        /// Pure and handle-free for unit testing. Mirrors the per-edge direction and sign used by
+        /// the iNKORE MaximizedWindowFixer reference: BOTTOM shrinks height, TOP moves down and
+        /// shrinks height, RIGHT shrinks width, LEFT moves right and shrinks width. Unrecognized
+        /// edge values leave the rect unchanged.
+        /// </summary>
+        /// <param name="mmi">The min/max info whose maximized rect is adjusted in place.</param>
+        /// <param name="edge">The auto-hide taskbar edge (one of the <c>ABE_*</c> values).</param>
+        public static void ApplyAutoHideTaskbarShift(ref MINMAXINFO mmi, uint edge)
+        {
+            switch (edge)
+            {
+                case NativeConstants.ABE_LEFT:
+                    mmi.ptMaxPosition.X += 2;
+                    mmi.ptMaxSize.X -= 2;
+                    break;
+                case NativeConstants.ABE_TOP:
+                    mmi.ptMaxPosition.Y += 2;
+                    mmi.ptMaxSize.Y -= 2;
+                    break;
+                case NativeConstants.ABE_RIGHT:
+                    mmi.ptMaxSize.X -= 2;
+                    break;
+                case NativeConstants.ABE_BOTTOM:
+                    mmi.ptMaxSize.Y -= 2;
+                    break;
+                default:
+                    break;
+            }
         }
 
         #endregion
