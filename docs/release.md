@@ -1,4 +1,4 @@
-# Release Checklist
+﻿# Release Checklist
 
 Use this checklist before publishing a package or tagging a release.
 
@@ -35,15 +35,8 @@ Inspect the package for the assembly, XML documentation file, license, README, a
 
 ## Docs Site
 
-The hosted docs site is built and deployed by [`.github/workflows/docs.yml`](../.github/workflows/docs.yml):
+There is currently **no** hosted documentation site or docs build/deploy workflow; the documentation lives entirely in the Markdown files under [`docs/`](.) and at the repository root. A published site is planned but not yet set up.
 
-- Conceptual docs are rendered by Hugo + the Hextra theme. Source markdown stays under [`docs/`](.) and is mounted into the site at build time.
-- API reference is rendered by DocFX from `Fluence.Wpf.xml`.
-- Hugo and DocFX outputs are merged into a single static artifact and published to GitHub Pages.
+Release rule:
 
-Release rules:
-
-- A failing docs build does **not** block the existing build/test pipeline ([`.github/workflows/build.yml`](../.github/workflows/build.yml)). Treat the docs workflow as a follow-up signal, not a release gate, until intentionally promoted.
-- When visual changes affect the gallery banner, regenerate `docs/screenshots/` and run `pwsh ./docs-site/scripts/build-docs.ps1` locally before tagging to make sure the published site has fresh assets.
-
-See [`docs-site/README.md`](../docs-site/README.md) for local preview and customization guidance.
+- When visual changes affect the gallery banner, regenerate `docs/screenshots/` (via the `GalleryScreenshotHarness`) before tagging so the in-repo screenshots stay current.

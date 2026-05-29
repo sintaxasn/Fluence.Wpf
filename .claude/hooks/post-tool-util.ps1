@@ -166,6 +166,38 @@ for ($i = 0; $i -lt $fullPaths.Count; $i++) {
             break
         }
     }
+
+    $text = [System.Text.Encoding]::UTF8.GetString($bytes)
+    $extension = [System.IO.Path]::GetExtension($path)
+    $isCSharp = [string]::Equals($extension, ".cs", [System.StringComparison]::OrdinalIgnoreCase)
+    $isXaml = [string]::Equals($extension, ".xaml", [System.StringComparison]::OrdinalIgnoreCase)
+    $isMarkdown = [string]::Equals($extension, ".md", [System.StringComparison]::OrdinalIgnoreCase)
+
+    if ($isCSharp) {
+        if ($text -match 'IsNullOrEmpty\s*\(') {
+            $violations.Add("$relativePath uses string.IsNullOrEmpty (banned, RS0030). Use string.IsNullOrWhiteSpace.")
+        }
+
+        if ($text -match 'TextOptions\.') {
+            $violations.Add("$relativePath references TextOptions.*; text-rendering options are banned (central inheritance is the design).")
+        }
+    }
+
+    if ($isXaml) {
+        if ($text -match 'TextOptions\.') {
+            $violations.Add("$relativePath references TextOptions.*; text-rendering options are banned (SnapsToDevicePixels belongs only on FluenceWindow.xaml).")
+        }
+
+        if ($relativePath -match 'Themes/Controls/' -and $text -match '"#[0-9A-Fa-f]{6}([0-9A-Fa-f]{2})?"') {
+            $violations.Add("$relativePath inlines a hard-coded hex color in a control template. Bind a canonical WinUI brush key via DynamicResource instead.")
+        }
+    }
+
+    if ($isCSharp -or $isMarkdown) {
+        if ($text.Contains([char]0x2014) -or $text.Contains([char]0x2013)) {
+            $violations.Add("$relativePath contains an em dash or en dash. Use hyphens in comments and documentation.")
+        }
+    }
 }
 
 $diffOutput = & git -C $projectRoot diff --check -- $relativePaths 2>&1

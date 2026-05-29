@@ -2,17 +2,17 @@
 
 Windows 11 Fluent Design controls and theming for WPF applications targeting **.NET Framework 4.7.2** and **Windows 10** (1809+), with enhanced visuals on **Windows 11**.
 
-**Current build:** `0.5.0 preview` (2026-05-21).
+**Current build:** `0.6.0 preview` (2026-05-24).
 
-**Docs:** [https://sintaxasn.github.io/Fluence.Wpf/](https://sintaxasn.github.io/Fluence.Wpf/)
+**Docs:** see the Markdown guides under [`docs/`](docs/) (start with [Getting started](docs/getting-started.md)).
 
 ## Features
 
 - **Theming with auto Light / Dark mode** - Auto (follow Windows theme), Light, Dark or High Contrast theming.
 - **Accent colors** - System accent palette, app-defined accent, and custom accent ramps mapped to WinUI-style resource keys.
 - **40+ Fluent-styled Controls** - 40+ Fluent-styled controls with accessibility, theming, and features aligned with their WinUI 3 counterparts.
-- **PowerShell / .NET Framework 4.7.2 support** - Build modern-styled UIs for scripts and legacy apps without having to migrate to .NET 5+ or the Windows App SDK.
-- **Incredibly small footprint** at just 600kb!
+- **PowerShell / .NET Framework 4.7.2 support** - Build modern-looking UIs for scripts and legacy apps without migrating to .NET 5+ or the Windows App SDK.
+- **Small footprint** - just 600 kb.
 
 ## Controls
 - **FluenceWindow** - **Mica**, **Acrylic**, and **Tabbed (Mica Alt)** style window with rounded corners; minimize / maximize / close button availability; extensible title bar for a WinUI-style search box or custom content.
@@ -23,8 +23,8 @@ Windows 11 Fluent Design controls and theming for WPF applications targeting **.
 
 ## Demos
 - **Gallery** - Simple WPF code-behind visual-verification app with theme swatches, accent picker, DWM backdrops, grouped control pages (Data Binding, Accessibility, Buttons, Selection, Inputs, Forms, Data, Trees, Navigation, Tabs, Menus, Status, Icons, Settings), inline examples, and embedded source for every example.
-- **MVVM Pattern** - Minimal Task Manager (`Fluence.Wpf.Demo.Mvvm`) built with CommunityToolkit.Mvvm, showcasing `[ObservableProperty]`, `[RelayCommand]`, filter bindings, and progress reporting with zero code-behind.
-- **PowerShell** - Build modern interfaces for your scripts using Windows PowerShell 5.1 without having to install PowerShell 7, .NET 9 / 10 or the Windows App SDK!
+- **MVVM Pattern** - Minimal Task Manager (`Fluence.Wpf.Demo.Mvvm`) built with CommunityToolkit.Mvvm, using `[ObservableProperty]`, `[RelayCommand]`, filter bindings, and progress reporting with no code-behind.
+- **PowerShell** - Build modern interfaces for scripts using Windows PowerShell 5.1 without installing PowerShell 7, .NET 9 / 10, or the Windows App SDK.
 
 ## Quick Start
 
@@ -100,7 +100,7 @@ dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -c Release
 
 Use `-f net472` or `-f net10.0-windows10.0.26100.0` to force a specific gallery target framework.
 
-**MVVM Task Manager demo** - minimal `FluenceWindow` + CommunityToolkit.Mvvm example with zero code-behind:
+**MVVM Task Manager demo** - minimal `FluenceWindow` + CommunityToolkit.Mvvm example with no code-behind:
 
 ```powershell
 dotnet run --project Fluence.Wpf.Demo.Mvvm/Fluence.Wpf.Demo.Mvvm.csproj
@@ -114,7 +114,7 @@ Refer to the [README.md](./Fluence.Wpf.Demo.PowerShell/README.md) for more detai
 
 ## Documentation
 
-The hosted docs site is at [sintaxasn.github.io/Fluence.Wpf](https://sintaxasn.github.io/Fluence.Wpf/). Markdown sources live in [`docs/`](docs/) and are mounted into the site at build time.
+Documentation lives in the Markdown guides under [`docs/`](docs/). A hosted documentation site is planned but not yet set up.
 
 - [Getting started](docs/getting-started.md) - reference, startup calls, local pack
 - [Theming](docs/theming.md) - merge order, accent, backdrop, watcher

@@ -418,12 +418,11 @@ Thumbs.db
 
 # Unwanted AI generated files
 .pi/**
-.pi/
-
+.omc/**
 .claude/settings.local.json
+.codex/**
 
 # Codex local configuration
-.codex/
 
 # Environment variables
 .env

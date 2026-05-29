@@ -51,9 +51,6 @@ The test project runs on .NET Framework 4.7.2 and .NET 10 for Windows, and both 
 
 ## Documentation site
 
-The hosted docs site at [sintaxasn.github.io/Fluence.Wpf](https://sintaxasn.github.io/Fluence.Wpf/) is built from this repository by [`.github/workflows/docs.yml`](../.github/workflows/docs.yml).
+There is currently **no** hosted documentation site; documentation lives entirely in the Markdown files under `docs/` and at the repository root. A published site is planned but not yet set up.
 
-- Source markdown still lives under `docs/`. The site mounts those files at build time via Hugo Modules, so editing a file under `docs/` is the only thing needed to update the corresponding page on the site.
-- The wrapper site project lives in [`docs-site/`](../docs-site). It carries Hugo + Hextra theme config, DocFX configuration, custom branding CSS, and the build/merge pipeline.
-- Preview locally with `pwsh ./docs-site/scripts/build-docs.ps1` (see [`docs-site/README.md`](../docs-site/README.md) for prerequisites). For conceptual-only iteration use `hugo server --source ./docs-site`.
-- Cross-doc links: prefer `[text](other-doc.md)`. The site's link render hook strips `.md`, rewrites repo-root references such as `../CHANGELOG.md` to the corresponding site URL, and points unpublished maintainer files at GitHub.
+- Cross-doc links: prefer `[text](other-doc.md)` relative links so they resolve both on GitHub and in any future generated site.

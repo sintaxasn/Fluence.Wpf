@@ -5,7 +5,7 @@ description: Catalog of Fluence.Wpf controls aligned with the demo gallery, with
 weight: 30
 ---
 
-The **Fluence.Wpf.Demo** gallery is the easiest way to browse the control set: `FluenceWindow` chrome with a search box in the title bar, a left `NavigationView` (compact / expanded), and grouped `UserControl` pages under `Fluence.Wpf.Demo/Pages/`:
+The **Fluence.Wpf.Demo** gallery shows the full control set: `FluenceWindow` chrome with a search box in the title bar, a left `NavigationView` (compact / expanded), and grouped `UserControl` pages under `Fluence.Wpf.Demo/Pages/`:
 
 - Home (clickable hero cards)
 - Icons (FontIcon and virtualized Segoe Fluent Icons catalog)
@@ -25,7 +25,7 @@ The **Fluence.Wpf.Demo** gallery is the easiest way to browse the control set: `
 - Status (InfoBar, InfoBadge, ProgressBar, ProgressRing)
 - Settings (theme, navigation style, colors, backdrop, caption buttons)
 
-Most non-Home gallery pages render discrete examples through `DemoSampleControl`. Source tabs are backed by page-local `XamlSource` and optional `CSharpSource` strings so examples can be debugged directly with their page code-behind. Fixed XAML samples keep named live content in page-owned hidden slots and transfer it with the demo-only `DemoSamplePageWiring` helper. Direct reference pages such as Typography mirror WinUI Gallery catalog surfaces and do not add a trailing source expander.
+Most non-Home gallery pages render discrete examples through `DemoSampleControl`. Source tabs are backed by page-local `XamlSource` and optional `CSharpSource` strings, so examples can be debugged alongside their page code-behind. Fixed XAML samples keep named live content in page-owned hidden slots and transfer it with the `DemoSamplePageWiring` helper. Reference pages such as Typography mirror WinUI Gallery catalog surfaces and do not add a trailing source expander.
 
 **Fluence.Wpf.Demo.Mvvm** is a minimal Task Manager demonstrating `FluenceWindow` + Fluence controls with zero code-behind (CommunityToolkit.Mvvm). See [AGENTS.md](../AGENTS.md) for architecture notes.
 
@@ -67,7 +67,7 @@ Tab strip and scroll bar styling are provided via merged themes (see `Themes/Gen
 
 ## Control Screenshots and API
 
-Each area below pairs Light and Dark gallery screenshots with the public API types used in that section. Captures live under `docs/screenshots/gallery/`, and API links point to `/api/` on the documentation site.
+Each area below pairs Light and Dark gallery screenshots with the public API types used in that section. Screenshots live under `docs/screenshots/gallery/`; API links point to `/api/` on the documentation site.
 
 ### Window and Shell
 
@@ -118,7 +118,7 @@ Key API:
   <a href="../../api/Fluence.Wpf.ControlAppearance.html">ControlAppearance</a>
 </div>
 
-The action controls expose standard WPF command, content, and click patterns with Fluent appearance roles. Use `Appearance="Accent"` for the page primary action and standard or subtle styling for lower-emphasis commands.
+The action controls expose standard WPF command, content, and click patterns. Use `Appearance="Accent"` for the primary action on a page; use standard or subtle styling for lower-emphasis commands.
 
 ### Selection
 
@@ -142,7 +142,7 @@ Key API:
   <a href="../../api/Fluence.Wpf.Controls.RatingControl.html">RatingControl</a>
 </div>
 
-Selection controls follow WPF checked-state APIs (`IsChecked`, groups, and selection) with Fluent focus, pressed, disabled, and checked-state visuals. `RatingControl` adds value-based selection for lightweight scoring UI.
+Selection controls follow WPF checked-state APIs (`IsChecked`, groups, and selection). `RatingControl` adds value-based selection for simple scoring UI.
 
 ### Inputs
 
@@ -169,7 +169,7 @@ Key API:
   <a href="../../api/Fluence.Wpf.NumberBoxValueChangedEventArgs.html">NumberBoxValueChangedEventArgs</a>
 </div>
 
-Input controls keep standard WPF editing, selection, command, and binding behavior. `NumberBox` adds numeric parsing, range, increment, and spin-button placement support; text inputs expose Fluent placeholder, validation, and focus visuals through the shared templates.
+Input controls keep standard WPF editing, selection, command, and binding behavior. `NumberBox` adds numeric parsing, range, increment, and spin-button placement. Text inputs expose placeholder, validation, and focus visuals through the shared templates.
 
 ### Forms
 
@@ -194,7 +194,7 @@ Key API:
   <a href="../../api/Fluence.Wpf.ValidationState.html">ValidationState</a>
 </div>
 
-The form page composes the input controls with card surfaces, status text, validation states, and primary actions. Use it as the reference for sign-in, checkout, and settings forms.
+The form page composes input controls with card surfaces, status text, validation states, and primary actions. Use it as the starting point for sign-in, checkout, and settings forms.
 
 ### Data and Collections
 
@@ -221,7 +221,7 @@ Key API:
   <a href="../../api/Fluence.Wpf.ListViewState.html">ListViewState</a>
 </div>
 
-Collection controls keep WPF item-source and template behavior while applying Fluent selection, hover, empty-state, and card surface treatment. `Card` adds header, footer, icon, clickable, and pressed-state APIs.
+Collection controls keep WPF item-source and template behavior. `Card` adds header, footer, icon, clickable, and pressed-state APIs.
 
 ### Data Binding
 
@@ -246,7 +246,7 @@ Key API:
   <a href="../../api/Fluence.Wpf.ListViewState.html">ListViewState</a>
 </div>
 
-The data-binding page documents normal WPF `ItemsSource`, `SelectedItem`, `SelectedItems`, item-template, and command-binding patterns with Fluence controls. The control API stays WPF-native so view models do not need Fluence-specific base classes.
+The data-binding page shows standard WPF `ItemsSource`, `SelectedItem`, `SelectedItems`, item-template, and command-binding patterns with Fluence controls. The control API is WPF-native; view models do not need any Fluence-specific base classes.
 
 ### Icons
 
@@ -267,7 +267,7 @@ Key API:
   <a href="../../api/Fluence.Wpf.Controls.FontIcon.html">FontIcon</a>
 </div>
 
-`FontIcon` wraps Segoe Fluent Symbols glyph rendering with icon-size, foreground, and alignment behavior that works inside buttons, navigation items, tab headers, cards, and standalone icon lists.
+`FontIcon` wraps Segoe Fluent Symbols glyph rendering with icon-size, foreground, and alignment properties. It works inside buttons, navigation items, tab headers, cards, and standalone icon lists.
 
 ### Typography
 
@@ -290,7 +290,7 @@ Key API:
   <a href="../../api/Fluence.Wpf.FluentTypography.html">FluentTypography</a>
 </div>
 
-`TextBlockExtensions.Typography` maps text to the shared Fluent type ramp so app text and control templates stay on the same typography tokens.
+`TextBlockExtensions.Typography` maps text to the Fluent type ramp, keeping app text and control templates on the same typography tokens.
 
 ### Navigation
 
@@ -369,7 +369,7 @@ Key API:
   <a href="../../api/Fluence.Wpf.BorderVariant.html">BorderVariant</a>
 </div>
 
-Layout primitives preserve WPF layout behavior while applying Fluent radii, strokes, dividers, and scroll chrome. `SmoothScrollViewer` is the preferred scroll host in the demo gallery.
+Layout primitives preserve WPF layout behavior. `SmoothScrollViewer` is the scroll host used throughout the demo gallery.
 
 ### Menus and Popups
 
@@ -393,7 +393,7 @@ Key API:
   <a href="../../api/Fluence.Wpf.Controls.ToolTip.html">ToolTip</a>
 </div>
 
-Menu and popup controls map WPF menu semantics to WinUI-style flyout visuals, including command text, separators, nested menu items, context menus, and tooltips.
+Menu and popup controls use WinUI-style flyout visuals: command text, separators, nested menu items, context menus, and tooltips all follow the same visual contract.
 
 ### Trees
 
@@ -445,7 +445,7 @@ Key API:
   <a href="../../api/Fluence.Wpf.ProgressRingState.html">ProgressRingState</a>
 </div>
 
-Status controls expose severity, closable state, determinate and indeterminate progress, paused and error states, and badge styling for count or attention indicators.
+Status controls expose severity, closable state, determinate and indeterminate progress, paused and error states, and badge styling for count or attention badges.
 
 ### Accessibility
 
@@ -469,15 +469,15 @@ Key API:
   <a href="../../api/Fluence.Wpf.Automation.InfoBarAutomationPeer.html">InfoBarAutomationPeer</a>
 </div>
 
-Accessibility coverage includes focus visuals, high contrast resources, automation peers, keyboard navigation, and right-to-left layout checks.
+Accessibility coverage includes focus visuals, high-contrast resources, automation peers, keyboard navigation, and right-to-left layout.
 
 ## FluenceWindow
 
-`FluenceWindow` provides Fluent title-bar styling, caption buttons, backdrop support, and a title-bar content slot. `MinWidth` is caller-controlled and remains unset by default; the default title bar height is 68 px. When `ExtendsContentIntoTitleBar="True"`, app content can render behind the title bar; NavigationView left panes reserve title-bar height before their first item when no explicit header is provided.
+`FluenceWindow` provides title-bar styling, caption buttons, backdrop support, and a title-bar content slot. `MinWidth` is caller-controlled and unset by default; the default title bar height is 68 px. When `ExtendsContentIntoTitleBar="True"`, app content renders behind the title bar. `NavigationView` left panes reserve title-bar height before their first item when no explicit header is provided.
 
-`CaptionButtonChrome` and `WindowPolicy` are internal implementation details behind `FluenceWindow` caption button and DWM policy decisions. They are covered by tests, but they are not normal consumer controls.
+`CaptionButtonChrome` and `WindowPolicy` are internal implementation details behind `FluenceWindow` caption-button and DWM policy decisions. They are covered by tests but are not consumer controls.
 
-`TitleBar` is the reusable shell title-bar control used by the gallery. It provides back and pane-toggle buttons (`BackRequested`, `PaneToggleRequested`, and matching command properties), icon/title/subtitle presentation, and left/right/content slots. Interactive template buttons opt into `WindowChrome.IsHitTestVisibleInChrome`; app-specific content such as search boxes should do the same.
+`TitleBar` is the shell title-bar control used by the gallery. It provides back and pane-toggle buttons (`BackRequested`, `PaneToggleRequested`, and matching command properties), icon/title/subtitle presentation, and left/right/content slots. Interactive template buttons set `WindowChrome.IsHitTestVisibleInChrome`; app-specific content such as search boxes should do the same.
 
 ## NavigationView
 
@@ -531,11 +531,11 @@ When `IsClickable` is true:
 
 Supported values: `Caption`, `Body`, `BodyStrong`, `BodyLarge`, `Subtitle`, `Title`, `TitleLarge`, `Display` (see `Fluence.Wpf/FluentTypography.cs`).
 
-The attached property applies the corresponding named style from `Themes/Typography/Typography.xaml` (`BodyTextBlockStyle`, `TitleTextBlockStyle`, and so on). Keep type-ramp metrics in that dictionary so code, templates, and consumers share one source of truth.
+The attached property applies the corresponding named style from `Themes/Typography/Typography.xaml` (`BodyTextBlockStyle`, `TitleTextBlockStyle`, and so on). Keep type-ramp metrics in that dictionary so code, templates, and app XAML all pull from the same place.
 
 ## Tabs
 
-`TabControl` / `TabItem` receive WinUI 3 styling automatically via `Themes/Generic.xaml` - animated selection indicator, typography, and strip padding match the rest of the library.
+`TabControl` / `TabItem` pick up WinUI 3 styling automatically via `Themes/Generic.xaml`. The animated selection indicator, typography, and strip padding match the rest of the library.
 
 `TabView` / `TabViewItem` add multi-document features on top of the standard `TabControl` contract:
 
@@ -569,7 +569,7 @@ Key members:
 | `TabViewItem.Icon`               | `object`                                           | Any visual (typically `FontIcon`); rendered to the left of `Header`.   |
 | `TabViewItem.CloseRequested`     | Routed event (`RoutingStrategy.Bubble`)            | Raised by the per-tab close button (`PART_CloseButton`).               |
 
-Consumers remove the tab from the source collection themselves - the control does not auto-remove items. See `Fluence.Wpf.Demo/Pages/GalleryTabsPage.xaml(.cs)` for a reference implementation.
+Consumers remove the tab from the source collection themselves; the control does not auto-remove items. See `Fluence.Wpf.Demo/Pages/GalleryTabsPage.xaml(.cs)` for an example.
 
 ## Feedback
 
@@ -688,20 +688,20 @@ Reference captures live under `docs/screenshots/`:
   </figure>
 </div>
 
-The <a href="/Fluence.Wpf/screenshots/">full screenshot set</a> is published on the Hugo site. If you need to refresh captures locally, run the screenshot harness directly:
+The full screenshot set lives under [`docs/screenshots/`](screenshots/). To refresh captures locally, run the screenshot harness directly:
 
 ```powershell
 dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug --filter "FullyQualifiedName~GalleryScreenshotHarness"
 ```
 
-The harness uses `RenderTargetBitmap` and flattens transparent WPF layers over `SolidBackgroundFillColorBaseBrush`. DWM Mica / Acrylic are still not captured because they are composed outside WPF, so the screenshots document the WPF control and shell surfaces. `FluenceWindow` caption styling is verified by `FluenceWindowTitleBarTests`.
+The harness uses `RenderTargetBitmap` and flattens transparent WPF layers over `SolidBackgroundFillColorBaseBrush`. DWM Mica / Acrylic are not captured because they are composed outside WPF, so the screenshots show WPF control and shell surfaces only. `FluenceWindow` caption styling is verified by `FluenceWindowTitleBarTests`.
 
-Marketing images live under `docs/images/` (for example `docs/images/Banner.png`). Capture control screenshots at 100 % and 150 % scaling and document the reference OS build, theme, and accent when adding them.
+Marketing images live under `docs/images/` (for example `docs/images/Banner.png`). Capture control screenshots at 100% and 150% scaling and record the reference OS build, theme, and accent when adding them.
 
 ## Tests
 
-MSTest exercises templates, theme stability, and control behavior on .NET Framework 4.7.2 and .NET 10 for Windows. Adding a new public control should include at least:
+MSTest exercises templates, theme stability, and control behavior on .NET Framework 4.7.2 and .NET 10 for Windows. A new public control needs at minimum:
 
-- A default-style / template smoke test (the control applies the expected template).
+- A default-style / template smoke test (verifying the control applies the expected template).
 - A theme-cycle pass if the control uses `DynamicResource` heavily (`ThemeTestHelpers.ApplyStandardThemeCycle`).
-- Interaction or state assertions where the control exposes behavior (see `ControlTests.NavigationView.cs` and `ControlTests.FluentStroke.cs` for representative patterns).
+- Interaction or state assertions where the control exposes behavior (see `ControlTests.NavigationView.cs` and `ControlTests.FluentStroke.cs` for examples).

@@ -21,7 +21,7 @@ weight: 10
     dotnet pack Fluence.Wpf/Fluence.Wpf.csproj -c Release -o ./artifacts
     ```
 
-The package id is **`Fluence.Wpf`**. Public feed publishing is a release decision; local packages are useful for consumer smoke tests before that point.
+The package id is **`Fluence.Wpf`**. Public feed publishing is a release decision; local packages are useful for smoke-testing before that happens.
 
 ## Initialize theme and accent
 
@@ -35,11 +35,11 @@ Fluence.Wpf.ApplicationThemeManager.Apply(
 Fluence.Wpf.ApplicationAccentColorManager.ApplySystemAccent();
 ```
 
-`Apply` (first call) seeds the resource stack in a fixed order. Later calls swap the theme color dictionary at slot `[0]`, refresh promoted color keys, and reload/promote the brush dictionary on non-HighContrast theme changes - see [theming.md](theming.md).
+`Apply` seeds the resource stack in a fixed slot order on the first call. Later calls swap the theme color dictionary at slot `[0]`, refresh promoted color keys, and reload the brush dictionary on non-HighContrast theme changes - see [theming.md](theming.md).
 
 ## Use a Fluent window shell
 
-Derive your main window from `Fluence.Wpf.Controls.FluenceWindow`, **or** call `ApplicationThemeManager.Apply(...)` at startup and use Fluence controls inside a standard WPF `Window`. Do not manually merge `Themes/Generic.xaml` in `App.xaml` when using the theme manager; it already owns the template slot.
+Derive your main window from `Fluence.Wpf.Controls.FluenceWindow`, **or** call `ApplicationThemeManager.Apply(...)` at startup and use Fluence controls inside a standard WPF `Window`. Do not manually merge `Themes/Generic.xaml` in `App.xaml`; the theme manager adds it at slot `[4]` on the first `Apply` call.
 
 ```xml
 <fluence:FluenceWindow
@@ -90,7 +90,7 @@ Fluence.Wpf.ApplicationThemeManager.Changed += (s, e) => { /* refresh theme-spec
 Fluence.Wpf.SystemThemeWatcher.UnWatch(myWindow);
 ```
 
-`ApplicationThemeManager.Changed` fires once per applied theme change - use it to swap theme-specific image assets (see `GalleryHomePage.xaml.cs` in the demo for a banner swap pattern).
+`ApplicationThemeManager.Changed` fires once per applied theme change. Use it to swap theme-specific image assets - `GalleryHomePage.xaml.cs` in the demo shows the banner swap pattern.
 
 ## Verify locally
 

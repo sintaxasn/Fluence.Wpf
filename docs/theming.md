@@ -5,7 +5,7 @@ description: Dictionary slots, canonical token families, accent ramps, backdrops
 weight: 20
 ---
 
-Fluence.Wpf follows WinUI 3 naming and state behavior for theme resources, while staying fully WPF-native. If you already work with WinUI keys, most token names and control roles will look familiar.
+Fluence.Wpf uses WinUI 3 naming and state behavior for theme resources and is implemented as plain WPF. If you already work with WinUI keys, most token names and control roles will look familiar.
 
 ## Merge order (application resources)
 
@@ -18,10 +18,13 @@ Fluence.Wpf follows WinUI 3 naming and state behavior for theme resources, while
 | 2     | Brushes (`Brushes.xaml`)                                           | Loaded once; reloaded and re-promoted on non-HC swaps |
 | 3     | Typography (`Typography.xaml`)                                     | Loaded once                                           |
 | 4     | Control templates (`Generic.xaml`)                                 | Loaded once                                           |
+| 5     | Theme-independent tokens (`Shared.xaml`)                           | Loaded once                                           |
 
-There must be **no accumulation** of extra theme dictionaries on repeated `Apply` calls (`DictionaryStabilityTests` enforces this). On a non-HighContrast theme swap, `ApplicationThemeManager` reloads `Brushes.xaml` and promotes those brush keys again so `DynamicResource` chains on `Freezable` values re-evaluate.
+Slot 5 (`Shared.xaml`) holds Color tokens that are identical across Light, Dark, and HighContrast (such as the Windows close-button reds), so it is loaded once and never swapped.
 
-`Typography.xaml` owns the Fluent type ramp through named `TextBlock` styles such as `BodyTextBlockStyle`, `BodyStrongTextBlockStyle`, and `TitleLargeTextBlockStyle`. `TextBlockExtensions.Typography` remains the compatibility API, but it resolves those styles instead of duplicating font metrics in code.
+Repeated `Apply` calls must not accumulate extra theme dictionaries (`DictionaryStabilityTests` enforces this). On a non-HighContrast theme swap, `ApplicationThemeManager` reloads `Brushes.xaml` and promotes those brush keys again so `DynamicResource` chains on `Freezable` values re-evaluate.
+
+`Typography.xaml` defines the Fluent type ramp as named `TextBlock` styles: `BodyTextBlockStyle`, `BodyStrongTextBlockStyle`, `TitleLargeTextBlockStyle`, and so on. `TextBlockExtensions.Typography` is the compatibility API; it resolves those styles rather than duplicating font metrics in code.
 
 ## Rules for XAML and code
 
@@ -31,7 +34,7 @@ There must be **no accumulation** of extra theme dictionaries on repeated `Apply
 
 ## Canonical token families
 
-Fluence.Wpf defines the full WinUI 3 token ramp; these are the ones most commonly referenced in custom templates:
+Fluence.Wpf defines the full WinUI 3 token ramp. These are the keys most commonly referenced in custom templates:
 
 - **Text**: `TextFillColorPrimary`, `TextFillColorSecondary`, `TextFillColorTertiary`, `TextFillColorDisabled`, `TextOnAccentFillColorPrimary` / `Secondary` / `Disabled`.
 - **Fill**: `ControlFillColorDefault`, `ControlFillColorSecondary`, `ControlFillColorTertiary`, `ControlFillColorInputActive`, `ControlFillColorDisabled`, `AccentFillColorDefault` / `Secondary` / `Tertiary` / `Disabled`, `SubtleFillColorSecondary` / `Tertiary`, `LayerFillColorDefault`, `CardBackgroundFillColorDefault`.
@@ -40,28 +43,28 @@ Fluence.Wpf defines the full WinUI 3 token ramp; these are the ones most commonl
 - **Window controls**: `WindowCloseButtonBackgroundPointerOver`, `WindowCloseButtonBackgroundPressed`, `WindowCloseButtonForegroundPointerOver`.
 - **High contrast aliases**: `SystemColorWindowTextColorBrush`, `SystemColorWindowColorBrush`, `SystemColorButtonFaceColorBrush`, `SystemColorButtonTextColorBrush`, `SystemColorHighlightColorBrush`, `SystemColorHighlightTextColorBrush`, `SystemColorHotlightColorBrush`, `SystemColorGrayTextColorBrush`. These brush-only aliases map directly to WPF `SystemColors` so consumers can preview or bind Windows high contrast roles without hard-coding platform resources.
 
-Each color token has a matching `*Brush` resource in `Brushes.xaml` (for example `ControlStrongStrokeColorDefaultBrush`) that binds back to the color via `DynamicResource` - consume the brush keys from XAML, not the raw color keys.
+Each color token has a matching `*Brush` resource in `Brushes.xaml` - for example `ControlStrongStrokeColorDefaultBrush` - that binds back to the color via `DynamicResource`. Reference the brush keys from XAML, not the raw color keys.
 
 ## Accent
 
 - `ApplicationAccentColorManager.ApplySystemAccent()` - follow Windows accent.
 - `ApplicationAccentColorManager.ApplyCustomAccent(Color)` - custom base; the ramp is derived to WinUI-style keys (`SystemAccentColorPrimary` / `Secondary` / `Tertiary` plus the `AccentFillColor*` role tokens).
-- Accent changes update the accent ramp **in place** (slot `[1]`); `DynamicResource` consumers refresh automatically.
+- Accent changes update the ramp in place at slot `[1]`; `DynamicResource` consumers refresh automatically.
 
 ## Backdrop (`FluenceWindow`)
 
 `BackdropType`: `None`, `Auto`, `Mica`, `Acrylic`, `Tabbed`.
 
-Behavior depends on OS support; unsupported combinations fall back per `FluenceWindow` / `SystemBackdropType` logic. Mica and Tabbed require Windows 11; `Acrylic` falls back on Windows 10 1809+.
+Which backdrops work depends on OS support. Mica and Tabbed require Windows 11; Acrylic is available on Windows 10 1809+. Unsupported combinations fall back silently per `FluenceWindow` / `SystemBackdropType` logic.
 
 ## System theme watcher
 
-`SystemThemeWatcher.Watch(window)` registers debounced Win32 settings hooks and coordinates with `ApplicationThemeManager` so resource updates stay coherent. Prefer **one** watched window per process unless you have a clear reason to register more; `ApplicationThemeManager.Changed` is the single event consumers should listen to.
+`SystemThemeWatcher.Watch(window)` registers debounced Win32 settings hooks and notifies `ApplicationThemeManager` when the OS theme changes. One watched window per process is the normal setup; `ApplicationThemeManager.Changed` is the event to subscribe to.
 
 ## Design-time
 
-`DesignTime.xaml` ships with Fluence and is merged under `d:DataContext` scenarios so the designer can resolve the same keys the runtime does. It assumes Light theme with `#0078D4` accent. Do **not** assume the XAML designer and runtime merge stacks resolve identically - always smoke-test in the demo.
+`DesignTime.xaml` ships with Fluence and is merged under `d:DataContext` scenarios so the designer can resolve resource keys. It assumes Light theme with `#0078D4` accent. The XAML designer and runtime merge stacks are not identical - always check the result in the demo app.
 
 ## Testing
 
-The test suite applies a **full theme cycle** (Light → Dark → High Contrast → Light → Auto) and asserts critical brushes resolve. See `ThemeTestHelpers.ApplyStandardThemeCycle` and `AssertKeyThemeBrushesResolve` in `Fluence.Wpf.Tests`. The `ControlStrongStrokeColor*` contract is covered by `ControlTests.FluentStroke.cs`.
+The test suite runs a full theme cycle (Light → Dark → High Contrast → Light → Auto) and asserts that critical brushes resolve at each step. See `ThemeTestHelpers.ApplyStandardThemeCycle` and `AssertKeyThemeBrushesResolve` in `Fluence.Wpf.Tests`. The `ControlStrongStrokeColor*` contract is covered by `ControlTests.FluentStroke.cs`.

@@ -1,4 +1,4 @@
-# Fluence.Wpf - Developer Handbook
+﻿# Fluence.Wpf - Developer Handbook
 
 Self-contained persistent memory for engineers (human and AI) working in this repository. Read top-to-bottom before touching code. This file is the single source of truth for conventions, architecture, reference authority, testing policy, and workflow; do **not** rely on out-of-repo agent bundles, external skill packs, or downstream-consumer-specific paths.
 
@@ -114,7 +114,7 @@ Prefer `EventArgs.Empty`, `nameof(...)`, explicit `readonly`, and immutable help
 
 ### Merge slots
 
-After `ApplicationThemeManager.Apply(...)` has run, `Application.Current.Resources.MergedDictionaries` always contains exactly **five** dictionaries in this fixed order:
+After `ApplicationThemeManager.Apply(...)` has run, `Application.Current.Resources.MergedDictionaries` always contains exactly **six** dictionaries in this fixed order:
 
 |  Slot | Dictionary                                             | Lifecycle                                                |
 | ----: | ------------------------------------------------------ | -------------------------------------------------------- |
@@ -123,8 +123,11 @@ After `ApplicationThemeManager.Apply(...)` has run, `Application.Current.Resourc
 | `[2]` | `Themes/Brushes/Brushes.xaml`                          | Loaded once; reloaded on non-HC theme swap to re-promote |
 | `[3]` | `Themes/Typography/Typography.xaml`                    | Loaded once; never replaced                              |
 | `[4]` | `Themes/Generic.xaml`                                  | Loaded once; never replaced                              |
+| `[5]` | `Themes/Shared.xaml`                                   | Loaded once; never replaced                              |
 
 The slot layout is enforced by `DictionaryStabilityTests` - any change to count or ordering breaks those tests and must be accompanied by a conscious update to both sides. Slot constants live at the top of `ApplicationThemeManager.cs`; change code only, never the comment drift.
+
+Slot `[5]` (`Themes/Shared.xaml`) holds theme-independent Color tokens that are identical across Light, Dark, and HighContrast (the Windows close-button reds and similar fixed values). It is loaded once and never swapped, and the per-theme dictionaries at `[0]` no longer carry these keys.
 
 **Key promotion.** After a theme swap the active theme dictionary's keys are copied into top-level `Application.Resources` so that `DynamicResource` bindings on `Freezable` properties (e.g. `SolidColorBrush.Color`) reliably re-evaluate. The `Brushes.xaml` dictionary is reloaded and re-promoted on every non-HighContrast swap for the same reason.
 
@@ -149,7 +152,7 @@ Every color key generally has a sibling `*Brush` `SolidColorBrush`; template bin
 
 ### Theme API surface
 
-- `ApplicationThemeManager.Apply(ApplicationTheme theme, BackdropType backdrop = BackdropType.Auto, bool updateAccent = true)` - first call initializes all five slots, later calls swap `[0]`, re-promote, and reload `[2]` on non-HC swaps.
+- `ApplicationThemeManager.Apply(ApplicationTheme theme, BackdropType backdrop = BackdropType.Auto, bool updateAccent = true)` - first call initializes all six slots, later calls swap `[0]`, re-promote, and reload `[2]` on non-HC swaps.
 - `ApplicationThemeManager.CurrentTheme` / `CurrentBackdrop` - read-only state.
 - `ApplicationThemeManager.Changed` - `EventHandler<ThemeChangedEventArgs>`, raised once per applied change.
 - `ApplicationAccentColorManager.ApplySystemAccent()` / `ApplyApplicationAccent(Color)` / `ApplyCustomAccent(Color)` - ramp generation + in-place key updates. Subscribe to `AccentColorChanged` for post-apply hooks.
@@ -236,7 +239,7 @@ When adding a new control or materially changing an existing one:
   5. Drain the dispatcher with `DrainDispatcher()` and close the window.
 - **InternalsVisibleTo**: the test assembly sees library internals; theme tests can call `ApplicationThemeManager.ResetForTesting()` to isolate fixtures.
 - **Baseline policy**: the HEAD-of-branch test count is the floor. Add tests, do not weaken it. If a test is legitimately obsoleted by a design change, remove the whole file in the same commit that supersedes it, record the rationale in `CHANGELOG.md`, and update this handbook if the testing pattern itself changed.
-- **Known pre-existing failures**: no root `KNOWN_ISSUES.md` file exists on this branch at the time this handbook was reviewed. If a failing test is accepted instead of fixed, create `KNOWN_ISSUES.md` at the repository root with the reproduction, affected TFM, reason, owner, and intended fix. A green local run is `total - skipped - known-failures = passed`; do not merge if your own changes add to the known-failure count.
+- **Known pre-existing failures**: a root `KNOWN_ISSUES.md` exists; it tracks deliberate non-features and resolved follow-ups, not accepted test failures. If a failing test is ever accepted instead of fixed, record it there with the reproduction, affected TFM, reason, owner, and intended fix. A green local run is `total - skipped - known-failures = passed`; do not merge if your own changes add to the known-failure count.
 - **Screenshot harness**: `Fluence.Wpf.Tests/GalleryScreenshotHarness.cs` regenerates `docs/screenshots/banner-{theme}-{scale}x.png` via `RenderTargetBitmap` during normal full test runs. DWM backdrops (Mica / Acrylic) are _not_ captured by `RenderTargetBitmap`, so the harness hosts `GalleryHomePage` inside a plain `Window` with a solid `SolidBackgroundFillColorBaseBrush`.
 
 ---
@@ -276,7 +279,7 @@ dotnet test    Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug -f net10.0-wi
 - `MainViewModel` owns an unfiltered `ObservableCollection<TaskItemViewModel>` and rebuilds `DisplayedTasks` on every filter or completion change. `StatusText` and `ProgressValue` are derived and notified after the rebuild - do **not** add `[NotifyPropertyChangedFor]` on `_activeFilter`; that would fire notifications before `DisplayedTasks` is rebuilt (stale read).
 - Filter radio buttons use `EnumToBoolConverter` with `ConverterParameter={x:Static vm:FilterMode.*}`.
 - Delete button inside `DataTemplate` reaches `MainViewModel.DeleteCommand` via `RelativeSource AncestorType=Window`; this is deliberate - keeps `TaskItemViewModel` free of parent references.
-- `App.xaml` contains **no `MergedDictionaries`**; `ApplicationThemeManager.Apply` (called from `App.xaml.cs`) seeds all five slots. A manual `Generic.xaml` merge would become a sixth stale entry and corrupt slot indices.
+- `App.xaml` contains **no `MergedDictionaries`**; `ApplicationThemeManager.Apply` (called from `App.xaml.cs`) seeds all six slots. A manual `Generic.xaml` merge would become a seventh stale entry and corrupt slot indices.
 - Run: `dotnet run --project Fluence.Wpf.Demo.Mvvm/Fluence.Wpf.Demo.Mvvm.csproj`.
 
 ---
@@ -295,6 +298,9 @@ dotnet test    Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug -f net10.0-wi
 - **Using `string.IsNullOrEmpty()`** -> build error RS0030 (banned via `BannedApiAnalyzers` + `BannedSymbols.txt`). Fix: always use `string.IsNullOrWhiteSpace()`.
 - **Win32 bit-mask arithmetic without `unchecked`** -> `OverflowException` at runtime; caught as a build error because `CheckForOverflowUnderflow=True`. Fix: wrap HIWORD/LOWORD extractions in `unchecked { }`. See `FluenceWindow.HitTestTitleBar` for the canonical pattern.
 - **Ignoring a return value from a non-void method** -> build error CA1806. Fix: discard with `_ = method()`.
+- **Immersive dark-mode DWM attribute differs by OS build** -> applying attribute 20 (`DWMWA_USE_IMMERSIVE_DARK_MODE`) on Windows 10 builds 17763-18361 (1809) silently fails and the caption stays light; those builds require attribute 19. Fix: select via `NativeMethods.GetImmersiveDarkModeAttribute(OsVersionHelper.OsBuild)` (the 19-vs-20 threshold is build 18362 / Windows 10 1903).
+- **Auto-hide taskbar hidden under a maximized window** -> an auto-hide taskbar reports a work area equal to the full monitor, so a maximized custom-chromed window covers it and blocks the hover-reveal. Fix: in `WM_GETMINMAXINFO`, when `rcWork == rcMonitor`, shift the maximized rect 2 px on the auto-hide edge via `NativeMethods.GetAutoHideTaskbarEdge` + `ApplyAutoHideTaskbarShift`.
+- **Subscribing static managers in a Window constructor leaks** -> `ApplicationThemeManager.Changed` and `ApplicationAccentColorManager.AccentColorChanged` are static, so subscribing in the constructor pins every constructed-but-never-shown `FluenceWindow` to their invocation lists forever. Fix: subscribe in `OnSourceInitialized` and unsubscribe in `OnClosed` so the lifetimes match.
 
 ---
 
@@ -313,7 +319,7 @@ Public and repository documentation:
 - [docs/migration-guide.md](docs/migration-guide.md)
 - [docs/contributing.md](docs/contributing.md)
 - [docs/release.md](docs/release.md)
-- [docs-site/README.md](docs-site/README.md)
+- [KNOWN_ISSUES.md](KNOWN_ISSUES.md)
 
 Maintainer / AI context (this file and its siblings):
 
@@ -321,7 +327,6 @@ Maintainer / AI context (this file and its siblings):
 - [CLAUDE.md](CLAUDE.md) - pointer to this handbook for Claude-class assistants
 - [.github/PULL_REQUEST_TEMPLATE.md](.github/PULL_REQUEST_TEMPLATE.md) - PR checklist shown to contributors
 - [.github/workflows/build.yml](.github/workflows/build.yml) - Release build, split-TFM tests, package artifacts
-- [.github/workflows/docs.yml](.github/workflows/docs.yml) - docs-site build and GitHub Pages deployment
 
 Anything under `docs/_internal/` is not part of the public doc set. Do not link it from `README.md` or `docs/*.md`.
 
@@ -370,7 +375,7 @@ CONTEXT (read before touching code):
 - Fluence.Wpf/docs/controls.md - public control catalogue
 - Fluence.Wpf/docs/theming.md - canonical brush/color families
 - Fluence.Wpf/docs/contributing.md - contribution notes
-- Fluence.Wpf/docs/release.md - release validation and docs-site notes
+- Fluence.Wpf/docs/release.md - release validation notes
 - Fluence.Wpf/CHANGELOG.md - recent scope
 
 Reference authority (see AGENTS.md Section 4):
