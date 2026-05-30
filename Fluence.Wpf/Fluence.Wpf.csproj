@@ -7,7 +7,7 @@
     <AssemblyName>Fluence.Wpf</AssemblyName>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <NoWarn>$(NoWarn);SYSLIB1045;IDE0330;S1244;VSTHRD001</NoWarn>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Fluence.Wpf.xml</DocumentationFile>
+    <DocumentationFile Condition="'$(TargetFramework)' != ''">bin/$(Configuration)/$(TargetFramework)/Fluence.Wpf.xml</DocumentationFile>
     <Description>Windows 11 Fluent Design controls and theming for WPF (.NET Framework 4.7.2 and .NET 10)</Description>
     <Product>Fluence.Wpf</Product>
     <Title>Fluence.Wpf</Title>
