@@ -42,10 +42,9 @@
         truly shared - HC overrides hover and pressed to its
         accent / WindowText pair.
         
-        Loaded as slot [5] in the canonical merge stack (see
-        ApplicationThemeManager). The slot is loaded once, never replaced,
-        and never participates in PromoteThemeColors - shared values do not
-        change with the theme so promotion is unnecessary.
+        Read by BaseColorTables.Load for every theme; these Color values are contributed
+        into the computed dictionary alongside the per-theme tokens. The file is not
+        merged as a slot - it is loaded transiently for data reading only.
     -->
 
     <!--

@@ -109,55 +109,37 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void FirstApply_Loads6Dictionaries()
+        public void FirstApply_LoadsThreeDictionaries()
         {
             WpfTestSta.Invoke(() =>
             {
                 Application app = Application.Current;
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
 
-                Assert.AreEqual(6, app.Resources.MergedDictionaries.Count,
-                    "Initial Apply should load exactly 6 dictionaries (Colors, Accent, Brushes, Typography, Generic, Shared).");
+                Assert.AreEqual(3, app.Resources.MergedDictionaries.Count,
+                    "Initial Apply should load exactly 3 dictionaries ([0] computed, [1] Typography, [2] Generic).");
             });
         }
 
         [TestMethod]
-        public void ThemeSwap_OnlyReplacesIndex0And2()
+        public void Apply_UsesThreeSlots_ReplacesComputedSlotOnChange()
         {
             WpfTestSta.Invoke(() =>
             {
                 Application app = Application.Current;
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
-                Collection<ResourceDictionary> dictionaries = app.Resources.MergedDictionaries;
-                ResourceDictionary accentRef = dictionaries[1];
-                ResourceDictionary typographyRef = dictionaries[3];
-                ResourceDictionary genericRef = dictionaries[4];
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
+                Collection<ResourceDictionary> dicts = app.Resources.MergedDictionaries;
+                Assert.AreEqual(3, dicts.Count, "Three slots after the first Apply.");
 
-                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, false);
+                object slot0 = dicts[0];
+                object typography = dicts[1];
+                object generic = dicts[2];
 
-                Assert.AreSame(accentRef, dictionaries[1], "Accent dictionary at [1] should not be replaced on theme swap.");
-                Assert.AreSame(typographyRef, dictionaries[3], "Typography dictionary at [3] should not be replaced on theme swap.");
-                Assert.AreSame(genericRef, dictionaries[4], "Generic dictionary at [4] should not be replaced on theme swap.");
-            });
-        }
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, true);
 
-        [TestMethod]
-        public void BrushesDict_ReloadedOnNonHcSwap()
-        {
-            WpfTestSta.Invoke(() =>
-            {
-                Application app = Application.Current;
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
-                ResourceDictionary brushesRef = app.Resources.MergedDictionaries[2];
-
-                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, false);
-                Assert.AreNotSame(brushesRef, app.Resources.MergedDictionaries[2],
-                    "Brushes dictionary should be reloaded after Light->Dark to pick up new Colors.");
-
-                ResourceDictionary brushesAfterDark = app.Resources.MergedDictionaries[2];
-                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, false);
-                Assert.AreSame(brushesAfterDark, app.Resources.MergedDictionaries[2],
-                    "Brushes dictionary should NOT be reloaded for HighContrast (HC promotes its own brushes).");
+                Assert.AreNotSame(slot0, dicts[0], "Computed slot [0] is replaced on theme change.");
+                Assert.AreSame(typography, dicts[1], "Typography slot [1] identity is stable across theme change.");
+                Assert.AreSame(generic, dicts[2], "Generic slot [2] identity is stable across theme change.");
             });
         }
 
@@ -206,7 +188,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void InitialApply_LoadsColorsAccentBrushesTypographyGenericShared_InOrder()
+        public void InitialApply_SlotsAreComputedTypographyGeneric_InOrder()
         {
             WpfTestSta.Invoke(() =>
             {
@@ -214,26 +196,21 @@ namespace Fluence.Wpf.Tests
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, false);
                 Collection<ResourceDictionary> dictionaries = app.Resources.MergedDictionaries;
 
-                Assert.AreEqual(6, dictionaries.Count);
+                Assert.AreEqual(3, dictionaries.Count);
 
-                string[] expectedFragments =
-                [
-                    "Theme.Light",
-                    "Accent",
-                    "Brushes",
-                    "Typography",
-                    "Generic",
-                    "Shared"
-                ];
+                // Slot [0] is the computed dictionary: no Source of its own, populated by the engine.
+                Assert.IsNull(dictionaries[0].Source, "Computed slot [0] should have no Source URI.");
+                Assert.IsTrue(dictionaries[0].Count > 0, "Computed slot [0] should hold resolved entries.");
 
-                for (int i = 0; i < expectedFragments.Length; i++)
-                {
-                    Uri source = dictionaries[i].Source;
-                    Assert.IsNotNull(source, string.Format("Dictionary at [{0}] should have a Source URI.", i));
-                    Assert.IsTrue(source.OriginalString.IndexOf(expectedFragments[i], StringComparison.OrdinalIgnoreCase) >= 0,
-                        string.Format("Dictionary at [{0}] Source should contain '{1}', but was '{2}'.",
-                            i, expectedFragments[i], source.OriginalString));
-                }
+                Uri typographySource = dictionaries[1].Source;
+                Assert.IsNotNull(typographySource, "Typography slot [1] should have a Source URI.");
+                Assert.IsTrue(typographySource.OriginalString.IndexOf("Typography", StringComparison.OrdinalIgnoreCase) >= 0,
+                    "Slot [1] Source should be Typography.xaml, but was " + typographySource.OriginalString);
+
+                Uri genericSource = dictionaries[2].Source;
+                Assert.IsNotNull(genericSource, "Generic slot [2] should have a Source URI.");
+                Assert.IsTrue(genericSource.OriginalString.IndexOf("Generic", StringComparison.OrdinalIgnoreCase) >= 0,
+                    "Slot [2] Source should be Generic.xaml, but was " + genericSource.OriginalString);
             });
         }
     }

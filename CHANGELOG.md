@@ -1,4 +1,4 @@
-﻿# Changelog
+# Changelog
 
 All notable changes to this project are documented in this file.
 
@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Gallery demo: the **Settings** entry moved from `NavigationView.PaneFooter` into `NavigationView.FooterMenuItems`, so it now gets full-width hover, the shared selection indicator, and unified keyboard/mouse selection for free. This retired the demo's bespoke Settings handling (the `PreviewMouseLeftButtonDown` / `PreviewKeyDown` handlers, `NavigateToSettings`, manual `IsSelected` juggling, and the compact-width `UpdateSettingsNavigationItemDisplay`); footer navigation now flows through `NavigationView.ItemInvoked`. The empty space above the pinned footer is the gap, so no separator element is needed.
 - Gallery demo: the `DemoControlGroupItemMargin` vertical spacing is now split top/bottom (`0,6,12,6`) instead of bottom-only (`0,0,12,12`), so a control group centered in a `DemoSampleControl` card (e.g. the Buttons page samples) sits equidistant from the card's top and bottom edges. Total spacing is unchanged.
 - Gallery demo: decorative/content glyphs now use the accent *foreground* brush `AccentTextFillColorPrimaryBrush` for a consistent accent pop - Home page tile icons (previously the accent *fill* brush `AccentFillColorDefaultBrush`, a control-background role), the Data list leading person glyphs, the Tabs tab icons, the Menus context-menu item icons, and the ComboBox/TextBox leading icons on the Selection/Inputs pages. The accent-text brush is the correct foreground role for glyphs (it carries the per-theme contrast treatment, matching the Colors page guidance and the existing `GalleryDataBindingPage` icons). Button content icons are deliberately left to inherit their button's text brush (neutral, or accent on `HyperlinkButton`), per the existing `MainWindow_StandardDemoButtonIcons_UsePrimaryTextBrush` contract; stateful NavigationView item icons, the Settings config UI, the Icons font-reference catalog, and semantic status icons are likewise left as-is.
+
 
 ### Fixed
 

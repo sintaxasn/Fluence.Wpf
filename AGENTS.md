@@ -112,26 +112,44 @@ Prefer `EventArgs.Empty`, `nameof(...)`, explicit `readonly`, and immutable help
 
 ## 3. Theme architecture
 
+### Pipeline
+
+The theme system is a single linear pipeline implemented in `Fluence.Wpf/Theming/FluenceThemeEngine.cs`. `ApplicationThemeManager` and `ApplicationAccentColorManager` are thin public facades that delegate to it; all color and brush computation lives in the engine.
+
+```
+Apply(themeRequest):
+  1. theme   = ThemeResolver.Resolve(request)         // Light / Dark / HC from request + OS registry
+  2. palette = AccentResolver.Resolve(accentIntent)   // OS palette first, generate fallback, default blue
+  3. colors  = ColorMap.Build(theme, palette)         // one Dictionary<string,Color>:
+                  base Color tokens from Theme.*.xaml + Shared.xaml (Color-only XAML tables)
+                  + all accent-derived keys computed once here
+                  + title-bar colors (TitleBarActiveColor, TitleBarInactiveColor, WindowBorderColor)
+  4. dict    = BrushFactory.Build(colors)             // one ResourceDictionary: every Color token
+                  + a frozen SolidColorBrush twin (key + "Brush") for each; SpecialBrushes.Add adds
+                  gradient elevation borders, HC SystemColors overrides, and brush-only exceptions
+  5. publish -> replace MergedDictionaries[0] with dict; DynamicResource consumers re-resolve
+  6. raise FluenceThemeEngine.Published -> facades fire Changed and AccentColorChanged
+```
+
+There is no key promotion, no swap-vs-mutate split, and no per-key copy-up into top-level `Application.Resources`. Every color and brush is built fresh and published as one dictionary replacement.
+
+**Accent intent** is sticky and resolved on every Apply call. `AccentIntent.System` (the default) reads the full OS palette from the registry first; if that fails it falls back to the DWM colorization color and then to default blue. `Apply(theme)` alone uses the OS palette - there is no "must also call `ApplySystemAccent`" footgun. `ApplyCustomAccent(Color)` pins the ramp to the given color using the HSV generator; `ApplySystemAccent()` resets the intent to System.
+
+**High contrast** is just another color table. Its tokens are resolved from live `SystemColors` in `SpecialBrushes.AddHighContrastBrushes`; there is no `_promotedHighContrastBrushKeys` list. A `WM_SETTINGCHANGE` via `SystemThemeWatcher` triggers a re-Apply, which rebuilds and republishes the HC brushes from the current `SystemColors` snapshot.
+
 ### Merge slots
 
-After `ApplicationThemeManager.Apply(...)` has run, `Application.Current.Resources.MergedDictionaries` always contains exactly **six** dictionaries in this fixed order:
+After `ApplicationThemeManager.Apply(...)` has run, `Application.Current.Resources.MergedDictionaries` always contains exactly **three** dictionaries in this fixed order:
 
-|  Slot | Dictionary                                             | Lifecycle                                                |
-| ----: | ------------------------------------------------------ | -------------------------------------------------------- |
-| `[0]` | `Themes/Colors/Theme.{Light\|Dark\|HighContrast}.xaml` | **Swapped** on every theme change                        |
-| `[1]` | `Themes/Accent/Accent.xaml`                            | Loaded once; ramp color keys are **updated in place**    |
-| `[2]` | `Themes/Brushes/Brushes.xaml`                          | Loaded once; reloaded on non-HC theme swap to re-promote |
-| `[3]` | `Themes/Typography/Typography.xaml`                    | Loaded once; never replaced                              |
-| `[4]` | `Themes/Generic.xaml`                                  | Loaded once; never replaced                              |
-| `[5]` | `Themes/Shared.xaml`                                   | Loaded once; never replaced                              |
+|  Slot | Dictionary                    | Lifecycle                                              |
+| ----: | ----------------------------- | ------------------------------------------------------ |
+| `[0]` | Computed colors + brushes     | **Replaced** on every theme or accent change           |
+| `[1]` | `Themes/Typography/Typography.xaml` | Loaded once; never replaced                      |
+| `[2]` | `Themes/Generic.xaml`         | Loaded once; never replaced                            |
 
-The slot layout is enforced by `DictionaryStabilityTests` - any change to count or ordering breaks those tests and must be accompanied by a conscious update to both sides. Slot constants live at the top of `ApplicationThemeManager.cs`; change code only, never the comment drift.
+Slot `[0]` is the `ResourceDictionary` built by `FluenceThemeEngine.BuildComputedDictionary` each Apply. It holds every canonical Color token and its frozen `SolidColorBrush` twin, plus special brushes (elevation gradients, HC overrides, brush-only exceptions). Replacing it causes all `DynamicResource` bindings in control templates to re-resolve without any promotion step.
 
-Slot `[5]` (`Themes/Shared.xaml`) holds theme-independent Color tokens that are identical across Light, Dark, and HighContrast (the Windows close-button reds and similar fixed values). It is loaded once and never swapped, and the per-theme dictionaries at `[0]` no longer carry these keys.
-
-**Key promotion.** After a theme swap the active theme dictionary's keys are copied into top-level `Application.Resources` so that `DynamicResource` bindings on `Freezable` properties (e.g. `SolidColorBrush.Color`) reliably re-evaluate. The `Brushes.xaml` dictionary is reloaded and re-promoted on every non-HighContrast swap for the same reason.
-
-**High-contrast promotion.** When the active theme is `HighContrast`, a set of brush keys is copied from the theme dictionary directly into `Application.Resources` so they win over `Brushes.xaml`. The list is maintained in `ApplicationThemeManager._promotedHighContrastBrushKeys`; follow the existing promotion pattern if you add new HC brushes.
+The slot layout is enforced by `DictionaryStabilityTests` - any change to count or ordering must be accompanied by a conscious update to both sides. The per-theme XAML files (`Themes/Colors/Theme.*.xaml`) are Color-only tables read by `BaseColorTables` at pipeline step 3; `Brushes.xaml` and `Accent.xaml` no longer exist.
 
 ### Canonical color/brush keys
 
@@ -152,10 +170,10 @@ Every color key generally has a sibling `*Brush` `SolidColorBrush`; template bin
 
 ### Theme API surface
 
-- `ApplicationThemeManager.Apply(ApplicationTheme theme, BackdropType backdrop = BackdropType.Auto, bool updateAccent = true)` - first call initializes all six slots, later calls swap `[0]`, re-promote, and reload `[2]` on non-HC swaps.
+- `ApplicationThemeManager.Apply(ApplicationTheme theme, BackdropType backdrop = BackdropType.Auto, bool updateAccent = true)` - first call seeds all three slots; later calls replace `[0]` with a freshly built computed dictionary. `updateAccent` is accepted for signature compatibility but no longer branches behavior.
 - `ApplicationThemeManager.CurrentTheme` / `CurrentBackdrop` - read-only state.
 - `ApplicationThemeManager.Changed` - `EventHandler<ThemeChangedEventArgs>`, raised once per applied change.
-- `ApplicationAccentColorManager.ApplySystemAccent()` / `ApplyApplicationAccent(Color)` / `ApplyCustomAccent(Color)` - ramp generation + in-place key updates. Subscribe to `AccentColorChanged` for post-apply hooks.
+- `ApplicationAccentColorManager.ApplySystemAccent()` / `ApplyApplicationAccent(Color)` / `ApplyCustomAccent(Color)` - set the accent intent and re-run the full pipeline. Subscribe to `AccentColorChanged` for post-apply hooks.
 - `SystemThemeWatcher.Watch(Window)` / `UnWatch(Window)` - Win32 settings-change hooks with debounce; fires `Changed` (via `ApplicationThemeManager`) once per logical OS change. **Do not assume more than one `Changed` per user action in tests.**
 - `FluenceWindow` is the canonical WPF window with DWM backdrop, rounded corners, caption extension, and an optional title-bar content slot.
 
@@ -209,7 +227,7 @@ When adding a new control or materially changing an existing one:
    - Mark template parts with `[TemplatePart]` attributes and wire them in `OnApplyTemplate`.
    - Wire up `VisualStateManager` groups (`CommonStates`, `FocusStates`, `CheckStates`, etc.) with Fluent timings (~100-167 ms).
 3. **Resources**
-   - Reuse canonical WinUI keys. If a concept is new (e.g. a brand-specific state), add a **color** to each `Themes/Colors/Theme.*.xaml`, **then** add the `SolidColorBrush` to `Themes/Brushes/Brushes.xaml` binding via `DynamicResource`.
+   - Reuse canonical WinUI keys. If a concept is new (e.g. a brand-specific state), add a **color** to each `Themes/Colors/Theme.*.xaml` (Color-only XAML tables), then add the brush to `SpecialBrushes.cs` if it requires a non-standard twin name or a gradient, or rely on the auto-twin that `BrushFactory` emits for every Color key. `Brushes.xaml` no longer exists.
    - Add a design-time preview entry in `Fluence.Wpf/Properties/DesignTimeResources.xaml` assuming Light + `#0078D4`; add the demo counterpart only when the demo also needs designer-time resource resolution.
 4. **Demo**
    - Add or extend a gallery page under `Fluence.Wpf.Demo/Pages/Gallery*.xaml`. Register the page in `MainWindow.NavigateTo(string tag)` if it should be navigable from the `NavigationView`.

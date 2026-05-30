@@ -1,7 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <!--  Windows 11 Fluent Light Theme - Color-only layer  -->
-    <!--  Accent Colors are in Accent/Accent.xaml; Brushes are in Brushes/Brushes.xaml  -->
+    <!--  Brushes and accent ramp are built in C# by the FluenceThemeEngine pipeline.  -->
 
     <!--  Application Background  -->
     <Color x:Key="ApplicationBackgroundColor">#FFFAFAFA</Color>
@@ -141,28 +141,6 @@
     <Color x:Key="WindowCloseForegroundHover">#FFFFFFFF</Color>
     <Color x:Key="WindowCloseForegroundPressed">#FFFFFFFF</Color>
 
-
-    <!--  Accent fill brushes  -->
-    <SolidColorBrush x:Key="AccentFillColorDefaultBrush" Color="{DynamicResource SystemAccentColorDark1}" />
-    <SolidColorBrush
-        x:Key="AccentFillColorSecondaryBrush"
-        Opacity=".9"
-        Color="{DynamicResource SystemAccentColorDark1}" />
-    <SolidColorBrush
-        x:Key="AccentFillColorTertiaryBrush"
-        Opacity=".8"
-        Color="{DynamicResource SystemAccentColorDark1}" />
-    <SolidColorBrush x:Key="AccentFillColorDisabledBrush" Color="{DynamicResource AccentFillColorDisabled}" />
-
-    <!--  Accent Text Fill Colors  -->
-    <SolidColorBrush x:Key="AccentTextFillColorPrimaryBrush" Color="{DynamicResource SystemAccentColorDark2}" />
-    <SolidColorBrush x:Key="AccentTextFillColorSecondaryBrush" Color="{DynamicResource SystemAccentColorDark3}" />
-    <SolidColorBrush x:Key="AccentTextFillColorTertiaryBrush" Color="{DynamicResource SystemAccentColorDark1}" />
-
-    <SolidColorBrush x:Key="SystemFillColorAttentionBrush" Color="{DynamicResource SystemAccentColor}" />
-    <SolidColorBrush x:Key="SystemFillColorSuccessBrush" Color="{StaticResource SystemFillColorSuccess}" />
-    <SolidColorBrush x:Key="SystemFillColorCautionBrush" Color="{StaticResource SystemFillColorCaution}" />
-    <SolidColorBrush x:Key="SystemFillColorCriticalBrush" Color="{StaticResource SystemFillColorCritical}" />
 
     <!--  Accent Fill Colors  -->
     <Color x:Key="AccentFillColorDisabled">#37000000</Color>
