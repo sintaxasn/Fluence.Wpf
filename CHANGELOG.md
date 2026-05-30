@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- Theme and accent internals rebuilt into a single `FluenceThemeEngine` pipeline: resolve theme -> resolve accent palette (OS registry first, generate fallback) -> C# color map (`ColorMap`) -> C#-built brushes (`BrushFactory` + `SpecialBrushes`) -> publish one computed `ResourceDictionary`. Merged-dictionary slots reduced from 6 to 3 ([0] computed colors and brushes replaced on every change, [1] Typography, [2] Generic). `Brushes.xaml` and `Accent.xaml` deleted; per-theme color files reduced to Color-only tables; `Apply(theme)` alone now resolves the OS accent palette without a separate `ApplySystemAccent()` call. Public API, events, and all canonical key names are unchanged.
+
 ### Fixed
 
 - `NavigationView`: the Settings (pane-footer) icon no longer drifts sideways while the left pane opens or collapses. The footer sits in a `ContentPresenter`, which sizes its child to content and centres it, whereas the menu items use a `StackPanel`, which stretches them. So the collapsed icon-only item slid across the pane as its width animated. Setting `HorizontalAlignment="Left"` on the footer `ContentPresenter` in the `Left` and `LeftCompact` templates keeps the icon in the same column as the menu icons. Covered by `DemoMainWindow_LeftPaneFooterIcon_StaysLeftAnchored_WhileCollapsed`.

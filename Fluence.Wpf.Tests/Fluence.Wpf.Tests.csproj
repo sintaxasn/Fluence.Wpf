@@ -26,4 +26,10 @@
     <ProjectReference Include="..\Fluence.Wpf.Demo.Mvvm\Fluence.Wpf.Demo.Mvvm.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Theming\golden\*.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

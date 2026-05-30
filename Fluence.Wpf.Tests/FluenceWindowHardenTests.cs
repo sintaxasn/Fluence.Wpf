@@ -218,22 +218,22 @@ namespace Fluence.Wpf.Tests
         {
             // The three Windows close-button Color tokens are theme-independent - the
             // Windows shell uses the same red across Light, Dark, and HighContrast - so
-            // they live in Themes/Shared.xaml (loaded as merge slot 5) rather than being
-            // duplicated across the three per-theme dictionaries. The brush layer still
-            // references them by key in Brushes.xaml; DynamicResource walks the merge
-            // chain and resolves through Shared.xaml.
+            // they live in Themes/Shared.xaml and are read by BaseColorTables.Load into the
+            // computed dictionary. BrushFactory then emits the corresponding *Brush twins.
             string shared = ReadRepositoryFile("Fluence.Wpf", "Themes", "Shared.xaml");
             StringAssert.Contains(shared, "<Color x:Key=\"WindowCloseButtonBackgroundPointerOver\">#FFC42B1C</Color>");
             StringAssert.Contains(shared, "<Color x:Key=\"WindowCloseButtonBackgroundPressed\">#FFB4271C</Color>");
             StringAssert.Contains(shared, "<Color x:Key=\"WindowCloseButtonForegroundPointerOver\">#FFFFFFFF</Color>");
 
-            string brushes = ReadRepositoryFile("Fluence.Wpf", "Themes", "Brushes", "Brushes.xaml");
-            StringAssert.Contains(brushes, "WindowCloseButtonBackgroundPointerOverBrush");
-            StringAssert.Contains(brushes, "WindowCloseButtonBackgroundPressedBrush");
-            StringAssert.Contains(brushes, "WindowCloseButtonForegroundPointerOverBrush");
-            StringAssert.Contains(brushes, "WindowCloseButtonBackgroundPointerOver");
-            StringAssert.Contains(brushes, "WindowCloseButtonBackgroundPressed");
-            StringAssert.Contains(brushes, "WindowCloseButtonForegroundPointerOver");
+            // Verify the brush twins are published into application resources at runtime.
+            WpfTestSta.Dispatcher!.Invoke(() =>
+            {
+                Application? app = WpfTestSta.EnsureApplication();
+                ResetAndApply(ApplicationTheme.Light, app);
+                Assert.IsNotNull(app?.Resources["WindowCloseButtonBackgroundPointerOverBrush"], "WindowCloseButtonBackgroundPointerOverBrush must resolve.");
+                Assert.IsNotNull(app?.Resources["WindowCloseButtonBackgroundPressedBrush"], "WindowCloseButtonBackgroundPressedBrush must resolve.");
+                Assert.IsNotNull(app?.Resources["WindowCloseButtonForegroundPointerOverBrush"], "WindowCloseButtonForegroundPointerOverBrush must resolve.");
+            });
         }
 
         [TestMethod]

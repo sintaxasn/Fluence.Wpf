@@ -50,8 +50,10 @@ namespace Fluence.Wpf.Tests
                     Source = new Uri("/Fluence.Wpf.Demo;component/Properties/DesignTimeResources.xaml", UriKind.Relative)
                 };
 
-                Assert.IsNotNull(library["TextFillColorPrimaryBrush"],
-                    "Library design-time resources should resolve theme brushes.");
+                // Brushes are built at runtime by FluenceThemeEngine and are not present in design-time
+                // resources. Verify the Color tokens and control templates load correctly.
+                Assert.IsNotNull(library["TextFillColorPrimary"],
+                    "Library design-time resources should resolve theme Color tokens.");
                 Assert.IsNotNull(demo["DemoSampleCardPadding"],
                     "Demo design-time resources should resolve demo shared styles.");
             });
@@ -75,22 +77,22 @@ namespace Fluence.Wpf.Tests
                     DemoTestHost.AddDemoSharedStyles(application);
 
                     Collection<ResourceDictionary> dictionaries = application.Resources.MergedDictionaries;
-                    Assert.AreEqual(7, dictionaries.Count, "Demo startup should append one demo dictionary after the six Fluence dictionaries.");
-                    for (int i = 0; i < 6; i++)
+                    Assert.AreEqual(4, dictionaries.Count, "Demo startup should append one demo dictionary after the three Fluence dictionaries.");
+                    for (int i = 0; i < 3; i++)
                     {
                         Assert.IsFalse(IsDemoSharedStyles(dictionaries[i]),
                             "Fluence theme slot " + i + " should not be occupied by demo styles.");
                     }
 
-                    Assert.IsTrue(IsDemoSharedStyles(dictionaries[6]),
+                    Assert.IsTrue(IsDemoSharedStyles(dictionaries[3]),
                         "DemoSharedStyles should be appended after the Fluence theme slots.");
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.Mica);
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.Mica);
 
-                    Assert.AreEqual(7, dictionaries.Count, "Theme changes should not duplicate demo styles.");
-                    Assert.IsTrue(IsDemoSharedStyles(dictionaries[6]),
-                        "DemoSharedStyles should stay after the six Fluence dictionaries.");
+                    Assert.AreEqual(4, dictionaries.Count, "Theme changes should not duplicate demo styles.");
+                    Assert.IsTrue(IsDemoSharedStyles(dictionaries[3]),
+                        "DemoSharedStyles should stay after the three Fluence dictionaries.");
                 }
                 finally
                 {

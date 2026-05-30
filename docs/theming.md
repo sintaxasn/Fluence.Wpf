@@ -9,20 +9,17 @@ Fluence.Wpf uses WinUI 3 naming and state behavior for theme resources and is im
 
 ## Merge order (application resources)
 
-`Application.Current.Resources.MergedDictionaries` uses a **stable slot layout** after the first `ApplicationThemeManager.Apply`:
+`Application.Current.Resources.MergedDictionaries` uses a **stable 3-slot layout** after the first `ApplicationThemeManager.Apply`:
 
-| Index | Content                                                            | On theme change                                       |
-|-------|--------------------------------------------------------------------|-------------------------------------------------------|
-| 0     | Theme colors (`Theme.Light` / `Theme.Dark` / `Theme.HighContrast`) | **Replaced** (the manager swaps only this dictionary) |
-| 1     | Accent ramp (`Accent.xaml`)                                        | Loaded once; **values updated in place**              |
-| 2     | Brushes (`Brushes.xaml`)                                           | Loaded once; reloaded and re-promoted on non-HC swaps |
-| 3     | Typography (`Typography.xaml`)                                     | Loaded once                                           |
-| 4     | Control templates (`Generic.xaml`)                                 | Loaded once                                           |
-| 5     | Theme-independent tokens (`Shared.xaml`)                           | Loaded once                                           |
+| Index | Content                             | On theme or accent change                                      |
+|-------|-------------------------------------|----------------------------------------------------------------|
+| 0     | Computed colors and brushes         | **Replaced** with a freshly built dictionary on every change   |
+| 1     | Typography (`Typography.xaml`)      | Loaded once; never replaced                                    |
+| 2     | Control templates (`Generic.xaml`)  | Loaded once; never replaced                                    |
 
-Slot 5 (`Shared.xaml`) holds Color tokens that are identical across Light, Dark, and HighContrast (such as the Windows close-button reds), so it is loaded once and never swapped.
+Slot 0 holds every canonical Color token and its frozen `SolidColorBrush` twin. It is built entirely in C# by `FluenceThemeEngine` each time `Apply` is called; replacing it causes all `DynamicResource` bindings to re-resolve with no promotion step. `Brushes.xaml` and `Accent.xaml` no longer exist; brushes are produced by `BrushFactory` (auto Color-to-Brush twins) and `SpecialBrushes` (gradient elevation borders, High Contrast SystemColors overrides, and brush-only exceptions). The per-theme XAML files (`Themes/Colors/Theme.*.xaml`) are Color-only tables read by C# at build time; they contain no brushes.
 
-Repeated `Apply` calls must not accumulate extra theme dictionaries (`DictionaryStabilityTests` enforces this). On a non-HighContrast theme swap, `ApplicationThemeManager` reloads `Brushes.xaml` and promotes those brush keys again so `DynamicResource` chains on `Freezable` values re-evaluate.
+Repeated `Apply` calls must not accumulate extra theme dictionaries (`DictionaryStabilityTests` enforces this).
 
 `Typography.xaml` defines the Fluent type ramp as named `TextBlock` styles: `BodyTextBlockStyle`, `BodyStrongTextBlockStyle`, `TitleLargeTextBlockStyle`, and so on. `TextBlockExtensions.Typography` is the compatibility API; it resolves those styles rather than duplicating font metrics in code.
 
@@ -30,7 +27,7 @@ Repeated `Apply` calls must not accumulate extra theme dictionaries (`Dictionary
 
 - Consume theme and accent brushes with **`DynamicResource`**, not `StaticResource`, so they track live updates.
 - Do not hard-code theme colors in control templates; bind to shared keys.
-- **High contrast**: the theme slot may promote certain brush keys so system colors take precedence over static fallbacks - see `ApplicationThemeManager` for the exact promotion behavior.
+- **High contrast**: brushes are built from live `SystemColors` snapshots in `SpecialBrushes.AddHighContrastBrushes` and published in slot 0 like any other theme. There is no promotion or `_promotedHighContrastBrushKeys` list. A `WM_SETTINGCHANGE` via `SystemThemeWatcher` triggers a re-Apply that refreshes the snapshot.
 
 ## Canonical token families
 
@@ -43,13 +40,14 @@ Fluence.Wpf defines the full WinUI 3 token ramp. These are the keys most commonl
 - **Window controls**: `WindowCloseButtonBackgroundPointerOver`, `WindowCloseButtonBackgroundPressed`, `WindowCloseButtonForegroundPointerOver`.
 - **High contrast aliases**: `SystemColorWindowTextColorBrush`, `SystemColorWindowColorBrush`, `SystemColorButtonFaceColorBrush`, `SystemColorButtonTextColorBrush`, `SystemColorHighlightColorBrush`, `SystemColorHighlightTextColorBrush`, `SystemColorHotlightColorBrush`, `SystemColorGrayTextColorBrush`. These brush-only aliases map directly to WPF `SystemColors` so consumers can preview or bind Windows high contrast roles without hard-coding platform resources.
 
-Each color token has a matching `*Brush` resource in `Brushes.xaml` - for example `ControlStrongStrokeColorDefaultBrush` - that binds back to the color via `DynamicResource`. Reference the brush keys from XAML, not the raw color keys.
+Each color token has a matching `*Brush` frozen `SolidColorBrush` - for example `ControlStrongStrokeColorDefaultBrush` - produced by `BrushFactory`. Reference the brush keys from XAML, not the raw color keys.
 
 ## Accent
 
-- `ApplicationAccentColorManager.ApplySystemAccent()` - follow Windows accent.
-- `ApplicationAccentColorManager.ApplyCustomAccent(Color)` - custom base; the ramp is derived to WinUI-style keys (`SystemAccentColorPrimary` / `Secondary` / `Tertiary` plus the `AccentFillColor*` role tokens).
-- Accent changes update the ramp in place at slot `[1]`; `DynamicResource` consumers refresh automatically.
+- `ApplicationAccentColorManager.ApplySystemAccent()` - sets the accent intent to System and re-runs the full pipeline, resolving the OS registry palette.
+- `ApplicationAccentColorManager.ApplyCustomAccent(Color)` - sets the accent intent to a fixed color; the ramp is generated to WinUI-style keys (`SystemAccentColorPrimary` / `Secondary` / `Tertiary` plus the `AccentFillColor*` role tokens).
+- `ApplicationThemeManager.Apply(theme)` alone uses the OS palette by default - no separate `ApplySystemAccent()` call is needed on startup.
+- Accent changes re-run the full pipeline and replace slot [0]; `DynamicResource` consumers refresh automatically.
 
 ## Backdrop (`FluenceWindow`)
 

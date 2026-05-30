@@ -422,6 +422,9 @@ Thumbs.db
 .claude/settings.local.json
 .codex/**
 
+# Regenerable theme-golden artifacts (authoritative copies live in Fluence.Wpf.Tests/Theming/golden/)
+data/theme-golden/
+
 # Codex local configuration
 
 # Environment variables
