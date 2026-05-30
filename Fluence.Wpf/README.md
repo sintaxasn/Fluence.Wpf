@@ -22,4 +22,4 @@ All targets use `LangVersion=latest`, but runtime API use must remain compatible
 
 ## Maintenance Notes
 
-Use `ApplicationThemeManager.Apply(...)` to load the five managed resource-dictionary slots instead of hand-merging `Themes/Generic.xaml`. When changing templates, prefer canonical theme keys and `DynamicResource` for theme/accent-bound brushes. See the root [AGENTS.md](../AGENTS.md), [docs/theming.md](../docs/theming.md), and [docs/controls.md](../docs/controls.md) for the full contract.
+Use `ApplicationThemeManager.Apply(...)` to load the six managed resource-dictionary slots instead of hand-merging `Themes/Generic.xaml`. When changing templates, prefer canonical theme keys and `DynamicResource` for theme/accent-bound brushes. See the root [AGENTS.md](../AGENTS.md), [docs/theming.md](../docs/theming.md), and [docs/controls.md](../docs/controls.md) for the full contract.

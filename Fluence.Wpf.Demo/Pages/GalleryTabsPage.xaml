@@ -15,9 +15,10 @@
             <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Tabs organize related panels while keeping one view active at a time." />
 
 
-            <ContentControl x:Name="DemoSampleSlot01DemoContentHost" Visibility="Collapsed"
-Background="{DynamicResource CardBackgroundFillColorTertiaryBrush}"
-                            >
+            <ContentControl
+                x:Name="DemoSampleSlot01DemoContentHost"
+                Background="{DynamicResource CardBackgroundFillColorTertiaryBrush}"
+                Visibility="Collapsed">
                 <TabControl Height="210">
                     <TabItem Background="{DynamicResource CardBackgroundFillColorTertiaryBrush}" Header="Overview">
                         <StackPanel Margin="{DynamicResource DemoTabContentMargin}">
@@ -87,7 +88,10 @@ Background="{DynamicResource CardBackgroundFillColorTertiaryBrush}"
                     TabCloseRequested="DemoTabView_TabCloseRequested">
                     <ui:TabViewItem Header="Document 1" IsSelected="True">
                         <ui:TabViewItem.Icon>
-                            <ui:FontIcon Glyph="&#xE8A5;" IconFontSize="16" />
+                            <ui:FontIcon
+                                Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
+                                Glyph="&#xE8A5;"
+                                IconFontSize="16" />
                         </ui:TabViewItem.Icon>
                         <Border Background="{DynamicResource LayerFillColorDefaultBrush}">
                             <StackPanel Margin="{DynamicResource DemoTabContentMargin}">
@@ -102,7 +106,10 @@ Background="{DynamicResource CardBackgroundFillColorTertiaryBrush}"
                     </ui:TabViewItem>
                     <ui:TabViewItem Header="Document 2">
                         <ui:TabViewItem.Icon>
-                            <ui:FontIcon Glyph="&#xE8A5;" IconFontSize="16" />
+                            <ui:FontIcon
+                                Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
+                                Glyph="&#xE8A5;"
+                                IconFontSize="16" />
                         </ui:TabViewItem.Icon>
                         <Border Background="{DynamicResource LayerFillColorDefaultBrush}">
                             <StackPanel Margin="{DynamicResource DemoTabContentMargin}">
@@ -117,7 +124,10 @@ Background="{DynamicResource CardBackgroundFillColorTertiaryBrush}"
                     </ui:TabViewItem>
                     <ui:TabViewItem Header="Pinned" IsClosable="False">
                         <ui:TabViewItem.Icon>
-                            <ui:FontIcon Glyph="&#xE718;" IconFontSize="16" />
+                            <ui:FontIcon
+                                Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
+                                Glyph="&#xE718;"
+                                IconFontSize="16" />
                         </ui:TabViewItem.Icon>
                         <Border Background="{DynamicResource LayerFillColorDefaultBrush}">
                             <StackPanel Margin="{DynamicResource DemoTabContentMargin}">

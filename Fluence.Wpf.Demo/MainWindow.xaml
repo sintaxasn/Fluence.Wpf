@@ -14,8 +14,7 @@
     RenderOptions.BitmapScalingMode="HighQuality"
     SystemBackdropType="Mica"
     TitleBarHeight="42"
-    UseLayoutRounding="True"
-    >
+    UseLayoutRounding="True">
 
     <ui:FluenceWindow.TitleBar>
         <ui:TitleBar
@@ -23,8 +22,7 @@
             Height="{Binding TitleBarHeight, RelativeSource={RelativeSource AncestorType=ui:FluenceWindow}}"
             BackRequested="ShellTitleBar_BackRequested"
             PaneToggleRequested="ShellTitleBar_PaneToggleRequested"
-            SizeChanged="TitleBarLayout_SizeChanged"
-            >
+            SizeChanged="TitleBarLayout_SizeChanged">
             <ui:TextBox
                 x:Name="NavSearchBox"
                 Width="230"
@@ -37,15 +35,11 @@
                 PreviewKeyDown="NavSearchBox_PreviewKeyDown"
                 Style="{StaticResource TitleBarSearchBoxStyle}"
                 TextChanged="NavSearchBox_TextChanged"
-                WindowChrome.IsHitTestVisibleInChrome="True"
-                />
+                WindowChrome.IsHitTestVisibleInChrome="True" />
         </ui:TitleBar>
     </ui:FluenceWindow.TitleBar>
 
-    <Grid
-        x:Name="ShellRoot"
-        ClipToBounds="True"
-        >
+    <Grid x:Name="ShellRoot" ClipToBounds="True">
         <ui:NavigationView
             x:Name="DemoNav"
             Background="Transparent"
@@ -54,22 +48,19 @@
             IsPaneOpen="True"
             IsPaneToggleButtonVisible="True"
             PaneDisplayMode="Left"
-            SelectedIndex="0"
-            >
-            <ui:NavigationView.PaneFooter>
+            SelectedIndex="0">
+            <ui:NavigationView.FooterMenuItems>
                 <ui:NavigationViewItem
                     x:Name="SettingsNavigationItem"
                     AutomationProperties.Name="Settings"
                     Content="Settings"
-                    PreviewKeyDown="SettingsNavigationItem_PreviewKeyDown"
-                    PreviewMouseLeftButtonDown="SettingsNavigationItem_PreviewMouseLeftButtonDown"
                     Tag="settings"
                     ToolTip="Settings">
                     <ui:NavigationViewItem.Icon>
                         <ui:FontIcon Glyph="&#xE713;" IconFontSize="16" />
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
-            </ui:NavigationView.PaneFooter>
+            </ui:NavigationView.FooterMenuItems>
         </ui:NavigationView>
     </Grid>
 </ui:FluenceWindow>

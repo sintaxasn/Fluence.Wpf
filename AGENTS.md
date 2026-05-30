@@ -269,7 +269,7 @@ dotnet test    Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug -f net10.0-wi
 - `NavigationView` named `DemoNav`: default `PaneDisplayMode="Left"` in source and opens expanded with `IsPaneOpen="True"` to showcase the full pane.
 - Menu items carry `Tag` strings; `MainWindow.NavigateTo(string tag)` does a switch to the matching `Gallery*Page` inside the content frame. Navigation remains tag-driven, with a lightweight visited-page stack only for the shell Back button.
 - `GalleryHomePage` shows a theme-aware hero banner (`BannerLight.png` / `BannerDark.png`) and large **clickable `Card`** tiles that route through the same `NavigateTo` helper. Window controls and app-level theme/navigation/backdrop options live on the Settings page.
-- 17 navigation-catalog pages: Home, Colors, Icons, Typography, Buttons, Selection, Inputs, Forms, Data, Data binding, Trees, Menus, Navigation, Tabs, Layout, Status, and Accessibility. Settings is a pane-footer route, not a `DemoNavigationCatalog` item.
+- 17 navigation-catalog pages: Home, Colors, Icons, Typography, Buttons, Selection, Inputs, Forms, Data, Data binding, Trees, Menus, Navigation, Tabs, Layout, Status, and Accessibility. Settings is a `NavigationView.FooterMenuItems` entry (a real, selectable footer nav item with the shared selection indicator), not a `DemoNavigationCatalog` item; footer navigation is routed through `DemoNav.ItemInvoked`.
 - Run: `dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -f net472` or `dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -f net10.0-windows10.0.26100.0`.
 
 ### Fluence.Wpf.Demo.Mvvm (MVVM Task Manager, net10.0-windows10.0.26100.0)
@@ -444,6 +444,8 @@ Demo sample surfaces use the native Fluence brush resources and control defaults
 | Expander expanded content | `SolidBackgroundFillColorBaseBrush` |
 | Secondary labels | `TextFillColorSecondaryBrush` |
 
+The page background has no dedicated brush (it uses the host control defaults), so the other five rows are the surface-token brushes that [Section 14.5](#145-definition-of-done) checks resolve across themes.
+
 Use `DynamicResource` for these role brushes so theme, accent, and high-contrast changes flow through the standard `ApplicationThemeManager` slots.
 
 ### 14.3 DemoSampleControl contract
@@ -477,7 +479,7 @@ Icons and Accessibility are part of this standard for discrete demonstrations. T
 A new or updated sample page is done only when:
 
 - Every discrete control demonstration uses `DemoSampleControl`; direct catalog/reference pages document their exception in tests and docs.
-- All five surface tokens resolve in Light, Dark, and High Contrast after runtime theme changes.
+- All five surface-token brushes (the brush rows in [Section 14.2](#142-color-layering)) resolve in Light, Dark, and High Contrast after runtime theme changes.
 - Card and source expander corners follow the `8,8,0,0` plus `0,0,8,8` pattern with no visible seam artifact.
 - The source expander shows copy-enabled XAML and C# tabs that match the visible sample.
 - Page heading, description, sample description, card, and source spacing use centralized demo resources. No inline `Margin`, `Padding`, `CornerRadius`, hex color, or font-size literals in sample page XAML.

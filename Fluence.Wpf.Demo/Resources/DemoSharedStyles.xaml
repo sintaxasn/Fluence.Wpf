@@ -17,7 +17,8 @@
     <Thickness x:Key="DemoPageDescriptionMargin">0,0,0,24</Thickness>
     <Thickness x:Key="DemoCompactStackSpacingMargin">0,0,0,8</Thickness>
     <Thickness x:Key="DemoTextTopGapMargin">0,6,0,0</Thickness>
-    <Thickness x:Key="DemoControlGroupItemMargin">0,0,12,12</Thickness>
+    <!--  Vertical margin is split top/bottom (6+6) rather than bottom-only (0+12) so a control group centered in a demo sample card sits equidistant from the card's top and bottom. Total spacing is unchanged: 12px between wrapped rows, 12px between items horizontally, flush-left.  -->
+    <Thickness x:Key="DemoControlGroupItemMargin">0,6,12,6</Thickness>
     <Thickness x:Key="DemoInlineControlGapMargin">16,0,0,0</Thickness>
     <Thickness x:Key="DemoInlineControlTrailingGapMargin">0,0,16,0</Thickness>
     <Thickness x:Key="DemoSmallInlineControlGapMargin">6,0,8,8</Thickness>

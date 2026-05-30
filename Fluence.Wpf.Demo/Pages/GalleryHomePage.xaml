@@ -47,7 +47,7 @@
                     Variant="{x:Static uicore:CardVariant.Default}">
                     <ui:Card.Icon>
                         <ui:FontIcon
-                            Foreground="{DynamicResource AccentFillColorDefaultBrush}"
+                            Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                             Glyph="&#xE790;"
                             IconFontSize="24" />
                     </ui:Card.Icon>
@@ -70,7 +70,7 @@
                     Variant="{x:Static uicore:CardVariant.Default}">
                     <ui:Card.Icon>
                         <ui:FontIcon
-                            Foreground="{DynamicResource AccentFillColorDefaultBrush}"
+                            Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                             Glyph="&#xE737;"
                             IconFontSize="24" />
                     </ui:Card.Icon>
@@ -102,7 +102,7 @@
                     Variant="{x:Static uicore:CardVariant.Default}">
                     <ui:Card.Icon>
                         <ui:FontIcon
-                            Foreground="{DynamicResource AccentFillColorDefaultBrush}"
+                            Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                             Glyph="&#xE8E5;"
                             IconFontSize="20" />
                     </ui:Card.Icon>
@@ -125,7 +125,7 @@
                     Variant="{x:Static uicore:CardVariant.Default}">
                     <ui:Card.Icon>
                         <ui:FontIcon
-                            Foreground="{DynamicResource AccentFillColorDefaultBrush}"
+                            Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                             Glyph="&#xE73E;"
                             IconFontSize="20" />
                     </ui:Card.Icon>
@@ -148,7 +148,7 @@
                     Variant="{x:Static uicore:CardVariant.Default}">
                     <ui:Card.Icon>
                         <ui:FontIcon
-                            Foreground="{DynamicResource AccentFillColorDefaultBrush}"
+                            Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                             Glyph="&#xE70F;"
                             IconFontSize="20" />
                     </ui:Card.Icon>
@@ -171,7 +171,7 @@
                     Variant="{x:Static uicore:CardVariant.Default}">
                     <ui:Card.Icon>
                         <ui:FontIcon
-                            Foreground="{DynamicResource AccentFillColorDefaultBrush}"
+                            Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                             Glyph="&#xE916;"
                             IconFontSize="20" />
                     </ui:Card.Icon>
@@ -194,7 +194,7 @@
                     Variant="{x:Static uicore:CardVariant.Default}">
                     <ui:Card.Icon>
                         <ui:FontIcon
-                            Foreground="{DynamicResource AccentFillColorDefaultBrush}"
+                            Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                             Glyph="&#xE80A;"
                             IconFontSize="20" />
                     </ui:Card.Icon>
@@ -217,7 +217,7 @@
                     Variant="{x:Static uicore:CardVariant.Default}">
                     <ui:Card.Icon>
                         <ui:FontIcon
-                            Foreground="{DynamicResource AccentFillColorDefaultBrush}"
+                            Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                             Glyph="&#xE700;"
                             IconFontSize="20" />
                     </ui:Card.Icon>
@@ -240,7 +240,7 @@
                     Variant="{x:Static uicore:CardVariant.Default}">
                     <ui:Card.Icon>
                         <ui:FontIcon
-                            Foreground="{DynamicResource AccentFillColorDefaultBrush}"
+                            Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                             Glyph="&#xE748;"
                             IconFontSize="20" />
                     </ui:Card.Icon>
@@ -263,7 +263,7 @@
                     Variant="{x:Static uicore:CardVariant.Default}">
                     <ui:Card.Icon>
                         <ui:FontIcon
-                            Foreground="{DynamicResource AccentFillColorDefaultBrush}"
+                            Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                             Glyph="&#xE712;"
                             IconFontSize="20" />
                     </ui:Card.Icon>
@@ -286,7 +286,7 @@
                     Variant="{x:Static uicore:CardVariant.Default}">
                     <ui:Card.Icon>
                         <ui:FontIcon
-                            Foreground="{DynamicResource AccentFillColorDefaultBrush}"
+                            Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                             Glyph="&#xE71C;"
                             IconFontSize="20" />
                     </ui:Card.Icon>

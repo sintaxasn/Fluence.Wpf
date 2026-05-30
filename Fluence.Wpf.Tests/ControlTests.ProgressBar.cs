@@ -93,7 +93,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void ProgressBar_DefaultStyle_UsesSixPixelTrackHeight()
+        public void ProgressBar_DefaultStyle_UsesFourPixelTrackHeight()
         {
             WpfTestSta.Invoke(() =>
             {
@@ -113,10 +113,10 @@ namespace Fluence.Wpf.Tests
                 WpfBorder? track = FindVisualChildByName<WpfBorder>(progressBar, "PART_Track");
                 Assert.IsNotNull(track, "ProgressBar template must expose PART_Track.");
 
-                Assert.AreEqual(6.0, progressBar.TrackHeight, 0.1,
-                    "ProgressBar default style should set a 6px track height to match the WinUI 3 Gallery visual.");
-                Assert.AreEqual(6.0, track.Height, 0.1,
-                    "ProgressBar track template height should follow the 6px TrackHeight.");
+                Assert.AreEqual(4.0, progressBar.TrackHeight, 0.1,
+                    "ProgressBar default style should set a 4px track height, close to the WinUI 3 reference (ProgressBarMinHeight = 3).");
+                Assert.AreEqual(4.0, track.Height, 0.1,
+                    "ProgressBar track template height should follow the 4px TrackHeight.");
 
                 w.Close();
             });

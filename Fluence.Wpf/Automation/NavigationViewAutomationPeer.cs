@@ -68,6 +68,11 @@ namespace Fluence.Wpf.Automation
         /// <inheritdoc />
         public virtual IRawElementProviderSimple[] GetSelection()
         {
+            if (NavigationView.SelectedFooterItem is NavigationViewItem footerContainer)
+            {
+                return [ProviderFromPeer(CreatePeerForElement(footerContainer))];
+            }
+
             object selected = NavigationView.SelectedItem;
             return selected is not null && NavigationView.ItemContainerGenerator.ContainerFromItem(selected) is NavigationViewItem container
                 ? [ProviderFromPeer(CreatePeerForElement(container))]

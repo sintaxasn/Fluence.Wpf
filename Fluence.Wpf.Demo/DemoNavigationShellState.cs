@@ -51,10 +51,6 @@ namespace Fluence.Wpf.Demo
 
         internal bool IsPaneOpen => _navigationView.IsPaneOpen;
 
-        internal bool ShouldShowSettingsText =>
-            _navigationView.PaneDisplayMode == NavigationViewPaneDisplayMode.Left &&
-            _navigationView.IsPaneOpen;
-
         private bool IsApplyingChrome { get; set; }
 
         private bool UserBackButtonVisible { get; set; }

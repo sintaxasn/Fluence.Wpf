@@ -131,13 +131,10 @@ namespace Fluence.Wpf.Tests
         public void DemoMainWindow_LeftPaneFooterIcon_StaysLeftAnchored_WhileCollapsed()
         {
             // Regression: the Settings footer item must keep its icon at the pane's left edge at every
-            // pane width. The footer is hosted in a ContentPresenter, which arranges its child at the
-            // child's desired size (it does not force-stretch like the menu items' StackPanel). In the
-            // collapsed icon-only state the item is ~48px, so a centered host let it slide laterally as
-            // the pane width animated between open (320) and compact (48). HorizontalAlignment=Left on
-            // the footer ContentPresenter anchors it. Reproduced against the real gallery MainWindow
-            // (a synthetic NavigationView host does not exhibit the centering); we force intermediate
-            // closed pane widths and assert the footer icon stays at the left.
+            // pane width. As a FooterMenuItems entry it is hosted in a stretching StackPanel (like the
+            // main items), so the fixed 40px icon column keeps the icon anchored at the left regardless
+            // of the animating pane width. We force intermediate closed pane widths against the real
+            // gallery MainWindow and assert the footer icon stays at the left.
             RunOnStaThread(() =>
             {
                 Application? application = EnsureApplication();
@@ -160,8 +157,8 @@ namespace Fluence.Wpf.Tests
 
                     NavigationView? nav = FindVisualChildByName<NavigationView>(mw, "DemoNav");
                     Assert.IsNotNull(nav, "Gallery MainWindow must host the DemoNav NavigationView.");
-                    NavigationViewItem? footer = nav!.PaneFooter as NavigationViewItem;
-                    Assert.IsNotNull(footer, "DemoNav must expose the Settings footer NavigationViewItem.");
+                    NavigationViewItem? footer = nav!.FooterMenuItems.Count > 0 ? nav.FooterMenuItems[0] as NavigationViewItem : null;
+                    Assert.IsNotNull(footer, "DemoNav must expose the Settings footer NavigationViewItem in FooterMenuItems.");
                     ContentPresenter? footerIcon = FindVisualChildByName<ContentPresenter>(footer!, "IconPresenter");
                     Assert.IsNotNull(footerIcon, "Footer item must expose IconPresenter.");
 

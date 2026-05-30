@@ -768,8 +768,12 @@ namespace Fluence.Wpf.Tests
                         "Selecting the footer Settings item should navigate to the Settings page.");
                     Assert.IsTrue(settings.IsSelected,
                         "The footer Settings item should show the same selected state as navigation list items.");
+                    Assert.IsTrue(nav.FooterMenuItems.Contains(settings),
+                        "Settings should live in the FooterMenuItems region.");
+                    Assert.AreSame(settings, nav.SelectedFooterItem,
+                        "Selecting Settings should make it the active footer selection.");
                     Assert.IsNull(nav.SelectedItem,
-                        "Settings lives in PaneFooter and should not masquerade as a normal navigation item.");
+                        "Footer selection should clear the main-menu SelectedItem so only one region is selected.");
                 }
                 finally
                 {
@@ -779,7 +783,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void MainWindow_SettingsFooter_HidesTextInCompactAndTopModes()
+        public void MainWindow_SettingsFooter_CollapsesLabelWhenPaneClosed()
         {
             RunOnSta(delegate
             {
@@ -794,26 +798,26 @@ namespace Fluence.Wpf.Tests
 
                     Assert.AreEqual(NavigationViewPaneDisplayMode.Left, nav.PaneDisplayMode,
                         "Demo shell starts in expanded Left navigation mode.");
+                    // As a FooterMenuItems entry, Settings uses the standard NavigationViewItem template:
+                    // the label is collapsed/shown by the template (it is not emptied), exactly like the
+                    // main menu items. Content stays "Settings" throughout.
                     Assert.AreEqual("Settings", settings.Content as string,
+                        "The Settings footer item keeps its label content; the template toggles the label visual.");
+                    ContentPresenter? label = FindByName<ContentPresenter>(settings, "ContentPresenter");
+                    Assert.IsNotNull(label, "Footer item must expose the label ContentPresenter.");
+                    Assert.AreEqual(Visibility.Visible, label.Visibility,
                         "Expanded Left mode should show the Settings label.");
 
-                    nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Top;
-                    Drain(window.Dispatcher);
-                    window.UpdateLayout();
-                    Drain(window.Dispatcher);
-
-                    Assert.AreEqual(string.Empty, settings.Content as string,
-                        "Top mode should render the Settings footer as icon-only.");
-
                     nav.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact;
+                    nav.IsPaneOpen = false;
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
-                    Assert.AreEqual(string.Empty, settings.Content as string,
-                        "LeftCompact mode should render the Settings footer as icon-only.");
-                    Assert.AreEqual(48.0, settings.Width, 0.01,
-                        "Icon-only Settings footer should reserve the compact pane width.");
+                    label = FindByName<ContentPresenter>(settings, "ContentPresenter");
+                    Assert.IsNotNull(label, "Footer item must still expose the label ContentPresenter after re-templating.");
+                    Assert.AreEqual(Visibility.Collapsed, label.Visibility,
+                        "A closed LeftCompact pane should collapse the Settings label to an icon-only entry, like the main items.");
                     Assert.AreEqual(Visibility.Visible, settings.Visibility,
                         "LeftCompact mode should keep the Settings footer item visible as a gear icon.");
                     FontIcon? settingsIcon = settings.Icon as FontIcon;
@@ -2374,15 +2378,9 @@ namespace Fluence.Wpf.Tests
 
         private static void InvokeSettingsItem(NavigationViewItem settingsItem)
         {
-            MouseButtonEventArgs mouseArgs = new(
-                Mouse.PrimaryDevice,
-                Environment.TickCount,
-                MouseButton.Left)
-            {
-                RoutedEvent = UIElement.PreviewMouseLeftButtonDownEvent,
-                Source = settingsItem
-            };
-            settingsItem.RaiseEvent(mouseArgs);
+            // Settings is a FooterMenuItems entry; drive selection through the same control path a
+            // click/keyboard invocation uses (raises ItemInvoked and shows the footer indicator).
+            NavigationView.FromItemContainer(settingsItem)?.SelectFooterMenuItem(settingsItem);
             Drain(settingsItem.Dispatcher);
         }
 

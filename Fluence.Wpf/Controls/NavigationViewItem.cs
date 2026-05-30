@@ -29,7 +29,6 @@
 using Fluence.Wpf.Automation;
 using System.Windows;
 using System.Windows.Automation.Peers;
-using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace Fluence.Wpf.Controls
@@ -132,7 +131,7 @@ namespace Fluence.Wpf.Controls
         /// <inheritdoc />
         protected override void OnKeyDown(KeyEventArgs e)
         {
-            if ((e.Key == Key.Enter || e.Key == Key.Space) && IsEnabled && ItemsControl.ItemsControlFromItemContainer(this) is NavigationView nav)
+            if ((e.Key == Key.Enter || e.Key == Key.Space) && IsEnabled && NavigationView.FromItemContainer(this) is NavigationView nav)
             {
                 nav.InvokeItem(this);
                 e.Handled = true;
@@ -186,7 +185,7 @@ namespace Fluence.Wpf.Controls
                 base.OnPreviewMouseLeftButtonDown(e);
                 return;
             }
-            if (ItemsControl.ItemsControlFromItemContainer(this) is not NavigationView nav)
+            if (NavigationView.FromItemContainer(this) is not NavigationView nav)
             {
                 base.OnPreviewMouseLeftButtonDown(e);
                 return;

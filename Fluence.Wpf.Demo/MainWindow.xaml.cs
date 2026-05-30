@@ -66,7 +66,6 @@ namespace Fluence.Wpf.Demo
         private DependencyPropertyDescriptor? _backVisibleDpd;
         private DependencyPropertyDescriptor? _paneToggleVisibleDpd;
         private object? _lastAnimatedPageContent;
-        private object? _settingsPage;
 
         internal event EventHandler? DemoNavigationPaneStateChanged;
 
@@ -86,6 +85,7 @@ namespace Fluence.Wpf.Demo
             _navigationState.Changed += DemoNavigationState_Changed;
 
             DemoNav?.SelectionChanged += DemoNav_SelectionChanged;
+            DemoNav?.ItemInvoked += DemoNav_ItemInvoked;
 
             PopulateNavigation();
             WatchTitleBarDependencies();
@@ -122,6 +122,7 @@ namespace Fluence.Wpf.Demo
             }
 
             DemoNav?.SelectionChanged -= DemoNav_SelectionChanged;
+            DemoNav?.ItemInvoked -= DemoNav_ItemInvoked;
             _navigationState.Changed -= DemoNavigationState_Changed;
 
             base.OnClosed(e);
@@ -139,10 +140,6 @@ namespace Fluence.Wpf.Demo
             _pageByContainer.Clear();
             _navigationBackStack.Clear();
             _currentNavigationItem = null;
-            if (SettingsNavigationItem is NavigationViewItem settingsNavigationItem)
-            {
-                settingsNavigationItem.IsSelected = false;
-            }
 
             NavigationViewItem? defaultItem = null;
             foreach (DemoNavigationItem item in DemoNavigationCatalog.Items)
@@ -154,6 +151,14 @@ namespace Fluence.Wpf.Demo
                 {
                     defaultItem = navItem;
                 }
+            }
+
+            // Settings is a FooterMenuItems entry (authored in XAML). Register its metadata so it
+            // routes through the same EnsurePageContent / CreatePageForRoute path as catalog items.
+            if (SettingsNavigationItem is NavigationViewItem settingsNavigationItem)
+            {
+                _navigationItemByContainer[settingsNavigationItem] =
+                    new DemoNavigationItem("Settings", "settings", "settings options preferences", "", false);
             }
 
             if (defaultItem is null && DemoNav.Items.Count > 0)
@@ -180,11 +185,6 @@ namespace Fluence.Wpf.Demo
             if (DemoNav.SelectedItem is not NavigationViewItem selected)
             {
                 return;
-            }
-
-            if (SettingsNavigationItem is NavigationViewItem settingsNavigationItem)
-            {
-                settingsNavigationItem.IsSelected = false;
             }
 
             if (!ReferenceEquals(_currentNavigationItem, selected))
@@ -225,7 +225,10 @@ namespace Fluence.Wpf.Demo
 
             if (string.Equals(tag.Trim(), "settings", StringComparison.OrdinalIgnoreCase))
             {
-                NavigateToSettings();
+                if (SettingsNavigationItem is NavigationViewItem settingsItem)
+                {
+                    DemoNav.SelectFooterMenuItem(settingsItem);
+                }
                 return;
             }
 
@@ -239,9 +242,12 @@ namespace Fluence.Wpf.Demo
                 return;
             }
 
-            if (SettingsNavigationItem is NavigationViewItem settingsNavigationItem)
+            // Footer entries (Settings) are not in DemoNav.Items; route them through the control's
+            // footer selection so they raise ItemInvoked and show the footer selection indicator.
+            if (ReferenceEquals(item, SettingsNavigationItem))
             {
-                settingsNavigationItem.IsSelected = false;
+                DemoNav.SelectFooterMenuItem(item);
+                return;
             }
 
             if (ReferenceEquals(DemoNav.SelectedItem, item) && EnsurePageContent(item) is object page)
@@ -257,24 +263,32 @@ namespace Fluence.Wpf.Demo
             }
         }
 
-        private void NavigateToSettings()
+        /// <summary>
+        /// Navigates when a footer item (Settings) is invoked. Main-menu items navigate through
+        /// <see cref="DemoNav_SelectionChanged"/>; footer items clear the main selection, so they are
+        /// handled here instead.
+        /// </summary>
+        private void DemoNav_ItemInvoked(object? sender, NavigationViewItemInvokedEventArgs e)
         {
-            if (DemoNav is null || SettingsNavigationItem is null)
+            if (DemoNav is null || !ReferenceEquals(e.InvokedItemContainer, SettingsNavigationItem))
             {
                 return;
             }
 
-            if (!ReferenceEquals(DemoNav.Content, _settingsPage) && !_isNavigatingBack && _currentNavigationItem is not null)
+            object? page = EnsurePageContent(SettingsNavigationItem);
+            if (page is null)
+            {
+                return;
+            }
+
+            if (!ReferenceEquals(DemoNav.Content, page) && !_isNavigatingBack && _currentNavigationItem is not null)
             {
                 _navigationBackStack.Add(_currentNavigationItem);
             }
 
-            _currentNavigationItem = null;
-            DemoNav.SelectedItem = null;
-            SettingsNavigationItem.IsSelected = true;
-            _settingsPage ??= new GallerySettingsPage(this);
-            DemoNav.Content = _settingsPage;
-            AnimatePageInIfChanged(_settingsPage);
+            _currentNavigationItem = SettingsNavigationItem;
+            DemoNav.Content = page;
+            AnimatePageInIfChanged(page);
             UpdateBackNavigationState();
         }
 
@@ -604,26 +618,11 @@ namespace Fluence.Wpf.Demo
             }
 
             _navigationState.ApplyChrome(extendedTitleBar, shellTitleBarPresent);
-            UpdateSettingsNavigationItemDisplay();
             ScheduleExtendedTitleOverlapCheck();
-        }
-
-        private void UpdateSettingsNavigationItemDisplay()
-        {
-            if (DemoNav is null || SettingsNavigationItem is null)
-            {
-                return;
-            }
-
-            bool showText = _navigationState.ShouldShowSettingsText;
-            SettingsNavigationItem.Content = showText ? "Settings" : string.Empty;
-            SettingsNavigationItem.Width = showText ? double.NaN : 48.0;
-            SettingsNavigationItem.MinWidth = showText ? 0.0 : 48.0;
         }
 
         private void DemoNavigationState_Changed(object? sender, EventArgs e)
         {
-            UpdateSettingsNavigationItemDisplay();
             DemoNavigationPaneStateChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -676,24 +675,6 @@ namespace Fluence.Wpf.Demo
                 _isNavigatingBack = false;
                 UpdateBackNavigationState();
             }
-        }
-
-        private void SettingsNavigationItem_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            NavigateToSettings();
-            e.Handled = true;
-        }
-
-        private void SettingsNavigationItem_PreviewKeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.Key is not (Key.Enter or Key.Space))
-            {
-                return;
-            }
-
-            _ = SettingsNavigationItem?.Focus();
-            NavigateToSettings();
-            e.Handled = true;
         }
 
         private void ScheduleExtendedTitleOverlapCheck()

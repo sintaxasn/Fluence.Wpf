@@ -404,11 +404,38 @@
                             x:Name="PaneFooterHost"
                             Grid.Row="2"
                             Padding="0,0,8,8">
-                            <!--  HorizontalAlignment=Left anchors the footer content to the pane's left edge. A ContentPresenter arranges its child at the child's desired size (it does not force-stretch like the menu items' StackPanel), so without this the icon-only collapsed footer item (~48px) is centered in the pane and slides laterally as the pane width animates between open and compact. Left keeps the footer icon column fixed at the same x as the menu item icons.  -->
-                            <ContentPresenter
-                                Margin="0,4,0,0"
-                                HorizontalAlignment="Left"
-                                Content="{TemplateBinding PaneFooter}" />
+                            <StackPanel Orientation="Vertical">
+                                <!--  FooterMenuItems: pinned, selectable navigation entries that stretch to the pane width (full-width hover/selection) and share the single-selection model with the main list.  -->
+                                <Grid>
+                                    <ItemsControl
+                                        x:Name="PART_FooterItemsHost"
+                                        Focusable="False"
+                                        ItemsSource="{Binding FooterMenuItems, RelativeSource={RelativeSource TemplatedParent}}" />
+                                    <Border
+                                        x:Name="PART_FooterSelectionIndicator"
+                                        Width="3"
+                                        Height="16"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Top"
+                                        Background="{DynamicResource AccentFillColorDefaultBrush}"
+                                        CornerRadius="1.5"
+                                        IsHitTestVisible="False"
+                                        Opacity="0"
+                                        RenderTransformOrigin="0.5,0.5">
+                                        <Border.RenderTransform>
+                                            <TransformGroup>
+                                                <ScaleTransform />
+                                                <TranslateTransform />
+                                            </TransformGroup>
+                                        </Border.RenderTransform>
+                                    </Border>
+                                </Grid>
+                                <!--  Legacy free-form PaneFooter content. HorizontalAlignment=Left anchors it to the pane's left edge: a ContentPresenter arranges its child at the child's desired size (it does not force-stretch like the menu items' StackPanel), so without this an icon-only collapsed footer item (~48px) is centered in the pane and slides laterally as the pane width animates between open and compact. Left keeps the footer icon column fixed at the same x as the menu item icons.  -->
+                                <ContentPresenter
+                                    Margin="0,4,0,0"
+                                    HorizontalAlignment="Left"
+                                    Content="{TemplateBinding PaneFooter}" />
+                            </StackPanel>
                         </Border>
                     </Grid>
                 </Border>
@@ -627,11 +654,38 @@
                             x:Name="PaneFooterHost"
                             Grid.Row="2"
                             Padding="0,0,0,8">
-                            <!--  HorizontalAlignment=Left anchors the footer content to the pane's left edge. A ContentPresenter arranges its child at the child's desired size (it does not force-stretch like the menu items' StackPanel), so without this the icon-only collapsed footer item (~48px) is centered in the pane and slides laterally as the pane width animates between open and compact. Left keeps the footer icon column fixed at the same x as the menu item icons.  -->
-                            <ContentPresenter
-                                Margin="0,4,0,0"
-                                HorizontalAlignment="Left"
-                                Content="{TemplateBinding PaneFooter}" />
+                            <StackPanel Orientation="Vertical">
+                                <!--  FooterMenuItems: pinned, selectable navigation entries that stretch to the pane width (full-width hover/selection) and share the single-selection model with the main list.  -->
+                                <Grid>
+                                    <ItemsControl
+                                        x:Name="PART_FooterItemsHost"
+                                        Focusable="False"
+                                        ItemsSource="{Binding FooterMenuItems, RelativeSource={RelativeSource TemplatedParent}}" />
+                                    <Border
+                                        x:Name="PART_FooterSelectionIndicator"
+                                        Width="3"
+                                        Height="16"
+                                        HorizontalAlignment="Left"
+                                        VerticalAlignment="Top"
+                                        Background="{DynamicResource AccentFillColorDefaultBrush}"
+                                        CornerRadius="1.5"
+                                        IsHitTestVisible="False"
+                                        Opacity="0"
+                                        RenderTransformOrigin="0.5,0.5">
+                                        <Border.RenderTransform>
+                                            <TransformGroup>
+                                                <ScaleTransform />
+                                                <TranslateTransform />
+                                            </TransformGroup>
+                                        </Border.RenderTransform>
+                                    </Border>
+                                </Grid>
+                                <!--  Legacy free-form PaneFooter content. HorizontalAlignment=Left anchors it to the pane's left edge: a ContentPresenter arranges its child at the child's desired size (it does not force-stretch like the menu items' StackPanel), so without this an icon-only collapsed footer item (~48px) is centered in the pane and slides laterally as the pane width animates between open and compact. Left keeps the footer icon column fixed at the same x as the menu item icons.  -->
+                                <ContentPresenter
+                                    Margin="0,4,0,0"
+                                    HorizontalAlignment="Left"
+                                    Content="{TemplateBinding PaneFooter}" />
+                            </StackPanel>
                         </Border>
                     </Grid>
                 </Border>
@@ -825,11 +879,48 @@
                                 </Border.RenderTransform>
                             </Border>
                         </Grid>
-                        <ContentPresenter
+                        <StackPanel
                             Grid.Column="3"
                             HorizontalAlignment="Right"
-                            VerticalAlignment="Center"
-                            Content="{TemplateBinding PaneFooter}" />
+                            VerticalAlignment="Stretch"
+                            Orientation="Horizontal">
+                            <!--  FooterMenuItems: right-docked, selectable footer entries. Not part of the main top overflow.  -->
+                            <Grid VerticalAlignment="Stretch">
+                                <ItemsControl
+                                    x:Name="PART_FooterItemsHost"
+                                    VerticalAlignment="Center"
+                                    Focusable="False"
+                                    ItemsSource="{Binding FooterMenuItems, RelativeSource={RelativeSource TemplatedParent}}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <StackPanel Focusable="False" Orientation="Horizontal" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                </ItemsControl>
+                                <!--  Canvas reports zero desired size, so the indicator overlays the footer items without widening column 3 (which would steal width from the top overflow calculation).  -->
+                                <Canvas>
+                                    <Border
+                                        x:Name="PART_FooterSelectionIndicator"
+                                        Canvas.Left="0"
+                                        Canvas.Bottom="0"
+                                        Width="16"
+                                        Height="3"
+                                        Background="{DynamicResource AccentFillColorDefaultBrush}"
+                                        CornerRadius="1.5"
+                                        IsHitTestVisible="False"
+                                        Opacity="0"
+                                        RenderTransformOrigin="0.5,0.5">
+                                        <Border.RenderTransform>
+                                            <TransformGroup>
+                                                <ScaleTransform />
+                                                <TranslateTransform />
+                                            </TransformGroup>
+                                        </Border.RenderTransform>
+                                    </Border>
+                                </Canvas>
+                            </Grid>
+                            <ContentPresenter VerticalAlignment="Center" Content="{TemplateBinding PaneFooter}" />
+                        </StackPanel>
                     </Grid>
                 </Border>
                 <Border Grid.Row="1" Background="{TemplateBinding ContentBackground}">

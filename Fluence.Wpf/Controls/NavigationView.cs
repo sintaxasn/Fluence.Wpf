@@ -30,6 +30,7 @@ using Fluence.Wpf.Automation;
 using Fluence.Wpf.Helpers;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Windows;
@@ -52,6 +53,8 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = PartPaneItemsScrollViewer, Type = typeof(ScrollViewer))]
     [TemplatePart(Name = PartPaneToggleButton, Type = typeof(System.Windows.Controls.Button))]
     [TemplatePart(Name = PartSelectionIndicator, Type = typeof(FrameworkElement))]
+    [TemplatePart(Name = PartFooterItemsHost, Type = typeof(ItemsControl))]
+    [TemplatePart(Name = PartFooterSelectionIndicator, Type = typeof(FrameworkElement))]
     [TemplatePart(Name = PartPaneColumn, Type = typeof(ColumnDefinition))]
     [TemplatePart(Name = PartTopItemsHost, Type = typeof(FrameworkElement))]
     [TemplatePart(Name = PartTopOverflowButton, Type = typeof(System.Windows.Controls.Button))]
@@ -83,6 +86,16 @@ namespace Fluence.Wpf.Controls
         /// Name of the shared selection indicator element.
         /// </summary>
         public const string PartSelectionIndicator = "PART_SelectionIndicator";
+
+        /// <summary>
+        /// Name of the items host that renders <see cref="FooterMenuItems"/>.
+        /// </summary>
+        public const string PartFooterItemsHost = "PART_FooterItemsHost";
+
+        /// <summary>
+        /// Name of the selection indicator element for the footer items region.
+        /// </summary>
+        public const string PartFooterSelectionIndicator = "PART_FooterSelectionIndicator";
 
         /// <summary>
         /// Name of the top pane items host template part.
@@ -232,6 +245,17 @@ namespace Fluence.Wpf.Controls
             typeof(NavigationView),
             new PropertyMetadata(null));
 
+        private static readonly DependencyPropertyKey FooterMenuItemsPropertyKey = DependencyProperty.RegisterReadOnly(
+            "FooterMenuItems",
+            typeof(ObservableCollection<object>),
+            typeof(NavigationView),
+            new PropertyMetadata(null));
+
+        /// <summary>
+        /// Identifies the <see cref="FooterMenuItems"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty FooterMenuItemsProperty = FooterMenuItemsPropertyKey.DependencyProperty;
+
         /// <summary>
         /// Initializes static members of the NavigationView class and overrides the default style metadata.
         /// </summary>
@@ -250,6 +274,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public NavigationView()
         {
+            SetValue(FooterMenuItemsPropertyKey, new ObservableCollection<object>());
+            FooterMenuItems.CollectionChanged += OnFooterMenuItemsChanged;
             Loaded += OnLoaded;
             SizeChanged += OnSizeChanged;
             Unloaded += OnUnloaded;
@@ -383,6 +409,20 @@ namespace Fluence.Wpf.Controls
             set => SetValue(ContentProperty, value);
         }
 
+        /// <summary>
+        /// Gets the collection of pinned footer entries, rendered below the main menu items.
+        /// Footer entries are <see cref="NavigationViewItem"/> instances that participate in the
+        /// same single-selection model and selection indicator as the main menu, mirroring the
+        /// WinUI <c>NavigationView.FooterMenuItems</c> region.
+        /// </summary>
+        public ObservableCollection<object> FooterMenuItems => (ObservableCollection<object>)GetValue(FooterMenuItemsProperty);
+
+        /// <summary>
+        /// Gets the currently selected footer item, or <see langword="null"/> when the active
+        /// selection is in the main menu region (or nothing is selected).
+        /// </summary>
+        internal NavigationViewItem? SelectedFooterItem { get; private set; }
+
         /// <inheritdoc />
         public override void OnApplyTemplate()
         {
@@ -409,6 +449,15 @@ namespace Fluence.Wpf.Controls
             _paneColumn = GetTemplateChild(PartPaneColumn) as ColumnDefinition;
             _selectionIndicator = GetTemplateChild(PartSelectionIndicator) as FrameworkElement;
             _indicatorHost = _selectionIndicator is not null ? VisualTreeHelper.GetParent(_selectionIndicator) as FrameworkElement : null;
+            _footerSelectionIndicator = GetTemplateChild(PartFooterSelectionIndicator) as FrameworkElement;
+            _footerIndicatorHost = _footerSelectionIndicator is not null ? VisualTreeHelper.GetParent(_footerSelectionIndicator) as FrameworkElement : null;
+            foreach (object entry in FooterMenuItems)
+            {
+                if (entry is NavigationViewItem footerItem)
+                {
+                    HookFooterItem(footerItem);
+                }
+            }
             _indicatorPositioned = false;
             StopAnimation();
             CoerceTopPaneProperties();
@@ -426,7 +475,12 @@ namespace Fluence.Wpf.Controls
                 ? ResolveNavigationViewItem(e.RemovedItems[0])
                 : null;
             base.OnSelectionChanged(e);
-            _ = Dispatcher.BeginInvoke(new Action(() => PositionIndicator(true, previousItem)), DispatcherPriority.Loaded);
+            if (SelectedItem is not null && SelectedFooterItem is not null)
+            {
+                SelectedFooterItem.IsSelected = false;
+                SelectedFooterItem = null;
+            }
+            _ = Dispatcher.BeginInvoke(new Action(() => RefreshIndicators(true, previousItem)), DispatcherPriority.Loaded);
         }
 
         /// <inheritdoc />
@@ -528,6 +582,15 @@ namespace Fluence.Wpf.Controls
             return _selectionIndicator;
         }
 
+        /// <summary>
+        /// Returns the footer selection indicator element from the current template, if resolved.
+        /// Used by unit tests.
+        /// </summary>
+        internal FrameworkElement? GetFooterSelectionIndicatorForTesting()
+        {
+            return _footerSelectionIndicator;
+        }
+
         internal double GetPaneColumnWidthForTesting()
         {
             return _paneColumn?.Width.Value ?? double.NaN;
@@ -542,28 +605,148 @@ namespace Fluence.Wpf.Controls
             return CalculateDepartPosition(fromPosition, previousItem, topMode, direction);
         }
 
+        /// <summary>
+        /// Programmatically selects a <see cref="FooterMenuItems"/> entry as if the user had invoked
+        /// it: clears any main-menu selection, marks the footer item selected, moves the footer
+        /// selection indicator, and raises <see cref="ItemInvoked"/>. No-op if the item is not a
+        /// current footer entry.
+        /// </summary>
+        /// <param name="item">The footer item to select.</param>
+        public void SelectFooterMenuItem(NavigationViewItem item)
+        {
+            if (item is null || !FooterMenuItems.Contains(item))
+            {
+                return;
+            }
+            InvokeItem(item);
+        }
+
         internal void InvokeItem(NavigationViewItem item)
         {
             if (item is null || !item.IsEnabled)
             {
                 return;
             }
-            object invokedItem = GetDataFromContainer(item);
+            bool isFooter = IsFooterItem(item);
+            object invokedItem = isFooter ? item : GetDataFromContainer(item);
             ItemInvoked?.Invoke(this, new NavigationViewItemInvokedEventArgs(invokedItem, item, false));
-            SelectItemFromContainer(item);
+            if (isFooter)
+            {
+                SelectFooterItem(item);
+            }
+            else
+            {
+                SelectItemFromContainer(item);
+            }
+        }
+
+        /// <summary>
+        /// Returns whether <paramref name="item"/> belongs to the <see cref="FooterMenuItems"/> region.
+        /// </summary>
+        private bool IsFooterItem(NavigationViewItem item)
+        {
+            return FooterMenuItems.Contains(item);
+        }
+
+        /// <summary>
+        /// Selects a footer item, clearing any main-menu selection so that exactly one region owns
+        /// the selection at a time, then schedules the footer selection indicator to reposition.
+        /// </summary>
+        private void SelectFooterItem(NavigationViewItem item)
+        {
+            if (item is null)
+            {
+                return;
+            }
+
+            foreach (object entry in FooterMenuItems)
+            {
+                if (entry is NavigationViewItem footerItem && !ReferenceEquals(footerItem, item))
+                {
+                    footerItem.IsSelected = false;
+                }
+            }
+
+            SelectedFooterItem = item;
+            item.IsSelected = true;
+
+            // Clearing the main selection raises OnSelectionChanged (which refreshes the indicators).
+            // When the main selection was already empty no event fires, so refresh explicitly too.
+            if (SelectedItem is not null)
+            {
+                SelectedItem = null;
+            }
+            else
+            {
+                ScheduleIndicatorPosition(true);
+            }
+        }
+
+        private void OnFooterMenuItemsChanged(object? sender, NotifyCollectionChangedEventArgs e)
+        {
+            if (e.OldItems is not null)
+            {
+                foreach (object entry in e.OldItems)
+                {
+                    if (entry is NavigationViewItem footerItem)
+                    {
+                        UnhookFooterItem(footerItem);
+                        if (ReferenceEquals(footerItem, SelectedFooterItem))
+                        {
+                            SelectedFooterItem = null;
+                        }
+                    }
+                }
+            }
+
+            if (e.NewItems is not null)
+            {
+                foreach (object entry in e.NewItems)
+                {
+                    if (entry is NavigationViewItem footerItem)
+                    {
+                        HookFooterItem(footerItem);
+                    }
+                }
+            }
+
+            ScheduleIndicatorPosition(false);
+        }
+
+        private void HookFooterItem(NavigationViewItem footerItem)
+        {
+            footerItem.Loaded -= OnNavigationViewItemLoaded;
+            footerItem.Loaded += OnNavigationViewItemLoaded;
+            footerItem.SizeChanged -= OnNavigationViewItemSizeChanged;
+            footerItem.SizeChanged += OnNavigationViewItemSizeChanged;
+            footerItem.IsVisibleChanged -= OnFooterItemIsVisibleChanged;
+            footerItem.IsVisibleChanged += OnFooterItemIsVisibleChanged;
+        }
+
+        private void UnhookFooterItem(NavigationViewItem footerItem)
+        {
+            footerItem.Loaded -= OnNavigationViewItemLoaded;
+            footerItem.SizeChanged -= OnNavigationViewItemSizeChanged;
+            footerItem.IsVisibleChanged -= OnFooterItemIsVisibleChanged;
+        }
+
+        private void OnFooterItemIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            ScheduleIndicatorPosition(false);
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
         {
-            _topOverflowButton?.Click -= OnTopOverflowButtonClick;
+            // Do not null the resolved template parts here. WPF preserves a control's template tree
+            // across an unload/reload (e.g. a cached page being revisited) and does NOT re-run
+            // OnApplyTemplate, so nulling the parts would strand the selection indicator and chrome
+            // handlers after the control reloads. OnApplyTemplate re-resolves the parts (with a
+            // detach/reattach) if the template is genuinely re-applied. Here we only release the
+            // external window watcher and stop in-flight animations, and reset the positioned flag
+            // so the indicator re-snaps to the current selection on reload.
             DetachTitleBarWindowWatcher();
             StopAnimation();
             StopPaneColumnAnimation();
-            _paneColumn = null;
-            _selectionIndicator = null;
-            _indicatorHost = null;
-            _topItemsHost = null;
-            _topOverflowButton = null;
             _indicatorPositioned = false;
         }
 
@@ -573,6 +756,9 @@ namespace Fluence.Wpf.Controls
             CoerceTopPaneProperties();
             UpdateTitleBarExtensionForPaneMode();
             ScheduleTopOverflowUpdate();
+            // Reposition the selection indicator on (re)load so it tracks the current selection even
+            // when the control was reloaded without OnApplyTemplate running again.
+            ScheduleIndicatorPosition(false);
         }
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -625,7 +811,7 @@ namespace Fluence.Wpf.Controls
 
         private void OnNavigationViewItemLoaded(object sender, RoutedEventArgs e)
         {
-            if (SelectedItem is not null)
+            if (SelectedItem is not null || SelectedFooterItem is not null)
             {
                 ScheduleIndicatorPosition(false);
             }
@@ -841,17 +1027,45 @@ namespace Fluence.Wpf.Controls
 
         private void ScheduleIndicatorPosition(bool animate)
         {
-            _ = Dispatcher.BeginInvoke(new Action(() => PositionIndicator(animate)), DispatcherPriority.Loaded);
+            _ = Dispatcher.BeginInvoke(new Action(() => RefreshIndicators(animate, null)), DispatcherPriority.Loaded);
         }
 
         /// <summary>
-        /// Positions the shared indicator at the currently selected item.
-        /// When <paramref name="animate"/> is true and the indicator was previously positioned,
-        /// runs a depart/arrive animation sequence.
+        /// Repositions both the main and footer selection indicators. The selection model guarantees
+        /// at most one region (main menu or footer) owns the selection, so at most one indicator shows.
         /// </summary>
-        private void PositionIndicator(bool animate)
+        private void RefreshIndicators(bool animate, NavigationViewItem? previousItem)
         {
-            PositionIndicator(animate, null);
+            PositionIndicator(animate, previousItem);
+            PositionFooterIndicator(animate);
+        }
+
+        /// <summary>
+        /// Snaps the footer selection indicator onto the selected footer item, or hides it when no
+        /// footer item is selected. The footer region typically holds a single item, so a snap
+        /// (rather than the main region's depart/arrive flight) is used; cross-region transitions
+        /// fade the inactive indicator out, matching WinUI's region-to-region behavior.
+        /// </summary>
+        private void PositionFooterIndicator(bool animate)
+        {
+            _ = animate;
+            if (_footerSelectionIndicator is null || _footerIndicatorHost is null)
+            {
+                return;
+            }
+            if (!IsLoaded
+                || SelectedFooterItem is null
+                || !SelectedFooterItem.IsVisible
+                || SelectedFooterItem.ActualHeight is 0)
+            {
+                _footerSelectionIndicator.BeginAnimation(OpacityProperty, null);
+                _footerSelectionIndicator.Opacity = 0.0;
+                return;
+            }
+
+            bool topMode = PaneDisplayMode == NavigationViewPaneDisplayMode.Top;
+            Point targetPosition = CalculateIndicatorPosition(SelectedFooterItem, _footerSelectionIndicator, _footerIndicatorHost, topMode);
+            SnapIndicatorCore(_footerSelectionIndicator, targetPosition);
         }
 
         private void PositionIndicator(bool animate, NavigationViewItem? previousItem)
@@ -876,7 +1090,7 @@ namespace Fluence.Wpf.Controls
             }
 
             bool topMode = PaneDisplayMode == NavigationViewPaneDisplayMode.Top;
-            Point targetPosition = CalculateIndicatorPosition(nvi, topMode);
+            Point targetPosition = CalculateIndicatorPosition(nvi, _selectionIndicator, _indicatorHost, topMode);
             if (!animate || !_indicatorPositioned)
             {
                 SnapIndicator(targetPosition);
@@ -888,21 +1102,17 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Calculates the translate position for the indicator relative to its host Grid.
+        /// Calculates the translate position for the supplied indicator relative to its host Grid.
         /// </summary>
-        private Point CalculateIndicatorPosition(NavigationViewItem item, bool topMode)
+        private Point CalculateIndicatorPosition(NavigationViewItem item, FrameworkElement indicator, FrameworkElement host, bool topMode)
         {
-            if (_selectionIndicator is null)
-            {
-                throw new InvalidOperationException("Selection indicator template part is missing.");
-            }
             try
             {
-                GeneralTransform transform = item.TransformToAncestor(_indicatorHost);
+                GeneralTransform transform = item.TransformToAncestor(host);
                 Point itemPos = transform.Transform(new Point(0, 0));
                 if (topMode)
                 {
-                    return new Point(itemPos.X + ((item.ActualWidth - _selectionIndicator.Width) / 2.0), 0.0);
+                    return new Point(itemPos.X + ((item.ActualWidth - indicator.Width) / 2.0), 0.0);
                 }
 
                 double x = itemPos.X + NavigationItemOuterHorizontalMargin;
@@ -910,7 +1120,7 @@ namespace Fluence.Wpf.Controls
                 {
                     x += NavigationItemChildIndicatorOffset;
                 }
-                return new Point(x, itemPos.Y + ((item.ActualHeight - _selectionIndicator.Height) / 2.0));
+                return new Point(x, itemPos.Y + ((item.ActualHeight - indicator.Height) / 2.0));
             }
             catch (Exception ex) when (ex.Message is not null)
             {
@@ -931,7 +1141,7 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Immediately places the indicator at the target offset with no animation.
+        /// Immediately places the main indicator at the target offset with no animation.
         /// </summary>
         private void SnapIndicator(Point targetPosition)
         {
@@ -939,8 +1149,18 @@ namespace Fluence.Wpf.Controls
             {
                 throw new InvalidOperationException("Selection indicator template part is missing.");
             }
-            StopAnimation(); EnsureMutableTransform();
-            TransformGroup group = (TransformGroup)_selectionIndicator.RenderTransform;
+            StopAnimation();
+            SnapIndicatorCore(_selectionIndicator, targetPosition);
+            _indicatorPositioned = true;
+        }
+
+        /// <summary>
+        /// Snaps an arbitrary indicator element to the supplied offset with scale reset and full opacity.
+        /// </summary>
+        private static void SnapIndicatorCore(FrameworkElement indicator, Point targetPosition)
+        {
+            EnsureMutableTransform(indicator);
+            TransformGroup group = (TransformGroup)indicator.RenderTransform;
             ScaleTransform scale = (ScaleTransform)group.Children[0];
             TranslateTransform translate = (TranslateTransform)group.Children[1];
 
@@ -949,8 +1169,7 @@ namespace Fluence.Wpf.Controls
             translate.X = targetPosition.X;
             translate.Y = targetPosition.Y;
 
-            _selectionIndicator.Opacity = 1.0;
-            _indicatorPositioned = true;
+            indicator.Opacity = 1.0;
         }
 
         private void AnimateIndicator(
@@ -964,7 +1183,7 @@ namespace Fluence.Wpf.Controls
             {
                 throw new InvalidOperationException("Selection indicator template part is missing.");
             }
-            StopAnimation(); EnsureMutableTransform();
+            StopAnimation(); EnsureMutableTransform(_selectionIndicator);
             TransformGroup group = (TransformGroup)_selectionIndicator.RenderTransform;
             ScaleTransform scale = (ScaleTransform)group.Children[0];
             TranslateTransform translate = (TranslateTransform)group.Children[1];
@@ -1215,22 +1434,17 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Replaces frozen XAML-defined transforms with mutable instances.
+        /// Replaces frozen XAML-defined transforms with mutable instances on the supplied indicator.
         /// </summary>
-        private void EnsureMutableTransform()
+        private static void EnsureMutableTransform(FrameworkElement indicator)
         {
-            if (_selectionIndicator is null)
-            {
-                return;
-            }
-
-            _selectionIndicator.BeginAnimation(OpacityProperty, null);
-            if (_selectionIndicator.RenderTransform as TransformGroup is not TransformGroup group || group.IsFrozen || group.Children.Count < 2 || group.Children[0] is not ScaleTransform s || group.Children[1] is not TranslateTransform t || s.IsFrozen || t.IsFrozen)
+            indicator.BeginAnimation(OpacityProperty, null);
+            if (indicator.RenderTransform as TransformGroup is not TransformGroup group || group.IsFrozen || group.Children.Count < 2 || group.Children[0] is not ScaleTransform s || group.Children[1] is not TranslateTransform t || s.IsFrozen || t.IsFrozen)
             {
                 TransformGroup newGroup = new();
                 newGroup.Children.Add(new ScaleTransform(1.0, 1.0));
                 newGroup.Children.Add(new TranslateTransform(0, 0));
-                _selectionIndicator.RenderTransform = newGroup;
+                indicator.RenderTransform = newGroup;
                 return;
             }
             ScaleTransform scale = (ScaleTransform)group.Children[0];
@@ -1511,6 +1725,25 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
+        /// Walks up the visual tree from <paramref name="container"/> to the owning
+        /// <see cref="NavigationView"/>. Unlike <see cref="ItemsControl.ItemsControlFromItemContainer"/>,
+        /// this resolves correctly for items hosted in the nested <see cref="FooterMenuItems"/> host.
+        /// </summary>
+        internal static NavigationView? FromItemContainer(DependencyObject? container)
+        {
+            DependencyObject? current = container;
+            while (current is not null)
+            {
+                if (current is NavigationView nav)
+                {
+                    return nav;
+                }
+                current = VisualTreeHelper.GetParent(current);
+            }
+            return null;
+        }
+
+        /// <summary>
         /// Represents a reference to the back navigation button control.
         /// </summary>
         private System.Windows.Controls.Button? _backButton;
@@ -1539,6 +1772,17 @@ namespace Fluence.Wpf.Controls
         /// Represents the host element for displaying an indicator within the user interface.
         /// </summary>
         private FrameworkElement? _indicatorHost;
+
+        /// <summary>
+        /// Selection indicator element for the footer region.
+        /// </summary>
+        private FrameworkElement? _footerSelectionIndicator;
+
+        /// <summary>
+        /// Host (coordinate parent) of <see cref="_footerSelectionIndicator"/>.
+        /// </summary>
+        private FrameworkElement? _footerIndicatorHost;
+
 
         /// <summary>
         /// Stores the current generation or version of the indicator animation.
