@@ -9,6 +9,14 @@
     d:DesignHeight="900"
     d:DesignWidth="900"
     mc:Ignorable="d">
+    <!--
+        Buttons gallery page. Pattern used by most pages:
+        * A SmoothScrollViewer over a StackPanel of DemoSampleControl "cards".
+        * Live controls for each card live in hidden ContentControl slots named
+        DemoSampleSlotNN...Host; the code-behind constructor calls
+        DemoSamplePageWiring.Apply(...) to move them into the cards and attach source.
+        See Fluence.Wpf.Demo/README.md and Pages/DemoSamplePageWiring.cs.
+    -->
     <ui:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
         <StackPanel Style="{StaticResource GalleryPageContentStackStyle}">
             <TextBlock Style="{StaticResource PageTitleStyle}" Text="Buttons" />

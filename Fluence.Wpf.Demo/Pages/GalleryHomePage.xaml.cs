@@ -111,6 +111,8 @@ namespace Fluence.Wpf.Demo.Pages
             return ((red * 0.2126) + (green * 0.7152) + (blue * 0.0722)) < 0.5;
         }
 
+        // Handles a click on any featured-control or action Card tile; reads the Card's
+        // Tag string and routes to the matching gallery page via host.NavigateTo(tag).
         private void Card_Click(object sender, RoutedEventArgs e)
         {
             if (sender is not Card card)

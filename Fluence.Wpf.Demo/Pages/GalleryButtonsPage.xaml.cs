@@ -349,12 +349,17 @@ namespace Fluence.Wpf.Demo.Pages.Buttons
 }
 ";
 
+        // Click counter for the RepeatButton interactive demo; incremented by
+        // RepeatCounterButton_Click and displayed in RepeatButtonCountText.
         private int _repeatButtonClickCount;
 
         public GalleryButtonsPage()
         {
             InitializeComponent();
 
+            // Move each hidden slot's control into its DemoSampleControl card and attach the
+            // XAML/C# source shown in the expander. The Nth source maps to DemoSampleSlot{N}. See
+            // DemoSamplePageWiring for the slot-naming contract.
             DemoSamplePageWiring.Apply(
                 (DependencyObject)Content,
                 new DemoSampleSource(1, ButtonAppearancesXamlSource, ButtonAppearancesCSharpSource),

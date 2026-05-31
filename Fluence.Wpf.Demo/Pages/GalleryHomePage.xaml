@@ -9,6 +9,19 @@
     d:DesignHeight="800"
     d:DesignWidth="900"
     mc:Ignorable="d">
+    <!--
+        Home page structure. This page does NOT use the DemoSampleControl slot pattern.
+        Instead it contains:
+        * A hero banner image (BrandBannerImage) that swaps between a light and dark
+        PNG asset when the theme changes. The swap is driven by UpdateBrandBanner()
+        in the code-behind, which subscribes to ApplicationThemeManager.Changed.
+        * Two action Card tiles (Theming, Shell) that route to the Settings page via
+        Card_Click, which calls host.NavigateTo(tag).
+        * A UniformGrid of nine featured-control Card tiles; each Card carries a Tag
+        string matching a gallery page route, and Card_Click resolves the navigation
+        through the same host.NavigateTo(tag) helper on MainWindow.
+        See GalleryHomePage.xaml.cs for the banner-update and card-click handlers.
+    -->
     <ui:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
         <StackPanel Style="{StaticResource GalleryPageContentStackStyle}">
             <!--  Hero brand graphic  -->

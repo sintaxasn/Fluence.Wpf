@@ -400,6 +400,9 @@ namespace Fluence.Wpf.Demo.Pages.DataBinding
         {
             InitializeComponent();
 
+            // Move each hidden slot's control into its DemoSampleControl card and attach the
+            // XAML/C# source shown in the expander. The Nth source maps to DemoSampleSlot{N}. See
+            // DemoSamplePageWiring for the slot-naming contract.
             DemoSamplePageWiring.Apply(
                 (DependencyObject)Content,
                 new DemoSampleSource(1, ObservableCollectionListViewXamlSource, ObservableCollectionListViewCSharpSource),
