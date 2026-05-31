@@ -46,7 +46,9 @@ foreach ($raw in $paths) {
     if (-not (Test-Path -LiteralPath $full -PathType Leaf)) { continue }
 
     try {
-        & pwsh -NoProfile -File $formatter -Path $full *> $null
+        # Use the same host the hook runs under (powershell.exe per .claude/settings.json);
+        # eng/Format-Xaml.ps1 is 5.1-compatible, so this avoids a hard dependency on pwsh 7.
+        & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $formatter -Path $full *> $null
     }
     catch {
         # Formatting is best-effort in the hook; never block the edit on a formatter hiccup.

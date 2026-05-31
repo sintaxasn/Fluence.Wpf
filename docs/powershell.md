@@ -35,7 +35,7 @@ a few seconds, with no IDE involved.
 
 Use `powershell.exe` (Windows PowerShell 5.1), not `pwsh` (PowerShell 7+). The Fluence
 DLL targets `net472`, which is the CLR that `powershell.exe` hosts. PowerShell 7 uses
-.NET (Core / 5+) and cannot load a `net472` assembly.
+.NET (Core / 5+); loading the `net472` Fluence assembly there is not supported and not reliable (runtime and shim mismatches), so use `powershell.exe`.
 
 Verify you have the right host:
 

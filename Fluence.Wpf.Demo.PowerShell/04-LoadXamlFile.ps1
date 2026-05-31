@@ -65,8 +65,22 @@ if ($null -ne $themeCombo) {
         [Fluence.Wpf.ApplicationThemeManager]::Apply($theme, [Fluence.Wpf.BackdropType]::Mica, $true)
     })
 }
+# The "Cycle accent" button steps through a small palette of custom accents.
+$accents = @(
+    [System.Windows.Media.Color]::FromRgb(0x00, 0x78, 0xD4),  # blue
+    [System.Windows.Media.Color]::FromRgb(0x10, 0x89, 0x3E),  # green
+    [System.Windows.Media.Color]::FromRgb(0xC4, 0x2B, 0x1C),  # red
+    [System.Windows.Media.Color]::FromRgb(0x74, 0x37, 0xC9)   # purple
+)
+$script:accentIndex = 0
 $accentBtn = $window.FindName('AccentButton')
-if ($null -ne $accentBtn) { $accentBtn.add_Click({ [Fluence.Wpf.ApplicationAccentColorManager]::ApplyCustomAccent([System.Windows.Media.Color]::FromRgb(0x74, 0x37, 0xC9)) }) }
+if ($null -ne $accentBtn) {
+    $accentBtn.add_Click({
+        $color = $accents[$script:accentIndex % $accents.Count]
+        $script:accentIndex++
+        [Fluence.Wpf.ApplicationAccentColorManager]::ApplyCustomAccent($color)
+    })
+}
 $sysAccentBtn = $window.FindName('SystemAccentButton')
 if ($null -ne $sysAccentBtn) { $sysAccentBtn.add_Click({ [Fluence.Wpf.ApplicationAccentColorManager]::ApplySystemAccent() }) }
 
