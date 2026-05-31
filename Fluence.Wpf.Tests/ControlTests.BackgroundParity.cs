@@ -421,10 +421,17 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void PowerShellDemoScripts_DeclareStrictModeParameters()
+        public void PowerShellDemoScripts_FollowCanonicalBootstrap()
         {
             string scriptsRoot = Path.Combine(FindRepoRoot(), "Fluence.Wpf.Demo.PowerShell");
             string[] scriptNames =
+            [
+                "01-HelloWorld.ps1",
+                "02-ThemeAndAccent.ps1",
+                "03-ControlsTour.ps1",
+                "04-LoadXamlFile.ps1"
+            ];
+            string[] retiredScriptNames =
             [
                 "Show-ControlsDemo.ps1",
                 "Show-ThemeDemo.ps1",
@@ -435,23 +442,40 @@ namespace Fluence.Wpf.Tests
             foreach (string scriptName in scriptNames)
             {
                 string path = Path.Combine(scriptsRoot, scriptName);
+                if (!File.Exists(path))
+                {
+                    violations.Add(scriptName + " is missing.");
+                    continue;
+                }
+
                 string source = File.ReadAllText(path);
 
-                if (ContainsOrdinal(source, "$SmokeTest") &&
-                    !ContainsOrdinal(source, "[switch]$SmokeTest"))
+                // Each script is self-contained and must follow the canonical bootstrap:
+                // relaunch into STA (WPF requirement), create a WPF Application before theming
+                // (otherwise ApplicationThemeManager.Apply has nowhere to publish brushes), and
+                // apply the Fluence theme engine.
+                if (!ContainsOrdinal(source, "GetApartmentState"))
                 {
-                    violations.Add(scriptName + " references $SmokeTest without declaring a switch parameter.");
+                    violations.Add(scriptName + " does not relaunch into STA (missing GetApartmentState guard).");
                 }
 
-                if (ContainsOrdinal(source, "$RunInProcess") &&
-                    !ContainsOrdinal(source, "[switch]$RunInProcess"))
+                if (!ContainsOrdinal(source, "System.Windows.Application"))
                 {
-                    violations.Add(scriptName + " references $RunInProcess without declaring a switch parameter.");
+                    violations.Add(scriptName + " does not create a System.Windows.Application before theming.");
                 }
 
-                if (ContainsOrdinal(source, "Show-FluenceDemo.ps1"))
+                if (!ContainsOrdinal(source, "ApplicationThemeManager]::Apply"))
                 {
-                    violations.Add(scriptName + " still reports the stale Show-FluenceDemo.ps1 script name.");
+                    violations.Add(scriptName + " does not call ApplicationThemeManager.Apply.");
+                }
+            }
+
+            // The retired scripts must be gone, and no new script should reference their names.
+            foreach (string retired in retiredScriptNames)
+            {
+                if (File.Exists(Path.Combine(scriptsRoot, retired)))
+                {
+                    violations.Add(retired + " should have been removed.");
                 }
             }
 
