@@ -192,6 +192,12 @@
                             <Setter TargetName="GapColumn" Property="Width" Value="0" />
                             <Setter TargetName="ContentColumn" Property="Width" Value="Auto" />
                         </DataTrigger>
+                        <!--  Footer items (e.g. Settings) render gear-only: hide the label and collapse its column, leaving just the icon. Only the Top pane template sets NavigationView.IsFooterItem on its footer host, and it inherits onto the footer items, so this rule is scoped to Top mode. The pane-level indicator re-centres under the narrowed item via the item's ActualWidth.  -->
+                        <Trigger Property="controls:NavigationView.IsFooterItem" Value="True">
+                            <Setter TargetName="ContentPresenter" Property="Visibility" Value="Collapsed" />
+                            <Setter TargetName="ContentColumn" Property="Width" Value="0" />
+                            <Setter TargetName="GapColumn" Property="Width" Value="0" />
+                        </Trigger>
                         <Trigger SourceName="InfoBadgePresenter" Property="Content" Value="{x:Null}">
                             <Setter TargetName="InfoBadgePresenter" Property="Visibility" Value="Collapsed" />
                         </Trigger>
@@ -889,6 +895,7 @@
                                 <ItemsControl
                                     x:Name="PART_FooterItemsHost"
                                     VerticalAlignment="Center"
+                                    controls:NavigationView.IsFooterItem="True"
                                     Focusable="False"
                                     ItemsSource="{Binding FooterMenuItems, RelativeSource={RelativeSource TemplatedParent}}">
                                     <ItemsControl.ItemsPanel>
@@ -897,7 +904,7 @@
                                         </ItemsPanelTemplate>
                                     </ItemsControl.ItemsPanel>
                                 </ItemsControl>
-                                <!--  Canvas reports zero desired size, so the indicator overlays the footer items without widening column 3 (which would steal width from the top overflow calculation).  -->
+                                <!--  Canvas reports zero desired size, so the indicator overlays the footer items without widening column 3 (which would steal width from the top overflow calculation). The Canvas fills the footer Grid cell at its origin, so canvas-space coordinates equal footer-Grid coordinates; CalculateIndicatorPosition transforms the selected item into the footer Grid (the indicator host) to centre the indicator under it.  -->
                                 <Canvas>
                                     <Border
                                         x:Name="PART_FooterSelectionIndicator"
