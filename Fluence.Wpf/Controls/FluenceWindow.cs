@@ -38,7 +38,6 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Shell;
-using System.Windows.Threading;
 
 namespace Fluence.Wpf.Controls
 {
@@ -468,12 +467,6 @@ namespace Fluence.Wpf.Controls
             _handle = new WindowInteropHelper(this).EnsureHandle();
             _hwndSource = HwndSource.FromHwnd(_handle);
             _hwndSource?.AddHook(WndProc);
-            // Cloak the window before the DWM backdrop and glass frame are applied. WPF presents
-            // the HWND before its first composed frame is ready; with a glass frame, a DWM system
-            // backdrop, and suppressed native caption painting, the empty client area is composited
-            // as solid black for one or more frames (the "black flash"). DWMWA_CLOAK keeps the window
-            // off-screen until the first frame has rendered, then BeginCloakForFirstPaint uncloaks it.
-            BeginCloakForFirstPaint();
             UpdateWindowChrome();
             ApplyWindowShell();
             SystemThemeWatcher.Watch(this);
@@ -558,60 +551,9 @@ namespace Fluence.Wpf.Controls
 
         #endregion
 
-        #region First-Paint Cloak
-
-        /// <summary>
-        /// Cloaks the window so DWM does not present it until the first WPF frame has rendered,
-        /// preventing the black client-area flash. Does nothing when DWM composition is unavailable
-        /// (no backdrop is drawn there, so there is no flash to hide, and cloaking could otherwise
-        /// leave a window invisible). The matching uncloak runs on either the first
-        /// <see cref="Window.ContentRendered"/> event or a guaranteed idle-priority dispatcher
-        /// fallback - whichever fires first - so the window can never be left cloaked even when
-        /// <see cref="Window.ContentRendered"/> does not fire (for example a zero-size or
-        /// content-less window).
-        /// </summary>
-        private void BeginCloakForFirstPaint()
-        {
-            if (_handle == IntPtr.Zero || !NativeMethods.IsCompositionEnabled())
-            {
-                return;
-            }
-            if (!NativeMethods.SetWindowCloak(_handle, true))
-            {
-                return;
-            }
-            _isCloaked = true;
-            ContentRendered += OnFirstContentRendered;
-            // ContextIdle runs only after the initial layout/render/input burst has drained, by which
-            // point the first frame is composed; it is always serviced, so it guarantees the uncloak.
-            _ = Dispatcher.BeginInvoke(DispatcherPriority.ContextIdle, new Action(EndCloakForFirstPaint));
-        }
-
-        private void OnFirstContentRendered(object? sender, EventArgs e)
-        {
-            EndCloakForFirstPaint();
-        }
-
-        private void EndCloakForFirstPaint()
-        {
-            if (!_isCloaked)
-            {
-                return;
-            }
-            _isCloaked = false;
-            ContentRendered -= OnFirstContentRendered;
-            if (_handle != IntPtr.Zero)
-            {
-                _ = NativeMethods.SetWindowCloak(_handle, false);
-            }
-        }
-
-        #endregion
-
         /// <inheritdoc />
         protected override void OnClosed(EventArgs e)
         {
-            EndCloakForFirstPaint();
             SystemThemeWatcher.UnWatch(this);
             ApplicationThemeManager.Changed -= OnThemeChanged;
             ApplicationAccentColorManager.AccentColorChanged -= OnAccentColorChanged;
@@ -712,6 +654,20 @@ namespace Fluence.Wpf.Controls
                 GetFallbackBackgroundColor());
 
             Background = new SolidColorBrush(plan.BackgroundColor);
+            // A top-level WPF window has two background layers: the WPF-painted content background
+            // (Window.Background, set above) and the HWND redirection surface that WPF clears behind
+            // that content (HwndTarget.BackgroundColor), which defaults to opaque black. With an
+            // active DWM backdrop the content background is transparent, so the default-black
+            // redirection surface is what flashes before the system backdrop composites (the
+            // first-paint "black flash"). Clearing the redirection surface to the same color as the
+            // content background (transparent for an active backdrop, the opaque theme fallback for
+            // None) lets the DWM backdrop show through from the first composed frame, which is why
+            // the reference Fluent window libraries need no first-paint cloak. Mirrors the WPF-UI
+            // WindowBackdrop.RemoveBackground flow.
+            if (_hwndSource?.CompositionTarget is not null)
+            {
+                _hwndSource.CompositionTarget.BackgroundColor = plan.BackgroundColor;
+            }
             if (_handle == IntPtr.Zero)
             {
                 return;
@@ -1320,12 +1276,6 @@ namespace Fluence.Wpf.Controls
         /// Represents the button control that is currently being hovered over for snap operations.
         /// </summary>
         private System.Windows.Controls.Button? _snapHoveredButton;
-
-        /// <summary>
-        /// Tracks whether the window is currently cloaked for the first-paint flash guard. Ensures the
-        /// cloak is applied and removed exactly once and that the window is never left cloaked.
-        /// </summary>
-        private bool _isCloaked;
 
     }
 }

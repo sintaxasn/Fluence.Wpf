@@ -417,18 +417,21 @@ namespace Fluence.Wpf.Tests
         }
 
         // ---------------------------------------------------------------------------
-        // 7. First-paint cloak guard.
+        // 7. First-paint redirection-surface guard.
         //
-        // FluenceWindow cloaks itself (DWMWA_CLOAK) in OnSourceInitialized before the DWM
-        // backdrop is applied so the empty client area does not flash black before WPF
-        // composes its first frame, then uncloaks after the first paint. The catastrophic
-        // failure mode of that fix is a window that is never uncloaked - permanently invisible.
-        // These tests pin the two invariants that prevent it: the window is not left cloaked
-        // after a Show()+drain, and the uncloak guard field is reset.
+        // A top-level WPF window paints two background layers: the WPF content background
+        // (Window.Background) and the HWND redirection surface (HwndTarget.BackgroundColor),
+        // which WPF clears to opaque black by default. With an active DWM backdrop the content
+        // background is transparent, so a default-black redirection surface flashes before the
+        // system backdrop composites (the first-paint "black flash"). FluenceWindow clears the
+        // redirection surface to match the content background, which is why it never needs to
+        // DWM-cloak the window. These tests pin both invariants: the redirection surface tracks
+        // the content background across a backdrop swap, and the window is never left cloaked
+        // (a cloaked window is permanently invisible - the failure mode of the abandoned cloak).
         // ---------------------------------------------------------------------------
 
         [TestMethod]
-        public void ShowThenDrain_DoesNotLeaveWindowCloaked()
+        public void ShowThenDrain_NeverCloaksWindow()
         {
             RunOnStaThread(() =>
             {
@@ -452,12 +455,58 @@ namespace Fluence.Wpf.Tests
 
                     nint handle = new System.Windows.Interop.WindowInteropHelper(w).Handle;
                     Assert.AreEqual(0, Fluence.Wpf.Native.NativeMethods.GetWindowCloakedState(handle),
-                        "After Show()+dispatcher drain the window must not be left cloaked (DWMWA_CLOAKED == 0); a cloaked window is permanently invisible.");
+                        "FluenceWindow must never DWM-cloak its window (DWMWA_CLOAKED == 0); the first-paint flash is solved by clearing the redirection surface, not by cloaking.");
+                }
+                finally
+                {
+                    w.Close();
+                    DrainDispatcher();
+                }
+            });
+        }
 
-                    FieldInfo? cloakField = typeof(FluenceWindow).GetField("_isCloaked", BindingFlags.NonPublic | BindingFlags.Instance);
-                    Assert.IsNotNull(cloakField, "Expected the private '_isCloaked' guard field on FluenceWindow.");
-                    Assert.IsFalse((bool)cloakField.GetValue(w)!,
-                        "The first-paint cloak guard must be reset once the window has been uncloaked.");
+        [TestMethod]
+        public void RedirectionSurface_MatchesContentBackground_AcrossBackdropSwap()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApp();
+                ResetAndApply(ApplicationTheme.Light, app);
+
+                FluenceWindow w = new()
+                {
+                    Width = 320,
+                    Height = 240,
+                    ShowInTaskbar = false,
+                    SystemBackdropType = BackdropType.Mica,
+                    WindowStartupLocation = WindowStartupLocation.Manual,
+                    Left = -10000,
+                    Top = -10000
+                };
+                try
+                {
+                    w.Show();
+                    DrainDispatcher();
+
+                    nint handle = new System.Windows.Interop.WindowInteropHelper(w).Handle;
+                    System.Windows.Interop.HwndSource? source = System.Windows.Interop.HwndSource.FromHwnd(handle);
+                    Assert.IsNotNull(source, "Expected a realised HwndSource after Show().");
+                    Assert.IsNotNull(source!.CompositionTarget, "Expected a CompositionTarget on the realised HwndSource.");
+
+                    // The fix: the HWND redirection surface (HwndTarget.BackgroundColor) must be
+                    // cleared to the same color WPF paints its content background, so no opaque
+                    // black surface is exposed before the DWM backdrop composites.
+                    Color content = ((SolidColorBrush)w.Background).Color;
+                    Assert.AreEqual(content, source.CompositionTarget.BackgroundColor,
+                        "With an active backdrop the redirection surface must match the (transparent) content background, not the default opaque black.");
+
+                    // Swapping to None re-runs ApplyBackdrop; both layers must move together to the
+                    // opaque theme fallback so the invariant holds across runtime backdrop changes.
+                    w.SystemBackdropType = BackdropType.None;
+                    DrainDispatcher();
+                    Color contentNone = ((SolidColorBrush)w.Background).Color;
+                    Assert.AreEqual(contentNone, source.CompositionTarget.BackgroundColor,
+                        "After swapping to BackdropType.None the redirection surface must track the opaque content background.");
                 }
                 finally
                 {

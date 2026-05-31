@@ -56,11 +56,17 @@ maintainers.
 - **`FluenceWindow` black-flash on first paint** - WPF presented the HWND
   before its first composed frame; with the extended glass frame, a DWM
   system backdrop, and suppressed native caption painting, the empty client
-  area composited as solid black for a frame or two. `FluenceWindow` now
-  cloaks itself (`DWMWA_CLOAK`, gated on `DwmIsCompositionEnabled`) in
-  `OnSourceInitialized` before applying the backdrop, then uncloaks after
-  the first paint (`ContentRendered` with a `DispatcherPriority.ContextIdle`
-  fallback, re-asserted in `OnClosed`) so the window is never left cloaked.
+  area composited as solid black for a frame or two. The fix clears the HWND
+  redirection surface (`HwndSource.CompositionTarget.BackgroundColor`, which
+  WPF defaults to opaque black) to the same color as the content background
+  in `ApplyBackdrop` - transparent for an active backdrop, the opaque theme
+  fallback for `None` - so the DWM backdrop shows through from the first
+  composed frame. This is the no-cloak mechanism the reference Fluent window
+  libraries (WPF-UI, iNKORE, MicaWPF) use. An earlier `DWMWA_CLOAK`
+  first-paint guard was tried and removed: under forced software rendering
+  (PSADT remoting) its WPF-side uncloak (`ContentRendered` /
+  `DispatcherPriority.ContextIdle`) raced the DWM backdrop composite and
+  exposed the same black frame it was meant to hide.
 - **`NavigationView` pane-footer icon slide** - The Settings (pane-footer)
   item slid horizontally while the left pane animated between open and
   compact. The footer is hosted in a `ContentPresenter`, which arranges its
