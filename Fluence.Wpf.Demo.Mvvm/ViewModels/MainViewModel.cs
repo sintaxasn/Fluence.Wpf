@@ -104,6 +104,31 @@ namespace Fluence.Wpf.Demo.Mvvm.ViewModels
             : 0;
 
         // ---------------------------------------------------------------
+        // Constructor
+        // ---------------------------------------------------------------
+
+        /// <summary>
+        /// Seeds a few sample tasks so the app is useful on first run and the XAML designer shows
+        /// realistic rows. New items are wired to <see cref="OnItemPropertyChanged"/> exactly like
+        /// <see cref="Add"/> does, so toggling completion refreshes the filtered view and the footer.
+        /// </summary>
+        public MainViewModel()
+        {
+            Seed("Try the Fluence.Wpf MVVM demo", isCompleted: true);
+            Seed("Toggle a task to see the strikethrough + progress update", isCompleted: false);
+            Seed("Filter by All / Pending / Completed", isCompleted: false);
+            Seed("Add your own task below", isCompleted: false);
+            Refresh();
+        }
+
+        private void Seed(string title, bool isCompleted)
+        {
+            TaskItemViewModel item = new(title) { IsCompleted = isCompleted };
+            item.PropertyChanged += OnItemPropertyChanged;
+            _allTasks.Add(item);
+        }
+
+        // ---------------------------------------------------------------
         // Commands
         // ---------------------------------------------------------------
 
@@ -180,8 +205,9 @@ namespace Fluence.Wpf.Demo.Mvvm.ViewModels
             }
         }
 
-        // Rebuild DisplayedTasks from _allTasks + ActiveFilter, then notify
-        // the two derived properties.
+        // Single rebuild path: Add/Delete/ClearCompleted and any IsCompleted toggle all funnel here.
+        // We rebuild DisplayedTasks from _allTasks rather than mutating it in place so the filtered
+        // view is always consistent in one step, then raise the derived StatusText/ProgressValue.
         private void Refresh()
         {
             IEnumerable<TaskItemViewModel> view = ActiveFilter switch

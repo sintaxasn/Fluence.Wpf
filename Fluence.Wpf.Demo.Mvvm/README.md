@@ -21,3 +21,10 @@ dotnet run --project Fluence.Wpf.Demo.Mvvm/Fluence.Wpf.Demo.Mvvm.csproj -c Debug
 ## Maintenance Notes
 
 Keep `App.xaml` free of manual merged dictionaries; `ApplicationThemeManager.Apply(...)` owns the Fluence resource slots. `MainViewModel.Refresh()` intentionally rebuilds `DisplayedTasks` before notifying derived status/progress properties, so avoid adding notification attributes that fire before the collection has been refreshed.
+
+## Design-time preview
+
+`Properties/DesignTimeResources.xaml` merges the library's `DesignTime.Dark.xaml`, so the XAML
+designer renders this window in **Dark** (the running app uses `ApplicationTheme.Auto`).
+`MainWindow.xaml` uses `d:DataContext="{d:DesignInstance vm:MainViewModel, IsDesignTimeCreatable=True}"`,
+so the designer instantiates the real (seeded) `MainViewModel` and shows sample rows.

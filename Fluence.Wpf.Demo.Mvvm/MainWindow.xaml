@@ -12,7 +12,8 @@
     Height="580"
     MinWidth="520"
     MinHeight="400"
-    d:DataContext="{d:DesignInstance vm:MainViewModel}"
+    d:DataContext="{d:DesignInstance vm:MainViewModel,
+                                     IsDesignTimeCreatable=True}"
     CornerStyle="Round"
     ExtendsContentIntoTitleBar="False"
     Icon="Resources/fluence-wpf-appicon-256.ico"
