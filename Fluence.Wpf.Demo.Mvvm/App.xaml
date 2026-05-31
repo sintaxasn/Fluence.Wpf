@@ -5,7 +5,7 @@
     <!--
         No ResourceDictionary.MergedDictionaries here.
         ApplicationThemeManager.Apply (called from App.xaml.cs OnStartup) seeds all
-        five theme-system merge slots in the correct order. Adding Generic.xaml here
-        would create a sixth stale copy and push the manager's slot indices out of range.
+        three theme-system merge slots in the correct order. Adding Generic.xaml here
+        would create a fourth stale copy and push the manager's slot indices out of range.
     -->
 </Application>

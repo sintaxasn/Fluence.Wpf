@@ -387,9 +387,10 @@ namespace Fluence.Wpf.Theming
             dict["AccentControlElevationBorderBrush"] = Solid(highlight);
             dict["TextControlElevationBorderBrush"] = Solid(controlDark);
 
-            // ToggleSwitch internal sub-layer base. HC omits the AccentFillBackdrop Color token,
-            // and the legacy promotion path left the Dark value resident, so reproduce it here.
-            dict["AccentFillBackdrop"] = Color.FromRgb(0x20, 0x20, 0x20);
+            // ToggleSwitch internal sub-layer base. HC omits the AccentFillBackdrop Color token, so
+            // derive it from the live SystemColors window color (matching the brush twin below)
+            // rather than a frozen Dark-theme constant, which would be wrong under HC-White.
+            dict["AccentFillBackdrop"] = window;
             dict["AccentFillBackdropBrush"] = Solid(window);
 
             // HC overrides the SelectedText-on-accent Color to black (the brush stays the

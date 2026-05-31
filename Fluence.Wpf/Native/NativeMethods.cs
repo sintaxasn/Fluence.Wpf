@@ -298,7 +298,11 @@ namespace Fluence.Wpf.Native
             return result == 0;
         }
 
-        public static int ColorToAbgr(System.Windows.Media.Color color)
+        // Packs a Color into the 0x00BBGGRR COLORREF layout that DWM window attributes such as
+        // DWMWA_BORDER_COLOR expect (alpha is ignored). Despite historically being named for ABGR,
+        // the byte order produced here is COLORREF; callers must not reuse it for an attribute that
+        // genuinely expects ABGR with a meaningful alpha channel.
+        public static int ColorToColorRef(System.Windows.Media.Color color)
         {
             return (color.B << 16) | (color.G << 8) | color.R;
         }

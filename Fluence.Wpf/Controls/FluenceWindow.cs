@@ -530,6 +530,9 @@ namespace Fluence.Wpf.Controls
             if (d is FluenceWindow window)
             {
                 window.UpdateWindowChrome();
+                // Caption-button slot layout depends on the chrome mode; refresh it so a runtime
+                // flip between extended and non-extended chrome does not leave the buttons stale.
+                window.UpdateCaptionButtons();
             }
         }
 
@@ -564,17 +567,18 @@ namespace Fluence.Wpf.Controls
 
         private void OnThemeChanged(object? sender, ThemeChangedEventArgs e)
         {
+            // Only ApplyBackdrop here. Every theme change runs through the engine, which raises
+            // AccentColorChanged (handled by OnAccentColorChanged -> ApplyFrame) before
+            // ApplicationThemeManager raises Changed, so the frame is already refreshed by the time
+            // this fires. Re-running ApplyFrame would redundantly re-issue the DWM border P/Invoke
+            // and rebuild the border brush on every apply. Accent-only changes still drive ApplyFrame
+            // via OnAccentColorChanged.
             if (!Dispatcher.CheckAccess())
             {
-                _ = Dispatcher.BeginInvoke(new Action(() =>
-                {
-                    ApplyBackdrop();
-                    ApplyFrame();
-                }));
+                _ = Dispatcher.BeginInvoke(new Action(ApplyBackdrop));
                 return;
             }
             ApplyBackdrop();
-            ApplyFrame();
         }
 
         private void OnAccentColorChanged(object? sender, EventArgs e)
@@ -653,7 +657,9 @@ namespace Fluence.Wpf.Controls
                 capabilities,
                 GetFallbackBackgroundColor());
 
-            Background = new SolidColorBrush(plan.BackgroundColor);
+            SolidColorBrush backgroundBrush = new(plan.BackgroundColor);
+            backgroundBrush.Freeze();
+            Background = backgroundBrush;
             // A top-level WPF window has two background layers: the WPF-painted content background
             // (Window.Background, set above) and the HWND redirection surface that WPF clears behind
             // that content (HwndTarget.BackgroundColor), which defaults to opaque black. With an
@@ -1031,7 +1037,13 @@ namespace Fluence.Wpf.Controls
             // If a custom-content child marked with IsHitTestVisibleInChrome=True is under the
             // cursor (e.g. a search TextBox or ToggleSwitch in the TitleBar content area), return
             // HTCLIENT so Windows passes the click to WPF rather than treating it as a drag.
-            return !IsOverInteractiveContent(point) && IsMoveable ? NativeConstants.HTCAPTION : 0;
+            //
+            // Fast path: when there is no custom TitleBar slot and content does not extend into the
+            // caption band, nothing interactive can sit under the cursor here, so short-circuit
+            // (&&) skips the InputHitTest tree-walk that WM_NCHITTEST would otherwise run on every
+            // mouse move.
+            bool overInteractiveContent = (TitleBar is not null || ExtendsContentIntoTitleBar) && IsOverInteractiveContent(point);
+            return !overInteractiveContent && IsMoveable ? NativeConstants.HTCAPTION : 0;
         }
 
         private bool TryGetTopResizeHit(Point point, out int hit)
@@ -1070,8 +1082,11 @@ namespace Fluence.Wpf.Controls
             ClearSnapHover();
             if (button is not null && button.IsEnabled)
             {
-                button.Background = TryFindResource("ControlStrongFillColorDefaultBrush") as Brush ?? Brushes.Transparent;
-                button.Foreground = TryFindResource("TextFillColorInverseBrush") as Brush ?? Brushes.White;
+                // Use resource references (not a TryFindResource snapshot) so the snap-hover colors
+                // track theme/accent/high-contrast changes and mirror the template's PointerOver
+                // visual state. ClearSnapHover restores the template/style defaults via ClearValue.
+                button.SetResourceReference(BackgroundProperty, "ControlStrongFillColorDefaultBrush");
+                button.SetResourceReference(ForegroundProperty, "TextFillColorInverseBrush");
                 _snapHoveredButton = button;
             }
         }
@@ -1080,7 +1095,7 @@ namespace Fluence.Wpf.Controls
         {
             if (_snapHoveredButton is not null)
             {
-                _snapHoveredButton.Background = Brushes.Transparent;
+                _snapHoveredButton.ClearValue(BackgroundProperty);
                 _snapHoveredButton.ClearValue(ForegroundProperty);
                 _snapHoveredButton = null;
             }

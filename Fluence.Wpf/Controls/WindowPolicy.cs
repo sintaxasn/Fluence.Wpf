@@ -91,7 +91,7 @@ namespace Fluence.Wpf.Controls
             int dwmBorderColor = NativeConstants.DWMWA_COLOR_DEFAULT;
             if (capabilities.SupportsBorderColor && isActive && isAccentBorderEnabled)
             {
-                dwmBorderColor = NativeMethods.ColorToAbgr(accentColor);
+                dwmBorderColor = NativeMethods.ColorToColorRef(accentColor);
             }
             return new FramePlan(templateBorderThickness, templateBorderBrushResourceKey, dwmBorderColor);
         }

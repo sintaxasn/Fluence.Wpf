@@ -28,6 +28,7 @@
 
 using Fluence.Wpf.Helpers;
 using Fluence.Wpf.Native;
+using System;
 using System.Runtime.InteropServices;
 using System.Windows.Media;
 
@@ -47,9 +48,11 @@ namespace Fluence.Wpf.Theming
         /// </summary>
         internal static AccentPalette Resolve(AccentIntent intent)
         {
-            if (intent.IsSystem && RegistryHelper.TryGetAccentPalette(out Color[]? p) && p is not null)
+            if (intent.IsSystem && RegistryHelper.TryGetAccentPalette(out Color[]? p) && p is not null && p.Length >= 7)
             {
-                // OS palette order: [Light3, Light2, Light1, Accent, Dark1, Dark2, Dark3, (8th reserved)]
+                // OS palette order: [Light3, Light2, Light1, Accent, Dark1, Dark2, Dark3, (8th reserved)].
+                // The length guard is defensive: a short or malformed registry blob falls through to
+                // the generated ramp rather than throwing IndexOutOfRangeException on the Apply hot path.
                 return new AccentPalette(p[0], p[1], p[2], p[3], p[4], p[5], p[6]);
             }
             Color baseColor = intent.IsSystem ? GetDwmAccentOrDefault() : intent.Custom;
@@ -65,8 +68,11 @@ namespace Fluence.Wpf.Theming
 
         private static Color GetDwmAccentOrDefault()
         {
-            // DwmGetColorizationParameters is an undocumented DWM entry (#127); it may throw
-            // SEHException or COMException on builds where it is unavailable.
+            // DwmGetColorizationParameters is an undocumented DWM entry (#127). On builds where the
+            // ordinal is absent or remapped the CLR raises EntryPointNotFoundException (or
+            // DllNotFoundException if dwmapi is unavailable); on builds where it exists but rejects
+            // the call it raises SEHException/COMException. All of these fall back to default blue
+            // rather than escaping into the Apply hot path.
             try
             {
                 NativeMethods.DwmGetColorizationParameters(out DWMCOLORIZATIONPARAMS prm);
@@ -78,6 +84,14 @@ namespace Fluence.Wpf.Theming
                 return DefaultAccent;
             }
             catch (SEHException)
+            {
+                return DefaultAccent;
+            }
+            catch (EntryPointNotFoundException)
+            {
+                return DefaultAccent;
+            }
+            catch (DllNotFoundException)
             {
                 return DefaultAccent;
             }

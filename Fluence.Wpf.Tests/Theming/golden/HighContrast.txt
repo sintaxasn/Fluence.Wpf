@@ -1,5 +1,5 @@
 AccentControlElevationBorderBrush|#00000000|#FF0078D7
-AccentFillBackdrop|#FF202020|#00000000
+AccentFillBackdrop|#FFFFFFFF|#00000000
 AccentFillBackdropBrush|#00000000|#FFFFFFFF
 AccentFillColorDefault|#FF005BA1|#00000000
 AccentFillColorDefaultBrush|#00000000|#FF005BA1

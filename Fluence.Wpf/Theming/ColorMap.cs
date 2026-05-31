@@ -27,7 +27,6 @@
  */
 
 using Fluence.Wpf.Helpers;
-using System;
 using System.Collections.Generic;
 using System.Windows.Media;
 
@@ -114,7 +113,10 @@ namespace Fluence.Wpf.Theming
                 titleBarInactive = dark ? Color.FromRgb(0x2B, 0x2B, 0x2B) : Color.FromRgb(0xFF, 0xFF, 0xFF);
             }
 
-            Color windowBorder = Environment.OSVersion.Version.Build < 22000
+            // Use the RtlGetVersion-based OsVersionHelper (not Environment.OSVersion, which is
+            // shimmed/version-capped for apps without a supportedOS manifest entry and would
+            // mis-detect Windows 11 as pre-22000) to match the rest of the library.
+            Color windowBorder = !OsVersionHelper.IsWindows11
                 && RegistryHelper.TryGetColorizationBalance(out Color colorizationColor, out int balance)
                 ? HsvColorHelper.BlendColors(colorizationColor, Color.FromRgb(0xD9, 0xD9, 0xD9), balance)
                 : titleBarActive;

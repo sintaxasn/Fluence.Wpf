@@ -37,11 +37,11 @@ namespace Fluence.Wpf.Theming
 {
     /// <summary>
     /// The single-pipeline theme engine that resolves theme and accent intent into a computed
-    /// <see cref="ResourceDictionary"/> and publishes it into application resources.
-    /// Facades (<c>ApplicationThemeManager</c>, <c>ApplicationAccentColorManager</c>) will
-    /// delegate to this engine once Stage 2 wiring is complete; for Stage 1 it compiles and
-    /// is exercised by unit tests without yet driving application resources via the
-    /// public <c>Apply</c> facades.
+    /// <see cref="ResourceDictionary"/> and publishes it into application resources. The public
+    /// facades (<c>ApplicationThemeManager</c>, <c>ApplicationAccentColorManager</c>) are thin
+    /// wrappers that delegate to this engine: their <c>Apply</c>/<c>ApplySystemAccent</c> entry
+    /// points call <see cref="Apply"/>, and they raise their own public events by subscribing to
+    /// <see cref="Published"/>.
     /// </summary>
     internal static class FluenceThemeEngine
     {
@@ -112,11 +112,15 @@ namespace Fluence.Wpf.Theming
             Collection<ResourceDictionary> dicts = Application.Current.Resources.MergedDictionaries;
             if (!_initialized)
             {
-                // Slot model: [0] computed, [1] Typography, [2] Generic
+                // Slot model: [0] computed, [1] Typography, [2] Generic. Insert (not Add) the
+                // static slots so that any foreign dictionaries an application merged into
+                // Application.Resources (e.g. via App.xaml) are pushed to index 3+ and the
+                // [0]/[1]/[2] contract that DynamicResource resolution and DictionaryStabilityTests
+                // depend on holds regardless of pre-existing entries.
                 RemoveFluenceDictionaries(dicts);
                 dicts.Insert(0, computed);
-                dicts.Add(Load("Themes/Typography/Typography.xaml"));
-                dicts.Add(Load("Themes/Generic.xaml"));
+                dicts.Insert(1, Load("Themes/Typography/Typography.xaml"));
+                dicts.Insert(2, Load("Themes/Generic.xaml"));
                 _initialized = true;
             }
             else
@@ -148,7 +152,11 @@ namespace Fluence.Wpf.Theming
             _initialized = false;
             _intent = AccentIntent.System;
             ResolvedTheme = ApplicationTheme.Light;
-            CurrentPalette = default;
+            // Seed a valid default-blue ramp rather than the zero Color value. SystemAccentColor
+            // (and FluenceWindow's DWM border, which reads it on activate/deactivate) may be
+            // observed between a reset and the next Apply; a default(AccentPalette) would surface
+            // as #00000000, painting a transparent/black border. FromCustom avoids any registry read.
+            CurrentPalette = AccentResolver.Resolve(AccentIntent.FromCustom(Color.FromRgb(0x00, 0x78, 0xD4)));
             CurrentTitleBarColors = default;
         }
     }
