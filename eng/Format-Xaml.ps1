@@ -84,7 +84,9 @@ try {
         $candidates = $Path | ForEach-Object { [System.IO.Path]::GetFullPath((Join-Path $repoRoot $_)) }
     }
     else {
-        $candidates = (& git -C $repoRoot ls-files '*.xaml') | ForEach-Object { Join-Path $repoRoot $_ }
+        # -co --exclude-standard: tracked (cached) AND untracked-but-not-ignored, so a new
+        # .xaml that has not been committed yet is still formatted/checked (avoids a false pass).
+        $candidates = (& git -C $repoRoot ls-files -co --exclude-standard '*.xaml') | ForEach-Object { Join-Path $repoRoot $_ }
     }
 
     $targets = New-Object System.Collections.Generic.List[string]
