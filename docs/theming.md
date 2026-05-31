@@ -61,7 +61,16 @@ Which backdrops work depends on OS support. Mica and Tabbed require Windows 11; 
 
 ## Design-time
 
-`DesignTime.xaml` ships with Fluence and is merged under `d:DataContext` scenarios so the designer can resolve resource keys. It assumes Light theme with `#0078D4` accent. The XAML designer and runtime merge stacks are not identical - always check the result in the demo app.
+The complete Fluence color and brush set is computed in C# at runtime by `FluenceThemeEngine` and published at `MergedDictionaries[0]`; none of those brushes exist as authored XAML, so the XAML designer / Blend cannot resolve `*Brush` keys on its own. To fix the preview, Fluence ships two generated, design-time-only dictionaries that hold the full computed palette for the default `#0078D4` accent:
+
+- `Properties/DesignTime.Light.xaml`
+- `Properties/DesignTime.Dark.xaml`
+
+The project-wide preview file `Properties/DesignTimeResources.xaml` merges the Light one (plus Typography and Generic), mirroring the runtime 3-slot model so the whole library previews correctly in Light. These files are compiled into the assembly (`Page` build action) and are referenceable at design time by pack URI, for example `pack://application:,,,/Fluence.Wpf;component/Properties/DesignTime.Dark.xaml`. Nothing merges them at runtime.
+
+To preview **Dark**, add a design-time-only merge of `DesignTime.Dark.xaml` (under `mc:Ignorable="d"` / the `d:` namespace) to the specific window or page you are previewing.
+
+These files are a serialized snapshot of the engine output, kept honest by a unit test: `DesignTimeResources_AreCurrent` regenerates each file in memory and fails CI if the committed file drifts. After an intentional engine change that affects colors or brushes, run the (normally `[Ignore]`d) `RegenerateDesignTimeResources` test to rewrite both files, then re-commit. The snapshot is deterministic and machine-independent: it forces the default accent through the HSV ramp generator (no registry / DWM read), uses the default theme title-bar colors for the window-chrome tokens, and omits the live-`SystemColors` `SystemColor*` aliases, the runtime-only `AcrylicNoiseBrush`, the flyout shadow effect, and the focus-visual styles. High contrast is out of scope for design-time previews. The XAML designer and runtime merge stacks are not identical - always check the result in the demo app.
 
 ## Testing
 

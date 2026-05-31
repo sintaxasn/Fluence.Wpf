@@ -106,6 +106,36 @@ namespace Fluence.Wpf.Theming
             return computed;
         }
 
+        /// <summary>
+        /// Builds the computed color + brush <see cref="ResourceDictionary"/> for
+        /// <paramref name="theme"/> using the default Windows accent (<c>#0078D4</c>),
+        /// <b>without</b> publishing into application resources and <b>without</b> reading
+        /// <see cref="Application.Current"/>, the registry, or DWM. The default accent is forced
+        /// through <see cref="AccentResolver.Resolve"/> with an
+        /// <see cref="AccentIntent.FromCustom"/> intent (the custom path runs the HSV ramp
+        /// generator directly and never touches the registry or <c>DwmGetColorizationParameters</c>),
+        /// and the title-bar/window-border tokens use their machine-independent theme defaults
+        /// (<c>deterministicChrome</c>). The result is therefore deterministic and headless-safe,
+        /// suitable for serializing a static design-time snapshot.
+        /// </summary>
+        /// <remarks>
+        /// Runs the same <see cref="ColorMap.Build"/> -> <see cref="BrushFactory.Build"/> ->
+        /// <see cref="SpecialBrushes.Add"/> sequence as the live pipeline so the snapshot stays
+        /// faithful to runtime. It deliberately omits <c>AcrylicNoiseBrush</c> (a runtime-generated
+        /// <see cref="System.Windows.Media.ImageBrush"/>), which the live
+        /// <see cref="BuildComputedDictionary"/> appends after the fact. Only
+        /// <see cref="ApplicationTheme.Light"/> and <see cref="ApplicationTheme.Dark"/> are
+        /// supported; high contrast is out of scope for design-time previews.
+        /// </remarks>
+        internal static ResourceDictionary BuildStandalone(ApplicationTheme theme)
+        {
+            AccentPalette palette = AccentResolver.Resolve(AccentIntent.FromCustom(Color.FromRgb(0x00, 0x78, 0xD4)));
+            Dictionary<string, Color> colors = ColorMap.Build(theme, palette, deterministicChrome: true);
+            ResourceDictionary computed = BrushFactory.Build(colors);
+            SpecialBrushes.Add(computed, colors, theme);
+            return computed;
+        }
+
         private static void Publish(ResourceDictionary computed)
         {
             if (Application.Current is null) { return; }
