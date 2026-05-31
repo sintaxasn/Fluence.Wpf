@@ -2035,6 +2035,67 @@ namespace Fluence.Wpf.Tests
             });
         }
 
+        // Switching pane display mode between Left and LeftCompact animates the pane width with the
+        // same GridLength flight as the collapse/expand toggle, instead of snapping.
+        [TestMethod]
+        public void NavigationView_PaneDisplayModeChange_AnimatesPaneWidth_LeftAndLeftCompact()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+
+                try
+                {
+                    NavigationView nav = new()
+                    {
+                        Width = 800,
+                        Height = 480,
+                        PaneDisplayMode = NavigationViewPaneDisplayMode.Left,
+                        IsPaneOpen = true
+                    };
+                    _ = nav.Items.Add(new NavigationViewItem { Content = "One" });
+                    window.Content = nav;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    WaitForAnimationAndDrain(window.Dispatcher, 300);
+                    window.UpdateLayout();
+                    Assert.AreEqual(320.0, nav.GetPaneColumnWidthForTesting(), 0.5,
+                        "An open Left pane should start at the 320px expanded width.");
+
+                    // Left -> LeftCompact: the control coerces IsPaneOpen=false; the pane width must
+                    // animate down rather than snap straight to 48 (the bug the mode-change handler had).
+                    nav.PaneDisplayMode = NavigationViewPaneDisplayMode.LeftCompact;
+                    DrainDispatcher(window.Dispatcher);
+                    Assert.IsGreaterThan(48.0, nav.GetPaneColumnWidthForTesting(),
+                        "Switching Left -> LeftCompact should animate the pane width, not snap immediately to 48.");
+                    _ = WaitUntil(window.Dispatcher, 600, () => nav.GetPaneColumnWidthForTesting() <= 48.5);
+                    Assert.AreEqual(48.0, nav.GetPaneColumnWidthForTesting(), 0.5,
+                        "Left -> LeftCompact should settle at the 48px compact width.");
+
+                    // LeftCompact -> Left, reopened the way an app does it (open the pane, then switch
+                    // mode): the pane width must animate back up rather than snap to 320.
+                    nav.IsPaneOpen = true;
+                    nav.PaneDisplayMode = NavigationViewPaneDisplayMode.Left;
+                    DrainDispatcher(window.Dispatcher);
+                    Assert.IsLessThan(320.0, nav.GetPaneColumnWidthForTesting(),
+                        "Switching LeftCompact -> Left (reopened) should animate the pane width, not snap immediately to 320.");
+                    _ = WaitUntil(window.Dispatcher, 600, () => nav.GetPaneColumnWidthForTesting() >= 319.5);
+                    Assert.AreEqual(320.0, nav.GetPaneColumnWidthForTesting(), 0.5,
+                        "LeftCompact -> Left (reopened) should settle at the 320px expanded width.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary is not null)
+                    {
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
         // LeftCompact pane still resizes inline and pushes sibling content.
         [TestMethod]
         public void NavigationView_LeftCompact_PaneOpen_ContentStartsAt320px_Inline()

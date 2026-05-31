@@ -500,7 +500,7 @@ namespace Fluence.Wpf.Controls
             CoerceTopPaneProperties();
             UpdateTitleBarExtensionForPaneMode();
             UpdateBackButtonState(false);
-            UpdatePaneColumnWidth(false);
+            ApplyPaneColumnWidthOnTemplateApplied();
             ScheduleTopOverflowUpdate();
             ScheduleIndicatorPosition(false);
         }
@@ -891,7 +891,17 @@ namespace Fluence.Wpf.Controls
         private static void OnPaneDisplayModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             NavigationView nav = (NavigationView)d;
+            NavigationViewPaneDisplayMode oldMode = (NavigationViewPaneDisplayMode)e.OldValue;
             NavigationViewPaneDisplayMode newMode = (NavigationViewPaneDisplayMode)e.NewValue;
+
+            // Left and LeftCompact use different pane templates, so the switch swaps the template and
+            // its PaneColumn; the width cannot animate on the old column (it is about to be discarded).
+            // Capture the current width now and hand it to the new template's OnApplyTemplate, which
+            // animates its fresh column from it - the same GridLength flight as the collapse/expand
+            // toggle. Transitions to/from Top have no pane-column animation, so they snap.
+            bool animatePaneWidth = IsLeftFamilyMode(oldMode) && IsLeftFamilyMode(newMode);
+            double fromWidth = nav.GetCurrentPaneColumnWidth();
+
             if (newMode == NavigationViewPaneDisplayMode.LeftCompact)
             {
                 nav.SetCurrentValue(IsPaneOpenProperty, false);
@@ -899,9 +909,24 @@ namespace Fluence.Wpf.Controls
             nav.CoerceTopPaneProperties();
             nav.UpdateTitleBarExtensionForPaneMode();
             nav._indicatorPositioned = false;
-            nav.UpdatePaneColumnWidth(false);
+
+            if (animatePaneWidth)
+            {
+                nav._pendingPaneWidthAnimationFrom = fromWidth;
+            }
+            else
+            {
+                nav._pendingPaneWidthAnimationFrom = null;
+                nav.UpdatePaneColumnWidth(false);
+            }
+
             nav.ScheduleTopOverflowUpdate();
             nav.ScheduleIndicatorPosition(false);
+        }
+
+        private static bool IsLeftFamilyMode(NavigationViewPaneDisplayMode mode)
+        {
+            return mode is NavigationViewPaneDisplayMode.Left or NavigationViewPaneDisplayMode.LeftCompact;
         }
 
         private static object CoerceIsPaneOpen(DependencyObject d, object baseValue)
@@ -988,6 +1013,28 @@ namespace Fluence.Wpf.Controls
         private void OnTitleBarExtensionChanged(object? sender, EventArgs e)
         {
             UpdateTitleBarExtensionForPaneMode();
+        }
+
+        /// <summary>
+        /// Sets the freshly templated pane column width during <see cref="OnApplyTemplate"/>. When a
+        /// Left &lt;-&gt; LeftCompact switch is in flight (<see cref="_pendingPaneWidthAnimationFrom"/> is
+        /// set), the new column animates from the captured pre-swap width to its target, continuing
+        /// the collapse/expand-style flight across the template swap; otherwise the width snaps.
+        /// </summary>
+        private void ApplyPaneColumnWidthOnTemplateApplied()
+        {
+            if (_pendingPaneWidthAnimationFrom is double fromWidth
+                && _paneColumn is not null
+                && PaneDisplayMode is NavigationViewPaneDisplayMode.Left or NavigationViewPaneDisplayMode.LeftCompact)
+            {
+                _pendingPaneWidthAnimationFrom = null;
+                _paneColumn.Width = new GridLength(fromWidth);
+                UpdatePaneColumnWidth(true);
+                return;
+            }
+
+            _pendingPaneWidthAnimationFrom = null;
+            UpdatePaneColumnWidth(false);
         }
 
         private void UpdatePaneColumnWidth(bool useAnimation)
@@ -1965,6 +2012,13 @@ namespace Fluence.Wpf.Controls
         private int _footerAnimationGeneration;
 
         private int _paneColumnAnimationGeneration;
+
+        /// <summary>
+        /// Pane width captured at a Left &lt;-&gt; LeftCompact display-mode switch, consumed by the next
+        /// <see cref="OnApplyTemplate"/> so the new template's pane column animates from it (the swap
+        /// discards the old column, so the flight cannot run on the original element).
+        /// </summary>
+        private double? _pendingPaneWidthAnimationFrom;
 
         private bool _topOverflowUpdateScheduled;
 

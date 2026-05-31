@@ -4,7 +4,7 @@
     xmlns:controls="clr-namespace:Fluence.Wpf.Controls"
     xmlns:sys="clr-namespace:System;assembly=mscorlib">
 
-    <sys:Double x:Key="ScrollBarSize">10</sys:Double>
+    <sys:Double x:Key="ScrollBarSize">8</sys:Double>
     <sys:Double x:Key="ScrollBarCompactThumbSize">6</sys:Double>
     <sys:Double x:Key="ScrollBarButtonArrowIconFontSize">8</sys:Double>
     <Thickness x:Key="ScrollViewerScrollBarMargin">1</Thickness>
