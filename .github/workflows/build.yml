@@ -1,4 +1,4 @@
-name: Build & Test
+﻿name: Build & Test
 
 on:
   push:
@@ -27,6 +27,12 @@ jobs:
 
       - name: Restore
         run: dotnet restore Fluence.Wpf.sln
+
+      - name: Restore .NET tools
+        run: dotnet tool restore
+
+      - name: Check XAML formatting
+        run: pwsh eng/Format-Xaml.ps1 -Check
 
       - name: Build solution (Release)
         run: dotnet build Fluence.Wpf.sln -c Release --no-restore -v minimal

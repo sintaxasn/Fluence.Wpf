@@ -108,6 +108,16 @@ Prefer `EventArgs.Empty`, `nameof(...)`, explicit `readonly`, and immutable help
 - Animation timings: **~100-167 ms** typical transitions (WinUI `ControlFastAnimationDuration`, `ControlNormalAnimationDuration`). Easing curves consistent with existing templates (`{StaticResource ControlFastOutSlowInKeySpline}` where present).
 - Focus visual: default WPF focus rectangles off; use FluentControl focus brush tokens instead, as in the existing Button / Card templates.
 
+#### XAML formatting (XAML Styler)
+
+Authored XAML is formatted by **XAML Styler** against the committed reference style `Settings.XamlStyler` at the repo root. The tool is pinned in `.config/dotnet-tools.json` (`dotnet tool restore`), so formatting is reproducible and does not depend on any editor plugin.
+
+- **Format** all authored XAML: `pwsh eng/Format-Xaml.ps1`. Format one file: `pwsh eng/Format-Xaml.ps1 -Path <file>`.
+- **Check** (CI gate, non-destructive): `pwsh eng/Format-Xaml.ps1 -Check` - fails if any authored XAML is not conformant. Wired into `.github/workflows/build.yml` and run on every edit by `.claude/hooks/post-tool-format-xaml.ps1`.
+- The reference style is attribute-per-line beyond two attributes (`AttributesTolerance: 2`), first attribute on a new line, 4-space indent. `eng/Format-Xaml.ps1` also enforces LF + a single UTF-8 BOM.
+- **Generated XAML is excluded** from formatting and the check: `Fluence.Wpf/Properties/DesignTime.*.xaml` (emitted byte-for-byte by `DesignTimeResourceWriter`; reformatting would break the `DesignTimeResources_AreCurrent` drift guard) and `**/Resources/fluence-wpf-banner-*.xaml` (generated vector geometry). Do not run the formatter on these; update the exclusion list in `eng/Format-Xaml.ps1` if new generated XAML is added.
+- Do not hand-fight the formatter: run it and commit its output. XAML Styler's own `-p` passive mode is unreliable (false positives), which is why the check formats a temp copy and compares.
+
 ---
 
 ## 3. Theme architecture
