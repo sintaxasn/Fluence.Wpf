@@ -35,6 +35,25 @@ using System.Windows.Media;
 
 namespace Fluence.Wpf.Demo.Pages
 {
+    /// <summary>
+    /// Reusable card that presents a single control demonstration on a gallery page.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Each card is divided into four zones:
+    /// <list type="number">
+    ///   <item><description><b>Description</b> - a bold label above the card set via <see cref="SampleDescription"/>.</description></item>
+    ///   <item><description><b>Live demo</b> - the area that hosts the actual running control, provided via <see cref="DemoContent"/>. Optional <see cref="OutputContent"/> sits beneath it to display interaction results.</description></item>
+    ///   <item><description><b>Options rail</b> - a collapsible right panel for property toggles, provided via <see cref="RightRailContent"/>. Hidden when empty.</description></item>
+    ///   <item><description><b>Source expander</b> - a collapsible section below the card with XAML and C# tabs showing copy-enabled source code. Hidden when both <see cref="XamlSource"/> and <see cref="CSharpSource"/> are empty.</description></item>
+    /// </list>
+    /// </para>
+    /// <para>
+    /// Because WPF error MC3093 prevents naming controls inside a property element, named live
+    /// controls are declared in hidden <c>ContentControl</c> slots at the page root and transferred
+    /// into this card by <c>DemoSamplePageWiring.Apply</c>.
+    /// </para>
+    /// </remarks>
     public partial class DemoSampleControl : ContentControl
     {
         private enum SourceLanguage
@@ -119,6 +138,7 @@ namespace Fluence.Wpf.Demo.Pages
             "while"
         };
 
+        /// <summary>Identifies the <see cref="SampleDescription"/> dependency property.</summary>
         public static readonly DependencyProperty SampleDescriptionProperty =
             DependencyProperty.Register(
                 "SampleDescription",
@@ -126,6 +146,7 @@ namespace Fluence.Wpf.Demo.Pages
                 typeof(DemoSampleControl),
                 new FrameworkPropertyMetadata(string.Empty, OnSampleDescriptionChanged));
 
+        /// <summary>Identifies the <see cref="XamlSource"/> dependency property.</summary>
         public static readonly DependencyProperty XamlSourceProperty =
             DependencyProperty.Register(
                 "XamlSource",
@@ -133,6 +154,7 @@ namespace Fluence.Wpf.Demo.Pages
                 typeof(DemoSampleControl),
                 new FrameworkPropertyMetadata(string.Empty, OnSourceChanged));
 
+        /// <summary>Identifies the <see cref="CSharpSource"/> dependency property.</summary>
         public static readonly DependencyProperty CSharpSourceProperty =
             DependencyProperty.Register(
                 "CSharpSource",
@@ -140,6 +162,7 @@ namespace Fluence.Wpf.Demo.Pages
                 typeof(DemoSampleControl),
                 new FrameworkPropertyMetadata(string.Empty, OnSourceChanged));
 
+        /// <summary>Identifies the <see cref="DemoContent"/> dependency property.</summary>
         public static readonly DependencyProperty DemoContentProperty =
             DependencyProperty.Register(
                 "DemoContent",
@@ -147,6 +170,7 @@ namespace Fluence.Wpf.Demo.Pages
                 typeof(DemoSampleControl),
                 new FrameworkPropertyMetadata(null, OnDemoContentChanged));
 
+        /// <summary>Identifies the <see cref="OutputContent"/> dependency property.</summary>
         public static readonly DependencyProperty OutputContentProperty =
             DependencyProperty.Register(
                 "OutputContent",
@@ -154,6 +178,7 @@ namespace Fluence.Wpf.Demo.Pages
                 typeof(DemoSampleControl),
                 new FrameworkPropertyMetadata(null, OnOutputContentChanged));
 
+        /// <summary>Identifies the <see cref="RightRailContent"/> dependency property.</summary>
         public static readonly DependencyProperty RightRailContentProperty =
             DependencyProperty.Register(
                 "RightRailContent",
@@ -173,36 +198,63 @@ namespace Fluence.Wpf.Demo.Pages
             UpdateSourceVisibility();
         }
 
+        /// <summary>
+        /// Gets or sets the bold label displayed above the sample card. The label is hidden when
+        /// this value is empty or whitespace.
+        /// </summary>
         public string SampleDescription
         {
             get => (string)GetValue(SampleDescriptionProperty);
             set => SetValue(SampleDescriptionProperty, value);
         }
 
+        /// <summary>
+        /// Gets or sets the XAML source text shown in the source expander's XAML tab. The
+        /// expander is hidden when both this and <see cref="CSharpSource"/> are empty.
+        /// </summary>
         public string XamlSource
         {
             get => (string)GetValue(XamlSourceProperty);
             set => SetValue(XamlSourceProperty, value);
         }
 
+        /// <summary>
+        /// Gets or sets the C# source text shown in the source expander's C# tab. The expander
+        /// is hidden when both this and <see cref="XamlSource"/> are empty.
+        /// </summary>
         public string CSharpSource
         {
             get => (string)GetValue(CSharpSourceProperty);
             set => SetValue(CSharpSourceProperty, value);
         }
 
+        /// <summary>
+        /// Gets or sets the live control displayed in the demo region of the card. When
+        /// <see langword="null"/>, the card body and source expander corners are adjusted to
+        /// indicate there is no live preview.
+        /// </summary>
         public object? DemoContent
         {
             get => GetValue(DemoContentProperty);
             set => SetValue(DemoContentProperty, value);
         }
 
+        /// <summary>
+        /// Gets or sets optional content displayed beneath the live demo to show interaction
+        /// results (for example, a click counter or selected-value readout). Hidden when
+        /// <see langword="null"/>.
+        /// </summary>
         public object? OutputContent
         {
             get => GetValue(OutputContentProperty);
             set => SetValue(OutputContentProperty, value);
         }
 
+        /// <summary>
+        /// Gets or sets optional content for the right-side options rail (property toggles,
+        /// radio buttons, etc.). The rail collapses automatically when this is
+        /// <see langword="null"/>.
+        /// </summary>
         public object? RightRailContent
         {
             get => GetValue(RightRailContentProperty);
@@ -469,6 +521,12 @@ namespace Fluence.Wpf.Demo.Pages
 
             return document;
         }
+
+        // The following methods implement a lightweight hand-rolled tokenizer for XAML and C#.
+        // A third-party syntax-highlighting library is intentionally avoided to keep the demo
+        // dependency-free; the tokenizer only needs to colorize the read-only source preview
+        // (keywords, string literals, comments, XML tag punctuation) and correctness on
+        // edge-cases is a secondary concern.
 
         private static void AddFormattedLine(Paragraph paragraph, string line, SourceLanguage language)
         {

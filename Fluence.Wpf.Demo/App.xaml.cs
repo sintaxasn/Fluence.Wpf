@@ -42,6 +42,12 @@ namespace Fluence.Wpf.Demo
             "/Fluence.Wpf.Demo;component/Resources/DemoSharedStyles.xaml",
             UriKind.Relative);
 
+        /// <summary>
+        /// Application entry point. Initializes the theme engine, applies the system accent
+        /// color, merges shared demo styles, and shows the main gallery window. The startup
+        /// sequence is: apply theme (seeds all three resource-dictionary slots) -&gt; apply accent
+        /// -&gt; load demo shared styles -&gt; show window.
+        /// </summary>
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);
@@ -54,6 +60,8 @@ namespace Fluence.Wpf.Demo
             MainWindow = mainWindow;
             mainWindow.Show();
 
+            // Headless self-test used by CI and the screenshot harness; not part of the normal
+            // app flow - safe to ignore when learning the startup sequence.
             if (IsSmokeTest(e.Args))
             {
                 _ = Dispatcher.BeginInvoke(new Action(delegate { RunSmokeTest(mainWindow); }), DispatcherPriority.ApplicationIdle);

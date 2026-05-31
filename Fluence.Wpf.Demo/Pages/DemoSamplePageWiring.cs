@@ -26,6 +26,15 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+// Slot-wiring infrastructure for demo sample pages.
+//
+// WPF raises error MC3093 ("Cannot set Name attribute value on element ... inside a template")
+// when you try to give an x:Name to a control declared directly inside a DemoSampleControl
+// property element, because the property element is treated like a template scope. To work
+// around this, each gallery page declares hidden ContentControl "slots" at the page root
+// (outside DemoSampleControl) and calls DemoSamplePageWiring.Apply to move the live controls
+// into the right DemoSampleControl zones at startup.
+
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -34,6 +43,13 @@ using System.Windows.Controls;
 
 namespace Fluence.Wpf.Demo.Pages
 {
+    /// <summary>
+    /// Carries the XAML and C# source text for one <c>DemoSampleControl</c> card.
+    /// </summary>
+    /// <remarks>
+    /// The <see cref="Slot"/> number is 1-based and must match the position of its corresponding
+    /// <c>DemoSampleControl</c> in document order on the page.
+    /// </remarks>
     internal readonly struct DemoSampleSource
     {
         public DemoSampleSource(int slot, string xamlSource, string cSharpSource)
@@ -48,15 +64,55 @@ namespace Fluence.Wpf.Demo.Pages
             CSharpSource = cSharpSource ?? throw new ArgumentNullException(nameof(cSharpSource));
         }
 
+        /// <summary>Gets the 1-based index that identifies which <c>DemoSampleControl</c> on the page receives this source.</summary>
         public int Slot { get; }
 
+        /// <summary>Gets the XAML source text displayed in the XAML tab of the source expander.</summary>
         public string XamlSource { get; }
 
+        /// <summary>Gets the C# source text displayed in the C# tab of the source expander.</summary>
         public string CSharpSource { get; }
     }
 
+    /// <summary>
+    /// Transfers live controls and source text from page-level hidden slots into their matching
+    /// <c>DemoSampleControl</c> cards on a gallery page.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// WPF error MC3093 prevents giving an <c>x:Name</c> to a control declared directly inside a
+    /// <c>DemoSampleControl</c> property element, because WPF treats that property element as a
+    /// template scope. Gallery pages therefore declare named <see cref="ContentControl"/> slots at
+    /// the page root using the convention <c>DemoSampleSlotNNDemoContentHost</c>,
+    /// <c>DemoSampleSlotNNOutputContentHost</c>, and <c>DemoSampleSlotNNRightRailContentHost</c>
+    /// (where NN is the 1-based sample index). Calling <see cref="Apply"/> finds every such slot,
+    /// moves its child into the matching sample card zone, assigns the XAML and C# source text, and
+    /// clears the now-empty slot. After <see cref="Apply"/> returns the hidden slots are empty and
+    /// all live controls live inside their <c>DemoSampleControl</c> cards.
+    /// </para>
+    /// <para>
+    /// If the number of <see cref="DemoSampleSource"/> arguments does not equal the number of
+    /// <c>DemoSampleControl</c> instances on the page, <see cref="Apply"/> throws so the mismatch
+    /// is caught at startup rather than silently producing a card with no source code.
+    /// </para>
+    /// </remarks>
     internal static class DemoSamplePageWiring
     {
+        /// <summary>
+        /// Wires every <c>DemoSampleControl</c> on a page to its live content and source code.
+        /// </summary>
+        /// <remarks>
+        /// WPF will not let you give an <c>x:Name</c> to a control declared directly inside a
+        /// <c>DemoSampleControl</c> property element (error MC3093). So pages instead declare
+        /// hidden <see cref="ContentControl"/> "slots" named
+        /// <c>DemoSampleSlotNNDemoContentHost</c> / <c>...OutputContentHost</c> /
+        /// <c>...RightRailContentHost</c> (NN is the 1-based sample index). This method finds each
+        /// slot, transfers its child into the matching sample card, attaches the XAML/C# source, and
+        /// clears the slot. The Nth <see cref="DemoSampleSource"/> argument supplies the Nth card's
+        /// source text, so the source count must equal the sample count.
+        /// </remarks>
+        /// <param name="root">The page's content root to search.</param>
+        /// <param name="sources">Source-code entries, one per sample, in document order.</param>
         internal static void Apply(DependencyObject root, params DemoSampleSource[] sources)
         {
             if (root is null)
@@ -91,6 +147,8 @@ namespace Fluence.Wpf.Demo.Pages
             }
         }
 
+        // Build a slot -> source lookup so each card can find its source in O(1) regardless of
+        // the order the caller listed the DemoSampleSource arguments.
         private static Dictionary<int, DemoSampleSource> CreateSourceMap(
             IEnumerable<DemoSampleSource> sources,
             int sampleCount)
@@ -122,6 +180,9 @@ namespace Fluence.Wpf.Demo.Pages
             return sourceBySlot;
         }
 
+        // Move each slot's child element into the correct DemoSampleControl zone, then clear the
+        // slot so the hidden ContentControl no longer holds a live reference to the transferred
+        // element.
         private static void ApplyContentSlots(DependencyObject root, IList<DemoSampleControl> samples)
         {
             Dictionary<int, ContentControl> demoSlots = [];
@@ -153,6 +214,8 @@ namespace Fluence.Wpf.Demo.Pages
             }
         }
 
+        // Catch page-authoring mistakes where a slot name references a card index that does not
+        // exist; fail fast at startup rather than silently ignoring the orphaned slot.
         private static void ValidateSlotTargets(
             int sampleCount,
             IDictionary<int, ContentControl> slots,
@@ -169,6 +232,8 @@ namespace Fluence.Wpf.Demo.Pages
             }
         }
 
+        // Remove the child from the hidden slot and return it so it can be re-parented into the
+        // DemoSampleControl; a WPF element can only have one logical parent at a time.
         private static object? TakeSlotContent(ContentControl slot)
         {
             object? content = slot.Content;
@@ -176,6 +241,8 @@ namespace Fluence.Wpf.Demo.Pages
             return content;
         }
 
+        // Walk the logical tree (not the visual tree, which is not yet built) to collect all
+        // hidden ContentControl slots by name suffix into three typed dictionaries.
         private static void CollectContentSlots(
             DependencyObject current,
             IDictionary<int, ContentControl> demoSlots,
@@ -198,6 +265,8 @@ namespace Fluence.Wpf.Demo.Pages
             }
         }
 
+        // Parse the numeric index out of a slot name that follows the DemoSampleSlotNNSuffix
+        // convention; ignore names that do not match the expected prefix + suffix pattern.
         private static void AddSlotIfMatched(
             ContentControl slot,
             string suffix,
@@ -230,6 +299,8 @@ namespace Fluence.Wpf.Demo.Pages
             slots.Add(index, slot);
         }
 
+        // Walk the logical tree in document order to collect DemoSampleControls so the resulting
+        // list index matches the 1-based slot numbering used by the slot naming convention.
         private static void CollectDemoSampleControls(DependencyObject current, ICollection<DemoSampleControl> samples)
         {
             if (current is DemoSampleControl sample)

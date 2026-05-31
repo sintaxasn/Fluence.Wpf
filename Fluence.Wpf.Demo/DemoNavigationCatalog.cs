@@ -30,19 +30,53 @@ using System.Collections.Generic;
 
 namespace Fluence.Wpf.Demo
 {
+    /// <summary>
+    /// Metadata for a single entry in the gallery's left navigation pane.
+    /// </summary>
     public sealed class DemoNavigationItem(string title, string route, string keywords, string glyph, bool isDefault)
     {
+        /// <summary>Gets the display label shown in the navigation pane.</summary>
         public string Title { get; private set; } = title;
 
+        /// <summary>
+        /// Gets the route key used by <c>MainWindow.CreatePageForRoute</c> to instantiate the
+        /// correct gallery page. Must match a case in that switch exactly.
+        /// </summary>
         public string Route { get; private set; } = route;
 
+        /// <summary>
+        /// Gets additional search terms (space-separated) that allow the search box to surface
+        /// this page even when the user types a synonym not present in <see cref="Title"/>.
+        /// </summary>
         public string Keywords { get; private set; } = keywords;
 
+        /// <summary>Gets the Segoe Fluent Icons Unicode code point string for this item's icon.</summary>
         public string Glyph { get; private set; } = glyph;
 
+        /// <summary>
+        /// Gets a value indicating whether this item should be selected on first load. Only one
+        /// item in the catalog should have this set to <see langword="true"/>.
+        /// </summary>
         public bool IsDefault { get; private set; } = isDefault;
     }
 
+    /// <summary>
+    /// The single source of truth for the gallery navigation menu.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Every entry in <see cref="Items"/> drives one row in the left-pane <c>NavigationView</c>.
+    /// The <c>Route</c> property of each entry is the key that <c>MainWindow.CreatePageForRoute</c>
+    /// uses in its switch to instantiate the matching gallery page. To add a new gallery page:
+    /// <list type="number">
+    ///   <item><description>Add a new <see cref="DemoNavigationItem"/> to the <c>CatalogItems</c> array below.</description></item>
+    ///   <item><description>Add a corresponding <c>case</c> to <c>MainWindow.CreatePageForRoute</c>.</description></item>
+    /// </list>
+    /// The Settings page is intentionally absent from this list because it lives in the
+    /// <c>NavigationView.FooterMenuItems</c> slot and is registered separately in
+    /// <c>MainWindow.PopulateNavigation</c>.
+    /// </para>
+    /// </remarks>
     public static class DemoNavigationCatalog
     {
         private static readonly DemoNavigationItem[] CatalogItems =
@@ -66,6 +100,7 @@ namespace Fluence.Wpf.Demo
             new("Accessibility", "accessibility", "screen reader narrator automation keyboard focus contrast rtl", "\uE776", false)
         ];
 
+        /// <summary>Gets the ordered sequence of navigation items that populate the gallery left pane.</summary>
         public static IEnumerable<DemoNavigationItem> Items => CatalogItems;
     }
 }

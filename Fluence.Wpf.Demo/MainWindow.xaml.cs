@@ -40,14 +40,26 @@ using System.Windows.Threading;
 
 namespace Fluence.Wpf.Demo
 {
+    /// <summary>
+    /// The main gallery window: a <c>FluenceWindow</c> with a <c>NavigationView</c> shell that
+    /// drives all seventeen gallery pages. It owns the title-bar layout, the search box filtering,
+    /// the back-navigation stack, and the page-creation switch.
+    /// </summary>
     public partial class MainWindow : FluenceWindow
     {
         internal const string GalleryWindowTitle = "Fluence.Wpf \u2014 Control Gallery";
 
+        // Maps each NavigationViewItem to its DemoNavigationItem metadata (title, route, keywords).
         private readonly Dictionary<NavigationViewItem, DemoNavigationItem> _navigationItemByContainer =
             [];
+
+        // Lazily populated cache: once a page is created for a container it is reused on every
+        // subsequent visit so the page state (expanded expanders, selected options) is preserved.
         private readonly Dictionary<NavigationViewItem, object> _pageByContainer =
             [];
+
+        // Lightweight history stack used only to enable the title-bar back button; entries are
+        // pushed on forward navigation and popped on back navigation.
         private readonly List<NavigationViewItem> _navigationBackStack =
             [];
         private bool _userShowIcon;
@@ -682,6 +694,8 @@ namespace Fluence.Wpf.Demo
             _ = Dispatcher.BeginInvoke(new Action(UpdateExtendedTitleOverlap), DispatcherPriority.Loaded);
         }
 
+        // Hide the title text when the centered search box would overlap it; runs after every
+        // layout pass that could change the title-bar geometry.
         private void UpdateExtendedTitleOverlap()
         {
             if (_isUpdatingExtendedTitleOverlap)
@@ -729,6 +743,8 @@ namespace Fluence.Wpf.Demo
                     return;
                 }
 
+                // If the app icon itself already overlaps the search box there is no room for the
+                // title at all; clear it and bail early rather than attempting to constrain width.
                 ContentPresenter? titleIcon = GetTitleBarTemplatePart<ContentPresenter>("PART_IconPresenter");
                 if (titleIcon is not null
                     && titleIcon.Visibility == Visibility.Visible
@@ -749,6 +765,9 @@ namespace Fluence.Wpf.Demo
                     return;
                 }
 
+                // Constrain the title width so it cannot bleed into the search box, then check
+                // whether even the truncated text still collides (can happen with very long titles
+                // and narrow windows).
                 titleText.MaxWidth = availableTitleWidth;
                 titleText.UpdateLayout();
                 if (!TryGetVisualX(titleText, this, out titleLeft))
@@ -768,6 +787,9 @@ namespace Fluence.Wpf.Demo
             }
         }
 
+        // Returns the element's left-edge X position relative to the given ancestor; guards
+        // TransformToAncestor with an ancestry check because the method throws if called on
+        // an element that is not in the ancestor's visual subtree.
         private static bool TryGetVisualX(FrameworkElement element, Visual ancestor, out double x)
         {
             x = 0.0;
@@ -781,6 +803,8 @@ namespace Fluence.Wpf.Demo
             return true;
         }
 
+        // Walks the visual-parent chain rather than calling VisualTreeHelper.IsAncestorOf so that
+        // non-Visual nodes (e.g. ContentPresenter inside a DataTemplate) do not break the walk.
         private static bool IsVisualAncestorOf(Visual ancestor, DependencyObject descendant)
         {
             DependencyObject? current = descendant;
