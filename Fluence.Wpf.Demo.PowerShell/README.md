@@ -1,38 +1,38 @@
-﻿# Fluence.Wpf - PowerShell demos
+﻿# Fluence.Wpf - PowerShell examples
 
-Three standalone Windows PowerShell 5.1 scripts showing how to build Fluent-styled WPF UIs without writing C#.
+Self-contained Windows PowerShell 5.1 scripts that build a themed Fluent window with no
+project, no compilation step of your own - just the Fluence.Wpf DLL loaded at runtime.
 
 ## Requirements
 
-- Windows PowerShell 5.1 (built into Windows - `powershell.exe`, **not** `pwsh.exe`)
-- .NET SDK (for the optional auto-build step)
-- `Fluence.Wpf.dll` built for `net472` - the scripts build it automatically if missing
+- Windows PowerShell 5.1 (built into Windows) run in STA mode. Each script relaunches itself
+  in STA automatically.
+- The .NET SDK on PATH (`dotnet`). On first run a script builds the `net472` Fluence.Wpf.dll
+  if it is not already present.
 
-## Running a demo
+## Run
 
-Open a terminal and run with the STA apartment flag:
+```powershell
+powershell.exe -STA -File .\01-HelloWorld.ps1
+```
 
-- powershell.exe -STA -File .\Show-ThemeDemo.ps1
-- powershell.exe -STA -File .\Show-ControlsDemo.ps1
-- powershell.exe -STA -File .\Show-ProgressDemo.ps1
+| Script | Shows |
+| --- | --- |
+| `01-HelloWorld.ps1` | The smallest example: a Mica window, a button that cycles Mica/Acrylic/Tabbed/None, and a rotating "Hello, World!" label. |
+| `02-ThemeAndAccent.ps1` | Switching Light/Dark/Auto, cycling a custom accent, returning to the system accent, and following OS theme changes with `SystemThemeWatcher`. |
+| `03-ControlsTour.ps1` | Common controls (buttons, toggle, checkbox, radio, text box, number box) in cards, with a toggle that updates an `InfoBar` from PowerShell. |
+| `04-LoadXamlFile.ps1` | Loading the UI from `MainWindow.xaml` on disk instead of an inline string, then wiring its named controls. |
 
-## What each demo shows
+## The pattern every script uses
 
-| Script                  | Demonstrates                                                                                              |
-|-------------------------|-----------------------------------------------------------------------------------------------------------|
-| `Show-ThemeDemo.ps1`    | FluenceWindow + Mica backdrop, Light/Dark/Auto theme switching, accent colour cycling, SystemThemeWatcher |
-| `Show-ControlsDemo.ps1` | Button variants, ToggleSwitch, CheckBox, RadioButton, TextBox, NumberBox                                  |
-| `Show-ProgressDemo.ps1` | ProgressBar, ProgressRing, InfoBar with a PowerShell-wired click handler                                  |
+1. Relaunch in STA (WPF requirement).
+2. Locate `..\Fluence.Wpf\bin\Release\net472\Fluence.Wpf.dll`; `dotnet build` it once if missing.
+3. `Add-Type` the WPF assemblies + the Fluence DLL.
+4. Create a `System.Windows.Application` **before** theming (otherwise the theme brushes have
+   nowhere to publish).
+5. `ApplicationThemeManager.Apply(theme, backdrop, updateAccent)`.
+6. Parse XAML (`XamlReader.Parse` for a string, `XamlReader.Load` for a file), wire handlers
+   with `$control.add_Click({ ... })`.
+7. `$app.Run($window)` to show the window and run the message loop.
 
-## How it works
-
-Each script:
-
-1. Checks for `Fluence.Wpf.dll` at `..\Fluence.Wpf\bin\Release\net472\` - builds it with `dotnet build` if absent.
-2. Loads WPF assemblies via `Add-Type`.
-3. Calls `ApplicationThemeManager.Apply()` to seed Fluence resources.
-4. Parses an inline XAML here-string with `XamlReader::Parse()`.
-5. Wires event handlers directly in PowerShell.
-6. Calls `Window.Show()` and enters the WPF dispatcher loop.
-
-The window icon is loaded from `..\assets\fluence-wpf-appicon-256.ico` when present.
+See `../docs/powershell.md` for the full guide.
