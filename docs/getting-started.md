@@ -98,4 +98,8 @@ Fluence.Wpf.SystemThemeWatcher.UnWatch(myWindow);
 - Run the gallery: `dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj`
 - Run the MVVM demo: `dotnet run --project Fluence.Wpf.Demo.Mvvm/Fluence.Wpf.Demo.Mvvm.csproj`
 
+## Using from PowerShell
+
+Fluence.Wpf can theme a WPF window from a plain Windows PowerShell 5.1 script (no project, no compile step of your own). See [powershell.md](powershell.md) for the bootstrap pattern and the runnable examples under `Fluence.Wpf.Demo.PowerShell/`.
+
 Next: [theming.md](theming.md) for dictionary order and pitfalls, [controls.md](controls.md) for the control inventory and XAML snippets.

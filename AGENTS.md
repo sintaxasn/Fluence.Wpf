@@ -345,6 +345,7 @@ Public and repository documentation:
 - [docs/getting-started.md](docs/getting-started.md)
 - [docs/theming.md](docs/theming.md)
 - [docs/controls.md](docs/controls.md)
+- [docs/powershell.md](docs/powershell.md)
 - [docs/migration-guide.md](docs/migration-guide.md)
 - [docs/contributing.md](docs/contributing.md)
 - [docs/release.md](docs/release.md)

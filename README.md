@@ -119,6 +119,7 @@ Documentation lives in the Markdown guides under [`docs/`](docs/). A hosted docu
 - [Getting started](docs/getting-started.md) - reference, startup calls, local pack
 - [Theming](docs/theming.md) - merge order, accent, backdrop, watcher
 - [Controls](docs/controls.md) - catalog aligned with the demo gallery
+- [PowerShell](docs/powershell.md) - theme a WPF window from Windows PowerShell 5.1
 - [Migration guide](docs/migration-guide.md) - generic move from other Fluent-style stacks
 - [Contributing](docs/contributing.md) - build matrix, tests, PR notes
 - [Release checklist](docs/release.md) - package, CI, screenshots, and tag flow
