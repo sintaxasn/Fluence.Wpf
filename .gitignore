@@ -431,3 +431,6 @@ data/theme-golden/
 .env
 .env.local
 .env.*.local
+
+# Internal Docs
+/docs/_internal/
