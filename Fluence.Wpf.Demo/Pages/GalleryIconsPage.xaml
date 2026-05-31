@@ -56,9 +56,7 @@
             </Grid>
 
             <StackPanel Grid.Row="3">
-                <TextBlock
-                    Style="{StaticResource SectionHeaderStyle}"
-                    Text="Installed icon catalog" />
+                <TextBlock Style="{StaticResource SectionHeaderStyle}" Text="Installed icon catalog" />
                 <TextBlock
                     x:Name="IconCatalogCountText"
                     Margin="0,0,0,24"

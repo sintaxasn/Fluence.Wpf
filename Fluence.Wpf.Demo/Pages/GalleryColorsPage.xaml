@@ -50,9 +50,7 @@
                 </Grid>
             </ui:Border>
 
-            <TabControl
-                x:Name="ColorSectionTabs"
-                Margin="0,12,0,0" />
+            <TabControl x:Name="ColorSectionTabs" Margin="0,12,0,0" />
         </StackPanel>
     </ui:SmoothScrollViewer>
 </UserControl>

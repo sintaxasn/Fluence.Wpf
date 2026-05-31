@@ -7,12 +7,11 @@
     Height="740"
     MinWidth="840"
     MinHeight="740"
+    CornerStyle="Round"
     ExtendsContentIntoTitleBar="False"
     SnapsToDevicePixels="True"
-    UseLayoutRounding="True"
-    CornerStyle="Round"
     SystemBackdropType="Mica"
-    >
+    UseLayoutRounding="True">
 
     <Grid Margin="24,20,24,20">
         <Grid.RowDefinitions>
@@ -36,9 +35,15 @@
                 Text="This window is loaded from XAML at runtime and uses Fluence.Wpf theme resources." />
         </StackPanel>
 
-        <ui:SmoothScrollViewer Grid.Row="1" HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+        <ui:SmoothScrollViewer
+            Grid.Row="1"
+            HorizontalScrollBarVisibility="Disabled"
+            VerticalScrollBarVisibility="Auto">
             <StackPanel>
-                <ui:Card Margin="0,0,0,14" Padding="16" Variant="Default">
+                <ui:Card
+                    Margin="0,0,0,14"
+                    Padding="16"
+                    Variant="Default">
                     <StackPanel>
                         <TextBlock
                             Margin="0,0,0,12"
@@ -76,15 +81,18 @@
 
                         <ui:InfoBar
                             x:Name="StatusInfoBar"
+                            Title="Ready"
                             IsClosable="False"
                             IsOpen="True"
                             Message="Theme watcher is enabled after the window is created."
-                            Severity="Informational"
-                            Title="Ready" />
+                            Severity="Informational" />
                     </StackPanel>
                 </ui:Card>
 
-                <ui:Card Margin="0,0,0,14" Padding="16" Variant="Default">
+                <ui:Card
+                    Margin="0,0,0,14"
+                    Padding="16"
+                    Variant="Default">
                     <StackPanel>
                         <TextBlock
                             Margin="0,0,0,12"
@@ -107,9 +115,19 @@
                                 IsChecked="True"
                                 OffContent="Off"
                                 OnContent="On" />
-                            <ui:CheckBox Margin="0,0,16,8" Content="Remember choice" IsChecked="True" />
-                            <ui:RadioButton Margin="0,0,16,8" Content="Option A" GroupName="DemoOptions" IsChecked="True" />
-                            <ui:RadioButton Margin="0,0,16,8" Content="Option B" GroupName="DemoOptions" />
+                            <ui:CheckBox
+                                Margin="0,0,16,8"
+                                Content="Remember choice"
+                                IsChecked="True" />
+                            <ui:RadioButton
+                                Margin="0,0,16,8"
+                                Content="Option A"
+                                GroupName="DemoOptions"
+                                IsChecked="True" />
+                            <ui:RadioButton
+                                Margin="0,0,16,8"
+                                Content="Option B"
+                                GroupName="DemoOptions" />
                         </WrapPanel>
 
                         <Grid Margin="0,8,0,0">
@@ -118,7 +136,10 @@
                                 <ColumnDefinition Width="12" />
                                 <ColumnDefinition Width="180" />
                             </Grid.ColumnDefinitions>
-                            <ui:TextBox Grid.Column="0" PlaceholderText="Type a message" Text="Loaded from MainWindow.xaml" />
+                            <ui:TextBox
+                                Grid.Column="0"
+                                PlaceholderText="Type a message"
+                                Text="Loaded from MainWindow.xaml" />
                             <ui:NumberBox
                                 Grid.Column="2"
                                 Header="Count"
@@ -141,7 +162,10 @@
                             Text="Progress" />
                         <ui:ProgressBar Margin="16,4,16,8" ProgressMode="Indeterminate" />
                         <StackPanel Orientation="Horizontal">
-                            <ui:ProgressRing Margin="16" HorizontalAlignment="Center" IsIndeterminate="True" />
+                            <ui:ProgressRing
+                                Margin="16"
+                                HorizontalAlignment="Center"
+                                IsIndeterminate="True" />
                             <TextBlock
                                 Margin="16,4,16,4"
                                 FontFamily="{DynamicResource FluentFontFamily}"

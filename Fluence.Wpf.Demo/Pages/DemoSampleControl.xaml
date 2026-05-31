@@ -184,7 +184,6 @@
 
         <Border
             x:Name="SampleCard"
-
             Grid.Row="1"
             Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
@@ -215,8 +214,8 @@
                     <Border
                         x:Name="OutputRegion"
                         Grid.Column="1"
-                        Margin="{DynamicResource DemoSampleOutputMargin}"
                         MinWidth="{DynamicResource DemoSampleOutputMinWidth}"
+                        Margin="{DynamicResource DemoSampleOutputMargin}"
                         Padding="{DynamicResource DemoSampleOutputPadding}"
                         VerticalAlignment="Center"
                         CornerRadius="{DynamicResource ControlCornerRadius}">
