@@ -8,23 +8,23 @@ Windows 11 Fluent Design controls and theming for WPF applications targeting **.
 
 ## Features
 
-- **Theming with auto Light / Dark mode** - Auto (follow Windows theme), Light, Dark or High Contrast theming.
+- **Theming with auto Light / Dark mode** - Auto (follow Windows), Light, Dark, or High Contrast.
 - **Accent colors** - System accent palette, app-defined accent, and custom accent ramps mapped to WinUI-style resource keys.
-- **40+ Fluent-styled Controls** - 40+ Fluent-styled controls with accessibility, theming, and features aligned with their WinUI 3 counterparts.
-- **PowerShell / .NET Framework 4.7.2 support** - Build modern-looking UIs for scripts and legacy apps without migrating to .NET 5+ or the Windows App SDK.
-- **Small footprint** - just 600 kb.
+- **40+ Fluent-styled controls** - accessible and themed, aligned with their WinUI 3 counterparts.
+- **PowerShell and .NET Framework 4.7.2 support** - build modern UIs for scripts and legacy apps without migrating to .NET 5+ or the Windows App SDK.
+- **Small footprint** - 600 kb.
 
-## Controls
-- **FluenceWindow** - **Mica**, **Acrylic**, and **Tabbed (Mica Alt)** style window with rounded corners; minimize / maximize / close button availability; extensible title bar for a WinUI-style search box or custom content.
+## Key controls
+- **FluenceWindow** - A window with **Mica**, **Acrylic**, and **Tabbed (Mica Alt)** backdrops, rounded corners, configurable minimize / maximize / close buttons, and an extensible title bar for a WinUI-style search box or custom content.
 - **Controls** - 40+ Fluent-styled controls: Button, HyperlinkButton, DropDownButton, SplitButton, RepeatButton, ToggleButton, CheckBox, RadioButton, ToggleSwitch, TextBox, PasswordBox, ComboBox, Slider, NumberBox, ProgressBar, ProgressRing, InfoBar, InfoBadge, RatingControl, PersonPicture, ListView, ListBox, Expander, Card (clickable), NavigationView, ContextMenu, MenuItem, Menu, ToolTip, TreeView, TreeViewItem, Separator, FontIcon, Border, StackPanel, DockPanel, SmoothScrollViewer, plus TabView and ScrollBar themes.
 - **Typography** - Styles or Attached properties on `TextBlock` for the WinUI type ramp (Caption / Body / BodyStrong / Title / TitleLarge / Display).
 - **TabView** - Multi-document surface over `TabControl` with per-tab close (`CloseRequested` / `TabCloseRequested`), trailing add-tab button (`AddTabButtonClick`), per-tab icons, `TabWidthMode`, `CloseButtonOverlayMode`, and horizontal overflow scroll.
 - **NavigationView** - `Top`, `Left`, and `LeftCompact` pane modes with animated shared selection indicator, pane toggle + back button in the 48 px rail, and WinUI 3 content-region border (`CornerRadius="8,0,0,0"`, `CardStrokeColorDefault` top/left stroke).
 
 ## Demos
-- **Gallery** - Simple WPF code-behind visual-verification app with theme swatches, accent picker, DWM backdrops, grouped control pages (Data Binding, Accessibility, Buttons, Selection, Inputs, Forms, Data, Trees, Navigation, Tabs, Menus, Status, Icons, Settings), inline examples, and embedded source for every example.
-- **MVVM Pattern** - Minimal Task Manager (`Fluence.Wpf.Demo.Mvvm`) built with CommunityToolkit.Mvvm, using `[ObservableProperty]`, `[RelayCommand]`, filter bindings, and progress reporting with no code-behind.
-- **PowerShell** - Build modern interfaces for scripts using Windows PowerShell 5.1 without installing PowerShell 7, .NET 9 / 10, or the Windows App SDK.
+- **Gallery** - A code-behind WPF app for visual verification: theme swatches, accent picker, DWM backdrops, grouped control pages (Data Binding, Accessibility, Buttons, Selection, Inputs, Forms, Data, Trees, Navigation, Tabs, Menus, Status, Icons, Settings), inline examples, and embedded source for each one.
+- **MVVM Pattern** - A minimal Task Manager (`Fluence.Wpf.Demo.Mvvm`) built with CommunityToolkit.Mvvm. It uses `[ObservableProperty]`, `[RelayCommand]`, filter bindings, and progress reporting with no code-behind.
+- **PowerShell** - Build UIs for scripts from Windows PowerShell 5.1, without installing PowerShell 7, .NET 9 / 10, or the Windows App SDK.
 
 ## Quick Start
 
@@ -47,7 +47,7 @@ Optional XML namespace mapping:
 xmlns:fluence="http://schemas.fluencewpf.com"
 ```
 
-## Controls
+## Control catalog
 
 | Area                | Types                                                                                                                                       |
 |---------------------|---------------------------------------------------------------------------------------------------------------------------------------------|
@@ -67,12 +67,12 @@ xmlns:fluence="http://schemas.fluencewpf.com"
 
 ## Installation
 
-NuGet package available soon. For now, use a project reference or a local package:
+A NuGet package is coming. For now, use a project reference or build a local package:
 
 ```powershell
 dotnet pack Fluence.Wpf/Fluence.Wpf.csproj -c Release -o ./artifacts
 ```
-Alternatively, clone or submodule this repository and add a **project reference** to `Fluence.Wpf/Fluence.Wpf.csproj`.
+Or clone or submodule this repository and add a **project reference** to `Fluence.Wpf/Fluence.Wpf.csproj`.
 
 ## Requirements
 
@@ -108,13 +108,13 @@ dotnet run --project Fluence.Wpf.Demo.Mvvm/Fluence.Wpf.Demo.Mvvm.csproj
 
 Or set either project as the startup project in Visual Studio and press F5.
 
-- **PowerShell demos** - three standalone scripts for PowerShell 5.1, showing how to build WinUI-styled WPF UIs without writing C#:
+- **PowerShell demos** - four standalone scripts for PowerShell 5.1 that build WinUI-styled WPF UIs without writing C#:
 
-Refer to the [README.md](./Fluence.Wpf.Demo.PowerShell/README.md) for more details.
+See the [README.md](./Fluence.Wpf.Demo.PowerShell/README.md) for details.
 
 ## Documentation
 
-Documentation lives in the Markdown guides under [`docs/`](docs/). A hosted documentation site is planned but not yet set up.
+The guides live under [`docs/`](docs/). A hosted documentation site is planned but not yet set up.
 
 - [Getting started](docs/getting-started.md) - reference, startup calls, local pack
 - [Theming](docs/theming.md) - merge order, accent, backdrop, watcher
@@ -126,9 +126,9 @@ Documentation lives in the Markdown guides under [`docs/`](docs/). A hosted docu
 
 ## Contributing
 
-The contributor guide lives at [docs/contributing.md](docs/contributing.md). It covers the build matrix, WPF test harness, visual verification expectations, changelog policy, and documentation rules.
+The contributor guide is at [docs/contributing.md](docs/contributing.md). It covers the build matrix, WPF test harness, visual verification expectations, changelog policy, and documentation rules.
 
-For AI-assisted work, read [AGENTS.md](AGENTS.md) before editing.
+For AI-assisted work, read [AGENTS.md](AGENTS.md) first.
 
 ## License
 

@@ -9,7 +9,7 @@ This folder contains the MSTest suite for the Fluence.Wpf library and demo shell
 - `ControlTests*.cs` - control template, behavior, focus, and theme tests.
 - `DemoMainWindowTests.cs` - gallery navigation, source sample, and shell behavior tests.
 - `GalleryScreenshotHarness.cs` - screenshot regeneration for documentation banners during full test runs.
-- `DisableParallelization.cs` - disables parallel MSTest execution for WPF resource/template stability.
+- `Properties/AssemblyInfo.cs` - carries `[assembly: DoNotParallelize]` so WPF resource/template work stays serial (the project also sets `<TestTfmsInParallel>false</TestTfmsInParallel>`).
 
 ## Run
 

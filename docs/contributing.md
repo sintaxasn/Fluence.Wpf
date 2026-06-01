@@ -13,11 +13,11 @@ dotnet build Fluence.Wpf.sln
 dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj
 ```
 
-The test project runs on .NET Framework 4.7.2 and .NET 10 for Windows, and both must pass. WPF tests run on a shared STA dispatcher (`WpfTestSta`); the assembly uses `[assembly: DoNotParallelize]` to avoid cross-thread resource issues. The branch's current test count is the floor: add coverage for new behavior and do not remove tests without documenting the replacement rationale.
+The test project runs on .NET Framework 4.7.2 and .NET 10 for Windows; both must pass. WPF tests share a single STA dispatcher (`WpfTestSta`), and the assembly carries `[assembly: DoNotParallelize]` to avoid cross-thread resource issues. Treat the branch's current test count as the floor. Add coverage for new behavior, and do not remove a test without documenting why its replacement supersedes it.
 
 ## Language and style
 
-- **Fluence.Wpf** library: `LangVersion=latest` and nullable reference types are enabled centrally. Modern C# syntax is allowed on every target framework, but runtime APIs must remain available on .NET Framework 4.7.2 unless the code is already isolated to a newer target.
+- **Fluence.Wpf** library: `LangVersion=latest` and nullable reference types are enabled centrally. Use modern C# syntax on any target framework, but keep runtime APIs to ones that exist on .NET Framework 4.7.2 unless the code is already isolated to a newer target.
 - Every `.cs` file starts with the standard BSD 3-Clause header used across the repo; match an existing file exactly.
 - Public APIs carry `///` XML comments. The library builds with `<DocumentationFile>` and does **not** suppress `CS1591` / `CS1574` - a missing comment becomes a build error.
 - XAML lives in `Fluence.Wpf/Themes/Controls/<ControlName>.xaml` and is merged from `Themes/Generic.xaml`.

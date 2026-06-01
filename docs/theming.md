@@ -5,7 +5,7 @@ description: Dictionary slots, canonical token families, accent ramps, backdrops
 weight: 20
 ---
 
-Fluence.Wpf uses WinUI 3 naming and state behavior for theme resources and is implemented as plain WPF. If you already work with WinUI keys, most token names and control roles will look familiar.
+Fluence.Wpf uses WinUI 3 naming and state behavior for theme resources, implemented as plain WPF. If you already work with WinUI keys, most token names and control roles will look familiar.
 
 ## Merge order (application resources)
 
@@ -31,14 +31,14 @@ Repeated `Apply` calls must not accumulate extra theme dictionaries (`Dictionary
 
 ## Canonical token families
 
-Fluence.Wpf defines the full WinUI 3 token ramp. These are the keys most commonly referenced in custom templates:
+Fluence.Wpf defines the full WinUI 3 token ramp. These are the keys you will reference most often in custom templates:
 
 - **Text**: `TextFillColorPrimary`, `TextFillColorSecondary`, `TextFillColorTertiary`, `TextFillColorDisabled`, `TextOnAccentFillColorPrimary` / `Secondary` / `Disabled`.
 - **Fill**: `ControlFillColorDefault`, `ControlFillColorSecondary`, `ControlFillColorTertiary`, `ControlFillColorInputActive`, `ControlFillColorDisabled`, `AccentFillColorDefault` / `Secondary` / `Tertiary` / `Disabled`, `SubtleFillColorSecondary` / `Tertiary`, `LayerFillColorDefault`, `CardBackgroundFillColorDefault`.
 - **Stroke**: `ControlStrokeColorDefault` / `Secondary`, **`ControlStrongStrokeColorDefault`** (radio / check-box rings), **`ControlStrongStrokeColorDisabled`**, `CardStrokeColorDefault`, `DividerStrokeColorDefault`, `FocusStrokeColorOuter` / `Inner`.
 - **Background**: `SolidBackgroundFillColorBase`, `ApplicationBackgroundColor`.
 - **Window controls**: `WindowCloseButtonBackgroundPointerOver`, `WindowCloseButtonBackgroundPressed`, `WindowCloseButtonForegroundPointerOver`.
-- **High contrast aliases**: `SystemColorWindowTextColorBrush`, `SystemColorWindowColorBrush`, `SystemColorButtonFaceColorBrush`, `SystemColorButtonTextColorBrush`, `SystemColorHighlightColorBrush`, `SystemColorHighlightTextColorBrush`, `SystemColorHotlightColorBrush`, `SystemColorGrayTextColorBrush`. These brush-only aliases map directly to WPF `SystemColors` so consumers can preview or bind Windows high contrast roles without hard-coding platform resources.
+- **High contrast aliases**: `SystemColorWindowTextColorBrush`, `SystemColorWindowColorBrush`, `SystemColorButtonFaceColorBrush`, `SystemColorButtonTextColorBrush`, `SystemColorHighlightColorBrush`, `SystemColorHighlightTextColorBrush`, `SystemColorHotlightColorBrush`, `SystemColorGrayTextColorBrush`. These brush-only aliases map directly to WPF `SystemColors`, so you can preview or bind Windows high contrast roles without hard-coding platform resources.
 
 Each color token has a matching `*Brush` frozen `SolidColorBrush` - for example `ControlStrongStrokeColorDefaultBrush` - produced by `BrushFactory`. Reference the brush keys from XAML, not the raw color keys.
 
@@ -61,7 +61,7 @@ Which backdrops work depends on OS support. Mica and Tabbed require Windows 11; 
 
 ## Design-time
 
-The complete Fluence color and brush set is computed in C# at runtime by `FluenceThemeEngine` and published at `MergedDictionaries[0]`; none of those brushes exist as authored XAML, so the XAML designer / Blend cannot resolve `*Brush` keys on its own. To fix the preview, Fluence ships two generated, design-time-only dictionaries that hold the full computed palette for the default `#0078D4` accent:
+`FluenceThemeEngine` computes the full Fluence color and brush set in C# at runtime and publishes it at `MergedDictionaries[0]`. None of those brushes exist as authored XAML, so the XAML designer and Blend cannot resolve `*Brush` keys on their own. To fix the preview, Fluence ships two generated, design-time-only dictionaries that hold the computed palette for the default `#0078D4` accent:
 
 - `Properties/DesignTime.Light.xaml`
 - `Properties/DesignTime.Dark.xaml`

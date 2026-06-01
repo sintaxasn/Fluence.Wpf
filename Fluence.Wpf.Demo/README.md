@@ -1,10 +1,10 @@
 ﻿# Fluence.Wpf Control Gallery (beginner guide)
 
-This app is a tour of every Fluence.Wpf control. It is also a worked example of how to build a
-modern, themed WPF desktop app, so it doubles as a learning resource: read this first, then
-follow the "where to look next" pointers into the code. It targets `net472` and
-`net10.0-windows10.0.26100.0`, references the library by project reference, and is the primary
-manual verification surface for control behavior, theming, accent, and window chrome.
+This app tours every Fluence.Wpf control and doubles as a worked example of a themed WPF
+desktop app. Read this first, then follow the "where to look next" pointers into the code. It
+targets `net472` and `net10.0-windows10.0.26100.0`, references the library by project reference,
+and is the primary manual verification surface for control behavior, theming, accent, and window
+chrome.
 
 ## Run it
 

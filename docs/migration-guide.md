@@ -5,7 +5,7 @@ description: Move an existing WPF application from standard WPF controls or anot
 weight: 40
 ---
 
-This guide covers moving an existing WPF app from stock controls or another Fluent-style library to `Fluence.Wpf`.
+Move an existing WPF app from stock controls or another Fluent-style library to `Fluence.Wpf`.
 
 ## Scope
 
@@ -30,8 +30,8 @@ This guide covers moving an existing WPF app from stock controls or another Flue
     Fluence.Wpf.ApplicationAccentColorManager.ApplySystemAccent();
     ```
 
-4. Replace shell windows with `fluence:FluenceWindow` where you need Fluent caption buttons, DWM backdrop, rounded corners, or a title-bar content slot.
-5. Replace controls incrementally. Start with leaf controls (`Button`, `TextBox`, `ComboBox`, `ListView`, `InfoBar`, `ProgressBar`), then move larger shell surfaces such as `NavigationView` and `TabView`.
+4. Replace shell windows with `fluence:FluenceWindow` where you need Fluent caption buttons, a DWM backdrop, rounded corners, or a title-bar content slot.
+5. Replace controls incrementally. Start with leaf controls (`Button`, `TextBox`, `ComboBox`, `ListView`, `InfoBar`, `ProgressBar`), then move larger shell surfaces like `NavigationView` and `TabView`.
 
 ## Resource Rules
 
@@ -45,7 +45,7 @@ This guide covers moving an existing WPF app from stock controls or another Flue
 
 ## Verification
 
-After migrating a page or shell surface, run the gallery and test Light, Dark, High Contrast, accent changes, and the target backdrop mode. For source builds, run:
+After migrating a page or shell surface, run the gallery and check Light, Dark, High Contrast, accent changes, and the target backdrop mode. For source builds, run:
 
 ```powershell
 dotnet build Fluence.Wpf.sln -c Debug

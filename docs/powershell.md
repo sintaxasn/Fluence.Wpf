@@ -7,7 +7,8 @@ weight: 50
 
 Fluence.Wpf ships as a standard .NET Framework 4.7.2 assembly. Windows PowerShell 5.1
 (built into every Windows installation) can load that assembly at runtime and create a
-fully themed Fluent window with one script file and no project of your own to compile.
+fully themed Fluent window from a single script file, with no project of your own to
+compile.
 
 The four scripts in `Fluence.Wpf.Demo.PowerShell/` are the canonical, runnable examples
 this guide is based on. Every snippet below comes directly from those scripts.
@@ -16,16 +17,16 @@ this guide is based on. Every snippet below comes directly from those scripts.
 
 ## Overview
 
-The value of the PowerShell path is simplicity:
+The PowerShell path trades the IDE for a single script:
 
 - No project file, no solution, no `App.xaml`.
-- WPF assemblies and the Fluence DLL are loaded with `Add-Type`.
-- The window is defined in XAML as an inline string or a `.xaml` file on disk.
-- Theme, accent, and OS-change tracking all use the same static API you would use
-  from C# - just with PowerShell syntax for static method calls.
+- `Add-Type` loads the WPF assemblies and the Fluence DLL.
+- The window is defined in XAML, either as an inline string or a `.xaml` file on disk.
+- Theme, accent, and OS-change tracking use the same static API you would call from
+  C#, written with PowerShell syntax for static methods.
 
-The result is a Mica-backed, light/dark-aware Fluent window launched from a terminal in
-a few seconds, with no IDE involved.
+You get a Mica-backed, light/dark-aware Fluent window a few seconds after running the
+script in a terminal.
 
 ---
 
@@ -93,7 +94,7 @@ The resulting file is `Fluence.Wpf/bin/Release/net472/Fluence.Wpf.dll`.
 
 ## The canonical bootstrap
 
-Every script follows the same sequence. Understand each step before writing your own.
+Every script follows the same sequence. Read through each step before writing your own.
 
 ### Step 1 - STA relaunch
 
@@ -119,10 +120,10 @@ Add-Type -Path $dll
 $app = New-Object System.Windows.Application
 ```
 
-This step is critical. `ApplicationThemeManager.Apply` publishes brushes into
-`Application.Current.Resources`. If no `Application` object exists when `Apply` is
-called, the call silently no-ops and the window renders unstyled (plain system
-controls, no Fluent brushes). Always create the `Application` before calling `Apply`.
+Create the `Application` before calling `Apply`. `ApplicationThemeManager.Apply`
+publishes brushes into `Application.Current.Resources`. With no `Application` object in
+place, the call silently no-ops and the window renders unstyled: plain system controls,
+no Fluent brushes.
 
 ### Step 5 - Apply the theme
 
@@ -134,9 +135,9 @@ controls, no Fluent brushes). Always create the `Application` before calling `Ap
 [Fluence.Wpf.ApplicationAccentColorManager]::ApplySystemAccent()
 ```
 
-`Apply` seeds the resource stack on the first call, loading brushes, typography, and
-control templates. Later calls swap only the computed color and brush dictionary so that
-all `DynamicResource` bindings in control templates re-resolve automatically.
+The first `Apply` call seeds the resource stack: brushes, typography, and control
+templates. Later calls swap only the computed color and brush dictionary, so every
+`DynamicResource` binding in the control templates re-resolves on its own.
 
 ### Step 6 - Parse XAML and build the window
 
@@ -434,8 +435,8 @@ $themeCombo.add_SelectionChanged({
 
 ## The four example scripts
 
-The `Fluence.Wpf.Demo.PowerShell/` directory contains four ready-to-run scripts. Run any
-of them from a terminal:
+The `Fluence.Wpf.Demo.PowerShell/` directory holds four ready-to-run scripts. Run any of
+them from a terminal:
 
 ```powershell
 powershell.exe -STA -File .\01-HelloWorld.ps1
@@ -443,38 +444,36 @@ powershell.exe -STA -File .\01-HelloWorld.ps1
 
 ### 01-HelloWorld.ps1
 
-The smallest complete example. Opens a Mica-backed window containing a greeting label
-and a single button. Each click cycles the backdrop through Mica, Acrylic, Tabbed, and
-None, and advances the label through a short list of international greetings. Demonstrates
-the full bootstrap sequence, `FindName`, `$script:` state, and `SystemThemeWatcher`.
+The smallest complete example. Opens a Mica-backed window with a greeting label and a
+single button. Each click cycles the backdrop through Mica, Acrylic, Tabbed, and None,
+and advances the label through a short list of international greetings. Covers the full
+bootstrap sequence, `FindName`, `$script:` state, and `SystemThemeWatcher`.
 
 [View script](../Fluence.Wpf.Demo.PowerShell/01-HelloWorld.ps1)
 
 ### 02-ThemeAndAccent.ps1
 
-Demonstrates runtime theme and accent control. Three buttons switch between Light, Dark,
-and Auto; two more cycle a palette of custom accent colors and restore the system accent.
-With `Auto` selected and `SystemThemeWatcher` registered, the window re-themes itself
-when the Windows setting changes while the script is running.
+Runtime theme and accent control. Three buttons switch between Light, Dark, and Auto;
+two more cycle a palette of custom accent colors and restore the system accent. With
+`Auto` selected and `SystemThemeWatcher` registered, the window re-themes itself when the
+Windows setting changes while the script is running.
 
 [View script](../Fluence.Wpf.Demo.PowerShell/02-ThemeAndAccent.ps1)
 
 ### 03-ControlsTour.ps1
 
-Showcases a selection of common Fluence controls inside scrolling `Card` panels: standard
-and accent `Button`, `ToggleSwitch`, `CheckBox`, `RadioButton`, `TextBox`, and `NumberBox`.
-A live interaction wires the `ToggleSwitch` to an `InfoBar` message entirely from
-PowerShell - no XAML binding needed.
+Common Fluence controls inside scrolling `Card` panels: standard and accent `Button`,
+`ToggleSwitch`, `CheckBox`, `RadioButton`, `TextBox`, and `NumberBox`. The `ToggleSwitch`
+drives an `InfoBar` message entirely from PowerShell, with no XAML binding.
 
 [View script](../Fluence.Wpf.Demo.PowerShell/03-ControlsTour.ps1)
 
 ### 04-LoadXamlFile.ps1
 
-Shows the more maintainable pattern: the window UI is defined in a separate
-`MainWindow.xaml` file and loaded with `XamlReader.Load` over a file stream, rather than
-an inline here-string. The script then calls `FindName` to locate named controls and
-wires them exactly as in the other scripts. Useful when XAML grows beyond what is
-comfortable in a string literal.
+The more maintainable pattern: the window UI lives in a separate `MainWindow.xaml` file
+and loads with `XamlReader.Load` over a file stream instead of an inline here-string. The
+script then calls `FindName` to locate named controls and wires them exactly as the other
+scripts do. Reach for this once the XAML outgrows a comfortable string literal.
 
 [View script](../Fluence.Wpf.Demo.PowerShell/04-LoadXamlFile.ps1)
 

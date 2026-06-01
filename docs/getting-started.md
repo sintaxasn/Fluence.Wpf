@@ -21,7 +21,7 @@ weight: 10
     dotnet pack Fluence.Wpf/Fluence.Wpf.csproj -c Release -o ./artifacts
     ```
 
-The package id is **`Fluence.Wpf`**. Public feed publishing is a release decision; local packages are useful for smoke-testing before that happens.
+The package id is **`Fluence.Wpf`**. Public feed publishing is a release decision; a local package is handy for smoke-testing before then.
 
 ## Initialize theme and accent
 
@@ -35,11 +35,11 @@ Fluence.Wpf.ApplicationThemeManager.Apply(
 Fluence.Wpf.ApplicationAccentColorManager.ApplySystemAccent();
 ```
 
-`Apply` seeds the resource stack in a fixed slot order on the first call. Later calls swap the theme color dictionary at slot `[0]`, refresh promoted color keys, and reload the brush dictionary on non-HighContrast theme changes - see [theming.md](theming.md).
+The first `Apply` seeds the resource stack in a fixed three-slot order. Later calls rebuild and replace the computed colors and brushes at slot `[0]`, so every `DynamicResource` binding re-resolves. See [theming.md](theming.md) for the full slot layout.
 
 ## Use a Fluent window shell
 
-Derive your main window from `Fluence.Wpf.Controls.FluenceWindow`, **or** call `ApplicationThemeManager.Apply(...)` at startup and use Fluence controls inside a standard WPF `Window`. Do not manually merge `Themes/Generic.xaml` in `App.xaml`; the theme manager adds it at slot `[4]` on the first `Apply` call.
+Derive your main window from `Fluence.Wpf.Controls.FluenceWindow`, **or** call `ApplicationThemeManager.Apply(...)` at startup and use Fluence controls inside a standard WPF `Window`. Do not manually merge `Themes/Generic.xaml` in `App.xaml`; the theme manager adds it at slot `[2]` on the first `Apply` call.
 
 ```xml
 <fluence:FluenceWindow
@@ -90,7 +90,7 @@ Fluence.Wpf.ApplicationThemeManager.Changed += (s, e) => { /* refresh theme-spec
 Fluence.Wpf.SystemThemeWatcher.UnWatch(myWindow);
 ```
 
-`ApplicationThemeManager.Changed` fires once per applied theme change. Use it to swap theme-specific image assets - `GalleryHomePage.xaml.cs` in the demo shows the banner swap pattern.
+`ApplicationThemeManager.Changed` fires once per applied theme change. Use it to swap theme-specific image assets; `GalleryHomePage.xaml.cs` in the demo shows the banner swap pattern.
 
 ## Verify locally
 
@@ -100,6 +100,6 @@ Fluence.Wpf.SystemThemeWatcher.UnWatch(myWindow);
 
 ## Using from PowerShell
 
-Fluence.Wpf can theme a WPF window from a plain Windows PowerShell 5.1 script (no project, no compile step of your own). See [powershell.md](powershell.md) for the bootstrap pattern and the runnable examples under `Fluence.Wpf.Demo.PowerShell/`.
+Fluence.Wpf can theme a WPF window from a plain Windows PowerShell 5.1 script, with no project and no compile step of your own. See [powershell.md](powershell.md) for the bootstrap pattern and the runnable examples under `Fluence.Wpf.Demo.PowerShell/`.
 
 Next: [theming.md](theming.md) for dictionary order and pitfalls, [controls.md](controls.md) for the control inventory and XAML snippets.

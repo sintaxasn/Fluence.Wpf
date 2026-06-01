@@ -12,7 +12,7 @@ body:
     attributes:
       label: Version or commit
       description: NuGet/package version, tag, or commit SHA.
-      placeholder: "v0.3.0 or 65c1b3d"
+      placeholder: "0.6.0-preview or 65c1b3d"
     validations:
       required: true
   - type: dropdown
@@ -29,8 +29,64 @@ body:
   - type: input
     id: windows-version
     attributes:
-      label: Windows version
-      placeholder: "Windows 11 24H2, Windows 10 22H2"
+      label: Windows version and build
+      description: Mica / Acrylic / rounded corners light up only on Windows 11; the immersive dark-mode and auto-hide-taskbar paths branch on the exact build.
+      placeholder: "Windows 11 24H2 (build 26100), Windows 10 22H2 (build 19045)"
+    validations:
+      required: true
+  - type: input
+    id: affected-control
+    attributes:
+      label: Affected control or surface
+      description: Which control, theme resource, or window surface is involved.
+      placeholder: "FluenceWindow, NavigationView, ToggleSwitch, TabView, ApplicationThemeManager, ..."
+    validations:
+      required: true
+  - type: dropdown
+    id: theme
+    attributes:
+      label: Theme
+      description: Which theme(s) reproduce the issue.
+      multiple: true
+      options:
+        - Light
+        - Dark
+        - High Contrast
+        - Auto (follow Windows)
+        - All / not theme-specific
+    validations:
+      required: true
+  - type: dropdown
+    id: backdrop
+    attributes:
+      label: Backdrop
+      description: Active FluenceWindow backdrop, if relevant.
+      options:
+        - Mica
+        - Acrylic
+        - Tabbed (Mica Alt)
+        - None
+        - Auto
+        - Not applicable
+    validations:
+      required: false
+  - type: input
+    id: accent
+    attributes:
+      label: Accent
+      description: System accent, an app-defined accent, or a custom accent ramp.
+      placeholder: "System accent, or custom #0078D4"
+    validations:
+      required: false
+  - type: dropdown
+    id: gallery-repro
+    attributes:
+      label: Reproduces in the gallery demo?
+      description: Does it reproduce in Fluence.Wpf.Demo, or only in your own app?
+      options:
+        - "Yes - reproduces in Fluence.Wpf.Demo"
+        - "No - only in my own app"
+        - "Not tried / not applicable"
     validations:
       required: true
   - type: textarea
