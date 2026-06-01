@@ -171,14 +171,6 @@ SystemAccentColorSecondary|#FF003E6E|#00000000
 SystemAccentColorSecondaryBrush|#00000000|#FF00213B
 SystemAccentColorTertiary|#FF00213B|#00000000
 SystemAccentColorTertiaryBrush|#00000000|#FF005BA1
-SystemColorButtonFaceColorBrush|#00000000|#FFF0F0F0
-SystemColorButtonTextColorBrush|#00000000|#FF000000
-SystemColorGrayTextColorBrush|#00000000|#FF6D6D6D
-SystemColorHighlightColorBrush|#00000000|#FF0078D7
-SystemColorHighlightTextColorBrush|#00000000|#FFFFFFFF
-SystemColorHotlightColorBrush|#00000000|#FF0066CC
-SystemColorWindowColorBrush|#00000000|#FFFFFFFF
-SystemColorWindowTextColorBrush|#00000000|#FF000000
 SystemFillColorAttention|#FF1AEBFF|#00000000
 SystemFillColorAttentionBackground|#FF1AEBFF|#00000000
 SystemFillColorAttentionBackgroundBrush|#00000000|#FF0078D7

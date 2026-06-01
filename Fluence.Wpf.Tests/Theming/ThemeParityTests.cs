@@ -78,6 +78,16 @@ namespace Fluence.Wpf.Tests.Theming
                 foreach (object key in CollectKeys(res))
                 {
                     if (key is not string ks) { continue; }
+
+                    // SystemColor* aliases resolve to live SystemColors (highlight, window, button
+                    // face, and so on), whose values track the host machine's OS theme and accent
+                    // rather than the requested theme. They are machine-dependent, so they are
+                    // excluded from this machine-independent parity snapshot, exactly as
+                    // DesignTimeResourceWriter excludes them. Otherwise a CI runner whose highlight
+                    // color differs from the snapshot machine drifts the check (for example
+                    // SystemColorHighlightColorBrush #FF0078D7 vs #FF0078D4).
+                    if (ks.StartsWith("SystemColor", StringComparison.Ordinal)) { continue; }
+
                     object? val = res[ks];
                     if (val is Color c) { map[ks] = (c, default); }
                     else if (val is SolidColorBrush b) { map[ks] = (default, b.Color); }
