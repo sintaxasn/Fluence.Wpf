@@ -152,7 +152,9 @@ namespace Fluence.Wpf.Tests
                 {
                     mw.Show();
                     DrainDispatcher(mw.Dispatcher);
-                    WaitForAnimationAndDrain(mw.Dispatcher, 300);
+                    // Settle until the shell's NavigationView is realized rather than padding a
+                    // fixed delay; returns as soon as the visual tree is up.
+                    _ = WaitUntil(mw.Dispatcher, 2000, () => FindVisualChildByName<NavigationView>(mw, "DemoNav") is not null);
                     mw.UpdateLayout();
 
                     NavigationView? nav = FindVisualChildByName<NavigationView>(mw, "DemoNav");
@@ -329,7 +331,8 @@ namespace Fluence.Wpf.Tests
                         "LeftCompact footer navigation items should receive the full compact pane width so their icons are visible.");
 
                     nav.IsPaneOpen = true;
-                    WaitForAnimationAndDrain(window.Dispatcher, 220);
+                    // Settle until the footer host reaches the asserted Visible state.
+                    _ = WaitUntil(window.Dispatcher, 2000, () => footerHost.Visibility == Visibility.Visible);
 
                     Assert.AreEqual(Visibility.Visible, footerHost.Visibility,
                         "LeftCompact footer should be visible when the pane opens.");
@@ -1220,7 +1223,8 @@ namespace Fluence.Wpf.Tests
                         "Icon item indicator should sit inside the selected item background.");
 
                     nav.SelectedIndex = 1;
-                    WaitForAnimationAndDrain(window.Dispatcher, 600);
+                    // Settle until the indicator slide reaches the asserted child-item offset.
+                    _ = WaitUntil(window.Dispatcher, 2000, () => Math.Abs(GetSelectionIndicatorTranslate(indicator).X - 53.0) <= 0.5);
                     window.UpdateLayout();
                     DrainDispatcher(window.Dispatcher);
 
@@ -1494,7 +1498,8 @@ namespace Fluence.Wpf.Tests
                     double iconItemX = GetSelectionIndicatorTranslate(indicator).X;
 
                     nav.SelectedIndex = 1;
-                    WaitForAnimationAndDrain(window.Dispatcher, 600);
+                    // Settle until the indicator returns to the icon-item offset (the asserted value).
+                    _ = WaitUntil(window.Dispatcher, 2000, () => Math.Abs(GetSelectionIndicatorTranslate(indicator).X - iconItemX) <= 0.5);
                     window.UpdateLayout();
                     DrainDispatcher(window.Dispatcher);
 
@@ -2059,7 +2064,8 @@ namespace Fluence.Wpf.Tests
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
-                    WaitForAnimationAndDrain(window.Dispatcher, 300);
+                    // Settle until the open pane reaches the asserted 320px expanded width.
+                    _ = WaitUntil(window.Dispatcher, 2000, () => Math.Abs(nav.GetPaneColumnWidthForTesting() - 320.0) <= 0.5);
                     window.UpdateLayout();
                     Assert.AreEqual(320.0, nav.GetPaneColumnWidthForTesting(), 0.5,
                         "An open Left pane should start at the 320px expanded width.");
@@ -2120,8 +2126,9 @@ namespace Fluence.Wpf.Tests
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    // Pane-open enter animation is 167 ms (CubicEase EaseOut). Wait past HoldEnd.
-                    WaitForAnimationAndDrain(window.Dispatcher, 300);
+                    // Pane-open enter animation is 167 ms (CubicEase EaseOut). Settle until the pane
+                    // reaches its 320px open width rather than padding past HoldEnd.
+                    _ = WaitUntil(window.Dispatcher, 2000, () => Math.Abs(nav.GetPaneColumnWidthForTesting() - 320.0) <= 0.5);
                     window.UpdateLayout();
 
                     ContentPresenter? presenter = FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter);
@@ -2310,8 +2317,9 @@ namespace Fluence.Wpf.Tests
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    // Pane enter animation is 167 ms (CubicEase). Wait past HoldEnd before sampling layout.
-                    WaitForAnimationAndDrain(window.Dispatcher, 300);
+                    // Pane enter animation is 167 ms (CubicEase). Settle until the pane reaches its
+                    // 320px open width before sampling layout, rather than padding past HoldEnd.
+                    _ = WaitUntil(window.Dispatcher, 2000, () => Math.Abs(nav.GetPaneColumnWidthForTesting() - 320.0) <= 0.5);
                     window.UpdateLayout();
 
                     ContentPresenter? presenter = FindVisualChildByName<ContentPresenter>(nav, NavigationView.PartContentPresenter);

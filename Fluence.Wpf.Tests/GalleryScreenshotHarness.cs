@@ -32,7 +32,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.ExceptionServices;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -75,7 +74,9 @@ namespace Fluence.Wpf.Tests
         private const double BaseDpi = 96.0;
         private const double ReferenceScale = 1.0;
 
-        private static readonly TimeSpan AnimationSettleDelay = TimeSpan.FromMilliseconds(260);
+        // Fluent transitions run ~100-167 ms; 150 ms is ample headroom for the storyboard to
+        // settle before RenderTargetBitmap capture without padding the per-route cost.
+        private static readonly TimeSpan AnimationSettleDelay = TimeSpan.FromMilliseconds(150);
         private static readonly Uri DemoSharedStylesUri = new(
             "/Fluence.Wpf.Demo;component/Resources/DemoSharedStyles.xaml",
             UriKind.Relative);
@@ -97,23 +98,7 @@ namespace Fluence.Wpf.Tests
 
         private static void RunOnStaThread(Action action)
         {
-            Exception? captured = null;
-            WpfTestSta.Dispatcher?.Invoke(new Action(delegate
-            {
-                try
-                {
-                    action();
-                }
-                catch (Exception exception)
-                {
-                    captured = exception;
-                }
-            }));
-
-            if (captured is not null)
-            {
-                ExceptionDispatchInfo.Capture(captured).Throw();
-            }
+            WpfTestSta.RunOnSta(action);
         }
 
         private static Application? EnsureApplication()
@@ -123,7 +108,7 @@ namespace Fluence.Wpf.Tests
 
         private static void DrainDispatcher(Dispatcher dispatcher)
         {
-            _ = dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
+            WpfTestSta.DrainDispatcher(dispatcher);
         }
 
         private static string FindRepoRoot()

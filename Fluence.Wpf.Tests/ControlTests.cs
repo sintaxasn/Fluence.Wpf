@@ -32,7 +32,6 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Runtime.ExceptionServices;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
@@ -75,10 +74,10 @@ namespace Fluence.Wpf.Tests
                 window.Close();
             }
 
-            Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
-            _ = dispatcher.Invoke(DispatcherPriority.Loaded, new Action(delegate { }));
-            _ = dispatcher.Invoke(DispatcherPriority.ContextIdle, new Action(delegate { }));
-            _ = dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
+            // A single ApplicationIdle drain subsumes the higher Loaded/ContextIdle priorities:
+            // Invoke blocks until the queue has been processed down to and including the requested
+            // priority, so once the windows are closed the lowest-priority pump drains them all.
+            WpfTestSta.DrainDispatcher(Dispatcher.CurrentDispatcher);
 
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
@@ -88,25 +87,7 @@ namespace Fluence.Wpf.Tests
 
         private static void RunOnStaThread(Action action)
         {
-            Dispatcher? dispatcher = WpfTestSta.Dispatcher;
-
-            Exception? capturedException = null;
-            dispatcher?.Invoke(new Action(delegate
-            {
-                try
-                {
-                    action();
-                }
-                catch (Exception exception)
-                {
-                    capturedException = exception;
-                }
-            }));
-
-            if (capturedException is not null)
-            {
-                ExceptionDispatchInfo.Capture(capturedException).Throw();
-            }
+            WpfTestSta.RunOnSta(action);
         }
 
         private static Application? EnsureApplication()
@@ -135,7 +116,7 @@ namespace Fluence.Wpf.Tests
 
         private static void DrainDispatcher(Dispatcher? dispatcher)
         {
-            _ = dispatcher?.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
+            WpfTestSta.DrainDispatcher(dispatcher);
         }
 
         private static T? FindVisualChild<T>(DependencyObject root) where T : DependencyObject
@@ -163,27 +144,12 @@ namespace Fluence.Wpf.Tests
             return null;
         }
 
+        // Visual-tree-only descendant search. Forwards to the canonical WpfTestSta implementation
+        // (FindVisualDescendants); the logical+visual cycle-guarded variant lives there too as
+        // FindLogicalAndVisualDescendants, which is what DemoTestHost-style callers use.
         private static IEnumerable<T> FindVisualChildren<T>(DependencyObject root) where T : DependencyObject
         {
-            if (root is null)
-            {
-                yield break;
-            }
-
-            int childCount = VisualTreeHelper.GetChildrenCount(root);
-            for (int index = 0; index < childCount; index++)
-            {
-                DependencyObject child = VisualTreeHelper.GetChild(root, index);
-                if (child is T match)
-                {
-                    yield return match;
-                }
-
-                foreach (T descendant in FindVisualChildren<T>(child))
-                {
-                    yield return descendant;
-                }
-            }
+            return WpfTestSta.FindVisualDescendants<T>(root);
         }
 
         private static DependencyObject? FindVisualChildByTypeName(DependencyObject root, string typeName)

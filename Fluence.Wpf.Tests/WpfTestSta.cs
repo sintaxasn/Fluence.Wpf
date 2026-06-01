@@ -27,8 +27,12 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Media3D;
 using System.Windows.Threading;
 
 namespace Fluence.Wpf.Tests
@@ -68,6 +72,131 @@ namespace Fluence.Wpf.Tests
         internal static T? Invoke<T>(Func<T> func) where T : class?
         {
             return EnsureDispatcher()?.Invoke(func);
+        }
+
+        /// <summary>
+        /// Runs <paramref name="action"/> on the shared STA dispatcher, capturing any exception it
+        /// throws and rethrowing it on the calling thread with its original stack trace preserved
+        /// (via <see cref="ExceptionDispatchInfo"/>) so test assertions surface where the caller
+        /// expects them. This is the single canonical implementation; per-fixture wrappers forward
+        /// here.
+        /// </summary>
+        internal static void RunOnSta(Action action)
+        {
+            Exception? captured = null;
+            EnsureDispatcher()?.Invoke(new Action(delegate
+            {
+                try
+                {
+                    action();
+                }
+                catch (Exception exception)
+                {
+                    captured = exception;
+                }
+            }));
+
+            if (captured is not null)
+            {
+                ExceptionDispatchInfo.Capture(captured).Throw();
+            }
+        }
+
+        /// <summary>
+        /// Drains the dispatcher queue down to <see cref="DispatcherPriority.ApplicationIdle"/> so
+        /// any queued layout, render, and idle callbacks complete before the caller samples state.
+        /// </summary>
+        internal static void DrainDispatcher(Dispatcher? dispatcher)
+        {
+            _ = dispatcher?.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
+        }
+
+        /// <summary>
+        /// Enumerates every descendant of <paramref name="root"/> of type <typeparamref name="T"/>
+        /// walking the <b>visual</b> tree only (depth-first, pre-order). This is the lightweight
+        /// variant used by control-template tests where the visual tree is the source of truth.
+        /// </summary>
+        internal static IEnumerable<T> FindVisualDescendants<T>(DependencyObject? root)
+            where T : DependencyObject
+        {
+            if (root is null)
+            {
+                yield break;
+            }
+
+            int childCount = VisualTreeHelper.GetChildrenCount(root);
+            for (int index = 0; index < childCount; index++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(root, index);
+                if (child is T match)
+                {
+                    yield return match;
+                }
+
+                foreach (T descendant in FindVisualDescendants<T>(child))
+                {
+                    yield return descendant;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Enumerates every descendant of <paramref name="root"/> of type <typeparamref name="T"/>
+        /// walking <b>both the visual and logical</b> trees, guarding against revisiting a node so
+        /// shared subtrees and cycles do not loop. This broader variant is used by demo/full-window
+        /// tests where content can live in the logical tree before (or instead of) being realized in
+        /// the visual tree.
+        /// </summary>
+        internal static IEnumerable<T> FindLogicalAndVisualDescendants<T>(DependencyObject? root)
+            where T : DependencyObject
+        {
+            HashSet<DependencyObject> visited = [];
+            foreach (T item in FindLogicalAndVisualDescendants<T>(root, visited))
+            {
+                yield return item;
+            }
+        }
+
+        private static IEnumerable<T> FindLogicalAndVisualDescendants<T>(
+            DependencyObject? root,
+            HashSet<DependencyObject> visited)
+            where T : DependencyObject
+        {
+            if (root is null || !visited.Add(root))
+            {
+                yield break;
+            }
+
+            if (root is T match)
+            {
+                yield return match;
+            }
+
+            int visualChildren = 0;
+            if (root is Visual or Visual3D)
+            {
+                visualChildren = VisualTreeHelper.GetChildrenCount(root);
+            }
+
+            for (int i = 0; i < visualChildren; i++)
+            {
+                DependencyObject child = VisualTreeHelper.GetChild(root, i);
+                foreach (T item in FindLogicalAndVisualDescendants<T>(child, visited))
+                {
+                    yield return item;
+                }
+            }
+
+            foreach (object logicalChild in LogicalTreeHelper.GetChildren(root))
+            {
+                if (logicalChild is DependencyObject dependencyObject)
+                {
+                    foreach (T item in FindLogicalAndVisualDescendants<T>(dependencyObject, visited))
+                    {
+                        yield return item;
+                    }
+                }
+            }
         }
 
         private static Dispatcher? EnsureDispatcher()

@@ -30,10 +30,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.ExceptionServices;
 using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Media3D;
 using System.Windows.Threading;
 
 namespace Fluence.Wpf.Tests
@@ -46,23 +43,7 @@ namespace Fluence.Wpf.Tests
 
         internal static void RunOnSta(Action action)
         {
-            Exception? captured = null;
-            WpfTestSta.Dispatcher?.Invoke(new Action(delegate
-            {
-                try
-                {
-                    action();
-                }
-                catch (Exception exception)
-                {
-                    captured = exception;
-                }
-            }));
-
-            if (captured is not null)
-            {
-                ExceptionDispatchInfo.Capture(captured).Throw();
-            }
+            WpfTestSta.RunOnSta(action);
         }
 
         internal static Application EnsureDemoTheme(BackdropType backdrop = BackdropType.None)
@@ -108,7 +89,7 @@ namespace Fluence.Wpf.Tests
 
         internal static void Drain(Dispatcher? dispatcher)
         {
-            _ = dispatcher?.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
+            WpfTestSta.DrainDispatcher(dispatcher);
         }
 
         internal static T? FindByName<T>(DependencyObject? root, string name)
@@ -125,14 +106,13 @@ namespace Fluence.Wpf.Tests
             return null;
         }
 
+        // Logical+visual descendant search with cycle guarding. Forwards to the canonical
+        // WpfTestSta.FindLogicalAndVisualDescendants; the distinct name there documents how this
+        // differs from the visual-only ControlTests variant (FindVisualDescendants).
         internal static IEnumerable<T> FindVisualChildren<T>(DependencyObject? root)
             where T : DependencyObject
         {
-            HashSet<DependencyObject> visited = [];
-            foreach (T item in FindVisualChildren<T>(root, visited))
-            {
-                yield return item;
-            }
+            return WpfTestSta.FindLogicalAndVisualDescendants<T>(root);
         }
 
         internal static string GetRepositoryFilePath(params string[] relativeSegments)
@@ -164,48 +144,6 @@ namespace Fluence.Wpf.Tests
             ApplicationAccentColorManager.ResetForTesting();
             application.Resources.MergedDictionaries.Clear();
             application.Resources.Clear();
-        }
-
-        private static IEnumerable<T> FindVisualChildren<T>(
-            DependencyObject? root,
-            HashSet<DependencyObject> visited)
-            where T : DependencyObject
-        {
-            if (root is null || !visited.Add(root))
-            {
-                yield break;
-            }
-
-            if (root is T match)
-            {
-                yield return match;
-            }
-
-            int visualChildren = 0;
-            if (root is Visual or Visual3D)
-            {
-                visualChildren = VisualTreeHelper.GetChildrenCount(root);
-            }
-
-            for (int i = 0; i < visualChildren; i++)
-            {
-                DependencyObject child = VisualTreeHelper.GetChild(root, i);
-                foreach (T item in FindVisualChildren<T>(child, visited))
-                {
-                    yield return item;
-                }
-            }
-
-            foreach (object logicalChild in LogicalTreeHelper.GetChildren(root))
-            {
-                if (logicalChild is DependencyObject dependencyObject)
-                {
-                    foreach (T item in FindVisualChildren<T>(dependencyObject, visited))
-                    {
-                        yield return item;
-                    }
-                }
-            }
         }
     }
 }

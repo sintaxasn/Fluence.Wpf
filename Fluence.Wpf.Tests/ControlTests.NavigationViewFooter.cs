@@ -220,7 +220,8 @@ namespace Fluence.Wpf.Tests
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
-                    WaitForAnimationAndDrain(window.Dispatcher, 300);
+                    // Settle until the footer item has stretched to the asserted pane width.
+                    _ = WaitUntil(window.Dispatcher, 2000, () => { window.UpdateLayout(); return footer.ActualWidth > 200.0; });
                     window.UpdateLayout();
 
                     // The footer item lives in a stretching StackPanel, so its hover/selection surface

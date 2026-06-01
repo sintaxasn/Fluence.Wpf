@@ -85,7 +85,9 @@ namespace Fluence.Wpf.Tests
                     nav.InvokeItem(files);
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
-                    WaitForAnimationAndDrain(window.Dispatcher, 600);
+                    // Settle until the indicator slide animation has reached its hold-end (no longer
+                    // animating), so the sampled filesY is the final settled offset.
+                    _ = WaitUntil(window.Dispatcher, 2000, () => !GetSelectionIndicatorTranslate(indicator).HasAnimatedProperties);
 
                     Assert.AreSame(files, nav.SelectedItem, "Invoking the second item should change the selection after reload.");
                     double filesY = GetSelectionIndicatorTranslate(indicator).Y;

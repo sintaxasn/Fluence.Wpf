@@ -257,6 +257,7 @@ When adding a new control or materially changing an existing one:
 - **TFMs**: `net472` **and** `net10.0-windows10.0.26100.0`; both must pass.
 - **Parallelization**: `[assembly: DoNotParallelize]` lives in `Fluence.Wpf.Tests/Properties/AssemblyInfo.cs`, and the test project sets `<TestTfmsInParallel>false</TestTfmsInParallel>`. WPF's shared `ResourceDictionary` / storyboard sealing is not thread-safe across parallel fixtures or target-framework lanes.
 - **STA**: `WpfTestSta` in the test project owns a single STA thread + `Dispatcher`. All UI-touching work goes through `WpfTestSta.Invoke(...)` / `RunOnStaThread(...)`.
+- **Shared test helpers** live in `WpfTestSta` (single canonical copy): `RunOnSta` (STA invoke with `ExceptionDispatchInfo` rethrow), `DrainDispatcher` (`ApplicationIdle` pump), and two explicitly named tree walkers - `FindVisualDescendants<T>` (visual tree only) and `FindLogicalAndVisualDescendants<T>` (visual + logical, cycle-guarded). Per-fixture wrappers forward to these; do not reintroduce divergent copies. Prefer the condition-based `WaitUntil(dispatcher, timeoutMs, predicate)` (sampling the value you assert) over a fixed `WaitForAnimationAndDrain(ms)` delay.
 - **Application**: `WpfTestSta.EnsureApplication()` creates an `Application` with `ShutdownMode.OnExplicitShutdown` so tests do not tear it down.
 - **Theme helpers**: `ThemeTestHelpers.ApplyStandardThemeCycle` (Light -> Dark -> HighContrast -> Light); `AssertKeyThemeBrushesResolve` for canonical key sanity.
 - **Tests for controls** typically:

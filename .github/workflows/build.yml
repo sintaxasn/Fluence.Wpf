@@ -37,11 +37,14 @@ jobs:
       - name: Build solution (Release)
         run: dotnet build Fluence.Wpf.sln -c Release --no-restore -v minimal
 
+      # Screenshots-category tests are PNG regenerators (no pass/fail assertion beyond
+      # "rendered without throwing"); they run in full local test runs to refresh
+      # docs/screenshots but are skipped here to keep CI fast.
       - name: Test (.NET Framework 4.7.2)
-        run: dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Release -f net472 --no-build --verbosity normal --logger "trx;LogFileName=net472.trx" --results-directory TestResults/net472
+        run: dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Release -f net472 --no-build --verbosity normal --filter "TestCategory!=Screenshots" --logger "trx;LogFileName=net472.trx" --results-directory TestResults/net472
 
       - name: Test (.NET 10)
-        run: dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Release -f net10.0-windows10.0.26100.0 --no-build --verbosity normal --logger "trx;LogFileName=net10.trx" --results-directory TestResults/net10
+        run: dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Release -f net10.0-windows10.0.26100.0 --no-build --verbosity normal --filter "TestCategory!=Screenshots" --logger "trx;LogFileName=net10.trx" --results-directory TestResults/net10
 
       - name: Upload test results
         if: always()
