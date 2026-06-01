@@ -123,6 +123,7 @@ namespace Fluence.Wpf.Tests.Theming
         /// attribute (or run it explicitly) after an intentional engine change, then re-commit the
         /// updated <c>DesignTime.{Light,Dark}.xaml</c> files.
         /// </summary>
+        [SlopwatchSuppress("SW001", "Maintainer-only file generator that rewrites committed DesignTime.{Light,Dark}.xaml; must not run in CI. DesignTimeResources_AreCurrent is the CI guard.")]
         [TestMethod]
         [Ignore("Maintainer-only: writes the committed DesignTime.{Light,Dark}.xaml files. Run manually after an intentional engine change.")]
         public void RegenerateDesignTimeResources()
