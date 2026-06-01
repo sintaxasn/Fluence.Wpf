@@ -57,6 +57,16 @@ namespace Fluence.Wpf.Tests.Theming
                 app.Resources.MergedDictionaries.Clear();
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
+
+                // Force machine-independent title-bar and window-border chrome before applying.
+                // The golden snapshot was captured with the OS "show accent color on title bars"
+                // setting OFF, whereas the live ColorMap chrome branch reads HKCU DWM
+                // ColorPrevalence and AccentColor. On a machine with that setting ON, the four
+                // chrome keys TitleBarActive, TitleBarInactive and WindowBorder, plus their Brush
+                // twins, would drift. Routing through the deterministic-chrome path makes this
+                // parity check hermetic, and the same machine-independent values are already
+                // covered by DesignTimeResourceTests.
+                FluenceThemeEngine.SetDeterministicChromeForTesting(true);
                 ApplicationThemeManager.Apply(theme, BackdropType.None, true);
                 ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
             });

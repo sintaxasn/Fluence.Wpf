@@ -49,6 +49,12 @@ namespace Fluence.Wpf.Theming
         private static AccentIntent _intent = AccentIntent.System;
         private static bool _initialized;
 
+        // Test-only: when set, BuildComputedDictionary uses ColorMap's machine-independent
+        // (deterministic) chrome branch so the golden-parity test does not depend on the host
+        // machine's "show accent color on title bars" personalization setting. See
+        // ThemeParityTests.CaptureResolved.
+        private static bool _deterministicChromeForTesting;
+
         /// <summary>Gets the most recently resolved <see cref="AccentPalette"/>.</summary>
         internal static AccentPalette CurrentPalette { get; private set; }
 
@@ -98,7 +104,7 @@ namespace Fluence.Wpf.Theming
         /// </summary>
         private static ResourceDictionary BuildComputedDictionary(ApplicationTheme theme, AccentPalette palette)
         {
-            Dictionary<string, Color> colors = ColorMap.Build(theme, palette);
+            Dictionary<string, Color> colors = ColorMap.Build(theme, palette, deterministicChrome: _deterministicChromeForTesting);
             CurrentTitleBarColors = (colors["TitleBarActiveColor"], colors["TitleBarInactiveColor"], colors["WindowBorderColor"]);
             ResourceDictionary computed = BrushFactory.Build(colors);
             SpecialBrushes.Add(computed, colors, theme);
@@ -176,10 +182,23 @@ namespace Fluence.Wpf.Theming
             }
         }
 
+        /// <summary>
+        /// Test-only switch that forces the live publish pipeline to emit machine-independent
+        /// title-bar / window-border chrome (the deterministic <see cref="ColorMap.Build"/> branch).
+        /// The golden-parity snapshot was captured with color-prevalence OFF; without this the
+        /// rebuild would read live OS personalization (HKCU DWM ColorPrevalence / AccentColor) and
+        /// drift on machines that show the accent color on title bars.
+        /// </summary>
+        internal static void SetDeterministicChromeForTesting(bool enabled)
+        {
+            _deterministicChromeForTesting = enabled;
+        }
+
         /// <summary>Resets engine state for test isolation.</summary>
         internal static void ResetForTesting()
         {
             _initialized = false;
+            _deterministicChromeForTesting = false;
             _intent = AccentIntent.System;
             ResolvedTheme = ApplicationTheme.Light;
             // Seed a valid default-blue ramp rather than the zero Color value. SystemAccentColor
