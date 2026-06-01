@@ -38,7 +38,7 @@ Resolve every visual or behavioural decision through AGENTS.md section 4: in-tre
    - Wire `VisualStateManager` groups with Fluent timings (~100 to 167 ms), reusing existing easing key splines.
    - Default WPF focus rectangles off; use the FluentControl focus brush tokens as in the Button / Card templates.
 
-3. **Resources.** Reuse canonical keys. If a concept is genuinely new, add the **color** to all three `Themes/Colors/Theme.{Light|Dark|HighContrast}.xaml`, then add the paired `SolidColorBrush` to `Themes/Brushes/Brushes.xaml`. If it is a high-contrast brush, also add the key to `ApplicationThemeManager._promotedHighContrastBrushKeys`. Add a design-time preview entry to `Fluence.Wpf/Properties/DesignTimeResources.xaml` assuming Light + `#0078D4`.
+3. **Resources.** Reuse canonical keys. If a concept is genuinely new, add the **color** to all three `Themes/Colors/Theme.{Light|Dark|HighContrast}.xaml` tables; `BrushFactory` auto-emits a frozen `SolidColorBrush` twin (`key + "Brush"`) for every color key, so a plain color needs no hand-written brush. Only touch `SpecialBrushes.cs` when the brush needs a non-standard twin name, a gradient, or a high-contrast override (HC brushes are rebuilt there from live `SystemColors`, with no promotion list). Add a design-time preview entry to `Fluence.Wpf/Properties/DesignTimeResources.xaml` assuming Light + `#0078D4`.
 
 4. **Demo.** Add or extend a gallery page under `Fluence.Wpf.Demo/Pages/Gallery*.xaml`, following the section 14 DemoSampleControl contract (use the `demo-sample-page` skill if it is a discrete sample). Register the page in `MainWindow.NavigateTo(string tag)` if it should be navigable.
 

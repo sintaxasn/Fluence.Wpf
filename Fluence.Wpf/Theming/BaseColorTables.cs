@@ -34,9 +34,11 @@ using System.Windows.Media;
 namespace Fluence.Wpf.Theming
 {
     /// <summary>
-    /// Loads per-theme and shared Color tokens from the XAML resource dictionaries.
-    /// The per-theme files are Color-only tables; brushes are built entirely in C# by
-    /// <see cref="BrushFactory"/> and <see cref="SpecialBrushes"/>.
+    /// Loads per-theme Color tokens from the XAML resource dictionaries. The few
+    /// theme-independent tokens (the Windows close-button brand colors) are seeded in
+    /// code by <see cref="AddSharedColors"/>; only the per-theme Color-only tables are
+    /// read from XAML. Brushes are built entirely in C# by <see cref="BrushFactory"/>
+    /// and <see cref="SpecialBrushes"/>.
     /// </summary>
     internal static class BaseColorTables
     {
@@ -49,9 +51,23 @@ namespace Fluence.Wpf.Theming
         internal static Dictionary<string, Color> Load(ApplicationTheme theme)
         {
             Dictionary<string, Color> map = new(StringComparer.Ordinal);
-            ReadColors(PackBase + "Themes/Shared.xaml", map);
+            AddSharedColors(map);
             ReadColors(PackBase + "Themes/Colors/Theme." + Name(theme) + ".xaml", map);
             return map;
+        }
+
+        /// <summary>
+        /// Seeds the theme-independent Color tokens that are identical across Light, Dark, and
+        /// HighContrast. These are the canonical Windows close-button brand colors - the shell uses
+        /// the same hover and pressed red and the white foreground in every theme - so they are
+        /// defined here in code rather than duplicated across the per-theme XAML tables. Seeded
+        /// before the per-theme table so a future theme could still override them.
+        /// </summary>
+        private static void AddSharedColors(Dictionary<string, Color> map)
+        {
+            map["WindowCloseButtonBackgroundPointerOver"] = Color.FromArgb(0xFF, 0xC4, 0x2B, 0x1C);
+            map["WindowCloseButtonBackgroundPressed"] = Color.FromArgb(0xFF, 0xB4, 0x27, 0x1C);
+            map["WindowCloseButtonForegroundPointerOver"] = Color.FromArgb(0xFF, 0xFF, 0xFF, 0xFF);
         }
 
         private static string Name(ApplicationTheme t)

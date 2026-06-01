@@ -44,10 +44,12 @@ maintainers.
   Color tokens (`WindowCloseButtonBackgroundPointerOver`, `...Pressed`,
   `WindowCloseButtonForegroundPointerOver`) are theme-independent (the
   Windows shell uses the same brand red across Light, Dark, and
-  HighContrast) and now live in `Themes/Shared.xaml` instead of being
-  duplicated across per-theme dictionaries. The merge stack is now six
-  slots. The audit also confirmed that Unit 6's `Theme.*.xaml` refresh left
-  the per-theme dictionaries already clean against WinUI 3's
+  HighContrast) and are seeded in code by `BaseColorTables` (its
+  `AddSharedColors` method) instead of being duplicated across per-theme
+  dictionaries. `Shared.xaml` has been removed; it was only ever read
+  transiently for its Color values, never merged as a slot. The audit also
+  confirmed that Unit 6's `Theme.*.xaml` refresh left the per-theme
+  dictionaries already clean against WinUI 3's
   `Common_themeresources_any.xaml` - the "full canonical rewrite" half of
   the task was a no-op.
 

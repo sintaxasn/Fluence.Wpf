@@ -10,7 +10,7 @@ in AGENTS.md -- read it before making any non-trivial change.
 WPF control library reproducing Windows 11 Fluent / WinUI 3 visuals on .NET
 Framework 4.7.2 and .NET 10. Four projects: `Fluence.Wpf` (library),
 `Fluence.Wpf.Demo` (gallery), `Fluence.Wpf.Demo.Mvvm` (MVVM demo),
-`Fluence.Wpf.Tests` (MSTest v3.2, multi-TFM).
+`Fluence.Wpf.Tests` (MSTest 4.2.2, multi-TFM).
 
 **XML namespace:** `http://schemas.fluencewpf.com` (prefix: `fluence`)
 
@@ -42,7 +42,9 @@ Framework 4.7.2 and .NET 10. Four projects: `Fluence.Wpf` (library),
    assets only use `StaticResource`.
 
 8. **No hard-coded colors:** Never write hex values in XAML templates. Use
-   canonical WinUI-style resource keys from `Themes/Brushes/Brushes.xaml`.
+   canonical WinUI-style resource keys. Hex literals belong only in the Color
+   tables `Themes/Colors/Theme.{Light|Dark|HighContrast}.xaml`; templates bind
+   the auto-generated `*Brush` twin via `DynamicResource`.
 
 9. **Overflow in Win32 bit-math:** Wrap HIWORD/LOWORD extractions in
    `unchecked { }`. `CheckForOverflowUnderflow=True` is active.
@@ -52,20 +54,23 @@ Framework 4.7.2 and .NET 10. Four projects: `Fluence.Wpf` (library),
 
 ---
 
-## Theme architecture (5-slot layout -- do not break)
+## Theme architecture (3-slot layout -- do not break)
 
-`Application.Current.Resources.MergedDictionaries` always has exactly 5 entries:
+`Application.Current.Resources.MergedDictionaries` always has exactly 3 entries
+after `ApplicationThemeManager.Apply(...)`:
 
 | Slot | File | Lifecycle |
 |------|------|-----------|
-| [0] | `Themes/Colors/Theme.{Light\|Dark\|HighContrast}.xaml` | Swapped on theme change |
-| [1] | `Themes/Accent/Accent.xaml` | Updated in place |
-| [2] | `Themes/Brushes/Brushes.xaml` | Reloaded on non-HC theme swap |
-| [3] | `Themes/Typography/Typography.xaml` | Static |
-| [4] | `Themes/Generic.xaml` | Static |
+| [0] | Computed colors + brushes (built by `FluenceThemeEngine.BuildComputedDictionary`) | Rebuilt and replaced on every theme or accent change |
+| [1] | `Themes/Typography/Typography.xaml` | Loaded once; never replaced |
+| [2] | `Themes/Generic.xaml` | Loaded once; never replaced |
 
-`DictionaryStabilityTests` enforces the slot count and order. Changing either
-requires updating both the code and the tests together.
+Slot [0] holds every canonical Color token plus its frozen `SolidColorBrush`
+twin and the special brushes (gradients, high-contrast overrides). Adding a
+color means adding it to all three `Themes/Colors/Theme.{Light|Dark|HighContrast}.xaml`
+tables; `BrushFactory` auto-emits the `*Brush` twin. `DictionaryStabilityTests`
+enforces the slot count and order. Changing either requires updating both the
+code and the tests together.
 
 ---
 

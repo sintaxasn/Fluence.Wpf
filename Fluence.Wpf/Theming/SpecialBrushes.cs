@@ -38,9 +38,9 @@ namespace Fluence.Wpf.Theming
     /// <summary>
     /// Constructs every brush that is not a plain solid twin of a Color token, plus the
     /// theme-independent layout/shadow/focus tokens consumed by control templates. This is the
-    /// single C# home for the special-brush definitions that the authored
-    /// <c>Brushes.xaml</c>, <c>Accent.xaml</c>, and <c>Theme.HighContrast.xaml</c> dictionaries
-    /// previously supplied. All produced brushes are frozen.
+    /// single C# home for the special-brush definitions (elevation gradients, focus visuals, and
+    /// high-contrast SystemColors aliases) that are not the plain solid twins <c>BrushFactory</c>
+    /// emits for each Color key. All produced brushes are frozen.
     /// </summary>
     internal static class SpecialBrushes
     {
@@ -87,8 +87,7 @@ namespace Fluence.Wpf.Theming
         }
 
         /// <summary>
-        /// Theme-independent layout, shadow, and focus tokens previously authored in
-        /// <c>Brushes.xaml</c>. These never change with theme or accent.
+        /// Theme-independent layout, shadow, and focus tokens. These never change with theme or accent.
         /// </summary>
         private static void AddSharedTokens(ResourceDictionary dict)
         {
@@ -113,7 +112,7 @@ namespace Fluence.Wpf.Theming
 
         /// <summary>
         /// Builds the two-border control focus visual (outer + inner stroke, 4 px radius),
-        /// matching <c>DefaultControlFocusVisualStyle</c> in Brushes.xaml. The border brushes are
+        /// the WinUI 3 <c>DefaultControlFocusVisualStyle</c>. The border brushes are
         /// resolved via <see cref="System.Windows.DynamicResourceExtension"/> so they re-evaluate
         /// against whichever computed dictionary is active.
         /// </summary>
@@ -145,8 +144,8 @@ namespace Fluence.Wpf.Theming
         }
 
         /// <summary>
-        /// Builds the inset single-stroke collection focus visual matching
-        /// <c>DefaultCollectionFocusVisualStyle</c> in Brushes.xaml.
+        /// Builds the inset single-stroke collection focus visual, the WinUI 3
+        /// <c>DefaultCollectionFocusVisualStyle</c>.
         /// </summary>
         private static Style BuildCollectionFocusVisualStyle()
         {
@@ -168,7 +167,7 @@ namespace Fluence.Wpf.Theming
         /// <summary>
         /// Light/Dark elevation-border brushes are <see cref="LinearGradientBrush"/> values whose
         /// stop colors come from the computed control-stroke tokens. Definitions (start/end points,
-        /// transform, stop offsets) are copied verbatim from Brushes.xaml.
+        /// transform, stop offsets) match the WinUI 3 elevation borders.
         /// </summary>
         private static void AddElevationBorderBrushes(ResourceDictionary dict, IReadOnlyDictionary<string, Color> colors)
         {
@@ -400,8 +399,7 @@ namespace Fluence.Wpf.Theming
 
         /// <summary>
         /// SystemColor aliases consumed by the WinUI Gallery color guidance page. These resolve to
-        /// live <see cref="SystemColors"/> in every theme (the authored Brushes.xaml bound them to
-        /// SystemColors keys unconditionally).
+        /// live <see cref="SystemColors"/> in every theme (bound to SystemColors keys unconditionally).
         /// </summary>
         private static void AddSystemColorAliases(ResourceDictionary dict)
         {

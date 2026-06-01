@@ -131,7 +131,9 @@ Apply(themeRequest):
   1. theme   = ThemeResolver.Resolve(request)         // Light / Dark / HC from request + OS registry
   2. palette = AccentResolver.Resolve(accentIntent)   // OS palette first, generate fallback, default blue
   3. colors  = ColorMap.Build(theme, palette)         // one Dictionary<string,Color>:
-                  base Color tokens from Theme.*.xaml + Shared.xaml (Color-only XAML tables)
+                  per-theme Color tokens from Theme.*.xaml (Color-only XAML tables)
+                  + the few theme-independent tokens (the Windows close-button brand
+                    colors) seeded in code by BaseColorTables; Shared.xaml no longer exists
                   + all accent-derived keys computed once here
                   + title-bar colors (TitleBarActiveColor, TitleBarInactiveColor, WindowBorderColor)
   4. dict    = BrushFactory.Build(colors)             // one ResourceDictionary: every Color token
@@ -288,6 +290,27 @@ dotnet test    Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug -f net10.0-wi
 - The gallery demo is run with `dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -f net472` or the matching `net10.0-windows10.0.26100.0` TFM.
 - For visual verification: exercise Light / Dark / High Contrast / Auto, a couple of accent swatches, Mica / Acrylic / Tabbed / None backdrops, and at least one control per gallery page.
 
+### CI/CD pipeline
+
+CI is a single `build` job on `windows-latest` defined in [.github/workflows/build.yml](.github/workflows/build.yml), triggered by any push or pull request targeting `main`. It restores, gates XAML formatting, builds Release, runs both TFM test lanes (excluding the `Screenshots` category) with TRX output, then packs and uploads artifacts. NuGet publish and SBOM generation are present but commented out as deliberate manual release steps.
+
+```mermaid
+flowchart TD
+    A[Push or PR to main] --> B[Checkout]
+    B --> C[Setup .NET 10]
+    C --> D[Cache NuGet packages]
+    D --> E[dotnet restore]
+    E --> F[dotnet tool restore]
+    F --> G[XAML format check<br/>pwsh eng/Format-Xaml.ps1 -Check]
+    G --> H[Build solution Release]
+    H --> I[Test net472<br/>filter TestCategory!=Screenshots, TRX]
+    I --> J[Test net10.0-windows10.0.26100.0<br/>filter TestCategory!=Screenshots, TRX]
+    J --> K[Upload test results<br/>always]
+    K --> L[Pack NuGet]
+    L --> M[Upload artifacts<br/>dotnet10 lib, dotnet472 lib, demo, nupkg]
+    M --> N[NuGet publish + SBOM<br/>commented out / manual]
+```
+
 ---
 
 ## 8. Demo applications
@@ -350,6 +373,8 @@ Public and repository documentation:
 - [docs/migration-guide.md](docs/migration-guide.md)
 - [docs/contributing.md](docs/contributing.md)
 - [docs/release.md](docs/release.md)
+- [docs/templated-prompts.md](docs/templated-prompts.md) - canonical task templates (referenced from Section 13)
+- [docs/demo-sample-pages.md](docs/demo-sample-pages.md) - demo sample-page standard (referenced from Section 14)
 - [KNOWN_ISSUES.md](KNOWN_ISSUES.md)
 
 Maintainer / AI context (this file and its siblings):
@@ -394,126 +419,55 @@ Consumer build compatibility is a release gate. For build-policy, public API, pr
 
 ## 13. Templated prompts
 
-Two canonical task templates. Copy the relevant block, fill in the `TASK` line, and execute end-to-end.
-
-### 13.1 Generic Fluence.Wpf development workflow
-
-```text
-ROLE: Senior WPF engineer maintaining Fluence.Wpf, a Windows 11 Fluent control library for .NET Framework 4.7.2 and .NET 10+.
-
-CONTEXT (read before touching code):
-- Fluence.Wpf/AGENTS.md - this handbook (authoritative)
-- Fluence.Wpf/docs/controls.md - public control catalogue
-- Fluence.Wpf/docs/theming.md - canonical brush/color families
-- Fluence.Wpf/docs/contributing.md - contribution notes
-- Fluence.Wpf/docs/release.md - release validation notes
-- Fluence.Wpf/CHANGELOG.md - recent scope
-
-Reference authority (see AGENTS.md Section 4):
-  1. In-tree precedent (XAML, controls, tests)
-  2. Per-domain authority:
-     - WinUI 3 CommonStyles - https://github.com/microsoft/microsoft-ui-xaml/tree/main/src/controls/dev/CommonStyles
-     - .NET 10 WPF Themes - https://github.com/dotnet/wpf/tree/main/src/Microsoft.DotNet.Wpf/src/Themes
-  3. Windows 11 design guidance on Microsoft Learn (tie-breaker only)
-
-TASK: <one sentence describing the concrete change>
-
-WORKFLOW:
- 1. Re-read the relevant sections of AGENTS.md: Section 3 Theme architecture, Section 4 Reference priority, Section 5 Control authoring, and Section 6 Testing.
- 2. Enumerate files and regions you plan to touch. Keep the diff minimal and name the slot/layer each file belongs to.
- 3. If the change is visual or behavioural, cite the authority from Section 4 that justifies it.
- 4. For any new control, follow Section 5 (Control authoring checklist) exactly.
- 5. For any theme / brush change, update the matching entries in Theme.{Light|Dark|HighContrast}.xaml AND Brushes.xaml together; never one without the other.
- 6. TDD: add or extend an MSTest before writing implementation. Run just that test on `net10.0-windows10.0.26100.0` first (fast feedback), then both TFMs.
- 7. dotnet build Fluence.Wpf.sln -c Debug - 0 errors / 0 warnings on net472 + net10.0-windows10.0.26100.0.
- 8. dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug -f net472 --no-build, then dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug -f net10.0-windows10.0.26100.0 --no-build; all tests pass and known failures are unchanged.
- 9. Update docs: CHANGELOG.md (always), docs/*.md (when the public surface changes), and create or update KNOWN_ISSUES.md only when an accepted known gap is opened or closed.
-10. Stage changes; show diffs; wait for the user's explicit commit instruction.
-
-ACCEPTANCE:
-- Build: 0/0 on both TFMs
-- Tests: no new regressions; net count +N for N new tests you added
-- Docs: synced with the change
-- No new third-party WPF runtime dependency introduced; no external agent bundles referenced
-- Every visual / behavioural choice has a cited authority from Section 4
-
-STOP CONDITION: working tree is "git-clean minus your intended diff"; wait for explicit user approval before committing.
-```
+Two canonical task templates (a generic development workflow plus its acceptance gates) live in [docs/templated-prompts.md](docs/templated-prompts.md). Copy the relevant block, fill in the `TASK` line, and execute end-to-end.
 
 ---
 
 ## 14. Demo Sample Pages
 
-Control samples in `Fluence.Wpf.Demo` render through `DemoSampleControl`. Design reference pages that mirror WinUI Gallery catalog surfaces, such as Typography, may render directly when a trailing source expander would diverge from the reference.
+The full demo sample-page standard - page skeleton, color layering, the `DemoSampleControl` contract, catalog surfaces, and definition of done - lives in [docs/demo-sample-pages.md](docs/demo-sample-pages.md). Control samples in `Fluence.Wpf.Demo` render through `DemoSampleControl`; design reference pages that mirror WinUI Gallery catalog surfaces (such as Typography) may render directly.
 
-### 14.1 Page skeleton
+---
 
-```text
-ScrollViewer
-└── StackPanel (page root)
-    ├── TextBlock        - Page name              [Title typography]
-    ├── TextBlock        - Page description       [Body, secondary foreground]
-    └── for each sample:
-        └── DemoSampleControl
-            ├── SampleDescription                [Body Strong]
-            ├── DemoContent                      [live sample]
-            ├── OutputContent                    [optional interaction result]
-            ├── RightRailContent                 [optional options pane]
-            └── Source expander                  [XAML and C# tabs]
-```
+## 15. AI contributor workflow
 
-### 14.2 Color layering
+LLM-assisted work in this repo is gated through the `.claude/` automation directory. Agents are explicit review/scaffold lanes you invoke; skills are scaffolding playbooks; hooks run automatically around tool calls and either inject `<system-reminder>` context or enforce file policy. This makes the conventions above discoverable and self-enforcing instead of relying on memory.
 
-Demo sample surfaces use the native Fluence brush resources and control defaults directly. Do not add demo-only brush aliases, do not shadow color-key names with brush resources, and do not reintroduce a demo refresh layer for surface promotion.
+### 15.1 Agents (`.claude/agents/`)
 
-| Layer | Brush resource |
+Read-only or scaffolding subagents. Use the one whose lane matches your change:
+
+| Agent | Use when |
 | --- | --- |
-| Page background | Leave to `NavigationView` / `SmoothScrollViewer` control defaults unless a specific page has no host surface. |
-| Sample card surface | `CardBackgroundFillColorDefaultBrush` |
-| Right rail / options pane | `CardBackgroundFillColorSecondaryBrush` |
-| Expander header | `ControlFillColorDefaultBrush` |
-| Expander expanded content | `SolidBackgroundFillColorBaseBrush` |
-| Secondary labels | `TextFillColorSecondaryBrush` |
+| `theme-slot-auditor` | After any theme, brush, color, accent, or `ApplicationThemeManager` change - verifies the three-slot invariant, slot `[0]` rebuild, `DynamicResource` usage, `BrushFactory` auto-twinning, canonical key names, and the high-contrast rebuild. |
+| `winui-parity-reviewer` | To compare WPF templates, resources, and behavior against WinUI 3 CommonStyles and official Microsoft guidance (visual fidelity). |
+| `net472-feasibility-checker` | After adding APIs, language features, or dependencies - confirms the code still runs on the separate `net472` test lane (Section 4.3). |
+| `documentation-updater` | After code changes that cause doc drift, or when writing/updating READMEs, getting-started guides, API references, CHANGELOGs, inline docs, or GitHub special files. |
 
-The page background has no dedicated brush (it uses the host control defaults), so the other five rows are the surface-token brushes that [Section 14.5](#145-definition-of-done) checks resolve across themes.
+### 15.2 Skills (`.claude/skills/`)
 
-Use `DynamicResource` for these role brushes so theme, accent, and high-contrast changes flow through the standard `ApplicationThemeManager` slots.
+Step-by-step scaffolding playbooks that bake the checklists into the work:
 
-### 14.3 DemoSampleControl contract
+| Skill | Use when |
+| --- | --- |
+| `new-control` | Scaffold a new custom control end to end against the Section 5 control authoring checklist (CLR type, template wired into `Generic.xaml`, design-time/demo entries, MSTest partial, docs/CHANGELOG). |
+| `demo-sample-page` | Scaffold or extend a `Fluence.Wpf.Demo` gallery sample page against the Section 14 `DemoSampleControl` contract. |
 
-`DemoSampleControl` is the only reusable surface for demo samples. Its public surface is intentionally small:
+### 15.3 Hooks (`.claude/hooks/`)
 
-- `SampleDescription` (`string`) renders bold text above the sample card.
-- `XamlSource` (`string`) supplies the XAML source tab.
-- `CSharpSource` (`string`) supplies the C# source tab.
-- `DemoContent` (`object`) hosts the live control region.
-- `OutputContent` (`object`) optionally hosts interaction results.
-- `RightRailContent` (`object`) optionally hosts property toggles and options.
+Hooks run automatically on tool events; you do not invoke them:
 
-Composition requirements:
+| Hook | Behavior |
+| --- | --- |
+| `pre-tool-theme-slot.ps1` | PreToolUse advisory on theme-slot-critical edits (`ApplicationThemeManager.cs`, `Themes/Generic.xaml`). Injects a non-blocking `<system-reminder>` restating the three-slot invariant and the `BrushFactory` auto-twin rule. |
+| `post-tool-format-xaml.ps1` | PostToolUse formatter that runs the pinned XAML Styler (`eng/Format-Xaml.ps1`) over each edited authored `.xaml`, enforcing the committed reference style plus LF + single UTF-8 BOM. Non-blocking; the CI `-Check` gate is the hard fail. |
+| `post-tool-util.ps1` | PostToolUse linter that blocks the write on text-policy violations: missing UTF-8 BOM, CRLF/CR line endings, `string.IsNullOrEmpty`, `TextOptions.*`, hard-coded hex in `Themes/Controls/**`, em/en dashes in `.cs` / `.md`, and `git diff --check` whitespace errors. |
 
-- Outer card uses the sample card brush, card stroke brush, and `CornerRadius="8,8,0,0"`.
-- Demo region uses a `*, Auto` layout. Output content lives inside the demo region, not the right rail.
-- Right rail collapses when empty, uses the right-rail brush, and keeps `CornerRadius="0,8,0,0"`.
-- Source expander is attached below the card with `CornerRadius="0,0,8,8"`, header text `Source code`, the source-header brush when collapsed, and the source-content brush when expanded.
-- Source content uses a `TabControl` with `XAML` and `C#` tabs. Each tab hosts the syntax-highlighted, copy-enabled RichTextBox viewer owned by `DemoSampleControl`.
-- Do not use or reintroduce legacy `Title`, `Description`, `SampleContent`, `ReplaceSourceLink(...)`, obsolete forwarding members, or source-link placeholder buttons.
+### 15.4 Gating principle
 
-Named live controls must not be declared directly inside `DemoSampleControl` property elements because WPF raises `MC3093`. Prefer page-owned hidden `ContentControl` slots plus `DemoSamplePageWiring.Apply(...)` from code-behind with typed `DemoSampleSource` registrations. The helper owns slot discovery, content transfer, source assignment, duplicate-slot detection, missing-source detection, and clearing the hidden slots after handoff. Catalog pages may stay outside `DemoSampleControl` when the WinUI Gallery reference itself is a direct catalog or guidance surface.
-
-### 14.4 Catalog surfaces
-
-Icons and Accessibility are part of this standard for discrete demonstrations. Typography is a direct WinUI Gallery-style reference page and does not add a trailing source expander.
-
-### 14.5 Definition of done
-
-A new or updated sample page is done only when:
-
-- Every discrete control demonstration uses `DemoSampleControl`; direct catalog/reference pages document their exception in tests and docs.
-- All five surface-token brushes (the brush rows in [Section 14.2](#142-color-layering)) resolve in Light, Dark, and High Contrast after runtime theme changes.
-- Card and source expander corners follow the `8,8,0,0` plus `0,0,8,8` pattern with no visible seam artifact.
-- The source expander shows copy-enabled XAML and C# tabs that match the visible sample.
-- Page heading, description, sample description, card, and source spacing use centralized demo resources. No inline `Margin`, `Padding`, `CornerRadius`, hex color, or font-size literals in sample page XAML.
-- Right-rail options mutate the demo control through binding where the target property allows it. Code-behind is acceptable for command-style results such as click counters.
-- The page renders without binding errors or resource-resolution warnings in Light and Dark.
-- `dotnet build Fluence.Wpf.sln -c Debug` and focused tests for the affected area pass with zero warnings.
+- Theme, brush, or color changes -> review with `theme-slot-auditor`.
+- Visual or control-template changes -> review with `winui-parity-reviewer`.
+- `net472` runtime-API questions -> check with `net472-feasibility-checker`.
+- New controls -> follow the `new-control` skill; new demo pages -> follow the `demo-sample-page` skill.
+- All authored XAML is auto-formatted by the post-tool hook and re-checked in CI; all touched text files are linted for encoding and text policy on write.
+- Keep authoring and review in separate passes: the scaffolding skills create or revise content, and the read-only auditor/reviewer agents evaluate it as a later, independent pass.

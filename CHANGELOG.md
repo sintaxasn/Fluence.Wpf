@@ -62,6 +62,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `NavigationView`: removed the divider line above the pane footer in the `Left` and `LeftCompact` templates, so the footer (e.g. the Settings item) sits directly in the pane. Also dropped the now-unused `BorderBrush` from `PaneFooterHost`.
 - `WindowPolicy.CreateWindowChrome` no longer takes a `captionHeight` parameter. The caller always reset `CaptionHeight` to 0 immediately afterward, so the parameter never had effect; `CaptionHeight` is now hard-coded to 0 in the helper.
 
+### Removed
+
+- `Themes/Shared.xaml` removed. Its three theme-independent Windows close-button brand colors (`WindowCloseButtonBackgroundPointerOver`, `...Pressed`, `WindowCloseButtonForegroundPointerOver`) are now seeded directly in C# by `BaseColorTables.AddSharedColors` instead of being read transiently from a standalone XAML table. Computed output is unchanged, so design-time snapshots and golden theme tests are unaffected; `FluenceWindowCloseButtonThemeTokens_*` updated to assert the in-code values.
+
 ## [0.6.0-preview] - 2026-05-24
 
 ### Changed
@@ -71,7 +75,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- `Themes/Shared.xaml` - a new merge slot (`[5]`, loaded once, never replaced) holding theme-independent Color tokens that are identical across Light, Dark, and HighContrast. Currently holds the three Windows close-button brand reds (`WindowCloseButtonBackgroundPointerOver`, `...Pressed`, `WindowCloseButtonForegroundPointerOver`). Per-theme dictionaries no longer carry these keys. Slot count in `ApplicationThemeManager` is now 6; `DictionaryStabilityTests` updated accordingly.
+- `Themes/Shared.xaml` - a new merge slot (`[5]`, loaded once, never replaced) holding theme-independent Color tokens that are identical across Light, Dark, and HighContrast. Currently holds the three Windows close-button brand reds (`WindowCloseButtonBackgroundPointerOver`, `...Pressed`, `WindowCloseButtonForegroundPointerOver`). Per-theme dictionaries no longer carry these keys. Slot count in `ApplicationThemeManager` is now 6; `DictionaryStabilityTests` updated accordingly. (Superseded since: the `FluenceThemeEngine` rebuild reduced the merge stack to 3 slots and made `Shared.xaml` a transient data read rather than a merge slot; `Shared.xaml` was later removed entirely, its tokens seeded in C# by `BaseColorTables`. See the `[Unreleased]` section.)
 
 ### Changed
 
