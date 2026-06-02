@@ -512,10 +512,6 @@ namespace Fluence.Wpf.Native
         /// <summary>
         /// Shifts a maximized window rect inward by 2 px on the auto-hide taskbar edge so the
         /// maximized window does not fully cover the taskbar, which would block its hover-reveal.
-        /// Pure and handle-free for unit testing. Mirrors the per-edge direction and sign used by
-        /// the iNKORE MaximizedWindowFixer reference: BOTTOM shrinks height, TOP moves down and
-        /// shrinks height, RIGHT shrinks width, LEFT moves right and shrinks width. Unrecognized
-        /// edge values leave the rect unchanged.
         /// </summary>
         /// <param name="mmi">The min/max info whose maximized rect is adjusted in place.</param>
         /// <param name="edge">The auto-hide taskbar edge (one of the <c>ABE_*</c> values).</param>

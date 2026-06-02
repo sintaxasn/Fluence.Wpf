@@ -63,12 +63,7 @@ maintainers.
   WPF defaults to opaque black) to the same color as the content background
   in `ApplyBackdrop` - transparent for an active backdrop, the opaque theme
   fallback for `None` - so the DWM backdrop shows through from the first
-  composed frame. This is the no-cloak mechanism the reference Fluent window
-  libraries (WPF-UI, iNKORE, MicaWPF) use. An earlier `DWMWA_CLOAK`
-  first-paint guard was tried and removed: under forced software rendering
-  (PSADT remoting) its WPF-side uncloak (`ContentRendered` /
-  `DispatcherPriority.ContextIdle`) raced the DWM backdrop composite and
-  exposed the same black frame it was meant to hide.
+  composed frame.
 - **`NavigationView` pane-footer icon slide** - The Settings (pane-footer)
   item slid horizontally while the left pane animated between open and
   compact. The footer is hosted in a `ContentPresenter`, which arranges its
