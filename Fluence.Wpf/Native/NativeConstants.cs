@@ -88,6 +88,14 @@ namespace Fluence.Wpf.Native
 
         // System Commands
         public const int SC_MOVE = 0xF010;
+        public const int SC_RESTORE = 0xF120;
+
+        // Window Style Indices and Extended Styles (GetWindowLong/SetWindowLong)
+        public const int GWL_EXSTYLE = -20;
+        public const int WS_EX_LAYERED = 0x00080000;
+
+        // SetLayeredWindowAttributes flags (LWA_*)
+        public const uint LWA_ALPHA = 0x00000002;
 
         // Hit Test Results
         public const int HTCLIENT = 1;

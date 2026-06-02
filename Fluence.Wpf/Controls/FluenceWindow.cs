@@ -38,6 +38,7 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Shell;
+using System.Windows.Threading;
 
 namespace Fluence.Wpf.Controls
 {
@@ -469,16 +470,123 @@ namespace Fluence.Wpf.Controls
             _hwndSource?.AddHook(WndProc);
             UpdateWindowChrome();
             ApplyWindowShell();
+            // After the chrome has collapsed the non-client frame, arm the first-paint guard on the
+            // software-rendering / no-composition path so the classic OS-drawn frame is never
+            // presented. On the hardware-composited path the gate is false and nothing below runs.
+            if (ShouldGuardFirstPaint() && _handle != IntPtr.Zero)
+            {
+                NativeMethods.SetWindowLayeredAlpha(_handle, 0);
+                ArmFirstPaintReveal();
+            }
             SystemThemeWatcher.Watch(this);
             ApplicationThemeManager.Changed += OnThemeChanged;
             ApplicationAccentColorManager.AccentColorChanged += OnAccentColorChanged;
         }
+
+        #region First-paint layered reveal guard (gated: software rendering / no composition only)
+
+        /// <summary>
+        /// The single condition under which the first-paint layered reveal guard runs. When this is
+        /// <see langword="false"/> (the normal hardware-composited path) the window behaves exactly as
+        /// it did before this guard existed: no layered style, no reveal triggers, zero change.
+        /// </summary>
+        private static bool ShouldGuardFirstPaint()
+        {
+            return RenderOptions.ProcessRenderMode == RenderMode.SoftwareOnly
+                || !NativeMethods.IsCompositionEnabled();
+        }
+
+        /// <summary>
+        /// Arms (or re-arms) the first-paint guard. Wires three independent self-healing reveal
+        /// triggers - a composition render tick, <see cref="OnContentRendered"/>, and a hard-fallback
+        /// timer - so the window can never remain invisible: any one of them reveals it.
+        /// </summary>
+        private void ArmFirstPaintReveal()
+        {
+            _firstPaintGuardArmed = true;
+            _firstPaintRevealFrames = 0;
+
+            CompositionTarget.Rendering -= OnFirstPaintRenderTick;
+            CompositionTarget.Rendering += OnFirstPaintRenderTick;
+
+            _firstPaintRevealTimer?.Stop();
+            _firstPaintRevealTimer = new DispatcherTimer(DispatcherPriority.Normal)
+            {
+                Interval = TimeSpan.FromMilliseconds(750)
+            };
+            _firstPaintRevealTimer.Tick += OnFirstPaintRevealTimerTick;
+            _firstPaintRevealTimer.Start();
+        }
+
+        private void OnFirstPaintRenderTick(object? sender, EventArgs e)
+        {
+            // Hold invisible until the collapsed non-client content frame (not the classic OS frame)
+            // is in the layered buffer; two ticks is enough for WPF to compose the new content.
+            _firstPaintRevealFrames++;
+            if (_firstPaintRevealFrames >= 2)
+            {
+                RevealFirstPaint();
+            }
+        }
+
+        private void OnFirstPaintRevealTimerTick(object? sender, EventArgs e)
+        {
+            RevealFirstPaint();
+        }
+
+        /// <summary>
+        /// Idempotently reveals the window: tears down every reveal trigger and restores full opacity.
+        /// Safe to call from any trigger or multiple times; only the first call after arming acts.
+        /// </summary>
+        private void RevealFirstPaint()
+        {
+            if (!_firstPaintGuardArmed)
+            {
+                return;
+            }
+            _firstPaintGuardArmed = false;
+
+            CompositionTarget.Rendering -= OnFirstPaintRenderTick;
+
+            if (_firstPaintRevealTimer is not null)
+            {
+                _firstPaintRevealTimer.Stop();
+                _firstPaintRevealTimer.Tick -= OnFirstPaintRevealTimerTick;
+                _firstPaintRevealTimer = null;
+            }
+
+            if (_handle != IntPtr.Zero)
+            {
+                NativeMethods.SetWindowLayeredAlpha(_handle, 255);
+            }
+        }
+
+        /// <inheritdoc />
+        protected override void OnContentRendered(EventArgs e)
+        {
+            base.OnContentRendered(e);
+            RevealFirstPaint();
+        }
+
+        #endregion
 
         /// <inheritdoc />
         protected override void OnStateChanged(EventArgs e)
         {
             ClearSnapHover();
             base.OnStateChanged(e);
+            // Restore-from-minimize re-shows the window, which can flash the classic non-client
+            // frame again under software rendering / no composition. Re-arm the guard so the reveal
+            // triggers bring the window back; on the composited path the gate is false and this is
+            // a no-op other than tracking the previous state.
+            WindowState previous = _previousWindowState;
+            _previousWindowState = WindowState;
+            if (previous == WindowState.Minimized && WindowState != WindowState.Minimized
+                && ShouldGuardFirstPaint() && _handle != IntPtr.Zero)
+            {
+                NativeMethods.SetWindowLayeredAlpha(_handle, 0);
+                ArmFirstPaintReveal();
+            }
             UpdateShellMetrics();
             ApplyFrame();
             UpdateCaptionButtons();
@@ -560,6 +668,16 @@ namespace Fluence.Wpf.Controls
             SystemThemeWatcher.UnWatch(this);
             ApplicationThemeManager.Changed -= OnThemeChanged;
             ApplicationAccentColorManager.AccentColorChanged -= OnAccentColorChanged;
+            // Tear down the first-paint guard if it is still armed so the render-tick hook and the
+            // fallback timer cannot outlive the window.
+            CompositionTarget.Rendering -= OnFirstPaintRenderTick;
+            if (_firstPaintRevealTimer is not null)
+            {
+                _firstPaintRevealTimer.Stop();
+                _firstPaintRevealTimer.Tick -= OnFirstPaintRevealTimerTick;
+                _firstPaintRevealTimer = null;
+            }
+            _firstPaintGuardArmed = false;
             _hwndSource?.RemoveHook(WndProc);
             _hwndSource = null;
             base.OnClosed(e);
@@ -887,6 +1005,17 @@ namespace Fluence.Wpf.Controls
             else if (msg == NativeConstants.WM_SYSCOMMAND && (wParam.ToInt64() & 0xFFF0L) == NativeConstants.SC_MOVE && !IsMoveable)
             {
                 handled = true;
+            }
+            else if (msg == NativeConstants.WM_SYSCOMMAND && (wParam.ToInt64() & 0xFFF0L) == NativeConstants.SC_RESTORE)
+            {
+                // Earlier catch than OnStateChanged for restore-from-minimize: hide before the
+                // restore composites so the classic frame is never presented under software
+                // rendering / no composition. Do NOT mark handled - let the restore proceed.
+                if (ShouldGuardFirstPaint() && _handle != IntPtr.Zero)
+                {
+                    NativeMethods.SetWindowLayeredAlpha(_handle, 0);
+                    ArmFirstPaintReveal();
+                }
             }
             else if (msg == NativeConstants.WM_GETMINMAXINFO)
             {
@@ -1291,6 +1420,32 @@ namespace Fluence.Wpf.Controls
         /// Represents the button control that is currently being hovered over for snap operations.
         /// </summary>
         private System.Windows.Controls.Button? _snapHoveredButton;
+
+        /// <summary>
+        /// True while the gated software-rendering / no-composition first-paint layered guard is
+        /// active (the window is held invisible via layered alpha until a reveal trigger fires).
+        /// </summary>
+        private bool _firstPaintGuardArmed;
+
+        /// <summary>
+        /// Counts composition render ticks observed while the first-paint guard is armed, used to
+        /// hold the window invisible until the collapsed non-client content frame is in the layered
+        /// buffer rather than the classic OS-drawn frame.
+        /// </summary>
+        private int _firstPaintRevealFrames;
+
+        /// <summary>
+        /// Hard-fallback timer that reveals the window if neither the render tick nor
+        /// <see cref="OnContentRendered"/> fires while the first-paint guard is armed, guaranteeing
+        /// the window can never remain invisible.
+        /// </summary>
+        private DispatcherTimer? _firstPaintRevealTimer;
+
+        /// <summary>
+        /// Tracks the previous <see cref="Window.WindowState"/> so the first-paint guard can detect
+        /// a restore-from-minimize transition and re-arm.
+        /// </summary>
+        private WindowState _previousWindowState = WindowState.Normal;
 
     }
 }

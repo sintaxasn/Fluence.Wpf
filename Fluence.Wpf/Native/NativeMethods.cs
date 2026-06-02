@@ -58,6 +58,10 @@ namespace Fluence.Wpf.Native
 
         [DllImport(User32, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool SetLayeredWindowAttributes(IntPtr hWnd, uint crKey, byte bAlpha, uint dwFlags);
+
+        [DllImport(User32, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool IsIconic(IntPtr hWnd);
 
         [DllImport(User32, SetLastError = true)]
@@ -317,6 +321,29 @@ namespace Fluence.Wpf.Native
         {
             int style = GetWindowLong(hwnd, GWL_STYLE);
             _ = SetWindowLong(hwnd, GWL_STYLE, style & ~WS_SYSMENU);
+        }
+
+        /// <summary>
+        /// Sets the per-window layered alpha so a window can be presented fully invisible
+        /// (<paramref name="alpha"/> == 0) and later revealed opaque (255). Ensures
+        /// <see cref="NativeConstants.WS_EX_LAYERED"/> is present on the extended style first, then
+        /// applies the alpha via <c>SetLayeredWindowAttributes</c>. Best-effort: failures (for
+        /// example a null handle) are ignored so this can never throw on a presentation path. Used
+        /// only by the software-rendering / no-composition first-paint guard in
+        /// <see cref="Fluence.Wpf.Controls.FluenceWindow"/>.
+        /// </summary>
+        public static void SetWindowLayeredAlpha(IntPtr hwnd, byte alpha)
+        {
+            if (hwnd == IntPtr.Zero)
+            {
+                return;
+            }
+            int exStyle = GetWindowLong(hwnd, NativeConstants.GWL_EXSTYLE);
+            if ((exStyle & NativeConstants.WS_EX_LAYERED) == 0)
+            {
+                _ = SetWindowLong(hwnd, NativeConstants.GWL_EXSTYLE, exStyle | NativeConstants.WS_EX_LAYERED);
+            }
+            _ = SetLayeredWindowAttributes(hwnd, 0, alpha, NativeConstants.LWA_ALPHA);
         }
 
         // Directly drives the native ShowWindow() API to minimize a window. Used as a

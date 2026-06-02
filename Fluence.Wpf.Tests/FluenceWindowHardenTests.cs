@@ -594,5 +594,54 @@ namespace Fluence.Wpf.Tests
                     "Closing a watched window must auto-UnWatch it (release its HwndSource hook and registry entry) even without an explicit UnWatch call.");
             });
         }
+
+        // ---------------------------------------------------------------------------
+        // 8. Gated software-rendering / no-composition first-paint layered guard.
+        //
+        // The visible flash itself is only reproducible on a forced-software / no-composition
+        // host such as a VM or a remoting session and is not unit-testable. This test pins the
+        // honest, reliable safety invariant: the guard never leaves a shown-then-drained window
+        // stuck in the armed, invisible state.
+        // ---------------------------------------------------------------------------
+
+        [TestMethod]
+        public void ShowThenDrain_LeavesFirstPaintGuardDisarmed()
+        {
+            // On a composited host the guard is never armed at all. On a software-rendering or
+            // no-composition host it arms and is then revealed by the render tick, the
+            // ContentRendered override, or the 750 ms fallback timer. Either way, a shown-then-
+            // drained window must never remain armed. This is the core safety invariant: the
+            // window can never get stuck invisible.
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApp();
+                ResetAndApply(ApplicationTheme.Light, app);
+
+                FluenceWindow w = new()
+                {
+                    Width = 320,
+                    Height = 240,
+                    ShowInTaskbar = false,
+                    WindowStartupLocation = WindowStartupLocation.Manual,
+                    Left = -10000,
+                    Top = -10000
+                };
+                try
+                {
+                    w.Show();
+                    DrainDispatcher();
+
+                    FieldInfo? armedField = typeof(FluenceWindow).GetField("_firstPaintGuardArmed", BindingFlags.NonPublic | BindingFlags.Instance);
+                    Assert.IsNotNull(armedField, "Expected the private '_firstPaintGuardArmed' field on FluenceWindow.");
+                    Assert.IsFalse((bool)armedField!.GetValue(w)!,
+                        "After Show() and draining the dispatcher, the first-paint guard must be disarmed - the window must never stay invisible.");
+                }
+                finally
+                {
+                    w.Close();
+                    DrainDispatcher();
+                }
+            });
+        }
     }
 }
