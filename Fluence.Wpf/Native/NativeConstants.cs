@@ -94,9 +94,6 @@ namespace Fluence.Wpf.Native
         public const int GWL_EXSTYLE = -20;
         public const int WS_EX_LAYERED = 0x00080000;
 
-        // SetLayeredWindowAttributes flags (LWA_*)
-        public const uint LWA_ALPHA = 0x00000002;
-
         // Hit Test Results
         public const int HTCLIENT = 1;
         public const int HTCAPTION = 2;
@@ -147,6 +144,7 @@ namespace Fluence.Wpf.Native
         public const string ColorizationColor = "ColorizationColor";
         public const string ColorizationColorBalance = "ColorizationColorBalance";
         public const string CurrentTheme = "CurrentTheme";
+        public const string EnableTransparency = "EnableTransparency";
         public const string EnableSnapAssistFlyout = "EnableSnapAssistFlyout";
     }
 }

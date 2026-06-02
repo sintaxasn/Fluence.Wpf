@@ -457,6 +457,8 @@ namespace Fluence.Wpf.Tests
                     nint handle = new System.Windows.Interop.WindowInteropHelper(w).Handle;
                     Assert.AreEqual(0, Fluence.Wpf.Native.NativeMethods.GetWindowCloakedState(handle),
                         "FluenceWindow must never DWM-cloak its window (DWMWA_CLOAKED == 0); the first-paint flash is solved by clearing the redirection surface, not by cloaking.");
+                    Assert.IsFalse(Fluence.Wpf.Native.NativeMethods.IsWindowLayered(handle),
+                        "FluenceWindow must never make its window layered (WS_EX_LAYERED == 0); the never-hide model leaves the window fully presented from the first frame rather than holding it invisible via layered alpha.");
                 }
                 finally
                 {
@@ -596,22 +598,24 @@ namespace Fluence.Wpf.Tests
         }
 
         // ---------------------------------------------------------------------------
-        // 8. Gated software-rendering / no-composition first-paint layered guard.
+        // 8. Never-hide first-paint invariant.
         //
-        // The visible flash itself is only reproducible on a forced-software / no-composition
-        // host such as a VM or a remoting session and is not unit-testable. This test pins the
-        // honest, reliable safety invariant: the guard never leaves a shown-then-drained window
-        // stuck in the armed, invisible state.
+        // FluenceWindow follows the WPF-UI "never hide the window" first-paint model: it never
+        // cloaks, layers, or defers showing the window to avoid the first-paint flash. The flash
+        // is solved entirely by clearing the HWND redirection surface (see test group 7), so the
+        // window is fully presented from its first composed frame. The earlier design held the
+        // window invisible via a layered-alpha guard and could in principle leave it stuck
+        // invisible; this test pins the replacement invariant: a shown-then-drained window is
+        // visible and is never hidden by any cloak or layered-alpha mechanism.
         // ---------------------------------------------------------------------------
 
         [TestMethod]
-        public void ShowThenDrain_LeavesFirstPaintGuardDisarmed()
+        public void ShowThenDrain_LeavesWindowVisibleAndNeverHidden()
         {
-            // On a composited host the guard is never armed at all. On a software-rendering or
-            // no-composition host it arms and is then revealed by the render tick, the
-            // ContentRendered override, or the 750 ms fallback timer. Either way, a shown-then-
-            // drained window must never remain armed. This is the core safety invariant: the
-            // window can never get stuck invisible.
+            // Core never-hide safety invariant: after Show() and a dispatcher drain the window is
+            // visible, is not DWM-cloaked, and does not carry WS_EX_LAYERED. There is no first-paint
+            // guard to disarm anymore - the window is simply never hidden in the first place, so it
+            // can never get stuck invisible.
             RunOnStaThread(() =>
             {
                 Application? app = EnsureApp();
@@ -631,10 +635,14 @@ namespace Fluence.Wpf.Tests
                     w.Show();
                     DrainDispatcher();
 
-                    FieldInfo? armedField = typeof(FluenceWindow).GetField("_firstPaintGuardArmed", BindingFlags.NonPublic | BindingFlags.Instance);
-                    Assert.IsNotNull(armedField, "Expected the private '_firstPaintGuardArmed' field on FluenceWindow.");
-                    Assert.IsFalse((bool)armedField!.GetValue(w)!,
-                        "After Show() and draining the dispatcher, the first-paint guard must be disarmed - the window must never stay invisible.");
+                    Assert.IsTrue(w.IsVisible,
+                        "After Show() and draining the dispatcher, the window must be visible - the never-hide model never defers showing the window.");
+
+                    nint handle = new System.Windows.Interop.WindowInteropHelper(w).Handle;
+                    Assert.AreEqual(0, Fluence.Wpf.Native.NativeMethods.GetWindowCloakedState(handle),
+                        "A shown-then-drained FluenceWindow must never be DWM-cloaked (DWMWA_CLOAKED == 0).");
+                    Assert.IsFalse(Fluence.Wpf.Native.NativeMethods.IsWindowLayered(handle),
+                        "A shown-then-drained FluenceWindow must never carry WS_EX_LAYERED - the never-hide model does not hold the window invisible via layered alpha.");
                 }
                 finally
                 {

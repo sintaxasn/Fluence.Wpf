@@ -41,15 +41,14 @@ namespace Fluence.Wpf.Tests
     public sealed class NativeMethodsTests
     {
         [TestMethod]
-        public void DwmCloakAttributeIds_MatchDwmApiContract()
+        public void DwmCloakedAttributeId_MatchesDwmApiContract()
         {
-            // DWMWA_CLOAK (set) and DWMWA_CLOAKED (read-only) are fixed DWMWINDOWATTRIBUTE ordinals.
-            // A typo here silently disables the first-paint flash guard, so pin the wire values.
-            // Read via reflection so the assertion is a runtime comparison (MSTEST0032 rejects
-            // comparing two compile-time constants).
-            int cloak = ReadConstant("DWMWA_CLOAK");
+            // DWMWA_CLOAKED (read-only) is a fixed DWMWINDOWATTRIBUTE ordinal, used only by the
+            // GetWindowCloakedState regression guard that asserts FluenceWindow never cloaks. A typo
+            // here would make that guard read the wrong attribute, so pin the wire value. Read via
+            // reflection so the assertion is a runtime comparison (MSTEST0032 rejects comparing two
+            // compile-time constants).
             int cloaked = ReadConstant("DWMWA_CLOAKED");
-            Assert.AreEqual(13, cloak, "DWMWA_CLOAK must be DWMWINDOWATTRIBUTE ordinal 13.");
             Assert.AreEqual(14, cloaked, "DWMWA_CLOAKED must be DWMWINDOWATTRIBUTE ordinal 14.");
         }
 

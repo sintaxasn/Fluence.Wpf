@@ -26,6 +26,8 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Native;
+
 namespace Fluence.Wpf.Helpers
 {
     internal sealed class WindowCapabilities(
@@ -33,7 +35,8 @@ namespace Fluence.Wpf.Helpers
         bool supportsMicaEffect,
         bool supportsRoundedCorners,
         bool supportsCaptionColor,
-        bool supportsBorderColor = false)
+        bool supportsBorderColor = false,
+        bool backdropCompositionAvailable = true)
     {
         internal bool SupportsSystemBackdropType { get; private set; } = supportsSystemBackdropType;
 
@@ -45,11 +48,30 @@ namespace Fluence.Wpf.Helpers
 
         internal bool SupportsBorderColor { get; private set; } = supportsBorderColor;
 
+        /// <summary>
+        /// Indicates whether DWM will actually composite a Mica or Acrylic backdrop in this
+        /// session. False when DWM composition is disabled, when the user has turned off
+        /// "Transparency effects" in Settings, or when the primary display adapter is a Microsoft
+        /// basic or synthetic adapter (a Hyper-V VM, an RDP session, or the Basic Display Adapter)
+        /// on which DWM cannot composite a backdrop. When false, callers must resolve the effective
+        /// backdrop to <see cref="BackdropType.None"/> so the window renders opaque instead of
+        /// showing an uncomposited surface.
+        /// </summary>
+        internal bool BackdropCompositionAvailable { get; private set; } = backdropCompositionAvailable;
+
         internal static WindowCapabilities Current => new(
             OsVersionHelper.SupportsSystemBackdropType,
             OsVersionHelper.SupportsMicaEffect,
             OsVersionHelper.SupportsRoundedCorners,
             OsVersionHelper.SupportsCaptionColor,
-            OsVersionHelper.SupportsBorderColor);
+            OsVersionHelper.SupportsBorderColor,
+            IsBackdropCompositionAvailable());
+
+        private static bool IsBackdropCompositionAvailable()
+        {
+            return NativeMethods.IsCompositionEnabled()
+                && RegistryHelper.IsTransparencyEnabled()
+                && !NativeMethods.IsPrimaryDisplayAdapterMicrosoftBasic();
+        }
     }
 }

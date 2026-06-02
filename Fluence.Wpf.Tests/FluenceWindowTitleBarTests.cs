@@ -27,6 +27,7 @@
  */
 
 using Fluence.Wpf.Controls;
+using Fluence.Wpf.Helpers;
 using Fluence.Wpf.Native;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -352,8 +353,14 @@ namespace Fluence.Wpf.Tests
             RunWithWindow(w =>
             {
                 WindowChrome chrome = WindowChrome.GetWindowChrome(w);
-                Assert.AreEqual(new Thickness(-1), chrome.GlassFrameThickness,
-                    "Default GlassFrameThickness should be -1 (backdrop or shadow active).");
+                // GlassFrameThickness now also depends on whether DWM will composite a backdrop this
+                // session (WindowCapabilities.BackdropCompositionAvailable). When composition/transparency
+                // is unavailable the frame is always the thin 0.00001 fallback, never -1, so this
+                // window-level assertion tracks that runtime gate to stay hermetic across machines. The
+                // value-for-inputs correctness is covered deterministically by WindowPolicyTests.
+                bool compositionAvailable = WindowCapabilities.Current.BackdropCompositionAvailable;
+                Assert.AreEqual(new Thickness(compositionAvailable ? -1 : 0.00001), chrome.GlassFrameThickness,
+                    "Default GlassFrameThickness is -1 when a backdrop/shadow is active and DWM will composite, else the thin 0.00001 fallback.");
 
                 w.HasShadow = false;
                 w.SystemBackdropType = BackdropType.None;

@@ -141,4 +141,5 @@ namespace Fluence.Wpf.Native
         public RECT rc;
         public IntPtr lParam;
     }
+
 }

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,6 +43,11 @@ namespace Fluence.Wpf.Native
 
         private const int GWL_STYLE = -16;
         private const int WS_SYSMENU = 0x80000;
+
+        // Extended window style index and layered-window constants used for the first-paint hold.
+        private const int GWL_EXSTYLE = -20;
+        private const int WS_EX_LAYERED = 0x00080000;
+        private const uint LWA_ALPHA = 0x00000002;
 
         #region User32 Window Style APIs
 
@@ -133,9 +138,54 @@ namespace Fluence.Wpf.Native
         public static extern void DwmGetColorizationParameters(
             out DWMCOLORIZATIONPARAMS parameters);
 
+        /// <summary>
+        /// Blocks until the next DWM present completes. Used to ensure a cloaked window's
+        /// composited content is on the DWM surface before uncloaking, so the reveal shows a
+        /// fully-settled frame rather than a stale or partial one.
+        /// </summary>
+        [DllImport(Dwmapi, EntryPoint = "DwmFlush")]
+        private static extern int _DwmFlush();
+
+        /// <summary>
+        /// Calls <c>DwmFlush</c>, blocking until the next DWM present completes. Any COM/PInvoke
+        /// exception is silently swallowed so callers are never interrupted by a DWM error.
+        /// </summary>
+        public static void DwmFlush()
+        {
+            try
+            {
+                _ = _DwmFlush();
+            }
+            catch (Exception ex) when (ex.Message is not null)
+            {
+                // DwmFlush failure must never propagate into the window.
+            }
+        }
+
         #endregion
 
         #region User32 APIs
+
+        private const int DISPLAY_DEVICE_PRIMARY_DEVICE = 0x4;
+
+        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+        private struct DISPLAY_DEVICE
+        {
+            public int cb;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
+            public string DeviceName;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+            public string DeviceString;
+            public int StateFlags;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+            public string DeviceID;
+            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
+            public string DeviceKey;
+        }
+
+        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool EnumDisplayDevices(string? lpDevice, uint iDevNum, ref DISPLAY_DEVICE lpDisplayDevice, uint dwFlags);
 
         [DllImport(User32, SetLastError = true)]
         public static extern bool GetWindowRect(IntPtr hwnd, out RECT lpRect);
@@ -233,15 +283,57 @@ namespace Fluence.Wpf.Native
         }
 
         /// <summary>
-        /// Cloaks or uncloaks a window via <see cref="NativeConstants.DWMWA_CLOAK"/>. While cloaked,
-        /// DWM keeps the window fully composed off-screen and does not present it, so a window can be
-        /// shown, have its backdrop applied, and render its first frame without the empty client area
-        /// flashing black. Callers MUST guarantee a matching uncloak; a window left cloaked is invisible.
+        /// Sets or clears the DWM cloak on a window via <see cref="NativeConstants.DWMWA_CLOAK"/>.
+        /// When cloaked the window is fully composited off-screen by DWM (including any Mica or
+        /// Acrylic backdrop) but invisible to the user. Requires DWM composition to be enabled; if
+        /// it is not, the call silently returns false and the caller must fall back to the layered-
+        /// window alpha approach. Used as the preferred first-paint hold mechanism so the window
+        /// is only revealed after layout, sizing, and WPF's first paint have completed.
         /// </summary>
+        /// <param name="hwnd">The window handle to cloak or uncloak.</param>
+        /// <param name="cloak"><see langword="true"/> to cloak (hide); <see langword="false"/> to uncloak (reveal).</param>
+        /// <returns><see langword="true"/> when the DWM call succeeded.</returns>
         public static bool SetWindowCloak(IntPtr hwnd, bool cloak)
         {
+            if (hwnd == IntPtr.Zero)
+            {
+                return false;
+            }
             int value = cloak ? NativeConstants.DWM_TRUE : NativeConstants.DWM_FALSE;
             return SetWindowAttribute(hwnd, NativeConstants.DWMWA_CLOAK, value);
+        }
+
+        /// <summary>
+        /// Adds or removes <c>WS_EX_LAYERED</c> on the window and, when adding, applies an alpha
+        /// value of zero (fully transparent) via <c>SetLayeredWindowAttributes</c>. When removing,
+        /// clears <c>WS_EX_LAYERED</c> so the window returns to its normal compositing mode. Used
+        /// as the fallback first-paint hold when DWM composition is unavailable and
+        /// <see cref="SetWindowCloak"/> cannot be used. In that case the window is opaque anyway
+        /// (no Mica/Acrylic), so <c>WS_EX_LAYERED</c> does not interfere with backdrop compositing.
+        /// </summary>
+        /// <param name="hwnd">The window handle to modify.</param>
+        /// <param name="alpha">Alpha value: 0 to hide, 255 to reveal.</param>
+        /// <returns><see langword="true"/> when both the style change and the attribute call succeeded.</returns>
+        public static bool SetWindowLayeredAlpha(IntPtr hwnd, byte alpha)
+        {
+            if (hwnd == IntPtr.Zero)
+            {
+                return false;
+            }
+            int exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
+            if (alpha == 0)
+            {
+                // Add WS_EX_LAYERED if not already set, then force alpha to 0.
+                _ = SetWindowLong(hwnd, GWL_EXSTYLE, exStyle | WS_EX_LAYERED);
+                return SetLayeredWindowAttributes(hwnd, 0, 0, LWA_ALPHA);
+            }
+            else
+            {
+                // Reveal at full opacity then remove WS_EX_LAYERED so the window reverts to normal.
+                bool ok = SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA);
+                _ = SetWindowLong(hwnd, GWL_EXSTYLE, exStyle & ~WS_EX_LAYERED);
+                return ok;
+            }
         }
 
         /// <summary>
@@ -257,6 +349,22 @@ namespace Fluence.Wpf.Native
             }
             int result = DwmGetWindowAttribute(hwnd, NativeConstants.DWMWA_CLOAKED, out int cloaked, sizeof(int));
             return result == 0 ? cloaked : 0;
+        }
+
+        /// <summary>
+        /// Returns <see langword="true"/> when the window's extended style carries
+        /// <see cref="NativeConstants.WS_EX_LAYERED"/>. Returns <see langword="false"/> for a null
+        /// handle. Used to assert the never-hide first-paint invariant: the window is fully presented
+        /// rather than held invisible via layered alpha.
+        /// </summary>
+        public static bool IsWindowLayered(IntPtr hwnd)
+        {
+            if (hwnd == IntPtr.Zero)
+            {
+                return false;
+            }
+            int exStyle = GetWindowLong(hwnd, NativeConstants.GWL_EXSTYLE);
+            return (exStyle & NativeConstants.WS_EX_LAYERED) != 0;
         }
 
         public static bool SetMicaEffect(IntPtr hwnd, bool enabled)
@@ -311,6 +419,33 @@ namespace Fluence.Wpf.Native
             return (color.B << 16) | (color.G << 8) | color.R;
         }
 
+        /// <summary>
+        /// Returns true when the primary display adapter is a Microsoft basic or synthetic adapter
+        /// (Hyper-V Video, Basic Display Adapter, Basic Render Driver, Remote Display Adapter).
+        /// Microsoft ships no discrete or integrated GPUs, so a Microsoft-vendor display adapter is
+        /// always a synthetic/software adapter on which DWM cannot composite a Mica or Acrylic
+        /// backdrop: it can report a usable WPF render tier yet the backdrop never renders, leaving
+        /// the transparent window surface to bleed the uncomposited accent color. A real GPU,
+        /// including Hyper-V GPU-PV or GPU passthrough (which exposes the host adapter name),
+        /// reports its true vendor and is treated as backdrop-capable.
+        /// </summary>
+        public static bool IsPrimaryDisplayAdapterMicrosoftBasic()
+        {
+            DISPLAY_DEVICE device = new() { cb = Marshal.SizeOf<DISPLAY_DEVICE>() };
+            for (uint index = 0; EnumDisplayDevices(null, index, ref device, 0); index++)
+            {
+                if ((device.StateFlags & DISPLAY_DEVICE_PRIMARY_DEVICE) != 0)
+                {
+                    return !string.IsNullOrWhiteSpace(device.DeviceString)
+                        && device.DeviceString.StartsWith("Microsoft", StringComparison.OrdinalIgnoreCase);
+                }
+
+                device.cb = Marshal.SizeOf<DISPLAY_DEVICE>();
+            }
+
+            return false;
+        }
+
         public static bool IsCompositionEnabled()
         {
             int result = DwmIsCompositionEnabled(out bool enabled);
@@ -321,29 +456,6 @@ namespace Fluence.Wpf.Native
         {
             int style = GetWindowLong(hwnd, GWL_STYLE);
             _ = SetWindowLong(hwnd, GWL_STYLE, style & ~WS_SYSMENU);
-        }
-
-        /// <summary>
-        /// Sets the per-window layered alpha so a window can be presented fully invisible
-        /// (<paramref name="alpha"/> == 0) and later revealed opaque (255). Ensures
-        /// <see cref="NativeConstants.WS_EX_LAYERED"/> is present on the extended style first, then
-        /// applies the alpha via <c>SetLayeredWindowAttributes</c>. Best-effort: failures (for
-        /// example a null handle) are ignored so this can never throw on a presentation path. Used
-        /// only by the software-rendering / no-composition first-paint guard in
-        /// <see cref="Fluence.Wpf.Controls.FluenceWindow"/>.
-        /// </summary>
-        public static void SetWindowLayeredAlpha(IntPtr hwnd, byte alpha)
-        {
-            if (hwnd == IntPtr.Zero)
-            {
-                return;
-            }
-            int exStyle = GetWindowLong(hwnd, NativeConstants.GWL_EXSTYLE);
-            if ((exStyle & NativeConstants.WS_EX_LAYERED) == 0)
-            {
-                _ = SetWindowLong(hwnd, NativeConstants.GWL_EXSTYLE, exStyle | NativeConstants.WS_EX_LAYERED);
-            }
-            _ = SetLayeredWindowAttributes(hwnd, 0, alpha, NativeConstants.LWA_ALPHA);
         }
 
         // Directly drives the native ShowWindow() API to minimize a window. Used as a

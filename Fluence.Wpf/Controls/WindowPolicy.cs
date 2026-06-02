@@ -50,19 +50,21 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Returns the glass-frame thickness appropriate for the given backdrop and shadow state.
-        /// When a DWM backdrop (Mica/Acrylic/Tabbed/Auto) is active the thickness is <c>-1</c>
-        /// so DWM extends the glass into the client area and the backdrop shows through. When
-        /// no backdrop is active and the user wants a shadow, the thickness is still <c>-1</c>
-        /// so WPF's <see cref="System.Windows.Shell.WindowChrome"/> draws the resize border with
-        /// a glass-frame fallback. When neither is active we use a very-thin-but-nonzero value
-        /// (<c>0.00001</c>) so the resize border continues to hit-test while WindowChrome's
+        /// Returns the glass-frame thickness appropriate for the given backdrop, shadow state,
+        /// and whether DWM will actually composite a backdrop in this session. When a DWM
+        /// backdrop (Mica/Acrylic/Tabbed/Auto) is active AND composition is available, the
+        /// thickness is <c>-1</c> so DWM extends the glass into the client area and the
+        /// backdrop shows through. When no backdrop is active and the user wants a shadow, the
+        /// thickness is still <c>-1</c> so WPF's <see cref="System.Windows.Shell.WindowChrome"/>
+        /// draws the resize border with a glass-frame fallback. When neither is active, or when
+        /// <paramref name="backdropCompositionAvailable"/> is false, we use a very-thin-but-nonzero
+        /// value (<c>0.00001</c>) so the resize border continues to hit-test while WindowChrome's
         /// renderer does not paint a visible glass-frame artifact - matching the pattern in
         /// <c>wpfui-main\src\Wpf.Ui\Controls\FluentWindow\FluentWindow.cs</c>.
         /// </summary>
-        internal static Thickness GetGlassFrameThickness(BackdropType backdrop, bool hasShadow)
+        internal static Thickness GetGlassFrameThickness(BackdropType backdrop, bool hasShadow, bool backdropCompositionAvailable = true)
         {
-            return backdrop != BackdropType.None || hasShadow
+            return backdropCompositionAvailable && (backdrop != BackdropType.None || hasShadow)
                 ? new Thickness(-1)
                 : new Thickness(0.00001);
         }
@@ -98,16 +100,24 @@ namespace Fluence.Wpf.Controls
 
         internal static BackdropType ResolveEffectiveBackdrop(BackdropType requestedBackdrop, WindowCapabilities capabilities)
         {
-            return requestedBackdrop switch
-            {
-                BackdropType.Auto or BackdropType.Mica => capabilities.SupportsSystemBackdropType || capabilities.SupportsMicaEffect
-                    ? BackdropType.Mica
-                    : BackdropType.None,
-                BackdropType.Acrylic or BackdropType.Tabbed => !capabilities.SupportsSystemBackdropType
-                    ? capabilities.SupportsMicaEffect ? BackdropType.Mica : BackdropType.None
-                    : requestedBackdrop,
-                BackdropType.None or _ => requestedBackdrop
-            };
+            // When DWM will not composite a system backdrop in this session (forced software
+            // rendering, composition disabled, or "Transparency effects" turned off), a transparent
+            // Mica/Acrylic window has nothing painted behind it: it flashes the uncomposited surface
+            // on first paint and stays wrong while transparency is off. Resolve to an opaque, solid
+            // window (None) so the client is never transparent, matching the reference Fluent window
+            // libraries which paint solid whenever the backdrop is unavailable.
+            return !capabilities.BackdropCompositionAvailable
+                ? BackdropType.None
+                : requestedBackdrop switch
+                {
+                    BackdropType.Auto or BackdropType.Mica => capabilities.SupportsSystemBackdropType || capabilities.SupportsMicaEffect
+                        ? BackdropType.Mica
+                        : BackdropType.None,
+                    BackdropType.Acrylic or BackdropType.Tabbed => !capabilities.SupportsSystemBackdropType
+                        ? capabilities.SupportsMicaEffect ? BackdropType.Mica : BackdropType.None
+                        : requestedBackdrop,
+                    BackdropType.None or _ => requestedBackdrop
+                };
         }
 
         internal static BackdropPlan BuildBackdropPlan(
@@ -118,8 +128,13 @@ namespace Fluence.Wpf.Controls
         {
             BackdropType effectiveBackdrop = ResolveEffectiveBackdrop(requestedBackdrop, capabilities);
             bool isDark = resolvedTheme == ApplicationTheme.Dark;
+            // Pin the opaque-None caption to the solid window background rather than leaving it
+            // system-managed (DWMWA_COLOR_DEFAULT). With "accent color on title bars" on
+            // (ColorPrevalence=1) the system-default caption IS the accent color and DWM paints it
+            // for a frame or two before WPF paints its themed title bar (the blue-accent flash).
+            int opaqueCaptionColor = NativeMethods.ColorToColorRef(fallbackBackgroundColor);
             return effectiveBackdrop == BackdropType.None
-                ? new BackdropPlan(effectiveBackdrop, false, fallbackBackgroundColor, NativeConstants.DWMWA_COLOR_DEFAULT, capabilities.SupportsSystemBackdropType ? NativeConstants.DWMSBT_NONE : null, false, resolvedTheme == ApplicationTheme.Dark)
+                ? new BackdropPlan(effectiveBackdrop, false, fallbackBackgroundColor, opaqueCaptionColor, capabilities.SupportsSystemBackdropType ? NativeConstants.DWMSBT_NONE : null, false, resolvedTheme == ApplicationTheme.Dark)
                 : effectiveBackdrop != BackdropType.Mica || capabilities.SupportsSystemBackdropType || !capabilities.SupportsMicaEffect
                 ? new BackdropPlan(effectiveBackdrop, true, Colors.Transparent, NativeConstants.DWMWA_COLOR_NONE, MapSystemBackdropType(effectiveBackdrop), false, isDark)
                 : new BackdropPlan(effectiveBackdrop, true, Colors.Transparent, NativeConstants.DWMWA_COLOR_NONE, null, true, isDark);
