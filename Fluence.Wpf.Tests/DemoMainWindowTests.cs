@@ -520,8 +520,8 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(titleBarToggle, "Extended title bar should expose a pane toggle button.");
                     Assert.AreEqual(Visibility.Visible, titleBarToggle.Visibility,
                         "Pane toggle should move into the title bar when content extends into the title bar.");
-                    Assert.AreEqual(42.0, titleBarToggle.ActualWidth, 0.5,
-                        "Title-bar pane toggle should match the compact title-bar glyph slot.");
+                    Assert.AreEqual(40.0, titleBarToggle.ActualWidth, 0.5,
+                        "Title-bar pane toggle should match the WinUI-canonical 40 px glyph button width.");
 
                     WpfTextBlock? titleBarGlyph = FindVisualChild<WpfTextBlock>(titleBarToggle);
                     Assert.IsNotNull(titleBarGlyph, "Title-bar pane toggle should render a Segoe Fluent Icons glyph.");

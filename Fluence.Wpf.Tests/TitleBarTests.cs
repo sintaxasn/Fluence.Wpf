@@ -110,8 +110,8 @@ namespace Fluence.Wpf.Tests
                         "The title-bar back button should use a smaller slot than the pane toggle.");
                     Assert.AreEqual(32.0, backButton.ActualHeight, 0.5,
                         "The title-bar back button should use a smaller height than the pane toggle.");
-                    Assert.AreEqual(42.0, paneToggleButton.ActualWidth, 0.5,
-                        "The title-bar pane toggle should keep the compact title-bar glyph slot.");
+                    Assert.AreEqual(40.0, paneToggleButton.ActualWidth, 0.5,
+                        "The title-bar pane toggle should use the WinUI-canonical 40 px glyph button width.");
                     Assert.AreEqual(36.0, paneToggleButton.ActualHeight, 0.5,
                         "The title-bar pane toggle should keep the compact title-bar glyph height.");
 

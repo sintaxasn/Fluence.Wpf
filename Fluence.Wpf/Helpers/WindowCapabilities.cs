@@ -26,52 +26,72 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Fluence.Wpf.Native;
-
 namespace Fluence.Wpf.Helpers
 {
+    /// <summary>
+    /// Snapshot of the DWM window-feature capabilities available on the current OS build.
+    /// Capabilities are probed once per call-site via <see cref="Current"/>; callers hold the
+    /// snapshot for the duration of one <c>ApplyWindowShell</c> pass rather than querying the OS
+    /// on every individual attribute write.
+    /// </summary>
     internal sealed class WindowCapabilities(
         bool supportsSystemBackdropType,
         bool supportsMicaEffect,
         bool supportsRoundedCorners,
         bool supportsCaptionColor,
-        bool supportsBorderColor = false,
-        bool backdropCompositionAvailable = true)
+        bool supportsBorderColor = false)
     {
+        /// <summary>
+        /// Gets a value indicating whether the OS supports
+        /// <c>DWMWA_SYSTEMBACKDROP_TYPE</c> (attribute 38). <see langword="true"/> on Windows 11
+        /// 22H2 (build 22621) and later; <see langword="false"/> on earlier builds. When
+        /// <see langword="true"/>, the canonical <c>DWMSBT_*</c> values must be used instead of
+        /// the legacy <c>DWMWA_MICA_EFFECT</c> attribute.
+        /// </summary>
         internal bool SupportsSystemBackdropType { get; private set; } = supportsSystemBackdropType;
 
+        /// <summary>
+        /// Gets a value indicating whether the OS supports the legacy Mica toggle
+        /// (<c>DWMWA_MICA_EFFECT</c>, attribute 1029). <see langword="true"/> on Windows 11 21H2
+        /// (builds 22000 to 22620); <see langword="false"/> on Windows 10 or Windows 11 22H2+.
+        /// Mutually exclusive with <see cref="SupportsSystemBackdropType"/>: when both would be
+        /// <see langword="true"/>, <see cref="SupportsSystemBackdropType"/> wins and this is
+        /// <see langword="false"/>.
+        /// </summary>
         internal bool SupportsMicaEffect { get; private set; } = supportsMicaEffect;
 
+        /// <summary>
+        /// Gets a value indicating whether the OS supports the DWM rounded-corner preference
+        /// (<c>DWMWA_WINDOW_CORNER_PREFERENCE</c>, attribute 33). <see langword="true"/> on any
+        /// Windows 11 build (build 22000+); <see langword="false"/> on Windows 10.
+        /// </summary>
         internal bool SupportsRoundedCorners { get; private set; } = supportsRoundedCorners;
 
+        /// <summary>
+        /// Gets a value indicating whether the OS supports setting the DWM caption color via
+        /// <c>DWMWA_CAPTION_COLOR</c> (attribute 35). <see langword="true"/> on any Windows 11
+        /// build; <see langword="false"/> on Windows 10.
+        /// </summary>
         internal bool SupportsCaptionColor { get; private set; } = supportsCaptionColor;
 
+        /// <summary>
+        /// Gets a value indicating whether the OS supports setting the DWM border color via
+        /// <c>DWMWA_BORDER_COLOR</c> (attribute 34). <see langword="true"/> on any Windows 11
+        /// build; <see langword="false"/> on Windows 10.
+        /// </summary>
         internal bool SupportsBorderColor { get; private set; } = supportsBorderColor;
 
         /// <summary>
-        /// Indicates whether DWM will actually composite a Mica or Acrylic backdrop in this
-        /// session. False when DWM composition is disabled, when the user has turned off
-        /// "Transparency effects" in Settings, or when the primary display adapter is a Microsoft
-        /// basic or synthetic adapter (a Hyper-V VM, an RDP session, or the Basic Display Adapter)
-        /// on which DWM cannot composite a backdrop. When false, callers must resolve the effective
-        /// backdrop to <see cref="BackdropType.None"/> so the window renders opaque instead of
-        /// showing an uncomposited surface.
+        /// Gets a <see cref="WindowCapabilities"/> snapshot for the current OS build by
+        /// delegating to <see cref="OsVersionHelper"/>, which caches the OS version after the
+        /// first probe. Always returns a non-null instance; Windows 10 builds get a snapshot
+        /// where all capability flags are <see langword="false"/>.
         /// </summary>
-        internal bool BackdropCompositionAvailable { get; private set; } = backdropCompositionAvailable;
-
         internal static WindowCapabilities Current => new(
             OsVersionHelper.SupportsSystemBackdropType,
             OsVersionHelper.SupportsMicaEffect,
             OsVersionHelper.SupportsRoundedCorners,
             OsVersionHelper.SupportsCaptionColor,
-            OsVersionHelper.SupportsBorderColor,
-            IsBackdropCompositionAvailable());
-
-        private static bool IsBackdropCompositionAvailable()
-        {
-            return NativeMethods.IsCompositionEnabled()
-                && RegistryHelper.IsTransparencyEnabled()
-                && !NativeMethods.IsPrimaryDisplayAdapterMicrosoftBasic();
-        }
+            OsVersionHelper.SupportsBorderColor);
     }
 }

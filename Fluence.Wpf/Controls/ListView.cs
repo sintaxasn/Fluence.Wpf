@@ -292,38 +292,16 @@ namespace Fluence.Wpf.Controls
             {
                 ui.Focusable = IsItemSelectable;
             }
-            if (!ItemAnimationsEnabled || element is not UIElement container)
+            if (!ItemAnimationsEnabled || !IsLoaded)
+            {
+                return;
+            }
+            if (element is not UIElement container)
             {
                 return;
             }
 
-            // Always start the container hidden, even before the list is loaded. Previously this
-            // returned early when !IsLoaded, leaving the container at its default Opacity 1; the
-            // initial batch then rendered fully visible, and a later post-load repopulation
-            // (a CollectionChanged Reset, e.g. the CloseApps list refreshing) re-prepared the same
-            // items at Opacity 0 and faded them in - so the list flashed at full opacity, vanished,
-            // then faded. Holding every animated container at Opacity 0 from the first realization
-            // guarantees it is never presented opaque before its fade. If the list is already
-            // loaded, fade in now; otherwise OnListViewLoaded fades the initial batch in once.
-            container.RenderTransform = new TranslateTransform(0, 12);
-            container.Opacity = 0;
-            if (IsLoaded)
-            {
-                BeginItemEntranceAnimation(container);
-            }
-        }
-
-        /// <summary>
-        /// Runs the entrance fade-and-slide on a container that is currently held hidden
-        /// (<see cref="UIElement.Opacity"/> 0, offset down by 12px). Begins the opacity 0 -> 1 and
-        /// slide 12 -> 0 animations that constitute the standard item insertion animation.
-        /// </summary>
-        private static void BeginItemEntranceAnimation(UIElement container)
-        {
-            if (container.RenderTransform is not TranslateTransform)
-            {
-                container.RenderTransform = new TranslateTransform(0, 12);
-            }
+            container.RenderTransform = new TranslateTransform(0, 12); container.Opacity = 0;
             DoubleAnimation opacityAnim = new(0, 1, InsertDuration)
             {
                 EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
@@ -374,22 +352,6 @@ namespace Fluence.Wpf.Controls
         private void OnListViewLoaded(object sender, RoutedEventArgs e)
         {
             EnsureDefaultGroupStyle();
-            if (!ItemAnimationsEnabled)
-            {
-                return;
-            }
-
-            // Fade in the initial batch: containers prepared before the list was loaded were held
-            // at Opacity 0 by PrepareContainerForItemOverride (so they never flashed at full
-            // opacity). Now that the list is loaded, run their entrance animation once. Containers
-            // realized after load are animated directly in PrepareContainerForItemOverride.
-            foreach (object? item in Items)
-            {
-                if (ItemContainerGenerator.ContainerFromItem(item) is UIElement container && container.Opacity == 0d)
-                {
-                    BeginItemEntranceAnimation(container);
-                }
-            }
         }
 
         private void EnsureDefaultGroupStyle()

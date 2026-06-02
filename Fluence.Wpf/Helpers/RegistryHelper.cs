@@ -53,18 +53,6 @@ namespace Fluence.Wpf.Helpers
             return key?.GetValue(NativeConstants.ColorPrevalence) is not int intValue || intValue != 0;
         }
 
-        /// <summary>
-        /// Reads <c>HKCU\...\Themes\Personalize\EnableTransparency</c>, the Windows "Transparency
-        /// effects" toggle. Returns <c>true</c> when transparency is enabled (also the default when
-        /// the value is missing). When false, DWM does not composite Mica/Acrylic, so callers must
-        /// fall back to an opaque window (see <c>WindowCapabilities.BackdropCompositionAvailable</c>).
-        /// </summary>
-        internal static bool IsTransparencyEnabled()
-        {
-            using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.PersonalizeRegistryPath);
-            return key?.GetValue(NativeConstants.EnableTransparency) is not int intValue || intValue != 0;
-        }
-
         internal static bool TryGetAccentPalette(out Color[]? palette)
         {
             using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.AccentRegistryPath);

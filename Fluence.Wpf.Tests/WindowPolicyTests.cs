@@ -50,47 +50,15 @@ namespace Fluence.Wpf.Tests
             bool legacyMica = false,
             bool roundedCorners = false,
             bool captionColor = false,
-            bool borderColor = false,
-            bool backdropComposition = true)
+            bool borderColor = false)
         {
             return new WindowCapabilities(
                 systemBackdrop,
                 legacyMica,
                 roundedCorners,
                 captionColor,
-                borderColor,
-                backdropComposition);
+                borderColor);
         }
-
-        #region ResolveEffectiveBackdrop - composition gate
-
-        [TestMethod]
-        public void ResolveEffectiveBackdrop_Mica_CompositionUnavailable_ReturnsNone()
-        {
-            // When DWM composition is disabled or "Transparency effects" is off,
-            // BackdropCompositionAvailable is false and the gate must short-circuit to None
-            // regardless of OS backdrop capability, preventing an uncomposited transparent flash.
-            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
-                BackdropType.Mica,
-                Caps(systemBackdrop: true, legacyMica: true, roundedCorners: true, captionColor: true, borderColor: true, backdropComposition: false));
-
-            Assert.AreEqual(BackdropType.None, effective,
-                "Mica on a backdrop-capable OS must still resolve to None when composition is unavailable.");
-        }
-
-        [TestMethod]
-        public void ResolveEffectiveBackdrop_Mica_CompositionAvailable_ReturnsMica()
-        {
-            // Confirm the gate does not suppress backdrops on a normal composition-enabled desktop.
-            BackdropType effective = WindowPolicy.ResolveEffectiveBackdrop(
-                BackdropType.Mica,
-                Caps(systemBackdrop: true, roundedCorners: true, captionColor: true, backdropComposition: true));
-
-            Assert.AreEqual(BackdropType.Mica, effective,
-                "Mica on a composition-enabled OS must resolve to Mica as before.");
-        }
-
-        #endregion
 
         #region ResolveEffectiveBackdrop - capability matrix
 
@@ -249,13 +217,8 @@ namespace Fluence.Wpf.Tests
             Assert.IsFalse(plan.UseTransparentBackground,
                 "None must paint a solid background - transparency would reveal the glass frame.");
             Assert.AreEqual(fallback, plan.BackgroundColor);
-            // The caption color is pinned to the solid fallback background (as a COLORREF) rather
-            // than left system-managed (DWMWA_COLOR_DEFAULT). With ColorPrevalence=1 the
-            // system-default caption is the accent color and DWM paints it for a frame or two
-            // before WPF paints its themed title bar - the opaque pin eliminates that flash.
-            int expectedCaptionColor = (fallback.B << 16) | (fallback.G << 8) | fallback.R;
-            Assert.AreEqual(expectedCaptionColor, plan.CaptionColor,
-                "None must pin the DWM caption to the solid fallback background color to prevent the accent-color flash.");
+            Assert.AreEqual(NativeConstants.DWMWA_COLOR_DEFAULT, plan.CaptionColor,
+                "None must leave the DWM caption color at its default (system-managed).");
             Assert.IsTrue(plan.SystemBackdropType.HasValue,
                 "On 22H2 DWM exposes DWMWA_SYSTEMBACKDROP_TYPE - None must emit DWMSBT_NONE to explicitly clear Mica/Acrylic.");
             Assert.AreEqual(NativeConstants.DWMSBT_NONE, plan.SystemBackdropType.Value);

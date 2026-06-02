@@ -40,9 +40,20 @@ namespace Fluence.Wpf.Helpers
     internal static class SnapLayoutHelper
     {
         /// <summary>
-        /// Returns <c>true</c> when the user has the Windows 11 Snap Layout flyout enabled.
-        /// Defaults to <c>true</c> when the registry value is absent (Windows 11 default).
+        /// Returns <see langword="true"/> when the user has the Windows 11 Snap Layout flyout
+        /// enabled. Defaults to <see langword="true"/> when the registry value is absent (the
+        /// Windows 11 default), so the flyout is shown unless the user explicitly turned it off.
         /// </summary>
+        /// <remarks>
+        /// The preference is stored under
+        /// <c>HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced</c>
+        /// as <c>EnableSnapAssistFlyout</c> (DWORD). A missing value, a non-DWORD value, or any
+        /// value other than 0 is treated as enabled.
+        /// </remarks>
+        /// <returns>
+        ///   <see langword="true"/> when the Snap Layout flyout is enabled or not configured;
+        ///   <see langword="false"/> when the user has explicitly disabled it.
+        /// </returns>
         internal static bool IsSnapLayoutEnabled()
         {
             using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.ExplorerAdvancedRegistryPath);

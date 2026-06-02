@@ -14,7 +14,6 @@
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="Focusable" Value="False" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-        <Setter Property="Height" Value="32" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="Template">
@@ -33,12 +32,12 @@
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                         </DataTrigger>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="RootGrid" Property="Background" Value="{DynamicResource ControlStrongFillColorDefaultBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorInverseBrush}" />
+                            <Setter TargetName="RootGrid" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
-                            <Setter TargetName="RootGrid" Property="Background" Value="{DynamicResource ControlStrongFillColorDisabledBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorInverseBrush}" />
+                            <Setter TargetName="RootGrid" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
@@ -49,8 +48,9 @@
             </Setter.Value>
         </Setter>
         <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
-        <Setter Property="Width" Value="64" />
+        <Setter Property="Width" Value="46" />
         <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
     </Style>
 
@@ -60,7 +60,6 @@
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="Focusable" Value="False" />
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
-        <Setter Property="Height" Value="32" />
         <Setter Property="HorizontalContentAlignment" Value="Center" />
         <Setter Property="Padding" Value="0" />
         <Setter Property="Template">
@@ -95,6 +94,7 @@
             </Setter.Value>
         </Setter>
         <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="VerticalAlignment" Value="Stretch" />
         <Setter Property="VerticalContentAlignment" Value="Center" />
         <Setter Property="Width" Value="46" />
         <Setter Property="WindowChrome.IsHitTestVisibleInChrome" Value="True" />
@@ -191,20 +191,19 @@
                                 <Grid
                                     x:Name="CaptionButtonPanel"
                                     Grid.Column="3"
-                                    Width="158"
+                                    Width="138"
                                     HorizontalAlignment="Right"
-                                    VerticalAlignment="Top"
+                                    VerticalAlignment="Stretch"
                                     Panel.ZIndex="2"
                                     WindowChrome.IsHitTestVisibleInChrome="True">
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="54" />
-                                        <ColumnDefinition Width="54" />
-                                        <ColumnDefinition Width="54" />
+                                        <ColumnDefinition Width="46" />
+                                        <ColumnDefinition Width="46" />
+                                        <ColumnDefinition Width="46" />
                                     </Grid.ColumnDefinitions>
                                     <Button
                                         x:Name="PART_MinimizeButton"
                                         Grid.Column="0"
-                                        HorizontalAlignment="Center"
                                         Command="{x:Static SystemCommands.MinimizeWindowCommand}"
                                         Style="{StaticResource WindowButtonStyle}"
                                         ToolTip="Minimize">
@@ -218,7 +217,6 @@
                                     <Button
                                         x:Name="PART_MaximizeButton"
                                         Grid.Column="1"
-                                        HorizontalAlignment="Center"
                                         Command="{x:Static SystemCommands.MaximizeWindowCommand}"
                                         Style="{StaticResource WindowButtonStyle}"
                                         ToolTip="Maximize">
@@ -232,7 +230,6 @@
                                     <Button
                                         x:Name="PART_RestoreButton"
                                         Grid.Column="1"
-                                        HorizontalAlignment="Center"
                                         Command="{x:Static SystemCommands.RestoreWindowCommand}"
                                         Style="{StaticResource WindowButtonStyle}"
                                         ToolTip="Restore"
@@ -247,7 +244,6 @@
                                     <Button
                                         x:Name="PART_CloseButton"
                                         Grid.Column="2"
-                                        HorizontalAlignment="Center"
                                         Command="{x:Static SystemCommands.CloseWindowCommand}"
                                         Style="{StaticResource WindowCloseButtonStyle}"
                                         ToolTip="Close">

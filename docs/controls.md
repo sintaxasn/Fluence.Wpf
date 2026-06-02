@@ -473,7 +473,7 @@ Accessibility coverage includes focus visuals, high-contrast resources, automati
 
 ## FluenceWindow
 
-`FluenceWindow` gives you title-bar styling, caption buttons, backdrop support, and a title-bar content slot. `MinWidth` is caller-controlled and unset by default; the default title bar height is 68 px. When `ExtendsContentIntoTitleBar="True"`, app content renders behind the title bar. A `NavigationView` left pane reserves title-bar height before its first item when no explicit header is provided.
+`FluenceWindow` gives you title-bar styling, caption buttons, backdrop support, and a title-bar content slot. `MinWidth` is caller-controlled and unset by default; the default title bar height is 48 px (the WinUI 3 canonical expanded title-bar height). When `ExtendsContentIntoTitleBar="True"`, app content renders behind the title bar. A `NavigationView` left pane reserves title-bar height before its first item when no explicit header is provided.
 
 `CaptionButtonChrome` and `WindowPolicy` are internal types behind `FluenceWindow` caption-button and DWM policy decisions. Tests cover them, but they are not consumer controls.
 

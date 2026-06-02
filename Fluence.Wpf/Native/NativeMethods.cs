@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,7 +32,19 @@ using System.Runtime.InteropServices;
 
 namespace Fluence.Wpf.Native
 {
-#pragma warning disable SYSLIB1054 // DllImport keeps the shared net472/net10 interop surface identical.
+    // SYSLIB1054 asks for [LibraryImport] source generation, but this assembly multi-targets
+    // net472 (where the source generator is unavailable) and net10, and the two TFMs must expose
+    // an identical interop surface. Classic [DllImport] is the only declaration form that compiles
+    // on both, so the analyzer is suppressed for this single interop file. This is the documented
+    // "exceptional third-party interop" carve-out; no other file may use an inline pragma.
+#pragma warning disable SYSLIB1054
+    /// <summary>
+    /// The native interop surface for <see cref="Fluence.Wpf.Controls.FluenceWindow"/> and its
+    /// policy/capability helpers: DWM backdrop and frame attributes, UxTheme caption suppression,
+    /// immersive color queries, monitor and taskbar geometry, layered-window presentation, and the
+    /// <c>RtlGetVersion</c> OS-build probe. Every method is best-effort and handle-safe so it can be
+    /// called from a presentation path without throwing.
+    /// </summary>
     internal static class NativeMethods
     {
         private const string Dwmapi = "dwmapi.dll";
@@ -44,12 +56,18 @@ namespace Fluence.Wpf.Native
         private const int GWL_STYLE = -16;
         private const int WS_SYSMENU = 0x80000;
 
-        // Extended window style index and layered-window constants used for the first-paint hold.
-        private const int GWL_EXSTYLE = -20;
-        private const int WS_EX_LAYERED = 0x00080000;
-        private const uint LWA_ALPHA = 0x00000002;
+        // SW_* arguments for ShowWindow (winuser.h). Only the states the caption buttons need.
+        private const int SW_MAXIMIZE = 3;
+        private const int SW_MINIMIZE = 6;
+        private const int SW_RESTORE = 9;
 
-        #region User32 Window Style APIs
+        /// <summary>The <c>HWND_BROADCAST</c> pseudo-handle for broadcasting a settings change.</summary>
+        public const int HWND_BROADCAST = 0xFFFF;
+
+        /// <summary>The <c>SMTO_ABORTIFHUNG</c> flag for <see cref="SendMessageTimeout"/>.</summary>
+        public const uint SMTO_ABORTIFHUNG = 0x0002;
+
+        #region P/Invoke declarations - User32 window styles and presentation
 
         [DllImport(User32, SetLastError = true)]
         private static extern int GetWindowLong(IntPtr hWnd, int nIndex);
@@ -63,20 +81,21 @@ namespace Fluence.Wpf.Native
 
         [DllImport(User32, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool SetLayeredWindowAttributes(IntPtr hWnd, uint crKey, byte bAlpha, uint dwFlags);
-
-        [DllImport(User32, SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool IsIconic(IntPtr hWnd);
 
         [DllImport(User32, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool IsZoomed(IntPtr hWnd);
 
+        /// <summary>Returns whether <paramref name="hWnd"/> is a valid existing window handle.</summary>
         [DllImport(User32, SetLastError = true)]
         [return: MarshalAs(UnmanagedType.Bool)]
         public static extern bool IsWindow(IntPtr hWnd);
 
+        /// <summary>
+        /// Sends a window message with a timeout. Used by the tests to broadcast
+        /// <c>WM_SETTINGCHANGE</c>/<c>ImmersiveColorSet</c> so the theme watcher re-reads the palette.
+        /// </summary>
         [DllImport(User32, SetLastError = true, CharSet = CharSet.Unicode)]
         public static extern IntPtr SendMessageTimeout(
             IntPtr hWnd,
@@ -87,138 +106,86 @@ namespace Fluence.Wpf.Native
             uint uTimeout,
             out IntPtr lpdwResult);
 
-        public const int HWND_BROADCAST = 0xFFFF;
-        public const uint SMTO_ABORTIFHUNG = 0x0002;
-
-        // SW_* constants for ShowWindow. See Win32 docs for full list.
-        private const int SW_RESTORE = 9;
-        private const int SW_MINIMIZE = 6;
-        private const int SW_MAXIMIZE = 3;
-
         #endregion
 
-        #region NT APIs
+        #region P/Invoke declarations - Ntdll
 
         [DllImport(Ntdll, SetLastError = true)]
         private static extern int RtlGetVersion(ref OSVERSIONINFOEX versionInfo);
 
         #endregion
 
-        #region DWM APIs
+        #region P/Invoke declarations - DWM
 
+        /// <summary>Sets a DWM window attribute from a 4-byte integer value.</summary>
         [DllImport(Dwmapi, PreserveSig = true)]
-        public static extern int DwmSetWindowAttribute(
-            IntPtr hwnd,
-            int attr,
-            ref int attrValue,
-            int attrSize);
+        public static extern int DwmSetWindowAttribute(IntPtr hwnd, int attr, ref int attrValue, int attrSize);
 
+        /// <summary>Reads a DWM window attribute into a 4-byte integer value.</summary>
         [DllImport(Dwmapi, PreserveSig = true)]
-        public static extern int DwmGetWindowAttribute(
-            IntPtr hwnd,
-            int attr,
-            out int attrValue,
-            int attrSize);
+        public static extern int DwmGetWindowAttribute(IntPtr hwnd, int attr, out int attrValue, int attrSize);
 
+        /// <summary>Extends the DWM frame into the client area using the supplied margins.</summary>
         [DllImport(Dwmapi, PreserveSig = true)]
-        public static extern int DwmExtendFrameIntoClientArea(
-            IntPtr hwnd,
-            ref MARGINS pMarInset);
+        public static extern int DwmExtendFrameIntoClientArea(IntPtr hwnd, ref MARGINS pMarInset);
 
+        /// <summary>Reads the current DWM colorization color and its opaque-blend flag.</summary>
         [DllImport(Dwmapi, PreserveSig = true)]
-        public static extern int DwmGetColorizationColor(
-            out uint pcrColorization,
-            out bool pfOpaqueBlend);
+        public static extern int DwmGetColorizationColor(out uint pcrColorization, out bool pfOpaqueBlend);
 
+        /// <summary>Reports whether DWM desktop composition is enabled.</summary>
         [DllImport(Dwmapi, PreserveSig = true)]
-        public static extern int DwmIsCompositionEnabled(
-            out bool pfEnabled);
+        public static extern int DwmIsCompositionEnabled(out bool pfEnabled);
 
+        /// <summary>Reads the undocumented DWM colorization parameters (ordinal-127 export).</summary>
         [DllImport(Dwmapi, EntryPoint = "#127", PreserveSig = false)]
-        public static extern void DwmGetColorizationParameters(
-            out DWMCOLORIZATIONPARAMS parameters);
-
-        /// <summary>
-        /// Blocks until the next DWM present completes. Used to ensure a cloaked window's
-        /// composited content is on the DWM surface before uncloaking, so the reveal shows a
-        /// fully-settled frame rather than a stale or partial one.
-        /// </summary>
-        [DllImport(Dwmapi, EntryPoint = "DwmFlush")]
-        private static extern int _DwmFlush();
-
-        /// <summary>
-        /// Calls <c>DwmFlush</c>, blocking until the next DWM present completes. Any COM/PInvoke
-        /// exception is silently swallowed so callers are never interrupted by a DWM error.
-        /// </summary>
-        public static void DwmFlush()
-        {
-            try
-            {
-                _ = _DwmFlush();
-            }
-            catch (Exception ex) when (ex.Message is not null)
-            {
-                // DwmFlush failure must never propagate into the window.
-            }
-        }
+        public static extern void DwmGetColorizationParameters(out DWMCOLORIZATIONPARAMS parameters);
 
         #endregion
 
-        #region User32 APIs
+        #region P/Invoke declarations - User32 geometry
 
-        private const int DISPLAY_DEVICE_PRIMARY_DEVICE = 0x4;
-
-        [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
-        private struct DISPLAY_DEVICE
-        {
-            public int cb;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)]
-            public string DeviceName;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-            public string DeviceString;
-            public int StateFlags;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-            public string DeviceID;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-            public string DeviceKey;
-        }
-
-        [DllImport("user32.dll", CharSet = CharSet.Unicode)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool EnumDisplayDevices(string? lpDevice, uint iDevNum, ref DISPLAY_DEVICE lpDisplayDevice, uint dwFlags);
-
+        /// <summary>Reads the screen rectangle of a window.</summary>
         [DllImport(User32, SetLastError = true)]
         public static extern bool GetWindowRect(IntPtr hwnd, out RECT lpRect);
 
+        /// <summary>Reads the client rectangle of a window.</summary>
         [DllImport(User32, SetLastError = true)]
         public static extern bool GetClientRect(IntPtr hwnd, out RECT lpRect);
 
+        /// <summary>Returns the monitor handle for a window using the supplied fallback flags.</summary>
         [DllImport(User32)]
         public static extern IntPtr MonitorFromWindow(IntPtr hwnd, uint dwFlags);
 
+        /// <summary>Fills <paramref name="lpmi"/> with the monitor and work-area rectangles.</summary>
         [DllImport(User32, CharSet = CharSet.Unicode)]
         public static extern bool GetMonitorInfo(IntPtr hMonitor, ref MONITORINFO lpmi);
 
+        /// <summary>Acquires a device context for a window.</summary>
         [DllImport(User32, SetLastError = true)]
         public static extern IntPtr GetDC(IntPtr hwnd);
 
+        /// <summary>Releases a device context acquired with <see cref="GetDC"/>.</summary>
         [DllImport(User32, SetLastError = true)]
         public static extern int ReleaseDC(IntPtr hwnd, IntPtr hdc);
 
         #endregion
 
-        #region Shell32 APIs
+        #region P/Invoke declarations - Shell32
 
+        /// <summary>Sends an appbar message to the shell (taskbar state and position queries).</summary>
         [DllImport(Shell32, SetLastError = true)]
         public static extern IntPtr SHAppBarMessage(uint dwMessage, ref APPBARDATA pData);
 
         #endregion
 
-        #region UxTheme APIs
+        #region P/Invoke declarations - UxTheme immersive color set (undocumented ordinals)
 
+        /// <summary>Returns the number of immersive color sets.</summary>
         [DllImport(UxTheme, EntryPoint = "#94", CharSet = CharSet.Unicode)]
         public static extern uint GetImmersiveColorSetCount();
 
+        /// <summary>Reads an immersive color from a color set by type.</summary>
         [DllImport(UxTheme, EntryPoint = "#95", CharSet = CharSet.Unicode)]
         public static extern uint GetImmersiveColorFromColorSetEx(
             uint dwImmersiveColorSet,
@@ -226,31 +193,40 @@ namespace Fluence.Wpf.Native
             bool bIgnoreHighContrast,
             uint dwHighContrastCacheMode);
 
+        /// <summary>Resolves an immersive color type ordinal from its name.</summary>
         [DllImport(UxTheme, EntryPoint = "#96", CharSet = CharSet.Unicode)]
         public static extern uint GetImmersiveColorTypeFromName(string name);
 
+        /// <summary>Returns the user's active immersive color-set preference index.</summary>
         [DllImport(UxTheme, EntryPoint = "#98", CharSet = CharSet.Unicode)]
-        public static extern uint GetImmersiveUserColorSetPreference(
-            bool bForceCheckRegistry,
-            bool bSkipCheckOnFail);
+        public static extern uint GetImmersiveUserColorSetPreference(bool bForceCheckRegistry, bool bSkipCheckOnFail);
 
+        /// <summary>Sets a UxTheme non-client window theme attribute (caption suppression).</summary>
         [DllImport(UxTheme, ExactSpelling = true, PreserveSig = true)]
-        public static extern int SetWindowThemeAttribute(
-            IntPtr hwnd,
-            int eAttribute,
-            ref WTA_OPTIONS pvAttribute,
-            uint cbAttribute);
+        public static extern int SetWindowThemeAttribute(IntPtr hwnd, int eAttribute, ref WTA_OPTIONS pvAttribute, uint cbAttribute);
 
         #endregion
 
-        #region Helper Methods
+        #region DWM attribute helpers
 
+        /// <summary>
+        /// Sets a 4-byte DWM window attribute and reports success. The value is copied into a local
+        /// so it can be passed by reference, matching the <c>ref int pvAttribute</c> DWM contract.
+        /// </summary>
+        /// <param name="hwnd">The target window handle.</param>
+        /// <param name="attribute">The <c>DWMWA_*</c> attribute id.</param>
+        /// <param name="value">The 4-byte value to set.</param>
+        /// <returns><see langword="true"/> when DWM returns <c>S_OK</c>.</returns>
         public static bool SetWindowAttribute(IntPtr hwnd, int attribute, int value)
         {
             int result = DwmSetWindowAttribute(hwnd, attribute, ref value, sizeof(int));
             return result == 0;
         }
 
+        /// <summary>Sets the rounded-corner preference (one of the <c>DWMWCP_*</c> values).</summary>
+        /// <param name="hwnd">The target window handle.</param>
+        /// <param name="cornerPreference">The <c>DWMWCP_*</c> value.</param>
+        /// <returns><see langword="true"/> on success.</returns>
         public static bool SetWindowCornerPreference(IntPtr hwnd, int cornerPreference)
         {
             return SetWindowAttribute(hwnd, NativeConstants.DWMWA_WINDOW_CORNER_PREFERENCE, cornerPreference);
@@ -268,72 +244,46 @@ namespace Fluence.Wpf.Native
         /// <returns>The DWM attribute id to pass to <see cref="DwmSetWindowAttribute"/>.</returns>
         public static int GetImmersiveDarkModeAttribute(int osBuild)
         {
-            return osBuild >= 18362 ? NativeConstants.DWMWA_USE_IMMERSIVE_DARK_MODE : NativeConstants.DWMWA_USE_IMMERSIVE_DARK_MODE_OLD;
+            return osBuild >= 18362
+                ? NativeConstants.DWMWA_USE_IMMERSIVE_DARK_MODE
+                : NativeConstants.DWMWA_USE_IMMERSIVE_DARK_MODE_OLD;
         }
 
+        /// <summary>Enables or disables the immersive dark caption for the current OS build.</summary>
+        /// <param name="hwnd">The target window handle.</param>
+        /// <param name="enabled"><see langword="true"/> to request the dark caption.</param>
+        /// <returns><see langword="true"/> on success.</returns>
         public static bool SetImmersiveDarkMode(IntPtr hwnd, bool enabled)
         {
             int value = enabled ? NativeConstants.DWM_TRUE : NativeConstants.DWM_FALSE;
             return SetWindowAttribute(hwnd, GetImmersiveDarkModeAttribute(OsVersionHelper.OsBuild), value);
         }
 
+        /// <summary>Sets the DWM system backdrop type (one of the <c>DWMSBT_*</c> values).</summary>
+        /// <param name="hwnd">The target window handle.</param>
+        /// <param name="backdropType">The <c>DWMSBT_*</c> value.</param>
+        /// <returns><see langword="true"/> on success.</returns>
         public static bool SetSystemBackdropType(IntPtr hwnd, int backdropType)
         {
             return SetWindowAttribute(hwnd, NativeConstants.DWMWA_SYSTEMBACKDROP_TYPE, backdropType);
         }
 
         /// <summary>
-        /// Sets or clears the DWM cloak on a window via <see cref="NativeConstants.DWMWA_CLOAK"/>.
-        /// When cloaked the window is fully composited off-screen by DWM (including any Mica or
-        /// Acrylic backdrop) but invisible to the user. Requires DWM composition to be enabled; if
-        /// it is not, the call silently returns false and the caller must fall back to the layered-
-        /// window alpha approach. Used as the preferred first-paint hold mechanism so the window
-        /// is only revealed after layout, sizing, and WPF's first paint have completed.
+        /// Cloaks or uncloaks a window via <see cref="NativeConstants.DWMWA_CLOAK"/>. While cloaked,
+        /// DWM keeps the window fully composed off-screen and does not present it. Retained as part
+        /// of the interop contract; <see cref="Fluence.Wpf.Controls.FluenceWindow"/> deliberately
+        /// does not cloak (its first-paint flash is solved by clearing the redirection surface), so
+        /// the never-cloak invariant is asserted by the harden tests via
+        /// <see cref="GetWindowCloakedState"/>. Any caller that does cloak MUST guarantee a matching
+        /// uncloak; a window left cloaked is invisible.
         /// </summary>
-        /// <param name="hwnd">The window handle to cloak or uncloak.</param>
-        /// <param name="cloak"><see langword="true"/> to cloak (hide); <see langword="false"/> to uncloak (reveal).</param>
-        /// <returns><see langword="true"/> when the DWM call succeeded.</returns>
+        /// <param name="hwnd">The target window handle.</param>
+        /// <param name="cloak"><see langword="true"/> to cloak, <see langword="false"/> to uncloak.</param>
+        /// <returns><see langword="true"/> on success.</returns>
         public static bool SetWindowCloak(IntPtr hwnd, bool cloak)
         {
-            if (hwnd == IntPtr.Zero)
-            {
-                return false;
-            }
             int value = cloak ? NativeConstants.DWM_TRUE : NativeConstants.DWM_FALSE;
             return SetWindowAttribute(hwnd, NativeConstants.DWMWA_CLOAK, value);
-        }
-
-        /// <summary>
-        /// Adds or removes <c>WS_EX_LAYERED</c> on the window and, when adding, applies an alpha
-        /// value of zero (fully transparent) via <c>SetLayeredWindowAttributes</c>. When removing,
-        /// clears <c>WS_EX_LAYERED</c> so the window returns to its normal compositing mode. Used
-        /// as the fallback first-paint hold when DWM composition is unavailable and
-        /// <see cref="SetWindowCloak"/> cannot be used. In that case the window is opaque anyway
-        /// (no Mica/Acrylic), so <c>WS_EX_LAYERED</c> does not interfere with backdrop compositing.
-        /// </summary>
-        /// <param name="hwnd">The window handle to modify.</param>
-        /// <param name="alpha">Alpha value: 0 to hide, 255 to reveal.</param>
-        /// <returns><see langword="true"/> when both the style change and the attribute call succeeded.</returns>
-        public static bool SetWindowLayeredAlpha(IntPtr hwnd, byte alpha)
-        {
-            if (hwnd == IntPtr.Zero)
-            {
-                return false;
-            }
-            int exStyle = GetWindowLong(hwnd, GWL_EXSTYLE);
-            if (alpha == 0)
-            {
-                // Add WS_EX_LAYERED if not already set, then force alpha to 0.
-                _ = SetWindowLong(hwnd, GWL_EXSTYLE, exStyle | WS_EX_LAYERED);
-                return SetLayeredWindowAttributes(hwnd, 0, 0, LWA_ALPHA);
-            }
-            else
-            {
-                // Reveal at full opacity then remove WS_EX_LAYERED so the window reverts to normal.
-                bool ok = SetLayeredWindowAttributes(hwnd, 0, 255, LWA_ALPHA);
-                _ = SetWindowLong(hwnd, GWL_EXSTYLE, exStyle & ~WS_EX_LAYERED);
-                return ok;
-            }
         }
 
         /// <summary>
@@ -341,6 +291,8 @@ namespace Fluence.Wpf.Native
         /// reason flags for why the window is cloaked. Zero means the window is not cloaked. Returns
         /// zero on any failure (for example when DWM composition is disabled).
         /// </summary>
+        /// <param name="hwnd">The target window handle.</param>
+        /// <returns>The cloak reason flags, or zero when not cloaked or on failure.</returns>
         public static int GetWindowCloakedState(IntPtr hwnd)
         {
             if (hwnd == IntPtr.Zero)
@@ -351,28 +303,20 @@ namespace Fluence.Wpf.Native
             return result == 0 ? cloaked : 0;
         }
 
-        /// <summary>
-        /// Returns <see langword="true"/> when the window's extended style carries
-        /// <see cref="NativeConstants.WS_EX_LAYERED"/>. Returns <see langword="false"/> for a null
-        /// handle. Used to assert the never-hide first-paint invariant: the window is fully presented
-        /// rather than held invisible via layered alpha.
-        /// </summary>
-        public static bool IsWindowLayered(IntPtr hwnd)
-        {
-            if (hwnd == IntPtr.Zero)
-            {
-                return false;
-            }
-            int exStyle = GetWindowLong(hwnd, NativeConstants.GWL_EXSTYLE);
-            return (exStyle & NativeConstants.WS_EX_LAYERED) != 0;
-        }
-
+        /// <summary>Toggles the legacy Windows 11 21H2 Mica effect (<c>DWMWA_MICA_EFFECT</c>).</summary>
+        /// <param name="hwnd">The target window handle.</param>
+        /// <param name="enabled"><see langword="true"/> to enable legacy Mica.</param>
+        /// <returns><see langword="true"/> on success.</returns>
         public static bool SetMicaEffect(IntPtr hwnd, bool enabled)
         {
             int value = enabled ? NativeConstants.DWM_TRUE : NativeConstants.DWM_FALSE;
             return SetWindowAttribute(hwnd, NativeConstants.DWMWA_MICA_EFFECT, value);
         }
 
+        /// <summary>Sets the title-bar caption color (a <c>COLORREF</c> or a <c>DWMWA_COLOR_*</c> sentinel).</summary>
+        /// <param name="hwnd">The target window handle.</param>
+        /// <param name="color">The caption color value.</param>
+        /// <returns><see langword="true"/> on success.</returns>
         public static bool SetCaptionColor(IntPtr hwnd, int color)
         {
             return SetWindowAttribute(hwnd, NativeConstants.DWMWA_CAPTION_COLOR, color);
@@ -383,6 +327,8 @@ namespace Fluence.Wpf.Native
         /// through cleanly. Best-effort: classic themes return <c>S_FALSE</c> which is treated
         /// as a no-op success.
         /// </summary>
+        /// <param name="hwnd">The target window handle.</param>
+        /// <returns><see langword="true"/> when the attribute applied (<c>S_OK</c> or <c>S_FALSE</c>).</returns>
         public static bool SuppressNonClientCaptionDraw(IntPtr hwnd)
         {
             if (hwnd == IntPtr.Zero)
@@ -398,11 +344,21 @@ namespace Fluence.Wpf.Native
             return hr >= 0; // S_OK or S_FALSE
         }
 
+        /// <summary>Sets the window border color (a <c>COLORREF</c> or a <c>DWMWA_COLOR_*</c> sentinel).</summary>
+        /// <param name="hwnd">The target window handle.</param>
+        /// <param name="color">The border color value.</param>
+        /// <returns><see langword="true"/> on success.</returns>
         public static bool SetBorderColor(IntPtr hwnd, int color)
         {
             return SetWindowAttribute(hwnd, NativeConstants.DWMWA_BORDER_COLOR, color);
         }
 
+        /// <summary>
+        /// Extends the DWM frame across the entire client area (the "sheet of glass" margins of
+        /// <c>-1</c> on every edge), letting the backdrop composite behind the whole window.
+        /// </summary>
+        /// <param name="hwnd">The target window handle.</param>
+        /// <returns><see langword="true"/> on success.</returns>
         public static bool ExtendFrameIntoClientArea(IntPtr hwnd)
         {
             MARGINS margins = new() { cxLeftWidth = -1, cxRightWidth = -1, cyTopHeight = -1, cyBottomHeight = -1 };
@@ -410,97 +366,109 @@ namespace Fluence.Wpf.Native
             return result == 0;
         }
 
-        // Packs a Color into the 0x00BBGGRR COLORREF layout that DWM window attributes such as
-        // DWMWA_BORDER_COLOR expect (alpha is ignored). Despite historically being named for ABGR,
-        // the byte order produced here is COLORREF; callers must not reuse it for an attribute that
-        // genuinely expects ABGR with a meaningful alpha channel.
+        /// <summary>
+        /// Packs a <see cref="System.Windows.Media.Color"/> into the <c>0x00BBGGRR</c> COLORREF
+        /// layout that DWM color attributes such as <see cref="NativeConstants.DWMWA_BORDER_COLOR"/>
+        /// expect; the alpha channel is ignored. Despite the historical "ABGR" naming, the byte
+        /// order produced here is COLORREF, so callers must not reuse it for an attribute that
+        /// genuinely expects ABGR with a meaningful alpha channel.
+        /// </summary>
+        /// <param name="color">The source color.</param>
+        /// <returns>The packed COLORREF value.</returns>
         public static int ColorToColorRef(System.Windows.Media.Color color)
         {
             return (color.B << 16) | (color.G << 8) | color.R;
         }
 
-        /// <summary>
-        /// Returns true when the primary display adapter is a Microsoft basic or synthetic adapter
-        /// (Hyper-V Video, Basic Display Adapter, Basic Render Driver, Remote Display Adapter).
-        /// Microsoft ships no discrete or integrated GPUs, so a Microsoft-vendor display adapter is
-        /// always a synthetic/software adapter on which DWM cannot composite a Mica or Acrylic
-        /// backdrop: it can report a usable WPF render tier yet the backdrop never renders, leaving
-        /// the transparent window surface to bleed the uncomposited accent color. A real GPU,
-        /// including Hyper-V GPU-PV or GPU passthrough (which exposes the host adapter name),
-        /// reports its true vendor and is treated as backdrop-capable.
-        /// </summary>
-        public static bool IsPrimaryDisplayAdapterMicrosoftBasic()
-        {
-            DISPLAY_DEVICE device = new() { cb = Marshal.SizeOf<DISPLAY_DEVICE>() };
-            for (uint index = 0; EnumDisplayDevices(null, index, ref device, 0); index++)
-            {
-                if ((device.StateFlags & DISPLAY_DEVICE_PRIMARY_DEVICE) != 0)
-                {
-                    return !string.IsNullOrWhiteSpace(device.DeviceString)
-                        && device.DeviceString.StartsWith("Microsoft", StringComparison.OrdinalIgnoreCase);
-                }
-
-                device.cb = Marshal.SizeOf<DISPLAY_DEVICE>();
-            }
-
-            return false;
-        }
-
+        /// <summary>Returns whether DWM desktop composition is currently enabled.</summary>
+        /// <returns><see langword="true"/> when composition is enabled.</returns>
         public static bool IsCompositionEnabled()
         {
             int result = DwmIsCompositionEnabled(out bool enabled);
             return result == 0 && enabled;
         }
 
+        /// <summary>Rounds the window corners with the full radius (<c>DWMWCP_ROUND</c>).</summary>
+        /// <param name="hwnd">The target window handle.</param>
+        /// <returns><see langword="true"/> on success.</returns>
+        public static bool RoundWindowCorner(IntPtr hwnd)
+        {
+            return SetWindowAttribute(hwnd, NativeConstants.DWMWA_WINDOW_CORNER_PREFERENCE, NativeConstants.DWMWCP_ROUND);
+        }
+
+        #endregion
+
+        #region Window style and presentation helpers
+
+        /// <summary>
+        /// Strips <c>WS_SYSMENU</c> from the window style so the native caption (and its buttons)
+        /// stops painting over the custom Fluent caption.
+        /// </summary>
+        /// <param name="hwnd">The target window handle.</param>
         public static void HideAllWindowButtons(IntPtr hwnd)
         {
             int style = GetWindowLong(hwnd, GWL_STYLE);
             _ = SetWindowLong(hwnd, GWL_STYLE, style & ~WS_SYSMENU);
         }
 
-        // Directly drives the native ShowWindow() API to minimize a window. Used as a
-        // belt-and-braces fallback from FluenceWindow.OnMinimizeWindow so that the custom
-        // caption's minimize button is guaranteed to work even when the chrome has stripped
-        // WS_SYSMENU/WS_MINIMIZEBOX (blocking SC_MINIMIZE via DefWindowProc), ResizeMode is
-        // NoResize, the window is Topmost, or the window is shown via ShowDialog() inside a
-        // nested dispatcher frame. The Win32 ShowWindow call honors SW_MINIMIZE regardless of
-        // window styles, so it cannot be silently gated the way WM_SYSCOMMAND can.
+        /// <summary>
+        /// Minimizes a window through the native <c>ShowWindow</c> API. Used as a belt-and-braces
+        /// fallback from the custom caption's minimize handler so minimize is guaranteed to work
+        /// even when the chrome has stripped <c>WS_SYSMENU</c>/<c>WS_MINIMIZEBOX</c> (which blocks
+        /// <c>SC_MINIMIZE</c> via <c>DefWindowProc</c>), the window is <c>NoResize</c>, topmost, or
+        /// shown via <c>ShowDialog()</c> inside a nested dispatcher frame. <c>ShowWindow</c> honors
+        /// <c>SW_MINIMIZE</c> regardless of window styles, so it cannot be silently gated the way
+        /// <c>WM_SYSCOMMAND</c> can.
+        /// </summary>
+        /// <param name="hwnd">The target window handle.</param>
+        /// <returns><see langword="true"/> when the window is (or becomes) minimized.</returns>
         public static bool MinimizeWindowNative(IntPtr hwnd)
         {
             return hwnd != IntPtr.Zero && (IsIconic(hwnd) || ShowWindow(hwnd, SW_MINIMIZE));
         }
 
+        /// <summary>Maximizes a window through the native <c>ShowWindow</c> API.</summary>
+        /// <param name="hwnd">The target window handle.</param>
+        /// <returns><see langword="true"/> when the window is (or becomes) maximized.</returns>
         public static bool MaximizeWindowNative(IntPtr hwnd)
         {
             return hwnd != IntPtr.Zero && (IsZoomed(hwnd) || ShowWindow(hwnd, SW_MAXIMIZE));
         }
 
+        /// <summary>Restores a window through the native <c>ShowWindow</c> API.</summary>
+        /// <param name="hwnd">The target window handle.</param>
+        /// <returns><see langword="true"/> when the restore call succeeds.</returns>
         public static bool RestoreWindowNative(IntPtr hwnd)
         {
             return hwnd != IntPtr.Zero && ShowWindow(hwnd, SW_RESTORE);
         }
 
-        public static bool RoundWindowCorner(IntPtr hwnd)
-        {
-            return SetWindowAttribute(hwnd, NativeConstants.DWMWA_WINDOW_CORNER_PREFERENCE, NativeConstants.DWMWCP_ROUND);
-        }
+        #endregion
 
+        #region OS version and taskbar helpers
+
+        /// <summary>
+        /// Reads the true OS version via <c>RtlGetVersion</c>, which (unlike the manifest-shimmed
+        /// <c>GetVersionEx</c>) reports the real build number the DWM feature gates depend on.
+        /// </summary>
+        /// <returns>The OS version (major, minor, build, revision).</returns>
+        /// <exception cref="InvalidOperationException">Thrown when <c>RtlGetVersion</c> fails.</exception>
         public static Version GetRealOsVersion()
         {
             OSVERSIONINFOEX versionInfo = new()
             {
                 OSVersionInfoSize = Marshal.SizeOf<OSVERSIONINFOEX>(),
-                CSDVersion = string.Empty
+                CSDVersion = string.Empty,
             };
 
             int result = RtlGetVersion(ref versionInfo);
             return result != 0
                 ? throw new InvalidOperationException("RtlGetVersion failed.")
                 : new Version(
-                versionInfo.MajorVersion,
-                versionInfo.MinorVersion,
-                versionInfo.BuildNumber,
-                versionInfo.Revision);
+                    versionInfo.MajorVersion,
+                    versionInfo.MinorVersion,
+                    versionInfo.BuildNumber,
+                    versionInfo.Revision);
         }
 
         /// <summary>
@@ -508,6 +476,7 @@ namespace Fluence.Wpf.Native
         /// mode. Queries the shell with <see cref="NativeConstants.ABM_GETSTATE"/> and tests the
         /// <see cref="NativeConstants.ABS_AUTOHIDE"/> bit of the returned state.
         /// </summary>
+        /// <returns><see langword="true"/> when the taskbar is auto-hide.</returns>
         public static bool IsTaskbarAutoHide()
         {
             APPBARDATA data = new() { cbSize = Marshal.SizeOf<APPBARDATA>() };
@@ -527,6 +496,7 @@ namespace Fluence.Wpf.Native
         /// multi-monitor setups. The parameter is retained so a future caller can match per
         /// monitor without an API break.
         /// </param>
+        /// <returns>The auto-hide taskbar edge, or <see langword="null"/>.</returns>
         public static uint? GetAutoHideTaskbarEdge(IntPtr monitor)
         {
             _ = monitor;

@@ -27,7 +27,6 @@
  */
 
 using Fluence.Wpf.Controls;
-using Fluence.Wpf.Helpers;
 using Fluence.Wpf.Native;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
@@ -206,12 +205,12 @@ namespace Fluence.Wpf.Tests
         #region 2. FluenceWindow sizing defaults
 
         [TestMethod]
-        public void TitleBarHeight_DefaultIs68()
+        public void TitleBarHeight_DefaultIs48()
         {
             RunWithWindow(w =>
             {
-                Assert.AreEqual(68d, w.TitleBarHeight,
-                    "TitleBarHeight should default to 68.");
+                Assert.AreEqual(48d, w.TitleBarHeight,
+                    "TitleBarHeight should default to 48 (WinUI 3 canonical expanded title-bar height).");
             });
         }
 
@@ -353,14 +352,8 @@ namespace Fluence.Wpf.Tests
             RunWithWindow(w =>
             {
                 WindowChrome chrome = WindowChrome.GetWindowChrome(w);
-                // GlassFrameThickness now also depends on whether DWM will composite a backdrop this
-                // session (WindowCapabilities.BackdropCompositionAvailable). When composition/transparency
-                // is unavailable the frame is always the thin 0.00001 fallback, never -1, so this
-                // window-level assertion tracks that runtime gate to stay hermetic across machines. The
-                // value-for-inputs correctness is covered deterministically by WindowPolicyTests.
-                bool compositionAvailable = WindowCapabilities.Current.BackdropCompositionAvailable;
-                Assert.AreEqual(new Thickness(compositionAvailable ? -1 : 0.00001), chrome.GlassFrameThickness,
-                    "Default GlassFrameThickness is -1 when a backdrop/shadow is active and DWM will composite, else the thin 0.00001 fallback.");
+                Assert.AreEqual(new Thickness(-1), chrome.GlassFrameThickness,
+                    "Default GlassFrameThickness should be -1 (backdrop or shadow active).");
 
                 w.HasShadow = false;
                 w.SystemBackdropType = BackdropType.None;
@@ -815,6 +808,65 @@ namespace Fluence.Wpf.Tests
                     "After one restore click, only the maximize icon should be visible.");
                 Assert.AreEqual(Visibility.Collapsed, restore.Visibility,
                     "After one restore click, the restore icon should be hidden.");
+            });
+        }
+
+        [TestMethod]
+        public void SetSnapHover_UsesSubtleFillTokens_MatchingTemplatePointerOver()
+        {
+            // The Windows 11 snap-layout flyout hover over the maximize/restore button is driven by
+            // SetSnapHover, because the WM_NCHITTEST/HTMAXBUTTON path bypasses the XAML IsMouseOver
+            // trigger. WindowButtonStyle's PointerOver state was migrated to the WinUI subtle fills
+            // (SubtleFillColorSecondaryBrush background / TextFillColorPrimaryBrush glyph), so the
+            // synthetic snap hover must reference the same tokens or it shows a stale strong-inverted
+            // fill while normal mouse hover shows the subtle fill. This pins the keys so the two
+            // paths cannot silently drift apart again. SetSnapHover is invoked directly (rather than
+            // through WndProc) so the assertion does not depend on the machine's snap-layout setting,
+            // OS build, or IsMaximizable gate that WM_NCHITTEST applies before reaching it.
+            RunWithShownWindow(w =>
+            {
+                System.Windows.Controls.Button? max = GetCaptionButtonField(w, "_maximizeButton");
+                Assert.IsNotNull(max, "Maximize template part should exist after Show.");
+                Assert.IsTrue(max.IsEnabled,
+                    "Precondition: maximize button must be enabled for SetSnapHover to apply a hover visual.");
+
+                // The resolved brushes the template PointerOver state would show, looked up the same
+                // way SetSnapHover's resource references resolve them.
+                object? expectedBackground = w.TryFindResource("SubtleFillColorSecondaryBrush");
+                object? expectedForeground = w.TryFindResource("TextFillColorPrimaryBrush");
+                object? staleBackground = w.TryFindResource("ControlStrongFillColorDefaultBrush");
+                Assert.IsInstanceOfType(expectedBackground, typeof(Brush),
+                    "SubtleFillColorSecondaryBrush must resolve to a Brush in the test theme.");
+                Assert.IsInstanceOfType(expectedForeground, typeof(Brush),
+                    "TextFillColorPrimaryBrush must resolve to a Brush in the test theme.");
+
+                MethodInfo? setSnapHover = typeof(FluenceWindow).GetMethod(
+                    "SetSnapHover",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                Assert.IsNotNull(setSnapHover, "SetSnapHover must exist for the snap-hover token test.");
+                _ = setSnapHover.Invoke(w, [max]);
+                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+
+                Assert.AreSame(expectedBackground, max.Background,
+                    "Snap hover must set the maximize button Background to SubtleFillColorSecondaryBrush, matching the WindowButtonStyle PointerOver state.");
+                Assert.AreSame(expectedForeground, max.Foreground,
+                    "Snap hover must set the maximize button Foreground to TextFillColorPrimaryBrush, matching the WindowButtonStyle PointerOver state.");
+                Assert.AreNotSame(staleBackground, max.Background,
+                    "Snap hover must NOT use the pre-re-author ControlStrongFillColorDefaultBrush token.");
+
+                // ClearSnapHover must restore the template/style defaults via ClearValue, so the
+                // local Background/Foreground values are cleared back to the unset (style-driven) state.
+                MethodInfo? clearSnapHover = typeof(FluenceWindow).GetMethod(
+                    "ClearSnapHover",
+                    BindingFlags.Instance | BindingFlags.NonPublic);
+                Assert.IsNotNull(clearSnapHover, "ClearSnapHover must exist for the snap-hover token test.");
+                _ = clearSnapHover.Invoke(w, null);
+                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+
+                Assert.AreEqual(DependencyProperty.UnsetValue, max.ReadLocalValue(System.Windows.Controls.Control.BackgroundProperty),
+                    "ClearSnapHover must ClearValue the Background local value so the style/template default applies again.");
+                Assert.AreEqual(DependencyProperty.UnsetValue, max.ReadLocalValue(System.Windows.Controls.Control.ForegroundProperty),
+                    "ClearSnapHover must ClearValue the Foreground local value so the style/template default applies again.");
             });
         }
 

@@ -30,12 +30,41 @@ using System.Windows;
 
 namespace Fluence.Wpf.Helpers
 {
-    internal sealed class FramePlan(Thickness templateBorderThickness, string templateBorderBrushResourceKey, int dwmBorderColor)
+    /// <summary>
+    /// Carries the resolved window-border frame instructions computed by
+    /// <see cref="Fluence.Wpf.Controls.WindowPolicy.BuildFramePlan"/>. The plan separates the
+    /// WPF-template border (driven by <see cref="TemplateBorderThickness"/> and
+    /// <see cref="TemplateBorderBrushResourceKey"/>) from the DWM border color
+    /// (<see cref="DwmBorderColor"/>), because only some OS builds support the DWM side.
+    /// </summary>
+    internal sealed class FramePlan(
+        Thickness templateBorderThickness,
+        string templateBorderBrushResourceKey,
+        int dwmBorderColor)
     {
+        /// <summary>
+        /// Gets the thickness of the WPF-template border element. <c>Thickness(2)</c> when the
+        /// window is active and in normal state; <c>Thickness(0)</c> when maximized (a border at
+        /// the monitor edge would clip against the taskbar or other monitors).
+        /// </summary>
         internal Thickness TemplateBorderThickness { get; private set; } = templateBorderThickness;
 
+        /// <summary>
+        /// Gets the <c>DynamicResource</c> key for the border brush to apply to the template
+        /// border element. <c>"SystemAccentColorBrush"</c> when the window is active and accent
+        /// borders are enabled; <c>"CardStrokeColorDefaultSolidBrush"</c> when the window is
+        /// inactive or accent borders are off.
+        /// </summary>
         internal string TemplateBorderBrushResourceKey { get; private set; } = templateBorderBrushResourceKey;
 
+        /// <summary>
+        /// Gets the COLORREF (BGR, 24-bit) value to write to <c>DWMWA_BORDER_COLOR</c>, or
+        /// <see cref="Fluence.Wpf.Native.NativeConstants.DWMWA_COLOR_DEFAULT"/> when the OS
+        /// does not expose that attribute (Windows 10) or the window is inactive. A caller
+        /// must check <see cref="WindowCapabilities.SupportsBorderColor"/> before writing this
+        /// value to the DWM attribute; the plan records the sentinel regardless so the caller
+        /// does not need a separate null check.
+        /// </summary>
         internal int DwmBorderColor { get; private set; } = dwmBorderColor;
     }
 }
