@@ -1,8 +1,9 @@
-﻿<ui:FluenceWindow
+<ui:FluenceWindow
     x:Class="Fluence.Wpf.Demo.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
+    Background="{DynamicResource ApplicationBackgroundBrush}"
     Title="Fluence.Wpf - Control Gallery"
     Width="1200"
     Height="1000"
