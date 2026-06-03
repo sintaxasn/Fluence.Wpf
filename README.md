@@ -2,7 +2,7 @@
 
 Windows 11 Fluent Design controls and theming for WPF applications targeting **.NET Framework 4.7.2** and **Windows 10** (1809+), with enhanced visuals on **Windows 11**.
 
-**Current build:** `0.7.0-pre` (2026-06-03).
+**Current build:** `0.7.0-preview` (2026-06-02).
 
 **Docs:** see the Markdown guides under [`docs/`](docs/) (start with [Getting started](docs/getting-started.md)).
 
@@ -12,17 +12,17 @@ Windows 11 Fluent Design controls and theming for WPF applications targeting **.
 - **Accent colors** - System accent palette, app-defined accent, and custom accent ramps mapped to WinUI-style resource keys.
 - **40+ Fluent-styled controls** - accessible and themed, aligned with their WinUI 3 counterparts.
 - **PowerShell and .NET Framework 4.7.2 support** - build modern UIs for scripts and legacy apps without migrating to .NET 5+ or the Windows App SDK.
-- **Small footprint** - 600 kb.
+- **Small footprint** - ~480 KB per assembly.
 
 ## Key controls
 - **FluenceWindow** - A window with **Mica**, **Acrylic**, and **Tabbed (Mica Alt)** backdrops, rounded corners, configurable minimize / maximize / close buttons, and an extensible title bar for a WinUI-style search box or custom content.
 - **Controls** - 40+ Fluent-styled controls: Button, HyperlinkButton, DropDownButton, SplitButton, RepeatButton, ToggleButton, CheckBox, RadioButton, ToggleSwitch, TextBox, PasswordBox, ComboBox, Slider, NumberBox, ProgressBar, ProgressRing, InfoBar, InfoBadge, RatingControl, PersonPicture, ListView, ListBox, Expander, Card (clickable), NavigationView, ContextMenu, MenuItem, Menu, ToolTip, TreeView, TreeViewItem, Separator, FontIcon, Border, StackPanel, DockPanel, SmoothScrollViewer, plus TabView and ScrollBar themes.
-- **Typography** - Styles or Attached properties on `TextBlock` for the WinUI type ramp (Caption / Body / BodyStrong / Title / TitleLarge / Display).
+- **Typography** - Styles or Attached properties on `TextBlock` for the WinUI type ramp (Caption / Body / BodyStrong / Subtitle / Title / TitleLarge / Display).
 - **TabView** - Multi-document surface over `TabControl` with per-tab close (`CloseRequested` / `TabCloseRequested`), trailing add-tab button (`AddTabButtonClick`), per-tab icons, `TabWidthMode`, `CloseButtonOverlayMode`, and horizontal overflow scroll.
 - **NavigationView** - `Top`, `Left`, and `LeftCompact` pane modes with animated shared selection indicator, pane toggle + back button in the 48 px rail, and WinUI 3 content-region border (`CornerRadius="8,0,0,0"`, `CardStrokeColorDefault` top/left stroke).
 
 ## Demos
-- **Gallery** - A code-behind WPF app for visual verification: theme swatches, accent picker, DWM backdrops, grouped control pages (Data Binding, Accessibility, Buttons, Selection, Inputs, Forms, Data, Trees, Navigation, Tabs, Menus, Status, Icons, Settings), inline examples, and embedded source for each one.
+- **Gallery** - A code-behind WPF app for visual verification: theme swatches, accent picker, DWM backdrops, grouped control pages (Colors, Icons, Typography, Buttons, Selection, Inputs, Forms, Data, Data Binding, Trees, Menus, Navigation, Tabs, Layout, Status, Accessibility, Settings), inline examples, and embedded source for each one.
 - **MVVM Pattern** - A minimal Task Manager (`Fluence.Wpf.Demo.Mvvm`) built with CommunityToolkit.Mvvm. It uses `[ObservableProperty]`, `[RelayCommand]`, filter bindings, and progress reporting with no code-behind.
 - **PowerShell** - Build UIs for scripts from Windows PowerShell 5.1, without installing PowerShell 7, .NET 9 / 10, or the Windows App SDK.
 
