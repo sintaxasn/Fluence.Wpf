@@ -2,7 +2,7 @@
 
 Windows 11 Fluent Design controls and theming for WPF applications targeting **.NET Framework 4.7.2** and **Windows 10** (1809+), with enhanced visuals on **Windows 11**.
 
-**Current build:** `0.7.0-preview` (2026-06-02).
+**Current build:** `0.7.0-preview` (2026-06-03).
 
 **Docs:** see the Markdown guides under [`docs/`](docs/) (start with [Getting started](docs/getting-started.md)).
 
@@ -25,6 +25,16 @@ Windows 11 Fluent Design controls and theming for WPF applications targeting **.
 - **Gallery** - A code-behind WPF app for visual verification: theme swatches, accent picker, DWM backdrops, grouped control pages (Colors, Icons, Typography, Buttons, Selection, Inputs, Forms, Data, Data Binding, Trees, Menus, Navigation, Tabs, Layout, Status, Accessibility, Settings), inline examples, and embedded source for each one.
 - **MVVM Pattern** - A minimal Task Manager (`Fluence.Wpf.Demo.Mvvm`) built with CommunityToolkit.Mvvm. It uses `[ObservableProperty]`, `[RelayCommand]`, filter bindings, and progress reporting with no code-behind.
 - **PowerShell** - Build UIs for scripts from Windows PowerShell 5.1, without installing PowerShell 7, .NET 9 / 10, or the Windows App SDK.
+
+## Screenshots
+
+| Light Mode | Dark Mode       |
+|:----------:|:---------------:|
+| ![Home (Light)](https://github.com/user-attachments/assets/edbba17f-347e-4a7c-bb37-0a39b9e849dd) | ![Home (Dark)](https://github.com/user-attachments/assets/358f7804-9d13-4f2f-9167-1eacef6350fa) |
+| ![Buttons (Light)](https://github.com/user-attachments/assets/77eeeab8-e5bd-4b34-a3ce-186783990dc0) | ![Buttons (Dark)](https://github.com/user-attachments/assets/f6499937-f4a8-449c-959a-2e0167613d37) |
+| ![Status (Light)](https://github.com/user-attachments/assets/b5dc5bfe-3c73-49b1-8ccd-c6769027ff2e) | ![Status (Dark)](https://github.com/user-attachments/assets/9b50b401-f79c-4940-a6c8-05ba5be6355d) |
+| ![MVVM (Light)](https://github.com/user-attachments/assets/cb3d6401-59f5-46a2-81d3-404806b2ec9f) | ![MVVM (Dark)](https://github.com/user-attachments/assets/bb5d9c26-c8d9-4890-9c02-f0baed88bc97) |
+| ![PowerShell (Light)](https://github.com/user-attachments/assets/5b271459-2fe6-4edc-8431-2a7fd0b6aa71) | ![PowerShell (Dark)](https://github.com/user-attachments/assets/3b7bead7-a567-457c-a89d-4c9bd97c3a48) |
 
 ## Quick Start
 
