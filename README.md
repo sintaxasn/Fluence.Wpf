@@ -2,7 +2,7 @@
 
 Windows 11 Fluent Design controls and theming for WPF applications targeting **.NET Framework 4.7.2** and **Windows 10** (1809+), with enhanced visuals on **Windows 11**.
 
-**Current build:** `0.6.0 preview` (2026-05-24).
+**Current build:** `0.7.0-pre` (2026-06-03).
 
 **Docs:** see the Markdown guides under [`docs/`](docs/) (start with [Getting started](docs/getting-started.md)).
 
