@@ -1,10 +1,3 @@
-﻿---
-title: Controls
-linkTitle: Controls
-description: Catalog of Fluence.Wpf controls aligned with the demo gallery, with XAML snippets and template contracts.
-weight: 30
----
-
 The **Fluence.Wpf.Demo** gallery shows every control: `FluenceWindow` chrome with a search box in the title bar, a left `NavigationView` (compact / expanded), and grouped `UserControl` pages under `Fluence.Wpf.Demo/Pages/`:
 
 - Home (clickable hero cards)
