@@ -373,8 +373,8 @@ Public and repository documentation:
 - [docs/migration-guide.md](docs/migration-guide.md)
 - [docs/contributing.md](docs/contributing.md)
 - [docs/release.md](docs/release.md)
-- [docs/skill_templated-prompts.md](docs/templated-prompts.md) - canonical task templates (referenced from Section 13)
-- [docs/skill_demo-sample-pages.md](docs/demo-sample-pages.md) - demo sample-page standard (referenced from Section 14)
+- [docs/skill_templated-prompts.md](docs/skill_templated-prompts.md) - canonical task templates (referenced from Section 13)
+- [docs/skill_demo-sample-pages.md](docs/skill_demo-sample-pages.md) - demo sample-page standard (referenced from Section 14)
 - [KNOWN_ISSUES.md](KNOWN_ISSUES.md)
 
 Maintainer / AI context (this file and its siblings):
