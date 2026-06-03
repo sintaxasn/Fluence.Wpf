@@ -46,6 +46,29 @@ namespace Fluence.Wpf.Tests.Theming
     public class ThemeParityTests
     {
         /// <summary>
+        /// HighContrast brush keys that <c>SpecialBrushes.AddHighContrastBrushes</c> binds to the
+        /// live <c>SystemColors.HighlightColor</c>. That color tracks the host machine's OS accent
+        /// and personalization, so it varies by machine (for example #FF0078D7 vs #FF0078D4). These
+        /// keys carry semantic WinUI names rather than a "SystemColor" prefix, so the prefix filter
+        /// in <c>CaptureResolved</c> does not exclude them. They are kept out of the
+        /// machine-independent golden snapshot and verified hermetically against the live highlight
+        /// by <c>HighContrast_HighlightDerivedBrushes_BindToLiveSystemHighlight</c>.
+        /// </summary>
+        private static readonly HashSet<string> HighContrastHighlightDerivedBrushKeys = new(StringComparer.Ordinal)
+        {
+            "AccentControlElevationBorderBrush",
+            "FocusStrokeColorOuterBrush",
+            "KeyboardFocusBorderColorBrush",
+            "LayerOnAccentAcrylicFillColorDefaultBrush",
+            "NavigationViewSelectionIndicatorBrush",
+            "SystemFillColorAttentionBackgroundBrush",
+            "SystemFillColorAttentionBrush",
+            "SystemFillColorSolidAttentionBackgroundBrush",
+            "WindowCloseFillColorHoverBrush",
+            "WindowCloseFillColorPressedBrush",
+        };
+
+        /// <summary>
         /// Applies <paramref name="theme"/> with a pinned accent and returns a map of every
         /// resolved string key to its Color and/or Brush color value.
         /// </summary>
@@ -87,6 +110,17 @@ namespace Fluence.Wpf.Tests.Theming
                     // color differs from the snapshot machine drifts the check (for example
                     // SystemColorHighlightColorBrush #FF0078D7 vs #FF0078D4).
                     if (ks.StartsWith("SystemColor", StringComparison.Ordinal)) { continue; }
+
+                    // In HighContrast these accent-semantic brushes bind to the live, machine-variable
+                    // SystemColors.HighlightColor (see SpecialBrushes.AddHighContrastBrushes), so they
+                    // are excluded here for the same reason as the SystemColor* aliases above. Their
+                    // highlight binding is covered hermetically by
+                    // HighContrast_HighlightDerivedBrushes_BindToLiveSystemHighlight.
+                    if (theme == ApplicationTheme.HighContrast
+                        && HighContrastHighlightDerivedBrushKeys.Contains(ks))
+                    {
+                        continue;
+                    }
 
                     object? val = res[ks];
                     if (val is Color c) { map[ks] = (c, default); }
@@ -180,6 +214,37 @@ namespace Fluence.Wpf.Tests.Theming
                 }
                 Assert.AreEqual(0, drift.Count, theme + " drift:\n" + string.Join("\n", drift));
             }
+        }
+
+        /// <summary>
+        /// Hermetic guard for the HighContrast accent-semantic brushes that bind to the live
+        /// <c>SystemColors.HighlightColor</c>. Their value is machine-dependent, so they are excluded
+        /// from the frozen golden snapshot; this verifies the binding contract directly against the
+        /// live highlight color, which holds on any machine.
+        /// </summary>
+        [TestMethod]
+        public void HighContrast_HighlightDerivedBrushes_BindToLiveSystemHighlight()
+        {
+            WpfTestSta.Dispatcher!.Invoke(() =>
+            {
+                Application app = WpfTestSta.EnsureApplication()!;
+                app.Resources.MergedDictionaries.Clear();
+                ApplicationThemeManager.ResetForTesting();
+                ApplicationAccentColorManager.ResetForTesting();
+                FluenceThemeEngine.SetDeterministicChromeForTesting(true);
+                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, true);
+                ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0x00, 0x78, 0xD4));
+
+                Color highlight = SystemColors.HighlightColor;
+                ResourceDictionary res = Application.Current!.Resources;
+                foreach (string key in HighContrastHighlightDerivedBrushKeys)
+                {
+                    Assert.IsInstanceOfType(res[key], typeof(SolidColorBrush), key + " must resolve to a SolidColorBrush in HighContrast.");
+                    SolidColorBrush brush = (SolidColorBrush)res[key];
+                    Assert.AreEqual(highlight, brush.Color,
+                        key + " must bind to the live SystemColors.HighlightColor in HighContrast.");
+                }
+            });
         }
 
         /// <summary>

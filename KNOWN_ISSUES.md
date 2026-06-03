@@ -55,6 +55,26 @@ maintainers.
 
 ## Resolved (Unreleased)
 
+- **`ThemeParityTests` HighContrast accent brushes were machine-dependent** -
+  Ten HighContrast brushes (`AccentControlElevationBorderBrush`,
+  `FocusStrokeColorOuterBrush`, `KeyboardFocusBorderColorBrush`,
+  `LayerOnAccentAcrylicFillColorDefaultBrush`,
+  `NavigationViewSelectionIndicatorBrush`, `SystemFillColorAttentionBrush`,
+  `SystemFillColorAttentionBackgroundBrush`,
+  `SystemFillColorSolidAttentionBackgroundBrush`,
+  `WindowCloseFillColorHoverBrush`, `WindowCloseFillColorPressedBrush`) bind to
+  the live `SystemColors.HighlightColor` in
+  `SpecialBrushes.AddHighContrastBrushes`. That binding is correct (HighContrast
+  chrome follows the system highlight, not the app accent) but machine-dependent.
+  The golden snapshot had frozen one machine's highlight (`#0078D7`), so CI
+  runners with a different highlight (`#0078D4`) drifted all ten. The earlier
+  hermeticity pass excluded only keys named `SystemColor*`; these carry semantic
+  WinUI names and slipped through. They are now excluded from the frozen golden
+  parity check in `CaptureResolved` (so `Golden_WriteCurrentResolvedValues`
+  regeneration stays consistent) and instead verified hermetically against the
+  live `SystemColors.HighlightColor` by
+  `HighContrast_HighlightDerivedBrushes_BindToLiveSystemHighlight`. No product
+  behavior changed.
 - **`FluenceWindow` black-flash on first paint** - WPF presented the HWND
   before its first composed frame; with the extended glass frame, a DWM
   system backdrop, and suppressed native caption painting, the empty client

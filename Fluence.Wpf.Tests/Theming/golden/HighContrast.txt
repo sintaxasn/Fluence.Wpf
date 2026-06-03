@@ -1,4 +1,3 @@
-AccentControlElevationBorderBrush|#00000000|#FF0078D7
 AccentFillBackdrop|#FFFFFFFF|#00000000
 AccentFillBackdropBrush|#00000000|#FFFFFFFF
 AccentFillColorDefault|#FF005BA1|#00000000
@@ -96,15 +95,12 @@ DividerStrokeColorDefaultBrush|#00000000|#FFA0A0A0
 FocusStrokeColorInner|#FF000000|#00000000
 FocusStrokeColorInnerBrush|#00000000|#FFFFFFFF
 FocusStrokeColorOuter|#FF1AEBFF|#00000000
-FocusStrokeColorOuterBrush|#00000000|#FF0078D7
 KeyboardFocusBorderColor|#FF1AEBFF|#00000000
-KeyboardFocusBorderColorBrush|#00000000|#FF0078D7
 LayerFillColorAlt|#FF000000|#00000000
 LayerFillColorAltBrush|#00000000|#FFFFFFFF
 LayerFillColorDefault|#FF000000|#00000000
 LayerFillColorDefaultBrush|#00000000|#FFFFFFFF
 LayerOnAccentAcrylicFillColorDefault|#FF1AEBFF|#00000000
-LayerOnAccentAcrylicFillColorDefaultBrush|#00000000|#FF0078D7
 LayerOnAcrylicFillColorDefault|#FF000000|#00000000
 LayerOnAcrylicFillColorDefaultBrush|#00000000|#FFFFFFFF
 LayerOnMicaBaseAltFillColorDefault|#FF000000|#00000000
@@ -117,7 +113,6 @@ LayerOnMicaBaseAltFillColorTransparent|#00000000|#00000000
 LayerOnMicaBaseAltFillColorTransparentBrush|#00000000|#00FFFFFF
 NavigationViewContentBackground|#FF000000|#00000000
 NavigationViewContentBackgroundBrush|#00000000|#FFFFFFFF
-NavigationViewSelectionIndicatorBrush|#00000000|#FF0078D7
 ScrollBarTrackFillBrush|#00000000|#FF000000
 SmokeFillColorDefault|#FF000000|#00000000
 SmokeFillColorDefaultBrush|#00000000|#FFFFFFFF
@@ -173,8 +168,6 @@ SystemAccentColorTertiary|#FF00213B|#00000000
 SystemAccentColorTertiaryBrush|#00000000|#FF005BA1
 SystemFillColorAttention|#FF1AEBFF|#00000000
 SystemFillColorAttentionBackground|#FF1AEBFF|#00000000
-SystemFillColorAttentionBackgroundBrush|#00000000|#FF0078D7
-SystemFillColorAttentionBrush|#00000000|#FF0078D7
 SystemFillColorCaution|#FFFFFFFF|#00000000
 SystemFillColorCautionBackground|#FF000000|#00000000
 SystemFillColorCautionBackgroundBrush|#00000000|#FFFFFFFF
@@ -190,7 +183,6 @@ SystemFillColorNeutralBackground|#FF000000|#00000000
 SystemFillColorNeutralBackgroundBrush|#00000000|#FFFFFFFF
 SystemFillColorNeutralBrush|#00000000|#FF000000
 SystemFillColorSolidAttentionBackground|#FF1AEBFF|#00000000
-SystemFillColorSolidAttentionBackgroundBrush|#00000000|#FF0078D7
 SystemFillColorSolidNeutral|#FFFFFFFF|#00000000
 SystemFillColorSolidNeutralBackground|#FF000000|#00000000
 SystemFillColorSolidNeutralBackgroundBrush|#00000000|#FFF0F0F0
@@ -233,9 +225,7 @@ WindowCloseButtonBackgroundPressedBrush|#00000000|#FFB4271C
 WindowCloseButtonForegroundPointerOver|#FFFFFFFF|#00000000
 WindowCloseButtonForegroundPointerOverBrush|#00000000|#FFFFFFFF
 WindowCloseFillColorHover|#FF1AEBFF|#00000000
-WindowCloseFillColorHoverBrush|#00000000|#FF0078D7
 WindowCloseFillColorPressed|#FF1AEBFF|#00000000
-WindowCloseFillColorPressedBrush|#00000000|#FF0078D7
 WindowCloseForegroundHover|#FF000000|#00000000
 WindowCloseForegroundHoverBrush|#00000000|#FFFFFFFF
 WindowCloseForegroundPressed|#FF000000|#00000000
