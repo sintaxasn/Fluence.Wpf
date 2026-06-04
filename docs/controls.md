@@ -58,22 +58,11 @@ xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
 
 Tab strip and scroll bar styling are provided via merged themes (see `Themes/Generic.xaml`).
 
-## Control Screenshots and API
+## Control API
 
-Each area below pairs Light and Dark gallery screenshots with the public API types it uses. Screenshots live under `docs/screenshots/gallery/`; API links point to `/api/` on the documentation site.
+Each area below lists the public API types it uses; API links point to `/api/` on the documentation site.
 
 ### Window and Shell
-
-<div class="fluence-control-shot-pair" aria-label="Window and shell screenshots">
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-home-light.png" alt="Gallery shell home page in light theme.">
-    <figcaption>Light</figcaption>
-  </figure>
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-home-dark.png" alt="Gallery shell home page in dark theme.">
-    <figcaption>Dark</figcaption>
-  </figure>
-</div>
 
 Key API:
 
@@ -87,17 +76,6 @@ Key API:
 Primary members include `SystemBackdropType`, `CornerStyle`, `ExtendsContentIntoTitleBar`, `TitleBar`, `TitleBarHeight`, caption-button visibility properties, and title-bar events for back and pane-toggle requests.
 
 ### Basic Actions
-
-<div class="fluence-control-shot-pair" aria-label="Basic action control screenshots">
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-buttons-light.png" alt="Buttons gallery page in light theme.">
-    <figcaption>Light</figcaption>
-  </figure>
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-buttons-dark.png" alt="Buttons gallery page in dark theme.">
-    <figcaption>Dark</figcaption>
-  </figure>
-</div>
 
 Key API:
 
@@ -115,17 +93,6 @@ The action controls keep standard WPF command, content, and click patterns. Use 
 
 ### Selection
 
-<div class="fluence-control-shot-pair" aria-label="Selection control screenshots">
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-selection-light.png" alt="Selection gallery page in light theme.">
-    <figcaption>Light</figcaption>
-  </figure>
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-selection-dark.png" alt="Selection gallery page in dark theme.">
-    <figcaption>Dark</figcaption>
-  </figure>
-</div>
-
 Key API:
 
 <div class="fluence-api-list">
@@ -138,17 +105,6 @@ Key API:
 Selection controls follow WPF checked-state APIs (`IsChecked`, groups, and selection). `RatingControl` adds value-based selection for simple scoring UI.
 
 ### Inputs
-
-<div class="fluence-control-shot-pair" aria-label="Input control screenshots">
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-inputs-light.png" alt="Inputs gallery page in light theme.">
-    <figcaption>Light</figcaption>
-  </figure>
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-inputs-dark.png" alt="Inputs gallery page in dark theme.">
-    <figcaption>Dark</figcaption>
-  </figure>
-</div>
 
 Key API:
 
@@ -166,17 +122,6 @@ Input controls keep standard WPF editing, selection, command, and binding behavi
 
 ### Forms
 
-<div class="fluence-control-shot-pair" aria-label="Form screenshots">
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-forms-light.png" alt="Forms gallery page in light theme.">
-    <figcaption>Light</figcaption>
-  </figure>
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-forms-dark.png" alt="Forms gallery page in dark theme.">
-    <figcaption>Dark</figcaption>
-  </figure>
-</div>
-
 Key API:
 
 <div class="fluence-api-list">
@@ -190,17 +135,6 @@ Key API:
 The form page combines input controls with card surfaces, status text, validation states, and primary actions. Start here for sign-in, checkout, and settings forms.
 
 ### Data and Collections
-
-<div class="fluence-control-shot-pair" aria-label="Data control screenshots">
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-data-light.png" alt="Data gallery page in light theme.">
-    <figcaption>Light</figcaption>
-  </figure>
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-data-dark.png" alt="Data gallery page in dark theme.">
-    <figcaption>Dark</figcaption>
-  </figure>
-</div>
 
 Key API:
 
@@ -218,17 +152,6 @@ Collection controls keep WPF item-source and template behavior. `Card` adds head
 
 ### Data Binding
 
-<div class="fluence-control-shot-pair" aria-label="Data binding screenshots">
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-data-binding-light.png" alt="Data binding gallery page in light theme.">
-    <figcaption>Light</figcaption>
-  </figure>
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-data-binding-dark.png" alt="Data binding gallery page in dark theme.">
-    <figcaption>Dark</figcaption>
-  </figure>
-</div>
-
 Key API:
 
 <div class="fluence-api-list">
@@ -243,17 +166,6 @@ The data-binding page shows standard WPF `ItemsSource`, `SelectedItem`, `Selecte
 
 ### Icons
 
-<div class="fluence-control-shot-pair" aria-label="Icon screenshots">
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-icons-light.png" alt="Icons gallery page in light theme.">
-    <figcaption>Light</figcaption>
-  </figure>
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-icons-dark.png" alt="Icons gallery page in dark theme.">
-    <figcaption>Dark</figcaption>
-  </figure>
-</div>
-
 Key API:
 
 <div class="fluence-api-list">
@@ -263,17 +175,6 @@ Key API:
 `FontIcon` renders Segoe Fluent Symbols glyphs and adds icon-size, foreground, and alignment properties. It works inside buttons, navigation items, tab headers, cards, and standalone icon lists.
 
 ### Typography
-
-<div class="fluence-control-shot-pair" aria-label="Typography screenshots">
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-typography-light.png" alt="Typography gallery page in light theme.">
-    <figcaption>Light</figcaption>
-  </figure>
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-typography-dark.png" alt="Typography gallery page in dark theme.">
-    <figcaption>Dark</figcaption>
-  </figure>
-</div>
 
 Key API:
 
@@ -286,17 +187,6 @@ Key API:
 `TextBlockExtensions.Typography` maps text to the Fluent type ramp, so app text and control templates share the same typography tokens.
 
 ### Navigation
-
-<div class="fluence-control-shot-pair" aria-label="Navigation control screenshots">
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-navigation-light.png" alt="Navigation gallery page in light theme.">
-    <figcaption>Light</figcaption>
-  </figure>
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-navigation-dark.png" alt="Navigation gallery page in dark theme.">
-    <figcaption>Dark</figcaption>
-  </figure>
-</div>
 
 Key API:
 
@@ -314,17 +204,6 @@ Key API:
 
 ### Tabs
 
-<div class="fluence-control-shot-pair" aria-label="Tab control screenshots">
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-tabs-light.png" alt="Tabs gallery page in light theme.">
-    <figcaption>Light</figcaption>
-  </figure>
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-tabs-dark.png" alt="Tabs gallery page in dark theme.">
-    <figcaption>Dark</figcaption>
-  </figure>
-</div>
-
 Key API:
 
 <div class="fluence-api-list">
@@ -338,17 +217,6 @@ Key API:
 `TabView` adds add-tab, close-request, width-mode, and close-button overlay APIs. Standard `TabControl` and `TabItem` pick up Fluent styling through the merged control templates.
 
 ### Layout and Surfaces
-
-<div class="fluence-control-shot-pair" aria-label="Layout control screenshots">
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-layout-light.png" alt="Layout gallery page in light theme.">
-    <figcaption>Light</figcaption>
-  </figure>
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-layout-dark.png" alt="Layout gallery page in dark theme.">
-    <figcaption>Dark</figcaption>
-  </figure>
-</div>
 
 Key API:
 
@@ -366,17 +234,6 @@ Layout primitives preserve WPF layout behavior. `SmoothScrollViewer` is the scro
 
 ### Menus and Popups
 
-<div class="fluence-control-shot-pair" aria-label="Menu and popup screenshots">
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-menus-light.png" alt="Menus gallery page in light theme.">
-    <figcaption>Light</figcaption>
-  </figure>
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-menus-dark.png" alt="Menus gallery page in dark theme.">
-    <figcaption>Dark</figcaption>
-  </figure>
-</div>
-
 Key API:
 
 <div class="fluence-api-list">
@@ -390,17 +247,6 @@ Menu and popup controls use WinUI-style flyout visuals. Command text, separators
 
 ### Trees
 
-<div class="fluence-control-shot-pair" aria-label="Tree control screenshots">
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-trees-light.png" alt="Trees gallery page in light theme.">
-    <figcaption>Light</figcaption>
-  </figure>
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-trees-dark.png" alt="Trees gallery page in dark theme.">
-    <figcaption>Dark</figcaption>
-  </figure>
-</div>
-
 Key API:
 
 <div class="fluence-api-list">
@@ -412,17 +258,6 @@ Key API:
 `TreeView` supports single and multiple selection modes, a live `SelectedItems` list, expandable hierarchy, and tri-state item selection through `TreeViewItem.IsSelectionChecked`.
 
 ### Status and Feedback
-
-<div class="fluence-control-shot-pair" aria-label="Status and feedback screenshots">
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-status-light.png" alt="Status gallery page in light theme.">
-    <figcaption>Light</figcaption>
-  </figure>
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-status-dark.png" alt="Status gallery page in dark theme.">
-    <figcaption>Dark</figcaption>
-  </figure>
-</div>
 
 Key API:
 
@@ -441,17 +276,6 @@ Key API:
 Status controls cover severity, closable state, determinate and indeterminate progress, paused and error states, and count or attention badge styling.
 
 ### Accessibility
-
-<div class="fluence-control-shot-pair" aria-label="Accessibility screenshots">
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-accessibility-light.png" alt="Accessibility gallery page in light theme.">
-    <figcaption>Light</figcaption>
-  </figure>
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-accessibility-dark.png" alt="Accessibility gallery page in dark theme.">
-    <figcaption>Dark</figcaption>
-  </figure>
-</div>
 
 Key API:
 
@@ -656,36 +480,19 @@ Visual contract:
 
 ## Screenshots
 
-Reference captures live under `docs/screenshots/`:
+Ten reference captures live under `docs/screenshots/`:
 
-- `gallery/gallery-*-light.png` and `gallery/gallery-*-dark.png` cover every gallery page, including Settings.
-- `apps/mvvm-light.png` / `apps/mvvm-dark.png` cover the MVVM Task Manager demo.
-- `apps/powershell-light.png` / `apps/powershell-dark.png` cover the PowerShell-hosted XAML demo.
-- `banner-{light,dark,highcontrast}-{1x,1.5x}.png` remain available for compact banner references.
+- `gallery-home-{light,dark}.png` - gallery shell on the Home page with the expanded `Left` navigation pane.
+- `gallery-buttons-{light,dark}.png` - Buttons page with the `LeftCompact` navigation rail.
+- `gallery-status-{light,dark}.png` - Status page with the `Top` navigation bar.
+- `mvvm-{light,dark}.png` - the MVVM Task Manager demo.
+- `powershell-{light,dark}.png` - the PowerShell controls-tour window (`03-ControlsTour.ps1`).
 
-<div class="fluence-screenshot-row" aria-label="Representative demo screenshots">
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-home-light.png" alt="Gallery home page capture in light theme.">
-    <figcaption>Gallery home, Light</figcaption>
-  </figure>
-  <figure>
-    <img src="../../images/screenshots/gallery/gallery-buttons-dark.png" alt="Buttons gallery page capture in dark theme.">
-    <figcaption>Buttons, Dark</figcaption>
-  </figure>
-  <figure>
-    <img src="../../images/screenshots/apps/mvvm-dark.png" alt="MVVM task manager capture in dark theme.">
-    <figcaption>MVVM, Dark</figcaption>
-  </figure>
-  <figure>
-    <img src="../../images/screenshots/apps/powershell-light.png" alt="PowerShell demo host capture in light theme.">
-    <figcaption>PowerShell, Light</figcaption>
-  </figure>
-</div>
-
-The full screenshot set lives under [`docs/screenshots/`](screenshots/). To refresh captures locally, run the screenshot harness directly:
+Capture is opt-in: the `GalleryScreenshotHarness` tests skip unless the `FLUENCE_CAPTURE_SCREENSHOTS` environment variable is set, so an ordinary test run never overwrites the committed images. To regenerate them (use the .NET 10 target so the MVVM capture is included):
 
 ```powershell
-dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug --filter "FullyQualifiedName~GalleryScreenshotHarness"
+$env:FLUENCE_CAPTURE_SCREENSHOTS = '1'
+dotnet test Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug -f net10.0-windows10.0.26100.0 --filter "TestCategory=Screenshots"
 ```
 
 The harness uses `RenderTargetBitmap` and flattens transparent WPF layers over `SolidBackgroundFillColorBaseBrush`. It cannot capture DWM Mica / Acrylic, which compose outside WPF, so the screenshots show WPF control and shell surfaces only. `FluenceWindowTitleBarTests` verifies `FluenceWindow` caption styling.
