@@ -267,6 +267,57 @@ namespace Fluence.Wpf.Demo.Pages.Menus
 }
 ";
 
+        private const string FlyoutXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Menus.FlyoutSample""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <ui:Button Click=""FlyoutButton_Click"" Content=""Show flyout"">
+        <ui:FlyoutBase.AttachedFlyout>
+            <ui:Flyout Placement=""Bottom"">
+                <ui:Flyout.Content>
+                    <StackPanel MaxWidth=""260"">
+                        <TextBlock
+                            FontWeight=""SemiBold""
+                            Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
+                            Text=""Quick note"" />
+                        <TextBlock
+                            Margin=""0,4,0,0""
+                            Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+                            Text=""A lightweight, light-dismiss popup anchored to its owner.""
+                            TextWrapping=""Wrap"" />
+                    </StackPanel>
+                </ui:Flyout.Content>
+            </ui:Flyout>
+        </ui:FlyoutBase.AttachedFlyout>
+    </ui:Button>
+</UserControl>
+";
+
+        private const string FlyoutCSharpSource = @"using System.Windows;
+using System.Windows.Controls;
+using Fluence.Wpf.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Menus
+{
+    public partial class FlyoutSample : UserControl
+    {
+        public FlyoutSample()
+        {
+            InitializeComponent();
+        }
+
+        private void FlyoutButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement element)
+            {
+                FlyoutBase.ShowAttachedFlyout(element);
+            }
+        }
+    }
+}
+";
+
         public GalleryMenusPage()
         {
             InitializeComponent();
@@ -275,7 +326,8 @@ namespace Fluence.Wpf.Demo.Pages.Menus
                 (DependencyObject)Content,
                 new DemoSampleSource(1, MenuBarXamlSource, MenuBarCSharpSource),
                 new DemoSampleSource(2, ContextMenuXamlSource, ContextMenuCSharpSource),
-                new DemoSampleSource(3, ToolTipsXamlSource, ToolTipsCSharpSource));
+                new DemoSampleSource(3, ToolTipsXamlSource, ToolTipsCSharpSource),
+                new DemoSampleSource(4, FlyoutXamlSource, FlyoutCSharpSource));
         }
 
         private void MenuBar_Click(object sender, RoutedEventArgs e)
@@ -286,6 +338,14 @@ namespace Fluence.Wpf.Demo.Pages.Menus
         private void ContextMenu_Click(object sender, RoutedEventArgs e)
         {
             SetTextFromTag(ContextMenuResultLabel, "Last action", sender);
+        }
+
+        private void FlyoutButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement element)
+            {
+                Fluence.Wpf.Controls.FlyoutBase.ShowAttachedFlyout(element);
+            }
         }
 
         private static void SetTextFromTag(TextBlock label, string prefix, object sender)

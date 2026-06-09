@@ -199,6 +199,33 @@
             </ContentControl>
             <local:DemoSampleControl SampleDescription="Use ToolTip for short hints that clarify icons, disabled commands, or risky actions." />
 
+
+            <ContentControl x:Name="DemoSampleSlot04DemoContentHost" Visibility="Collapsed">
+                <ui:Button
+                    VerticalAlignment="Center"
+                    Click="FlyoutButton_Click"
+                    Content="Show flyout">
+                    <ui:FlyoutBase.AttachedFlyout>
+                        <ui:Flyout Placement="Bottom">
+                            <ui:Flyout.Content>
+                                <StackPanel MaxWidth="260">
+                                    <TextBlock
+                                        FontWeight="SemiBold"
+                                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                                        Text="Quick note" />
+                                    <TextBlock
+                                        Margin="0,4,0,0"
+                                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                        Text="A Flyout is a lightweight, light-dismiss popup anchored to its owner. Click outside to dismiss it."
+                                        TextWrapping="Wrap" />
+                                </StackPanel>
+                            </ui:Flyout.Content>
+                        </ui:Flyout>
+                    </ui:FlyoutBase.AttachedFlyout>
+                </ui:Button>
+            </ContentControl>
+            <local:DemoSampleControl SampleDescription="Use Flyout for lightweight, light-dismiss popups (details, quick forms, confirmations) anchored to a control." />
+
         </StackPanel>
     </ui:SmoothScrollViewer>
 </UserControl>
