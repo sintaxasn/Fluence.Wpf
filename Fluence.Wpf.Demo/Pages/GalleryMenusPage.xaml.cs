@@ -27,6 +27,7 @@
  */
 
 using System.Globalization;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -318,6 +319,52 @@ namespace Fluence.Wpf.Demo.Pages.Menus
 }
 ";
 
+        private const string ContentDialogXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Menus.ContentDialogSample""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <ui:Button Click=""ShowDialogButton_Click"" Content=""Show dialog"" />
+</UserControl>
+";
+
+        private const string ContentDialogCSharpSource = @"using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using Fluence.Wpf;
+using Fluence.Wpf.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Menus
+{
+    public partial class ContentDialogSample : UserControl
+    {
+        public ContentDialogSample()
+        {
+            InitializeComponent();
+        }
+
+        private void ShowDialogButton_Click(object sender, RoutedEventArgs e)
+        {
+            _ = ShowDialogAsync();
+        }
+
+        private async Task ShowDialogAsync()
+        {
+            ContentDialog dialog = new()
+            {
+                Title = ""Delete file?"",
+                Content = ""Roadmap.md will be permanently deleted. This cannot be undone."",
+                PrimaryButtonText = ""Delete"",
+                CloseButtonText = ""Cancel"",
+                DefaultButton = ContentDialogButton.Close
+            };
+
+            ContentDialogResult result = await dialog.ShowAsync();
+        }
+    }
+}
+";
+
         public GalleryMenusPage()
         {
             InitializeComponent();
@@ -327,7 +374,8 @@ namespace Fluence.Wpf.Demo.Pages.Menus
                 new DemoSampleSource(1, MenuBarXamlSource, MenuBarCSharpSource),
                 new DemoSampleSource(2, ContextMenuXamlSource, ContextMenuCSharpSource),
                 new DemoSampleSource(3, ToolTipsXamlSource, ToolTipsCSharpSource),
-                new DemoSampleSource(4, FlyoutXamlSource, FlyoutCSharpSource));
+                new DemoSampleSource(4, FlyoutXamlSource, FlyoutCSharpSource),
+                new DemoSampleSource(5, ContentDialogXamlSource, ContentDialogCSharpSource));
         }
 
         private void MenuBar_Click(object sender, RoutedEventArgs e)
@@ -346,6 +394,26 @@ namespace Fluence.Wpf.Demo.Pages.Menus
             {
                 Fluence.Wpf.Controls.FlyoutBase.ShowAttachedFlyout(element);
             }
+        }
+
+        private void ShowDialogButton_Click(object sender, RoutedEventArgs e)
+        {
+            _ = ShowDialogAsync();
+        }
+
+        private async Task ShowDialogAsync()
+        {
+            Fluence.Wpf.Controls.ContentDialog dialog = new()
+            {
+                Title = "Delete file?",
+                Content = "Roadmap.md will be permanently deleted. This cannot be undone.",
+                PrimaryButtonText = "Delete",
+                CloseButtonText = "Cancel",
+                DefaultButton = Fluence.Wpf.ContentDialogButton.Close
+            };
+
+            Fluence.Wpf.ContentDialogResult result = await dialog.ShowAsync();
+            DialogResultLabel.Text = string.Format(CultureInfo.CurrentCulture, "Dialog result: {0}", result);
         }
 
         private static void SetTextFromTag(TextBlock label, string prefix, object sender)
