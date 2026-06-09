@@ -1,8 +1,15 @@
-﻿# Changelog
+# Changelog
 
 All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+### Changed
+
+- `ProgressBar` and `ProgressRing` were re-aligned to the WinUI 3 look, feel, and animation so they read as the platform controls. `ProgressBar` adopts the thin-track metrics (`MinHeight` 3 over a 1 px `TrackHeight`, indicator `CornerRadius` 1.5, track corner radius 0.5; the indicator host is pinned to `MinHeight` and centered so `Height` no longer thickens the bar), and its indeterminate state uses the canonical two-segment storyboard (40 percent and 60 percent segments on a shared 2.0 s forever cycle with KeySpline 0.4 0.0 0.6 1.0, the second segment delayed 0.75 s) with the determinate fill easing over 367 ms. `ProgressRing` replaces the previous caterpillar animation with the WinUI pulsing-arc-plus-rotation model (arc sweep 0 to 0.5 to 0 and a 90 to 1170 degree rotation, both over 2.0 s, forever), with the determinate tween over 367 ms and `MinHeight` / `MinWidth` set to 16.
+- `ProgressBar` and `ProgressRing` now lead with the WinUI-orthogonal API: `ProgressBar.IsIndeterminate` (inherited) plus new `ShowError` / `ShowPaused`, and `ProgressRing.IsActive` / `IsIndeterminate` / `Value` plus new `ShowError` / `ShowPaused`. The previous `ProgressBar.ProgressMode` and `ProgressRing.ProgressState` enums are retained as backward-compatible one-way aliases that map onto the flags, so existing consumers keep working; `ProgressBar.StepProgress` (with `Steps` / `CurrentStep`) stays as a Fluence-only determinate sub-mode. Covered by the expanded `ControlTests.ProgressBar` and `ControlTests.ProgressRing` suites.
 
 ## [0.7.0-preview] - 2026-06-02
 

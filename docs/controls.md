@@ -391,27 +391,30 @@ You remove the tab from the source collection yourself; the control does not aut
 
 ## Feedback
 
-`ProgressBar` supports determinate, indeterminate, step, paused, and error modes through `ProgressMode`. Paused and error modes use the system caution and critical brushes.
+`ProgressBar` follows the WinUI 3 contract: `IsIndeterminate` toggles the sliding two-segment indeterminate animation, and `ShowError` / `ShowPaused` switch the indicator to the system critical and caution brushes. The three flags are orthogonal, so an indeterminate bar can also carry the error or paused color.
 
 ```xml
-<ui:ProgressBar Value="62" ProgressMode="Paused" />
-<ui:ProgressBar Value="78" ProgressMode="Error" />
+<ui:ProgressBar Value="62" ShowPaused="True" />
+<ui:ProgressBar Value="78" ShowError="True" />
+<ui:ProgressBar IsIndeterminate="True" />
 ```
 
-`ProgressRing` supports the same normal/caution/critical visual language through `ProgressState`:
+The legacy `ProgressMode` enum (`Standard`, `Indeterminate`, `Error`, `Paused`, `StepProgress`) is retained as a backward-compatible alias that maps onto those flags. `StepProgress` (with `Steps` / `CurrentStep`) is a Fluence-only determinate sub-mode with no WinUI equivalent.
+
+`ProgressRing` uses the same `IsActive` / `IsIndeterminate` / `Value` contract as WinUI, plus `ShowError` / `ShowPaused` for the critical and caution colors. The indeterminate ring is a pulsing arc that rotates, matching the WinUI motion.
 
 ```xml
 <ui:ProgressRing IsActive="True" IsIndeterminate="True" />
-<ui:ProgressRing ProgressState="Paused"
-                 IsActive="True"
-                 IsIndeterminate="True" />
-<ui:ProgressRing ProgressState="Error"
-                 IsActive="True"
+<ui:ProgressRing IsActive="True"
+                 IsIndeterminate="True"
+                 ShowPaused="True" />
+<ui:ProgressRing IsActive="True"
                  IsIndeterminate="False"
+                 ShowError="True"
                  Value="70" />
 ```
 
-`ProgressRingState` values are `Normal`, `Paused`, and `Error`. `Normal` uses the accent brush, `Paused` uses `SystemFillColorCautionBrush`, and `Error` uses `SystemFillColorCriticalBrush`.
+`ProgressState` (`Normal`, `Paused`, `Error`) remains as a backward-compatible alias for `ShowPaused` / `ShowError`: `Normal` uses the accent brush, `Paused` uses `SystemFillColorCautionBrush`, and `Error` uses `SystemFillColorCriticalBrush`.
 
 ## Menus & Popups
 
