@@ -1,4 +1,4 @@
-﻿# Fluence.Wpf - Developer Handbook
+# Fluence.Wpf - Developer Handbook
 
 Self-contained persistent memory for engineers (human and AI) working in this repository. Read top-to-bottom before touching code. This file is the single source of truth for conventions, architecture, reference authority, testing policy, and workflow; do **not** rely on out-of-repo agent bundles, external skill packs, or downstream-consumer-specific paths.
 
@@ -419,13 +419,13 @@ Consumer build compatibility is a release gate. For build-policy, public API, pr
 
 ## 13. Templated prompts
 
-Two canonical task templates (a generic development workflow plus its acceptance gates) live in [docs/templated-prompts.md](docs/templated-prompts.md). Copy the relevant block, fill in the `TASK` line, and execute end-to-end.
+Two canonical task templates (a generic development workflow plus its acceptance gates) live in [docs/skill_templated-prompts.md](docs/skiLL_templated-prompts.md). Copy the relevant block, fill in the `TASK` line, and execute end-to-end.
 
 ---
 
 ## 14. Demo Sample Pages
 
-The full demo sample-page standard - page skeleton, color layering, the `DemoSampleControl` contract, catalog surfaces, and definition of done - lives in [docs/demo-sample-pages.md](docs/demo-sample-pages.md). Control samples in `Fluence.Wpf.Demo` render through `DemoSampleControl`; design reference pages that mirror WinUI Gallery catalog surfaces (such as Typography) may render directly.
+The full demo sample-page standard - page skeleton, color layering, the `DemoSampleControl` contract, catalog surfaces, and definition of done - lives in [docs/skill_demo-sample-pages.md](docs/skill_demo-sample-pages.md). Control samples in `Fluence.Wpf.Demo` render through `DemoSampleControl`; design reference pages that mirror WinUI Gallery catalog surfaces (such as Typography) may render directly.
 
 ---
 
