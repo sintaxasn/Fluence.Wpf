@@ -151,7 +151,7 @@
     <Style x:Key="PipsPagerNavigationButtonStyle" TargetType="{x:Type Button}">
         <Setter Property="Background" Value="Transparent" />
         <Setter Property="FocusVisualStyle" Value="{DynamicResource DefaultControlFocusVisualStyle}" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ControlStrongFillColorDefaultBrush}" />
         <Setter Property="Height" Value="20" />
         <Setter Property="Template">
             <Setter.Value>

@@ -172,10 +172,12 @@ namespace Fluence.Wpf.Controls
                 new FrameworkPropertyMetadata(TeachingTipPlacementMode.Auto, OnPlacementInputChanged));
 
         /// <summary>
-        /// Gets or sets where the tip opens relative to <see cref="Target"/>.
-        /// <see cref="TeachingTipPlacementMode.Auto"/> currently resolves to
-        /// <see cref="TeachingTipPlacementMode.Bottom"/>. Ignored while <see cref="Target"/> is
-        /// <see langword="null"/> (untargeted tips always center).
+        /// Gets or sets where the tip opens relative to <see cref="Target"/>. When a target is
+        /// set, <see cref="TeachingTipPlacementMode.Auto"/> currently resolves to
+        /// <see cref="TeachingTipPlacementMode.Bottom"/>. When <see cref="Target"/> is
+        /// <see langword="null"/>, an untargeted <see cref="TeachingTipPlacementMode.Auto"/> tip
+        /// docks to the bottom-right corner of the window content (the WinUI default position);
+        /// any other explicit value centers the tip over the window content.
         /// </summary>
         public TeachingTipPlacementMode PreferredPlacement
         {

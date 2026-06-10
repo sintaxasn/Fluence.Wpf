@@ -571,7 +571,12 @@ namespace Fluence.Wpf.Tests
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 200 };
-                Controls.PipsPager pager = new() { NumberOfPages = 3 };
+                Controls.PipsPager pager = new()
+                {
+                    NumberOfPages = 3,
+                    PreviousButtonVisibility = PipsPagerButtonVisibility.Visible,
+                    NextButtonVisibility = PipsPagerButtonVisibility.Visible,
+                };
 
                 try
                 {
@@ -585,6 +590,17 @@ namespace Fluence.Wpf.Tests
 
                     object? strongFill = app?.TryFindResource("ControlStrongFillColorDefaultBrush");
                     Assert.IsNotNull(strongFill, "ControlStrongFillColorDefaultBrush must resolve.");
+
+                    // WinUI maps PipsPagerNavigationButtonForeground at rest to
+                    // ControlStrongFillColorDefaultBrush; the chevron buttons must share the same
+                    // neutral strong fill as the pips when not hovered or pressed. The next button
+                    // is enabled at the first page, so its Foreground reflects the rest setter
+                    // (the previous button is disabled at page 0 and shows the disabled brush).
+                    WpfButton? nextButton = FindVisualChildByName<WpfButton>(pager, "PART_NextButton");
+                    Assert.IsNotNull(nextButton, "PART_NextButton must be present in the PipsPager template.");
+                    Assert.IsTrue(nextButton.IsEnabled, "The next button must be enabled at the first page.");
+                    Assert.AreSame(strongFill, nextButton.Foreground,
+                        "The navigation button rest Foreground must be ControlStrongFillColorDefaultBrush.");
 
                     WpfToggleButton? selectedPip = GetPipAt(host, 0);
                     WpfToggleButton? restPip = GetPipAt(host, 1);

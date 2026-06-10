@@ -520,6 +520,8 @@ private void ShowNoteFlyout_Click(object sender, RoutedEventArgs e)
 
 `ContentDialog` raises a modal prompt with a title, arbitrary body content, and up to three command buttons (`PrimaryButtonText`, `SecondaryButtonText`, `CloseButtonText`; buttons with no text collapse). `ShowAsync()` returns a `Task<ContentDialogResult>` that completes when the dialog closes, `Hide()` dismisses it programmatically, and `DefaultButton` picks the button that takes initial focus and answers Enter; Escape routes through the close button, and Tab navigation is trapped inside the dialog. Over a `FluenceWindow` the smoke layer dims the entire window, title bar included; over a plain `Window` the dialog is hosted in the content adorner layer.
 
+A dialog declared inline in XAML starts collapsed and is detached from its declared parent when `ShowAsync()` runs, then re-hosted inside the modal overlay (it becomes visible only while overlay-hosted). The supported parent types are `Panel`, `Decorator` (for example `Border`), and `ContentControl`; `ShowAsync()` throws an `InvalidOperationException` with a descriptive message for any other parent type, so remove the dialog from an unsupported parent before showing it.
+
 ```csharp
 ContentDialog dialog = new()
 {
