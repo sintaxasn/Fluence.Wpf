@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.8.0-preview] - 2026-06-10
+
 ### Added
 
 - `Flyout`, `FlyoutBase`, and `FlyoutPresenter` - a light-dismiss popup family mirroring the WinUI 3 flyout contract. `FlyoutBase` owns the popup lifecycle (`ShowAt` / `Hide`, `Opening` / `Opened` / cancelable `Closing` / `Closed`, and `Placement` via the new `FlyoutPlacementMode` enum) plus the `FlyoutBase.AttachedFlyout` attached property and `ShowAttachedFlyout` so any element can carry a flyout; `Flyout` adds `Content` and `FlyoutPresenterStyle`, rendered inside the themed `FlyoutPresenter` chrome. The popup centers on the facing edge of its placement target like WinUI, Escape dismisses it, and the presenter inherits the placement target's `DataContext` while open. `FlyoutBaseClosingEventArgs` lives in the root `Fluence.Wpf` namespace alongside the other event-args types (it briefly sat in `Fluence.Wpf.Controls` during this release's development). Shown on the gallery Menus page; covered by `ControlTests.Flyout.cs`.
@@ -23,6 +25,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - `ProgressBar` and `ProgressRing` were re-aligned to the WinUI 3 look, feel, and animation so they read as the platform controls. `ProgressBar` adopts the thin-track metrics (`MinHeight` 3 over a 1 px `TrackHeight`, indicator `CornerRadius` 1.5, track corner radius 0.5; the indicator host is pinned to `MinHeight` and centered so `Height` no longer thickens the bar), and its indeterminate state uses the canonical two-segment storyboard (40 percent and 60 percent segments on a shared 2.0 s forever cycle with KeySpline 0.4 0.0 0.6 1.0, the second segment delayed 0.75 s) with the determinate fill easing over 367 ms. `ProgressRing` replaces the previous caterpillar animation with the WinUI pulsing-arc-plus-rotation model (arc sweep 0 to 0.5 to 0 and a 90 to 1170 degree rotation, both over 2.0 s, forever), with the determinate tween over 367 ms and `MinHeight` / `MinWidth` set to 16.
 - `ProgressBar` and `ProgressRing` now lead with the WinUI-orthogonal API: `ProgressBar.IsIndeterminate` (inherited) plus new `ShowError` / `ShowPaused`, and `ProgressRing.IsActive` / `IsIndeterminate` / `Value` plus new `ShowError` / `ShowPaused`. The previous `ProgressBar.ProgressMode` and `ProgressRing.ProgressState` enums are retained as backward-compatible one-way aliases that map onto the flags, so existing consumers keep working; `ProgressBar.StepProgress` (with `Steps` / `CurrentStep`) stays as a Fluence-only determinate sub-mode. Covered by the expanded `ControlTests.ProgressBar` and `ControlTests.ProgressRing` suites.
+- `PasswordBox` indicators are now opt-in: `ShowCapsLockIndicator` and `ShowPasswordStrength` default to `false`, so a plain `PasswordBox` renders as a standard Fluent password field with no extra chrome. Set either property to `true` to restore the previous behavior; the gallery's Inputs sample and Forms sign-in sample opt in explicitly.
 
 ### Fixed
 
