@@ -652,7 +652,7 @@ Up and Down move through the suggestions, Enter raises `QuerySubmitted` (with `C
                SelectedDate="{Binding DueDate}" />
 ```
 
-`TimePicker` binds `SelectedTime` (`TimeSpan?`) and raises `SelectedTimeChanged`. `ClockIdentifier` selects `12HourClock` (the default: hours 1-12 plus an AM/PM column using the culture's designators) or `24HourClock` (hours 0-23, no designator column), and `MinuteIncrement` steps the minute column (for example 5 offers 00, 05, 10, and so on).
+`TimePicker` binds `SelectedTime` (`TimeSpan?`) and raises `SelectedTimeChanged`. `ClockIdentifier` selects `12HourClock` (hours 1-12 plus an AM/PM column using the culture's designators, with an invariant AM/PM fallback when the culture defines none) or `24HourClock` (hours 0-23, no designator column); the default follows the current culture's short time pattern. `MinuteIncrement` steps the minute column (for example 5 offers 00, 05, 10, and so on).
 
 ```xml
 <ui:TimePicker Header="Reminder time"

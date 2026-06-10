@@ -235,10 +235,14 @@ namespace Fluence.Wpf.Controls
 
         /// <summary>1
         /// Initializes a new instance of the <see cref="ProgressBar"/> class and subscribes to size changes for layout updates.
+        /// Loaded and Unloaded are also wired so the repeat-forever indeterminate animation only
+        /// runs while the control is in a live visual tree, mirroring <see cref="ProgressRing"/>.
         /// </summary>
         public ProgressBar()
         {
             SizeChanged += OnSizeChanged;
+            Loaded += OnLoaded;
+            Unloaded += OnUnloaded;
         }
 
         /// <inheritdoc />
@@ -331,6 +335,24 @@ namespace Fluence.Wpf.Controls
             UpdateFillWidth(_stepMode);
             RefreshIndeterminateLayout();
             UpdateIndicatorHostClip();
+        }
+
+        /// <summary>
+        /// Re-applies the resolved visual state when the control (re)enters a live visual tree,
+        /// restarting the indeterminate animation that <see cref="OnUnloaded"/> stopped.
+        /// </summary>
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            ApplyProgressMode();
+        }
+
+        /// <summary>
+        /// Stops the repeat-forever indeterminate animation when the control leaves the visual
+        /// tree so closed windows do not leak rooted animation clocks.
+        /// </summary>
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            StopIndeterminate();
         }
 
         /// <summary>
@@ -456,7 +478,10 @@ namespace Fluence.Wpf.Controls
         private void StartIndeterminate(double trackWidth)
         {
             StopIndeterminate();
-            if (_indeterminateTranslate is null || _indeterminateBar is null)
+
+            // Only animate while loaded: the repeat-forever clocks would otherwise stay rooted
+            // after the hosting window closes. OnLoaded restarts the animation on re-entry.
+            if (!IsLoaded || _indeterminateTranslate is null || _indeterminateBar is null)
             {
                 return;
             }

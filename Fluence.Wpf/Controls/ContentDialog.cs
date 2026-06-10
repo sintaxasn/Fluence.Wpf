@@ -77,6 +77,18 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="ContentDialog"/> class. The dialog
+        /// starts collapsed so a dialog declared in window XAML renders nothing inline at
+        /// rest; it becomes visible while it is hosted in its modal overlay during
+        /// <see cref="ShowAsync"/> and collapses again when it closes. SetCurrentValue keeps
+        /// an explicit consumer-set <see cref="UIElement.Visibility"/> authoritative.
+        /// </summary>
+        public ContentDialog()
+        {
+            SetCurrentValue(VisibilityProperty, Visibility.Collapsed);
+        }
+
+        /// <summary>
         /// Identifies the <see cref="Title"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty TitleProperty =
@@ -452,6 +464,11 @@ namespace Fluence.Wpf.Controls
             _ownerInputBlocker = OnOwnerPreviewMouseDown;
             owner.AddHandler(PreviewMouseDownEvent, _ownerInputBlocker, handledEventsToo: true);
 
+            // If the owner window closes while the dialog is open (Alt+F4 or the native close
+            // button on a plain window), close the dialog too so the pending ShowAsync task
+            // completes instead of hanging forever. CloseDialog unsubscribes.
+            owner.Closed += OnOwnerClosed;
+
             // The template (and with it the command buttons) is applied during the layout
             // pass that realizes the adorner, so move initial focus once layout has run.
             _ = Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(MoveInitialFocus));
@@ -503,6 +520,20 @@ namespace Fluence.Wpf.Controls
             {
                 HandleButtonInvoked(CloseButtonClick, CloseButtonCommand, CloseButtonCommandParameter, ContentDialogResult.None);
                 e.Handled = true;
+            }
+        }
+
+        /// <inheritdoc />
+        /// <remarks>
+        /// The Enter/<see cref="DefaultButton"/> shortcut runs on the bubbling key event (not
+        /// the tunneling preview) so focused body controls that consume Enter themselves,
+        /// such as an AcceptsReturn TextBox or an open ComboBox, win over the default button.
+        /// </remarks>
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            if (e.Handled || _showCompletionSource is null)
+            {
                 return;
             }
 
@@ -542,6 +573,16 @@ namespace Fluence.Wpf.Controls
             }
 
             e.Handled = true;
+        }
+
+        /// <summary>
+        /// Closes the dialog with <see cref="ContentDialogResult.None"/> when the owner window
+        /// closes while the dialog is open, so the pending <see cref="ShowAsync"/> task always
+        /// completes.
+        /// </summary>
+        private void OnOwnerClosed(object? sender, EventArgs e)
+        {
+            CloseDialog(ContentDialogResult.None);
         }
 
         /// <summary>
@@ -709,15 +750,23 @@ namespace Fluence.Wpf.Controls
             TaskCompletionSource<ContentDialogResult> completionSource = _showCompletionSource;
             _showCompletionSource = null;
 
-            if (_owner is not null && _ownerInputBlocker is not null)
+            if (_owner is not null)
             {
-                _owner.RemoveHandler(PreviewMouseDownEvent, _ownerInputBlocker);
+                if (_ownerInputBlocker is not null)
+                {
+                    _owner.RemoveHandler(PreviewMouseDownEvent, _ownerInputBlocker);
+                }
+
+                _owner.Closed -= OnOwnerClosed;
             }
 
             _owner = null;
             _ownerInputBlocker = null;
 
             _overlayRoot?.Children.Remove(this);
+
+            // Back to the at-rest contract: a dialog that is not overlay-hosted renders nothing.
+            SetCurrentValue(VisibilityProperty, Visibility.Collapsed);
 
             _overlayHostPanel?.Children.Remove(_overlayRoot);
             _overlayHostPanel = null;
@@ -743,7 +792,9 @@ namespace Fluence.Wpf.Controls
 
         /// <summary>
         /// Builds the overlay layout root: a smoke layer that dims and blocks everything behind
-        /// it, with the dialog centered on top and Tab navigation trapped inside.
+        /// it, with the dialog centered on top and Tab navigation trapped inside. A dialog
+        /// declared in window XAML is detached from its declared parent first and made visible
+        /// only while it is overlay-hosted.
         /// </summary>
         private Grid BuildOverlayRoot()
         {
@@ -755,8 +806,51 @@ namespace Fluence.Wpf.Controls
             KeyboardNavigation.SetControlTabNavigation(root, KeyboardNavigationMode.Cycle);
             KeyboardNavigation.SetDirectionalNavigation(root, KeyboardNavigationMode.Contained);
             _ = root.Children.Add(smoke);
+            DetachFromParent(this);
             _ = root.Children.Add(this);
+            SetCurrentValue(VisibilityProperty, Visibility.Visible);
             return root;
+        }
+
+        /// <summary>
+        /// Detaches <paramref name="element"/> from its current parent so it can join the
+        /// overlay layout root. The logical parent is preferred because it owns the content
+        /// slot (a ContentControl's content reports a ContentPresenter as its visual parent);
+        /// the visual parent is the fallback for template-generated hosts. Unsupported parents
+        /// fail fast instead of letting the overlay grid throw WPF's generic re-parenting error.
+        /// </summary>
+        /// <param name="element">The element to detach.</param>
+        /// <exception cref="InvalidOperationException">
+        /// The parent is not a <see cref="System.Windows.Controls.Panel"/>, a
+        /// <see cref="System.Windows.Controls.Decorator"/> (which includes Border), or a
+        /// <see cref="ContentControl"/>.
+        /// </exception>
+        private static void DetachFromParent(FrameworkElement element)
+        {
+            DependencyObject? parent = element.Parent ?? VisualTreeHelper.GetParent(element);
+            if (parent is null)
+            {
+                return;
+            }
+
+            if (parent is System.Windows.Controls.Panel panel)
+            {
+                panel.Children.Remove(element);
+            }
+            else if (parent is System.Windows.Controls.Decorator decorator)
+            {
+                decorator.Child = null;
+            }
+            else if (parent is ContentControl contentControl)
+            {
+                contentControl.Content = null;
+            }
+            else
+            {
+                throw new InvalidOperationException(
+                    "ContentDialog could not detach itself from its parent (" + parent.GetType().FullName + ") to move into its modal overlay. " +
+                    "Declare the dialog inside a Panel, Border, Decorator, or ContentControl, or remove it from its parent before calling ShowAsync.");
+            }
         }
 
         /// <summary>

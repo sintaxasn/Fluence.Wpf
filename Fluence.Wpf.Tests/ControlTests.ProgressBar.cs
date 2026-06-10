@@ -32,6 +32,7 @@ using System.Windows;
 using System.Windows.Media;
 using FluenceProgressBar = Fluence.Wpf.Controls.ProgressBar;
 using WpfBorder = System.Windows.Controls.Border;
+using WpfContentControl = System.Windows.Controls.ContentControl;
 using WpfGrid = System.Windows.Controls.Grid;
 
 namespace Fluence.Wpf.Tests
@@ -300,6 +301,58 @@ namespace Fluence.Wpf.Tests
         public void ProgressBar_ShowPaused_UsesCautionBrush()
         {
             AssertProgressBarStatePrimitiveBrush(bar => bar.ShowPaused = true, "SystemFillColorCautionBrush");
+        }
+
+        [TestMethod]
+        public void ProgressBar_Indeterminate_StopsAnimationOnUnloadAndRestartsOnReload()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                FluenceProgressBar progressBar = new()
+                {
+                    Width = 240,
+                    Height = 24,
+                    IsIndeterminate = true
+                };
+                WpfContentControl host = new() { Content = progressBar };
+                Window w = new() { Content = host, Width = 300, Height = 120 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                TranslateTransform? translate =
+                    progressBar.Template.FindName("PART_IndeterminateTranslate", progressBar) as TranslateTransform;
+                TranslateTransform? translate2 =
+                    progressBar.Template.FindName("PART_IndeterminateTranslate2", progressBar) as TranslateTransform;
+                Assert.IsNotNull(translate, "ProgressBar template must expose PART_IndeterminateTranslate.");
+                Assert.IsNotNull(translate2, "ProgressBar template must expose PART_IndeterminateTranslate2.");
+                Assert.IsTrue(WaitUntil(w.Dispatcher, 2000, () => translate.HasAnimatedProperties),
+                    "The indeterminate animation must run while the bar is loaded.");
+
+                host.Content = null;
+                DrainDispatcher(w.Dispatcher);
+
+                Assert.IsFalse(translate.HasAnimatedProperties,
+                    "Unloading must stop the repeat-forever animation on the primary translate transform.");
+                Assert.IsFalse(translate2.HasAnimatedProperties,
+                    "Unloading must stop the repeat-forever animation on the secondary translate transform.");
+
+                host.Content = progressBar;
+                DrainDispatcher(w.Dispatcher);
+
+                Assert.IsTrue(WaitUntil(w.Dispatcher, 2000, () => translate.HasAnimatedProperties),
+                    "Reloading must restart the indeterminate animation.");
+
+                w.Close();
+                DrainDispatcher(w.Dispatcher);
+
+                Assert.IsFalse(translate.HasAnimatedProperties,
+                    "Closing the hosting window must leave no active animation clocks on the translate transforms.");
+                Assert.IsFalse(translate2.HasAnimatedProperties,
+                    "Closing the hosting window must leave no active animation clocks on the secondary translate transform.");
+            });
         }
 
         [TestMethod]

@@ -64,6 +64,16 @@ namespace Fluence.Wpf.Tests
             return layer?.GetAdorners(root);
         }
 
+        private static void RaiseKeyEvent(UIElement target, Key key, RoutedEvent routedEvent)
+        {
+            PresentationSource? source = PresentationSource.FromVisual(target);
+            Assert.IsNotNull(source, "The key event target must be connected to a presentation source.");
+            target.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice, source, 0, key)
+            {
+                RoutedEvent = routedEvent,
+            });
+        }
+
         [TestMethod]
         public void ContentDialog_DefaultStyle_AppliesAndTemplatePartsFound()
         {
@@ -96,6 +106,13 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
+                    Assert.AreEqual(Visibility.Collapsed, dialog.Visibility,
+                        "A dialog declared in window XAML must stay collapsed until ShowAsync hosts it in its modal overlay.");
+
+                    // The collapsed at-rest dialog is skipped by layout, so inflate the
+                    // template explicitly to assert the template contract.
+                    _ = dialog.ApplyTemplate();
+
                     Assert.AreEqual(548.0, dialog.MaxWidth, 0.01, "ContentDialog.MaxWidth must be the WinUI ContentDialogMaxWidth (548).");
                     Assert.AreEqual(320.0, dialog.MinWidth, 0.01, "ContentDialog.MinWidth must be the WinUI ContentDialogMinWidth (320).");
 
@@ -123,6 +140,201 @@ namespace Fluence.Wpf.Tests
                     window.Close();
                 }
             });
+        }
+
+        [TestMethod]
+        public void ContentDialog_DeclaredAsWindowContentChild_CollapsedAtRestAndShowsViaShowAsync()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Grid host = new();
+                Controls.ContentDialog dialog = new()
+                {
+                    Title = "Declared",
+                    Content = "Body",
+                    PrimaryButtonText = "OK",
+                    CloseButtonText = "Cancel",
+                };
+                _ = host.Children.Add(dialog);
+                Window window = new() { Width = 640, Height = 480, Content = host };
+
+                try
+                {
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.AreEqual(Visibility.Collapsed, dialog.Visibility,
+                        "A dialog declared in window XAML must be collapsed at rest.");
+                    Assert.AreEqual(0.0, dialog.ActualHeight, 0.001,
+                        "A dialog declared in window XAML must occupy no layout height at rest.");
+
+                    Task<ContentDialogResult> task = dialog.ShowAsync();
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000,
+                            () => FindVisualChildByName<ButtonBase>(dialog, "PART_PrimaryButton") is not null),
+                        "ShowAsync on a declared dialog must succeed and apply the template once overlay-hosted.");
+                    Assert.AreEqual(Visibility.Visible, dialog.Visibility,
+                        "The dialog must be visible while it is hosted in its modal overlay.");
+                    Assert.IsFalse(host.Children.Contains(dialog),
+                        "ShowAsync must detach the declared dialog from its XAML parent.");
+
+                    dialog.Hide();
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => task.IsCompleted),
+                        "Hide must complete the pending ShowAsync task for a declared dialog.");
+                    Assert.AreEqual(Visibility.Collapsed, dialog.Visibility,
+                        "Closing must collapse the dialog again so it renders nothing at rest.");
+                }
+                finally
+                {
+                    dialog.Hide();
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void ContentDialog_EnterInAcceptsReturnTextBox_DoesNotInvokeDefaultButton()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Window window = CreateShownContentDialogOwner();
+                TextBox body = new() { AcceptsReturn = true, MinLines = 3 };
+                Controls.ContentDialog dialog = new()
+                {
+                    Title = "Notes",
+                    Content = body,
+                    PrimaryButtonText = "Save",
+                    CloseButtonText = "Cancel",
+                    DefaultButton = ContentDialogButton.Primary,
+                };
+
+                try
+                {
+                    Task<ContentDialogResult> task = dialog.ShowAsync();
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000,
+                            () => FindVisualChildByName<ButtonBase>(dialog, "PART_PrimaryButton") is not null),
+                        "The dialog template must apply before Enter is simulated.");
+
+                    _ = body.Focus();
+                    DrainDispatcher(window.Dispatcher);
+
+                    // Real key input tunnels the preview event first and then bubbles the key
+                    // down event. The multiline TextBox consumes the bubbling Enter, so the
+                    // dialog must leave it alone.
+                    RaiseKeyEvent(body, Key.Enter, UIElement.PreviewKeyDownEvent);
+                    RaiseKeyEvent(body, Key.Enter, UIElement.KeyDownEvent);
+                    DrainDispatcher(window.Dispatcher);
+
+                    Assert.IsFalse(task.IsCompleted,
+                        "Enter inside an AcceptsReturn TextBox must not invoke the default button while DefaultButton=Primary.");
+                    Assert.IsTrue(GetContentDialogOverlayAdorners(window) is { Length: > 0 },
+                        "The dialog must stay open after Enter is consumed by the multiline TextBox.");
+
+                    dialog.Hide();
+                }
+                finally
+                {
+                    dialog.Hide();
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void ContentDialog_EnterWithDefaultButton_InvokesDefaultViaBubbling()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Window window = CreateShownContentDialogOwner();
+                Controls.ContentDialog dialog = new()
+                {
+                    Title = "Confirm",
+                    Content = "Body",
+                    PrimaryButtonText = "OK",
+                    CloseButtonText = "Cancel",
+                    DefaultButton = ContentDialogButton.Primary,
+                };
+
+                try
+                {
+                    bool clickRaised = false;
+                    dialog.PrimaryButtonClick += (_, _) => clickRaised = true;
+
+                    Task<ContentDialogResult> task = dialog.ShowAsync();
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000,
+                            () => FindVisualChildByName<ButtonBase>(dialog, "PART_PrimaryButton") is not null),
+                        "The dialog template must apply before Enter is simulated.");
+
+                    // Move focus off the command buttons so the default-button shortcut path
+                    // (not the native button click) handles Enter.
+                    _ = dialog.Focus();
+                    DrainDispatcher(window.Dispatcher);
+
+                    RaiseKeyEvent(dialog, Key.Enter, UIElement.PreviewKeyDownEvent);
+                    RaiseKeyEvent(dialog, Key.Enter, UIElement.KeyDownEvent);
+
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => task.IsCompleted),
+                        "Enter must invoke the default button through the bubbling key event.");
+                    Assert.IsTrue(clickRaised, "Enter must raise PrimaryButtonClick while DefaultButton=Primary.");
+                }
+                finally
+                {
+                    dialog.Hide();
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public async Task ContentDialog_OwnerWindowClose_CompletesPendingTaskWithNone()
+        {
+            Task<ContentDialogResult>? dialogTask = null;
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Window window = CreateShownContentDialogOwner();
+                Controls.ContentDialog dialog = new()
+                {
+                    Title = "Confirm",
+                    Content = "Body",
+                    PrimaryButtonText = "OK",
+                    CloseButtonText = "Cancel",
+                };
+
+                try
+                {
+                    dialogTask = dialog.ShowAsync();
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000,
+                            () => FindVisualChildByName<ButtonBase>(dialog, "PART_CloseButton") is not null),
+                        "The dialog template must apply before the owner window closes.");
+
+                    window.Close();
+
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => dialogTask.IsCompleted),
+                        "Closing the owner window must complete the pending ShowAsync task.");
+                }
+                finally
+                {
+                    dialog.Hide();
+                    window.Close();
+                }
+            });
+
+            Assert.IsNotNull(dialogTask, "ShowAsync must have produced a dialog task.");
+            ContentDialogResult result = await dialogTask.ConfigureAwait(false);
+            Assert.AreEqual(ContentDialogResult.None, result,
+                "An owner window close must complete the task with ContentDialogResult.None.");
         }
 
         [TestMethod]

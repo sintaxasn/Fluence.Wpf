@@ -66,6 +66,17 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="TeachingTip"/> class. The tip starts
+        /// collapsed so a tip declared in page XAML renders nothing inline; it becomes visible
+        /// once it is re-hosted in its popup the first time it opens. SetCurrentValue keeps an
+        /// explicit consumer-set <see cref="UIElement.Visibility"/> authoritative.
+        /// </summary>
+        public TeachingTip()
+        {
+            SetCurrentValue(VisibilityProperty, Visibility.Collapsed);
+        }
+
+        /// <summary>
         /// Identifies the <see cref="Title"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty TitleProperty =
@@ -496,16 +507,53 @@ namespace Fluence.Wpf.Controls
 
             if (!ReferenceEquals(HostPopup.Child, this))
             {
-                DependencyObject? parent = VisualTreeHelper.GetParent(this) ?? Parent;
-                if (parent is System.Windows.Controls.Panel panel)
-                {
-                    panel.Children.Remove(this);
-                }
-
+                DetachFromParent(this);
                 HostPopup.Child = this;
+                SetCurrentValue(VisibilityProperty, Visibility.Visible);
             }
 
             return HostPopup;
+        }
+
+        /// <summary>
+        /// Detaches <paramref name="element"/> from its current parent so it can become the
+        /// popup child. The logical parent is preferred because it owns the content slot (a
+        /// ContentControl's content reports a ContentPresenter as its visual parent); the
+        /// visual parent is the fallback for template-generated hosts. Unsupported parents
+        /// fail fast instead of letting the popup throw WPF's generic re-parenting error.
+        /// </summary>
+        /// <param name="element">The element to detach.</param>
+        /// <exception cref="InvalidOperationException">
+        /// The parent is not a <see cref="System.Windows.Controls.Panel"/>, a
+        /// <see cref="System.Windows.Controls.Decorator"/> (which includes Border), or a
+        /// <see cref="ContentControl"/>.
+        /// </exception>
+        private static void DetachFromParent(FrameworkElement element)
+        {
+            DependencyObject? parent = element.Parent ?? VisualTreeHelper.GetParent(element);
+            if (parent is null)
+            {
+                return;
+            }
+
+            if (parent is System.Windows.Controls.Panel panel)
+            {
+                panel.Children.Remove(element);
+            }
+            else if (parent is System.Windows.Controls.Decorator decorator)
+            {
+                decorator.Child = null;
+            }
+            else if (parent is ContentControl contentControl)
+            {
+                contentControl.Content = null;
+            }
+            else
+            {
+                throw new InvalidOperationException(
+                    "TeachingTip could not detach itself from its parent (" + parent.GetType().FullName + ") to move into its popup. " +
+                    "Declare the tip inside a Panel, Border, Decorator, or ContentControl, or remove it from its parent before opening it.");
+            }
         }
 
         private void OnPopupClosed(object? sender, EventArgs e)

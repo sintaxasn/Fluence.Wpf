@@ -33,6 +33,8 @@ using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
+using System.Windows.Threading;
 
 // IMPORTANT: every reference to TextBlock / ListBox in this file MUST be fully qualified
 // (System.Windows.Controls.TextBlock, System.Windows.Controls.ListBox). The
@@ -269,6 +271,7 @@ namespace Fluence.Wpf.Controls
             _cancelButton?.Click -= OnCancelButtonClick;
             _monthList?.SelectionChanged -= OnMonthOrYearSelectionChanged;
             _yearList?.SelectionChanged -= OnMonthOrYearSelectionChanged;
+            _popupRoot?.PreviewKeyDown -= OnPopupPreviewKeyDown;
 
             base.OnApplyTemplate();
 
@@ -298,6 +301,15 @@ namespace Fluence.Wpf.Controls
             _cancelButton?.Click += OnCancelButtonClick;
             _monthList?.SelectionChanged += OnMonthOrYearSelectionChanged;
             _yearList?.SelectionChanged += OnMonthOrYearSelectionChanged;
+
+            _popupRoot = _popup?.Child;
+            if (_popupRoot is not null)
+            {
+                // Keep Tab cycling inside the flyout instead of escaping to the window behind
+                // it, and intercept Escape (cancel) / Enter (accept) at the popup root.
+                KeyboardNavigation.SetTabNavigation(_popupRoot, KeyboardNavigationMode.Cycle);
+                _popupRoot.PreviewKeyDown += OnPopupPreviewKeyDown;
+            }
 
             UpdateFieldText();
         }
@@ -419,6 +431,11 @@ namespace Fluence.Wpf.Controls
 
             PopulateSelectorColumns();
             _popup.SetCurrentValue(Popup.IsOpenProperty, true);
+
+            // Item containers exist only after the popup child's first layout pass, so defer
+            // the focus move to Loaded priority (below Render) like the other in-tree
+            // post-layout callbacks.
+            _ = Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(MoveFocusIntoPopup));
         }
 
         private void OnAcceptButtonClick(object sender, RoutedEventArgs e)
@@ -430,6 +447,86 @@ namespace Fluence.Wpf.Controls
         private void OnCancelButtonClick(object sender, RoutedEventArgs e)
         {
             ClosePopup();
+        }
+
+        /// <summary>
+        /// Handles flyout keyboard interaction at the popup root: Escape discards the pending
+        /// column selection (the cancel-button path) and Enter commits it (the accept-button
+        /// path). Enter is left alone while a flyout command button has keyboard focus so the
+        /// button's native click handling wins.
+        /// </summary>
+        private void OnPopupPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Handled || _popup is null || !_popup.IsOpen)
+            {
+                return;
+            }
+
+            if (e.Key == Key.Escape)
+            {
+                ClosePopup();
+                e.Handled = true;
+                return;
+            }
+
+            if (e.Key == Key.Enter)
+            {
+                IInputElement? focused = Keyboard.FocusedElement;
+                if (ReferenceEquals(focused, _acceptButton) || ReferenceEquals(focused, _cancelButton))
+                {
+                    return;
+                }
+
+                CommitPendingSelection();
+                ClosePopup();
+                e.Handled = true;
+            }
+        }
+
+        /// <summary>
+        /// Moves keyboard focus to the selected item of the first visible selector column once
+        /// the open flyout has laid out, so the flyout is immediately keyboard operable.
+        /// </summary>
+        private void MoveFocusIntoPopup()
+        {
+            if (_popup is null || !_popup.IsOpen)
+            {
+                return;
+            }
+
+            Selector? column = GetFirstVisibleSelectorColumn();
+            if (column is null)
+            {
+                return;
+            }
+
+            int index = Math.Max(column.SelectedIndex, 0);
+            if (column.ItemContainerGenerator.ContainerFromIndex(index) is IInputElement container)
+            {
+                _ = Keyboard.Focus(container);
+            }
+            else
+            {
+                _ = column.Focus();
+            }
+        }
+
+        /// <summary>
+        /// Returns the first visible selector column in the culture order of the visible
+        /// fields (see <see cref="GetOrderedVisibleFields"/>).
+        /// </summary>
+        private Selector? GetFirstVisibleSelectorColumn()
+        {
+            foreach (DateField field in GetOrderedVisibleFields())
+            {
+                Selector? column = GetSelector(field);
+                if (column is not null && column.Visibility == Visibility.Visible)
+                {
+                    return column;
+                }
+            }
+
+            return null;
         }
 
         private void OnMonthOrYearSelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -734,6 +831,12 @@ namespace Fluence.Wpf.Controls
         /// The light-dismiss popup hosting the selector columns.
         /// </summary>
         private Popup? _popup;
+
+        /// <summary>
+        /// The popup child root that carries the flyout keyboard handling (Tab cycle plus
+        /// Escape/Enter interception).
+        /// </summary>
+        private UIElement? _popupRoot;
 
         /// <summary>
         /// The day selector column.

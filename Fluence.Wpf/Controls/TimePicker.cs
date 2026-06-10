@@ -33,6 +33,8 @@ using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
+using System.Windows.Threading;
 
 // IMPORTANT: every reference to TextBlock / ListBox in this file MUST be fully qualified
 // (System.Windows.Controls.TextBlock, System.Windows.Controls.ListBox). The
@@ -130,7 +132,7 @@ namespace Fluence.Wpf.Controls
                 typeof(string),
                 typeof(TimePicker),
                 new FrameworkPropertyMetadata(
-                    TwelveHourClock,
+                    GetDefaultClockIdentifier(),
                     OnClockIdentifierChanged,
                     CoerceClockIdentifier));
 
@@ -138,7 +140,9 @@ namespace Fluence.Wpf.Controls
         /// Gets or sets the clock system used by the field and the hour column:
         /// "12HourClock" (hours 1..12 plus an AM/PM designator column) or "24HourClock"
         /// (hours 0..23, no designator column). Any other value is coerced back to
-        /// "12HourClock".
+        /// "12HourClock". The default follows the user's regional clock: "24HourClock" when
+        /// the current culture's short time pattern uses the 24-hour 'H' specifier, otherwise
+        /// "12HourClock". An explicitly set value always wins over the regional default.
         /// </summary>
         public string ClockIdentifier
         {
@@ -228,6 +232,7 @@ namespace Fluence.Wpf.Controls
             _flyoutButton?.Click -= OnFlyoutButtonClick;
             _acceptButton?.Click -= OnAcceptButtonClick;
             _cancelButton?.Click -= OnCancelButtonClick;
+            _popupRoot?.PreviewKeyDown -= OnPopupPreviewKeyDown;
 
             base.OnApplyTemplate();
 
@@ -245,6 +250,15 @@ namespace Fluence.Wpf.Controls
             _flyoutButton?.Click += OnFlyoutButtonClick;
             _acceptButton?.Click += OnAcceptButtonClick;
             _cancelButton?.Click += OnCancelButtonClick;
+
+            _popupRoot = _popup?.Child;
+            if (_popupRoot is not null)
+            {
+                // Keep Tab cycling inside the flyout instead of escaping to the window behind
+                // it, and intercept Escape (cancel) / Enter (accept) at the popup root.
+                KeyboardNavigation.SetTabNavigation(_popupRoot, KeyboardNavigationMode.Cycle);
+                _popupRoot.PreviewKeyDown += OnPopupPreviewKeyDown;
+            }
 
             UpdateFieldText();
         }
@@ -264,6 +278,19 @@ namespace Fluence.Wpf.Controls
             // the clock system; the segment, divider, and column collapse in 24-hour mode
             // is handled by the template's ClockIdentifier trigger.
             ((TimePicker)d).UpdateFieldText();
+        }
+
+        /// <summary>
+        /// Computes the regional default for <see cref="ClockIdentifier"/>: "24HourClock" when
+        /// the current culture's short time pattern uses the 24-hour 'H' specifier, otherwise
+        /// "12HourClock". Captured once as the dependency property's default metadata value;
+        /// explicitly set values always win.
+        /// </summary>
+        private static string GetDefaultClockIdentifier()
+        {
+            return CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern.Contains("H")
+                ? TwentyFourHourClock
+                : TwelveHourClock;
         }
 
         /// <summary>
@@ -296,11 +323,35 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Returns the current culture's AM or PM designator for an hour of day.
+        /// Returns the culture's AM designator, falling back to the invariant "AM" when the
+        /// culture provides none. On .NET Framework NLS many locales (de-DE, fr-FR, sv-SE,
+        /// it-IT) report empty designators, which would otherwise render two blank,
+        /// indistinguishable period values.
+        /// </summary>
+        private static string GetAmDesignator(CultureInfo culture)
+        {
+            string designator = culture.DateTimeFormat.AMDesignator;
+            return string.IsNullOrWhiteSpace(designator) ? "AM" : designator;
+        }
+
+        /// <summary>
+        /// Returns the culture's PM designator, falling back to the invariant "PM" when the
+        /// culture provides none. See <see cref="GetAmDesignator"/> for the .NET Framework
+        /// NLS rationale.
+        /// </summary>
+        private static string GetPmDesignator(CultureInfo culture)
+        {
+            string designator = culture.DateTimeFormat.PMDesignator;
+            return string.IsNullOrWhiteSpace(designator) ? "PM" : designator;
+        }
+
+        /// <summary>
+        /// Returns the current culture's AM or PM designator for an hour of day, with the
+        /// invariant "AM"/"PM" fallback for cultures whose designators are empty.
         /// </summary>
         private static string GetPeriodDesignator(int hour, CultureInfo culture)
         {
-            return hour >= 12 ? culture.DateTimeFormat.PMDesignator : culture.DateTimeFormat.AMDesignator;
+            return hour >= 12 ? GetPmDesignator(culture) : GetAmDesignator(culture);
         }
 
         /// <summary>
@@ -323,6 +374,11 @@ namespace Fluence.Wpf.Controls
 
             PopulateSelectorColumns();
             _popup.SetCurrentValue(Popup.IsOpenProperty, true);
+
+            // Item containers exist only after the popup child's first layout pass, so defer
+            // the focus move to Loaded priority (below Render) like the other in-tree
+            // post-layout callbacks.
+            _ = Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(MoveFocusIntoPopup));
         }
 
         private void OnAcceptButtonClick(object sender, RoutedEventArgs e)
@@ -334,6 +390,86 @@ namespace Fluence.Wpf.Controls
         private void OnCancelButtonClick(object sender, RoutedEventArgs e)
         {
             ClosePopup();
+        }
+
+        /// <summary>
+        /// Handles flyout keyboard interaction at the popup root: Escape discards the pending
+        /// column selection (the cancel-button path) and Enter commits it (the accept-button
+        /// path). Enter is left alone while a flyout command button has keyboard focus so the
+        /// button's native click handling wins.
+        /// </summary>
+        private void OnPopupPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Handled || _popup is null || !_popup.IsOpen)
+            {
+                return;
+            }
+
+            if (e.Key == Key.Escape)
+            {
+                ClosePopup();
+                e.Handled = true;
+                return;
+            }
+
+            if (e.Key == Key.Enter)
+            {
+                IInputElement? focused = Keyboard.FocusedElement;
+                if (ReferenceEquals(focused, _acceptButton) || ReferenceEquals(focused, _cancelButton))
+                {
+                    return;
+                }
+
+                CommitPendingSelection();
+                ClosePopup();
+                e.Handled = true;
+            }
+        }
+
+        /// <summary>
+        /// Moves keyboard focus to the selected item of the first visible selector column once
+        /// the open flyout has laid out, so the flyout is immediately keyboard operable.
+        /// </summary>
+        private void MoveFocusIntoPopup()
+        {
+            if (_popup is null || !_popup.IsOpen)
+            {
+                return;
+            }
+
+            Selector? column = GetFirstVisibleSelectorColumn();
+            if (column is null)
+            {
+                return;
+            }
+
+            int index = Math.Max(column.SelectedIndex, 0);
+            if (column.ItemContainerGenerator.ContainerFromIndex(index) is IInputElement container)
+            {
+                _ = Keyboard.Focus(container);
+            }
+            else
+            {
+                _ = column.Focus();
+            }
+        }
+
+        /// <summary>
+        /// Returns the first visible selector column in display order (hour, minute, AM/PM);
+        /// the AM/PM column is collapsed by the template trigger in 24-hour mode.
+        /// </summary>
+        private Selector? GetFirstVisibleSelectorColumn()
+        {
+            Selector?[] columns = [_hourList, _minuteList, _periodList];
+            foreach (Selector? column in columns)
+            {
+                if (column is not null && column.Visibility == Visibility.Visible)
+                {
+                    return column;
+                }
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -395,7 +531,7 @@ namespace Fluence.Wpf.Controls
                 }
                 else
                 {
-                    List<string> periods = [culture.DateTimeFormat.AMDesignator, culture.DateTimeFormat.PMDesignator];
+                    List<string> periods = [GetAmDesignator(culture), GetPmDesignator(culture)];
                     _periodList.ItemsSource = periods;
                     _periodList.SelectedIndex = hour >= 12 ? 1 : 0;
                 }
@@ -503,6 +639,12 @@ namespace Fluence.Wpf.Controls
         /// The light-dismiss popup hosting the selector columns.
         /// </summary>
         private Popup? _popup;
+
+        /// <summary>
+        /// The popup child root that carries the flyout keyboard handling (Tab cycle plus
+        /// Escape/Enter interception).
+        /// </summary>
+        private UIElement? _popupRoot;
 
         /// <summary>
         /// The hour selector column.

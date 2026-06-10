@@ -78,6 +78,13 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
+                    Assert.AreEqual(Visibility.Collapsed, tip.Visibility,
+                        "A closed tip declared in a panel must stay collapsed until it is popup-hosted.");
+
+                    // The collapsed at-rest tip is skipped by layout, so inflate the template
+                    // explicitly to assert the template contract.
+                    _ = tip.ApplyTemplate();
+
                     Assert.AreEqual(320.0, tip.MinWidth, 0.01, "TeachingTip.MinWidth must be the WinUI TeachingTipMinWidth (320).");
                     Assert.AreEqual(336.0, tip.MaxWidth, 0.01, "TeachingTip.MaxWidth must be the WinUI TeachingTipMaxWidth (336).");
                     Assert.AreEqual(new Thickness(16, 15, 16, 17), tip.Padding,
@@ -104,6 +111,96 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void TeachingTip_ClosedInPanel_RendersNothingBeforeFirstOpen()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Window window = new() { Width = 640, Height = 480 };
+                Grid host = new();
+                Controls.TeachingTip tip = new()
+                {
+                    Title = "Inline",
+                    Subtitle = "Must not paint in the page",
+                    Content = "Body",
+                };
+                _ = host.Children.Add(tip);
+                window.Content = host;
+
+                try
+                {
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.AreEqual(Visibility.Collapsed, tip.Visibility,
+                        "A closed tip declared in a panel must be collapsed before its first open.");
+                    Assert.AreEqual(0.0, tip.ActualHeight, 0.001,
+                        "A closed tip declared in a panel must occupy no layout height before its first open.");
+                    Assert.AreEqual(0.0, tip.ActualWidth, 0.001,
+                        "A closed tip declared in a panel must occupy no layout width before its first open.");
+
+                    tip.IsOpen = true;
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }),
+                        "Opening the declared tip must re-host it in its popup.");
+                    Assert.AreEqual(Visibility.Visible, tip.Visibility,
+                        "Opening must restore visibility once the tip is popup-hosted.");
+                    Assert.IsFalse(host.Children.Contains(tip),
+                        "Opening must detach the tip from its declared panel.");
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => tip.ActualHeight > 0),
+                        "The popup-hosted tip must render its surface once open.");
+                }
+                finally
+                {
+                    tip.IsOpen = false;
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void TeachingTip_DeclaredAsBorderChild_OpensWithoutThrowing()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Window window = new() { Width = 640, Height = 480 };
+                Border host = new();
+                Controls.TeachingTip tip = new()
+                {
+                    Title = "Bordered",
+                    Content = "Body",
+                };
+                host.Child = tip;
+                window.Content = host;
+
+                try
+                {
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    tip.IsOpen = true;
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }),
+                        "A tip declared as Border.Child must open without throwing.");
+                    Assert.IsNull(host.Child,
+                        "Opening must clear the Border.Child slot so the tip can become the popup child.");
+                    Assert.AreSame(tip, tip.HostPopup?.Child,
+                        "The popup child must be the tip detached from the Border.");
+                }
+                finally
+                {
+                    tip.IsOpen = false;
                     window.Close();
                 }
             });

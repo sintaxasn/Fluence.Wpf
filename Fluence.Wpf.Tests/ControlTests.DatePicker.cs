@@ -34,6 +34,8 @@ using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace Fluence.Wpf.Tests
 {
@@ -438,6 +440,172 @@ namespace Fluence.Wpf.Tests
 
                     Assert.AreEqual(date.ToString("d", CultureInfo.CurrentCulture), peer.GetName(),
                         "The peer name must report the selected date in the culture short date format.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void DatePicker_FlyoutOpen_MovesKeyboardFocusIntoPopupAndCyclesTab()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Window window = new() { Width = 500, Height = 400 };
+                Controls.DatePicker picker = new()
+                {
+                    SelectedDate = new DateTime(2024, 5, 17, 0, 0, 0, DateTimeKind.Unspecified),
+                };
+
+                try
+                {
+                    window.Content = picker;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    ControlTemplate? template = picker.Template;
+                    Assert.IsNotNull(template, "DatePicker must receive its themed template.");
+                    ButtonBase? flyoutButton = template.FindName("PART_FlyoutButton", picker) as ButtonBase;
+                    Popup? popup = template.FindName("PART_Popup", picker) as Popup;
+                    Assert.IsNotNull(flyoutButton, "PART_FlyoutButton must be present in the template.");
+                    Assert.IsNotNull(popup, "PART_Popup must be present in the template.");
+                    Assert.IsNotNull(popup.Child, "The selector flyout must have a popup child root.");
+
+                    Assert.AreEqual(KeyboardNavigationMode.Cycle, KeyboardNavigation.GetTabNavigation(popup.Child),
+                        "Tab navigation must cycle inside the flyout popup root.");
+
+                    RaiseButtonClick(flyoutButton);
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                        "Clicking the field must open the selector flyout.");
+
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () =>
+                            popup.Child is Visual root
+                            && Keyboard.FocusedElement is Visual focused
+                            && focused.IsDescendantOf(root)),
+                        "Opening the flyout must move keyboard focus inside the popup.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void DatePicker_FlyoutEscape_ClosesWithoutCommitting()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Window window = new() { Width = 500, Height = 400 };
+                Controls.DatePicker picker = new();
+
+                try
+                {
+                    window.Content = picker;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    ControlTemplate? template = picker.Template;
+                    Assert.IsNotNull(template, "DatePicker must receive its themed template.");
+                    ButtonBase? flyoutButton = template.FindName("PART_FlyoutButton", picker) as ButtonBase;
+                    Popup? popup = template.FindName("PART_Popup", picker) as Popup;
+                    Selector? dayList = template.FindName("PART_DayList", picker) as Selector;
+                    Selector? monthList = template.FindName("PART_MonthList", picker) as Selector;
+                    Assert.IsNotNull(flyoutButton, "PART_FlyoutButton must be present in the template.");
+                    Assert.IsNotNull(popup, "PART_Popup must be present in the template.");
+                    Assert.IsNotNull(dayList, "PART_DayList must be present in the template.");
+                    Assert.IsNotNull(monthList, "PART_MonthList must be present in the template.");
+
+                    DateTime original = new(2024, 5, 17, 0, 0, 0, DateTimeKind.Unspecified);
+                    picker.SelectedDate = original;
+                    DrainDispatcher(window.Dispatcher);
+
+                    RaiseButtonClick(flyoutButton);
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                        "The selector flyout must open before the Escape scenario.");
+                    Assert.IsNotNull(popup.Child, "The selector flyout must have a popup child root.");
+
+                    bool raised = false;
+                    picker.SelectedDateChanged += (_, _) => raised = true;
+
+                    monthList.SelectedIndex = 0;
+                    dayList.SelectedIndex = 0;
+                    DrainDispatcher(window.Dispatcher);
+
+                    RaiseKeyEvent(popup.Child, Key.Escape, UIElement.PreviewKeyDownEvent);
+
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => !popup.IsOpen),
+                        "Escape must close the selector flyout.");
+                    Assert.AreEqual(original, picker.SelectedDate, "Escape must not commit the pending column selection.");
+                    Assert.IsFalse(raised, "Escape must not raise SelectedDateChanged.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void DatePicker_FlyoutEnter_CommitsPendingSelection()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Window window = new() { Width = 500, Height = 400 };
+                Controls.DatePicker picker = new();
+
+                try
+                {
+                    window.Content = picker;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    ControlTemplate? template = picker.Template;
+                    Assert.IsNotNull(template, "DatePicker must receive its themed template.");
+                    ButtonBase? flyoutButton = template.FindName("PART_FlyoutButton", picker) as ButtonBase;
+                    Popup? popup = template.FindName("PART_Popup", picker) as Popup;
+                    Selector? dayList = template.FindName("PART_DayList", picker) as Selector;
+                    Selector? monthList = template.FindName("PART_MonthList", picker) as Selector;
+                    Selector? yearList = template.FindName("PART_YearList", picker) as Selector;
+                    Assert.IsNotNull(flyoutButton, "PART_FlyoutButton must be present in the template.");
+                    Assert.IsNotNull(popup, "PART_Popup must be present in the template.");
+                    Assert.IsNotNull(dayList, "PART_DayList must be present in the template.");
+                    Assert.IsNotNull(monthList, "PART_MonthList must be present in the template.");
+                    Assert.IsNotNull(yearList, "PART_YearList must be present in the template.");
+
+                    picker.SelectedDate = new DateTime(2024, 5, 17, 0, 0, 0, DateTimeKind.Unspecified);
+                    DrainDispatcher(window.Dispatcher);
+
+                    RaiseButtonClick(flyoutButton);
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                        "The selector flyout must open before the Enter scenario.");
+                    Assert.IsNotNull(popup.Child, "The selector flyout must have a popup child root.");
+
+                    monthList.SelectedIndex = 0;
+                    yearList.SelectedIndex = 2025 - picker.MinYear;
+                    dayList.SelectedIndex = 9;
+                    DrainDispatcher(window.Dispatcher);
+
+                    RaiseKeyEvent(popup.Child, Key.Enter, UIElement.PreviewKeyDownEvent);
+
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => !popup.IsOpen),
+                        "Enter must close the selector flyout.");
+                    Assert.AreEqual(new DateTime(2025, 1, 10, 0, 0, 0, DateTimeKind.Unspecified), picker.SelectedDate,
+                        "Enter must commit the pending column selection like the accept button.");
                 }
                 finally
                 {
