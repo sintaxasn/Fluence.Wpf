@@ -351,10 +351,10 @@ namespace Fluence.Wpf.Demo.Pages.Inputs
                 (System.Windows.DependencyObject)Content,
                 new DemoSampleSource(1, TextBoxInputXamlSource, TextBoxInputCSharpSource),
                 new DemoSampleSource(2, TextBoxValidationXamlSource, TextBoxValidationCSharpSource),
-                new DemoSampleSource(3, PasswordBoxInputXamlSource, PasswordBoxInputCSharpSource),
-                new DemoSampleSource(4, NumberBoxInputXamlSource, NumberBoxInputCSharpSource),
-                new DemoSampleSource(5, SliderInputXamlSource, SliderInputCSharpSource),
-                new DemoSampleSource(6, AutoSuggestBoxXamlSource, AutoSuggestBoxCSharpSource));
+                new DemoSampleSource(3, AutoSuggestBoxXamlSource, AutoSuggestBoxCSharpSource),
+                new DemoSampleSource(4, PasswordBoxInputXamlSource, PasswordBoxInputCSharpSource),
+                new DemoSampleSource(5, NumberBoxInputXamlSource, NumberBoxInputCSharpSource),
+                new DemoSampleSource(6, SliderInputXamlSource, SliderInputCSharpSource));
         }
 
         private void DemoAutoSuggestBox_TextChanged(object sender, Fluence.Wpf.AutoSuggestBoxTextChangedEventArgs e)

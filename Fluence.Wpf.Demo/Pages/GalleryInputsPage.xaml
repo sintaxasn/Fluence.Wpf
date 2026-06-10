@@ -75,6 +75,25 @@
 
 
             <ContentControl x:Name="DemoSampleSlot03DemoContentHost" Visibility="Collapsed">
+                <ui:StackPanel Spacing="8">
+                    <ui:AutoSuggestBox
+                        x:Name="DemoAutoSuggestBox"
+                        Width="280"
+                        HorizontalAlignment="Left"
+                        PlaceholderText="Search fruit"
+                        QuerySubmitted="DemoAutoSuggestBox_QuerySubmitted"
+                        TextChanged="DemoAutoSuggestBox_TextChanged" />
+                    <TextBlock
+                        x:Name="AutoSuggestResultLabel"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="No query submitted" />
+                </ui:StackPanel>
+            </ContentControl>
+            <local:DemoSampleControl SampleDescription="Use AutoSuggestBox for search and autocomplete: handle TextChanged to filter suggestions and QuerySubmitted to act on the choice." />
+
+
+            <ContentControl x:Name="DemoSampleSlot04DemoContentHost" Visibility="Collapsed">
                 <ui:StackPanel Spacing="20">
                     <ui:PasswordBox
                         Width="480"
@@ -96,7 +115,7 @@
             <local:DemoSampleControl SampleDescription="Use password boxes for protected text entry, with reveal and strength affordances when appropriate." />
 
 
-            <ContentControl x:Name="DemoSampleSlot04DemoContentHost" Visibility="Collapsed">
+            <ContentControl x:Name="DemoSampleSlot05DemoContentHost" Visibility="Collapsed">
                 <ui:StackPanel Spacing="20">
                     <ui:NumberBox
                         Width="260"
@@ -129,7 +148,7 @@
             <local:DemoSampleControl SampleDescription="Use number boxes for numeric entry with optional spin buttons, bounds, and supporting descriptions." />
 
 
-            <ContentControl x:Name="DemoSampleSlot05DemoContentHost" Visibility="Collapsed">
+            <ContentControl x:Name="DemoSampleSlot06DemoContentHost" Visibility="Collapsed">
                 <ui:StackPanel Spacing="20">
                     <ui:StackPanel Spacing="8">
                         <TextBlock Foreground="{DynamicResource TextFillColorPrimaryBrush}" Text="Default" />
@@ -193,25 +212,6 @@
                 </ui:StackPanel>
             </ContentControl>
             <local:DemoSampleControl SampleDescription="Use sliders when a relative value is easier to choose visually than typing a precise number." />
-
-
-            <ContentControl x:Name="DemoSampleSlot06DemoContentHost" Visibility="Collapsed">
-                <ui:StackPanel Spacing="8">
-                    <ui:AutoSuggestBox
-                        x:Name="DemoAutoSuggestBox"
-                        Width="280"
-                        HorizontalAlignment="Left"
-                        PlaceholderText="Search fruit"
-                        QuerySubmitted="DemoAutoSuggestBox_QuerySubmitted"
-                        TextChanged="DemoAutoSuggestBox_TextChanged" />
-                    <TextBlock
-                        x:Name="AutoSuggestResultLabel"
-                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                        Style="{StaticResource CaptionTextBlockStyle}"
-                        Text="No query submitted" />
-                </ui:StackPanel>
-            </ContentControl>
-            <local:DemoSampleControl SampleDescription="Use AutoSuggestBox for search and autocomplete: handle TextChanged to filter suggestions and QuerySubmitted to act on the choice." />
         </StackPanel>
     </ui:SmoothScrollViewer>
 </UserControl>
