@@ -49,7 +49,9 @@ namespace Fluence.Wpf.Demo.Pages
         <ui:PasswordBox
             Margin=""0,0,0,12""
             PlaceholderText=""Password""
-            RevealButtonEnabled=""True"" />
+            RevealButtonEnabled=""True""
+            ShowCapsLockIndicator=""True""
+            ShowPasswordStrength=""True"" />
         <ui:CheckBox
             Margin=""0,0,0,24""
             Content=""Remember me"" />

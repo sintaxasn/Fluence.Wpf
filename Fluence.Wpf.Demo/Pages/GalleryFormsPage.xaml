@@ -29,7 +29,9 @@
                         x:Name="SignInPasswordBox"
                         Margin="{DynamicResource DemoControlBottomGapMargin}"
                         PlaceholderText="Password"
-                        RevealButtonEnabled="True" />
+                        RevealButtonEnabled="True"
+                        ShowCapsLockIndicator="True"
+                        ShowPasswordStrength="True" />
                     <ui:CheckBox
                         x:Name="RememberMeCheckBox"
                         Margin="{DynamicResource DemoSampleBlockMargin}"

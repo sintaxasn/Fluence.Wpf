@@ -129,12 +129,16 @@ namespace Fluence.Wpf.Demo.Pages.Inputs
             Width=""480""
             HorizontalAlignment=""Left""
             PlaceholderText=""Enter password...""
-            RevealButtonEnabled=""True"" />
+            RevealButtonEnabled=""True""
+            ShowCapsLockIndicator=""True""
+            ShowPasswordStrength=""True"" />
         <ui:PasswordBox
             Width=""480""
             HorizontalAlignment=""Left""
             Password=""CorrectHorse7!""
-            RevealButtonEnabled=""True"" />
+            RevealButtonEnabled=""True""
+            ShowCapsLockIndicator=""True""
+            ShowPasswordStrength=""True"" />
         <ui:PasswordBox
             Width=""480""
             HorizontalAlignment=""Left""
