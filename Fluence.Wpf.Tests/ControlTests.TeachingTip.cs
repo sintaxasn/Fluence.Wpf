@@ -244,7 +244,8 @@ namespace Fluence.Wpf.Tests
                     Popup? popup = tip.HostPopup;
                     Assert.IsNotNull(popup, "Opening the tip must lazily create the host popup.");
                     Assert.IsTrue(popup.AllowsTransparency, "TeachingTip popups must allow transparency for the rounded surface.");
-                    Assert.AreEqual(PopupAnimation.Fade, popup.PopupAnimation, "TeachingTip popups must use the fade animation.");
+                    Assert.AreEqual(PopupAnimation.None, popup.PopupAnimation,
+                        "TeachingTip popups must disable the popup fade; the template's Loaded storyboard owns the reveal.");
                     Assert.AreSame(tip, popup.Child, "The popup child must be the templated TeachingTip itself.");
                     Assert.AreSame(target, popup.PlacementTarget, "The popup must anchor to TeachingTip.Target.");
                     Assert.AreEqual(PlacementMode.Custom, popup.Placement,
@@ -272,6 +273,17 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(topBeak, "TopBeak must exist in the TeachingTip template.");
                     Assert.AreEqual(Visibility.Visible, topBeak.Visibility,
                         "A tip popped below its target must show the beak on its top edge.");
+
+                    // The open reveal (fade plus slide from Y=-8) must exist in the template
+                    // and settle at rest once the 167ms storyboard completes.
+                    System.Windows.Media.TranslateTransform? translate =
+                        tip.Template.FindName("TipTranslate", tip) as System.Windows.Media.TranslateTransform;
+                    Assert.IsNotNull(translate, "The TeachingTip template must expose the TipTranslate reveal transform.");
+                    Grid? tipRoot = tip.Template.FindName("TipRoot", tip) as Grid;
+                    Assert.IsNotNull(tipRoot, "The TeachingTip template must expose the TipRoot layout root.");
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000,
+                            () => Math.Abs(translate.Y) < 0.001 && tipRoot.Opacity >= 1.0),
+                        "The open reveal must settle at Y=0 and full opacity.");
                 }
                 finally
                 {

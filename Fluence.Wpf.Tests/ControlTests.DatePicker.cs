@@ -204,6 +204,17 @@ namespace Fluence.Wpf.Tests
                     Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
                         "Clicking the field must open the selector flyout.");
 
+                    // The open reveal (slide down from Y=-8 with a fade) must exist in the
+                    // template and settle at rest once the 167ms storyboard completes.
+                    TranslateTransform? translate =
+                        template.FindName("FlyoutSurfaceTranslate", picker) as TranslateTransform;
+                    Assert.IsNotNull(translate, "The DatePicker template must expose the FlyoutSurfaceTranslate reveal transform.");
+                    Border? surface = template.FindName("FlyoutSurface", picker) as Border;
+                    Assert.IsNotNull(surface, "The DatePicker template must expose the FlyoutSurface element.");
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000,
+                            () => Math.Abs(translate.Y) < 0.001 && surface.Opacity >= 1.0),
+                        "The flyout reveal must settle at Y=0 and full opacity.");
+
                     Assert.AreEqual(12, monthList.Items.Count, "The month column must offer the twelve culture month names.");
                     Assert.AreEqual(31, dayList.Items.Count, "The day column must offer 31 days for May.");
                     Assert.AreEqual(picker.MaxYear - picker.MinYear + 1, yearList.Items.Count,

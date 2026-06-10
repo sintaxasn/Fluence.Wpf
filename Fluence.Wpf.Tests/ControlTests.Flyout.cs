@@ -27,6 +27,7 @@
  */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -115,12 +116,26 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(popup, "ShowAt should lazily create the host popup.");
                     Assert.IsFalse(popup.StaysOpen, "Flyout popups must be light-dismiss (StaysOpen=false).");
                     Assert.IsTrue(popup.AllowsTransparency, "Flyout popups must allow transparency for the rounded surface.");
-                    Assert.AreEqual(PopupAnimation.Fade, popup.PopupAnimation, "Flyout popups must use the fade animation.");
+                    Assert.AreEqual(PopupAnimation.None, popup.PopupAnimation,
+                        "Flyout popups must disable the popup fade; the presenter's Loaded storyboard owns the reveal.");
                     Assert.AreSame(target, popup.PlacementTarget, "ShowAt must anchor the popup to the placement target.");
 
                     Controls.FlyoutPresenter? presenter = popup.Child as Controls.FlyoutPresenter;
                     Assert.IsNotNull(presenter, "The popup child must be a FlyoutPresenter.");
                     Assert.AreEqual("Flyout body", presenter.Content, "Flyout.Content must flow to the presenter.");
+
+                    // The open reveal (slide from Y=-8 with a fade) must exist in the template
+                    // and settle at rest once the 167ms storyboard completes.
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => presenter.IsLoaded),
+                        "The presenter must load inside the open popup.");
+                    System.Windows.Media.TranslateTransform? translate =
+                        presenter.Template.FindName("PresenterTranslate", presenter) as System.Windows.Media.TranslateTransform;
+                    Assert.IsNotNull(translate, "The presenter template must expose the PresenterTranslate reveal transform.");
+                    Border? surface = presenter.Template.FindName("PresenterSurface", presenter) as Border;
+                    Assert.IsNotNull(surface, "The presenter template must expose the PresenterSurface root.");
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000,
+                            () => Math.Abs(translate.Y) < 0.001 && surface.Opacity >= 1.0),
+                        "The open reveal must settle at Y=0 and full opacity.");
                 }
                 finally
                 {

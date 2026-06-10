@@ -32,7 +32,11 @@
                         x:Name="Backplate"
                         Background="{TemplateBinding Background}"
                         CornerRadius="{DynamicResource ControlCornerRadius}"
+                        RenderTransformOrigin="0.5,0.5"
                         UseLayoutRounding="True">
+                        <Border.RenderTransform>
+                            <ScaleTransform x:Name="PressScale" ScaleX="1" ScaleY="1" />
+                        </Border.RenderTransform>
                         <ContentPresenter
                             x:Name="IconPresenter"
                             HorizontalAlignment="Center"
@@ -42,12 +46,49 @@
                             TextElement.FontSize="{TemplateBinding FontSize}"
                             TextElement.Foreground="{TemplateBinding Foreground}" />
                     </Border>
+                    <!--  Press scale storyboards mirror Button.xaml (0.98 over 100ms on the 0.8,0,0,1 ControlFastOutSlowIn spline).  -->
+                    <ControlTemplate.Resources>
+                        <Storyboard x:Key="PressedScaleStoryboard">
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleX">
+                                <SplineDoubleKeyFrame
+                                    KeySpline="0.8,0,0,1"
+                                    KeyTime="0:0:0.1"
+                                    Value="0.98" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleY">
+                                <SplineDoubleKeyFrame
+                                    KeySpline="0.8,0,0,1"
+                                    KeyTime="0:0:0.1"
+                                    Value="0.98" />
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                        <Storyboard x:Key="ReleasedScaleStoryboard">
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleX">
+                                <SplineDoubleKeyFrame
+                                    KeySpline="0.8,0,0,1"
+                                    KeyTime="0:0:0.1"
+                                    Value="1" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleY">
+                                <SplineDoubleKeyFrame
+                                    KeySpline="0.8,0,0,1"
+                                    KeyTime="0:0:0.1"
+                                    Value="1" />
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </ControlTemplate.Resources>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="Backplate" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="Backplate" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard Storyboard="{StaticResource PressedScaleStoryboard}" />
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard Storyboard="{StaticResource ReleasedScaleStoryboard}" />
+                            </Trigger.ExitActions>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
@@ -88,7 +129,11 @@
                         Margin="2,1"
                         Background="{TemplateBinding Background}"
                         CornerRadius="{DynamicResource ControlCornerRadius}"
+                        RenderTransformOrigin="0.5,0.5"
                         UseLayoutRounding="True">
+                        <Border.RenderTransform>
+                            <ScaleTransform x:Name="PressScale" ScaleX="1" ScaleY="1" />
+                        </Border.RenderTransform>
                         <Grid Margin="4,0">
                             <Grid.ColumnDefinitions>
                                 <!--  Icon  -->
@@ -116,12 +161,49 @@
                                 Text="{TemplateBinding Label}" />
                         </Grid>
                     </Border>
+                    <!--  Press scale storyboards mirror Button.xaml (0.98 over 100ms on the 0.8,0,0,1 ControlFastOutSlowIn spline).  -->
+                    <ControlTemplate.Resources>
+                        <Storyboard x:Key="PressedScaleStoryboard">
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleX">
+                                <SplineDoubleKeyFrame
+                                    KeySpline="0.8,0,0,1"
+                                    KeyTime="0:0:0.1"
+                                    Value="0.98" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleY">
+                                <SplineDoubleKeyFrame
+                                    KeySpline="0.8,0,0,1"
+                                    KeyTime="0:0:0.1"
+                                    Value="0.98" />
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                        <Storyboard x:Key="ReleasedScaleStoryboard">
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleX">
+                                <SplineDoubleKeyFrame
+                                    KeySpline="0.8,0,0,1"
+                                    KeyTime="0:0:0.1"
+                                    Value="1" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleY">
+                                <SplineDoubleKeyFrame
+                                    KeySpline="0.8,0,0,1"
+                                    KeyTime="0:0:0.1"
+                                    Value="1" />
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </ControlTemplate.Resources>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="Backplate" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="Backplate" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard Storyboard="{StaticResource PressedScaleStoryboard}" />
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard Storyboard="{StaticResource ReleasedScaleStoryboard}" />
+                            </Trigger.ExitActions>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
@@ -179,7 +261,14 @@
                                     Label="See more"
                                     Visibility="Collapsed">
                                     <controls:AppBarButton.Icon>
-                                        <controls:FontIcon Glyph="&#xE712;" />
+                                        <controls:FontIcon
+                                            x:Name="MoreButtonIcon"
+                                            Glyph="&#xE712;"
+                                            RenderTransformOrigin="0.5,0.5">
+                                            <controls:FontIcon.RenderTransform>
+                                                <RotateTransform x:Name="MoreButtonIconRotation" Angle="0" />
+                                            </controls:FontIcon.RenderTransform>
+                                        </controls:FontIcon>
                                     </controls:AppBarButton.Icon>
                                 </controls:AppBarButton>
                             </StackPanel>
@@ -188,7 +277,11 @@
                             <StackPanel
                                 x:Name="PART_SecondaryHost"
                                 Grid.Row="1"
+                                RenderTransformOrigin="0,0"
                                 Visibility="Collapsed">
+                                <StackPanel.RenderTransform>
+                                    <ScaleTransform x:Name="SecondaryHostScale" ScaleX="1" ScaleY="1" />
+                                </StackPanel.RenderTransform>
                                 <Border
                                     Height="1"
                                     Margin="4,2"
@@ -206,8 +299,67 @@
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
+                        <!--
+                            Overflow expand/collapse over 167ms on the 0.8,0,0,1 spline
+                            (Typography.xaml motion tokens ControlFastAnimationDuration +
+                            ControlFastOutSlowInKeySpline; storyboard attributes need literal
+                            values). The reveal is a top-anchored ScaleY 0 to 1 on the secondary
+                            host (RenderTransform keeps the popup at its final size while the
+                            content sweeps in, matching the WinUI overflow feel; the in-tree
+                            Expander.xaml alternative snaps its height discretely and animates
+                            less); the more-button glyph rotates 0 to 180 like the Expander
+                            chevron. The exit storyboard holds the host Visible while it scales
+                            back to 0 and collapses it fully at the end via the discrete
+                            Visibility keyframe (Expander.xaml ObjectAnimationUsingKeyFrames
+                            precedent); both storyboards pin Visibility so each replaces the
+                            other's held value on re-toggle.
+                        -->
                         <Trigger Property="IsExpanded" Value="True">
                             <Setter TargetName="PART_SecondaryHost" Property="Visibility" Value="Visible" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_SecondaryHost" Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SecondaryHostScale" Storyboard.TargetProperty="ScaleY">
+                                            <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0.8,0,0,1"
+                                                KeyTime="0:0:0.167"
+                                                Value="1" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="MoreButtonIconRotation" Storyboard.TargetProperty="Angle">
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0.8,0,0,1"
+                                                KeyTime="0:0:0.167"
+                                                Value="180" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_SecondaryHost" Storyboard.TargetProperty="Visibility">
+                                            <DiscreteObjectKeyFrame KeyTime="0:0:0" Value="{x:Static Visibility.Visible}" />
+                                            <DiscreteObjectKeyFrame KeyTime="0:0:0.167" Value="{x:Static Visibility.Collapsed}" />
+                                        </ObjectAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SecondaryHostScale" Storyboard.TargetProperty="ScaleY">
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0.8,0,0,1"
+                                                KeyTime="0:0:0.167"
+                                                Value="0" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="MoreButtonIconRotation" Storyboard.TargetProperty="Angle">
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0.8,0,0,1"
+                                                KeyTime="0:0:0.167"
+                                                Value="0" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

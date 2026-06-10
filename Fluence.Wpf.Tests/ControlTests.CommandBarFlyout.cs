@@ -236,6 +236,13 @@ namespace Fluence.Wpf.Tests
                     Assert.AreEqual(Visibility.Collapsed, secondaryHost.Visibility,
                         "The secondary host must stay collapsed until the more button is clicked.");
 
+                    System.Windows.Media.ScaleTransform? hostScale =
+                        presenter.Template.FindName("SecondaryHostScale", presenter) as System.Windows.Media.ScaleTransform;
+                    Assert.IsNotNull(hostScale, "The presenter template must expose the SecondaryHostScale reveal transform.");
+                    System.Windows.Media.RotateTransform? chevronRotation =
+                        presenter.Template.FindName("MoreButtonIconRotation", presenter) as System.Windows.Media.RotateTransform;
+                    Assert.IsNotNull(chevronRotation, "The presenter template must expose the MoreButtonIconRotation transform.");
+
                     moreButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
                     Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => presenter.IsExpanded),
                         "Clicking the more button must expand the presenter.");
@@ -243,11 +250,22 @@ namespace Fluence.Wpf.Tests
                         "Expanding must make the secondary host visible.");
                     Assert.IsTrue(flyout.IsOpen, "The more button must toggle the overflow without dismissing the flyout.");
 
+                    // The 167ms expand storyboard must settle the host scale at 1 and rotate
+                    // the more-button glyph to 180.
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => hostScale.ScaleY >= 1.0),
+                        "Expanding must animate the secondary host ScaleY up to 1.");
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => chevronRotation.Angle >= 180.0),
+                        "Expanding must rotate the more-button glyph to 180 degrees.");
+
                     moreButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
                     Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => !presenter.IsExpanded),
                         "Clicking the more button again must collapse the presenter.");
                     Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => !secondaryHost.IsVisible),
-                        "Collapsing must hide the secondary host.");
+                        "Collapsing must hide the secondary host (the exit storyboard collapses it at the end).");
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => hostScale.ScaleY <= 0.0),
+                        "Collapsing must animate the secondary host ScaleY back to 0.");
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => chevronRotation.Angle <= 0.0),
+                        "Collapsing must rotate the more-button glyph back to 0 degrees.");
                 }
                 finally
                 {
@@ -396,6 +414,68 @@ namespace Fluence.Wpf.Tests
                     }
                 }
             });
+        }
+
+        [TestMethod]
+        public void AppBarButton_Pressed_AnimatesBackplatePressScale()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Window window = new() { Width = 400, Height = 300 };
+                PressScaleAppBarButtonProbe button = new()
+                {
+                    Icon = new Controls.FontIcon { Glyph = "\uE8C8" },
+                    Label = "Copy",
+                };
+
+                // The implicit AppBarButton style only applies to the exact type, so the
+                // probe subclass resolves it explicitly by the implicit-style resource key.
+                button.SetResourceReference(FrameworkElement.StyleProperty, typeof(Controls.AppBarButton));
+
+                try
+                {
+                    window.Content = button;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    System.Windows.Media.ScaleTransform? pressScale =
+                        button.Template.FindName("PressScale", button) as System.Windows.Media.ScaleTransform;
+                    Assert.IsNotNull(pressScale, "The AppBarButton template must expose the PressScale transform.");
+                    Assert.AreEqual(1.0, pressScale.ScaleX, 0.001, "The backplate must rest at 1.0 scale.");
+
+                    // Press: the Button.xaml press-scale storyboard settles at 0.98.
+                    button.SetPressed(true);
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000,
+                            () => pressScale.ScaleX <= 0.98 && pressScale.ScaleY <= 0.98),
+                        "Pressing must animate the backplate down to the 0.98 press scale.");
+
+                    // Release: the release storyboard restores 1.0.
+                    button.SetPressed(false);
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000,
+                            () => pressScale.ScaleX >= 1.0 && pressScale.ScaleY >= 1.0),
+                        "Releasing must animate the backplate back to 1.0 scale.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        /// <summary>
+        /// Exposes the protected <see cref="ButtonBase.IsPressed"/> setter so the press-scale
+        /// storyboards can be driven without a real input device.
+        /// </summary>
+        private sealed class PressScaleAppBarButtonProbe : Controls.AppBarButton
+        {
+            public void SetPressed(bool pressed)
+            {
+                IsPressed = pressed;
+            }
         }
     }
 }

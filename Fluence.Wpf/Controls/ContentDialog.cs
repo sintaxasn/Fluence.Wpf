@@ -615,11 +615,12 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Plays the WinUI dialog entrance on the overlay-hosted dialog surface: opacity 0 to 1
-        /// and scale 1.05 to 1.0 around the center over 250 ms with a decelerating ease (the
-        /// WinUI DialogShowing transition). The animations use <see cref="FillBehavior.Stop"/>
-        /// with base values equal to the end values, so nothing stays animated once the
-        /// entrance completes.
+        /// Plays the WinUI dialog entrance on the overlay-hosted dialog surface, mirroring the
+        /// DialogShowing visual transition keyframes: opacity rises 0 to 1 linearly over the
+        /// faster motion duration while the scale settles 1.05 to 1.0 around the center over
+        /// the normal motion duration on the decelerating Fluent key spline. The animations use
+        /// <see cref="FillBehavior.Stop"/> with base values equal to the end values, so nothing
+        /// stays animated once the entrance completes.
         /// </summary>
         private void BeginOpenAnimation()
         {
@@ -627,22 +628,46 @@ namespace Fluence.Wpf.Controls
             SetCurrentValue(RenderTransformOriginProperty, new Point(0.5, 0.5));
             SetCurrentValue(RenderTransformProperty, scale);
 
-            Duration duration = new(TimeSpan.FromMilliseconds(OpenAnimationMilliseconds));
-            CubicEase ease = new() { EasingMode = EasingMode.EaseOut };
-            DoubleAnimation opacityAnimation = new(0.0, 1.0, duration)
+            // WinUI ContentDialog_themeresources.xaml "To=DialogShowing" keyframes. The timing
+            // values mirror the Themes/Typography/Typography.xaml motion tokens, which XAML
+            // storyboard attributes cannot reference and code therefore mirrors by value:
+            // ControlFasterAnimationDuration (83 ms) for the linear opacity rise and
+            // ControlNormalAnimationDuration (250 ms) with ControlFastOutSlowInKeySpline
+            // (0.8,0,0,1) for the scale settle.
+            DoubleAnimationUsingKeyFrames opacityAnimation = new()
             {
-                EasingFunction = ease,
                 FillBehavior = FillBehavior.Stop,
-            };
-            DoubleAnimation scaleAnimation = new(1.05, 1.0, duration)
-            {
-                EasingFunction = ease,
-                FillBehavior = FillBehavior.Stop,
+                KeyFrames =
+                {
+                    new DiscreteDoubleKeyFrame(0.0, KeyTime.FromTimeSpan(TimeSpan.Zero)),
+                    new LinearDoubleKeyFrame(1.0, KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(OpenFadeMilliseconds))),
+                },
             };
 
             BeginAnimation(OpacityProperty, opacityAnimation);
-            scale.BeginAnimation(ScaleTransform.ScaleXProperty, scaleAnimation);
-            scale.BeginAnimation(ScaleTransform.ScaleYProperty, scaleAnimation);
+            scale.BeginAnimation(ScaleTransform.ScaleXProperty, CreateOpenScaleAnimation());
+            scale.BeginAnimation(ScaleTransform.ScaleYProperty, CreateOpenScaleAnimation());
+        }
+
+        /// <summary>
+        /// Builds one axis of the entrance scale animation: 1.05 to 1.0 over the normal motion
+        /// duration on the decelerating Fluent key spline (see <see cref="BeginOpenAnimation"/>
+        /// for the WinUI keyframe source and the mirrored Typography.xaml motion tokens).
+        /// </summary>
+        private static DoubleAnimationUsingKeyFrames CreateOpenScaleAnimation()
+        {
+            return new DoubleAnimationUsingKeyFrames
+            {
+                FillBehavior = FillBehavior.Stop,
+                KeyFrames =
+                {
+                    new DiscreteDoubleKeyFrame(1.05, KeyTime.FromTimeSpan(TimeSpan.Zero)),
+                    new SplineDoubleKeyFrame(
+                        1.0,
+                        KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(OpenScaleMilliseconds)),
+                        new KeySpline(0.8, 0.0, 0.0, 1.0)),
+                },
+            };
         }
 
         /// <summary>
@@ -974,10 +999,18 @@ namespace Fluence.Wpf.Controls
         private KeyEventHandler? _ownerKeyInputBlocker;
 
         /// <summary>
-        /// The duration of the dialog entrance animation (opacity and scale), matching the
-        /// WinUI ControlNormalAnimationDuration used by the DialogShowing transition.
+        /// The duration of the entrance opacity rise, mirroring the value of the
+        /// ControlFasterAnimationDuration motion token (Themes/Typography/Typography.xaml)
+        /// used by the WinUI DialogShowing transition.
         /// </summary>
-        private const double OpenAnimationMilliseconds = 250;
+        private const double OpenFadeMilliseconds = 83;
+
+        /// <summary>
+        /// The duration of the entrance scale settle, mirroring the value of the
+        /// ControlNormalAnimationDuration motion token (Themes/Typography/Typography.xaml)
+        /// used by the WinUI DialogShowing transition.
+        /// </summary>
+        private const double OpenScaleMilliseconds = 250;
 
         /// <summary>
         /// The overlay layout root (smoke layer plus the dialog) added to the host while open.

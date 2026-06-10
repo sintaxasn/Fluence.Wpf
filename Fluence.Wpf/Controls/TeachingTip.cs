@@ -579,7 +579,9 @@ namespace Fluence.Wpf.Controls
                 HostPopup = new Popup
                 {
                     AllowsTransparency = true,
-                    PopupAnimation = PopupAnimation.Fade,
+                    // The TeachingTip template owns the open reveal (a slide + fade storyboard
+                    // on Loaded), so the popup must not add its own fade on top.
+                    PopupAnimation = PopupAnimation.None,
                 };
                 HostPopup.Closed += OnPopupClosed;
             }

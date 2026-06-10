@@ -27,6 +27,7 @@
  */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
@@ -605,12 +606,87 @@ namespace Fluence.Wpf.Tests
                     Assert.AreSame(strongFill, selectedDot.Fill,
                         "The selected pip must fill with the same neutral ControlStrongFillColorDefaultBrush (no accent).");
                     Assert.AreEqual(4.0, restDot.Width, 0.01, "The rest pip dot must stay at the 4px rest size.");
-                    Assert.AreEqual(6.0, selectedDot.Width, 0.01, "The selected pip dot must grow to the 6px selected size.");
+
+                    // The selected size is animated (83ms ControlFasterAnimationDuration), so
+                    // sample the dot until the storyboard settles at the 6px selected size.
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => Math.Abs(selectedDot.Width - 6.0) < 0.01),
+                        "The selected pip dot must grow to the 6px selected size.");
 
                     pager.IsEnabled = false;
                     DrainDispatcher(window.Dispatcher);
                     Assert.AreSame(app?.TryFindResource("ControlStrongFillColorDisabledBrush"), restDot.Fill,
                         "Disabled pips must fill with ControlStrongFillColorDisabledBrush.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void PipsPager_PipSizeMorph_AnimatesSelectionAndSurvivesWindowRebuild()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Window window = new() { Width = 500, Height = 200 };
+                Controls.PipsPager pager = new() { NumberOfPages = 10, MaxVisiblePips = 3 };
+
+                try
+                {
+                    window.Content = pager;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    WpfStackPanel? host = FindVisualChildByName<WpfStackPanel>(pager, "PART_PipsHost");
+                    Assert.IsNotNull(host, "PART_PipsHost must be present in the PipsPager template.");
+
+                    static System.Windows.Shapes.Ellipse? DotAt(WpfStackPanel pipsHost, int offset)
+                    {
+                        WpfToggleButton? pip = GetPipAt(pipsHost, offset);
+                        return pip is null
+                            ? null
+                            : FindVisualChildByName<System.Windows.Shapes.Ellipse>(pip, "Pip");
+                    }
+
+                    static bool IsDotSize(System.Windows.Shapes.Ellipse? dot, double size)
+                    {
+                        return dot is not null
+                            && Math.Abs(dot.Width - size) < 0.01
+                            && Math.Abs(dot.Height - size) < 0.01;
+                    }
+
+                    // Pips are created with IsChecked already true, so the IsChecked
+                    // EnterActions must run when the template applies and settle the
+                    // selected dot at 6x6 (83ms ControlFasterAnimationDuration morph).
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => IsDotSize(DotAt(host, 0), 6.0)),
+                        "The initially selected pip must animate to the 6px selected size at load.");
+                    Assert.IsTrue(IsDotSize(DotAt(host, 1), 4.0), "An unselected pip must rest at 4px.");
+
+                    // In-place selection change (the window stays clamped at the start):
+                    // the old pip's ExitActions shrink it back to 4 while the new pip grows to 6.
+                    pager.SelectedPageIndex = 1;
+                    DrainDispatcher(window.Dispatcher);
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => IsDotSize(DotAt(host, 1), 6.0)),
+                        "The newly selected pip must animate up to the 6px selected size.");
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => IsDotSize(DotAt(host, 0), 4.0)),
+                        "The previously selected pip must animate back to the 4px rest size.");
+
+                    // Window rebuild (mid-range selection recreates the pips): the recreated
+                    // selected pip must still land at 6x6 because its trigger condition is
+                    // already true when the recreated template applies.
+                    pager.SelectedPageIndex = 5;
+                    DrainDispatcher(window.Dispatcher);
+                    Assert.AreEqual("Page 5", AutomationProperties.GetName(GetPipAt(host, 0)!),
+                        "A mid-range selection must rebuild the pip window.");
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => IsDotSize(DotAt(host, 1), 6.0)),
+                        "A recreated selected pip must animate to the 6px selected size.");
+                    Assert.IsTrue(IsDotSize(DotAt(host, 0), 4.0), "A recreated unselected pip must rest at 4px.");
+                    Assert.IsTrue(IsDotSize(DotAt(host, 2), 4.0), "A recreated unselected pip must rest at 4px.");
                 }
                 finally
                 {

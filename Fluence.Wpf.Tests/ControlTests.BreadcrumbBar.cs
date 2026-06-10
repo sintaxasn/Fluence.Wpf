@@ -423,5 +423,52 @@ namespace Fluence.Wpf.Tests
                 }
             });
         }
+
+        [TestMethod]
+        public void BreadcrumbBarItem_Pressed_AnimatesContentPlatePressScale()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Window window = new() { Width = 500, Height = 200 };
+                Controls.BreadcrumbBar bar = new();
+                BreadcrumbBarItemProbe first = new() { Content = "Home" };
+                BreadcrumbBarItemProbe second = new() { Content = "Documents" };
+                _ = bar.Items.Add(first);
+                _ = bar.Items.Add(second);
+
+                try
+                {
+                    window.Content = bar;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.IsFalse(first.IsLastItem, "The pressed crumb must be an ancestor (non-last) item.");
+
+                    ScaleTransform? pressScale = first.Template.FindName("PressScale", first) as ScaleTransform;
+                    Assert.IsNotNull(pressScale, "The BreadcrumbBarItem template must expose the PressScale transform.");
+                    Assert.AreEqual(1.0, pressScale.ScaleX, 0.001, "The content plate must rest at 1.0 scale.");
+
+                    // Press: the Button.xaml press-scale storyboard settles at 0.98.
+                    first.SimulateMouseDown();
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000,
+                            () => pressScale.ScaleX <= 0.98 && pressScale.ScaleY <= 0.98),
+                        "Pressing a crumb must animate its content plate down to the 0.98 press scale.");
+
+                    // Release: the release storyboard restores 1.0.
+                    first.SimulateMouseUp();
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000,
+                            () => pressScale.ScaleX >= 1.0 && pressScale.ScaleY >= 1.0),
+                        "Releasing a crumb must animate its content plate back to 1.0 scale.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
     }
 }

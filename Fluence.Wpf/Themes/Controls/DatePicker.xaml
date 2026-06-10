@@ -143,6 +143,9 @@
                                 BorderThickness="1"
                                 CornerRadius="{DynamicResource OverlayCornerRadius}"
                                 UseLayoutRounding="True">
+                                <Border.RenderTransform>
+                                    <TranslateTransform x:Name="FlyoutSurfaceTranslate" />
+                                </Border.RenderTransform>
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition Height="Auto" />
@@ -209,6 +212,34 @@
                         </Popup>
                     </Grid>
                     <ControlTemplate.Triggers>
+                        <!--
+                            Flyout open reveal, ContextMenu.xaml submenu precedent: the surface
+                            slides down from Y=-8 to 0 (the popup is Placement=Bottom) with a fade
+                            0 to 1 over 167ms on the 0.8,0,0,1 spline (Typography.xaml motion
+                            tokens ControlFastAnimationDuration + ControlFastOutSlowInKeySpline;
+                            storyboard attributes need literal values). The popup keeps
+                            PopupAnimation=None so this storyboard owns the reveal.
+                        -->
+                        <EventTrigger RoutedEvent="FrameworkElement.Loaded" SourceName="FlyoutSurface">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FlyoutSurfaceTranslate" Storyboard.TargetProperty="Y">
+                                        <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="-8" />
+                                        <SplineDoubleKeyFrame
+                                            KeySpline="0.8,0,0,1"
+                                            KeyTime="0:0:0.167"
+                                            Value="0" />
+                                    </DoubleAnimationUsingKeyFrames>
+                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FlyoutSurface" Storyboard.TargetProperty="Opacity">
+                                        <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                                        <SplineDoubleKeyFrame
+                                            KeySpline="0.8,0,0,1"
+                                            KeyTime="0:0:0.167"
+                                            Value="1" />
+                                    </DoubleAnimationUsingKeyFrames>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
                         <Trigger Property="Header" Value="{x:Null}">
                             <Setter TargetName="HeaderPresenter" Property="Visibility" Value="Collapsed" />
                         </Trigger>

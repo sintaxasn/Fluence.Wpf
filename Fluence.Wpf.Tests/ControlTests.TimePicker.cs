@@ -236,6 +236,17 @@ namespace Fluence.Wpf.Tests
                     Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
                         "Clicking the field must open the selector flyout.");
 
+                    // The open reveal (slide down from Y=-8 with a fade) must exist in the
+                    // template and settle at rest once the 167ms storyboard completes.
+                    TranslateTransform? translate =
+                        template.FindName("FlyoutSurfaceTranslate", picker) as TranslateTransform;
+                    Assert.IsNotNull(translate, "The TimePicker template must expose the FlyoutSurfaceTranslate reveal transform.");
+                    Border? surface = template.FindName("FlyoutSurface", picker) as Border;
+                    Assert.IsNotNull(surface, "The TimePicker template must expose the FlyoutSurface element.");
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000,
+                            () => Math.Abs(translate.Y) < 0.001 && surface.Opacity >= 1.0),
+                        "The flyout reveal must settle at Y=0 and full opacity.");
+
                     CultureInfo culture = CultureInfo.CurrentCulture;
                     Assert.AreEqual(12, hourList.Items.Count, "The 12-hour clock must offer the hours 1..12.");
                     Assert.AreEqual(1.ToString(culture), hourList.Items[0], "The 12-hour column must start at hour 1.");

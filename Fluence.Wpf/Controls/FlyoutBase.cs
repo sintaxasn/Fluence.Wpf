@@ -326,7 +326,9 @@ namespace Fluence.Wpf.Controls
                     Child = Presenter,
                     CustomPopupPlacementCallback = GetPlacements,
                     Placement = PlacementMode.Custom,
-                    PopupAnimation = PopupAnimation.Fade,
+                    // The FlyoutPresenter template owns the open reveal (a slide + fade
+                    // storyboard on Loaded), so the popup must not add its own fade on top.
+                    PopupAnimation = PopupAnimation.None,
                     StaysOpen = false,
                 };
                 HostPopup.Closed += OnPopupClosed;

@@ -82,7 +82,10 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:TeachingTip}">
-                    <Grid UseLayoutRounding="True">
+                    <Grid x:Name="TipRoot" UseLayoutRounding="True">
+                        <Grid.RenderTransform>
+                            <TranslateTransform x:Name="TipTranslate" />
+                        </Grid.RenderTransform>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="*" />
@@ -213,6 +216,41 @@
                         </Button>
                     </Grid>
                     <ControlTemplate.Triggers>
+                        <!--
+                            Open reveal, ContextMenu.xaml submenu precedent: fade 0 to 1 over 83ms
+                            (ControlFasterAnimationDuration) and slide from Y=-8 (the beak/target
+                            side) to 0 over 167ms (ControlFastAnimationDuration) on the 0.8,0,0,1
+                            spline (ControlFastOutSlowInKeySpline); Typography.xaml motion tokens,
+                            mirrored literally because storyboard attributes cannot reference them.
+                            A Loaded EventTrigger cannot key off ActualPlacement, so v1 uses this
+                            fixed direction matching the dominant bottom placement (Auto resolves
+                            to Bottom, beak on the top edge). TeachingTip.cs sets the popup's
+                            PopupAnimation to None so this storyboard owns the reveal.
+                            SourceName anchors the trigger to the template child: a tip that is
+                            declared collapsed in a panel raises Loaded before its template ever
+                            instantiates, and an unanchored trigger would then fail to resolve
+                            the storyboard target names.
+                        -->
+                        <EventTrigger RoutedEvent="FrameworkElement.Loaded" SourceName="TipRoot">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TipRoot" Storyboard.TargetProperty="Opacity">
+                                        <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                                        <SplineDoubleKeyFrame
+                                            KeySpline="0.8,0,0,1"
+                                            KeyTime="0:0:0.083"
+                                            Value="1" />
+                                    </DoubleAnimationUsingKeyFrames>
+                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TipTranslate" Storyboard.TargetProperty="Y">
+                                        <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="-8" />
+                                        <SplineDoubleKeyFrame
+                                            KeySpline="0.8,0,0,1"
+                                            KeyTime="0:0:0.167"
+                                            Value="0" />
+                                    </DoubleAnimationUsingKeyFrames>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
                         <!--  The beak sits on the edge of the tip that faces the target.  -->
                         <Trigger Property="ActualPlacement" Value="{x:Static ui:TeachingTipPlacementMode.Bottom}">
                             <Setter TargetName="TopBeak" Property="Visibility" Value="Visible" />

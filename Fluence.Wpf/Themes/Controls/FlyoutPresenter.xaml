@@ -30,12 +30,16 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:FlyoutPresenter}">
                     <Border
+                        x:Name="PresenterSurface"
                         Padding="{TemplateBinding Padding}"
                         Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
                         CornerRadius="{DynamicResource OverlayCornerRadius}"
                         UseLayoutRounding="True">
+                        <Border.RenderTransform>
+                            <TranslateTransform x:Name="PresenterTranslate" />
+                        </Border.RenderTransform>
                         <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
                             <ContentPresenter
                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
@@ -45,6 +49,41 @@
                                 TextElement.Foreground="{TemplateBinding Foreground}" />
                         </ScrollViewer>
                     </Border>
+                    <ControlTemplate.Triggers>
+                        <!--
+                            Open reveal, ContextMenu.xaml submenu precedent: slide from Y=-8 to 0 with
+                            a fade 0 to 1 over 167ms on the 0.8,0,0,1 spline (Typography.xaml motion
+                            tokens ControlFastAnimationDuration + ControlFastOutSlowInKeySpline;
+                            storyboard attributes need literal values). The presenter cannot see
+                            FlyoutBase.Placement from the template, so v1 uses this fixed reveal
+                            matching the dominant bottom placement. FlyoutBase.cs sets the popup's
+                            PopupAnimation to None so this storyboard owns the reveal.
+                            SourceName anchors the trigger to the template child so it is only
+                            hooked once the template has instantiated; a presenter whose Loaded
+                            fires without an applied template (a collapsed declaration) would
+                            otherwise fail to resolve the storyboard target names.
+                        -->
+                        <EventTrigger RoutedEvent="FrameworkElement.Loaded" SourceName="PresenterSurface">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PresenterTranslate" Storyboard.TargetProperty="Y">
+                                        <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="-8" />
+                                        <SplineDoubleKeyFrame
+                                            KeySpline="0.8,0,0,1"
+                                            KeyTime="0:0:0.167"
+                                            Value="0" />
+                                    </DoubleAnimationUsingKeyFrames>
+                                    <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PresenterSurface" Storyboard.TargetProperty="Opacity">
+                                        <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="0" />
+                                        <SplineDoubleKeyFrame
+                                            KeySpline="0.8,0,0,1"
+                                            KeyTime="0:0:0.167"
+                                            Value="1" />
+                                    </DoubleAnimationUsingKeyFrames>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

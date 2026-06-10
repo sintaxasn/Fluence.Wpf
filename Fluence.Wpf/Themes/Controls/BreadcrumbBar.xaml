@@ -40,7 +40,11 @@
                             x:Name="ContentPlate"
                             Grid.Column="0"
                             Background="{TemplateBinding Background}"
-                            CornerRadius="{DynamicResource ControlCornerRadius}">
+                            CornerRadius="{DynamicResource ControlCornerRadius}"
+                            RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <ScaleTransform x:Name="PressScale" ScaleX="1" ScaleY="1" />
+                            </Border.RenderTransform>
                             <ContentPresenter
                                 x:Name="ContentPresenter"
                                 Margin="{TemplateBinding Padding}"
@@ -62,6 +66,37 @@
                             IconFontSize="12"
                             IsHitTestVisible="False" />
                     </Grid>
+                    <!--  Press scale storyboards mirror Button.xaml (0.98 over 100ms on the 0.8,0,0,1 ControlFastOutSlowIn spline).  -->
+                    <ControlTemplate.Resources>
+                        <Storyboard x:Key="PressedScaleStoryboard">
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleX">
+                                <SplineDoubleKeyFrame
+                                    KeySpline="0.8,0,0,1"
+                                    KeyTime="0:0:0.1"
+                                    Value="0.98" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleY">
+                                <SplineDoubleKeyFrame
+                                    KeySpline="0.8,0,0,1"
+                                    KeyTime="0:0:0.1"
+                                    Value="0.98" />
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                        <Storyboard x:Key="ReleasedScaleStoryboard">
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleX">
+                                <SplineDoubleKeyFrame
+                                    KeySpline="0.8,0,0,1"
+                                    KeyTime="0:0:0.1"
+                                    Value="1" />
+                            </DoubleAnimationUsingKeyFrames>
+                            <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleY">
+                                <SplineDoubleKeyFrame
+                                    KeySpline="0.8,0,0,1"
+                                    KeyTime="0:0:0.1"
+                                    Value="1" />
+                            </DoubleAnimationUsingKeyFrames>
+                        </Storyboard>
+                    </ControlTemplate.Resources>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsLastItem" Value="True">
                             <Setter TargetName="ChevronIcon" Property="Visibility" Value="Collapsed" />
@@ -84,6 +119,12 @@
                             </MultiTrigger.Conditions>
                             <Setter TargetName="ContentPlate" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+                            <MultiTrigger.EnterActions>
+                                <BeginStoryboard Storyboard="{StaticResource PressedScaleStoryboard}" />
+                            </MultiTrigger.EnterActions>
+                            <MultiTrigger.ExitActions>
+                                <BeginStoryboard Storyboard="{StaticResource ReleasedScaleStoryboard}" />
+                            </MultiTrigger.ExitActions>
                         </MultiTrigger>
 
                         <Trigger Property="IsEnabled" Value="False">

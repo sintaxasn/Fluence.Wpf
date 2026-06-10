@@ -12,8 +12,9 @@
         ControlStrongFillColorDefaultBrush, grows to 5px in TextFillColorSecondaryBrush on
         hover (TextFillColorSecondaryBrush pressed), and the selected pip renders 6px in the
         same ControlStrongFillColorDefaultBrush (ControlStrongFillColorDisabledBrush when
-        disabled), approximating the WinUI 4/5/6 px pip scale with two-state sizing instead
-        of animated scaling.
+        disabled), matching the WinUI 4/5/6 px pip scale; the size changes animate over the
+        ControlFasterAnimationDuration on the ControlFastOutSlowIn spline (ToggleSwitch.xaml
+        knob-morph precedent).
         Navigation buttons: subtle plates (SubtleFillColorSecondaryBrush hover /
         SubtleFillColorTertiaryBrush press, see NumberBox spin buttons) hosting Fluence
         FontIcon chevrons; ChevronLeft/Right E76B/E76C when horizontal and ChevronUp/Down
@@ -41,18 +42,100 @@
                             Fill="{DynamicResource ControlStrongFillColorDefaultBrush}" />
                     </Grid>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
+                        <!--
+                            Pip size morph (rest 4 / hover 5 / selected 6), ToggleSwitch.xaml knob
+                            precedent: Width/Height animate over 83ms on the 0.8,0,0,1 spline
+                            (Typography.xaml motion tokens ControlFasterAnimationDuration +
+                            ControlFastOutSlowInKeySpline; storyboard attributes need literal
+                            values). Brush roles keep the committed neutral strong-fill mapping.
+                            Hover sizing applies only to unchecked pips and is declared before the
+                            IsChecked trigger, so checking a hovered pip lets the 6px selected
+                            storyboard begin last and win the size handoff.
+                        -->
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsMouseOver" Value="True" />
+                                <Condition Property="IsChecked" Value="False" />
+                            </MultiTrigger.Conditions>
                             <Setter TargetName="Pip" Property="Fill" Value="{DynamicResource TextFillColorSecondaryBrush}" />
-                            <Setter TargetName="Pip" Property="Height" Value="5" />
-                            <Setter TargetName="Pip" Property="Width" Value="5" />
-                        </Trigger>
+                            <MultiTrigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Pip" Storyboard.TargetProperty="Width">
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0.8,0,0,1"
+                                                KeyTime="0:0:0.083"
+                                                Value="5" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Pip" Storyboard.TargetProperty="Height">
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0.8,0,0,1"
+                                                KeyTime="0:0:0.083"
+                                                Value="5" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </MultiTrigger.EnterActions>
+                            <MultiTrigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Pip" Storyboard.TargetProperty="Width">
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0.8,0,0,1"
+                                                KeyTime="0:0:0.083"
+                                                Value="4" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Pip" Storyboard.TargetProperty="Height">
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0.8,0,0,1"
+                                                KeyTime="0:0:0.083"
+                                                Value="4" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </MultiTrigger.ExitActions>
+                        </MultiTrigger>
                         <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="Pip" Property="Fill" Value="{DynamicResource TextFillColorSecondaryBrush}" />
                         </Trigger>
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="Pip" Property="Fill" Value="{DynamicResource ControlStrongFillColorDefaultBrush}" />
-                            <Setter TargetName="Pip" Property="Height" Value="6" />
-                            <Setter TargetName="Pip" Property="Width" Value="6" />
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Pip" Storyboard.TargetProperty="Width">
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0.8,0,0,1"
+                                                KeyTime="0:0:0.083"
+                                                Value="6" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Pip" Storyboard.TargetProperty="Height">
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0.8,0,0,1"
+                                                KeyTime="0:0:0.083"
+                                                Value="6" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Pip" Storyboard.TargetProperty="Width">
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0.8,0,0,1"
+                                                KeyTime="0:0:0.083"
+                                                Value="4" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Pip" Storyboard.TargetProperty="Height">
+                                            <SplineDoubleKeyFrame
+                                                KeySpline="0.8,0,0,1"
+                                                KeyTime="0:0:0.083"
+                                                Value="4" />
+                                        </DoubleAnimationUsingKeyFrames>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter TargetName="Pip" Property="Fill" Value="{DynamicResource ControlStrongFillColorDisabledBrush}" />
