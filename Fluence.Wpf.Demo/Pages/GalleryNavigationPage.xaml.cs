@@ -246,6 +246,47 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
 }
 ";
 
+        private const string BreadcrumbBarXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Navigation.BreadcrumbTrail""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <ui:BreadcrumbBar x:Name=""Trail"" ItemClicked=""Trail_ItemClicked"" />
+</UserControl>
+";
+
+        private const string BreadcrumbBarCSharpSource = @"using System.Collections.ObjectModel;
+using System.Windows.Controls;
+using Fluence.Wpf;
+
+namespace Fluence.Wpf.Demo.Pages.Navigation
+{
+    public partial class BreadcrumbTrail : UserControl
+    {
+        private readonly ObservableCollection<string> _path =
+            [""Home"", ""Documents"", ""Design"", ""Specs""];
+
+        public BreadcrumbTrail()
+        {
+            InitializeComponent();
+            Trail.ItemsSource = _path;
+        }
+
+        private void Trail_ItemClicked(object sender, BreadcrumbBarItemClickedEventArgs e)
+        {
+            // Trim the path back to the clicked crumb.
+            for (int i = _path.Count - 1; i > e.Index; i--)
+            {
+                _path.RemoveAt(i);
+            }
+        }
+    }
+}
+";
+
+        private readonly System.Collections.ObjectModel.ObservableCollection<string> _breadcrumbPath =
+            ["Home", "Documents", "Design", "Specs"];
+
         public GalleryNavigationPage()
         {
             InitializeComponent();
@@ -255,9 +296,25 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
                 new DemoSampleSource(1, LeftNavigationViewXamlSource, LeftNavigationViewCSharpSource),
                 new DemoSampleSource(2, TopNavigationViewXamlSource, TopNavigationViewCSharpSource),
                 new DemoSampleSource(3, CompactNavigationViewXamlSource, CompactNavigationViewCSharpSource),
-                new DemoSampleSource(4, InfoBadgeNavigationXamlSource, InfoBadgeNavigationCSharpSource));
+                new DemoSampleSource(4, InfoBadgeNavigationXamlSource, InfoBadgeNavigationCSharpSource),
+                new DemoSampleSource(5, BreadcrumbBarXamlSource, BreadcrumbBarCSharpSource));
+
+            DemoBreadcrumbBar.ItemsSource = _breadcrumbPath;
 
             Loaded += GalleryNavigationPage_Loaded;
+        }
+
+        private void DemoBreadcrumbBar_ItemClicked(object sender, Fluence.Wpf.BreadcrumbBarItemClickedEventArgs e)
+        {
+            for (int i = _breadcrumbPath.Count - 1; i > e.Index; i--)
+            {
+                _breadcrumbPath.RemoveAt(i);
+            }
+
+            BreadcrumbResultLabel.Text = string.Format(
+                System.Globalization.CultureInfo.CurrentCulture,
+                "Navigated to: {0}",
+                e.Item);
         }
 
         private void GalleryNavigationPage_Loaded(object sender, RoutedEventArgs e)
