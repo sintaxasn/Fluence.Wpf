@@ -233,7 +233,7 @@ namespace Fluence.Wpf.Controls
             set => SetValue(TrackHeightProperty, value);
         }
 
-        /// <summary>1
+        /// <summary>
         /// Initializes a new instance of the <see cref="ProgressBar"/> class and subscribes to size changes for layout updates.
         /// Loaded and Unloaded are also wired so the repeat-forever indeterminate animation only
         /// runs while the control is in a live visual tree, mirroring <see cref="ProgressRing"/>.

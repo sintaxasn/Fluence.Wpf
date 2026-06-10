@@ -543,7 +543,8 @@ namespace Fluence.Wpf.Tests
                     "TextFillColorPrimaryBrush",
                     "TextFillColorSecondaryBrush",
                     "TextFillColorDisabledBrush",
-                    "AccentFillColorDefaultBrush",
+                    "ControlStrongFillColorDefaultBrush",
+                    "ControlStrongFillColorDisabledBrush",
                     "SubtleFillColorSecondaryBrush",
                     "SubtleFillColorTertiaryBrush",
                 ];
@@ -556,6 +557,64 @@ namespace Fluence.Wpf.Tests
                         Assert.IsNotNull(app?.TryFindResource(key),
                             string.Format("Resource '{0}' must resolve in PipsPager theme cycle step: {1}", key, theme));
                     }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void PipsPager_PipFills_UseNeutralStrongFillRoles()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Window window = new() { Width = 500, Height = 200 };
+                Controls.PipsPager pager = new() { NumberOfPages = 3 };
+
+                try
+                {
+                    window.Content = pager;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    WpfStackPanel? host = FindVisualChildByName<WpfStackPanel>(pager, "PART_PipsHost");
+                    Assert.IsNotNull(host, "PART_PipsHost must be present in the PipsPager template.");
+
+                    object? strongFill = app?.TryFindResource("ControlStrongFillColorDefaultBrush");
+                    Assert.IsNotNull(strongFill, "ControlStrongFillColorDefaultBrush must resolve.");
+
+                    WpfToggleButton? selectedPip = GetPipAt(host, 0);
+                    WpfToggleButton? restPip = GetPipAt(host, 1);
+                    Assert.IsNotNull(selectedPip, "The selected pip must be a ToggleButton.");
+                    Assert.IsNotNull(restPip, "The rest pip must be a ToggleButton.");
+
+                    System.Windows.Shapes.Ellipse? selectedDot =
+                        FindVisualChildByName<System.Windows.Shapes.Ellipse>(selectedPip, "Pip");
+                    System.Windows.Shapes.Ellipse? restDot =
+                        FindVisualChildByName<System.Windows.Shapes.Ellipse>(restPip, "Pip");
+                    Assert.IsNotNull(selectedDot, "The selected pip must render its dot Ellipse.");
+                    Assert.IsNotNull(restDot, "The rest pip must render its dot Ellipse.");
+
+                    // WinUI PipsPager pips are neutral: rest and selected dots both use the
+                    // strong fill (PipsPagerSelectionIndicatorForeground / ...Selected); the
+                    // selected pip is distinguished by size, not by the accent color.
+                    Assert.AreSame(strongFill, restDot.Fill,
+                        "The rest pip must fill with ControlStrongFillColorDefaultBrush.");
+                    Assert.AreSame(strongFill, selectedDot.Fill,
+                        "The selected pip must fill with the same neutral ControlStrongFillColorDefaultBrush (no accent).");
+                    Assert.AreEqual(4.0, restDot.Width, 0.01, "The rest pip dot must stay at the 4px rest size.");
+                    Assert.AreEqual(6.0, selectedDot.Width, 0.01, "The selected pip dot must grow to the 6px selected size.");
+
+                    pager.IsEnabled = false;
+                    DrainDispatcher(window.Dispatcher);
+                    Assert.AreSame(app?.TryFindResource("ControlStrongFillColorDisabledBrush"), restDot.Fill,
+                        "Disabled pips must fill with ControlStrongFillColorDisabledBrush.");
+                }
+                finally
+                {
+                    window.Close();
                 }
             });
         }

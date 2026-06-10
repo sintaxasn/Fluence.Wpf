@@ -9,8 +9,11 @@
         ContentDialogMinWidth 320, ContentDialogMinHeight 184, ContentDialogPadding 24,
         button spacing 8, title 20px SemiBold). Surface: ContentDialogBackground =
         SolidBackgroundFillColorBase, ContentDialogTopOverlay = LayerFillColorAlt,
+        ContentDialogBorderBrush = SurfaceStrokeColorDefault,
         ContentDialogSeparatorBorderBrush = CardStrokeColorDefault. The smoke layer
-        (SmokeFillColorDefaultBrush) is painted by the host adorner in ContentDialog.cs.
+        (SmokeFillColorDefaultBrush) is painted by the host adorner in ContentDialog.cs,
+        and the ~250ms opacity + 1.05-to-1.0 scale entrance is driven from code when the
+        dialog is overlay-hosted (see ContentDialog.BeginOpenAnimation).
         No DropShadowEffect on the surface Border - WPF bitmap effects on a Border with
         CornerRadius produce artifacts (see DropDownButton.xaml); the smoke layer already
         separates the dialog from the window content beneath.
@@ -20,7 +23,7 @@
     -->
     <Style TargetType="{x:Type controls:ContentDialog}">
         <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorBaseBrush}" />
-        <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource SurfaceStrokeColorDefaultBrush}" />
         <Setter Property="BorderThickness" Value="1" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />

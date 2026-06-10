@@ -271,6 +271,7 @@ namespace Fluence.Wpf.Controls
             _cancelButton?.Click -= OnCancelButtonClick;
             _monthList?.SelectionChanged -= OnMonthOrYearSelectionChanged;
             _yearList?.SelectionChanged -= OnMonthOrYearSelectionChanged;
+            _popup?.Closed -= OnPopupClosed;
             _popupRoot?.PreviewKeyDown -= OnPopupPreviewKeyDown;
 
             base.OnApplyTemplate();
@@ -301,6 +302,7 @@ namespace Fluence.Wpf.Controls
             _cancelButton?.Click += OnCancelButtonClick;
             _monthList?.SelectionChanged += OnMonthOrYearSelectionChanged;
             _yearList?.SelectionChanged += OnMonthOrYearSelectionChanged;
+            _popup?.Closed += OnPopupClosed;
 
             _popupRoot = _popup?.Child;
             if (_popupRoot is not null)
@@ -377,15 +379,44 @@ namespace Fluence.Wpf.Controls
 
         /// <summary>
         /// Formats one field of <paramref name="date"/> for display: the day and year as
-        /// culture-formatted numbers, the month as the culture's full month name.
+        /// culture-formatted numbers, the month as the culture's full Gregorian month name
+        /// (see <see cref="GetGregorianFormat"/>).
         /// </summary>
         private static string FormatSegment(DateField field, DateTime date, CultureInfo culture)
         {
             return field == DateField.Day
                 ? date.Day.ToString(culture)
                 : field == DateField.Month
-                    ? culture.DateTimeFormat.GetMonthName(date.Month)
+                    ? GetGregorianFormat(culture).GetMonthName(date.Month)
                     : date.Year.ToString(culture);
+        }
+
+        /// <summary>
+        /// Returns the culture's date format pinned to the Gregorian calendar so month names
+        /// match the Gregorian <see cref="DateTime"/> day/year math the control performs.
+        /// Cultures whose default calendar is non-Gregorian (for example Um Al Qura) would
+        /// otherwise pair Gregorian numbers with the names of a different calendar. Falls back
+        /// to the invariant format for the rare culture without an optional Gregorian calendar.
+        /// </summary>
+        private static DateTimeFormatInfo GetGregorianFormat(CultureInfo culture)
+        {
+            DateTimeFormatInfo format = culture.DateTimeFormat;
+            if (format.Calendar is GregorianCalendar)
+            {
+                return format;
+            }
+
+            foreach (System.Globalization.Calendar optionalCalendar in culture.OptionalCalendars)
+            {
+                if (optionalCalendar is GregorianCalendar gregorian)
+                {
+                    DateTimeFormatInfo pinned = (DateTimeFormatInfo)format.Clone();
+                    pinned.Calendar = gregorian;
+                    return pinned;
+                }
+            }
+
+            return DateTimeFormatInfo.InvariantInfo;
         }
 
         /// <summary>
@@ -424,7 +455,7 @@ namespace Fluence.Wpf.Controls
 
         private void OnFlyoutButtonClick(object sender, RoutedEventArgs e)
         {
-            if (_popup is null)
+            if (_popup is null || IsWithinLightDismissReopenLockout())
             {
                 return;
             }
@@ -436,6 +467,35 @@ namespace Fluence.Wpf.Controls
             // the focus move to Loaded priority (below Render) like the other in-tree
             // post-layout callbacks.
             _ = Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(MoveFocusIntoPopup));
+        }
+
+        /// <summary>
+        /// Returns whether a flyout-button click arrived within the short lockout after a
+        /// light dismiss. Clicking the open field light-dismisses the StaysOpen=false popup
+        /// on the mouse press, and without this guard the same click would immediately
+        /// reopen it, so the field could never close its own flyout.
+        /// </summary>
+        private bool IsWithinLightDismissReopenLockout()
+        {
+            return _lastLightDismissTick.HasValue
+                && unchecked(Environment.TickCount - _lastLightDismissTick.Value) < LightDismissReopenLockoutMilliseconds;
+        }
+
+        /// <summary>
+        /// Records when the popup closes through a light dismiss (any close that did not run
+        /// through <see cref="ClosePopup"/>), arming the reopen lockout consumed by
+        /// <see cref="OnFlyoutButtonClick"/>. Accept, cancel, and Escape closes do not arm it,
+        /// so programmatic close-and-reopen flows stay instant.
+        /// </summary>
+        private void OnPopupClosed(object? sender, EventArgs e)
+        {
+            if (_popupSelfClosing)
+            {
+                _popupSelfClosing = false;
+                return;
+            }
+
+            _lastLightDismissTick = Environment.TickCount;
         }
 
         private void OnAcceptButtonClick(object sender, RoutedEventArgs e)
@@ -562,11 +622,13 @@ namespace Fluence.Wpf.Controls
             {
                 if (_monthList is not null)
                 {
-                    // Gregorian-style twelve month names; alternate calendars are out of scope.
+                    // Gregorian-pinned twelve month names so they match the Gregorian
+                    // day/year math; alternate calendars are out of scope.
+                    DateTimeFormatInfo gregorianFormat = GetGregorianFormat(culture);
                     List<string> months = [];
                     for (int monthIndex = 1; monthIndex <= 12; monthIndex++)
                     {
-                        months.Add(culture.DateTimeFormat.GetMonthName(monthIndex));
+                        months.Add(gregorianFormat.GetMonthName(monthIndex));
                     }
 
                     _monthList.ItemsSource = months;
@@ -648,7 +710,13 @@ namespace Fluence.Wpf.Controls
 
         private void ClosePopup()
         {
-            _popup?.SetCurrentValue(Popup.IsOpenProperty, false);
+            if (_popup is not null && _popup.IsOpen)
+            {
+                // Closing through the control's own pipeline must not arm the light-dismiss
+                // reopen lockout; Popup.Closed is raised synchronously from the set below.
+                _popupSelfClosing = true;
+                _popup.SetCurrentValue(Popup.IsOpenProperty, false);
+            }
         }
 
         private int GetPendingDay()
@@ -899,6 +967,24 @@ namespace Fluence.Wpf.Controls
         /// Guards against re-entrancy while the columns are being repopulated.
         /// </summary>
         private bool _suppressColumnSync;
+
+        /// <summary>
+        /// Set while <see cref="ClosePopup"/> closes the popup so <see cref="OnPopupClosed"/>
+        /// can tell the control's own closes apart from light dismisses.
+        /// </summary>
+        private bool _popupSelfClosing;
+
+        /// <summary>
+        /// The <see cref="Environment.TickCount"/> of the last light dismiss, or
+        /// <see langword="null"/> when none has occurred; arms the field-click reopen lockout.
+        /// </summary>
+        private int? _lastLightDismissTick;
+
+        /// <summary>
+        /// How long after a light dismiss a flyout-button click is ignored, covering the
+        /// press-then-release span of the field click that caused the dismiss.
+        /// </summary>
+        private const int LightDismissReopenLockoutMilliseconds = 250;
 
         /// <summary>
         /// Identifies one of the three date fields the control presents.

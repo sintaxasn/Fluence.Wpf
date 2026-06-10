@@ -36,6 +36,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Threading;
 
 namespace Fluence.Wpf.Controls
@@ -459,10 +460,15 @@ namespace Fluence.Wpf.Controls
 
             // Defense in depth (and the only block on the adorner path, where the smoke covers
             // just the content): swallow any pointer press in the owner window whose source is
-            // not inside the dialog, keeping chrome such as a title-bar search box inert.
+            // not inside the dialog, keeping chrome such as a title-bar search box inert. Key
+            // input gets the same treatment so chrome that already holds keyboard focus cannot
+            // be typed into while the dialog is modal; key events whose source is inside the
+            // dialog pass through untouched, preserving the dialog's own Tab cycle and keys.
             _owner = owner;
             _ownerInputBlocker = OnOwnerPreviewMouseDown;
             owner.AddHandler(PreviewMouseDownEvent, _ownerInputBlocker, handledEventsToo: true);
+            _ownerKeyInputBlocker = OnOwnerPreviewKeyDown;
+            owner.AddHandler(PreviewKeyDownEvent, _ownerKeyInputBlocker, handledEventsToo: true);
 
             // If the owner window closes while the dialog is open (Alt+F4 or the native close
             // button on a plain window), close the dialog too so the pending ShowAsync task
@@ -473,6 +479,7 @@ namespace Fluence.Wpf.Controls
             // pass that realizes the adorner, so move initial focus once layout has run.
             _ = Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(MoveInitialFocus));
 
+            BeginOpenAnimation();
             Opened?.Invoke(this, EventArgs.Empty);
             return completionSource.Task;
         }
@@ -576,6 +583,28 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
+        /// Swallows tunneling key input anywhere in the owner window that does not originate
+        /// inside the dialog, mirroring <see cref="OnOwnerPreviewMouseDown"/>, so chrome that
+        /// still holds keyboard focus (such as a title-bar search box) cannot be typed into
+        /// while the dialog is modal. Key input sourced inside the dialog is left alone so the
+        /// dialog's own Tab cycle and key handling keep working.
+        /// </summary>
+        private void OnOwnerPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (_showCompletionSource is null)
+            {
+                return;
+            }
+
+            if (e.OriginalSource is DependencyObject source && IsWithinDialog(source))
+            {
+                return;
+            }
+
+            e.Handled = true;
+        }
+
+        /// <summary>
         /// Closes the dialog with <see cref="ContentDialogResult.None"/> when the owner window
         /// closes while the dialog is open, so the pending <see cref="ShowAsync"/> task always
         /// completes.
@@ -583,6 +612,37 @@ namespace Fluence.Wpf.Controls
         private void OnOwnerClosed(object? sender, EventArgs e)
         {
             CloseDialog(ContentDialogResult.None);
+        }
+
+        /// <summary>
+        /// Plays the WinUI dialog entrance on the overlay-hosted dialog surface: opacity 0 to 1
+        /// and scale 1.05 to 1.0 around the center over 250 ms with a decelerating ease (the
+        /// WinUI DialogShowing transition). The animations use <see cref="FillBehavior.Stop"/>
+        /// with base values equal to the end values, so nothing stays animated once the
+        /// entrance completes.
+        /// </summary>
+        private void BeginOpenAnimation()
+        {
+            ScaleTransform scale = new();
+            SetCurrentValue(RenderTransformOriginProperty, new Point(0.5, 0.5));
+            SetCurrentValue(RenderTransformProperty, scale);
+
+            Duration duration = new(TimeSpan.FromMilliseconds(OpenAnimationMilliseconds));
+            CubicEase ease = new() { EasingMode = EasingMode.EaseOut };
+            DoubleAnimation opacityAnimation = new(0.0, 1.0, duration)
+            {
+                EasingFunction = ease,
+                FillBehavior = FillBehavior.Stop,
+            };
+            DoubleAnimation scaleAnimation = new(1.05, 1.0, duration)
+            {
+                EasingFunction = ease,
+                FillBehavior = FillBehavior.Stop,
+            };
+
+            BeginAnimation(OpacityProperty, opacityAnimation);
+            scale.BeginAnimation(ScaleTransform.ScaleXProperty, scaleAnimation);
+            scale.BeginAnimation(ScaleTransform.ScaleYProperty, scaleAnimation);
         }
 
         /// <summary>
@@ -757,11 +817,17 @@ namespace Fluence.Wpf.Controls
                     _owner.RemoveHandler(PreviewMouseDownEvent, _ownerInputBlocker);
                 }
 
+                if (_ownerKeyInputBlocker is not null)
+                {
+                    _owner.RemoveHandler(PreviewKeyDownEvent, _ownerKeyInputBlocker);
+                }
+
                 _owner.Closed -= OnOwnerClosed;
             }
 
             _owner = null;
             _ownerInputBlocker = null;
+            _ownerKeyInputBlocker = null;
 
             _overlayRoot?.Children.Remove(this);
 
@@ -899,6 +965,19 @@ namespace Fluence.Wpf.Controls
         /// presses outside the dialog while it is open; retained so it can be removed on close.
         /// </summary>
         private MouseButtonEventHandler? _ownerInputBlocker;
+
+        /// <summary>
+        /// The tunneling preview-key handler attached to <see cref="_owner"/> that swallows key
+        /// input sourced outside the dialog while it is open; retained so it can be removed on
+        /// close.
+        /// </summary>
+        private KeyEventHandler? _ownerKeyInputBlocker;
+
+        /// <summary>
+        /// The duration of the dialog entrance animation (opacity and scale), matching the
+        /// WinUI ControlNormalAnimationDuration used by the DialogShowing transition.
+        /// </summary>
+        private const double OpenAnimationMilliseconds = 250;
 
         /// <summary>
         /// The overlay layout root (smoke layer plus the dialog) added to the host while open.

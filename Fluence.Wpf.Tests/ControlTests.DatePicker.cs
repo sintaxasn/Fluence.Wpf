@@ -641,6 +641,145 @@ namespace Fluence.Wpf.Tests
             });
         }
 
+        [TestMethod]
+        public void DatePicker_NonGregorianDefaultCulture_UsesGregorianMonthNames()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                CultureInfo originalCulture = CultureInfo.CurrentCulture;
+                Window window = new() { Width = 500, Height = 400 };
+
+                try
+                {
+                    // ar-SA defaults to the Um Al Qura calendar, so unpinned month names
+                    // would belong to a different calendar than the Gregorian day/year math.
+                    CultureInfo culture = CultureInfo.GetCultureInfo("ar-SA");
+                    System.Threading.Thread.CurrentThread.CurrentCulture = culture;
+
+                    DateTimeFormatInfo gregorianFormat = (DateTimeFormatInfo)culture.DateTimeFormat.Clone();
+                    GregorianCalendar? gregorian = null;
+                    foreach (System.Globalization.Calendar optionalCalendar in culture.OptionalCalendars)
+                    {
+                        if (optionalCalendar is GregorianCalendar candidate)
+                        {
+                            gregorian = candidate;
+                            break;
+                        }
+                    }
+
+                    if (gregorian is null)
+                    {
+                        Assert.Inconclusive("ar-SA offers no optional Gregorian calendar on this runtime.");
+                        return;
+                    }
+
+                    gregorianFormat.Calendar = gregorian;
+                    DateTime march = new(2024, 3, 15, 0, 0, 0, DateTimeKind.Unspecified);
+                    string expectedMonthName = gregorianFormat.GetMonthName(3);
+
+                    Controls.DatePicker picker = new() { SelectedDate = march };
+                    window.Content = picker;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    ControlTemplate? template = picker.Template;
+                    Assert.IsNotNull(template, "DatePicker must receive its themed template.");
+                    TextBlock? first = template.FindName("FirstSegmentText", picker) as TextBlock;
+                    TextBlock? second = template.FindName("SecondSegmentText", picker) as TextBlock;
+                    TextBlock? third = template.FindName("ThirdSegmentText", picker) as TextBlock;
+                    Assert.IsNotNull(first, "FirstSegmentText must be present in the default template.");
+                    Assert.IsNotNull(second, "SecondSegmentText must be present in the default template.");
+                    Assert.IsNotNull(third, "ThirdSegmentText must be present in the default template.");
+
+                    List<string> segments = [first.Text, second.Text, third.Text];
+                    Assert.IsTrue(segments.Contains(expectedMonthName),
+                        string.Format(
+                            "The month segment must show the Gregorian month name '{0}' (segments: {1}).",
+                            expectedMonthName,
+                            string.Join(" | ", segments)));
+
+                    string defaultCalendarName = culture.DateTimeFormat.GetMonthName(3);
+                    if (!string.Equals(defaultCalendarName, expectedMonthName, StringComparison.Ordinal))
+                    {
+                        Assert.IsFalse(segments.Contains(defaultCalendarName),
+                            "The month segment must not show the non-Gregorian default-calendar month name.");
+                    }
+                }
+                finally
+                {
+                    System.Threading.Thread.CurrentThread.CurrentCulture = originalCulture;
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void DatePicker_FieldClickAfterLightDismiss_DoesNotImmediatelyReopen()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Window window = new() { Width = 500, Height = 400 };
+                Controls.DatePicker picker = new();
+
+                try
+                {
+                    window.Content = picker;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    ControlTemplate? template = picker.Template;
+                    Assert.IsNotNull(template, "DatePicker must receive its themed template.");
+                    ButtonBase? flyoutButton = template.FindName("PART_FlyoutButton", picker) as ButtonBase;
+                    Popup? popup = template.FindName("PART_Popup", picker) as Popup;
+                    ButtonBase? acceptButton = template.FindName("PART_AcceptButton", picker) as ButtonBase;
+                    Assert.IsNotNull(flyoutButton, "PART_FlyoutButton must be present in the template.");
+                    Assert.IsNotNull(popup, "PART_Popup must be present in the template.");
+                    Assert.IsNotNull(acceptButton, "PART_AcceptButton must be present in the template.");
+
+                    RaiseButtonClick(flyoutButton);
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                        "The selector flyout must open before the light dismiss is simulated.");
+
+                    // A light dismiss closes the popup outside the control's own pipeline,
+                    // exactly like the StaysOpen=false dismissal on the field mousedown.
+                    popup.SetCurrentValue(Popup.IsOpenProperty, false);
+                    DrainDispatcher(window.Dispatcher);
+
+                    // The click of the same press-release gesture must not reopen the flyout.
+                    RaiseButtonClick(flyoutButton);
+                    DrainDispatcher(window.Dispatcher);
+                    Assert.IsFalse(popup.IsOpen,
+                        "A field click right after a light dismiss must not reopen the flyout (toggle, not flicker).");
+
+                    // Once the lockout has elapsed, the field opens the flyout again.
+                    System.Threading.Thread.Sleep(300);
+                    RaiseButtonClick(flyoutButton);
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                        "A field click after the lockout must reopen the flyout.");
+
+                    // Accept-driven closes do not arm the lockout: an immediate reopen works.
+                    RaiseButtonClick(acceptButton);
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => !popup.IsOpen),
+                        "Accept must close the selector flyout.");
+                    RaiseButtonClick(flyoutButton);
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                        "A field click right after an accept close must reopen the flyout immediately.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
         private static void RaiseButtonClick(ButtonBase button)
         {
             button.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));

@@ -17,9 +17,55 @@
         The control resolves ActualPlacement when it opens: a tip popped below its target
         (placement Bottom) shows the beak on its top edge, and untargeted / Center tips
         collapse the beak entirely.
+        Close affordance follows the WinUI CloseButtonLocations states: the footer close
+        button shows only while CloseButtonContent is set; a null CloseButtonContent shows
+        the alternate top-right X (FontIcon E711 on a subtle plate, WinUI
+        TeachingTipAlternateCloseButton* tokens) unless light dismiss is enabled, in which
+        case no close affordance is shown. The title reserves a 28px right margin under the
+        alternate X (WinUI TeachingTipTitleStackPanelMarginWithHeaderCloseButton).
         No DropShadowEffect on the Border - WPF bitmap effects on a Border with CornerRadius
         produce artifacts in a Popup (see DropDownButton.xaml).
     -->
+
+    <!--
+        Subtle plate for the alternate top-right X close button. Tokens per WinUI
+        TeachingTipAlternateCloseButton*: transparent rest plate, SubtleFillColorSecondary
+        hover / SubtleFillColorTertiary press, primary-to-secondary text foreground (see
+        PipsPager.xaml for the same plate pattern).
+    -->
+    <Style x:Key="TeachingTipAlternateCloseButtonStyle" TargetType="{x:Type Button}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource DefaultControlFocusVisualStyle}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="Height" Value="24" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border
+                        x:Name="ButtonPlate"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="{DynamicResource ControlCornerRadius}">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="ButtonPlate" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="ButtonPlate" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
+        <Setter Property="Width" Value="24" />
+    </Style>
+
     <Style TargetType="{x:Type controls:TeachingTip}">
         <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorTertiaryBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource SurfaceStrokeColorFlyoutBrush}" />
@@ -150,6 +196,21 @@
                             Stroke="{TemplateBinding BorderBrush}"
                             StrokeThickness="1"
                             Visibility="Collapsed" />
+                        <Button
+                            x:Name="PART_AlternateCloseButton"
+                            Grid.Row="1"
+                            Grid.Column="1"
+                            Margin="0,8,8,0"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Top"
+                            Style="{StaticResource TeachingTipAlternateCloseButtonStyle}"
+                            Visibility="Collapsed">
+                            <controls:FontIcon
+                                Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
+                                Glyph="&#xE711;"
+                                IconFontSize="12"
+                                IsHitTestVisible="False" />
+                        </Button>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <!--  The beak sits on the edge of the tip that faces the target.  -->
@@ -178,11 +239,29 @@
                         <Trigger Property="ActionButtonContent" Value="{x:Null}">
                             <Setter TargetName="PART_ActionButton" Property="Visibility" Value="Collapsed" />
                         </Trigger>
+                        <!--
+                            WinUI close-affordance matrix: footer close only with content;
+                            alternate top-right X for null content without light dismiss;
+                            no close affordance for null content with light dismiss.
+                        -->
                         <Trigger Property="CloseButtonContent" Value="{x:Null}">
-                            <Setter TargetName="PART_CloseButton" Property="Content" Value="&#xE711;" />
-                            <Setter TargetName="PART_CloseButton" Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets" />
-                            <Setter TargetName="PART_CloseButton" Property="FontSize" Value="12" />
+                            <Setter TargetName="PART_CloseButton" Property="Visibility" Value="Collapsed" />
                         </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="CloseButtonContent" Value="{x:Null}" />
+                                <Condition Property="IsLightDismissEnabled" Value="False" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="PART_AlternateCloseButton" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="TitleText" Property="Margin" Value="0,0,28,0" />
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="ActionButtonContent" Value="{x:Null}" />
+                                <Condition Property="CloseButtonContent" Value="{x:Null}" />
+                            </MultiTrigger.Conditions>
+                            <Setter TargetName="FooterArea" Property="Visibility" Value="Collapsed" />
+                        </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

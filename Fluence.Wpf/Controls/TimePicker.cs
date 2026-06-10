@@ -232,6 +232,7 @@ namespace Fluence.Wpf.Controls
             _flyoutButton?.Click -= OnFlyoutButtonClick;
             _acceptButton?.Click -= OnAcceptButtonClick;
             _cancelButton?.Click -= OnCancelButtonClick;
+            _popup?.Closed -= OnPopupClosed;
             _popupRoot?.PreviewKeyDown -= OnPopupPreviewKeyDown;
 
             base.OnApplyTemplate();
@@ -250,6 +251,7 @@ namespace Fluence.Wpf.Controls
             _flyoutButton?.Click += OnFlyoutButtonClick;
             _acceptButton?.Click += OnAcceptButtonClick;
             _cancelButton?.Click += OnCancelButtonClick;
+            _popup?.Closed += OnPopupClosed;
 
             _popupRoot = _popup?.Child;
             if (_popupRoot is not null)
@@ -367,7 +369,7 @@ namespace Fluence.Wpf.Controls
 
         private void OnFlyoutButtonClick(object sender, RoutedEventArgs e)
         {
-            if (_popup is null)
+            if (_popup is null || IsWithinLightDismissReopenLockout())
             {
                 return;
             }
@@ -379,6 +381,35 @@ namespace Fluence.Wpf.Controls
             // the focus move to Loaded priority (below Render) like the other in-tree
             // post-layout callbacks.
             _ = Dispatcher.BeginInvoke(DispatcherPriority.Loaded, new Action(MoveFocusIntoPopup));
+        }
+
+        /// <summary>
+        /// Returns whether a flyout-button click arrived within the short lockout after a
+        /// light dismiss. Clicking the open field light-dismisses the StaysOpen=false popup
+        /// on the mouse press, and without this guard the same click would immediately
+        /// reopen it, so the field could never close its own flyout.
+        /// </summary>
+        private bool IsWithinLightDismissReopenLockout()
+        {
+            return _lastLightDismissTick.HasValue
+                && unchecked(Environment.TickCount - _lastLightDismissTick.Value) < LightDismissReopenLockoutMilliseconds;
+        }
+
+        /// <summary>
+        /// Records when the popup closes through a light dismiss (any close that did not run
+        /// through <see cref="ClosePopup"/>), arming the reopen lockout consumed by
+        /// <see cref="OnFlyoutButtonClick"/>. Accept, cancel, and Escape closes do not arm it,
+        /// so programmatic close-and-reopen flows stay instant.
+        /// </summary>
+        private void OnPopupClosed(object? sender, EventArgs e)
+        {
+            if (_popupSelfClosing)
+            {
+                _popupSelfClosing = false;
+                return;
+            }
+
+            _lastLightDismissTick = Environment.TickCount;
         }
 
         private void OnAcceptButtonClick(object sender, RoutedEventArgs e)
@@ -553,7 +584,13 @@ namespace Fluence.Wpf.Controls
 
         private void ClosePopup()
         {
-            _popup?.SetCurrentValue(Popup.IsOpenProperty, false);
+            if (_popup is not null && _popup.IsOpen)
+            {
+                // Closing through the control's own pipeline must not arm the light-dismiss
+                // reopen lockout; Popup.Closed is raised synchronously from the set below.
+                _popupSelfClosing = true;
+                _popup.SetCurrentValue(Popup.IsOpenProperty, false);
+            }
         }
 
         /// <summary>
@@ -597,30 +634,34 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Writes the selected time into the field segments: the hour per
         /// <see cref="ClockIdentifier"/>, the minute always two-digit, and the culture's
-        /// AM/PM designator in 12-hour mode. The placeholder swap for a null
-        /// <see cref="SelectedTime"/> and the designator collapse in 24-hour mode are
-        /// handled by template triggers.
+        /// AM/PM designator in 12-hour mode. Out-of-range values (negative spans, spans past
+        /// a day) are normalized into a valid hour and minute of day with the same math as
+        /// <see cref="PopulateSelectorColumns"/>, so the field can never display an hour such
+        /// as "-1". The placeholder swap for a null <see cref="SelectedTime"/> and the
+        /// designator collapse in 24-hour mode are handled by template triggers.
         /// </summary>
         private void UpdateFieldText()
         {
             CultureInfo culture = CultureInfo.CurrentCulture;
             TimeSpan? selectedTime = SelectedTime;
             bool twentyFourHour = IsTwentyFourHourClock;
+            int hour = selectedTime.HasValue ? ((selectedTime.Value.Hours % 24) + 24) % 24 : 0;
+            int minute = selectedTime.HasValue ? ((selectedTime.Value.Minutes % 60) + 60) % 60 : 0;
 
             string hourText = !selectedTime.HasValue
                 ? string.Empty
                 : twentyFourHour
-                    ? selectedTime.Value.Hours.ToString(culture)
-                    : GetTwelveHourDisplayHour(selectedTime.Value.Hours).ToString(culture);
+                    ? hour.ToString(culture)
+                    : GetTwelveHourDisplayHour(hour).ToString(culture);
             _hourSegmentText?.SetCurrentValue(System.Windows.Controls.TextBlock.TextProperty, hourText);
 
             string minuteText = selectedTime.HasValue
-                ? selectedTime.Value.Minutes.ToString("00", culture)
+                ? minute.ToString("00", culture)
                 : string.Empty;
             _minuteSegmentText?.SetCurrentValue(System.Windows.Controls.TextBlock.TextProperty, minuteText);
 
             string periodText = selectedTime.HasValue && !twentyFourHour
-                ? GetPeriodDesignator(selectedTime.Value.Hours, culture)
+                ? GetPeriodDesignator(hour, culture)
                 : string.Empty;
             _periodSegmentText?.SetCurrentValue(System.Windows.Controls.TextBlock.TextProperty, periodText);
         }
@@ -703,5 +744,23 @@ namespace Fluence.Wpf.Controls
         /// mapping used when committing.
         /// </summary>
         private bool _populatedTwentyFourHourClock;
+
+        /// <summary>
+        /// Set while <see cref="ClosePopup"/> closes the popup so <see cref="OnPopupClosed"/>
+        /// can tell the control's own closes apart from light dismisses.
+        /// </summary>
+        private bool _popupSelfClosing;
+
+        /// <summary>
+        /// The <see cref="Environment.TickCount"/> of the last light dismiss, or
+        /// <see langword="null"/> when none has occurred; arms the field-click reopen lockout.
+        /// </summary>
+        private int? _lastLightDismissTick;
+
+        /// <summary>
+        /// How long after a light dismiss a flyout-button click is ignored, covering the
+        /// press-then-release span of the field click that caused the dismiss.
+        /// </summary>
+        private const int LightDismissReopenLockoutMilliseconds = 250;
     }
 }

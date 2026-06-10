@@ -29,21 +29,10 @@
 using System;
 using System.Windows;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 
 namespace Fluence.Wpf.Controls
 {
-    /// <summary>
-    /// Provides data for the <see cref="FlyoutBase.Closing"/> event.
-    /// </summary>
-    public class FlyoutBaseClosingEventArgs : EventArgs
-    {
-        /// <summary>
-        /// Gets or sets a value indicating whether the close operation should be canceled.
-        /// Set to <see langword="true"/> to keep the flyout open.
-        /// </summary>
-        public bool Cancel { get; set; }
-    }
-
     /// <summary>
     /// Represents the base class for flyout controls that display lightweight UI in a
     /// light-dismiss <see cref="Popup"/> anchored to a placement target, mirroring the
@@ -52,7 +41,9 @@ namespace Fluence.Wpf.Controls
     /// <remarks>
     /// The popup is created lazily on the first <see cref="ShowAt"/> call with
     /// <see cref="Popup.StaysOpen"/> set to <see langword="false"/> (clicking outside the
-    /// flyout dismisses it). Derived classes supply the popup child via
+    /// flyout dismisses it). The popup uses a custom placement callback so the flyout is
+    /// centered on the facing edge of its placement target, matching WinUI, and Escape
+    /// pressed inside the flyout dismisses it. Derived classes supply the popup child via
     /// <see cref="CreatePresenter"/>.
     /// </remarks>
     public abstract class FlyoutBase : DependencyObject
@@ -76,7 +67,7 @@ namespace Fluence.Wpf.Controls
                 nameof(Placement),
                 typeof(FlyoutPlacementMode),
                 typeof(FlyoutBase),
-                new PropertyMetadata(FlyoutPlacementMode.Top, OnPlacementChanged));
+                new PropertyMetadata(FlyoutPlacementMode.Top));
 
         /// <summary>
         /// Gets or sets where the flyout opens relative to its placement target.
@@ -200,7 +191,9 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Shows the flyout placed relative to the specified element. Raises
         /// <see cref="Opening"/> before the popup opens and <see cref="Opened"/> after, then
-        /// moves focus to the presenter.
+        /// moves focus to the presenter. The presenter inherits the placement target's
+        /// <see cref="FrameworkElement.DataContext"/> for the lifetime of the popup so
+        /// bindings inside the flyout content resolve against the anchor's view model.
         /// </summary>
         /// <param name="placementTarget">The element to anchor the flyout to.</param>
         /// <exception cref="ArgumentNullException"><paramref name="placementTarget"/> is <c>null</c>.</exception>
@@ -213,7 +206,11 @@ namespace Fluence.Wpf.Controls
 
             Popup popup = EnsurePopup();
             popup.PlacementTarget = placementTarget;
-            popup.Placement = MapPlacement(Placement);
+
+            // The host popup has no visual parent, so the presenter inherits no DataContext.
+            // Flow the anchor's DataContext in for the popup lifetime (cleared on close).
+            Presenter?.SetCurrentValue(FrameworkElement.DataContextProperty, placementTarget.DataContext);
+
             if (popup.IsOpen)
             {
                 return;
@@ -258,13 +255,14 @@ namespace Fluence.Wpf.Controls
         protected abstract FrameworkElement CreatePresenter();
 
         /// <summary>
-        /// Maps the WinUI-style <see cref="FlyoutPlacementMode"/> to the WPF popup
-        /// <see cref="PlacementMode"/>. <see cref="FlyoutPlacementMode.Full"/> and
-        /// <see cref="FlyoutPlacementMode.Auto"/> map to bottom placement.
+        /// Maps the WinUI-style <see cref="FlyoutPlacementMode"/> to the WPF popup side the
+        /// flyout opens on. <see cref="FlyoutPlacementMode.Full"/> and
+        /// <see cref="FlyoutPlacementMode.Auto"/> map to the bottom side. Internal so tests
+        /// can verify the mapping that feeds the custom placement callback.
         /// </summary>
         /// <param name="placement">The requested flyout placement.</param>
-        /// <returns>The equivalent popup placement.</returns>
-        private static PlacementMode MapPlacement(FlyoutPlacementMode placement)
+        /// <returns>The equivalent popup side.</returns>
+        internal static PlacementMode MapPlacementSide(FlyoutPlacementMode placement)
         {
             return placement switch
             {
@@ -276,17 +274,44 @@ namespace Fluence.Wpf.Controls
             };
         }
 
-        private static void OnPlacementChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        /// <summary>
+        /// Computes the custom popup placements that center a popup on the facing edge of its
+        /// placement target, matching WinUI flyout positioning: horizontal centering for
+        /// <see cref="PlacementMode.Top"/> / <see cref="PlacementMode.Bottom"/> and vertical
+        /// centering for <see cref="PlacementMode.Left"/> / <see cref="PlacementMode.Right"/>.
+        /// The opposite edge is offered as the fallback so the popup flips at screen edges
+        /// like the native placement modes. Shared with <see cref="TeachingTip"/>; internal
+        /// so tests can verify the placement math directly.
+        /// </summary>
+        /// <param name="side">The target side to center on (Top, Bottom, Left, or Right).</param>
+        /// <param name="popupSize">The size of the popup.</param>
+        /// <param name="targetSize">The size of the placement target.</param>
+        /// <param name="offset">The extra offset from the popup's HorizontalOffset and VerticalOffset.</param>
+        /// <returns>The candidate placements, primary edge first.</returns>
+        internal static CustomPopupPlacement[] GetEdgeCenteredPlacements(
+            PlacementMode side,
+            Size popupSize,
+            Size targetSize,
+            Point offset)
         {
-            if (d is FlyoutBase flyout && flyout.HostPopup is not null)
-            {
-                flyout.HostPopup.Placement = MapPlacement((FlyoutPlacementMode)e.NewValue);
-            }
+            double centeredX = ((targetSize.Width - popupSize.Width) / 2.0) + offset.X;
+            double centeredY = ((targetSize.Height - popupSize.Height) / 2.0) + offset.Y;
+            CustomPopupPlacement above = new(new Point(centeredX, -popupSize.Height + offset.Y), PopupPrimaryAxis.Horizontal);
+            CustomPopupPlacement below = new(new Point(centeredX, targetSize.Height + offset.Y), PopupPrimaryAxis.Horizontal);
+            CustomPopupPlacement leftOf = new(new Point(-popupSize.Width + offset.X, centeredY), PopupPrimaryAxis.Vertical);
+            CustomPopupPlacement rightOf = new(new Point(targetSize.Width + offset.X, centeredY), PopupPrimaryAxis.Vertical);
+            return side == PlacementMode.Top
+                ? [above, below]
+                : side == PlacementMode.Left
+                    ? [leftOf, rightOf]
+                    : side == PlacementMode.Right ? [rightOf, leftOf] : [below, above];
         }
 
         /// <summary>
         /// Creates the light-dismiss popup on first use and hosts the presenter returned by
-        /// <see cref="CreatePresenter"/> as its child.
+        /// <see cref="CreatePresenter"/> as its child. The popup uses
+        /// <see cref="PlacementMode.Custom"/> with an edge-centering callback so the flyout
+        /// is centered on the target edge selected by <see cref="Placement"/>.
         /// </summary>
         /// <returns>The popup that hosts the presenter.</returns>
         private Popup EnsurePopup()
@@ -294,10 +319,13 @@ namespace Fluence.Wpf.Controls
             if (HostPopup is null)
             {
                 Presenter = CreatePresenter();
+                Presenter.PreviewKeyDown += OnPresenterPreviewKeyDown;
                 HostPopup = new Popup
                 {
                     AllowsTransparency = true,
                     Child = Presenter,
+                    CustomPopupPlacementCallback = GetPlacements,
+                    Placement = PlacementMode.Custom,
                     PopupAnimation = PopupAnimation.Fade,
                     StaysOpen = false,
                 };
@@ -307,8 +335,39 @@ namespace Fluence.Wpf.Controls
             return HostPopup;
         }
 
+        /// <summary>
+        /// The popup's custom placement callback: centers the popup on the target edge
+        /// selected by the current <see cref="Placement"/> value.
+        /// </summary>
+        private CustomPopupPlacement[] GetPlacements(Size popupSize, Size targetSize, Point offset)
+        {
+            return GetEdgeCenteredPlacements(MapPlacementSide(Placement), popupSize, targetSize, offset);
+        }
+
+        /// <summary>
+        /// Dismisses the flyout when Escape is pressed inside the presenter, mirroring the
+        /// WinUI light-dismiss keyboard contract. Runs through <see cref="Hide"/> so a
+        /// <see cref="Closing"/> handler can still cancel the close.
+        /// </summary>
+        private void OnPresenterPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (!e.Handled && e.Key == Key.Escape)
+            {
+                Hide();
+                e.Handled = true;
+            }
+        }
+
+        /// <summary>
+        /// Raises <see cref="Closed"/> once the popup has closed, releasing the placement
+        /// target so the flyout does not pin the last anchor, and clearing the DataContext
+        /// flowed onto the presenter by <see cref="ShowAt"/>. The clear uses SetCurrentValue
+        /// (ClearValue cannot undo a current-value override on a default-source property).
+        /// </summary>
         private void OnPopupClosed(object? sender, EventArgs e)
         {
+            _ = HostPopup?.PlacementTarget = null;
+            Presenter?.SetCurrentValue(FrameworkElement.DataContextProperty, null);
             Closed?.Invoke(this, EventArgs.Empty);
         }
     }

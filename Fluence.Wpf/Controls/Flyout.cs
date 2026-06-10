@@ -52,6 +52,14 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Gets or sets the content shown in the flyout.
         /// </summary>
+        /// <remarks>
+        /// The content is hosted in an unparented popup, so it does not live in the placement
+        /// target's name scope: <c>ElementName</c> (and <c>RelativeSource FindAncestor</c>
+        /// walks above the presenter) bindings inside the content do not resolve. The
+        /// presenter inherits the placement target's <see cref="FrameworkElement.DataContext"/>
+        /// while the flyout is open, so plain <c>Binding</c> paths against the anchor's view
+        /// model work as expected.
+        /// </remarks>
         public object? Content
         {
             get => GetValue(ContentProperty);

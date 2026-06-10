@@ -6,12 +6,14 @@
     <!--
         Fluent Design PipsPager style.
         Authority: WinUI 3 PipsPager.xaml + PipsPager_themeresources.xaml (a run of round pip
-        dots inside fixed square touch targets, selected pip larger and accent-filled, optional
-        previous/next chevron buttons with the subtle fill states).
-        Pips: 20x20 touch target; dot 4px at rest in TextFillColorSecondaryBrush, grows to 5px
-        in TextFillColorPrimaryBrush on hover, and the selected pip renders 6px in
-        AccentFillColorDefaultBrush (TextFillColorDisabledBrush when disabled), approximating
-        the WinUI 4/5/6 px pip scale with two-state sizing instead of animated scaling.
+        dots inside fixed square touch targets, selected pip larger, optional previous/next
+        chevron buttons with the subtle fill states).
+        Pips are neutral per PipsPagerSelectionIndicatorForeground*: dot 4px at rest in
+        ControlStrongFillColorDefaultBrush, grows to 5px in TextFillColorSecondaryBrush on
+        hover (TextFillColorSecondaryBrush pressed), and the selected pip renders 6px in the
+        same ControlStrongFillColorDefaultBrush (ControlStrongFillColorDisabledBrush when
+        disabled), approximating the WinUI 4/5/6 px pip scale with two-state sizing instead
+        of animated scaling.
         Navigation buttons: subtle plates (SubtleFillColorSecondaryBrush hover /
         SubtleFillColorTertiaryBrush press, see NumberBox spin buttons) hosting Fluence
         FontIcon chevrons; ChevronLeft/Right E76B/E76C when horizontal and ChevronUp/Down
@@ -36,21 +38,24 @@
                             Height="4"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
-                            Fill="{DynamicResource TextFillColorSecondaryBrush}" />
+                            Fill="{DynamicResource ControlStrongFillColorDefaultBrush}" />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="Pip" Property="Fill" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+                            <Setter TargetName="Pip" Property="Fill" Value="{DynamicResource TextFillColorSecondaryBrush}" />
                             <Setter TargetName="Pip" Property="Height" Value="5" />
                             <Setter TargetName="Pip" Property="Width" Value="5" />
                         </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="Pip" Property="Fill" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+                        </Trigger>
                         <Trigger Property="IsChecked" Value="True">
-                            <Setter TargetName="Pip" Property="Fill" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+                            <Setter TargetName="Pip" Property="Fill" Value="{DynamicResource ControlStrongFillColorDefaultBrush}" />
                             <Setter TargetName="Pip" Property="Height" Value="6" />
                             <Setter TargetName="Pip" Property="Width" Value="6" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter TargetName="Pip" Property="Fill" Value="{DynamicResource TextFillColorDisabledBrush}" />
+                            <Setter TargetName="Pip" Property="Fill" Value="{DynamicResource ControlStrongFillColorDisabledBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

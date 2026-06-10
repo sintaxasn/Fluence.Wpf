@@ -676,6 +676,124 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void ContentDialog_WhileOpen_BlocksKeyInputOutsideDialog()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                TextBox behind = new() { Text = "Behind" };
+                Window window = new() { Width = 640, Height = 480, Content = behind };
+
+                try
+                {
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Controls.ContentDialog dialog = new()
+                    {
+                        Title = "Confirm",
+                        Content = "Body",
+                        PrimaryButtonText = "OK",
+                        CloseButtonText = "Cancel",
+                    };
+
+                    _ = dialog.ShowAsync();
+                    bool templated = WaitUntil(window.Dispatcher, 2000,
+                        () => FindVisualChildByName<ButtonBase>(dialog, "PART_PrimaryButton") is not null);
+                    Assert.IsTrue(templated, "The dialog template must apply before key input is simulated.");
+
+                    PresentationSource? source = PresentationSource.FromVisual(window);
+                    Assert.IsNotNull(source, "The owner window must have a presentation source once shown.");
+
+                    // A key press sourced outside the dialog (standing in for a title-bar
+                    // search box that still holds keyboard focus) must be swallowed.
+                    KeyEventArgs outside = new(Keyboard.PrimaryDevice, source, 0, Key.A)
+                    {
+                        RoutedEvent = UIElement.PreviewKeyDownEvent,
+                    };
+                    behind.RaiseEvent(outside);
+                    Assert.IsTrue(outside.Handled, "Key input outside the open dialog must be blocked.");
+
+                    // A key press sourced inside the dialog must pass through so the dialog's
+                    // own Tab cycle and key handling keep working.
+                    ButtonBase? primary = FindVisualChildByName<ButtonBase>(dialog, "PART_PrimaryButton");
+                    Assert.IsNotNull(primary, "PART_PrimaryButton must be present in the open dialog.");
+                    KeyEventArgs inside = new(Keyboard.PrimaryDevice, source, 0, Key.A)
+                    {
+                        RoutedEvent = UIElement.PreviewKeyDownEvent,
+                    };
+                    primary.RaiseEvent(inside);
+                    Assert.IsFalse(inside.Handled, "Key input inside the dialog must not be blocked.");
+
+                    dialog.Hide();
+
+                    // After the dialog closes, key input outside it flows normally again.
+                    KeyEventArgs afterClose = new(Keyboard.PrimaryDevice, source, 0, Key.A)
+                    {
+                        RoutedEvent = UIElement.PreviewKeyDownEvent,
+                    };
+                    behind.RaiseEvent(afterClose);
+                    Assert.IsFalse(afterClose.Handled, "Once the dialog closes, owner key input must no longer be blocked.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void ContentDialog_Open_UsesSurfaceStrokeAndPlaysEntranceAnimation()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Window window = CreateShownContentDialogOwner();
+                Controls.ContentDialog dialog = new()
+                {
+                    Title = "Animated",
+                    Content = "Body",
+                    CloseButtonText = "Close",
+                };
+
+                try
+                {
+                    _ = dialog.ShowAsync();
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000,
+                            () => FindVisualChildByName<Border>(dialog, "DialogSurface") is not null),
+                        "The dialog template must apply once overlay-hosted.");
+
+                    // C1: the outer dialog stroke is the WinUI ContentDialogBorderBrush.
+                    Border? surface = FindVisualChildByName<Border>(dialog, "DialogSurface");
+                    Assert.IsNotNull(surface, "DialogSurface must exist in the ContentDialog template.");
+                    Assert.AreSame(app?.TryFindResource("SurfaceStrokeColorDefaultBrush"), surface.BorderBrush,
+                        "The dialog's outer BorderBrush must resolve to SurfaceStrokeColorDefaultBrush (WinUI ContentDialogBorderBrush).");
+
+                    // C2: the entrance animates opacity 0->1 and scale 1.05->1.0 around the center.
+                    Assert.AreEqual(new Point(0.5, 0.5), dialog.RenderTransformOrigin,
+                        "The entrance animation must scale around the dialog's center.");
+                    ScaleTransform? scale = dialog.RenderTransform as ScaleTransform;
+                    Assert.IsNotNull(scale, "Opening must install a ScaleTransform for the entrance animation.");
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000,
+                            () => dialog.Opacity >= 1.0 && scale.ScaleX <= 1.0 && scale.ScaleY <= 1.0),
+                        "The entrance animation must settle at full opacity and 1.0 scale.");
+
+                    dialog.Hide();
+                }
+                finally
+                {
+                    dialog.Hide();
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
         public void ContentDialog_OverFluenceWindow_HostsOverlayAboveTheWholeWindow()
         {
             RunOnStaThread(() =>

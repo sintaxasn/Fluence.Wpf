@@ -792,6 +792,113 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void TimePicker_OutOfRangeSelectedTime_NormalizesFieldText()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Window window = new() { Width = 500, Height = 400 };
+
+                // 24-hour clock pinned so the normalized hour value is asserted directly.
+                Controls.TimePicker picker = new() { ClockIdentifier = "24HourClock" };
+
+                try
+                {
+                    window.Content = picker;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    ControlTemplate? template = picker.Template;
+                    Assert.IsNotNull(template, "TimePicker must receive its themed template.");
+                    TextBlock? hourText = template.FindName("HourSegmentText", picker) as TextBlock;
+                    TextBlock? minuteText = template.FindName("MinuteSegmentText", picker) as TextBlock;
+                    Assert.IsNotNull(hourText, "HourSegmentText must be present in the default template.");
+                    Assert.IsNotNull(minuteText, "MinuteSegmentText must be present in the default template.");
+
+                    CultureInfo culture = CultureInfo.CurrentCulture;
+
+                    // A negative span wraps to the previous-day hour like the flyout columns.
+                    picker.SelectedTime = TimeSpan.FromHours(-1);
+                    DrainDispatcher(window.Dispatcher);
+                    Assert.AreEqual(23.ToString(culture), hourText.Text,
+                        "A -1 hour span must display as hour 23, never as \"-1\".");
+
+                    // A span past a day wraps into the day like the flyout columns.
+                    picker.SelectedTime = TimeSpan.FromHours(25);
+                    DrainDispatcher(window.Dispatcher);
+                    Assert.AreEqual(1.ToString(culture), hourText.Text,
+                        "A 25 hour span must display as hour 1.");
+
+                    // Negative minutes normalize into 0..59.
+                    picker.SelectedTime = new TimeSpan(0, -30, 0);
+                    DrainDispatcher(window.Dispatcher);
+                    Assert.AreEqual(30.ToString("00", culture), minuteText.Text,
+                        "A -30 minute span must display minute 30, never a negative minute.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void TimePicker_FieldClickAfterLightDismiss_DoesNotImmediatelyReopen()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Window window = new() { Width = 500, Height = 400 };
+                Controls.TimePicker picker = new() { ClockIdentifier = "12HourClock" };
+
+                try
+                {
+                    window.Content = picker;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    ControlTemplate? template = picker.Template;
+                    Assert.IsNotNull(template, "TimePicker must receive its themed template.");
+                    ButtonBase? flyoutButton = template.FindName("PART_FlyoutButton", picker) as ButtonBase;
+                    Popup? popup = template.FindName("PART_Popup", picker) as Popup;
+                    Assert.IsNotNull(flyoutButton, "PART_FlyoutButton must be present in the template.");
+                    Assert.IsNotNull(popup, "PART_Popup must be present in the template.");
+
+                    RaiseButtonClick(flyoutButton);
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                        "The selector flyout must open before the light dismiss is simulated.");
+
+                    // A light dismiss closes the popup outside the control's own pipeline,
+                    // exactly like the StaysOpen=false dismissal on the field mousedown.
+                    popup.SetCurrentValue(Popup.IsOpenProperty, false);
+                    DrainDispatcher(window.Dispatcher);
+
+                    // The click of the same press-release gesture must not reopen the flyout.
+                    RaiseButtonClick(flyoutButton);
+                    DrainDispatcher(window.Dispatcher);
+                    Assert.IsFalse(popup.IsOpen,
+                        "A field click right after a light dismiss must not reopen the flyout (toggle, not flicker).");
+
+                    // Once the lockout has elapsed, the field opens the flyout again.
+                    System.Threading.Thread.Sleep(300);
+                    RaiseButtonClick(flyoutButton);
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                        "A field click after the lockout must reopen the flyout.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
         public void TimePicker_SurfaceBrushes_ResolveAfterThemeCycle()
         {
             RunOnStaThread(() =>

@@ -100,14 +100,20 @@ namespace Fluence.Wpf.Tests
 
                     ButtonBase? action = FindVisualChildByName<ButtonBase>(tip, "PART_ActionButton");
                     ButtonBase? close = FindVisualChildByName<ButtonBase>(tip, "PART_CloseButton");
+                    ButtonBase? alternateClose = FindVisualChildByName<ButtonBase>(tip, "PART_AlternateCloseButton");
                     Assert.IsNotNull(action, "PART_ActionButton must exist in the TeachingTip template.");
                     Assert.IsNotNull(close, "PART_CloseButton must exist in the TeachingTip template.");
+                    Assert.IsNotNull(alternateClose, "PART_AlternateCloseButton must exist in the TeachingTip template.");
                     Assert.AreEqual(Visibility.Collapsed, action.Visibility,
                         "The action button must collapse while ActionButtonContent is null.");
-                    Assert.AreEqual(Visibility.Visible, close.Visibility,
-                        "The close button must always be visible as the close affordance.");
-                    Assert.AreEqual("", close.Content,
-                        "The close button must fall back to the Fluent close glyph while CloseButtonContent is null.");
+                    Assert.AreEqual(Visibility.Collapsed, close.Visibility,
+                        "The footer close button must collapse while CloseButtonContent is null, per WinUI.");
+                    Assert.AreEqual(Visibility.Visible, alternateClose.Visibility,
+                        "The alternate top-right X must show while CloseButtonContent is null and light dismiss is off.");
+                    Controls.FontIcon? alternateGlyph = alternateClose.Content as Controls.FontIcon;
+                    Assert.IsNotNull(alternateGlyph, "The alternate close button must host a FontIcon.");
+                    Assert.AreEqual("", alternateGlyph.Glyph,
+                        "The alternate close button must show the Fluent close glyph (E711).");
                 }
                 finally
                 {
@@ -241,7 +247,13 @@ namespace Fluence.Wpf.Tests
                     Assert.AreEqual(PopupAnimation.Fade, popup.PopupAnimation, "TeachingTip popups must use the fade animation.");
                     Assert.AreSame(tip, popup.Child, "The popup child must be the templated TeachingTip itself.");
                     Assert.AreSame(target, popup.PlacementTarget, "The popup must anchor to TeachingTip.Target.");
-                    Assert.AreEqual(PlacementMode.Bottom, popup.Placement, "Auto must map to popup Bottom placement.");
+                    Assert.AreEqual(PlacementMode.Custom, popup.Placement,
+                        "Auto must map to Custom placement so the tip centers on the target's bottom edge.");
+                    Assert.IsNotNull(popup.CustomPopupPlacementCallback,
+                        "The targeted tip popup must carry the edge-centering placement callback.");
+                    CustomPopupPlacement[] placements = popup.CustomPopupPlacementCallback(new Size(100, 40), new Size(60, 20), default);
+                    Assert.AreEqual(new Point(-20, 20), placements[0].Point,
+                        "Auto (Bottom) must center the tip horizontally on the target's bottom edge.");
                     Assert.IsTrue(popup.StaysOpen, "Light dismiss is disabled by default, so the popup must stay open.");
 
                     Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => FindVisualChildren<TextBlock>(tip)
@@ -469,7 +481,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void TeachingTip_NoTarget_CentersPopupAndHidesBeak()
+        public void TeachingTip_NoTarget_DocksBottomRightAndHidesBeak()
         {
             RunOnStaThread(() =>
             {
@@ -480,7 +492,7 @@ namespace Fluence.Wpf.Tests
                 Controls.TeachingTip tip = new()
                 {
                     Title = "Untargeted",
-                    Subtitle = "Centered over the window content",
+                    Subtitle = "Docked to the bottom-right of the window content",
                 };
 
                 try
@@ -495,12 +507,17 @@ namespace Fluence.Wpf.Tests
 
                     Popup? popup = tip.HostPopup;
                     Assert.IsNotNull(popup, "Opening the tip must lazily create the host popup.");
-                    Assert.AreEqual(PlacementMode.Center, popup.Placement,
-                        "An untargeted tip must center its popup.");
+                    Assert.AreEqual(PlacementMode.Custom, popup.Placement,
+                        "An untargeted tip must use Custom placement to dock to the bottom-right per WinUI.");
+                    Assert.IsNotNull(popup.CustomPopupPlacementCallback,
+                        "An untargeted tip must carry the bottom-right placement callback.");
+                    CustomPopupPlacement[] placements = popup.CustomPopupPlacementCallback(new Size(100, 40), new Size(600, 400), default);
+                    Assert.AreEqual(new Point(500, 360), placements[0].Point,
+                        "The untargeted tip must dock to the bottom-right corner of the window content.");
                     Assert.AreSame(window.Content, popup.PlacementTarget,
                         "An untargeted tip must anchor to the active window's content.");
                     Assert.AreEqual(TeachingTipPlacementMode.Center, tip.ActualPlacement,
-                        "An untargeted tip must resolve ActualPlacement to Center.");
+                        "An untargeted tip must resolve ActualPlacement to Center so no beak is shown.");
 
                     Assert.IsTrue(WaitUntil(window.Dispatcher, 2000,
                             () => tip.Template?.FindName("TopBeak", tip) is Path),
@@ -510,8 +527,13 @@ namespace Fluence.Wpf.Tests
                         Path? beak = tip.Template.FindName(beakName, tip) as Path;
                         Assert.IsNotNull(beak, string.Format("{0} must exist in the TeachingTip template.", beakName));
                         Assert.AreEqual(Visibility.Collapsed, beak.Visibility,
-                            string.Format("{0} must be collapsed for an untargeted (Center) tip.", beakName));
+                            string.Format("{0} must be collapsed for an untargeted tip.", beakName));
                     }
+
+                    // An explicit Center preference keeps the centered popup for untargeted tips.
+                    tip.PreferredPlacement = TeachingTipPlacementMode.Center;
+                    Assert.AreEqual(PlacementMode.Center, popup.Placement,
+                        "An untargeted tip with an explicit Center preference must center its popup.");
                 }
                 finally
                 {
@@ -550,11 +572,28 @@ namespace Fluence.Wpf.Tests
 
                     Popup? popup = tip.HostPopup;
                     Assert.IsNotNull(popup, "Opening the tip must lazily create the host popup.");
-                    Assert.AreEqual(PlacementMode.Bottom, popup.Placement, "Auto must map to popup Bottom placement.");
+                    Assert.AreEqual(PlacementMode.Custom, popup.Placement,
+                        "Edge placements must map to Custom placement so the tip centers on the target edge.");
 
+                    // The popup side mapping that feeds the shared edge-centering callback.
+                    Assert.AreEqual(PlacementMode.Top, Controls.TeachingTip.MapPlacementSide(TeachingTipPlacementMode.Top),
+                        "Top must map to the top side.");
+                    Assert.AreEqual(PlacementMode.Left, Controls.TeachingTip.MapPlacementSide(TeachingTipPlacementMode.Left),
+                        "Left must map to the left side.");
+                    Assert.AreEqual(PlacementMode.Right, Controls.TeachingTip.MapPlacementSide(TeachingTipPlacementMode.Right),
+                        "Right must map to the right side.");
+                    Assert.AreEqual(PlacementMode.Bottom, Controls.TeachingTip.MapPlacementSide(TeachingTipPlacementMode.Bottom),
+                        "Bottom must map to the bottom side.");
+                    Assert.AreEqual(PlacementMode.Bottom, Controls.TeachingTip.MapPlacementSide(TeachingTipPlacementMode.Auto),
+                        "Auto currently maps to the bottom side.");
+
+                    Size popupSize = new(100, 40);
+                    Size targetSize = new(60, 20);
                     tip.PreferredPlacement = TeachingTipPlacementMode.Top;
-                    Assert.AreEqual(PlacementMode.Top, popup.Placement, "Top must map to popup Top placement.");
                     Assert.AreEqual(TeachingTipPlacementMode.Top, tip.ActualPlacement, "Top must resolve ActualPlacement to Top.");
+                    Assert.IsNotNull(popup.CustomPopupPlacementCallback, "Edge placements must carry the centering callback.");
+                    Assert.AreEqual(new Point(-20, -40), popup.CustomPopupPlacementCallback(popupSize, targetSize, default)[0].Point,
+                        "Top placement must center the tip horizontally on the target's top edge.");
                     DrainDispatcher(window.Dispatcher);
                     Path? bottomBeak = tip.Template.FindName("BottomBeak", tip) as Path;
                     Path? topBeak = tip.Template.FindName("TopBeak", tip) as Path;
@@ -566,19 +605,211 @@ namespace Fluence.Wpf.Tests
                         "The top beak must hide when the tip moves above its target.");
 
                     tip.PreferredPlacement = TeachingTipPlacementMode.Left;
-                    Assert.AreEqual(PlacementMode.Left, popup.Placement, "Left must map to popup Left placement.");
+                    Assert.AreEqual(new Point(-100, -10), popup.CustomPopupPlacementCallback(popupSize, targetSize, default)[0].Point,
+                        "Left placement must center the tip vertically on the target's left edge.");
 
                     tip.PreferredPlacement = TeachingTipPlacementMode.Right;
-                    Assert.AreEqual(PlacementMode.Right, popup.Placement, "Right must map to popup Right placement.");
+                    Assert.AreEqual(new Point(60, -10), popup.CustomPopupPlacementCallback(popupSize, targetSize, default)[0].Point,
+                        "Right placement must center the tip vertically on the target's right edge.");
 
                     tip.PreferredPlacement = TeachingTipPlacementMode.Bottom;
-                    Assert.AreEqual(PlacementMode.Bottom, popup.Placement, "Bottom must map to popup Bottom placement.");
+                    Assert.AreEqual(new Point(-20, 20), popup.CustomPopupPlacementCallback(popupSize, targetSize, default)[0].Point,
+                        "Bottom placement must center the tip horizontally on the target's bottom edge.");
 
                     tip.PreferredPlacement = TeachingTipPlacementMode.Center;
-                    Assert.AreEqual(PlacementMode.Center, popup.Placement, "Center must map to popup Center placement.");
+                    Assert.AreEqual(PlacementMode.Center, popup.Placement,
+                        "An explicit Center placement with a target must keep the native centered popup.");
 
                     tip.PreferredPlacement = TeachingTipPlacementMode.Auto;
-                    Assert.AreEqual(PlacementMode.Bottom, popup.Placement, "Auto currently maps to popup Bottom placement.");
+                    Assert.AreEqual(PlacementMode.Custom, popup.Placement,
+                        "Auto must return to the edge-centering Custom placement.");
+                    Assert.AreEqual(new Point(-20, 20), popup.CustomPopupPlacementCallback(popupSize, targetSize, default)[0].Point,
+                        "Auto currently centers the tip on the target's bottom edge.");
+                }
+                finally
+                {
+                    tip.IsOpen = false;
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void TeachingTip_CloseAffordance_FollowsCloseButtonContentAndLightDismiss()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Window window = new() { Width = 640, Height = 480 };
+                Button target = new() { Content = "Anchor" };
+                Controls.TeachingTip tip = new()
+                {
+                    Title = "Affordances",
+                    Target = target,
+                };
+
+                try
+                {
+                    window.Content = target;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    tip.IsOpen = true;
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000,
+                            () => tip.HostPopup is { IsOpen: true } && tip.Template?.FindName("PART_CloseButton", tip) is ButtonBase),
+                        "The tip must open and apply its template before the affordance matrix is verified.");
+
+                    ButtonBase? footerClose = tip.Template.FindName("PART_CloseButton", tip) as ButtonBase;
+                    ButtonBase? alternateClose = tip.Template.FindName("PART_AlternateCloseButton", tip) as ButtonBase;
+                    FrameworkElement? footerArea = tip.Template.FindName("FooterArea", tip) as FrameworkElement;
+                    Assert.IsNotNull(footerClose, "PART_CloseButton must exist in the TeachingTip template.");
+                    Assert.IsNotNull(alternateClose, "PART_AlternateCloseButton must exist in the TeachingTip template.");
+                    Assert.IsNotNull(footerArea, "FooterArea must exist in the TeachingTip template.");
+
+                    // Null content, no light dismiss: alternate top-right X only.
+                    Assert.AreEqual(Visibility.Collapsed, footerClose.Visibility,
+                        "The footer close button must hide while CloseButtonContent is null.");
+                    Assert.AreEqual(Visibility.Visible, alternateClose.Visibility,
+                        "The alternate X must show for a null CloseButtonContent without light dismiss.");
+                    Assert.AreEqual(Visibility.Collapsed, footerArea.Visibility,
+                        "The footer row must collapse entirely while it has no visible buttons.");
+
+                    // Null content, light dismiss: no close affordance at all (WinUI).
+                    tip.IsLightDismissEnabled = true;
+                    DrainDispatcher(window.Dispatcher);
+                    Assert.AreEqual(Visibility.Collapsed, footerClose.Visibility,
+                        "The footer close button must stay hidden for a light-dismiss tip without content.");
+                    Assert.AreEqual(Visibility.Collapsed, alternateClose.Visibility,
+                        "A light-dismiss tip without CloseButtonContent must show no close affordance.");
+
+                    // Explicit content: footer close button only, regardless of light dismiss.
+                    tip.CloseButtonContent = "Got it";
+                    DrainDispatcher(window.Dispatcher);
+                    Assert.AreEqual(Visibility.Visible, footerClose.Visibility,
+                        "The footer close button must show while CloseButtonContent is set.");
+                    Assert.AreEqual(Visibility.Collapsed, alternateClose.Visibility,
+                        "The alternate X must hide while CloseButtonContent is set.");
+                    Assert.AreEqual(Visibility.Visible, footerArea.Visibility,
+                        "The footer row must show while it has a visible button.");
+
+                    tip.IsLightDismissEnabled = false;
+                    DrainDispatcher(window.Dispatcher);
+                    Assert.AreEqual(Visibility.Visible, footerClose.Visibility,
+                        "The footer close button must keep showing once content is set and light dismiss is off.");
+                    Assert.AreEqual(Visibility.Collapsed, alternateClose.Visibility,
+                        "The alternate X must stay hidden while CloseButtonContent is set.");
+                }
+                finally
+                {
+                    tip.IsOpen = false;
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void TeachingTip_AlternateCloseButton_RunsCloseButtonPipeline()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Window window = new() { Width = 640, Height = 480 };
+                Button target = new() { Content = "Anchor" };
+                Controls.TeachingTip tip = new()
+                {
+                    Title = "Corner close",
+                    Target = target,
+                };
+
+                try
+                {
+                    window.Content = target;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    tip.IsOpen = true;
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000,
+                            () => tip.HostPopup is { IsOpen: true } && tip.Template?.FindName("PART_AlternateCloseButton", tip) is ButtonBase),
+                        "The tip must open and apply its template before the alternate close button is clicked.");
+
+                    bool closeClickRaised = false;
+                    bool closedRaised = false;
+                    tip.CloseButtonClick += (_, _) => closeClickRaised = true;
+                    tip.Closed += (_, _) => closedRaised = true;
+
+                    ButtonBase? alternateClose = tip.Template.FindName("PART_AlternateCloseButton", tip) as ButtonBase;
+                    Assert.IsNotNull(alternateClose, "PART_AlternateCloseButton must exist in the TeachingTip template.");
+                    Assert.AreEqual(Visibility.Visible, alternateClose.Visibility,
+                        "The alternate X must be the visible close affordance for this tip.");
+                    alternateClose.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+
+                    Assert.IsTrue(closeClickRaised, "Clicking the alternate X must raise CloseButtonClick.");
+                    Assert.IsFalse(tip.IsOpen, "Clicking the alternate X must set IsOpen=false.");
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: false }),
+                        "Clicking the alternate X must close the host popup.");
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => closedRaised),
+                        "Clicking the alternate X must raise Closed once the popup has closed.");
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup?.PlacementTarget is null),
+                        "Closing must release the popup's placement target so the tip does not pin the anchor.");
+                }
+                finally
+                {
+                    tip.IsOpen = false;
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void TeachingTip_Escape_ClosesTip()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Window window = new() { Width = 640, Height = 480 };
+                Button target = new() { Content = "Anchor" };
+                Controls.TeachingTip tip = new()
+                {
+                    Title = "Escapable",
+                    Target = target,
+                };
+
+                try
+                {
+                    window.Content = target;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    tip.IsOpen = true;
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true }),
+                        "The tip must open before Escape is simulated.");
+
+                    bool closedRaised = false;
+                    tip.Closed += (_, _) => closedRaised = true;
+
+                    tip.RaiseEvent(new KeyEventArgs(
+                        Keyboard.PrimaryDevice,
+                        PresentationSource.FromVisual(window),
+                        0,
+                        Key.Escape)
+                    {
+                        RoutedEvent = UIElement.PreviewKeyDownEvent,
+                    });
+
+                    Assert.IsFalse(tip.IsOpen, "Escape inside the tip must set IsOpen=false.");
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: false }),
+                        "Escape inside the tip must close the host popup.");
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => closedRaised),
+                        "The Escape dismissal must raise Closed.");
                 }
                 finally
                 {

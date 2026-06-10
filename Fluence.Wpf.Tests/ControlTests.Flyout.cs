@@ -30,6 +30,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 
 namespace Fluence.Wpf.Tests
 {
@@ -324,22 +325,169 @@ namespace Fluence.Wpf.Tests
 
                     Popup? popup = flyout.HostPopup;
                     Assert.IsNotNull(popup, "ShowAt should lazily create the host popup.");
-                    Assert.AreEqual(PlacementMode.Top, popup.Placement, "Top must map to popup Top placement.");
+                    Assert.AreEqual(PlacementMode.Custom, popup.Placement,
+                        "The flyout popup must use Custom placement so it can center on the target edge like WinUI.");
+                    Assert.IsNotNull(popup.CustomPopupPlacementCallback,
+                        "The flyout popup must carry the edge-centering placement callback.");
+
+                    // The popup side mapping that feeds the callback.
+                    Assert.AreEqual(PlacementMode.Top, Controls.FlyoutBase.MapPlacementSide(FlyoutPlacementMode.Top),
+                        "Top must map to the top side.");
+                    Assert.AreEqual(PlacementMode.Bottom, Controls.FlyoutBase.MapPlacementSide(FlyoutPlacementMode.Bottom),
+                        "Bottom must map to the bottom side.");
+                    Assert.AreEqual(PlacementMode.Left, Controls.FlyoutBase.MapPlacementSide(FlyoutPlacementMode.Left),
+                        "Left must map to the left side.");
+                    Assert.AreEqual(PlacementMode.Right, Controls.FlyoutBase.MapPlacementSide(FlyoutPlacementMode.Right),
+                        "Right must map to the right side.");
+                    Assert.AreEqual(PlacementMode.Bottom, Controls.FlyoutBase.MapPlacementSide(FlyoutPlacementMode.Full),
+                        "Full currently maps to the bottom side.");
+                    Assert.AreEqual(PlacementMode.Bottom, Controls.FlyoutBase.MapPlacementSide(FlyoutPlacementMode.Auto),
+                        "Auto currently maps to the bottom side.");
+
+                    // The live popup callback must follow the flyout's current Placement: the
+                    // default Top placement centers the popup horizontally above the target.
+                    Size popupSize = new(100, 40);
+                    Size targetSize = new(60, 20);
+                    CustomPopupPlacement[] topPlacements = popup.CustomPopupPlacementCallback(popupSize, targetSize, default);
+                    Assert.AreEqual(new Point(-20, -40), topPlacements[0].Point,
+                        "Top placement must center the popup horizontally on the target's top edge.");
 
                     flyout.Placement = FlyoutPlacementMode.Bottom;
-                    Assert.AreEqual(PlacementMode.Bottom, popup.Placement, "Bottom must map to popup Bottom placement.");
+                    CustomPopupPlacement[] bottomPlacements = popup.CustomPopupPlacementCallback(popupSize, targetSize, default);
+                    Assert.AreEqual(new Point(-20, 20), bottomPlacements[0].Point,
+                        "Bottom placement must center the popup horizontally on the target's bottom edge.");
+                }
+                finally
+                {
+                    flyout.Hide();
+                    window.Close();
+                }
+            });
+        }
 
-                    flyout.Placement = FlyoutPlacementMode.Left;
-                    Assert.AreEqual(PlacementMode.Left, popup.Placement, "Left must map to popup Left placement.");
+        [TestMethod]
+        public void FlyoutBase_GetEdgeCenteredPlacements_CentersOnFacingEdge()
+        {
+            // Pure placement math: a 100x40 popup against a 60x20 target. Points are relative
+            // to the target's top-left corner.
+            Size popupSize = new(100, 40);
+            Size targetSize = new(60, 20);
 
-                    flyout.Placement = FlyoutPlacementMode.Right;
-                    Assert.AreEqual(PlacementMode.Right, popup.Placement, "Right must map to popup Right placement.");
+            CustomPopupPlacement[] top = Controls.FlyoutBase.GetEdgeCenteredPlacements(
+                PlacementMode.Top, popupSize, targetSize, default);
+            Assert.AreEqual(new Point(-20, -40), top[0].Point,
+                "Top must center horizontally ((60-100)/2 = -20) with the popup bottom on the target top.");
+            Assert.AreEqual(new Point(-20, 20), top[1].Point,
+                "Top must offer the bottom edge as the screen-edge flip fallback.");
 
-                    flyout.Placement = FlyoutPlacementMode.Full;
-                    Assert.AreEqual(PlacementMode.Bottom, popup.Placement, "Full currently maps to popup Bottom placement.");
+            CustomPopupPlacement[] bottom = Controls.FlyoutBase.GetEdgeCenteredPlacements(
+                PlacementMode.Bottom, popupSize, targetSize, default);
+            Assert.AreEqual(new Point(-20, 20), bottom[0].Point,
+                "Bottom must center horizontally with the popup top on the target bottom.");
+            Assert.AreEqual(new Point(-20, -40), bottom[1].Point,
+                "Bottom must offer the top edge as the screen-edge flip fallback.");
 
-                    flyout.Placement = FlyoutPlacementMode.Auto;
-                    Assert.AreEqual(PlacementMode.Bottom, popup.Placement, "Auto currently maps to popup Bottom placement.");
+            CustomPopupPlacement[] left = Controls.FlyoutBase.GetEdgeCenteredPlacements(
+                PlacementMode.Left, popupSize, targetSize, default);
+            Assert.AreEqual(new Point(-100, -10), left[0].Point,
+                "Left must center vertically ((20-40)/2 = -10) with the popup right on the target left.");
+
+            CustomPopupPlacement[] right = Controls.FlyoutBase.GetEdgeCenteredPlacements(
+                PlacementMode.Right, popupSize, targetSize, default);
+            Assert.AreEqual(new Point(60, -10), right[0].Point,
+                "Right must center vertically with the popup left on the target right.");
+
+            CustomPopupPlacement[] offsetBottom = Controls.FlyoutBase.GetEdgeCenteredPlacements(
+                PlacementMode.Bottom, popupSize, targetSize, new Point(5, 7));
+            Assert.AreEqual(new Point(-15, 27), offsetBottom[0].Point,
+                "HorizontalOffset/VerticalOffset must shift the centered placement.");
+        }
+
+        [TestMethod]
+        public void Flyout_Escape_HidesFlyoutThroughClosingPipeline()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Window window = new() { Width = 400, Height = 300 };
+                Button target = new() { Content = "Anchor" };
+                Controls.Flyout flyout = new() { Content = "Dismiss me" };
+
+                try
+                {
+                    window.Content = target;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    flyout.ShowAt(target);
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => flyout.IsOpen),
+                        "ShowAt should open the flyout popup before Escape is simulated.");
+
+                    bool closingRaised = false;
+                    flyout.Closing += (_, _) => closingRaised = true;
+
+                    Controls.FlyoutPresenter? presenter = flyout.HostPopup?.Child as Controls.FlyoutPresenter;
+                    Assert.IsNotNull(presenter, "The popup child must be a FlyoutPresenter.");
+                    presenter.RaiseEvent(new KeyEventArgs(
+                        Keyboard.PrimaryDevice,
+                        PresentationSource.FromVisual(window),
+                        0,
+                        Key.Escape)
+                    {
+                        RoutedEvent = UIElement.PreviewKeyDownEvent,
+                    });
+
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => !flyout.IsOpen),
+                        "Escape inside the flyout must dismiss it.");
+                    Assert.IsTrue(closingRaised, "The Escape dismissal must run through the cancelable Closing event.");
+                }
+                finally
+                {
+                    flyout.Hide();
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void Flyout_ShowAt_FlowsTargetDataContextIntoPresenter()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Window window = new() { Width = 400, Height = 300 };
+                object viewModel = new();
+                Button target = new() { Content = "Anchor", DataContext = viewModel };
+                Controls.Flyout flyout = new() { Content = "Bound" };
+
+                try
+                {
+                    window.Content = target;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    flyout.ShowAt(target);
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => flyout.IsOpen),
+                        "ShowAt should open the flyout popup before the DataContext is verified.");
+
+                    Controls.FlyoutPresenter? presenter = flyout.HostPopup?.Child as Controls.FlyoutPresenter;
+                    Assert.IsNotNull(presenter, "The popup child must be a FlyoutPresenter.");
+                    Assert.AreSame(viewModel, presenter.DataContext,
+                        "ShowAt must flow the placement target's DataContext onto the presenter.");
+
+                    flyout.Hide();
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => !flyout.IsOpen),
+                        "Hide should close the flyout popup before the cleanup is verified.");
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => presenter.DataContext is null),
+                        "Closing must clear the DataContext flowed onto the presenter.");
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => flyout.HostPopup?.PlacementTarget is null),
+                        "Closing must release the popup's placement target so the flyout does not pin the anchor.");
                 }
                 finally
                 {

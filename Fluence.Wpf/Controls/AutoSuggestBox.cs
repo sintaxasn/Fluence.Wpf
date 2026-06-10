@@ -56,12 +56,14 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = PART_TextBox, Type = typeof(System.Windows.Controls.TextBox))]
     [TemplatePart(Name = PART_SuggestionsPopup, Type = typeof(Popup))]
     [TemplatePart(Name = PART_SuggestionsList, Type = typeof(Selector))]
+    [TemplatePart(Name = PART_QueryButton, Type = typeof(ButtonBase))]
     public class AutoSuggestBox : Control
     {
         // Template part names. These must match the names used in the default control template.
         private const string PART_TextBox = "PART_TextBox";
         private const string PART_SuggestionsPopup = "PART_SuggestionsPopup";
         private const string PART_SuggestionsList = "PART_SuggestionsList";
+        private const string PART_QueryButton = "PART_QueryButton";
 
         /// <summary>
         /// Initializes static members of the AutoSuggestBox class and overrides the default
@@ -232,7 +234,10 @@ namespace Fluence.Wpf.Controls
 
         /// <summary>
         /// Gets or sets the icon shown at the right edge of the text box, typically a
-        /// search glyph. The default template hosts it in the text box icon slot.
+        /// search glyph. The default template hosts it in a clickable subtle button in the
+        /// text box icon slot; clicking it submits the current text through the same
+        /// <see cref="QuerySubmitted"/> pipeline as the Enter key. No button is shown while
+        /// the value is <see langword="null"/>.
         /// </summary>
         public object? QueryIcon
         {
@@ -292,14 +297,17 @@ namespace Fluence.Wpf.Controls
             _textBox?.TextChanged -= OnTextBoxTextChanged;
             _suggestionsList?.PreviewMouseLeftButtonUp -= OnSuggestionsListPreviewMouseLeftButtonUp;
             _popup?.Closed -= OnPopupClosed;
+            _queryButton?.Click -= OnQueryButtonClick;
 
             _textBox = GetTemplateChild(PART_TextBox) as System.Windows.Controls.TextBox;
             _popup = GetTemplateChild(PART_SuggestionsPopup) as Popup;
             _suggestionsList = GetTemplateChild(PART_SuggestionsList) as Selector;
+            _queryButton = GetTemplateChild(PART_QueryButton) as ButtonBase;
 
             _textBox?.TextChanged += OnTextBoxTextChanged;
             _suggestionsList?.PreviewMouseLeftButtonUp += OnSuggestionsListPreviewMouseLeftButtonUp;
             _popup?.Closed += OnPopupClosed;
+            _queryButton?.Click += OnQueryButtonClick;
 
             SyncTextBoxText(Text);
         }
@@ -408,6 +416,9 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
+            // A genuine user edit replaces any keyboard-highlight preview baseline.
+            _isPreviewingSuggestion = false;
+
             _pendingChangeReason = AutoSuggestionBoxTextChangeReason.UserInput;
             try
             {
@@ -419,6 +430,15 @@ namespace Fluence.Wpf.Controls
             }
 
             UpdateSuggestionListState();
+        }
+
+        /// <summary>
+        /// Submits the current text when the query icon button is clicked, running the same
+        /// <see cref="QuerySubmitted"/> pipeline as the Enter key without a chosen suggestion.
+        /// </summary>
+        private void OnQueryButtonClick(object sender, RoutedEventArgs e)
+        {
+            SubmitQuery(null);
         }
 
         private void OnSuggestionsListPreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -446,6 +466,7 @@ namespace Fluence.Wpf.Controls
 
         private void OnPopupClosed(object? sender, EventArgs e)
         {
+            _isPreviewingSuggestion = false;
             SetCurrentValue(IsSuggestionListOpenProperty, false);
             if (_suggestionsList is not null && _suggestionsList.SelectedIndex != -1)
             {
@@ -606,7 +627,11 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Moves the suggestion list selection by <paramref name="delta"/>, cycling through
         /// no selection like WinUI: stepping past either end clears the selection so the
-        /// user returns to their typed text.
+        /// user returns to their typed text. While <see cref="UpdateTextOnSelect"/> is
+        /// enabled, the highlighted suggestion's text is previewed into the box (raising
+        /// <see cref="TextChanged"/> with
+        /// <see cref="AutoSuggestionBoxTextChangeReason.SuggestionChosen"/>) and the original
+        /// typed text is restored when the highlight cycles back to no selection.
         /// </summary>
         private void MoveSuggestionSelection(int delta)
         {
@@ -630,6 +655,45 @@ namespace Fluence.Wpf.Controls
             if (index >= 0 && _suggestionsList is System.Windows.Controls.ListBox listBox)
             {
                 listBox.ScrollIntoView(listBox.Items[index]);
+            }
+
+            PreviewHighlightedSuggestion(index);
+        }
+
+        /// <summary>
+        /// Applies the keyboard-highlight text preview for the suggestion at
+        /// <paramref name="index"/>: the typed text is captured once when the highlight first
+        /// enters the list, each highlighted suggestion is previewed into <see cref="Text"/>,
+        /// and the typed text is restored when the highlight cycles back to no selection.
+        /// No-op while <see cref="UpdateTextOnSelect"/> is disabled, matching WinUI.
+        /// </summary>
+        private void PreviewHighlightedSuggestion(int index)
+        {
+            if (!UpdateTextOnSelect)
+            {
+                return;
+            }
+
+            if (index >= 0)
+            {
+                object? item = _suggestionsList?.Items[index];
+                if (item is null)
+                {
+                    return;
+                }
+
+                if (!_isPreviewingSuggestion)
+                {
+                    _typedText = Text;
+                    _isPreviewingSuggestion = true;
+                }
+
+                SetTextWithReason(GetTextFromSuggestion(item), AutoSuggestionBoxTextChangeReason.SuggestionChosen);
+            }
+            else if (_isPreviewingSuggestion)
+            {
+                _isPreviewingSuggestion = false;
+                SetTextWithReason(_typedText, AutoSuggestionBoxTextChangeReason.SuggestionChosen);
             }
         }
 
@@ -661,6 +725,23 @@ namespace Fluence.Wpf.Controls
         /// The selector presenting the suggestions.
         /// </summary>
         private Selector? _suggestionsList;
+
+        /// <summary>
+        /// The clickable query icon button hosted in the text box icon slot, when present.
+        /// </summary>
+        private ButtonBase? _queryButton;
+
+        /// <summary>
+        /// The text the user had typed before the keyboard highlight entered the suggestion
+        /// list; restored when the highlight cycles back to no selection.
+        /// </summary>
+        private string _typedText = string.Empty;
+
+        /// <summary>
+        /// Whether the box is currently previewing a keyboard-highlighted suggestion, so the
+        /// typed text is captured only once per navigation pass.
+        /// </summary>
+        private bool _isPreviewingSuggestion;
 
         /// <summary>
         /// Guards against re-entrancy while pushing <see cref="Text"/> into the template

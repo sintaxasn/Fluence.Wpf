@@ -348,6 +348,137 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void AutoSuggestBox_ArrowKeys_PreviewHighlightedSuggestionAndRestoreTypedText()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Window window = new() { Width = 400, Height = 300 };
+                Controls.AutoSuggestBox box = new();
+
+                try
+                {
+                    window.Content = box;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Controls.TextBox? textBox = box.Template?.FindName("PART_TextBox", box) as Controls.TextBox;
+                    Popup? popup = box.Template?.FindName("PART_SuggestionsPopup", box) as Popup;
+                    Selector? list = box.Template?.FindName("PART_SuggestionsList", box) as Selector;
+                    Assert.IsNotNull(textBox, "PART_TextBox must be present in the template.");
+                    Assert.IsNotNull(popup, "PART_SuggestionsPopup must be present in the template.");
+                    Assert.IsNotNull(list, "PART_SuggestionsList must be present in the template.");
+
+                    // Type "ap" (UserInput baseline), then open the list.
+                    textBox.Text = "ap";
+                    DrainDispatcher(window.Dispatcher);
+                    List<string> items = ["Apple", "Banana", "Cherry"];
+                    box.ItemsSource = items;
+                    box.IsSuggestionListOpen = true;
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => popup.IsOpen),
+                        "The suggestion popup must open before the navigation scenario.");
+
+                    List<AutoSuggestionBoxTextChangeReason> reasons = [];
+                    box.TextChanged += (_, args) => reasons.Add(args.Reason);
+                    bool querySubmitted = false;
+                    box.QuerySubmitted += (_, _) => querySubmitted = true;
+
+                    // Moving the highlight previews each suggestion into the box.
+                    RaisePreviewKeyDown(textBox, window, Key.Down);
+                    DrainDispatcher(window.Dispatcher);
+                    Assert.AreEqual(0, list.SelectedIndex, "Down must move the highlight onto the first suggestion.");
+                    Assert.AreEqual("Apple", box.Text, "The highlighted suggestion must be previewed into Text.");
+                    Assert.AreEqual("Apple", textBox.Text, "The preview must reach the inner text box.");
+
+                    RaisePreviewKeyDown(textBox, window, Key.Down);
+                    DrainDispatcher(window.Dispatcher);
+                    Assert.AreEqual("Banana", box.Text, "Each highlight move must preview the new suggestion.");
+
+                    RaisePreviewKeyDown(textBox, window, Key.Down);
+                    DrainDispatcher(window.Dispatcher);
+                    Assert.AreEqual("Cherry", box.Text, "The last suggestion must preview like the others.");
+
+                    // Cycling past the end returns to no selection and restores the typed text.
+                    RaisePreviewKeyDown(textBox, window, Key.Down);
+                    DrainDispatcher(window.Dispatcher);
+                    Assert.AreEqual(-1, list.SelectedIndex, "Cycling past the end must clear the highlight.");
+                    Assert.AreEqual("ap", box.Text, "Clearing the highlight must restore the original typed text.");
+
+                    Assert.IsTrue(reasons.Count > 0, "The preview navigation must raise TextChanged.");
+                    foreach (AutoSuggestionBoxTextChangeReason reason in reasons)
+                    {
+                        Assert.AreEqual(AutoSuggestionBoxTextChangeReason.SuggestionChosen, reason,
+                            "Every preview text change must report Reason=SuggestionChosen so app filters do not re-run.");
+                    }
+
+                    Assert.IsFalse(querySubmitted, "Arrow-key navigation alone must not submit the query.");
+                    Assert.IsTrue(popup.IsOpen, "Arrow-key navigation must keep the suggestion list open.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void AutoSuggestBox_QueryIconButton_SubmitsQueryAndHidesWhenIconNull()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Window window = new() { Width = 400, Height = 300 };
+                Controls.AutoSuggestBox box = new()
+                {
+                    QueryIcon = new Controls.FontIcon { Glyph = "" },
+                    Text = "search term",
+                };
+
+                try
+                {
+                    window.Content = box;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Controls.TextBox? textBox = box.Template?.FindName("PART_TextBox", box) as Controls.TextBox;
+                    ButtonBase? queryButton = box.Template?.FindName("PART_QueryButton", box) as ButtonBase;
+                    Assert.IsNotNull(textBox, "PART_TextBox must be present in the template.");
+                    Assert.IsNotNull(queryButton, "PART_QueryButton must be present in the template while QueryIcon is set.");
+                    Assert.AreSame(queryButton, textBox.Icon,
+                        "The query button must be hosted in the text box icon slot.");
+                    Assert.AreSame(box.QueryIcon, queryButton.Content,
+                        "The query button must host the QueryIcon content.");
+
+                    AutoSuggestBoxQuerySubmittedEventArgs? submitted = null;
+                    box.QuerySubmitted += (_, args) => submitted = args;
+
+                    queryButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent));
+                    DrainDispatcher(window.Dispatcher);
+
+                    Assert.IsNotNull(submitted, "Clicking the query icon button must raise QuerySubmitted.");
+                    Assert.AreEqual("search term", submitted.QueryText, "QueryText must carry the current text.");
+                    Assert.IsNull(submitted.ChosenSuggestion,
+                        "A query icon click submits without a chosen suggestion, like Enter.");
+
+                    // Clearing QueryIcon removes the button from the icon slot entirely.
+                    box.QueryIcon = null;
+                    DrainDispatcher(window.Dispatcher);
+                    Assert.IsNull(textBox.Icon, "Clearing QueryIcon must clear the icon slot so no empty button is shown.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
         public void AutoSuggestBox_SurfaceBrushes_ResolveAfterThemeCycle()
         {
             RunOnStaThread(() =>

@@ -41,18 +41,21 @@ namespace Fluence.Wpf.Controls
     /// A contextual tip surface with a title, subtitle, body content, and optional action and
     /// close buttons, mirroring the WinUI 3 <c>TeachingTip</c> control. The tip is hosted in an
     /// internal light-weight <see cref="Popup"/>: when <see cref="Target"/> is set the popup is
-    /// anchored to it with <see cref="PreferredPlacement"/> mapped to the popup placement;
-    /// untargeted tips center over the active window content and hide the beak. The body uses
-    /// the inherited <see cref="ContentControl.Content"/> and
+    /// anchored to it, centered on the target edge selected by <see cref="PreferredPlacement"/>;
+    /// untargeted tips dock to the bottom-right corner of the active window content (or center
+    /// when <see cref="PreferredPlacement"/> is explicitly Center) and hide the beak. The body
+    /// uses the inherited <see cref="ContentControl.Content"/> and
     /// <see cref="ContentControl.ContentTemplate"/>.
     /// </summary>
     [TemplatePart(Name = PART_ActionButton, Type = typeof(ButtonBase))]
     [TemplatePart(Name = PART_CloseButton, Type = typeof(ButtonBase))]
+    [TemplatePart(Name = PART_AlternateCloseButton, Type = typeof(ButtonBase))]
     public class TeachingTip : ContentControl
     {
         // Template part names.
         private const string PART_ActionButton = "PART_ActionButton";
         private const string PART_CloseButton = "PART_CloseButton";
+        private const string PART_AlternateCloseButton = "PART_AlternateCloseButton";
 
         /// <summary>
         /// Initializes static members of the TeachingTip class and overrides the default
@@ -270,8 +273,12 @@ namespace Fluence.Wpf.Controls
                 new FrameworkPropertyMetadata(null));
 
         /// <summary>
-        /// Gets or sets the content of the close button in the tip footer. While the value is
-        /// <see langword="null"/> the button shows the default Fluent close glyph.
+        /// Gets or sets the content of the close button in the tip footer, matching the WinUI
+        /// close-affordance rules: the footer close button shows only while this value is set.
+        /// While it is <see langword="null"/> and <see cref="IsLightDismissEnabled"/> is
+        /// <see langword="false"/>, an alternate X close button is shown in the top-right
+        /// corner of the tip instead; while it is <see langword="null"/> and light dismiss is
+        /// enabled, the tip shows no close affordance at all.
         /// </summary>
         public object? CloseButtonContent
         {
@@ -299,8 +306,9 @@ namespace Fluence.Wpf.Controls
         /// Gets the placement the tip resolved when it was last opened:
         /// <see cref="PreferredPlacement"/> with <see cref="TeachingTipPlacementMode.Auto"/>
         /// resolved to a concrete edge, or <see cref="TeachingTipPlacementMode.Center"/> for
-        /// untargeted tips. The template positions the beak on the edge facing the target and
-        /// hides it for <see cref="TeachingTipPlacementMode.Center"/>.
+        /// untargeted tips (which dock to the bottom-right corner of the window content but
+        /// never show a beak). The template positions the beak on the edge facing the target
+        /// and hides it for <see cref="TeachingTipPlacementMode.Center"/>.
         /// </summary>
         public TeachingTipPlacementMode ActualPlacement
         {
@@ -342,11 +350,30 @@ namespace Fluence.Wpf.Controls
         {
             _actionButton?.Click -= OnActionButtonClick;
             _closeButton?.Click -= OnCloseButtonClick;
+            _alternateCloseButton?.Click -= OnCloseButtonClick;
             base.OnApplyTemplate();
             _actionButton = GetTemplateChild(PART_ActionButton) as ButtonBase;
             _closeButton = GetTemplateChild(PART_CloseButton) as ButtonBase;
+            _alternateCloseButton = GetTemplateChild(PART_AlternateCloseButton) as ButtonBase;
             _actionButton?.Click += OnActionButtonClick;
             _closeButton?.Click += OnCloseButtonClick;
+            _alternateCloseButton?.Click += OnCloseButtonClick;
+        }
+
+        /// <inheritdoc />
+        /// <remarks>
+        /// Escape pressed inside the open tip dismisses it, mirroring the WinUI keyboard
+        /// contract. The close runs through the <see cref="IsOpen"/> pipeline so
+        /// <see cref="Closed"/> is raised as usual.
+        /// </remarks>
+        protected override void OnPreviewKeyDown(KeyEventArgs e)
+        {
+            base.OnPreviewKeyDown(e);
+            if (!e.Handled && e.Key == Key.Escape && IsOpen)
+            {
+                SetCurrentValue(IsOpenProperty, false);
+                e.Handled = true;
+            }
         }
 
         private static object CoerceText(DependencyObject d, object? baseValue)
@@ -383,21 +410,22 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Maps the WinUI-style <see cref="TeachingTipPlacementMode"/> to the WPF popup
-        /// <see cref="PlacementMode"/>. <see cref="TeachingTipPlacementMode.Auto"/> maps to
-        /// bottom placement.
+        /// Maps the WinUI-style <see cref="TeachingTipPlacementMode"/> to the WPF popup side
+        /// the tip opens on, feeding the shared edge-centering placement callback.
+        /// <see cref="TeachingTipPlacementMode.Auto"/> maps to the bottom side;
+        /// <see cref="TeachingTipPlacementMode.Center"/> never reaches this mapping because
+        /// centered tips use the native <see cref="PlacementMode.Center"/>.
         /// </summary>
         /// <param name="placement">The requested tip placement.</param>
-        /// <returns>The equivalent popup placement.</returns>
-        private static PlacementMode MapPlacement(TeachingTipPlacementMode placement)
+        /// <returns>The equivalent popup side.</returns>
+        internal static PlacementMode MapPlacementSide(TeachingTipPlacementMode placement)
         {
             return placement switch
             {
                 TeachingTipPlacementMode.Top => PlacementMode.Top,
                 TeachingTipPlacementMode.Left => PlacementMode.Left,
                 TeachingTipPlacementMode.Right => PlacementMode.Right,
-                TeachingTipPlacementMode.Center => PlacementMode.Center,
-                TeachingTipPlacementMode.Bottom or TeachingTipPlacementMode.Auto or _ =>
+                TeachingTipPlacementMode.Bottom or TeachingTipPlacementMode.Auto or TeachingTipPlacementMode.Center or _ =>
                     PlacementMode.Bottom,
             };
         }
@@ -465,9 +493,13 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Anchors the popup to <see cref="Target"/> with the mapped
-        /// <see cref="PreferredPlacement"/>, or centers it over the active window content for
-        /// untargeted tips, and records the resolved placement in <see cref="ActualPlacement"/>.
+        /// Anchors the popup to <see cref="Target"/>, centered on the target edge selected by
+        /// <see cref="PreferredPlacement"/> (via the shared edge-centering placement callback);
+        /// explicit Center placement keeps the native centered popup. Untargeted tips dock to
+        /// the bottom-right corner of the active window content per WinUI, or center when
+        /// <see cref="PreferredPlacement"/> is explicitly Center, and record
+        /// <see cref="TeachingTipPlacementMode.Center"/> so the beak stays hidden. The resolved
+        /// placement is recorded in <see cref="ActualPlacement"/>.
         /// </summary>
         private void ApplyPlacement(Popup popup)
         {
@@ -476,15 +508,62 @@ namespace Fluence.Wpf.Controls
             {
                 popup.PlacementTarget = target;
                 TeachingTipPlacementMode resolved = ResolvePlacement(PreferredPlacement);
-                popup.Placement = MapPlacement(resolved);
+                if (resolved == TeachingTipPlacementMode.Center)
+                {
+                    popup.CustomPopupPlacementCallback = null;
+                    popup.Placement = PlacementMode.Center;
+                }
+                else
+                {
+                    popup.CustomPopupPlacementCallback = GetEdgePlacements;
+                    popup.Placement = PlacementMode.Custom;
+                }
+
                 ActualPlacement = resolved;
             }
             else
             {
                 popup.PlacementTarget = ResolveFallbackPlacementTarget();
-                popup.Placement = PlacementMode.Center;
+                if (PreferredPlacement == TeachingTipPlacementMode.Auto)
+                {
+                    popup.CustomPopupPlacementCallback = GetBottomRightPlacements;
+                    popup.Placement = PlacementMode.Custom;
+                }
+                else
+                {
+                    popup.CustomPopupPlacementCallback = null;
+                    popup.Placement = PlacementMode.Center;
+                }
+
                 ActualPlacement = TeachingTipPlacementMode.Center;
             }
+        }
+
+        /// <summary>
+        /// The popup's custom placement callback for targeted tips: centers the tip on the
+        /// target edge selected by <see cref="PreferredPlacement"/>, sharing the
+        /// <see cref="FlyoutBase.GetEdgeCenteredPlacements"/> math with the flyout family.
+        /// </summary>
+        private CustomPopupPlacement[] GetEdgePlacements(Size popupSize, Size targetSize, Point offset)
+        {
+            return FlyoutBase.GetEdgeCenteredPlacements(
+                MapPlacementSide(ResolvePlacement(PreferredPlacement)),
+                popupSize,
+                targetSize,
+                offset);
+        }
+
+        /// <summary>
+        /// The popup's custom placement callback for untargeted tips: docks the tip to the
+        /// bottom-right corner of the fallback placement target (the active window content),
+        /// matching the WinUI default position for untargeted teaching tips.
+        /// </summary>
+        private static CustomPopupPlacement[] GetBottomRightPlacements(Size popupSize, Size targetSize, Point offset)
+        {
+            Point bottomRight = new(
+                targetSize.Width - popupSize.Width + offset.X,
+                targetSize.Height - popupSize.Height + offset.Y);
+            return [new CustomPopupPlacement(bottomRight, PopupPrimaryAxis.Horizontal)];
         }
 
         /// <summary>
@@ -566,6 +645,10 @@ namespace Fluence.Wpf.Controls
                 SetCurrentValue(IsOpenProperty, false);
             }
 
+            // Release the anchor so a closed tip does not pin the last placement target
+            // (or the fallback window content) for its own lifetime.
+            _ = HostPopup?.PlacementTarget = null;
+
             Closed?.Invoke(this, EventArgs.Empty);
         }
 
@@ -594,5 +677,11 @@ namespace Fluence.Wpf.Controls
         /// The close button wired from the template, when present.
         /// </summary>
         private ButtonBase? _closeButton;
+
+        /// <summary>
+        /// The alternate top-right X close button wired from the template, when present. It
+        /// shares the <see cref="OnCloseButtonClick"/> pipeline with the footer close button.
+        /// </summary>
+        private ButtonBase? _alternateCloseButton;
     }
 }
