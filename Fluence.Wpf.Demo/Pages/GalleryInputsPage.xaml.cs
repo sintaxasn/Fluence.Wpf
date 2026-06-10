@@ -277,6 +277,72 @@ namespace Fluence.Wpf.Demo.Pages.Inputs
 }
 ";
 
+        private const string AutoSuggestBoxXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Inputs.AutoSuggestSample""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <ui:AutoSuggestBox
+        x:Name=""SearchBox""
+        Width=""280""
+        PlaceholderText=""Search fruit""
+        QuerySubmitted=""SearchBox_QuerySubmitted""
+        TextChanged=""SearchBox_TextChanged"" />
+</UserControl>
+";
+
+        private const string AutoSuggestBoxCSharpSource = @"using System;
+using System.Collections.Generic;
+using System.Windows.Controls;
+using Fluence.Wpf;
+
+namespace Fluence.Wpf.Demo.Pages.Inputs
+{
+    public partial class AutoSuggestSample : UserControl
+    {
+        private static readonly string[] Fruits =
+            { ""Apple"", ""Apricot"", ""Banana"", ""Cherry"", ""Mango"", ""Orange"", ""Peach"" };
+
+        public AutoSuggestSample()
+        {
+            InitializeComponent();
+        }
+
+        private void SearchBox_TextChanged(object sender, AutoSuggestBoxTextChangedEventArgs e)
+        {
+            if (e.Reason != AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                return;
+            }
+
+            List<string> matches = new();
+            foreach (string fruit in Fruits)
+            {
+                if (fruit.IndexOf(SearchBox.Text, StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    matches.Add(fruit);
+                }
+            }
+
+            SearchBox.ItemsSource = matches;
+        }
+
+        private void SearchBox_QuerySubmitted(object sender, AutoSuggestBoxQuerySubmittedEventArgs e)
+        {
+            string submitted = e.ChosenSuggestion as string ?? e.QueryText;
+            // Act on the submitted query here.
+        }
+    }
+}
+";
+
+        private static readonly string[] AutoSuggestFruits =
+        [
+            "Apple", "Apricot", "Banana", "Blackberry", "Blueberry", "Cherry",
+            "Grape", "Lemon", "Lime", "Mango", "Orange", "Peach", "Pear",
+            "Pineapple", "Plum", "Raspberry", "Strawberry", "Watermelon",
+        ];
+
         public GalleryInputsPage()
         {
             InitializeComponent();
@@ -287,8 +353,35 @@ namespace Fluence.Wpf.Demo.Pages.Inputs
                 new DemoSampleSource(2, TextBoxValidationXamlSource, TextBoxValidationCSharpSource),
                 new DemoSampleSource(3, PasswordBoxInputXamlSource, PasswordBoxInputCSharpSource),
                 new DemoSampleSource(4, NumberBoxInputXamlSource, NumberBoxInputCSharpSource),
-                new DemoSampleSource(5, SliderInputXamlSource, SliderInputCSharpSource));
+                new DemoSampleSource(5, SliderInputXamlSource, SliderInputCSharpSource),
+                new DemoSampleSource(6, AutoSuggestBoxXamlSource, AutoSuggestBoxCSharpSource));
         }
 
+        private void DemoAutoSuggestBox_TextChanged(object sender, Fluence.Wpf.AutoSuggestBoxTextChangedEventArgs e)
+        {
+            if (e.Reason != Fluence.Wpf.AutoSuggestionBoxTextChangeReason.UserInput)
+            {
+                return;
+            }
+
+            string query = DemoAutoSuggestBox.Text;
+            System.Collections.Generic.List<string> matches = [];
+            foreach (string fruit in AutoSuggestFruits)
+            {
+                if (string.IsNullOrWhiteSpace(query)
+                    || fruit.StartsWith(query, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    matches.Add(fruit);
+                }
+            }
+
+            DemoAutoSuggestBox.ItemsSource = matches;
+        }
+
+        private void DemoAutoSuggestBox_QuerySubmitted(object sender, Fluence.Wpf.AutoSuggestBoxQuerySubmittedEventArgs e)
+        {
+            string submitted = e.ChosenSuggestion as string ?? e.QueryText;
+            AutoSuggestResultLabel.Text = string.Format(System.Globalization.CultureInfo.CurrentCulture, "Submitted: {0}", submitted);
+        }
     }
 }

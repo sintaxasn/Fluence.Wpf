@@ -193,6 +193,25 @@
                 </ui:StackPanel>
             </ContentControl>
             <local:DemoSampleControl SampleDescription="Use sliders when a relative value is easier to choose visually than typing a precise number." />
+
+
+            <ContentControl x:Name="DemoSampleSlot06DemoContentHost" Visibility="Collapsed">
+                <ui:StackPanel Spacing="8">
+                    <ui:AutoSuggestBox
+                        x:Name="DemoAutoSuggestBox"
+                        Width="280"
+                        HorizontalAlignment="Left"
+                        PlaceholderText="Search fruit"
+                        QuerySubmitted="DemoAutoSuggestBox_QuerySubmitted"
+                        TextChanged="DemoAutoSuggestBox_TextChanged" />
+                    <TextBlock
+                        x:Name="AutoSuggestResultLabel"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="No query submitted" />
+                </ui:StackPanel>
+            </ContentControl>
+            <local:DemoSampleControl SampleDescription="Use AutoSuggestBox for search and autocomplete: handle TextChanged to filter suggestions and QuerySubmitted to act on the choice." />
         </StackPanel>
     </ui:SmoothScrollViewer>
 </UserControl>
