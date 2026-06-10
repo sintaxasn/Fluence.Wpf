@@ -9,13 +9,19 @@
         crumb layout of content followed by a chevron separator; chevron font size 12 with
         2,0 padding; item font size 14 at Normal weight; ControlCornerRadius on the click
         plate; transparent bar background and border).
-        Ancestor crumbs read TextFillColorSecondaryBrush at rest and light up to
-        TextFillColorPrimaryBrush over a subtle fill plate on hover/press, following the
-        in-tree Button/HyperlinkButton subtle states; the current (last) crumb hides its
-        chevron and renders TextFillColorPrimaryBrush + SemiBold. WinUI's 1,3 content padding
-        is widened to 4,3 so the subtle hover plate clears the text.
-        The chevron is the Fluence FontIcon with the ChevronRight glyph (E76C), hit-test
-        invisible so only the content plate is the click target.
+        Crumb foreground follows the WinUI BreadcrumbBar ramp: rest TextFillColorPrimaryBrush
+        (BreadcrumbBarNormalForegroundBrush), hover TextFillColorSecondaryBrush
+        (BreadcrumbBarHoverForegroundBrush), press TextFillColorTertiaryBrush
+        (BreadcrumbBarPressedForegroundBrush) over a subtle fill plate, matching the in-tree
+        Button/HyperlinkButton subtle states. The current (last) crumb hides its chevron and
+        renders TextFillColorPrimaryBrush (BreadcrumbBarCurrentNormalForegroundBrush); its
+        SemiBold weight is a deliberate owner deviation (WinUI uses BreadcrumbBarItemFontWeight
+        Normal). WinUI's 1,3 content padding is widened to 4,3 so the subtle hover plate clears
+        the text.
+        The chevron separator is the Fluence FontIcon with the WinUI
+        BreadcrumbBarChevronLeftToRight glyph (E974) in TextFillColorPrimaryBrush
+        (BreadcrumbBarNormalForegroundBrush), hit-test invisible so only the content plate is
+        the click target.
         WinUI's ellipsis overflow collapse is a deliberate v1 omission (see BreadcrumbBar.cs);
         the strip extends to its natural width and clips when constrained.
     -->
@@ -26,7 +32,7 @@
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
         <Setter Property="FontSize" Value="14" />
         <Setter Property="FontWeight" Value="Normal" />
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="Padding" Value="4,3" />
         <Setter Property="Template">
             <Setter.Value>
@@ -61,8 +67,8 @@
                             Grid.Column="1"
                             Margin="2,0"
                             VerticalAlignment="Center"
-                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                            Glyph="&#xE76C;"
+                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                            Glyph="&#xE974;"
                             IconFontSize="12"
                             IsHitTestVisible="False" />
                     </Grid>
@@ -110,7 +116,7 @@
                                 <Condition Property="IsLastItem" Value="False" />
                             </MultiTrigger.Conditions>
                             <Setter TargetName="ContentPlate" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
                         </MultiTrigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
@@ -118,7 +124,7 @@
                                 <Condition Property="IsLastItem" Value="False" />
                             </MultiTrigger.Conditions>
                             <Setter TargetName="ContentPlate" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorTertiaryBrush}" />
                             <MultiTrigger.EnterActions>
                                 <BeginStoryboard Storyboard="{StaticResource PressedScaleStoryboard}" />
                             </MultiTrigger.EnterActions>

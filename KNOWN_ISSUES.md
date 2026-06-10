@@ -21,3 +21,24 @@ maintainers.
   `SolidBackgroundFillColorBaseBrush`. Automated capture of the full
   `FluenceWindow` chrome needs a different approach (e.g. `PrintWindow` /
   GDI screen capture).
+- **`DatePicker` / `TimePicker` selector flyouts** - the flyouts present plain
+  scrollable selector lists. They do **not** implement WinUI's infinitely
+  looping selectors, nor the WinUI centered accent highlight band with the
+  foreground flip over the selected row (`DatePicker_themeresources.xaml`
+  `HighlightRect` / `MonochromaticOverlayPresenter`). The highlight band is
+  coupled to the looping-selector interaction model, so both are deferred
+  together; the looping omission is already noted in code at `DatePicker.cs`
+  (around line 606) and `TimePicker.cs` (around line 511).
+- **`ContentDialog` smoke layer and motion** - the dialog always paints its
+  smoke (dimming) layer; there is **no** WinUI `DialogShowingWithoutSmokeLayer`
+  state. It also has **no** `FullDialogSizing` stretch mode and **no** exit
+  (`DialogHidden`) reverse animation; the entrance motion is implemented.
+- **`BreadcrumbBar` ellipsis overflow** - the bar does **not** collapse leading
+  crumbs into an ellipsis (WinUI collapses them into an `E712` ellipsis item
+  with a flyout). Long trails extend to their natural width and clip when
+  constrained.
+- **`PipsPager` scrolling and nav-button scale** - the pager uses a centered
+  re-rendering window (already noted in code at `PipsPager.cs` around lines
+  65-70). It does **not** implement WinUI's edge-pip scale-down or the
+  stationary edge-scrolling viewport, and the navigation buttons do **not** use
+  WinUI's pressed `0.875` scale.

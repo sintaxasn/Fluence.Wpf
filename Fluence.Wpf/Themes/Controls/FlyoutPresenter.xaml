@@ -40,7 +40,7 @@
                         <Border.RenderTransform>
                             <TranslateTransform x:Name="PresenterTranslate" />
                         </Border.RenderTransform>
-                        <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
+                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                             <ContentPresenter
                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                 VerticalAlignment="{TemplateBinding VerticalContentAlignment}"

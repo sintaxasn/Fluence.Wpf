@@ -602,6 +602,18 @@ namespace Fluence.Wpf.Tests
                     Assert.AreSame(strongFill, nextButton.Foreground,
                         "The navigation button rest Foreground must be ControlStrongFillColorDefaultBrush.");
 
+                    // WinUI maps PipsPagerNavigationButtonForegroundDisabled to
+                    // ControlStrongFillColorDisabledBrush (not the text disabled fill). The
+                    // previous button is disabled at page 0, so its Foreground must reflect that
+                    // disabled setter.
+                    object? strongFillDisabled = app?.TryFindResource("ControlStrongFillColorDisabledBrush");
+                    Assert.IsNotNull(strongFillDisabled, "ControlStrongFillColorDisabledBrush must resolve.");
+                    WpfButton? previousButton = FindVisualChildByName<WpfButton>(pager, "PART_PreviousButton");
+                    Assert.IsNotNull(previousButton, "PART_PreviousButton must be present in the PipsPager template.");
+                    Assert.IsFalse(previousButton.IsEnabled, "The previous button must be disabled at the first page.");
+                    Assert.AreSame(strongFillDisabled, previousButton.Foreground,
+                        "The disabled navigation button Foreground must be ControlStrongFillColorDisabledBrush.");
+
                     WpfToggleButton? selectedPip = GetPipAt(host, 0);
                     WpfToggleButton? restPip = GetPipAt(host, 1);
                     Assert.IsNotNull(selectedPip, "The selected pip must be a ToggleButton.");

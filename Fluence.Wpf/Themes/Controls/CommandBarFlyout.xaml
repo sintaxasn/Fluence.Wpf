@@ -37,14 +37,18 @@
                         <Border.RenderTransform>
                             <ScaleTransform x:Name="PressScale" ScaleX="1" ScaleY="1" />
                         </Border.RenderTransform>
-                        <ContentPresenter
-                            x:Name="IconPresenter"
+                        <!--  Icon normalized into a 16px-high Viewbox per WinUI ContentViewbox.  -->
+                        <Viewbox
+                            Height="16"
                             HorizontalAlignment="Center"
-                            VerticalAlignment="Center"
-                            Content="{TemplateBinding Icon}"
-                            TextElement.FontFamily="{TemplateBinding FontFamily}"
-                            TextElement.FontSize="{TemplateBinding FontSize}"
-                            TextElement.Foreground="{TemplateBinding Foreground}" />
+                            VerticalAlignment="Center">
+                            <ContentPresenter
+                                x:Name="IconPresenter"
+                                Content="{TemplateBinding Icon}"
+                                TextElement.FontFamily="{TemplateBinding FontFamily}"
+                                TextElement.FontSize="{TemplateBinding FontSize}"
+                                TextElement.Foreground="{TemplateBinding Foreground}" />
+                        </Viewbox>
                     </Border>
                     <!--  Press scale storyboards mirror Button.xaml (0.98 over 100ms on the 0.8,0,0,1 ControlFastOutSlowIn spline).  -->
                     <ControlTemplate.Resources>
@@ -143,15 +147,17 @@
                                 <!--  Label  -->
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <ContentPresenter
-                                x:Name="IconPresenter"
+                            <!--  Icon normalized into a 16px-high Viewbox per WinUI ContentViewbox.  -->
+                            <Viewbox
                                 Grid.Column="0"
-                                Width="16"
                                 Height="16"
                                 HorizontalAlignment="Center"
-                                VerticalAlignment="Center"
-                                Content="{TemplateBinding Icon}"
-                                TextElement.Foreground="{TemplateBinding Foreground}" />
+                                VerticalAlignment="Center">
+                                <ContentPresenter
+                                    x:Name="IconPresenter"
+                                    Content="{TemplateBinding Icon}"
+                                    TextElement.Foreground="{TemplateBinding Foreground}" />
+                            </Viewbox>
                             <TextBlock
                                 Grid.Column="2"
                                 VerticalAlignment="Center"

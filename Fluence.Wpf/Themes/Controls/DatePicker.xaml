@@ -95,7 +95,7 @@
                                         x:Name="FirstDivider"
                                         Grid.Column="1"
                                         Width="1"
-                                        Background="{DynamicResource DividerStrokeColorDefaultBrush}" />
+                                        Background="{DynamicResource ControlStrokeColorDefaultBrush}" />
                                     <TextBlock
                                         x:Name="SecondSegmentText"
                                         Grid.Column="2"
@@ -106,7 +106,7 @@
                                         x:Name="SecondDivider"
                                         Grid.Column="3"
                                         Width="1"
-                                        Background="{DynamicResource DividerStrokeColorDefaultBrush}" />
+                                        Background="{DynamicResource ControlStrokeColorDefaultBrush}" />
                                     <TextBlock
                                         x:Name="ThirdSegmentText"
                                         Grid.Column="4"

@@ -220,7 +220,7 @@ Key API:
 
 `NavigationView` owns pane layout, selection, back-button state, top overflow, and item invocation events. Application route history remains app-owned.
 
-`BreadcrumbBar` shows the path to the current location as clickable crumbs separated by chevrons; the last crumb renders emphasized with no trailing chevron. Bind `ItemsSource` and handle `ItemClicked` (which carries the clicked `Item` and `Index`) to trim the path:
+`BreadcrumbBar` shows the path to the current location as clickable crumbs separated by chevrons; the last crumb renders emphasized with no trailing chevron. Long trails clip when constrained rather than collapsing leading crumbs into an ellipsis (there is no overflow flyout in this version). Bind `ItemsSource` and handle `ItemClicked` (which carries the clicked `Item` and `Index`) to trim the path:
 
 ```xml
 <ui:BreadcrumbBar x:Name="Trail" ItemClicked="Trail_ItemClicked" />

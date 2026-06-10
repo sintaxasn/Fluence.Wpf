@@ -923,8 +923,10 @@ namespace Fluence.Wpf.Tests
                     "ControlFillColorDefaultBrush (field fill) must resolve after a full theme cycle.");
                 Assert.IsNotNull(app?.TryFindResource("ControlElevationBorderBrush"),
                     "ControlElevationBorderBrush (field stroke) must resolve after a full theme cycle.");
+                Assert.IsNotNull(app?.TryFindResource("ControlStrokeColorDefaultBrush"),
+                    "ControlStrokeColorDefaultBrush (field segment dividers, WinUI TimePickerSpacerFill) must resolve after a full theme cycle.");
                 Assert.IsNotNull(app?.TryFindResource("DividerStrokeColorDefaultBrush"),
-                    "DividerStrokeColorDefaultBrush (segment dividers) must resolve after a full theme cycle.");
+                    "DividerStrokeColorDefaultBrush (flyout divider) must resolve after a full theme cycle.");
                 Assert.IsNotNull(app?.TryFindResource("TextFillColorSecondaryBrush"),
                     "TextFillColorSecondaryBrush (placeholder foreground) must resolve after a full theme cycle.");
                 Assert.IsNotNull(app?.TryFindResource("SolidBackgroundFillColorTertiaryBrush"),

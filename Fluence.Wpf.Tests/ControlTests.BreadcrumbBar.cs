@@ -129,9 +129,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     SolidColorBrush? primaryBrush = app?.TryFindResource("TextFillColorPrimaryBrush") as SolidColorBrush;
-                    SolidColorBrush? secondaryBrush = app?.TryFindResource("TextFillColorSecondaryBrush") as SolidColorBrush;
                     Assert.IsNotNull(primaryBrush, "TextFillColorPrimaryBrush must resolve.");
-                    Assert.IsNotNull(secondaryBrush, "TextFillColorSecondaryBrush must resolve.");
 
                     for (int index = 0; index < crumbs.Length - 1; index++)
                     {
@@ -148,11 +146,21 @@ namespace Fluence.Wpf.Tests
                         Assert.AreEqual(Visibility.Visible, chevron.Visibility,
                             string.Format("The chevron of the ancestor crumb at index {0} must be visible.", index));
 
+                        // WinUI BreadcrumbBarChevronLeftToRight is E974 painted in
+                        // BreadcrumbBarNormalForegroundBrush (TextFillColorPrimaryBrush).
+                        Assert.AreEqual("", chevron.Glyph,
+                            string.Format("The chevron of the ancestor crumb at index {0} must use the WinUI E974 glyph.", index));
+                        SolidColorBrush? chevronForeground = chevron.Foreground as SolidColorBrush;
+                        Assert.IsNotNull(chevronForeground,
+                            string.Format("The chevron of the ancestor crumb at index {0} must use a solid foreground brush.", index));
+                        Assert.AreEqual(primaryBrush.Color, chevronForeground.Color,
+                            string.Format("The chevron of the ancestor crumb at index {0} must use the primary text fill.", index));
+
                         SolidColorBrush? ancestorForeground = ancestor.Foreground as SolidColorBrush;
                         Assert.IsNotNull(ancestorForeground,
                             string.Format("The ancestor crumb at index {0} must use a solid foreground brush.", index));
-                        Assert.AreEqual(secondaryBrush.Color, ancestorForeground.Color,
-                            string.Format("The ancestor crumb at index {0} must use the secondary text fill at rest.", index));
+                        Assert.AreEqual(primaryBrush.Color, ancestorForeground.Color,
+                            string.Format("The ancestor crumb at index {0} must use the primary text fill at rest, matching WinUI.", index));
                     }
 
                     Controls.BreadcrumbBarItem? last =

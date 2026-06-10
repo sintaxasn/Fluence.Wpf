@@ -165,14 +165,14 @@
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="ButtonPlate" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
-                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
                         </Trigger>
                         <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="ButtonPlate" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource ControlStrongFillColorDisabledBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
