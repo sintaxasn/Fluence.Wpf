@@ -235,7 +235,8 @@ namespace Fluence.Wpf.Demo.Pages.Forms
                 new DemoSampleSource(2, CheckoutFormXamlSource, CheckoutFormCSharpSource),
                 new DemoSampleSource(3, SettingsFormXamlSource, SettingsFormCSharpSource),
                 new DemoSampleSource(4, DatePickerXamlSource, DatePickerCSharpSource),
-                new DemoSampleSource(5, TimePickerXamlSource, TimePickerCSharpSource));
+                new DemoSampleSource(5, TimePickerXamlSource, TimePickerCSharpSource),
+                new DemoSampleSource(6, ColorPickerXamlSource, ColorPickerCSharpSource));
 
             Loaded += GalleryFormsPage_Loaded;
         }
@@ -273,6 +274,43 @@ namespace Fluence.Wpf.Demo.Pages.Forms
     }
 }
 ";
+
+        private const string ColorPickerXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Forms.AccentColorForm""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <ui:ColorPicker
+        x:Name=""AccentColorPicker""
+        ColorChanged=""AccentColorPicker_ColorChanged""
+        IsAlphaEnabled=""True"" />
+</UserControl>
+";
+
+        private const string ColorPickerCSharpSource = @"using System.Windows.Controls;
+using Fluence.Wpf;
+
+namespace Fluence.Wpf.Demo.Pages.Forms
+{
+    public partial class AccentColorForm : UserControl
+    {
+        public AccentColorForm()
+        {
+            InitializeComponent();
+        }
+
+        private void AccentColorPicker_ColorChanged(object sender, ColorPickerColorChangedEventArgs e)
+        {
+            // e.NewColor carries the picked color.
+        }
+    }
+}
+";
+
+        private void DemoColorPicker_ColorChanged(object sender, Fluence.Wpf.ColorPickerColorChangedEventArgs e)
+        {
+            ColorPickerResultLabel.Text = string.Format(System.Globalization.CultureInfo.CurrentCulture, "Color: {0}", e.NewColor);
+        }
 
         private void DemoTimePicker_SelectedTimeChanged(object sender, Fluence.Wpf.TimePickerSelectedValueChangedEventArgs e)
         {

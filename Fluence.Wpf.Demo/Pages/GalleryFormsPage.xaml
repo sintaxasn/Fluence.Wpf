@@ -176,6 +176,22 @@
                 </ui:StackPanel>
             </ContentControl>
             <local:DemoSampleControl SampleDescription="Use TimePicker for choosing a time from hour, minute, and AM/PM columns in a flyout." />
+
+
+            <ContentControl x:Name="DemoSampleSlot06DemoContentHost" Visibility="Collapsed">
+                <ui:StackPanel HorizontalAlignment="Left" Spacing="8">
+                    <ui:ColorPicker
+                        x:Name="DemoColorPicker"
+                        ColorChanged="DemoColorPicker_ColorChanged"
+                        IsAlphaEnabled="True" />
+                    <TextBlock
+                        x:Name="ColorPickerResultLabel"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="Color: #FFFF0000" />
+                </ui:StackPanel>
+            </ContentControl>
+            <local:DemoSampleControl SampleDescription="Use ColorPicker for choosing a color from a saturation/value spectrum with hue, alpha, and hex input." />
         </StackPanel>
     </ui:SmoothScrollViewer>
 </UserControl>
