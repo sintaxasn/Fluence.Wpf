@@ -6,12 +6,12 @@ The **Fluence.Wpf.Demo** gallery shows every control: `FluenceWindow` chrome wit
 - Accessibility (focus order, high contrast, automation, RTL)
 - Buttons
 - Selection (CheckBox, RadioButton, ToggleSwitch, RatingControl)
-- Inputs (TextBox, PasswordBox, NumberBox, ComboBox, Slider)
-- Forms (sign-in, checkout, settings)
+- Inputs (TextBox, PasswordBox, NumberBox, ComboBox, Slider, AutoSuggestBox)
+- Forms (sign-in, checkout, settings, DatePicker, TimePicker, ColorPicker)
 - Data (Card, ListBox, ListView)
 - Data Binding (ObservableCollection, selection modes, data templates)
 - Trees (TreeView)
-- Menus (Menu, ContextMenu, ToolTip, command buttons)
+- Menus (Menu, ContextMenu, ToolTip, Flyout, ContentDialog, TeachingTip, command buttons)
 - Navigation (NavigationView modes)
 - Tabs (TabControl, TabView)
 - Layout (StackPanel, DockPanel, Border, Separator, Expander)
@@ -44,13 +44,14 @@ xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
 |---------------------|------------------------------------------------------------------------------------------------------------------------------------|
 | Window              | `FluenceWindow`, `TitleBar`                                                                                                         |
 | Basic actions       | `Button`, `HyperlinkButton`, `DropDownButton`, `SplitButton`, `RepeatButton`, `ToggleButton`                                       |
-| Selection           | `CheckBox`, `RadioButton`, `ToggleSwitch`, `ComboBox`, `Slider`, `NumberBox`                                                       |
-| Text                | `TextBox`, `PasswordBox`, `TextBlock` + `TextBlockExtensions`                                                                      |
+| Selection           | `CheckBox`, `RadioButton`, `ToggleSwitch`, `ComboBox`, `Slider`, `NumberBox`, `DatePicker`, `TimePicker`, `ColorPicker`            |
+| Text                | `TextBox`, `PasswordBox`, `AutoSuggestBox`, `TextBlock` + `TextBlockExtensions`                                                    |
 | Data                | `ListView`, `ListBox`, `ListBoxItem`, `ListViewItem`                                                                               |
 | Tabs                | `TabControl`, `TabItem`, `TabView`, `TabViewItem`                                                                                  |
 | Feedback            | `ProgressBar`, `ProgressRing`, `InfoBar`, `InfoBadge`, `RatingControl`                                                             |
 | Navigation          | `NavigationView`, `NavigationViewItem`, `NavigationViewItemHeader`, `NavigationViewItemSeparator`                                  |
-| Menus & popups      | `ContextMenu`, `MenuItem`, `Menu`, `ToolTip`                                                                                       |
+| Menus & popups      | `ContextMenu`, `MenuItem`, `Menu`, `ToolTip`, `FlyoutBase`, `Flyout`, `FlyoutPresenter`, `TeachingTip`                             |
+| Dialogs             | `ContentDialog`                                                                                                                    |
 | Trees & collections | `TreeView`, `TreeViewItem`                                                                                                         |
 | Layout / surfaces   | `Card`, `Expander`, `Border`, `StackPanel`, `DockPanel`, `SmoothScrollViewer`, `Separator`                                         |
 | Person / social     | `PersonPicture`                                                                                                                    |
@@ -114,11 +115,16 @@ Key API:
   <a href="../../api/Fluence.Wpf.Controls.NumberBox.html">NumberBox</a>
   <a href="../../api/Fluence.Wpf.Controls.TextBox.html">TextBox</a>
   <a href="../../api/Fluence.Wpf.Controls.PasswordBox.html">PasswordBox</a>
+  <a href="../../api/Fluence.Wpf.Controls.AutoSuggestBox.html">AutoSuggestBox</a>
   <a href="../../api/Fluence.Wpf.SpinButtonPlacementMode.html">SpinButtonPlacementMode</a>
   <a href="../../api/Fluence.Wpf.NumberBoxValueChangedEventArgs.html">NumberBoxValueChangedEventArgs</a>
+  <a href="../../api/Fluence.Wpf.AutoSuggestBoxTextChangedEventArgs.html">AutoSuggestBoxTextChangedEventArgs</a>
+  <a href="../../api/Fluence.Wpf.AutoSuggestBoxSuggestionChosenEventArgs.html">AutoSuggestBoxSuggestionChosenEventArgs</a>
+  <a href="../../api/Fluence.Wpf.AutoSuggestBoxQuerySubmittedEventArgs.html">AutoSuggestBoxQuerySubmittedEventArgs</a>
+  <a href="../../api/Fluence.Wpf.AutoSuggestionBoxTextChangeReason.html">AutoSuggestionBoxTextChangeReason</a>
 </div>
 
-Input controls keep standard WPF editing, selection, command, and binding behavior. `NumberBox` adds numeric parsing, range, increment, and spin-button placement. Text inputs get placeholder, validation, and focus visuals from the shared templates.
+Input controls keep standard WPF editing, selection, command, and binding behavior. `NumberBox` adds numeric parsing, range, increment, and spin-button placement. Text inputs get placeholder, validation, and focus visuals from the shared templates. `AutoSuggestBox` pairs a text input with a light-dismiss suggestion list the application fills through `TextChanged`, `SuggestionChosen`, and `QuerySubmitted`.
 
 ### Forms
 
@@ -129,10 +135,16 @@ Key API:
   <a href="../../api/Fluence.Wpf.Controls.PasswordBox.html">PasswordBox</a>
   <a href="../../api/Fluence.Wpf.Controls.ComboBox.html">ComboBox</a>
   <a href="../../api/Fluence.Wpf.Controls.Button.html">Button</a>
+  <a href="../../api/Fluence.Wpf.Controls.DatePicker.html">DatePicker</a>
+  <a href="../../api/Fluence.Wpf.Controls.TimePicker.html">TimePicker</a>
+  <a href="../../api/Fluence.Wpf.Controls.ColorPicker.html">ColorPicker</a>
   <a href="../../api/Fluence.Wpf.ValidationState.html">ValidationState</a>
+  <a href="../../api/Fluence.Wpf.DatePickerSelectedValueChangedEventArgs.html">DatePickerSelectedValueChangedEventArgs</a>
+  <a href="../../api/Fluence.Wpf.TimePickerSelectedValueChangedEventArgs.html">TimePickerSelectedValueChangedEventArgs</a>
+  <a href="../../api/Fluence.Wpf.ColorPickerColorChangedEventArgs.html">ColorPickerColorChangedEventArgs</a>
 </div>
 
-The form page combines input controls with card surfaces, status text, validation states, and primary actions. Start here for sign-in, checkout, and settings forms.
+The form page combines input controls with card surfaces, status text, validation states, and primary actions. Start here for sign-in, checkout, and settings forms. `DatePicker`, `TimePicker`, and `ColorPicker` add flyout-based date, time, and color selection for form fields.
 
 ### Data and Collections
 
@@ -241,9 +253,19 @@ Key API:
   <a href="../../api/Fluence.Wpf.Controls.MenuItem.html">MenuItem</a>
   <a href="../../api/Fluence.Wpf.Controls.ContextMenu.html">ContextMenu</a>
   <a href="../../api/Fluence.Wpf.Controls.ToolTip.html">ToolTip</a>
+  <a href="../../api/Fluence.Wpf.Controls.FlyoutBase.html">FlyoutBase</a>
+  <a href="../../api/Fluence.Wpf.Controls.Flyout.html">Flyout</a>
+  <a href="../../api/Fluence.Wpf.Controls.FlyoutPresenter.html">FlyoutPresenter</a>
+  <a href="../../api/Fluence.Wpf.Controls.ContentDialog.html">ContentDialog</a>
+  <a href="../../api/Fluence.Wpf.Controls.TeachingTip.html">TeachingTip</a>
+  <a href="../../api/Fluence.Wpf.FlyoutPlacementMode.html">FlyoutPlacementMode</a>
+  <a href="../../api/Fluence.Wpf.TeachingTipPlacementMode.html">TeachingTipPlacementMode</a>
+  <a href="../../api/Fluence.Wpf.ContentDialogResult.html">ContentDialogResult</a>
+  <a href="../../api/Fluence.Wpf.ContentDialogButton.html">ContentDialogButton</a>
+  <a href="../../api/Fluence.Wpf.ContentDialogButtonClickEventArgs.html">ContentDialogButtonClickEventArgs</a>
 </div>
 
-Menu and popup controls use WinUI-style flyout visuals. Command text, separators, nested menu items, context menus, and tooltips all follow the same visual contract.
+Menu and popup controls use WinUI-style flyout visuals. Command text, separators, nested menu items, context menus, and tooltips all follow the same visual contract. `Flyout` hosts arbitrary content in a light-dismiss popup, `ContentDialog` raises a modal prompt with up to three command buttons, and `TeachingTip` anchors a coaching callout to a target element.
 
 ### Trees
 
@@ -450,6 +472,66 @@ The legacy `ProgressMode` enum (`Standard`, `Indeterminate`, `Error`, `Paused`, 
 <ui:Button Content="Save" ToolTipService.ToolTip="Save the document" />
 ```
 
+`Flyout` shows arbitrary content in a light-dismiss popup anchored to a placement target. Any element can carry one through the `FlyoutBase.AttachedFlyout` attached property and open it with `FlyoutBase.ShowAttachedFlyout` (or call `ShowAt` directly). `Placement` picks the side via `FlyoutPlacementMode`, `FlyoutPresenterStyle` restyles the themed `FlyoutPresenter` chrome, and `Opening` / `Opened` / `Closing` / `Closed` track the lifecycle - `Closing` is cancelable through `FlyoutBaseClosingEventArgs.Cancel`.
+
+```xml
+<ui:Button Click="ShowNoteFlyout_Click" Content="Show flyout">
+    <ui:FlyoutBase.AttachedFlyout>
+        <ui:Flyout Placement="Bottom">
+            <ui:Flyout.Content>
+                <TextBlock Text="A lightweight, light-dismiss popup." />
+            </ui:Flyout.Content>
+        </ui:Flyout>
+    </ui:FlyoutBase.AttachedFlyout>
+</ui:Button>
+```
+
+```csharp
+private void ShowNoteFlyout_Click(object sender, RoutedEventArgs e)
+{
+    FlyoutBase.ShowAttachedFlyout((FrameworkElement)sender);
+}
+```
+
+`ContentDialog` raises a modal prompt with a title, arbitrary body content, and up to three command buttons (`PrimaryButtonText`, `SecondaryButtonText`, `CloseButtonText`; buttons with no text collapse). `ShowAsync()` returns a `Task<ContentDialogResult>` that completes when the dialog closes, `Hide()` dismisses it programmatically, and `DefaultButton` picks the button that takes initial focus and answers Enter; Escape routes through the close button, and Tab navigation is trapped inside the dialog. Over a `FluenceWindow` the smoke layer dims the entire window, title bar included; over a plain `Window` the dialog is hosted in the content adorner layer.
+
+```csharp
+ContentDialog dialog = new()
+{
+    Title = "Delete file?",
+    Content = "Roadmap.md will be permanently deleted. This cannot be undone.",
+    PrimaryButtonText = "Delete",
+    CloseButtonText = "Cancel",
+    DefaultButton = ContentDialogButton.Close,
+};
+
+ContentDialogResult result = await dialog.ShowAsync();
+```
+
+The cancelable `PrimaryButtonClick` / `SecondaryButtonClick` / `CloseButtonClick` events run before the dialog closes - set `ContentDialogButtonClickEventArgs.Cancel` to keep it open (for example when validation fails) - and the matching `*ButtonCommand` / `*ButtonCommandParameter` properties execute alongside them. `Opened` and `Closed` report the dialog lifecycle.
+
+`TeachingTip` is a non-blocking coaching callout. Set `Target` to anchor the tip to an element - the beak points at the target and `PreferredPlacement` (`TeachingTipPlacementMode`) picks the side - or leave it unset to center the tip over the window content with the beak hidden. `IsOpen` shows and hides the tip, `IsLightDismissEnabled` lets a click elsewhere dismiss it, and `ActionButtonContent` / `ActionButtonCommand` plus `CloseButtonContent` drive the optional buttons, reported through `ActionButtonClick`, `CloseButtonClick`, and `Closed`.
+
+```xml
+<Grid>
+    <ui:Button x:Name="SaveButton" Click="ShowTipButton_Click" Content="Save" />
+    <ui:TeachingTip x:Name="SaveTip"
+                    Title="Autosave is on"
+                    Subtitle="Your changes are saved as you type."
+                    CloseButtonContent="Got it"
+                    IsLightDismissEnabled="True"
+                    PreferredPlacement="Bottom" />
+</Grid>
+```
+
+```csharp
+private void ShowTipButton_Click(object sender, RoutedEventArgs e)
+{
+    SaveTip.Target = SaveButton;
+    SaveTip.IsOpen = true;
+}
+```
+
 ## Trees
 
 `TreeView` and `TreeViewItem` render a hierarchical list matching the WinUI 3 `TreeView` visual contract.
@@ -480,6 +562,67 @@ Visual contract:
 - Chevron (`U+E76C`) rotates 90° on expand - 100 ms `ControlFastOutSlowInKeySpline` easing.
 - `SubtleFillColorSecondaryBrush` on hover, `SubtleFillColorTertiaryBrush` on press, `AccentFillColorDefaultBrush` when selected.
 - VSM groups: `CommonStates`, `SelectionStates`, `ExpansionStates`.
+
+## AutoSuggestBox
+
+`AutoSuggestBox` is a text input with a light-dismiss suggestion list that follows the WinUI 3 contract: the application owns filtering. Handle `TextChanged`, ignore stale notifications (a `Reason` other than `UserInput`, or `CheckCurrent()` returning false), and update `ItemsSource`; the list opens while the box has keyboard focus and suggestions exist.
+
+```xml
+<ui:AutoSuggestBox x:Name="SearchBox"
+                   Width="280"
+                   Header="Fruit"
+                   PlaceholderText="Search fruit"
+                   QuerySubmitted="SearchBox_QuerySubmitted"
+                   TextChanged="SearchBox_TextChanged" />
+```
+
+```csharp
+private void SearchBox_TextChanged(object sender, AutoSuggestBoxTextChangedEventArgs e)
+{
+    if (e.Reason != AutoSuggestionBoxTextChangeReason.UserInput)
+    {
+        return;
+    }
+
+    SearchBox.ItemsSource = FindMatches(SearchBox.Text);
+}
+
+private void SearchBox_QuerySubmitted(object sender, AutoSuggestBoxQuerySubmittedEventArgs e)
+{
+    string submitted = e.ChosenSuggestion as string ?? e.QueryText;
+    // Act on the query.
+}
+```
+
+Up and Down move through the suggestions, Enter raises `QuerySubmitted` (with `ChosenSuggestion` set when a suggestion is selected), and Escape closes the list. `UpdateTextOnSelect` (default `true`) writes a chosen suggestion back into `Text` through `TextMemberPath`, and `Header`, `PlaceholderText`, `QueryIcon`, and `MaxSuggestionListHeight` shape the field.
+
+## Pickers
+
+`DatePicker` and `TimePicker` show a button-styled field that opens a light-dismiss selector flyout; the flyout's accept button commits the pending column selection and cancel discards it.
+
+`DatePicker` binds `SelectedDate` (`DateTime?`, `null` until the user picks) and raises `SelectedDateChanged` with the old and new dates. The field orders its day, month, and year segments by the current culture's short date pattern; `MinYear` / `MaxYear` (defaults 1900 and 2100) bound the year column, `DayVisible` / `MonthVisible` / `YearVisible` hide individual segments, and the day column rebuilds for the pending month and year, so 29 February is offered only in leap years.
+
+```xml
+<ui:DatePicker Header="Due date"
+               PlaceholderText="Pick a date"
+               SelectedDate="{Binding DueDate}" />
+```
+
+`TimePicker` binds `SelectedTime` (`TimeSpan?`) and raises `SelectedTimeChanged`. `ClockIdentifier` selects `12HourClock` (the default: hours 1-12 plus an AM/PM column using the culture's designators) or `24HourClock` (hours 0-23, no designator column), and `MinuteIncrement` steps the minute column (for example 5 offers 00, 05, 10, and so on).
+
+```xml
+<ui:TimePicker Header="Reminder time"
+               ClockIdentifier="24HourClock"
+               MinuteIncrement="5"
+               SelectedTime="{Binding ReminderTime}" />
+```
+
+`ColorPicker` combines a saturation/value spectrum at the selected hue, a hue slider, an optional alpha slider, current/previous preview swatches, and an optional hex input. `Color` (two-way bindable, opaque red by default) raises `ColorChanged` with the old and new values; `PreviousColor` fills the comparison swatch, `IsAlphaEnabled` (default `false`) adds the alpha slider and 8-digit hex editing, and `IsColorSpectrumVisible` / `IsColorChannelTextInputVisible` trim the layout. The picker keeps hue, saturation, value, and alpha as its internal source of truth, so dragging along the spectrum's grey axis does not accumulate RGB round-trip drift.
+
+```xml
+<ui:ColorPicker Color="{Binding AccentColor, Mode=TwoWay}"
+                IsAlphaEnabled="True" />
+```
 
 ## Screenshots
 
