@@ -50,7 +50,7 @@ xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
 | Tabs                | `TabControl`, `TabItem`, `TabView`, `TabViewItem`                                                                                  |
 | Feedback            | `ProgressBar`, `ProgressRing`, `InfoBar`, `InfoBadge`, `RatingControl`                                                             |
 | Navigation          | `NavigationView`, `NavigationViewItem`, `NavigationViewItemHeader`, `NavigationViewItemSeparator`                                  |
-| Menus & popups      | `ContextMenu`, `MenuItem`, `Menu`, `ToolTip`, `FlyoutBase`, `Flyout`, `FlyoutPresenter`, `TeachingTip`                             |
+| Menus & popups      | `ContextMenu`, `MenuItem`, `Menu`, `ToolTip`, `FlyoutBase`, `Flyout`, `FlyoutPresenter`, `TeachingTip`, `CommandBarFlyout`, `AppBarButton` |
 | Dialogs             | `ContentDialog`                                                                                                                    |
 | Trees & collections | `TreeView`, `TreeViewItem`                                                                                                         |
 | Layout / surfaces   | `Card`, `Expander`, `Border`, `StackPanel`, `DockPanel`, `SmoothScrollViewer`, `Separator`                                         |
@@ -260,6 +260,9 @@ Key API:
   <a href="../../api/Fluence.Wpf.Controls.TeachingTip.html">TeachingTip</a>
   <a href="../../api/Fluence.Wpf.FlyoutPlacementMode.html">FlyoutPlacementMode</a>
   <a href="../../api/Fluence.Wpf.TeachingTipPlacementMode.html">TeachingTipPlacementMode</a>
+  <a href="../../api/Fluence.Wpf.Controls.CommandBarFlyout.html">CommandBarFlyout</a>
+  <a href="../../api/Fluence.Wpf.Controls.CommandBarFlyoutPresenter.html">CommandBarFlyoutPresenter</a>
+  <a href="../../api/Fluence.Wpf.Controls.AppBarButton.html">AppBarButton</a>
   <a href="../../api/Fluence.Wpf.ContentDialogResult.html">ContentDialogResult</a>
   <a href="../../api/Fluence.Wpf.ContentDialogButton.html">ContentDialogButton</a>
   <a href="../../api/Fluence.Wpf.ContentDialogButtonClickEventArgs.html">ContentDialogButtonClickEventArgs</a>
@@ -531,6 +534,25 @@ private void ShowTipButton_Click(object sender, RoutedEventArgs e)
     SaveTip.IsOpen = true;
 }
 ```
+
+`CommandBarFlyout` shows a compact horizontal strip of `AppBarButton` commands with an optional overflow menu of secondary commands behind a "see more" button. Invoking any command dismisses the flyout. It derives from `FlyoutBase`, so `ShowAt`, `Hide`, and the attached `FlyoutBase.AttachedFlyout` pattern all apply:
+
+```xml
+<ui:CommandBarFlyout>
+    <ui:CommandBarFlyout.PrimaryCommands>
+        <ui:AppBarButton Click="Copy_Click" Label="Copy">
+            <ui:AppBarButton.Icon>
+                <ui:FontIcon Glyph="&#xE8C8;" IconFontSize="16" />
+            </ui:AppBarButton.Icon>
+        </ui:AppBarButton>
+    </ui:CommandBarFlyout.PrimaryCommands>
+    <ui:CommandBarFlyout.SecondaryCommands>
+        <ui:AppBarButton Click="Delete_Click" Label="Delete" />
+    </ui:CommandBarFlyout.SecondaryCommands>
+</ui:CommandBarFlyout>
+```
+
+Primary commands render icon-only with the `Label` as a tooltip; secondary commands render as icon-plus-label menu rows.
 
 ## Trees
 
