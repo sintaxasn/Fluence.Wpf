@@ -49,7 +49,7 @@ xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
 | Data                | `ListView`, `ListBox`, `ListBoxItem`, `ListViewItem`                                                                               |
 | Tabs                | `TabControl`, `TabItem`, `TabView`, `TabViewItem`                                                                                  |
 | Feedback            | `ProgressBar`, `ProgressRing`, `InfoBar`, `InfoBadge`, `RatingControl`                                                             |
-| Navigation          | `NavigationView`, `NavigationViewItem`, `NavigationViewItemHeader`, `NavigationViewItemSeparator`, `BreadcrumbBar`, `BreadcrumbBarItem` |
+| Navigation          | `NavigationView`, `NavigationViewItem`, `NavigationViewItemHeader`, `NavigationViewItemSeparator`, `BreadcrumbBar`, `BreadcrumbBarItem`, `PipsPager` |
 | Menus & popups      | `ContextMenu`, `MenuItem`, `Menu`, `ToolTip`, `FlyoutBase`, `Flyout`, `FlyoutPresenter`, `TeachingTip`, `CommandBarFlyout`, `AppBarButton` |
 | Dialogs             | `ContentDialog`                                                                                                                    |
 | Trees & collections | `TreeView`, `TreeViewItem`                                                                                                         |
@@ -213,6 +213,9 @@ Key API:
   <a href="../../api/Fluence.Wpf.Controls.BreadcrumbBar.html">BreadcrumbBar</a>
   <a href="../../api/Fluence.Wpf.Controls.BreadcrumbBarItem.html">BreadcrumbBarItem</a>
   <a href="../../api/Fluence.Wpf.BreadcrumbBarItemClickedEventArgs.html">BreadcrumbBarItemClickedEventArgs</a>
+  <a href="../../api/Fluence.Wpf.Controls.PipsPager.html">PipsPager</a>
+  <a href="../../api/Fluence.Wpf.PipsPagerButtonVisibility.html">PipsPagerButtonVisibility</a>
+  <a href="../../api/Fluence.Wpf.PipsPagerSelectedIndexChangedEventArgs.html">PipsPagerSelectedIndexChangedEventArgs</a>
 </div>
 
 `NavigationView` owns pane layout, selection, back-button state, top overflow, and item invocation events. Application route history remains app-owned.
@@ -221,6 +224,16 @@ Key API:
 
 ```xml
 <ui:BreadcrumbBar x:Name="Trail" ItemClicked="Trail_ItemClicked" />
+```
+
+`PipsPager` is a compact page indicator for carousels and onboarding flows: a row (or column) of clickable pip dots with the selected page emphasized, optional previous/next chevron buttons (`PipsPagerButtonVisibility`), and a sliding window of at most `MaxVisiblePips` dots for large page counts. Handle `SelectedIndexChanged` to switch content:
+
+```xml
+<ui:PipsPager
+    NumberOfPages="8"
+    PreviousButtonVisibility="Visible"
+    NextButtonVisibility="Visible"
+    SelectedIndexChanged="Pager_SelectedIndexChanged" />
 ```
 
 ### Tabs

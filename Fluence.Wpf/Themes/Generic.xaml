@@ -52,6 +52,7 @@
         <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/ColorPicker.xaml" />
         <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/CommandBarFlyout.xaml" />
         <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/BreadcrumbBar.xaml" />
+        <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/PipsPager.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

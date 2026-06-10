@@ -297,11 +297,55 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
                 new DemoSampleSource(2, TopNavigationViewXamlSource, TopNavigationViewCSharpSource),
                 new DemoSampleSource(3, CompactNavigationViewXamlSource, CompactNavigationViewCSharpSource),
                 new DemoSampleSource(4, InfoBadgeNavigationXamlSource, InfoBadgeNavigationCSharpSource),
-                new DemoSampleSource(5, BreadcrumbBarXamlSource, BreadcrumbBarCSharpSource));
+                new DemoSampleSource(5, BreadcrumbBarXamlSource, BreadcrumbBarCSharpSource),
+                new DemoSampleSource(6, PipsPagerXamlSource, PipsPagerCSharpSource));
 
             DemoBreadcrumbBar.ItemsSource = _breadcrumbPath;
 
             Loaded += GalleryNavigationPage_Loaded;
+        }
+
+        private const string PipsPagerXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Navigation.CarouselPager""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <ui:PipsPager
+        x:Name=""Pager""
+        NextButtonVisibility=""Visible""
+        NumberOfPages=""8""
+        PreviousButtonVisibility=""Visible""
+        SelectedIndexChanged=""Pager_SelectedIndexChanged"" />
+</UserControl>
+";
+
+        private const string PipsPagerCSharpSource = @"using System.Windows.Controls;
+using Fluence.Wpf;
+
+namespace Fluence.Wpf.Demo.Pages.Navigation
+{
+    public partial class CarouselPager : UserControl
+    {
+        public CarouselPager()
+        {
+            InitializeComponent();
+        }
+
+        private void Pager_SelectedIndexChanged(object sender, PipsPagerSelectedIndexChangedEventArgs e)
+        {
+            // e.NewIndex is the zero-based page to show.
+        }
+    }
+}
+";
+
+        private void DemoPipsPager_SelectedIndexChanged(object sender, Fluence.Wpf.PipsPagerSelectedIndexChangedEventArgs e)
+        {
+            PipsPagerResultLabel.Text = string.Format(
+                System.Globalization.CultureInfo.CurrentCulture,
+                "Page {0} of {1}",
+                e.NewIndex + 1,
+                DemoPipsPager.NumberOfPages);
         }
 
         private void DemoBreadcrumbBar_ItemClicked(object sender, Fluence.Wpf.BreadcrumbBarItemClickedEventArgs e)
