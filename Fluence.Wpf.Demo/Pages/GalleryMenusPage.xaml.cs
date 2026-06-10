@@ -365,6 +365,45 @@ namespace Fluence.Wpf.Demo.Pages.Menus
 }
 ";
 
+        private const string TeachingTipXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Menus.TeachingTipSample""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <Grid>
+        <ui:Button x:Name=""TipButton"" Click=""ShowTipButton_Click"" Content=""Show teaching tip"" />
+        <ui:TeachingTip
+            x:Name=""Tip""
+            Title=""Pro tip""
+            Subtitle=""A TeachingTip coaches the user from a target element without blocking.""
+            CloseButtonContent=""Got it""
+            IsLightDismissEnabled=""True""
+            PreferredPlacement=""Bottom"" />
+    </Grid>
+</UserControl>
+";
+
+        private const string TeachingTipCSharpSource = @"using System.Windows;
+using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Menus
+{
+    public partial class TeachingTipSample : UserControl
+    {
+        public TeachingTipSample()
+        {
+            InitializeComponent();
+        }
+
+        private void ShowTipButton_Click(object sender, RoutedEventArgs e)
+        {
+            Tip.Target = TipButton;
+            Tip.IsOpen = true;
+        }
+    }
+}
+";
+
         public GalleryMenusPage()
         {
             InitializeComponent();
@@ -375,7 +414,8 @@ namespace Fluence.Wpf.Demo.Pages.Menus
                 new DemoSampleSource(2, ContextMenuXamlSource, ContextMenuCSharpSource),
                 new DemoSampleSource(3, ToolTipsXamlSource, ToolTipsCSharpSource),
                 new DemoSampleSource(4, FlyoutXamlSource, FlyoutCSharpSource),
-                new DemoSampleSource(5, ContentDialogXamlSource, ContentDialogCSharpSource));
+                new DemoSampleSource(5, ContentDialogXamlSource, ContentDialogCSharpSource),
+                new DemoSampleSource(6, TeachingTipXamlSource, TeachingTipCSharpSource));
         }
 
         private void MenuBar_Click(object sender, RoutedEventArgs e)
@@ -414,6 +454,12 @@ namespace Fluence.Wpf.Demo.Pages.Menus
 
             Fluence.Wpf.ContentDialogResult result = await dialog.ShowAsync();
             DialogResultLabel.Text = string.Format(CultureInfo.CurrentCulture, "Dialog result: {0}", result);
+        }
+
+        private void ShowTeachingTipButton_Click(object sender, RoutedEventArgs e)
+        {
+            DemoTeachingTip.Target = TeachingTipButton;
+            DemoTeachingTip.IsOpen = true;
         }
 
         private static void SetTextFromTag(TextBlock label, string prefix, object sender)

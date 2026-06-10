@@ -45,6 +45,7 @@
         <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/TreeView.xaml" />
         <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/FlyoutPresenter.xaml" />
         <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/ContentDialog.xaml" />
+        <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/TeachingTip.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>
