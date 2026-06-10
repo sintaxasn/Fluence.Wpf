@@ -234,9 +234,51 @@ namespace Fluence.Wpf.Demo.Pages.Forms
                 new DemoSampleSource(1, SignInFormXamlSource, SignInFormCSharpSource),
                 new DemoSampleSource(2, CheckoutFormXamlSource, CheckoutFormCSharpSource),
                 new DemoSampleSource(3, SettingsFormXamlSource, SettingsFormCSharpSource),
-                new DemoSampleSource(4, DatePickerXamlSource, DatePickerCSharpSource));
+                new DemoSampleSource(4, DatePickerXamlSource, DatePickerCSharpSource),
+                new DemoSampleSource(5, TimePickerXamlSource, TimePickerCSharpSource));
 
             Loaded += GalleryFormsPage_Loaded;
+        }
+
+        private const string TimePickerXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Forms.ReminderTimeForm""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <ui:TimePicker
+        x:Name=""ReminderTimePicker""
+        Header=""Reminder time""
+        MinuteIncrement=""5""
+        PlaceholderText=""Pick a time""
+        SelectedTimeChanged=""ReminderTimePicker_SelectedTimeChanged"" />
+</UserControl>
+";
+
+        private const string TimePickerCSharpSource = @"using System.Windows.Controls;
+using Fluence.Wpf;
+
+namespace Fluence.Wpf.Demo.Pages.Forms
+{
+    public partial class ReminderTimeForm : UserControl
+    {
+        public ReminderTimeForm()
+        {
+            InitializeComponent();
+        }
+
+        private void ReminderTimePicker_SelectedTimeChanged(object sender, TimePickerSelectedValueChangedEventArgs e)
+        {
+            // e.NewTime carries the committed time (null when cleared).
+        }
+    }
+}
+";
+
+        private void DemoTimePicker_SelectedTimeChanged(object sender, Fluence.Wpf.TimePickerSelectedValueChangedEventArgs e)
+        {
+            TimePickerResultLabel.Text = e.NewTime is System.TimeSpan newTime
+                ? string.Format(System.Globalization.CultureInfo.CurrentCulture, "Selected: {0:t}", System.DateTime.Today.Add(newTime))
+                : "No time selected";
         }
 
         private void DemoDatePicker_SelectedDateChanged(object sender, Fluence.Wpf.DatePickerSelectedValueChangedEventArgs e)
