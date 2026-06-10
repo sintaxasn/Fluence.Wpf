@@ -135,6 +135,10 @@
                         <Trigger Property="Icon" Value="{x:Null}">
                             <Setter TargetName="IconPresenter" Property="Visibility" Value="Collapsed" />
                         </Trigger>
+                        <!--  Icon-only buttons (no content) drop the icon-to-text gap so the glyph centers.  -->
+                        <Trigger Property="Content" Value="{x:Null}">
+                            <Setter TargetName="IconPresenter" Property="Margin" Value="0" />
+                        </Trigger>
 
                         <Trigger Property="Appearance" Value="Accent">
                             <Setter Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}" />
