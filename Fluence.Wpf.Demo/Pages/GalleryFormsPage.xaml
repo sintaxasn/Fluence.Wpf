@@ -141,6 +141,23 @@
                     Severity="{x:Static uicore:InfoBarSeverity.Success}" />
             </ContentControl>
             <local:DemoSampleControl SampleDescription="Use form controls to edit a small set of preferences and show confirmation after saving." />
+
+
+            <ContentControl x:Name="DemoSampleSlot04DemoContentHost" Visibility="Collapsed">
+                <ui:StackPanel HorizontalAlignment="Left" Spacing="8">
+                    <ui:DatePicker
+                        x:Name="DemoDatePicker"
+                        Header="Due date"
+                        PlaceholderText="Pick a date"
+                        SelectedDateChanged="DemoDatePicker_SelectedDateChanged" />
+                    <TextBlock
+                        x:Name="DatePickerResultLabel"
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Style="{StaticResource CaptionTextBlockStyle}"
+                        Text="No date selected" />
+                </ui:StackPanel>
+            </ContentControl>
+            <local:DemoSampleControl SampleDescription="Use DatePicker for choosing a date from day, month, and year columns in a flyout." />
         </StackPanel>
     </ui:SmoothScrollViewer>
 </UserControl>

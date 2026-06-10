@@ -47,6 +47,7 @@
         <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/ContentDialog.xaml" />
         <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/TeachingTip.xaml" />
         <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/AutoSuggestBox.xaml" />
+        <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/DatePicker.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
 </ResourceDictionary>

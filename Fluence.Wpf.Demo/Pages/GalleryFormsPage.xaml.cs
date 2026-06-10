@@ -192,6 +192,39 @@ namespace Fluence.Wpf.Demo.Pages.Forms
 }
 ";
 
+        private const string DatePickerXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Forms.DueDateForm""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <ui:DatePicker
+        x:Name=""DueDatePicker""
+        Header=""Due date""
+        PlaceholderText=""Pick a date""
+        SelectedDateChanged=""DueDatePicker_SelectedDateChanged"" />
+</UserControl>
+";
+
+        private const string DatePickerCSharpSource = @"using System.Windows.Controls;
+using Fluence.Wpf;
+
+namespace Fluence.Wpf.Demo.Pages.Forms
+{
+    public partial class DueDateForm : UserControl
+    {
+        public DueDateForm()
+        {
+            InitializeComponent();
+        }
+
+        private void DueDatePicker_SelectedDateChanged(object sender, DatePickerSelectedValueChangedEventArgs e)
+        {
+            // e.NewDate carries the committed date (null when cleared).
+        }
+    }
+}
+";
+
         public GalleryFormsPage()
         {
             InitializeComponent();
@@ -200,9 +233,17 @@ namespace Fluence.Wpf.Demo.Pages.Forms
                 (DependencyObject)Content,
                 new DemoSampleSource(1, SignInFormXamlSource, SignInFormCSharpSource),
                 new DemoSampleSource(2, CheckoutFormXamlSource, CheckoutFormCSharpSource),
-                new DemoSampleSource(3, SettingsFormXamlSource, SettingsFormCSharpSource));
+                new DemoSampleSource(3, SettingsFormXamlSource, SettingsFormCSharpSource),
+                new DemoSampleSource(4, DatePickerXamlSource, DatePickerCSharpSource));
 
             Loaded += GalleryFormsPage_Loaded;
+        }
+
+        private void DemoDatePicker_SelectedDateChanged(object sender, Fluence.Wpf.DatePickerSelectedValueChangedEventArgs e)
+        {
+            DatePickerResultLabel.Text = e.NewDate is System.DateTime newDate
+                ? string.Format(System.Globalization.CultureInfo.CurrentCulture, "Selected: {0:d}", newDate)
+                : "No date selected";
         }
 
         private void GalleryFormsPage_Loaded(object sender, RoutedEventArgs e)
