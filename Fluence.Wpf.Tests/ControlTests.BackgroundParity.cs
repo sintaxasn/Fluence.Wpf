@@ -287,8 +287,8 @@ namespace Fluence.Wpf.Tests
                     WpfBorder? copyButtonHost = FindVisualChildByName<WpfBorder>(sourceExpander, "CopySourceButtonHost");
                     Assert.IsNotNull(sourceViewer, "Expanded source should expose the code viewer.");
                     Assert.IsNotNull(copyButtonHost, "Expanded source should expose the overlaid copy-button host.");
-                    AssertBrushColor(sourceViewer.Background, "SolidBackgroundFillColorBaseBrush",
-                        "Source code should use the darker WinUI Gallery on-image fill role.");
+                    AssertBrushColor(sourceViewer.Background, "SystemFillColorSolidAttentionBackgroundBrush",
+                        "Source code should use the solid attention background surface (F7F7F7 light / 2E2E2E dark).");
                     AssertBrushColor(copyButtonHost.Background, "CardBackgroundFillColorDefaultBrush",
                         "Copy action should sit on the WinUI Gallery on-image fill bubble.");
                 }

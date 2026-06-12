@@ -1546,7 +1546,10 @@ namespace Fluence.Wpf.Tests
                 {
                     foreach (DemoPageExpectation expectation in PageExpectations)
                     {
-                        if (expectation.PageType == typeof(GalleryTypographyPage))
+                        // Design-reference catalog pages (Typography, Iconography) render
+                        // directly without DemoSampleControl source samples.
+                        if (expectation.PageType == typeof(GalleryTypographyPage)
+                            || expectation.PageType == typeof(GalleryIconsPage))
                         {
                             continue;
                         }
@@ -2189,19 +2192,28 @@ namespace Fluence.Wpf.Tests
                     Assert.IsTrue(list.Items.Count > 100, "Icon catalog must load enough rows to exercise virtualization.");
 
                     WpfBorder? catalogCard = FindByName<WpfBorder>(page, "IconCatalogCard");
-                    Assert.IsNotNull(catalogCard, "Icon catalog should be hosted in a shared card surface.");
-                    Assert.AreEqual(new Thickness(16), catalogCard.Padding,
-                        "Icon catalog card should use the shared demo sample card padding.");
+                    Assert.IsNotNull(catalogCard, "Icon catalog should be hosted in the bordered gallery panel.");
+                    Assert.AreEqual(new Thickness(0), catalogCard.Padding,
+                        "Icon catalog panel should stay flush so the sidebar divider spans its full height.");
                     Assert.AreEqual(new CornerRadius(8), catalogCard.CornerRadius,
-                        "Icon catalog card should use the same 8px corner radius as other demo surfaces.");
+                        "Icon catalog panel should use the same 8px corner radius as other demo surfaces.");
                     Assert.AreEqual(new Thickness(1), catalogCard.BorderThickness,
-                        "Icon catalog card should keep the standard 1px card stroke.");
-                    AssertIconBrush(catalogCard.Background, "CardBackgroundFillColorDefaultBrush",
-                        "Icon catalog card should use the shared section card background.");
+                        "Icon catalog panel should keep the standard 1px stroke.");
+                    AssertIconBrush(catalogCard.Background, "SolidBackgroundFillColorBaseBrush",
+                        "Icon catalog panel should use the WinUI Gallery tile-grid background.");
                     AssertIconBrush(catalogCard.BorderBrush, "CardStrokeColorDefaultBrush",
-                        "Icon catalog card should use the shared card stroke.");
+                        "Icon catalog panel should use the shared card stroke.");
                     Assert.AreEqual(new Thickness(0), list.BorderThickness,
-                        "Icon catalog ListView should let the surrounding card own the stroke.");
+                        "Icon catalog ListView should let the surrounding panel own the stroke.");
+
+                    WpfBorder? detailsPanel = FindByName<WpfBorder>(page, "IconDetailsPanel");
+                    Assert.IsNotNull(detailsPanel, "Icon details sidebar should exist.");
+                    Assert.AreEqual(new Thickness(1, 0, 0, 0), detailsPanel.BorderThickness,
+                        "Icon details sidebar should be separated from the grid by a 1px vertical divider.");
+                    AssertIconBrush(detailsPanel.Background, "CardBackgroundFillColorDefaultBrush",
+                        "Icon details sidebar should use the card background over the panel.");
+                    AssertIconBrush(detailsPanel.BorderBrush, "DividerStrokeColorDefaultBrush",
+                        "Icon details sidebar divider should use the divider stroke token.");
 
                     ScrollViewer? viewer = FindVisualChild<ScrollViewer>(list);
                     Assert.IsNotNull(viewer, "Icon catalog list must own a ScrollViewer.");

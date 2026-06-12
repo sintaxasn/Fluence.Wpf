@@ -33,16 +33,16 @@
                                     TextElement.FontFamily="{TemplateBinding FontFamily}"
                                     TextElement.FontSize="{TemplateBinding FontSize}"
                                     TextElement.Foreground="{TemplateBinding Foreground}" />
+                                <!--  WinUI Expander chevron backplate: 32x32, ControlCornerRadius, transparent at rest; hover/press feedback paints only this plate.  -->
                                 <Border
+                                    x:Name="ChevronBackplate"
                                     Grid.Column="1"
-                                    Width="20"
-                                    Height="20"
+                                    Width="32"
+                                    Height="32"
                                     Margin="{DynamicResource DemoSourceChevronMargin}"
                                     VerticalAlignment="Center"
-                                    RenderTransformOrigin="0.5,0.5">
-                                    <Border.RenderTransform>
-                                        <RotateTransform x:Name="ChevronRotation" Angle="0" />
-                                    </Border.RenderTransform>
+                                    Background="{DynamicResource SubtleFillColorTransparentBrush}"
+                                    CornerRadius="{DynamicResource ControlCornerRadius}">
                                     <Path
                                         x:Name="Chevron"
                                         Width="12"
@@ -50,20 +50,26 @@
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
                                         Data="M 2,4.5 L 6,8.5 L 10,4.5"
+                                        RenderTransformOrigin="0.5,0.5"
                                         Stroke="{DynamicResource TextFillColorPrimaryBrush}"
                                         StrokeEndLineCap="Round"
                                         StrokeLineJoin="Round"
                                         StrokeStartLineCap="Round"
-                                        StrokeThickness="1.5" />
+                                        StrokeThickness="1.5">
+                                        <Path.RenderTransform>
+                                            <RotateTransform x:Name="ChevronRotation" Angle="0" />
+                                        </Path.RenderTransform>
+                                    </Path>
                                 </Border>
                             </Grid>
                         </Border>
                         <ControlTemplate.Triggers>
+                            <!--  WinUI Expander header: only the chevron plate reacts (ExpanderChevronPointerOverBackground / ExpanderChevronPressedBackground); the header surface itself never lights up.  -->
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="HeaderBorder" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                                <Setter TargetName="ChevronBackplate" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="HeaderBorder" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                                <Setter TargetName="ChevronBackplate" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
                             </Trigger>
                             <Trigger Property="IsChecked" Value="True">
                                 <Trigger.EnterActions>
@@ -137,23 +143,63 @@
                                     OverridesDefaultStyle="True"
                                     Style="{StaticResource DemoSampleSourceHeaderToggleButtonStyle}" />
 
+                                <!--  WinUI Expander composition: an outer clip hosts the translated content panel so the expand/collapse slide stays inside the source section bounds.  -->
                                 <Border
-                                    x:Name="SourceContentBorder"
+                                    x:Name="SourceContentClip"
                                     Grid.Row="1"
-                                    Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                                     ClipToBounds="True"
                                     CornerRadius="0,0,8,8">
-                                    <ContentPresenter
-                                        x:Name="ExpandSite"
-                                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
-                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                        Focusable="False" />
+                                    <Border
+                                        x:Name="SourceContentBorder"
+                                        Background="{DynamicResource SystemFillColorSolidAttentionBackgroundBrush}"
+                                        CornerRadius="0,0,8,8">
+                                        <Border.RenderTransform>
+                                            <TranslateTransform x:Name="SourceContentTranslate" />
+                                        </Border.RenderTransform>
+                                        <ContentPresenter
+                                            x:Name="ExpandSite"
+                                            HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                            VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                            Focusable="False" />
+                                    </Border>
                                 </Border>
                             </Grid>
                         </Border>
                         <ControlTemplate.Triggers>
+                            <!--  WinUI Expander ExpandDown/CollapseUp: the row opens immediately on expand; on collapse it holds open for the 167 ms slide-up (code-behind) before releasing the space.  -->
                             <Trigger Property="IsExpanded" Value="True">
                                 <Setter TargetName="ContentRowDefinition" Property="Height" Value="Auto" />
+                                <Trigger.EnterActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentRowDefinition" Storyboard.TargetProperty="Height">
+                                                <DiscreteObjectKeyFrame KeyTime="0:0:0">
+                                                    <DiscreteObjectKeyFrame.Value>
+                                                        <GridLength>Auto</GridLength>
+                                                    </DiscreteObjectKeyFrame.Value>
+                                                </DiscreteObjectKeyFrame>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.EnterActions>
+                                <Trigger.ExitActions>
+                                    <BeginStoryboard>
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentRowDefinition" Storyboard.TargetProperty="Height">
+                                                <DiscreteObjectKeyFrame KeyTime="0:0:0">
+                                                    <DiscreteObjectKeyFrame.Value>
+                                                        <GridLength>Auto</GridLength>
+                                                    </DiscreteObjectKeyFrame.Value>
+                                                </DiscreteObjectKeyFrame>
+                                                <DiscreteObjectKeyFrame KeyTime="0:0:0.167">
+                                                    <DiscreteObjectKeyFrame.Value>
+                                                        <GridLength>0</GridLength>
+                                                    </DiscreteObjectKeyFrame.Value>
+                                                </DiscreteObjectKeyFrame>
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </BeginStoryboard>
+                                </Trigger.ExitActions>
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
                                 <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
@@ -244,6 +290,7 @@
             x:Name="SourceExpander"
             Grid.Row="2"
             BorderThickness="1"
+            Collapsed="SourceExpander_Collapsed"
             CornerRadius="0,0,8,8"
             Expanded="SourceExpander_Expanded"
             Header="Source code"

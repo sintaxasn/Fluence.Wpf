@@ -1,7 +1,7 @@
 The **Fluence.Wpf.Demo** gallery shows every control: `FluenceWindow` chrome with a search box in the title bar, a left `NavigationView` (compact / expanded), and grouped `UserControl` pages under `Fluence.Wpf.Demo/Pages/`:
 
 - Home (clickable hero cards)
-- Icons (FontIcon and virtualized Segoe Fluent Icons catalog)
+- Icons (WinUI Gallery-style Iconography catalog: search, virtualized tile grid, copyable glyph details)
 - Typography (Fluent type ramp and TextBlock usage)
 - Accessibility (focus order, high contrast, automation, RTL)
 - Buttons

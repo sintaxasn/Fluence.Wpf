@@ -489,7 +489,7 @@
                             <ContentPresenter x:Name="PART_ContentPresenter" Content="{TemplateBinding Content}" />
                         </Border>
                         <Border
-                            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                            BorderBrush="{DynamicResource ControlStrokeColorSecondaryBrush}"
                             BorderThickness="1,1,0,0"
                             CornerRadius="8,0,0,0"
                             IsHitTestVisible="False" />
@@ -739,7 +739,7 @@
                             <ContentPresenter x:Name="PART_ContentPresenter" Content="{TemplateBinding Content}" />
                         </Border>
                         <Border
-                            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                            BorderBrush="{DynamicResource ControlStrokeColorSecondaryBrush}"
                             BorderThickness="1,1,0,0"
                             CornerRadius="8,0,0,0"
                             IsHitTestVisible="False" />
@@ -820,7 +820,7 @@
                     Grid.Row="0"
                     Padding="4,0,8,0"
                     Background="{DynamicResource AcrylicInAppFillColorDefaultBrush}"
-                    BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
+                    BorderBrush="{DynamicResource ControlStrokeColorSecondaryBrush}"
                     BorderThickness="0,0,0,1">
                     <Grid>
                         <Grid.ColumnDefinitions>

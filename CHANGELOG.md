@@ -17,6 +17,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Changed
 
 - Gallery Forms page: the TimePicker, DatePicker, and ColorPicker samples now lead the page, ahead of the sign-in, checkout, and settings form compositions.
+- `TextBox` and `PasswordBox`: the helper text, validation message, caps lock indicator, and password strength meter now sit 2px further below the input box.
+- Gallery sample cards: the source-code expander now mirrors the WinUI Expander - hover and press feedback render on the chevron backplate only (the header surface no longer lights up), expanding slides the section open with the WinUI decelerate motion (333 ms, KeySpline 0,0,0,1) and collapsing accelerates closed (167 ms, KeySpline 1,1,0,1), and the expanded source area uses `SystemFillColorSolidAttentionBackgroundBrush` (#F7F7F7 light / #2E2E2E dark). The copy-source button gains a visible 1px `ControlStrokeColorDefaultBrush` outline.
+- `NavigationView`: the pane/content seam in the Left, LeftCompact, and Top templates now uses `ControlStrokeColorSecondaryBrush` so the divider reads clearly over Mica in both Light and Dark (the previous `CardStrokeColorDefaultBrush` was nearly invisible in Dark).
+- Gallery Icons page redesigned as an Iconography catalog matching the WinUI 3 Gallery: live search over icon name, code, and derived tags, a width-adaptive virtualized tile grid with an accent selection ring, and a details sidebar with copyable Icon name, Text glyph, Code glyph, FontIcon XAML, and FontIcon C# values plus tag pills.
 - `ColorPicker.IsColorChannelTextInputVisible` now governs the RGB/HSV representation selector and the per-channel text inputs, matching WinUI semantics. It previously collapsed the hex input row; hex visibility is now governed by the new `IsHexInputVisible` property (migration: replace `IsColorChannelTextInputVisible="False"` with `IsHexInputVisible="False"` if you used it to hide the hex box).
 
 ### Fixed

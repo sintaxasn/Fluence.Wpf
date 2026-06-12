@@ -47,9 +47,10 @@ namespace Fluence.Wpf.Tests
         private const string IntentionalPartialSnippetMarker = "Intentionally partial layout snippet";
         private static readonly XNamespace XamlNamespace = "http://schemas.microsoft.com/winfx/2006/xaml";
 
+        // GalleryIconsPage is a design reference page (WinUI Gallery Iconography catalog)
+        // and renders directly instead of through DemoSampleControl, like Typography.
         private static readonly Func<UIElement>[] SamplePageFactories =
         [
-            static () => new GalleryIconsPage(),
             static () => new GalleryAccessibilityPage(),
             static () => new GalleryButtonsPage(),
             static () => new GallerySelectionPage(),

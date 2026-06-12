@@ -211,7 +211,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void TextBox_HelperAndValidationText_UsesSevenPixelTopMarginAndCenteredContent()
+        public void TextBox_HelperAndValidationText_UsesNinePixelTopMarginAndCenteredContent()
         {
             WpfTestSta.Invoke(() =>
             {
@@ -235,8 +235,8 @@ namespace Fluence.Wpf.Tests
 
                 StackPanel? helperRow = VisualTreeHelper.GetParent(helper) as StackPanel;
                 Assert.IsNotNull(helperRow, "Helper text should be hosted in the validation/helper row.");
-                Assert.AreEqual(new Thickness(12, 7, 12, 0), helperRow.Margin,
-                    "Helper and validation text should sit 7px below the input chrome.");
+                Assert.AreEqual(new Thickness(12, 9, 12, 0), helperRow.Margin,
+                    "Helper and validation text should sit 9px below the input chrome.");
                 Assert.AreEqual(VerticalAlignment.Center, helper.VerticalAlignment,
                     "Helper text should be vertically centered with the validation icon.");
                 Assert.AreEqual(VerticalAlignment.Center, icon.VerticalAlignment,

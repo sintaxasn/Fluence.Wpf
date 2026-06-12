@@ -32,6 +32,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
+using System.Windows.Threading;
 
 namespace Fluence.Wpf.Demo.Pages
 {
@@ -380,6 +382,85 @@ namespace Fluence.Wpf.Demo.Pages
         private void SourceExpander_Expanded(object sender, RoutedEventArgs e)
         {
             LoadSourceTabs();
+
+            // The template trigger opens the content row in the same dispatcher operation
+            // that raised Expanded; defer the slide so it measures the opened row before
+            // the next render pass paints it.
+            _ = Dispatcher.BeginInvoke(DispatcherPriority.DataBind, new Action(PlaySourceExpandMotion));
+        }
+
+        private void SourceExpander_Collapsed(object sender, RoutedEventArgs e)
+        {
+            _ = Dispatcher.BeginInvoke(DispatcherPriority.DataBind, new Action(PlaySourceCollapseMotion));
+        }
+
+        /// <summary>
+        /// Mirrors the WinUI Expander ExpandDown storyboard: the row snaps open while the
+        /// source panel slides down from beneath the header, decelerating over 333 ms
+        /// (KeySpline 0,0,0,1 per WinUI Expander.xaml).
+        /// </summary>
+        private void PlaySourceExpandMotion()
+        {
+            if (!SourceExpander.IsExpanded ||
+                FindSourceMotionPart<Border>("SourceContentBorder") is not Border content ||
+                FindSourceMotionPart<TranslateTransform>("SourceContentTranslate") is not TranslateTransform translate)
+            {
+                return;
+            }
+
+            content.UpdateLayout();
+            double height = content.ActualHeight;
+            if (height <= 0d)
+            {
+                return;
+            }
+
+            translate.BeginAnimation(TranslateTransform.YProperty, null);
+            translate.Y = -height;
+            BeginSourceSlide(translate, 0d, TimeSpan.FromMilliseconds(333), new KeySpline(0.0, 0.0, 0.0, 1.0));
+        }
+
+        /// <summary>
+        /// Mirrors the WinUI Expander CollapseUp storyboard: the source panel slides up
+        /// behind the header, accelerating over 167 ms (KeySpline 1,1,0,1 per WinUI
+        /// Expander.xaml), while the template trigger holds the row open until the slide
+        /// finishes and then releases the space.
+        /// </summary>
+        private void PlaySourceCollapseMotion()
+        {
+            if (SourceExpander.IsExpanded ||
+                FindSourceMotionPart<Border>("SourceContentBorder") is not Border content ||
+                FindSourceMotionPart<TranslateTransform>("SourceContentTranslate") is not TranslateTransform translate)
+            {
+                return;
+            }
+
+            double height = content.ActualHeight;
+            if (height <= 0d)
+            {
+                return;
+            }
+
+            translate.BeginAnimation(TranslateTransform.YProperty, null);
+            translate.Y = 0d;
+            BeginSourceSlide(translate, -height, TimeSpan.FromMilliseconds(167), new KeySpline(1.0, 1.0, 0.0, 1.0));
+        }
+
+        private static void BeginSourceSlide(TranslateTransform translate, double toValue, TimeSpan duration, KeySpline easing)
+        {
+            DoubleAnimationUsingKeyFrames slide = new();
+            _ = slide.KeyFrames.Add(new SplineDoubleKeyFrame(toValue, KeyTime.FromTimeSpan(duration), easing));
+            slide.Completed += (_, _) =>
+            {
+                translate.BeginAnimation(TranslateTransform.YProperty, null);
+                translate.Y = 0d;
+            };
+            translate.BeginAnimation(TranslateTransform.YProperty, slide);
+        }
+
+        private T? FindSourceMotionPart<T>(string partName) where T : class
+        {
+            return SourceExpander.Template?.FindName(partName, SourceExpander) as T;
         }
 
         private void LoadSourceTabs()
@@ -435,6 +516,7 @@ namespace Fluence.Wpf.Demo.Pages
             Border border = new()
             {
                 Name = "CopySourceButtonHost",
+                BorderThickness = new Thickness(1),
                 Child = copyButton,
                 CornerRadius = new CornerRadius(4),
                 HorizontalAlignment = HorizontalAlignment.Right,
@@ -442,6 +524,7 @@ namespace Fluence.Wpf.Demo.Pages
                 VerticalAlignment = VerticalAlignment.Top
             };
             border.SetResourceReference(BackgroundProperty, "CardBackgroundFillColorDefaultBrush");
+            border.SetResourceReference(BorderBrushProperty, "ControlStrokeColorDefaultBrush");
             return border;
         }
 
@@ -484,7 +567,7 @@ namespace Fluence.Wpf.Demo.Pages
                 Padding = new Thickness(0),
                 VerticalScrollBarVisibility = ScrollBarVisibility.Auto
             };
-            viewer.SetResourceReference(BackgroundProperty, "SolidBackgroundFillColorBaseBrush");
+            viewer.SetResourceReference(BackgroundProperty, "SystemFillColorSolidAttentionBackgroundBrush");
             viewer.SetResourceReference(ForegroundProperty, "TextFillColorPrimaryBrush");
             viewer.Document = CreateSourceDocument(source, language);
             return viewer;
