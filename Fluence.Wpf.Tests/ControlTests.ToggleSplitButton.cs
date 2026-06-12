@@ -479,6 +479,36 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void ToggleSplitButton_FocusVisuals_UseKeyboardOnlyFocusVisualStyle()
+        {
+            // Mirrors the SplitButton contract: focus rings come from the
+            // DefaultControlFocusVisualStyle adorner on each half, which WPF shows only
+            // for keyboard navigation (Tab), never on mouse click - matching DropDownButton.
+            RunToggleSplitButtonTest(
+                () => new Controls.ToggleSplitButton
+                {
+                    Content = "Toggle",
+                    IsHitTestVisible = false
+                },
+                (application, button) =>
+                {
+                    System.Windows.Controls.Button primary = GetPrimaryButtonPart(button);
+                    ToggleButton secondary = GetSecondaryButtonPart(button);
+                    Style? focusVisualStyle = application?.TryFindResource("DefaultControlFocusVisualStyle") as Style;
+
+                    Assert.IsNotNull(focusVisualStyle, "DefaultControlFocusVisualStyle should resolve from the computed dictionary.");
+                    Assert.AreSame(focusVisualStyle, primary.FocusVisualStyle,
+                        "The primary half must use the FocusVisualStyle adorner so the focus ring shows only for keyboard navigation, never on click.");
+                    Assert.AreSame(focusVisualStyle, secondary.FocusVisualStyle,
+                        "The secondary half must use the FocusVisualStyle adorner so the focus ring shows only for keyboard navigation, never on click.");
+                    Assert.IsNull(FindVisualChildByName<Border>(button, "PrimaryFocusOuter"),
+                        "The always-on in-template primary focus borders must be gone; they rendered on mouse click.");
+                    Assert.IsNull(FindVisualChildByName<Border>(button, "SecondaryFocusOuter"),
+                        "The always-on in-template secondary focus borders must be gone; they rendered on mouse click.");
+                });
+        }
+
+        [TestMethod]
         public void ToggleSplitButton_ThemeCycle_CheckedBrushesReResolve()
         {
             RunToggleSplitButtonTest(

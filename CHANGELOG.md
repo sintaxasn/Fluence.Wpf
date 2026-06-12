@@ -26,6 +26,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `ToggleButton` indeterminate state (`IsThreeState`, `IsChecked` of `null`) now renders the WinUI parity visuals for hover, pressed, and disabled using the neutral control palette; previously no state change rendered at all.
 - `ToggleButton` checked-pressed state now matches WinUI: the foreground softens to `TextOnAccentFillColorSecondaryBrush` and the border becomes transparent (previously primary on-accent text with the accent elevation border).
 - Setting `ToggleButton.Appearance` to a value other than `Standard` no longer disables every state visual. Each state trigger was conditioned on `Appearance=Standard`, so `Appearance="Accent"` rendered checked and unchecked identically; the template now applies the single canonical WinUI toggle visual for all appearance values.
+- `SplitButton` and `ToggleSplitButton` focus rings now appear only during keyboard navigation (Tab), not when a half is clicked. The per-half in-template focus borders were driven by `IsKeyboardFocused`, which mouse clicks also set; each half now carries the standard `DefaultControlFocusVisualStyle` adorner instead, which WPF renders only for keyboard focus, matching `DropDownButton` and the rest of the library. Covered by `ControlTests.SplitButton.cs` and `ControlTests.ToggleSplitButton.cs`.
 
 ## [0.8.0-preview] - 2026-06-10
 
