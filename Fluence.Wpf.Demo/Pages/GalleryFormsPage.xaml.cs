@@ -233,12 +233,12 @@ namespace Fluence.Wpf.Demo.Pages.Forms
 
             DemoSamplePageWiring.Apply(
                 (DependencyObject)Content,
-                new DemoSampleSource(1, SignInFormXamlSource, SignInFormCSharpSource),
-                new DemoSampleSource(2, CheckoutFormXamlSource, CheckoutFormCSharpSource),
-                new DemoSampleSource(3, SettingsFormXamlSource, SettingsFormCSharpSource),
-                new DemoSampleSource(4, DatePickerXamlSource, DatePickerCSharpSource),
-                new DemoSampleSource(5, TimePickerXamlSource, TimePickerCSharpSource),
-                new DemoSampleSource(6, ColorPickerXamlSource, ColorPickerCSharpSource));
+                new DemoSampleSource(1, TimePickerXamlSource, TimePickerCSharpSource),
+                new DemoSampleSource(2, DatePickerXamlSource, DatePickerCSharpSource),
+                new DemoSampleSource(3, ColorPickerXamlSource, ColorPickerCSharpSource),
+                new DemoSampleSource(4, SignInFormXamlSource, SignInFormCSharpSource),
+                new DemoSampleSource(5, CheckoutFormXamlSource, CheckoutFormCSharpSource),
+                new DemoSampleSource(6, SettingsFormXamlSource, SettingsFormCSharpSource));
 
             Loaded += GalleryFormsPage_Loaded;
         }

@@ -232,6 +232,58 @@ namespace Fluence.Wpf.Demo.Pages.Data
     }
 }
 ";
+        private const string ListBoxSelectionXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Data.ListBoxSelection""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width=""*"" />
+            <ColumnDefinition Width=""20"" />
+            <ColumnDefinition Width=""*"" />
+        </Grid.ColumnDefinitions>
+        <ui:ListBox
+            x:Name=""SingleSelectListBox""
+            Height=""180""
+            BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
+            BorderThickness=""1"">
+            <ui:ListBoxItem Content=""Documents"" IsSelected=""True"" />
+            <ui:ListBoxItem Content=""Pictures"" />
+            <ui:ListBoxItem Content=""Music"" />
+            <ui:ListBoxItem Content=""Videos"" />
+            <ui:ListBoxItem Content=""Downloads"" />
+        </ui:ListBox>
+        <ui:ListBox
+            x:Name=""MultiSelectListBox""
+            Grid.Column=""2""
+            Height=""180""
+            BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
+            BorderThickness=""1""
+            SelectionMode=""Extended"">
+            <ui:ListBoxItem Content=""Critical"" IsSelected=""True"" />
+            <ui:ListBoxItem Content=""Error"" IsSelected=""True"" />
+            <ui:ListBoxItem Content=""Warning"" />
+            <ui:ListBoxItem Content=""Information"" />
+            <ui:ListBoxItem Content=""Verbose"" />
+        </ui:ListBox>
+    </Grid>
+</UserControl>
+";
+
+        private const string ListBoxSelectionCSharpSource = @"using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Data
+{
+    public partial class ListBoxSelection : UserControl
+    {
+        public ListBoxSelection()
+        {
+            InitializeComponent();
+        }
+    }
+}
+";
         private const string CardVariantsXamlSource = @"<UserControl
     x:Class=""Fluence.Wpf.Demo.Pages.Data.CardVariants""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
@@ -361,10 +413,11 @@ namespace Fluence.Wpf.Demo.Pages.Data
 
             DemoSamplePageWiring.Apply(
                 (DependencyObject)Content,
-            new DemoSampleSource(1, ListViewItemsXamlSource, ListViewItemsCSharpSource),
-            new DemoSampleSource(2, ListViewEmptyStateXamlSource, ListViewEmptyStateCSharpSource),
-            new DemoSampleSource(3, PersonPictureXamlSource, PersonPictureCSharpSource),
-                new DemoSampleSource(4, CardVariantsXamlSource, CardVariantsCSharpSource));
+                new DemoSampleSource(1, ListViewItemsXamlSource, ListViewItemsCSharpSource),
+                new DemoSampleSource(2, ListViewEmptyStateXamlSource, ListViewEmptyStateCSharpSource),
+                new DemoSampleSource(3, ListBoxSelectionXamlSource, ListBoxSelectionCSharpSource),
+                new DemoSampleSource(4, PersonPictureXamlSource, PersonPictureCSharpSource),
+                new DemoSampleSource(5, CardVariantsXamlSource, CardVariantsCSharpSource));
         }
 
         private void AddListItem_Click(object sender, RoutedEventArgs e)

@@ -176,12 +176,34 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void GalleryDataPage_ListBoxSamplesExposeSelectionModes()
+        {
+            RunDemoPageTest(() => new GalleryDataPage(), window =>
+            {
+                Controls.ListBox? singleSelect = FindVisualChildByName<Controls.ListBox>(window, "SingleSelectListBox");
+                Controls.ListBox? multiSelect = FindVisualChildByName<Controls.ListBox>(window, "MultiSelectListBox");
+
+                Assert.IsNotNull(singleSelect, "Data page should include a single-selection ListBox sample.");
+                Assert.IsNotNull(multiSelect, "Data page should include a multi-selection ListBox sample.");
+                Assert.AreEqual(SelectionMode.Single, singleSelect.SelectionMode,
+                    "The first ListBox sample should keep the default single selection mode.");
+                Assert.AreEqual(SelectionMode.Extended, multiSelect.SelectionMode,
+                    "The second ListBox sample should demonstrate extended multi-selection.");
+                Assert.IsTrue(singleSelect.Items.Count > 0, "Single-selection ListBox sample should contain items.");
+                Assert.IsTrue(multiSelect.SelectedItems.Count >= 2,
+                    "Multi-selection ListBox sample should start with multiple items selected.");
+            });
+        }
+
+        [TestMethod]
         public void GalleryDataAndTreeSamplesExposeThemedBorders()
         {
             RunDemoPageTest(() => new GalleryDataPage(), window =>
             {
                 AssertControlHasThemedBorder(FindVisualChildByName<Controls.ListView>(window, "SimpleListView"), "SimpleListView");
                 AssertControlHasThemedBorder(FindVisualChildByName<Controls.ListView>(window, "RichListView"), "RichListView");
+                AssertControlHasThemedBorder(FindVisualChildByName<Controls.ListBox>(window, "SingleSelectListBox"), "SingleSelectListBox");
+                AssertControlHasThemedBorder(FindVisualChildByName<Controls.ListBox>(window, "MultiSelectListBox"), "MultiSelectListBox");
             });
 
             RunDemoPageTest(() => new GalleryDataBindingPage(), window =>
