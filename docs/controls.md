@@ -43,7 +43,7 @@ xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
 | Area                | Types                                                                                                                              |
 |---------------------|------------------------------------------------------------------------------------------------------------------------------------|
 | Window              | `FluenceWindow`, `TitleBar`                                                                                                         |
-| Basic actions       | `Button`, `HyperlinkButton`, `DropDownButton`, `SplitButton`, `RepeatButton`, `ToggleButton`                                       |
+| Basic actions       | `Button`, `HyperlinkButton`, `DropDownButton`, `SplitButton`, `ToggleSplitButton`, `RepeatButton`, `ToggleButton`                  |
 | Selection           | `CheckBox`, `RadioButton`, `ToggleSwitch`, `ComboBox`, `Slider`, `NumberBox`, `DatePicker`, `TimePicker`, `ColorPicker`            |
 | Text                | `TextBox`, `PasswordBox`, `AutoSuggestBox`, `TextBlock` + `TextBlockExtensions`                                                    |
 | Data                | `ListView`, `ListBox`, `ListBoxItem`, `ListViewItem`                                                                               |
@@ -85,14 +85,18 @@ Key API:
   <a href="../../api/Fluence.Wpf.Controls.HyperlinkButton.html">HyperlinkButton</a>
   <a href="../../api/Fluence.Wpf.Controls.DropDownButton.html">DropDownButton</a>
   <a href="../../api/Fluence.Wpf.Controls.SplitButton.html">SplitButton</a>
+  <a href="../../api/Fluence.Wpf.Controls.ToggleSplitButton.html">ToggleSplitButton</a>
   <a href="../../api/Fluence.Wpf.Controls.RepeatButton.html">RepeatButton</a>
   <a href="../../api/Fluence.Wpf.Controls.ToggleButton.html">ToggleButton</a>
   <a href="../../api/Fluence.Wpf.ControlAppearance.html">ControlAppearance</a>
+  <a href="../../api/Fluence.Wpf.ToggleSplitButtonIsCheckedChangedEventArgs.html">ToggleSplitButtonIsCheckedChangedEventArgs</a>
 </div>
 
 The action controls keep standard WPF command, content, and click patterns. Use `Appearance="Accent"` for the primary action on a page, and standard or subtle styling for lower-emphasis commands.
 
 `ToggleButton` holds a checked state with the WinUI accent visuals: checked renders as the accent state with distinct hover and pressed tints, and `IsThreeState="True"` adds the indeterminate state (`IsChecked` of `null`) with the WinUI neutral palette. The default template renders the same canonical toggle visual for every `Appearance` value; the property exists primarily for derived controls such as `DropDownButton`.
+
+`ToggleSplitButton` derives from `SplitButton` and turns the primary half into a toggle: a primary click flips `IsChecked` and then raises `Click`, so handlers observe the already-toggled state, while the chevron half still opens the `Flyout`. Subscribe to `IsCheckedChanged` (carrying the new state in `ToggleSplitButtonIsCheckedChangedEventArgs`) for state updates from clicks, bindings, or the Toggle automation pattern. Checked renders both halves in the accent palette with the WinUI checked divider stroke. Use it when the primary half switches a mode on or off and the flyout chooses which variant of that mode applies, such as list formatting.
 
 ### Selection
 

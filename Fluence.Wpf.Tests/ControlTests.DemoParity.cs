@@ -101,6 +101,35 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void GalleryButtonsPage_ToggleSplitButtonSampleTogglesStateText()
+        {
+            RunDemoPageTest(() => new GalleryButtonsPage(), window =>
+            {
+                Controls.ToggleSplitButton? listToggle = FindVisualChildByName<Controls.ToggleSplitButton>(window, "ListToggleSplitButton");
+                TextBlock? stateText = FindVisualChildByName<TextBlock>(window, "ToggleSplitButtonStateText");
+
+                Assert.IsNotNull(listToggle, "Buttons page should include the named ToggleSplitButton sample.");
+                Assert.IsNotNull(stateText, "Buttons page should include the ToggleSplitButton state label.");
+                Assert.AreEqual("List formatting: Off", stateText.Text);
+
+                System.Windows.Controls.Button? primary = listToggle.Template?.FindName("PART_PrimaryButton", listToggle) as System.Windows.Controls.Button;
+                Assert.IsNotNull(primary, "The ToggleSplitButton sample should expose its primary template part.");
+
+                primary.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
+                DrainDispatcher(window.Dispatcher);
+
+                Assert.IsTrue(listToggle.IsChecked, "Clicking the primary half should check the sample.");
+                Assert.AreEqual("List formatting: Bulleted list", stateText.Text);
+
+                primary.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
+                DrainDispatcher(window.Dispatcher);
+
+                Assert.IsFalse(listToggle.IsChecked, "A second primary click should uncheck the sample.");
+                Assert.AreEqual("List formatting: Off", stateText.Text);
+            });
+        }
+
+        [TestMethod]
         public void GallerySelectionPage_CheckBoxSamplesMatchWinUIGalleryStates()
         {
             RunDemoPageTest(() => new GallerySelectionPage(), window =>

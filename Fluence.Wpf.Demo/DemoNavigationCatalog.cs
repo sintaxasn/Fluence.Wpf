@@ -85,7 +85,7 @@ namespace Fluence.Wpf.Demo
             new("Colors", "colors", "color brush swatch theme resource high contrast accent", "\uE790", false),
             new("Icons", "icons", "fonticon icon segoe fluent symbols", "\uED58", false),
             new("Typography", "typography", "text textblock font style type ramp", "\uE8D2", false),
-            new("Buttons", "buttons", "button dropdownbutton splitbutton hyperlinkbutton repeatbutton togglebutton accent icon", "\uE8E5", false),
+            new("Buttons", "buttons", "button dropdownbutton splitbutton hyperlinkbutton repeatbutton togglebutton togglesplitbutton splittogglebutton accent icon", "\uE8E5", false),
             new("Selection", "selection", "checkbox radio radiobutton toggleswitch combobox rating slider", "\uE73E", false),
             new("Inputs", "inputs", "textbox passwordbox numberbox slider text input validation", "\uE70F", false),
             new("Forms", "forms", "signin checkout settings form text input", "\uE7C3", false),

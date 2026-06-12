@@ -315,7 +315,14 @@ namespace Fluence.Wpf.Controls
             }
         }
 
-        private void OnPrimaryButtonClick(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Called when the primary half is clicked; raises <see cref="Click"/> and invokes
+        /// <see cref="Command"/>. Override to run logic before the click is raised, calling
+        /// the base implementation to preserve the click and command behavior.
+        /// </summary>
+        /// <param name="sender">The primary button template part that raised the click.</param>
+        /// <param name="e">The routed event data from the primary button.</param>
+        protected virtual void OnPrimaryButtonClick(object sender, RoutedEventArgs e)
         {
             // Primary half: raise Click and invoke Command.
             RaiseEvent(new RoutedEventArgs(ClickEvent, this));

@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Gallery Data page: a dedicated `ListBox` sample showing the default single-selection list next to an `Extended` multi-selection list, closing the last demo coverage gap in the control catalog. Covered by `ControlTests.DemoParity.cs`.
 - Gallery Buttons page: a `ToggleButton` sample with an on/off state label, a three-state (`IsThreeState`) example showing the indeterminate visuals, and a disabled-checked example. Covered by `ControlTests.DemoParity.cs`.
+- `ToggleSplitButton` - a `SplitButton` subclass mirroring the WinUI 3 control: the primary half toggles the new `IsChecked` property (two-way bindable) and then raises `Click`, so handlers observe the already-toggled state, while the chevron half keeps opening the flyout. `IsCheckedChanged` carries the new state via `ToggleSplitButtonIsCheckedChangedEventArgs`; checked renders both halves in the accent palette with the WinUI checked divider stroke (`ControlStrokeColorOnAccentTertiaryBrush`), including the CheckedFlyoutOpen both-halves-pressed tint and the disabled-checked palette. The automation peer exposes the Toggle and ExpandCollapse patterns (no Invoke, per WinUI). `SplitButton.OnPrimaryButtonClick` became `protected virtual` to host the toggle hook. Shown on the gallery Buttons page; covered by `ControlTests.ToggleSplitButton.cs`.
 
 ### Changed
 

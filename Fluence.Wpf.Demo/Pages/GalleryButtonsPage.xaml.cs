@@ -400,6 +400,96 @@ namespace Fluence.Wpf.Demo.Pages.Buttons
     }
 }
 ";
+        private const string ToggleSplitButtonsXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Buttons.ToggleSplitButtons""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <StackPanel>
+        <WrapPanel VerticalAlignment=""Center"">
+            <ui:ToggleSplitButton
+                x:Name=""ListToggleSplitButton""
+                Margin=""0,0,8,8""
+                Content=""Bulleted list""
+                IsCheckedChanged=""ListToggleSplitButton_IsCheckedChanged"">
+                <ui:ToggleSplitButton.Flyout>
+                    <StackPanel MinWidth=""180"" Margin=""4"">
+                        <ui:Button
+                            HorizontalAlignment=""Stretch""
+                            HorizontalContentAlignment=""Left""
+                            Appearance=""Subtle""
+                            Click=""ListStyleButton_Click""
+                            Content=""Bulleted list"" />
+                        <ui:Button
+                            HorizontalAlignment=""Stretch""
+                            HorizontalContentAlignment=""Left""
+                            Appearance=""Subtle""
+                            Click=""ListStyleButton_Click""
+                            Content=""Numbered list"" />
+                        <ui:Button
+                            HorizontalAlignment=""Stretch""
+                            HorizontalContentAlignment=""Left""
+                            Appearance=""Subtle""
+                            Click=""ListStyleButton_Click""
+                            Content=""Checklist"" />
+                    </StackPanel>
+                </ui:ToggleSplitButton.Flyout>
+            </ui:ToggleSplitButton>
+            <ui:ToggleSplitButton
+                Margin=""0,0,8,8""
+                Content=""Disabled""
+                IsChecked=""True""
+                IsEnabled=""False"">
+                <ui:ToggleSplitButton.Flyout>
+                    <TextBlock Margin=""12"" Text=""Unavailable"" />
+                </ui:ToggleSplitButton.Flyout>
+            </ui:ToggleSplitButton>
+        </WrapPanel>
+        <TextBlock
+            x:Name=""ToggleSplitButtonStateText""
+            Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+            Text=""List formatting: Off"" />
+    </StackPanel>
+</UserControl>
+";
+
+        private const string ToggleSplitButtonsCSharpSource = @"using System.Globalization;
+using System.Windows;
+using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Buttons
+{
+    public partial class ToggleSplitButtons : UserControl
+    {
+        public ToggleSplitButtons()
+        {
+            InitializeComponent();
+        }
+
+        private void ListToggleSplitButton_IsCheckedChanged(object? sender, Fluence.Wpf.ToggleSplitButtonIsCheckedChangedEventArgs e)
+        {
+            UpdateListFormattingText(e.IsChecked);
+        }
+
+        private void ListStyleButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Fluence.Wpf.Controls.Button button && button.Content is string listStyle)
+            {
+                ListToggleSplitButton.Content = listStyle;
+                ListToggleSplitButton.IsChecked = true;
+                UpdateListFormattingText(true);
+            }
+        }
+
+        private void UpdateListFormattingText(bool isChecked)
+        {
+            ToggleSplitButtonStateText.Text = isChecked
+                ? string.Format(CultureInfo.CurrentCulture, ""List formatting: {0}"", ListToggleSplitButton.Content)
+                : ""List formatting: Off"";
+        }
+    }
+}
+";
 
         // Click counter for the RepeatButton interactive demo; incremented by
         // RepeatCounterButton_Click and displayed in RepeatButtonCountText.
@@ -420,7 +510,8 @@ namespace Fluence.Wpf.Demo.Pages.Buttons
                 new DemoSampleSource(4, DropDownButtonsXamlSource, DropDownButtonsCSharpSource),
                 new DemoSampleSource(5, SplitButtonsXamlSource, SplitButtonsCSharpSource),
                 new DemoSampleSource(6, RepeatButtonsXamlSource, RepeatButtonsCSharpSource),
-                new DemoSampleSource(7, ToggleButtonsXamlSource, ToggleButtonsCSharpSource));
+                new DemoSampleSource(7, ToggleButtonsXamlSource, ToggleButtonsCSharpSource),
+                new DemoSampleSource(8, ToggleSplitButtonsXamlSource, ToggleSplitButtonsCSharpSource));
         }
 
         private void RepeatCounterButton_Click(object sender, RoutedEventArgs e)
@@ -437,6 +528,28 @@ namespace Fluence.Wpf.Demo.Pages.Buttons
             ToggleButtonStateText.Text = WrapToggleButton.IsChecked == true
                 ? "Wrap text: On"
                 : "Wrap text: Off";
+        }
+
+        private void ListToggleSplitButton_IsCheckedChanged(object? sender, ToggleSplitButtonIsCheckedChangedEventArgs e)
+        {
+            UpdateListFormattingText(e.IsChecked);
+        }
+
+        private void ListStyleButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Fluence.Wpf.Controls.Button button && button.Content is string listStyle)
+            {
+                ListToggleSplitButton.Content = listStyle;
+                ListToggleSplitButton.IsChecked = true;
+                UpdateListFormattingText(true);
+            }
+        }
+
+        private void UpdateListFormattingText(bool isChecked)
+        {
+            ToggleSplitButtonStateText.Text = isChecked
+                ? string.Format(CultureInfo.CurrentCulture, "List formatting: {0}", ListToggleSplitButton.Content)
+                : "List formatting: Off";
         }
     }
 }
