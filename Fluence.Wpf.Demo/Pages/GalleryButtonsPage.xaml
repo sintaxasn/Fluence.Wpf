@@ -224,6 +224,35 @@
                     Text="Clicks: 0" />
             </ContentControl>
             <local:DemoSampleControl SampleDescription="Use RepeatButton when holding the pointer should raise Click repeatedly." />
+
+
+            <ContentControl x:Name="DemoSampleSlot07DemoContentHost" Visibility="Collapsed">
+                <WrapPanel VerticalAlignment="Center">
+                    <ui:ToggleButton
+                        x:Name="WrapToggleButton"
+                        Margin="{DynamicResource DemoControlGroupItemMargin}"
+                        Checked="WrapToggleButton_CheckedChanged"
+                        Content="Wrap text"
+                        Unchecked="WrapToggleButton_CheckedChanged" />
+                    <ui:ToggleButton
+                        x:Name="ThreeStateToggleButton"
+                        Margin="{DynamicResource DemoControlGroupItemMargin}"
+                        Content="Three-state"
+                        IsThreeState="True" />
+                    <ui:ToggleButton
+                        Margin="{DynamicResource DemoControlGroupItemMargin}"
+                        Content="Disabled checked"
+                        IsChecked="True"
+                        IsEnabled="False" />
+                </WrapPanel>
+            </ContentControl>
+            <ContentControl x:Name="DemoSampleSlot07OutputContentHost" Visibility="Collapsed">
+                <TextBlock
+                    x:Name="ToggleButtonStateText"
+                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                    Text="Wrap text: Off" />
+            </ContentControl>
+            <local:DemoSampleControl SampleDescription="Use ToggleButton when a command switches a state on or off and should look pressed while active." />
         </StackPanel>
     </ui:SmoothScrollViewer>
 </UserControl>

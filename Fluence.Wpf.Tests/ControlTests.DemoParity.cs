@@ -76,6 +76,31 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void GalleryButtonsPage_ToggleButtonSampleUpdatesStateText()
+        {
+            RunDemoPageTest(() => new GalleryButtonsPage(), window =>
+            {
+                Controls.ToggleButton? wrapToggle = FindVisualChildByName<Controls.ToggleButton>(window, "WrapToggleButton");
+                Controls.ToggleButton? threeStateToggle = FindVisualChildByName<Controls.ToggleButton>(window, "ThreeStateToggleButton");
+                TextBlock? stateText = FindVisualChildByName<TextBlock>(window, "ToggleButtonStateText");
+
+                Assert.IsNotNull(wrapToggle, "Buttons page should include the named ToggleButton sample.");
+                Assert.IsNotNull(threeStateToggle, "Buttons page should include a three-state ToggleButton sample.");
+                Assert.IsNotNull(stateText, "Buttons page should include the ToggleButton state label.");
+                Assert.IsTrue(threeStateToggle.IsThreeState, "The three-state sample should opt into IsThreeState.");
+                Assert.AreEqual("Wrap text: Off", stateText.Text);
+
+                wrapToggle.IsChecked = true;
+                DrainDispatcher(window.Dispatcher);
+                Assert.AreEqual("Wrap text: On", stateText.Text);
+
+                wrapToggle.IsChecked = false;
+                DrainDispatcher(window.Dispatcher);
+                Assert.AreEqual("Wrap text: Off", stateText.Text);
+            });
+        }
+
+        [TestMethod]
         public void GallerySelectionPage_CheckBoxSamplesMatchWinUIGalleryStates()
         {
             RunDemoPageTest(() => new GallerySelectionPage(), window =>

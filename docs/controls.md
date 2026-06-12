@@ -92,6 +92,8 @@ Key API:
 
 The action controls keep standard WPF command, content, and click patterns. Use `Appearance="Accent"` for the primary action on a page, and standard or subtle styling for lower-emphasis commands.
 
+`ToggleButton` holds a checked state with the WinUI accent visuals: checked renders as the accent state with distinct hover and pressed tints, and `IsThreeState="True"` adds the indeterminate state (`IsChecked` of `null`) with the WinUI neutral palette. The default template renders the same canonical toggle visual for every `Appearance` value; the property exists primarily for derived controls such as `DropDownButton`.
+
 ### Selection
 
 Key API:

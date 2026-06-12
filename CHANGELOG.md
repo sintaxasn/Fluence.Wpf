@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Added
 
 - Gallery Data page: a dedicated `ListBox` sample showing the default single-selection list next to an `Extended` multi-selection list, closing the last demo coverage gap in the control catalog. Covered by `ControlTests.DemoParity.cs`.
+- Gallery Buttons page: a `ToggleButton` sample with an on/off state label, a three-state (`IsThreeState`) example showing the indeterminate visuals, and a disabled-checked example. Covered by `ControlTests.DemoParity.cs`.
 
 ### Changed
 
@@ -17,6 +18,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Fixed
 
 - `ListBoxItem` selection indicator now renders at the canonical 3x16 size, vertically centered, matching `ListViewItem` (previously a `ScaleTransform` with an absolute `CenterY` left the bar at 60 percent height anchored near its top edge). The indicator also adopts the same 167 ms slide-in / 120 ms slide-out animation as `ListViewItem`, and a disabled selected item now shows the indicator with `AccentFillColorDisabledBrush` instead of hiding it. Covered by `ControlTests.ListBox.cs`.
+- `ToggleButton` checked hover and pressed tints now render. The unconditional checked-rest trigger was declared after the checked hover and pressed triggers, so WPF's last-active-trigger precedence kept the rest fill winning whenever the pointer hovered or pressed a checked toggle; the triggers are now ordered rest, hover, pressed within each state family. Covered by `ControlTests.ToggleButton.cs`.
+- `ToggleButton` indeterminate state (`IsThreeState`, `IsChecked` of `null`) now renders the WinUI parity visuals for hover, pressed, and disabled using the neutral control palette; previously no state change rendered at all.
+- `ToggleButton` checked-pressed state now matches WinUI: the foreground softens to `TextOnAccentFillColorSecondaryBrush` and the border becomes transparent (previously primary on-accent text with the accent elevation border).
+- Setting `ToggleButton.Appearance` to a value other than `Standard` no longer disables every state visual. Each state trigger was conditioned on `Appearance=Standard`, so `Appearance="Accent"` rendered checked and unchecked identically; the template now applies the single canonical WinUI toggle visual for all appearance values.
 
 ## [0.8.0-preview] - 2026-06-10
 

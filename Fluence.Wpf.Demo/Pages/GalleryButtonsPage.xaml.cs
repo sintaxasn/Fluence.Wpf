@@ -301,8 +301,8 @@ namespace Fluence.Wpf.Demo.Pages.Buttons
     }
 }
 ";
-        private const string ToggleAndRepeatButtonsXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Buttons.ToggleAndRepeatButtons""
+        private const string RepeatButtonsXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Buttons.RepeatButtons""
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
@@ -322,17 +322,17 @@ namespace Fluence.Wpf.Demo.Pages.Buttons
 </UserControl>
 ";
 
-        private const string ToggleAndRepeatButtonsCSharpSource = @"using System.Globalization;
+        private const string RepeatButtonsCSharpSource = @"using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 
 namespace Fluence.Wpf.Demo.Pages.Buttons
 {
-    public partial class ToggleAndRepeatButtons : UserControl
+    public partial class RepeatButtons : UserControl
     {
         private int repeatButtonClickCount;
 
-        public ToggleAndRepeatButtons()
+        public RepeatButtons()
         {
             InitializeComponent();
         }
@@ -344,6 +344,58 @@ namespace Fluence.Wpf.Demo.Pages.Buttons
                 CultureInfo.CurrentCulture,
                 ""Clicks: {0}"",
                 repeatButtonClickCount);
+        }
+    }
+}
+";
+        private const string ToggleButtonsXamlSource = @"<UserControl
+    x:Class=""Fluence.Wpf.Demo.Pages.Buttons.ToggleButtons""
+    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
+    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
+    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <StackPanel>
+        <WrapPanel VerticalAlignment=""Center"">
+            <ui:ToggleButton
+                x:Name=""WrapToggleButton""
+                Margin=""0,0,8,8""
+                Checked=""WrapToggleButton_CheckedChanged""
+                Content=""Wrap text""
+                Unchecked=""WrapToggleButton_CheckedChanged"" />
+            <ui:ToggleButton
+                Margin=""0,0,8,8""
+                Content=""Three-state""
+                IsThreeState=""True"" />
+            <ui:ToggleButton
+                Margin=""0,0,8,8""
+                Content=""Disabled checked""
+                IsChecked=""True""
+                IsEnabled=""False"" />
+        </WrapPanel>
+        <TextBlock
+            x:Name=""ToggleButtonStateText""
+            Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
+            Text=""Wrap text: Off"" />
+    </StackPanel>
+</UserControl>
+";
+
+        private const string ToggleButtonsCSharpSource = @"using System.Windows;
+using System.Windows.Controls;
+
+namespace Fluence.Wpf.Demo.Pages.Buttons
+{
+    public partial class ToggleButtons : UserControl
+    {
+        public ToggleButtons()
+        {
+            InitializeComponent();
+        }
+
+        private void WrapToggleButton_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+            ToggleButtonStateText.Text = WrapToggleButton.IsChecked == true
+                ? ""Wrap text: On""
+                : ""Wrap text: Off"";
         }
     }
 }
@@ -367,7 +419,8 @@ namespace Fluence.Wpf.Demo.Pages.Buttons
                 new DemoSampleSource(3, HyperlinkButtonsXamlSource, HyperlinkButtonsCSharpSource),
                 new DemoSampleSource(4, DropDownButtonsXamlSource, DropDownButtonsCSharpSource),
                 new DemoSampleSource(5, SplitButtonsXamlSource, SplitButtonsCSharpSource),
-                new DemoSampleSource(6, ToggleAndRepeatButtonsXamlSource, ToggleAndRepeatButtonsCSharpSource));
+                new DemoSampleSource(6, RepeatButtonsXamlSource, RepeatButtonsCSharpSource),
+                new DemoSampleSource(7, ToggleButtonsXamlSource, ToggleButtonsCSharpSource));
         }
 
         private void RepeatCounterButton_Click(object sender, RoutedEventArgs e)
@@ -377,6 +430,13 @@ namespace Fluence.Wpf.Demo.Pages.Buttons
                 CultureInfo.CurrentCulture,
                 "Clicks: {0}",
                 _repeatButtonClickCount);
+        }
+
+        private void WrapToggleButton_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+            ToggleButtonStateText.Text = WrapToggleButton.IsChecked == true
+                ? "Wrap text: On"
+                : "Wrap text: Off";
         }
     }
 }
