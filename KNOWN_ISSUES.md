@@ -29,6 +29,16 @@ maintainers.
   coupled to the looping-selector interaction model, so both are deferred
   together; the looping omission is already noted in code at `DatePicker.cs`
   (around line 606) and `TimePicker.cs` (around line 511).
+- **`ColorPicker` spectrum permutations and layout options** - the picker now
+  carries the WinUI gallery-default option surface (preview, color slider, hex,
+  More/Less toggle, alpha slider/text, and the RGB/HSV channel text inputs),
+  but `ColorSpectrumShape` (the Ring spectrum), the `ColorSpectrumComponents`
+  permutations, `Orientation`, and the Min/Max channel range properties remain
+  deliberately omitted; the spectrum is fixed to saturation (x) by value (y)
+  with hue as the third-dimension slider. Two deviations from WinUI: the hex
+  input commits on Enter / focus loss rather than live per keystroke, and the
+  hue text input accepts 0-360 (WinUI caps at 359) because the picker's model
+  and slider use 360 inclusive.
 - **`ContentDialog` smoke layer and motion** - the dialog always paints its
   smoke (dimming) layer; there is **no** WinUI `DialogShowingWithoutSmokeLayer`
   state. It also has **no** `FullDialogSizing` stretch mode and **no** exit

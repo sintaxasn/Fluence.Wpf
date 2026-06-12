@@ -282,10 +282,16 @@ namespace Fluence.Wpf.Demo.Pages.Forms
     xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
     xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
     xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+    <!--
+        The text-entry area shows an RGB/HSV selector, per-channel inputs, an alpha
+        percentage input, and a hex input. Set IsMoreButtonVisible=""True"" to collapse
+        it behind a More/Less toggle; the Is*Visible properties hide individual parts.
+    -->
     <ui:ColorPicker
         x:Name=""AccentColorPicker""
         ColorChanged=""AccentColorPicker_ColorChanged""
-        IsAlphaEnabled=""True"" />
+        IsAlphaEnabled=""True""
+        IsMoreButtonVisible=""False"" />
 </UserControl>
 ";
 

@@ -669,11 +669,12 @@ Up and Down move through the suggestions, Enter raises `QuerySubmitted` (with `C
                SelectedTime="{Binding ReminderTime}" />
 ```
 
-`ColorPicker` combines a saturation/value spectrum at the selected hue, a hue slider, an optional alpha slider, current/previous preview swatches, and an optional hex input. `Color` (two-way bindable, opaque red by default) raises `ColorChanged` with the old and new values; `PreviousColor` fills the comparison swatch, `IsAlphaEnabled` (default `false`) adds the alpha slider and 8-digit hex editing, and `IsColorSpectrumVisible` / `IsColorChannelTextInputVisible` trim the layout. The picker keeps hue, saturation, value, and alpha as its internal source of truth, so dragging along the spectrum's grey axis does not accumulate RGB round-trip drift.
+`ColorPicker` combines a saturation/value spectrum at the selected hue, a hue slider, an optional alpha slider, current/previous preview swatches, and a text-entry area with an RGB/HSV representation selector, per-channel inputs, an alpha percentage input, and a hex input. `Color` (two-way bindable, opaque red by default) raises `ColorChanged` with the old and new values; `PreviousColor` fills the comparison swatch and `IsAlphaEnabled` (default `false`) adds the alpha editing surfaces and 8-digit hex editing. The WinUI visibility options trim the layout: `IsColorSpectrumVisible`, `IsColorPreviewVisible`, `IsColorSliderVisible`, `IsColorChannelTextInputVisible`, `IsAlphaSliderVisible`, `IsAlphaTextInputVisible`, `IsHexInputVisible`, and `IsMoreButtonVisible` (default `false`; when `true` the text-entry area collapses behind a More/Less toggle). Channel and alpha inputs commit live per keystroke; the hex input commits on Enter or focus loss. The picker keeps hue, saturation, value, and alpha as its internal source of truth, so dragging along the spectrum's grey axis does not accumulate RGB round-trip drift.
 
 ```xml
 <ui:ColorPicker Color="{Binding AccentColor, Mode=TwoWay}"
-                IsAlphaEnabled="True" />
+                IsAlphaEnabled="True"
+                IsMoreButtonVisible="True" />
 ```
 
 ## Screenshots
