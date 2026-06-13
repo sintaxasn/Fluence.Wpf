@@ -292,6 +292,8 @@ namespace Fluence.Wpf.Theming
             // Control stroke
             dict["ControlStrokeColorDefaultBrush"] = Solid(controlDark);
             dict["ControlStrokeColorSecondaryBrush"] = Solid(controlDark);
+            // NavigationView pane/content seam follows the same system control-dark stroke in HC.
+            dict["NavigationViewContentSeparatorBrush"] = Solid(controlDark);
             dict["ControlStrokeColorTertiaryBrush"] = Solid(controlText);
             dict["ControlStrokeColorOnAccentDefaultBrush"] = Solid(highlightText);
             dict["ControlStrokeColorOnAccentSecondaryBrush"] = Solid(highlightText);

@@ -166,7 +166,7 @@
                             </Grid>
                         </Border>
                         <ControlTemplate.Triggers>
-                            <!--  WinUI Expander ExpandDown/CollapseUp: the row opens immediately on expand; on collapse it holds open for the 167 ms slide-up (code-behind) before releasing the space.  -->
+                            <!--  WinUI Expander ExpandDown/CollapseUp: the row opens immediately on expand; on collapse it holds open for the 250 ms slide-up (code-behind) before releasing the space.  -->
                             <Trigger Property="IsExpanded" Value="True">
                                 <Setter TargetName="ContentRowDefinition" Property="Height" Value="Auto" />
                                 <Trigger.EnterActions>
@@ -191,7 +191,7 @@
                                                         <GridLength>Auto</GridLength>
                                                     </DiscreteObjectKeyFrame.Value>
                                                 </DiscreteObjectKeyFrame>
-                                                <DiscreteObjectKeyFrame KeyTime="0:0:0.167">
+                                                <DiscreteObjectKeyFrame KeyTime="0:0:0.25">
                                                     <DiscreteObjectKeyFrame.Value>
                                                         <GridLength>0</GridLength>
                                                     </DiscreteObjectKeyFrame.Value>

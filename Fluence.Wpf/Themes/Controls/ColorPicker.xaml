@@ -55,6 +55,56 @@
         <Setter Property="UseLayoutRounding" Value="True" />
     </Style>
 
+    <!--
+        Subtle toggle for the More/Less button. The default ToggleButton renders its
+        checked state as an accent fill (plus a press scale), which is wrong for the
+        WinUI ColorPicker More button - that button is a flat subtle toggle whose checked
+        state is conveyed by the "Less" label and the flipped chevron (both swapped by the
+        ColorPicker template triggers). This style keeps it transparent with subtle
+        hover/press tints and no accent or scale transform.
+    -->
+    <Style x:Key="ColorPickerMoreButtonStyle" TargetType="{x:Type controls:ToggleButton}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="FocusVisualStyle" Value="{DynamicResource DefaultControlFocusVisualStyle}" />
+        <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="MinHeight" Value="32" />
+        <Setter Property="OverridesDefaultStyle" Value="True" />
+        <Setter Property="Padding" Value="11,5,11,6" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type controls:ToggleButton}">
+                    <Border
+                        x:Name="MoreButtonFill"
+                        Background="{TemplateBinding Background}"
+                        CornerRadius="{DynamicResource ControlCornerRadius}">
+                        <ContentPresenter
+                            Margin="{TemplateBinding Padding}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            RecognizesAccessKey="True"
+                            TextElement.FontFamily="{TemplateBinding FontFamily}"
+                            TextElement.FontSize="{TemplateBinding FontSize}"
+                            TextElement.Foreground="{TemplateBinding Foreground}" />
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="MoreButtonFill" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter TargetName="MoreButtonFill" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="UseLayoutRounding" Value="True" />
+    </Style>
+
     <Style TargetType="{x:Type controls:ColorPicker}">
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
@@ -199,6 +249,7 @@
                                     Margin="0,12,0,0"
                                     HorizontalAlignment="Right"
                                     AutomationProperties.Name="More options"
+                                    Style="{StaticResource ColorPickerMoreButtonStyle}"
                                     Visibility="Collapsed">
                                     <StackPanel Orientation="Horizontal">
                                         <TextBlock x:Name="MoreButtonLabel" Text="More" />

@@ -396,8 +396,10 @@ namespace Fluence.Wpf.Demo.Pages
 
         /// <summary>
         /// Mirrors the WinUI Expander ExpandDown storyboard: the row snaps open while the
-        /// source panel slides down from beneath the header, decelerating over 333 ms
-        /// (KeySpline 0,0,0,1 per WinUI Expander.xaml).
+        /// source panel slides down into view from beneath the header, decelerating over
+        /// 333 ms (KeySpline 0,0,0,1 per WinUI Expander.xaml). The slide is driven by an
+        /// explicit from/to keyframe pair so the animation holds its final on-screen
+        /// position (HoldEnd) and the content can never strand off-screen.
         /// </summary>
         private void PlaySourceExpandMotion()
         {
@@ -415,16 +417,17 @@ namespace Fluence.Wpf.Demo.Pages
                 return;
             }
 
-            translate.BeginAnimation(TranslateTransform.YProperty, null);
-            translate.Y = -height;
-            BeginSourceSlide(translate, 0d, TimeSpan.FromMilliseconds(333), new KeySpline(0.0, 0.0, 0.0, 1.0));
+            BeginSourceSlide(translate, -height, 0d, TimeSpan.FromMilliseconds(333), new KeySpline(0.0, 0.0, 0.0, 1.0));
         }
 
         /// <summary>
-        /// Mirrors the WinUI Expander CollapseUp storyboard: the source panel slides up
-        /// behind the header, accelerating over 167 ms (KeySpline 1,1,0,1 per WinUI
-        /// Expander.xaml), while the template trigger holds the row open until the slide
-        /// finishes and then releases the space.
+        /// Slides the source panel up behind the header while the template trigger holds
+        /// the row open until the slide finishes and then releases the space. Deliberate
+        /// deviation from the WinUI Expander CollapseUp storyboard (167 ms, KeySpline
+        /// 1,1,0,1): that spline finishes nearly all of its travel in the first ~100 ms,
+        /// which reads as an instant snap in WPF, so the demo uses the Fluent accelerate
+        /// curve (slow into fast, KeySpline 0.7,0,1,0.5) over 250 ms to match the WinUI
+        /// Gallery's perceived collapse motion.
         /// </summary>
         private void PlaySourceCollapseMotion()
         {
@@ -441,14 +444,17 @@ namespace Fluence.Wpf.Demo.Pages
                 return;
             }
 
-            translate.BeginAnimation(TranslateTransform.YProperty, null);
-            translate.Y = 0d;
-            BeginSourceSlide(translate, -height, TimeSpan.FromMilliseconds(167), new KeySpline(1.0, 1.0, 0.0, 1.0));
+            BeginSourceSlide(translate, 0d, -height, TimeSpan.FromMilliseconds(250), new KeySpline(0.7, 0.0, 1.0, 0.5));
         }
 
-        private static void BeginSourceSlide(TranslateTransform translate, double toValue, TimeSpan duration, KeySpline easing)
+        // Drives translate.Y from fromValue to toValue with a leading zero-time keyframe so
+        // WPF animates the full path deterministically. HoldEnd keeps the final value, and
+        // the Completed handler clears the animation and pins the resting Y to 0 (content
+        // in place when expanded; harmlessly behind the collapsed, zero-height row).
+        private static void BeginSourceSlide(TranslateTransform translate, double fromValue, double toValue, TimeSpan duration, KeySpline easing)
         {
             DoubleAnimationUsingKeyFrames slide = new();
+            _ = slide.KeyFrames.Add(new DiscreteDoubleKeyFrame(fromValue, KeyTime.FromTimeSpan(TimeSpan.Zero)));
             _ = slide.KeyFrames.Add(new SplineDoubleKeyFrame(toValue, KeyTime.FromTimeSpan(duration), easing));
             slide.Completed += (_, _) =>
             {
