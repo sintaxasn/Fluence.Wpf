@@ -112,7 +112,7 @@ namespace Fluence.Wpf.Tests
                 Assert.AreEqual("\uE77B", initialsText.Text,
                     "PersonPicture with no data must show contact glyph U+E77B.");
                 StringAssert.Contains(initialsText.FontFamily.Source, "Segoe Fluent Icons",
-System.StringComparison.Ordinal, "The contact glyph must use the icon font, not the text font.");
+                System.StringComparison.Ordinal, "The contact glyph must use the icon font, not the text font.");
                 w.Close();
             });
         }

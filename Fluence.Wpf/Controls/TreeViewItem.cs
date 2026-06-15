@@ -70,7 +70,7 @@ namespace Fluence.Wpf.Controls
                 typeof(bool?),
                 typeof(TreeViewItem),
                 new FrameworkPropertyMetadata(
-defaultValue: false,
+                    defaultValue: false,
                     FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
                     OnIsSelectionCheckedChanged));
 
