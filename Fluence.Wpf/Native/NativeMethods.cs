@@ -552,8 +552,7 @@ namespace Fluence.Wpf.Native
                 : new Version(
                     versionInfo.MajorVersion,
                     versionInfo.MinorVersion,
-                    versionInfo.BuildNumber,
-                    versionInfo.Revision);
+                    versionInfo.BuildNumber);
         }
 
         /// <summary>
