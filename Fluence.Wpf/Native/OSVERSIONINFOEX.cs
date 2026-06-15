@@ -61,11 +61,6 @@ namespace Fluence.Wpf.Native
         /// <summary>
         /// The platform identifier.
         /// </summary>
-        public int Revision;
-
-        /// <summary>
-        /// The OS platform id.
-        /// </summary>
         public int PlatformId;
 
         /// <summary>
