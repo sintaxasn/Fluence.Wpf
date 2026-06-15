@@ -69,8 +69,8 @@ namespace Fluence.Wpf.Native
         public uint clrGlassReflectionIntensity;
 
         /// <summary>
-        /// <see langword="true"/> when the colorization is opaque.
+        /// Non-zero when the colorization is opaque.
         /// </summary>
-        public bool fOpaque;
+        public int fOpaque;
     }
 }
