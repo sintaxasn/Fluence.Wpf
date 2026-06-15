@@ -50,7 +50,7 @@ namespace Fluence.Wpf.Tests
         {
             Application application = WpfTestSta.EnsureApplication() ?? throw new InvalidOperationException("WPF application was not created.");
             ResetApplication(application);
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, backdrop, true);
+            ApplicationThemeManager.Apply(ApplicationTheme.Light, backdrop, updateAccent: true);
             ApplicationAccentColorManager.ApplySystemAccent();
             AddDemoSharedStyles(application);
             return application;
@@ -71,7 +71,7 @@ namespace Fluence.Wpf.Tests
                 Height = 720,
                 WindowStartupLocation = WindowStartupLocation.Manual,
                 ShowInTaskbar = false,
-                Content = content
+                Content = content,
             };
             window.Show();
             Drain(window.Dispatcher);

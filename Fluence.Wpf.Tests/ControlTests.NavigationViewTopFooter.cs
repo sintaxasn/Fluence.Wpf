@@ -45,7 +45,7 @@ namespace Fluence.Wpf.Tests
                 Window window = new();
                 try
                 {
-                    NavigationView nav = CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.Top, true);
+                    NavigationView nav = CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.Top, isPaneOpen: true);
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
@@ -89,14 +89,14 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void NavigationView_TopFooterItem_RendersIconOnly()
         {
-            RunOnStaThread(() =>
+            RunOnStaThread(static () =>
             {
                 Application? application = EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 try
                 {
-                    window.Content = CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.Top, true);
+                    window.Content = CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.Top, isPaneOpen: true);
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
@@ -125,14 +125,14 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void NavigationView_TopFooterItem_KeepsLabel_InLeft()
         {
-            RunOnStaThread(() =>
+            RunOnStaThread(static () =>
             {
                 Application? application = EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 try
                 {
-                    window.Content = CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.Left, true);
+                    window.Content = CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.Left, isPaneOpen: true);
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
@@ -157,14 +157,14 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void NavigationView_TopMainItem_KeepsLabel()
         {
-            RunOnStaThread(() =>
+            RunOnStaThread(static () =>
             {
                 Application? application = EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
                 Window window = new();
                 try
                 {
-                    NavigationView nav = CreateNavWithFooterItem(out _, NavigationViewPaneDisplayMode.Top, true);
+                    NavigationView nav = CreateNavWithFooterItem(out _, NavigationViewPaneDisplayMode.Top, isPaneOpen: true);
                     window.Content = nav;
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
@@ -198,7 +198,7 @@ namespace Fluence.Wpf.Tests
                 Window window = new();
                 try
                 {
-                    NavigationView nav = CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.Top, true);
+                    NavigationView nav = CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.Top, isPaneOpen: true);
                     nav.SelectedIndex = 0;
                     window.Content = nav;
                     window.Show();

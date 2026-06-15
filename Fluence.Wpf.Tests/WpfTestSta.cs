@@ -44,7 +44,7 @@ namespace Fluence.Wpf.Tests
     internal static class WpfTestSta
     {
         private static Dispatcher? _dispatcher;
-        private static readonly object LockObj = new();
+        private static readonly Lock LockObj = new();
 
         internal static Dispatcher? Dispatcher => EnsureDispatcher();
 
@@ -56,7 +56,7 @@ namespace Fluence.Wpf.Tests
                 {
                     Application app = new()
                     {
-                        ShutdownMode = ShutdownMode.OnExplicitShutdown
+                        ShutdownMode = ShutdownMode.OnExplicitShutdown,
                     };
                 }
 
@@ -110,7 +110,7 @@ namespace Fluence.Wpf.Tests
         /// <param name="dispatcher">The dispatcher to drain.</param>
         internal static void DrainDispatcher(Dispatcher? dispatcher)
         {
-            _ = dispatcher?.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
+            _ = dispatcher?.Invoke(DispatcherPriority.ApplicationIdle, new Action(static delegate { }));
         }
 
         /// <summary>
@@ -215,7 +215,7 @@ namespace Fluence.Wpf.Tests
                 }
 
                 Dispatcher? created = null;
-                using ManualResetEventSlim ready = new(false);
+                using ManualResetEventSlim ready = new(initialState: false);
                 Thread thread = new(() =>
                 {
                     created = Dispatcher.CurrentDispatcher;

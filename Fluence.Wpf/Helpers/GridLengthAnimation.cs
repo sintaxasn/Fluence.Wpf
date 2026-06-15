@@ -78,7 +78,7 @@ namespace Fluence.Wpf.Helpers
                 nameof(EasingFunction),
                 typeof(IEasingFunction),
                 typeof(GridLengthAnimation),
-                new PropertyMetadata(null));
+                new PropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Gets or sets the starting value of the animation.

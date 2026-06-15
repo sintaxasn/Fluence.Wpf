@@ -170,7 +170,7 @@ namespace Fluence.Wpf.Demo
             if (SettingsNavigationItem is NavigationViewItem settingsNavigationItem)
             {
                 _navigationItemByContainer[settingsNavigationItem] =
-                    new DemoNavigationItem("Settings", "settings", "settings options preferences", "", false);
+                    new DemoNavigationItem("Settings", "settings", "settings options preferences", "", isDefault: false);
             }
 
             if (defaultItem is null && DemoNav.Items.Count > 0)
@@ -188,7 +188,7 @@ namespace Fluence.Wpf.Demo
             {
                 Content = item.Title,
                 Tag = item.Route + " " + item.Keywords,
-                Icon = new FontIcon { Glyph = item.Glyph, IconFontSize = 16 }
+                Icon = new FontIcon { Glyph = item.Glyph, IconFontSize = 16 },
             };
         }
 
@@ -490,18 +490,18 @@ namespace Fluence.Wpf.Demo
                 return;
             }
 
-            element.BeginAnimation(OpacityProperty, null);
+            element.BeginAnimation(OpacityProperty, animation: null);
             element.RenderTransform = new TranslateTransform(0.0, 20.0);
             element.Opacity = 0.0;
 
             CubicEase easing = new() { EasingMode = EasingMode.EaseOut };
             DoubleAnimation opacityAnimation = new(0.0, 1.0, new Duration(TimeSpan.FromMilliseconds(160)))
             {
-                EasingFunction = easing
+                EasingFunction = easing,
             };
             opacityAnimation.Completed += delegate
             {
-                element.BeginAnimation(OpacityProperty, null);
+                element.BeginAnimation(OpacityProperty, animation: null);
                 element.Opacity = 1.0;
             };
             element.BeginAnimation(OpacityProperty, opacityAnimation);
@@ -510,11 +510,11 @@ namespace Fluence.Wpf.Demo
             {
                 DoubleAnimation slideAnimation = new(20.0, 0.0, new Duration(TimeSpan.FromMilliseconds(167)))
                 {
-                    EasingFunction = easing
+                    EasingFunction = easing,
                 };
                 slideAnimation.Completed += delegate
                 {
-                    transform.BeginAnimation(TranslateTransform.YProperty, null);
+                    transform.BeginAnimation(TranslateTransform.YProperty, animation: null);
                     transform.Y = 0.0;
                 };
                 transform.BeginAnimation(TranslateTransform.YProperty, slideAnimation);
@@ -653,7 +653,7 @@ namespace Fluence.Wpf.Demo
                 {
                     Width = 20,
                     Height = 20,
-                    VerticalAlignment = VerticalAlignment.Center
+                    VerticalAlignment = VerticalAlignment.Center,
                 };
                 RenderOptions.SetBitmapScalingMode(_titleBarIconView, BitmapScalingMode.HighQuality);
             }

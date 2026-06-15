@@ -44,37 +44,6 @@ using System.Windows.Controls;
 namespace Fluence.Wpf.Demo.Pages
 {
     /// <summary>
-    /// Carries the XAML and C# source text for one <c>DemoSampleControl</c> card.
-    /// </summary>
-    /// <remarks>
-    /// The <see cref="Slot"/> number is 1-based and must match the position of its corresponding
-    /// <c>DemoSampleControl</c> in document order on the page.
-    /// </remarks>
-    internal readonly struct DemoSampleSource
-    {
-        public DemoSampleSource(int slot, string xamlSource, string cSharpSource)
-        {
-            if (slot <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(slot), "Slot must be greater than zero.");
-            }
-
-            Slot = slot;
-            XamlSource = xamlSource ?? throw new ArgumentNullException(nameof(xamlSource));
-            CSharpSource = cSharpSource ?? throw new ArgumentNullException(nameof(cSharpSource));
-        }
-
-        /// <summary>Gets the 1-based index that identifies which <c>DemoSampleControl</c> on the page receives this source.</summary>
-        public int Slot { get; }
-
-        /// <summary>Gets the XAML source text displayed in the XAML tab of the source expander.</summary>
-        public string XamlSource { get; }
-
-        /// <summary>Gets the C# source text displayed in the C# tab of the source expander.</summary>
-        public string CSharpSource { get; }
-    }
-
-    /// <summary>
     /// Transfers live controls and source text from page-level hidden slots into their matching
     /// <c>DemoSampleControl</c> cards on a gallery page.
     /// </summary>

@@ -100,7 +100,7 @@ namespace Fluence.Wpf.Controls
                 typeof(DateTime?),
                 typeof(DatePicker),
                 new FrameworkPropertyMetadata(
-                    null,
+defaultValue: null,
                     FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
                     OnSelectedDateChanged));
 
@@ -160,7 +160,7 @@ namespace Fluence.Wpf.Controls
                 nameof(DayVisible),
                 typeof(bool),
                 typeof(DatePicker),
-                new FrameworkPropertyMetadata(true, OnFieldVisibilityChanged));
+                new FrameworkPropertyMetadata(defaultValue: true, OnFieldVisibilityChanged));
 
         /// <summary>
         /// Gets or sets whether the day segment and selector column are shown.
@@ -179,7 +179,7 @@ namespace Fluence.Wpf.Controls
                 nameof(MonthVisible),
                 typeof(bool),
                 typeof(DatePicker),
-                new FrameworkPropertyMetadata(true, OnFieldVisibilityChanged));
+                new FrameworkPropertyMetadata(defaultValue: true, OnFieldVisibilityChanged));
 
         /// <summary>
         /// Gets or sets whether the month segment and selector column are shown.
@@ -198,7 +198,7 @@ namespace Fluence.Wpf.Controls
                 nameof(YearVisible),
                 typeof(bool),
                 typeof(DatePicker),
-                new FrameworkPropertyMetadata(true, OnFieldVisibilityChanged));
+                new FrameworkPropertyMetadata(defaultValue: true, OnFieldVisibilityChanged));
 
         /// <summary>
         /// Gets or sets whether the year segment and selector column are shown.
@@ -217,7 +217,7 @@ namespace Fluence.Wpf.Controls
                 nameof(Header),
                 typeof(object),
                 typeof(DatePicker),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Gets or sets the optional header content shown above the field.
@@ -316,6 +316,7 @@ namespace Fluence.Wpf.Controls
             UpdateFieldText();
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "MA0091:Sender should be 'this' for instance events", Justification = "The method is static.")]
         private static void OnSelectedDateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             DatePicker picker = (DatePicker)d;
@@ -474,7 +475,7 @@ namespace Fluence.Wpf.Controls
             }
 
             PopulateSelectorColumns();
-            _popup.SetCurrentValue(Popup.IsOpenProperty, true);
+            _popup.SetCurrentValue(Popup.IsOpenProperty, value: true);
 
             // Item containers exist only after the popup child's first layout pass, so defer
             // the focus move to Loaded priority (below Render) like the other in-tree
@@ -732,7 +733,7 @@ namespace Fluence.Wpf.Controls
                 // Closing through the control's own pipeline must not arm the light-dismiss
                 // reopen lockout; Popup.Closed is raised synchronously from the set below.
                 _popupSelfClosing = true;
-                _popup.SetCurrentValue(Popup.IsOpenProperty, false);
+                _popup.SetCurrentValue(Popup.IsOpenProperty, value: false);
             }
         }
 

@@ -108,7 +108,7 @@ namespace Fluence.Wpf.Controls
                 typeof(TimeSpan?),
                 typeof(TimePicker),
                 new FrameworkPropertyMetadata(
-                    null,
+defaultValue: null,
                     FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
                     OnSelectedTimeChanged));
 
@@ -158,7 +158,7 @@ namespace Fluence.Wpf.Controls
                 nameof(MinuteIncrement),
                 typeof(int),
                 typeof(TimePicker),
-                new FrameworkPropertyMetadata(1, null, CoerceMinuteIncrement));
+                new FrameworkPropertyMetadata(1, propertyChangedCallback: null, CoerceMinuteIncrement));
 
         /// <summary>
         /// Gets or sets the step between the offered minute values (for example 15 offers
@@ -178,7 +178,7 @@ namespace Fluence.Wpf.Controls
                 nameof(Header),
                 typeof(object),
                 typeof(TimePicker),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Gets or sets the optional header content shown above the field.
@@ -265,6 +265,7 @@ namespace Fluence.Wpf.Controls
             UpdateFieldText();
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "MA0091:Sender should be 'this' for instance events", Justification = "The method is static.")]
         private static void OnSelectedTimeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TimePicker picker = (TimePicker)d;
@@ -290,7 +291,7 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         private static string GetDefaultClockIdentifier()
         {
-            return CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern.Contains("H")
+            return CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern.Contains("H", StringComparison.Ordinal)
                 ? TwentyFourHourClock
                 : TwelveHourClock;
         }
@@ -391,7 +392,7 @@ namespace Fluence.Wpf.Controls
             }
 
             PopulateSelectorColumns();
-            _popup.SetCurrentValue(Popup.IsOpenProperty, true);
+            _popup.SetCurrentValue(Popup.IsOpenProperty, value: true);
 
             // Item containers exist only after the popup child's first layout pass, so defer
             // the focus move to Loaded priority (below Render) like the other in-tree
@@ -607,7 +608,7 @@ namespace Fluence.Wpf.Controls
                 // Closing through the control's own pipeline must not arm the light-dismiss
                 // reopen lockout; Popup.Closed is raised synchronously from the set below.
                 _popupSelfClosing = true;
-                _popup.SetCurrentValue(Popup.IsOpenProperty, false);
+                _popup.SetCurrentValue(Popup.IsOpenProperty, value: false);
             }
         }
 

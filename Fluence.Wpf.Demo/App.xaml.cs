@@ -197,7 +197,7 @@ namespace Fluence.Wpf.Demo
 
         private static void DrainDispatcher(Dispatcher dispatcher)
         {
-            _ = dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
+            _ = dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(static delegate { }));
         }
 
         private static bool IsSmokeTest(string[] args)

@@ -87,7 +87,7 @@ namespace Fluence.Wpf.Controls
                 nameof(Title),
                 typeof(string),
                 typeof(TeachingTip),
-                new FrameworkPropertyMetadata(string.Empty, null, CoerceText));
+                new FrameworkPropertyMetadata(string.Empty, propertyChangedCallback: null, CoerceText));
 
         /// <summary>
         /// Gets or sets the title shown at the top of the tip. The title is hidden while the
@@ -107,7 +107,7 @@ namespace Fluence.Wpf.Controls
                 nameof(Subtitle),
                 typeof(string),
                 typeof(TeachingTip),
-                new FrameworkPropertyMetadata(string.Empty, null, CoerceText));
+                new FrameworkPropertyMetadata(string.Empty, propertyChangedCallback: null, CoerceText));
 
         /// <summary>
         /// Gets or sets the subtitle shown beneath <see cref="Title"/>. The subtitle is hidden
@@ -127,7 +127,7 @@ namespace Fluence.Wpf.Controls
                 nameof(Target),
                 typeof(FrameworkElement),
                 typeof(TeachingTip),
-                new FrameworkPropertyMetadata(null, OnPlacementInputChanged));
+                new FrameworkPropertyMetadata(defaultValue: null, OnPlacementInputChanged));
 
         /// <summary>
         /// Gets or sets the element the tip is anchored to. When <see langword="null"/> the tip
@@ -147,7 +147,7 @@ namespace Fluence.Wpf.Controls
                 nameof(IsOpen),
                 typeof(bool),
                 typeof(TeachingTip),
-                new FrameworkPropertyMetadata(false, OnIsOpenChanged));
+                new FrameworkPropertyMetadata(defaultValue: false, OnIsOpenChanged));
 
         /// <summary>
         /// Gets or sets a value indicating whether the tip is open. Setting
@@ -193,7 +193,7 @@ namespace Fluence.Wpf.Controls
                 nameof(IsLightDismissEnabled),
                 typeof(bool),
                 typeof(TeachingTip),
-                new FrameworkPropertyMetadata(false, OnIsLightDismissEnabledChanged));
+                new FrameworkPropertyMetadata(defaultValue: false, OnIsLightDismissEnabledChanged));
 
         /// <summary>
         /// Gets or sets a value indicating whether clicking outside the tip dismisses it.
@@ -213,7 +213,7 @@ namespace Fluence.Wpf.Controls
                 nameof(ActionButtonContent),
                 typeof(object),
                 typeof(TeachingTip),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Gets or sets the content of the accent action button in the tip footer. The button
@@ -233,7 +233,7 @@ namespace Fluence.Wpf.Controls
                 nameof(ActionButtonCommand),
                 typeof(ICommand),
                 typeof(TeachingTip),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Gets or sets the command executed when the action button is invoked, after the
@@ -253,7 +253,7 @@ namespace Fluence.Wpf.Controls
                 nameof(ActionButtonCommandParameter),
                 typeof(object),
                 typeof(TeachingTip),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Gets or sets the parameter passed to <see cref="ActionButtonCommand"/>.
@@ -272,7 +272,7 @@ namespace Fluence.Wpf.Controls
                 nameof(CloseButtonContent),
                 typeof(object),
                 typeof(TeachingTip),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Gets or sets the content of the close button in the tip footer, matching the WinUI
@@ -373,7 +373,7 @@ namespace Fluence.Wpf.Controls
             base.OnPreviewKeyDown(e);
             if (!e.Handled && e.Key == Key.Escape && IsOpen)
             {
-                SetCurrentValue(IsOpenProperty, false);
+                SetCurrentValue(IsOpenProperty, value: false);
                 e.Handled = true;
             }
         }
@@ -657,7 +657,7 @@ namespace Fluence.Wpf.Controls
                 // The popup closed outside the IsOpen pipeline (light dismiss); sync the
                 // property without clobbering a potential binding. The re-entrant changed
                 // callback finds the popup already closed and no-ops.
-                SetCurrentValue(IsOpenProperty, false);
+                SetCurrentValue(IsOpenProperty, value: false);
             }
 
             // Release the anchor so a closed tip does not pin the last placement target
@@ -680,7 +680,7 @@ namespace Fluence.Wpf.Controls
         private void OnCloseButtonClick(object sender, RoutedEventArgs e)
         {
             CloseButtonClick?.Invoke(this, EventArgs.Empty);
-            SetCurrentValue(IsOpenProperty, false);
+            SetCurrentValue(IsOpenProperty, value: false);
         }
 
         /// <summary>

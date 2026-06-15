@@ -166,7 +166,7 @@ namespace Fluence.Wpf.Controls
                 nameof(PreviousColor),
                 typeof(Color?),
                 typeof(ColorPicker),
-                new FrameworkPropertyMetadata(null, OnPreviousColorChanged));
+                new FrameworkPropertyMetadata(defaultValue: null, OnPreviousColorChanged));
 
         /// <summary>
         /// Gets or sets the comparison color shown next to the current color in the preview
@@ -186,7 +186,7 @@ namespace Fluence.Wpf.Controls
                 nameof(IsAlphaEnabled),
                 typeof(bool),
                 typeof(ColorPicker),
-                new FrameworkPropertyMetadata(false, OnIsAlphaEnabledChanged));
+                new FrameworkPropertyMetadata(defaultValue: false, OnIsAlphaEnabledChanged));
 
         /// <summary>
         /// Gets or sets a value indicating whether the alpha channel can be edited. When
@@ -209,7 +209,7 @@ namespace Fluence.Wpf.Controls
                 nameof(IsColorSpectrumVisible),
                 typeof(bool),
                 typeof(ColorPicker),
-                new FrameworkPropertyMetadata(true));
+                new FrameworkPropertyMetadata(defaultValue: true));
 
         /// <summary>
         /// Gets or sets a value indicating whether the saturation/value spectrum square is
@@ -229,7 +229,7 @@ namespace Fluence.Wpf.Controls
                 nameof(IsColorChannelTextInputVisible),
                 typeof(bool),
                 typeof(ColorPicker),
-                new FrameworkPropertyMetadata(true));
+                new FrameworkPropertyMetadata(defaultValue: true));
 
         /// <summary>
         /// Gets or sets a value indicating whether the hex text input row is shown. The
@@ -505,7 +505,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            _spectrumBitmap ??= new WriteableBitmap(SpectrumSize, SpectrumSize, 96, 96, PixelFormats.Bgra32, null);
+            _spectrumBitmap ??= new WriteableBitmap(SpectrumSize, SpectrumSize, 96, 96, PixelFormats.Bgra32, palette: null);
             byte[] pixels = _spectrumPixels ??= new byte[SpectrumSize * SpectrumSize * 4];
 
             Color hueColor = HsvColorHelper.HsvToRgb(_hue, 1, 1);
@@ -520,9 +520,9 @@ namespace Fluence.Wpf.Controls
                 for (int x = 0; x < SpectrumSize; x++)
                 {
                     double saturation = x / (double)(SpectrumSize - 1);
-                    pixels[index] = (byte)Math.Round(value * (255.0 - (saturation * (255.0 - hueBlue))));
-                    pixels[index + 1] = (byte)Math.Round(value * (255.0 - (saturation * (255.0 - hueGreen))));
-                    pixels[index + 2] = (byte)Math.Round(value * (255.0 - (saturation * (255.0 - hueRed))));
+                    pixels[index] = (byte)Math.Round(value * (255.0 - (saturation * (255.0 - hueBlue))), MidpointRounding.ToEven);
+                    pixels[index + 1] = (byte)Math.Round(value * (255.0 - (saturation * (255.0 - hueGreen))), MidpointRounding.ToEven);
+                    pixels[index + 2] = (byte)Math.Round(value * (255.0 - (saturation * (255.0 - hueRed))), MidpointRounding.ToEven);
                     pixels[index + 3] = 255;
                     index += 4;
                 }
@@ -738,7 +738,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            byte alpha = (byte)Math.Round(Math.Max(0, Math.Min(255, e.NewValue)));
+            byte alpha = (byte)Math.Round(Math.Max(0, Math.Min(255, e.NewValue)), MidpointRounding.ToEven);
             SetColorFromHsv(_hue, _saturation, _value, alpha);
         }
 
@@ -786,8 +786,8 @@ namespace Fluence.Wpf.Controls
         /// input is treated as fully opaque.
         /// </summary>
         /// <param name="text">The hex color string to parse.</param>
-        /// <param name="color">The parsed color if successful; otherwise, <c>default</c>.</param>
-        /// <returns><c>true</c> if the hex color string was successfully parsed; otherwise, <c>false</c>.</returns>
+        /// <param name="color">The parsed color if successful; otherwise, <see langword="default"/>.</param>
+        /// <returns><see langword="true"/> if the hex color string was successfully parsed; otherwise, <see langword="false"/>.</returns>
         private static bool TryParseHexColor(string text, out Color color)
         {
             color = default;
@@ -797,7 +797,7 @@ namespace Fluence.Wpf.Controls
             }
 
             string hex = text.Trim();
-            if (hex.StartsWith("#", StringComparison.Ordinal))
+            if (hex.StartsWith('#'.ToString(), StringComparison.Ordinal))
             {
                 hex = hex[1..];
             }

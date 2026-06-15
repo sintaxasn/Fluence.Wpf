@@ -46,6 +46,6 @@ namespace Fluence.Wpf
         /// <summary>
         /// Multiple items can be selected with item check boxes.
         /// </summary>
-        Multiple = 2
+        Multiple = 2,
     }
 }

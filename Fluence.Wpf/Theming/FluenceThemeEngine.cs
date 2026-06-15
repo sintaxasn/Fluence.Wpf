@@ -94,7 +94,7 @@ namespace Fluence.Wpf.Theming
 
             ResourceDictionary dict = BuildComputedDictionary(theme, palette);
             Publish(dict);
-            Published?.Invoke(null, EventArgs.Empty);
+            Published?.Invoke(sender: null, EventArgs.Empty);
         }
 
         /// <summary>
@@ -182,7 +182,7 @@ namespace Fluence.Wpf.Theming
             for (int i = dicts.Count - 1; i >= 0; i--)
             {
                 string s = dicts[i].Source?.OriginalString.ToLowerInvariant() ?? string.Empty;
-                if (s.Contains("fluence.wpf;component") && s.Contains("themes/"))
+                if (s.Contains("fluence.wpf;component", StringComparison.Ordinal) && s.Contains("themes/", StringComparison.Ordinal))
                 {
                     dicts.RemoveAt(i);
                 }

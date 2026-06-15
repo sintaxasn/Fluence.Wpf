@@ -118,7 +118,7 @@ namespace Fluence.Wpf.Controls
                 "IsTopOverflowCollapsed",
                 typeof(bool),
                 typeof(NavigationView),
-                new PropertyMetadata(false));
+                new PropertyMetadata(defaultValue: false));
 
         /// <summary>
         /// Internal inheritable attached flag marking the footer items region. The Top pane template
@@ -133,7 +133,7 @@ namespace Fluence.Wpf.Controls
                 "IsFooterItem",
                 typeof(bool),
                 typeof(NavigationView),
-                new FrameworkPropertyMetadata(false, FrameworkPropertyMetadataOptions.Inherits));
+                new FrameworkPropertyMetadata(defaultValue: false, FrameworkPropertyMetadataOptions.Inherits));
 
         /// <summary>
         /// Sets the <see cref="IsFooterItemProperty"/> flag on <paramref name="element"/>.
@@ -182,7 +182,7 @@ namespace Fluence.Wpf.Controls
             "SelectionFollowsFocus",
             typeof(bool),
             typeof(NavigationView),
-            new PropertyMetadata(false));
+            new PropertyMetadata(defaultValue: false));
 
         /// <summary>
         /// Identifies the <see cref="IsBackButtonVisible"/> dependency property.
@@ -191,7 +191,7 @@ namespace Fluence.Wpf.Controls
             "IsBackButtonVisible",
             typeof(bool),
             typeof(NavigationView),
-            new PropertyMetadata(false, OnBackButtonStateChanged));
+            new PropertyMetadata(defaultValue: false, OnBackButtonStateChanged));
 
         /// <summary>
         /// Identifies the <see cref="IsBackEnabled"/> dependency property.
@@ -200,7 +200,7 @@ namespace Fluence.Wpf.Controls
             "IsBackEnabled",
             typeof(bool),
             typeof(NavigationView),
-            new PropertyMetadata(true, OnBackButtonStateChanged));
+            new PropertyMetadata(defaultValue: true, OnBackButtonStateChanged));
 
         /// <summary>
         /// Identifies the <see cref="IsPaneToggleButtonVisible"/> dependency property.
@@ -210,9 +210,9 @@ namespace Fluence.Wpf.Controls
             typeof(bool),
             typeof(NavigationView),
             new FrameworkPropertyMetadata(
-                true,
+defaultValue: true,
                 FrameworkPropertyMetadataOptions.AffectsMeasure,
-                null,
+propertyChangedCallback: null,
                 CoerceIsPaneToggleButtonVisible));
 
         /// <summary>
@@ -222,7 +222,7 @@ namespace Fluence.Wpf.Controls
             "Header",
             typeof(object),
             typeof(NavigationView),
-            new PropertyMetadata(null));
+            new PropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Identifies the <see cref="HeaderTemplate"/> dependency property.
@@ -231,7 +231,7 @@ namespace Fluence.Wpf.Controls
             "HeaderTemplate",
             typeof(DataTemplate),
             typeof(NavigationView),
-            new PropertyMetadata(null));
+            new PropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Identifies the <see cref="PaneHeader"/> dependency property.
@@ -240,7 +240,7 @@ namespace Fluence.Wpf.Controls
             "PaneHeader",
             typeof(object),
             typeof(NavigationView),
-            new PropertyMetadata(null));
+            new PropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Identifies the <see cref="PaneFooter"/> dependency property.
@@ -249,7 +249,7 @@ namespace Fluence.Wpf.Controls
             "PaneFooter",
             typeof(object),
             typeof(NavigationView),
-            new PropertyMetadata(null));
+            new PropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Identifies the <see cref="ContentBackground"/> dependency property.
@@ -259,7 +259,7 @@ namespace Fluence.Wpf.Controls
             typeof(Brush),
             typeof(NavigationView),
             new FrameworkPropertyMetadata(
-                null,
+defaultValue: null,
                 FrameworkPropertyMetadataOptions.AffectsRender));
 
         /// <summary>
@@ -269,7 +269,7 @@ namespace Fluence.Wpf.Controls
             "IsPaneOpen",
             typeof(bool),
             typeof(NavigationView),
-            new FrameworkPropertyMetadata(true, OnIsPaneOpenChanged, CoerceIsPaneOpen));
+            new FrameworkPropertyMetadata(defaultValue: true, OnIsPaneOpenChanged, CoerceIsPaneOpen));
 
         /// <summary>
         /// Identifies the <see cref="Content"/> dependency property.
@@ -278,13 +278,13 @@ namespace Fluence.Wpf.Controls
             "Content",
             typeof(object),
             typeof(NavigationView),
-            new PropertyMetadata(null));
+            new PropertyMetadata(propertyChangedCallback: null));
 
         private static readonly DependencyPropertyKey FooterMenuItemsPropertyKey = DependencyProperty.RegisterReadOnly(
             "FooterMenuItems",
             typeof(ObservableCollection<object>),
             typeof(NavigationView),
-            new PropertyMetadata(null));
+            new PropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Identifies the <see cref="FooterMenuItems"/> dependency property.
@@ -507,10 +507,10 @@ namespace Fluence.Wpf.Controls
             StopAnimation();
             CoerceTopPaneProperties();
             UpdateTitleBarExtensionForPaneMode();
-            UpdateBackButtonState(false);
+            UpdateBackButtonState(useTransitions: false);
             ApplyPaneColumnWidthOnTemplateApplied();
             ScheduleTopOverflowUpdate();
-            ScheduleIndicatorPosition(false);
+            ScheduleIndicatorPosition(animate: false);
         }
 
         /// <inheritdoc />
@@ -525,7 +525,7 @@ namespace Fluence.Wpf.Controls
                 SelectedFooterItem.IsSelected = false;
                 SelectedFooterItem = null;
             }
-            _ = Dispatcher.BeginInvoke(new Action(() => RefreshIndicators(true, previousItem)), DispatcherPriority.Loaded);
+            _ = Dispatcher.BeginInvoke(new Action(() => RefreshIndicators(animate: true, previousItem)), DispatcherPriority.Loaded);
         }
 
         /// <inheritdoc />
@@ -674,7 +674,7 @@ namespace Fluence.Wpf.Controls
             }
             bool isFooter = IsFooterItem(item);
             object invokedItem = isFooter ? item : GetDataFromContainer(item);
-            ItemInvoked?.Invoke(this, new NavigationViewItemInvokedEventArgs(invokedItem, item, false));
+            ItemInvoked?.Invoke(this, new NavigationViewItemInvokedEventArgs(invokedItem, item, isSettingsInvoked: false));
             if (isFooter)
             {
                 SelectFooterItem(item);
@@ -689,7 +689,7 @@ namespace Fluence.Wpf.Controls
         /// Returns whether <paramref name="item"/> belongs to the <see cref="FooterMenuItems"/> region.
         /// </summary>
         /// <param name="item">The item to check.</param>
-        /// <returns><c>true</c> if the item belongs to the footer region; otherwise, <c>false</c>.</returns>
+        /// <returns><see langword="true"/> if the item belongs to the footer region; otherwise, <see langword="false"/>.</returns>
         private bool IsFooterItem(NavigationViewItem item)
         {
             return FooterMenuItems.Contains(item);
@@ -726,7 +726,7 @@ namespace Fluence.Wpf.Controls
             }
             else
             {
-                ScheduleIndicatorPosition(true);
+                ScheduleIndicatorPosition(animate: true);
             }
         }
 
@@ -758,7 +758,7 @@ namespace Fluence.Wpf.Controls
                 }
             }
 
-            ScheduleIndicatorPosition(false);
+            ScheduleIndicatorPosition(animate: false);
         }
 
         private void HookFooterItem(NavigationViewItem footerItem)
@@ -780,7 +780,7 @@ namespace Fluence.Wpf.Controls
 
         private void OnFooterItemIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
-            ScheduleIndicatorPosition(false);
+            ScheduleIndicatorPosition(animate: false);
         }
 
         private void OnUnloaded(object sender, RoutedEventArgs e)
@@ -806,7 +806,7 @@ namespace Fluence.Wpf.Controls
             ScheduleTopOverflowUpdate();
             // Reposition the selection indicator on (re)load so it tracks the current selection even
             // when the control was reloaded without OnApplyTemplate running again.
-            ScheduleIndicatorPosition(false);
+            ScheduleIndicatorPosition(animate: false);
         }
 
         private void OnSizeChanged(object sender, SizeChangedEventArgs e)
@@ -817,8 +817,8 @@ namespace Fluence.Wpf.Controls
         private static void OnBackButtonStateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             NavigationView nav = (NavigationView)d;
-            nav.UpdateBackButtonState(true);
-            nav.UpdatePaneColumnWidth(false);
+            nav.UpdateBackButtonState(useTransitions: true);
+            nav.UpdatePaneColumnWidth(useAnimation: false);
         }
 
         /// <summary>
@@ -834,7 +834,7 @@ namespace Fluence.Wpf.Controls
             _ = VisualStateManager.GoToState(this, stateName, useTransitions);
             if (_backButton is not null)
             {
-                _backButton.BeginAnimation(VisibilityProperty, null);
+                _backButton.BeginAnimation(VisibilityProperty, animation: null);
                 _backButton.Visibility = isVisible ? Visibility.Visible : Visibility.Collapsed;
             }
         }
@@ -862,7 +862,7 @@ namespace Fluence.Wpf.Controls
         {
             if (SelectedItem is not null || SelectedFooterItem is not null)
             {
-                ScheduleIndicatorPosition(false);
+                ScheduleIndicatorPosition(animate: false);
             }
 
             ScheduleTopOverflowUpdate();
@@ -882,6 +882,7 @@ namespace Fluence.Wpf.Controls
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "MA0091:Sender should be 'this' for instance events", Justification = "The method is static.")]
         private static void OnIsPaneOpenChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             NavigationView nav = (NavigationView)d;
@@ -895,9 +896,9 @@ namespace Fluence.Wpf.Controls
                 nav.PaneClosed?.Invoke(nav, EventArgs.Empty);
             }
             nav._indicatorPositioned = false;
-            nav.UpdatePaneColumnWidth(true);
+            nav.UpdatePaneColumnWidth(useAnimation: true);
             nav.ScheduleTopOverflowUpdate();
-            nav.ScheduleIndicatorPosition(false);
+            nav.ScheduleIndicatorPosition(animate: false);
         }
 
         private static void OnPaneDisplayModeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -916,7 +917,7 @@ namespace Fluence.Wpf.Controls
 
             if (newMode == NavigationViewPaneDisplayMode.LeftCompact)
             {
-                nav.SetCurrentValue(IsPaneOpenProperty, false);
+                nav.SetCurrentValue(IsPaneOpenProperty, value: false);
             }
             nav.CoerceTopPaneProperties();
             nav.UpdateTitleBarExtensionForPaneMode();
@@ -929,11 +930,11 @@ namespace Fluence.Wpf.Controls
             else
             {
                 nav._pendingPaneWidthAnimationFrom = null;
-                nav.UpdatePaneColumnWidth(false);
+                nav.UpdatePaneColumnWidth(useAnimation: false);
             }
 
             nav.ScheduleTopOverflowUpdate();
-            nav.ScheduleIndicatorPosition(false);
+            nav.ScheduleIndicatorPosition(animate: false);
         }
 
         private static bool IsLeftFamilyMode(NavigationViewPaneDisplayMode mode)
@@ -1041,12 +1042,12 @@ namespace Fluence.Wpf.Controls
             {
                 _pendingPaneWidthAnimationFrom = null;
                 _paneColumn.Width = new GridLength(fromWidth);
-                UpdatePaneColumnWidth(true);
+                UpdatePaneColumnWidth(useAnimation: true);
                 return;
             }
 
             _pendingPaneWidthAnimationFrom = null;
-            UpdatePaneColumnWidth(false);
+            UpdatePaneColumnWidth(useAnimation: false);
         }
 
         private void UpdatePaneColumnWidth(bool useAnimation)
@@ -1086,7 +1087,7 @@ namespace Fluence.Wpf.Controls
                 To = new GridLength(targetWidth),
                 Duration = new Duration(TimeSpan.FromMilliseconds(PaneAnimationMilliseconds)),
                 EasingFunction = new CubicEase { EasingMode = EasingMode.EaseInOut },
-                FillBehavior = FillBehavior.Stop
+                FillBehavior = FillBehavior.Stop,
             };
 
             animation.Completed += delegate
@@ -1096,7 +1097,7 @@ namespace Fluence.Wpf.Controls
                     return;
                 }
 
-                paneColumn.BeginAnimation(ColumnDefinition.WidthProperty, null);
+                paneColumn.BeginAnimation(ColumnDefinition.WidthProperty, animation: null);
                 paneColumn.Width = new GridLength(targetWidth);
             };
 
@@ -1123,7 +1124,7 @@ namespace Fluence.Wpf.Controls
 
         private void ScheduleIndicatorPosition(bool animate)
         {
-            _ = Dispatcher.BeginInvoke(new Action(() => RefreshIndicators(animate, null)), DispatcherPriority.Loaded);
+            _ = Dispatcher.BeginInvoke(new Action(() => RefreshIndicators(animate, previousItem: null)), DispatcherPriority.Loaded);
         }
 
         /// <summary>
@@ -1164,7 +1165,7 @@ namespace Fluence.Wpf.Controls
                     // Animate the indicator out when leaving a selected footer item (e.g. navigating
                     // away from Settings); snap to hidden when nothing was showing or animation is off.
                     bool wasVisible = _footerSelectionIndicator.Opacity > 0.01;
-                    AnimateFooterIndicatorVisibility(false, true, animate && wasVisible);
+                    AnimateFooterIndicatorVisibility(appearing: false, topMode: true, animate && wasVisible);
                 }
                 else
                 {
@@ -1195,7 +1196,7 @@ namespace Fluence.Wpf.Controls
 
             // Fade + scale the indicator in when it first appears on a footer item; a reflow while it
             // is already shown just repositions it at full opacity.
-            AnimateFooterIndicatorVisibility(true, true, animate && wasHidden);
+            AnimateFooterIndicatorVisibility(appearing: true, topMode: true, animate && wasHidden);
         }
 
         /// <summary>
@@ -1245,12 +1246,12 @@ namespace Fluence.Wpf.Controls
             DoubleAnimation scaleAnimation = new(fromScale, toScale, duration)
             {
                 EasingFunction = ease,
-                FillBehavior = FillBehavior.Stop
+                FillBehavior = FillBehavior.Stop,
             };
             DoubleAnimation opacityAnimation = new(fromOpacity, toOpacity, duration)
             {
                 EasingFunction = ease,
-                FillBehavior = FillBehavior.Stop
+                FillBehavior = FillBehavior.Stop,
             };
 
             opacityAnimation.Completed += delegate
@@ -1259,9 +1260,9 @@ namespace Fluence.Wpf.Controls
                 {
                     return;
                 }
-                scale.BeginAnimation(ScaleTransform.ScaleXProperty, null);
-                scale.BeginAnimation(ScaleTransform.ScaleYProperty, null);
-                _footerSelectionIndicator.BeginAnimation(OpacityProperty, null);
+                scale.BeginAnimation(ScaleTransform.ScaleXProperty, animation: null);
+                scale.BeginAnimation(ScaleTransform.ScaleYProperty, animation: null);
+                _footerSelectionIndicator.BeginAnimation(OpacityProperty, animation: null);
                 scale.ScaleX = 1.0;
                 scale.ScaleY = 1.0;
                 _footerSelectionIndicator.Opacity = toOpacity;
@@ -1282,18 +1283,18 @@ namespace Fluence.Wpf.Controls
             {
                 return;
             }
-            _footerSelectionIndicator.BeginAnimation(OpacityProperty, null);
+            _footerSelectionIndicator.BeginAnimation(OpacityProperty, animation: null);
             if (_footerSelectionIndicator.RenderTransform is TransformGroup group && group.Children.Count >= 2)
             {
                 if (group.Children[0] is ScaleTransform scale && !scale.IsFrozen)
                 {
-                    scale.BeginAnimation(ScaleTransform.ScaleXProperty, null);
-                    scale.BeginAnimation(ScaleTransform.ScaleYProperty, null);
+                    scale.BeginAnimation(ScaleTransform.ScaleXProperty, animation: null);
+                    scale.BeginAnimation(ScaleTransform.ScaleYProperty, animation: null);
                 }
                 if (group.Children[1] is TranslateTransform translate && !translate.IsFrozen)
                 {
-                    translate.BeginAnimation(TranslateTransform.XProperty, null);
-                    translate.BeginAnimation(TranslateTransform.YProperty, null);
+                    translate.BeginAnimation(TranslateTransform.XProperty, animation: null);
+                    translate.BeginAnimation(TranslateTransform.YProperty, animation: null);
                 }
             }
         }
@@ -1451,17 +1452,17 @@ namespace Fluence.Wpf.Controls
             DoubleAnimation departAxisAnimation = new(fromAxis, departAxis, departDuration)
             {
                 EasingFunction = departEase,
-                FillBehavior = FillBehavior.Stop
+                FillBehavior = FillBehavior.Stop,
             };
             DoubleAnimation departOpacityAnimation = new(1.0, 0.0, departDuration)
             {
                 EasingFunction = departEase,
-                FillBehavior = FillBehavior.Stop
+                FillBehavior = FillBehavior.Stop,
             };
             DoubleAnimation departScaleAnimation = new(1.0, 0.72, departDuration)
             {
                 EasingFunction = departEase,
-                FillBehavior = FillBehavior.Stop
+                FillBehavior = FillBehavior.Stop,
             };
 
             departAxisAnimation.Completed += delegate
@@ -1470,9 +1471,9 @@ namespace Fluence.Wpf.Controls
                 {
                     return;
                 }
-                translate.BeginAnimation(axisProperty, null);
-                scale.BeginAnimation(scaleProperty, null);
-                _selectionIndicator.BeginAnimation(OpacityProperty, null);
+                translate.BeginAnimation(axisProperty, animation: null);
+                scale.BeginAnimation(scaleProperty, animation: null);
+                _selectionIndicator.BeginAnimation(OpacityProperty, animation: null);
                 if (topMode)
                 {
                     translate.X = arriveStartPosition.X;
@@ -1492,17 +1493,17 @@ namespace Fluence.Wpf.Controls
                 DoubleAnimation arriveAxisAnimation = new(arriveStartAxis, toAxis, arriveDuration)
                 {
                     EasingFunction = arriveEase,
-                    FillBehavior = FillBehavior.Stop
+                    FillBehavior = FillBehavior.Stop,
                 };
                 DoubleAnimation arriveOpacityAnimation = new(0.0, 1.0, arriveDuration)
                 {
                     EasingFunction = arriveEase,
-                    FillBehavior = FillBehavior.Stop
+                    FillBehavior = FillBehavior.Stop,
                 };
                 DoubleAnimation arriveScaleAnimation = new(0.72, 1.0, arriveDuration)
                 {
                     EasingFunction = arriveEase,
-                    FillBehavior = FillBehavior.Stop
+                    FillBehavior = FillBehavior.Stop,
                 };
 
                 arriveAxisAnimation.Completed += delegate
@@ -1512,9 +1513,9 @@ namespace Fluence.Wpf.Controls
                         return;
                     }
 
-                    translate.BeginAnimation(axisProperty, null);
-                    scale.BeginAnimation(scaleProperty, null);
-                    _selectionIndicator.BeginAnimation(OpacityProperty, null);
+                    translate.BeginAnimation(axisProperty, animation: null);
+                    scale.BeginAnimation(scaleProperty, animation: null);
+                    _selectionIndicator.BeginAnimation(OpacityProperty, animation: null);
 
                     translate.X = toPosition.X;
                     translate.Y = toPosition.Y;
@@ -1650,18 +1651,18 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            _selectionIndicator.BeginAnimation(OpacityProperty, null);
+            _selectionIndicator.BeginAnimation(OpacityProperty, animation: null);
             if (_selectionIndicator.RenderTransform is TransformGroup group && group.Children.Count >= 2)
             {
                 if (group.Children[0] is ScaleTransform scale && !scale.IsFrozen)
                 {
-                    scale.BeginAnimation(ScaleTransform.ScaleXProperty, null);
-                    scale.BeginAnimation(ScaleTransform.ScaleYProperty, null);
+                    scale.BeginAnimation(ScaleTransform.ScaleXProperty, animation: null);
+                    scale.BeginAnimation(ScaleTransform.ScaleYProperty, animation: null);
                 }
                 if (group.Children[1] is TranslateTransform translate && !translate.IsFrozen)
                 {
-                    translate.BeginAnimation(TranslateTransform.XProperty, null);
-                    translate.BeginAnimation(TranslateTransform.YProperty, null);
+                    translate.BeginAnimation(TranslateTransform.XProperty, animation: null);
+                    translate.BeginAnimation(TranslateTransform.YProperty, animation: null);
                 }
             }
         }
@@ -1669,16 +1670,17 @@ namespace Fluence.Wpf.Controls
         private void StopPaneColumnAnimation()
         {
             _paneColumnAnimationGeneration++;
-            _paneColumn?.BeginAnimation(ColumnDefinition.WidthProperty, null);
+            _paneColumn?.BeginAnimation(ColumnDefinition.WidthProperty, animation: null);
         }
 
         /// <summary>
         /// Replaces frozen XAML-defined transforms with mutable instances on the supplied indicator.
         /// </summary>
         /// <param name="indicator">The indicator element to update.</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "MA0194:Merge is expressions on the same value", Justification = "Implementing this alters behaviour.")]
         private static void EnsureMutableTransform(FrameworkElement indicator)
         {
-            indicator.BeginAnimation(OpacityProperty, null);
+            indicator.BeginAnimation(OpacityProperty, animation: null);
             if (indicator.RenderTransform as TransformGroup is not TransformGroup group || group.IsFrozen || group.Children.Count < 2 || group.Children[0] is not ScaleTransform s || group.Children[1] is not TranslateTransform t || s.IsFrozen || t.IsFrozen)
             {
                 TransformGroup newGroup = new();
@@ -1689,10 +1691,10 @@ namespace Fluence.Wpf.Controls
             }
             ScaleTransform scale = (ScaleTransform)group.Children[0];
             TranslateTransform translate = (TranslateTransform)group.Children[1];
-            scale.BeginAnimation(ScaleTransform.ScaleXProperty, null);
-            scale.BeginAnimation(ScaleTransform.ScaleYProperty, null);
-            translate.BeginAnimation(TranslateTransform.XProperty, null);
-            translate.BeginAnimation(TranslateTransform.YProperty, null);
+            scale.BeginAnimation(ScaleTransform.ScaleXProperty, animation: null);
+            scale.BeginAnimation(ScaleTransform.ScaleYProperty, animation: null);
+            translate.BeginAnimation(TranslateTransform.XProperty, animation: null);
+            translate.BeginAnimation(TranslateTransform.YProperty, animation: null);
         }
 
         private NavigationViewItem? ResolveNavigationViewItem(object? item)
@@ -1839,7 +1841,7 @@ namespace Fluence.Wpf.Controls
                     }
                     else
                     {
-                        navItem.SetValue(IsTopOverflowCollapsedProperty, true);
+                        navItem.SetValue(IsTopOverflowCollapsedProperty, value: true);
                         navItem.Visibility = Visibility.Collapsed;
                         overflowItems.Add(navItem);
                     }
@@ -1905,7 +1907,7 @@ namespace Fluence.Wpf.Controls
                     Icon = CreateOverflowIcon(navItem),
                     MinWidth = 280,
                     MinHeight = 44,
-                    Tag = navItem
+                    Tag = navItem,
                 };
                 menuItem.Click += OnTopOverflowMenuItemClick;
                 _ = menu.Items.Add(menuItem);
@@ -1926,7 +1928,7 @@ namespace Fluence.Wpf.Controls
                 Glyph = fontIcon.Glyph,
                 IconFontFamily = fontIcon.IconFontFamily,
                 IconFontSize = 16.0,
-                MirroredWhenRightToLeft = fontIcon.MirroredWhenRightToLeft
+                MirroredWhenRightToLeft = fontIcon.MirroredWhenRightToLeft,
             };
             overflowIcon.SetResourceReference(ForegroundProperty, "TextFillColorSecondaryBrush");
 
@@ -1970,7 +1972,7 @@ namespace Fluence.Wpf.Controls
         /// this resolves correctly for items hosted in the nested <see cref="FooterMenuItems"/> host.
         /// </summary>
         /// <param name="container">The container element from which to start the search.</param>
-        /// <returns>The owning <see cref="NavigationView"/> if found; otherwise, <c>null</c>.</returns>
+        /// <returns>The owning <see cref="NavigationView"/> if found; otherwise, <see langword="null"/>.</returns>
         internal static NavigationView? FromItemContainer(DependencyObject? container)
         {
             DependencyObject? current = container;

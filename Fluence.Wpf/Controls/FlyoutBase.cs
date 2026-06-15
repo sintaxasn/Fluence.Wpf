@@ -57,7 +57,7 @@ namespace Fluence.Wpf.Controls
                 "AttachedFlyout",
                 typeof(FlyoutBase),
                 typeof(FlyoutBase),
-                new PropertyMetadata(null));
+                new PropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Identifies the <see cref="Placement"/> dependency property.
@@ -86,7 +86,7 @@ namespace Fluence.Wpf.Controls
                 nameof(ShouldConstrainToRootBounds),
                 typeof(bool),
                 typeof(FlyoutBase),
-                new PropertyMetadata(true));
+                new PropertyMetadata(defaultValue: true));
 
         /// <summary>
         /// Gets or sets a value indicating whether the flyout should stay within the bounds of
@@ -146,7 +146,7 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         /// <param name="element">The element the flyout is attached to.</param>
         /// <returns>The attached flyout, or <see langword="null"/> when none is attached.</returns>
-        /// <exception cref="ArgumentNullException"><paramref name="element"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="element"/> is <see langword="null"/>.</exception>
         public static FlyoutBase? GetAttachedFlyout(FrameworkElement element)
         {
             return element is null
@@ -160,7 +160,7 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         /// <param name="element">The element to attach the flyout to.</param>
         /// <param name="value">The flyout to attach, or <see langword="null"/> to detach.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="element"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="element"/> is <see langword="null"/>.</exception>
         public static void SetAttachedFlyout(FrameworkElement element, FlyoutBase? value)
         {
             if (element is null)
@@ -177,7 +177,7 @@ namespace Fluence.Wpf.Controls
         /// flyout is attached.
         /// </summary>
         /// <param name="flyoutOwner">The element whose attached flyout should be shown.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="flyoutOwner"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="flyoutOwner"/> is <see langword="null"/>.</exception>
         public static void ShowAttachedFlyout(FrameworkElement flyoutOwner)
         {
             if (flyoutOwner is null)
@@ -196,7 +196,7 @@ namespace Fluence.Wpf.Controls
         /// bindings inside the flyout content resolve against the anchor's view model.
         /// </summary>
         /// <param name="placementTarget">The element to anchor the flyout to.</param>
-        /// <exception cref="ArgumentNullException"><paramref name="placementTarget"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="placementTarget"/> is <see langword="null"/>.</exception>
         public void ShowAt(FrameworkElement placementTarget)
         {
             if (placementTarget is null)
@@ -376,7 +376,7 @@ namespace Fluence.Wpf.Controls
         private void OnPopupClosed(object? sender, EventArgs e)
         {
             _ = HostPopup?.PlacementTarget = null;
-            Presenter?.SetCurrentValue(FrameworkElement.DataContextProperty, null);
+            Presenter?.SetCurrentValue(FrameworkElement.DataContextProperty, value: null);
             Closed?.Invoke(this, EventArgs.Empty);
         }
     }

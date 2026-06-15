@@ -170,13 +170,13 @@ namespace Fluence.Wpf.Controls
                 "IsTextSelectionEnabled",
                 typeof(bool),
                 typeof(TextBlockExtensions),
-                new FrameworkPropertyMetadata(false, OnIsTextSelectionEnabledChanged));
+                new FrameworkPropertyMetadata(defaultValue: false, OnIsTextSelectionEnabledChanged));
 
         /// <summary>
         /// Gets the value of the <see cref="IsTextSelectionEnabledProperty"/> attached property for the specified object.
         /// </summary>
         /// <param name="obj">The target <see cref="System.Windows.Controls.TextBlock"/>.</param>
-        /// <returns><c>true</c> if selection is enabled; otherwise <c>false</c>.</returns>
+        /// <returns><see langword="true"/> if selection is enabled; otherwise <see langword="false"/>.</returns>
         public static bool GetIsTextSelectionEnabled(this DependencyObject obj)
         {
             return (bool)obj.GetValue(IsTextSelectionEnabledProperty);
@@ -186,7 +186,7 @@ namespace Fluence.Wpf.Controls
         /// Sets the value of the <see cref="IsTextSelectionEnabledProperty"/> attached property for the specified object.
         /// </summary>
         /// <param name="obj">The target <see cref="System.Windows.Controls.TextBlock"/>.</param>
-        /// <param name="value"><c>true</c> to enable text selection; otherwise <c>false</c>.</param>
+        /// <param name="value"><see langword="true"/> to enable text selection; otherwise <see langword="false"/>.</param>
         public static void SetIsTextSelectionEnabled(this DependencyObject obj, bool value)
         {
             obj.SetValue(IsTextSelectionEnabledProperty, value);
@@ -256,13 +256,13 @@ namespace Fluence.Wpf.Controls
                 HorizontalAlignment = HorizontalAlignment.Stretch,
                 IsReadOnly = true,
                 CaretBrush = textBlock.Foreground,
-                SelectionBrush = SystemColors.HighlightBrush
+                SelectionBrush = SystemColors.HighlightBrush,
             };
             _ = overlay.SetBinding(System.Windows.Controls.TextBox.TextProperty, new Binding
             {
                 Path = new PropertyPath(System.Windows.Controls.TextBlock.TextProperty),
                 Source = textBlock,
-                Mode = BindingMode.OneWay
+                Mode = BindingMode.OneWay,
             });
             _ = grid.Children.Add(overlay);
             parent.Children.Insert(index, grid);
@@ -314,13 +314,13 @@ namespace Fluence.Wpf.Controls
                 "ShowPlaceholder",
                 typeof(bool),
                 typeof(TextBlockExtensions),
-                new FrameworkPropertyMetadata(false));
+                new FrameworkPropertyMetadata(defaultValue: false));
 
         /// <summary>
         /// Gets whether the placeholder should be shown.
         /// </summary>
         /// <param name="obj">The target dependency object.</param>
-        /// <returns><c>true</c> when the placeholder should be shown; otherwise <c>false</c>.</returns>
+        /// <returns><see langword="true"/> when the placeholder should be shown; otherwise <see langword="false"/>.</returns>
         public static bool GetShowPlaceholder(this DependencyObject obj)
         {
             return (bool)obj.GetValue(ShowPlaceholderProperty);
@@ -330,7 +330,7 @@ namespace Fluence.Wpf.Controls
         /// Sets whether the placeholder should be shown.
         /// </summary>
         /// <param name="obj">The target dependency object.</param>
-        /// <param name="value"><c>true</c> to show the placeholder; otherwise <c>false</c>.</param>
+        /// <param name="value"><see langword="true"/> to show the placeholder; otherwise <see langword="false"/>.</param>
         public static void SetShowPlaceholder(this DependencyObject obj, bool value)
         {
             obj.SetValue(ShowPlaceholderProperty, value);
@@ -348,7 +348,7 @@ namespace Fluence.Wpf.Controls
                 "Icon",
                 typeof(object),
                 typeof(TextBlockExtensions),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Gets the icon for the specified element.

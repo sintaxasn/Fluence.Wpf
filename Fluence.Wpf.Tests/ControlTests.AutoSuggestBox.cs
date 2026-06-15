@@ -43,7 +43,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void AutoSuggestBox_DefaultStyle_AppliesTemplateParts()
         {
-            RunOnStaThread(() =>
+            RunOnStaThread(static () =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -477,7 +477,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void AutoSuggestBox_SurfaceBrushes_ResolveAfterThemeCycle()
         {
-            RunOnStaThread(() =>
+            RunOnStaThread(static () =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -505,7 +505,7 @@ namespace Fluence.Wpf.Tests
                 0,
                 key)
             {
-                RoutedEvent = UIElement.PreviewKeyDownEvent
+                RoutedEvent = UIElement.PreviewKeyDownEvent,
             });
         }
     }

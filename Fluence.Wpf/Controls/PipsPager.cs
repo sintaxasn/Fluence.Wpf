@@ -308,6 +308,7 @@ namespace Fluence.Wpf.Controls
                 : proposed > lastIndex ? lastIndex : baseValue;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "MA0091:Sender should be 'this' for instance events", Justification = "The method is static.")]
         private static void OnSelectedPageIndexChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             PipsPager pager = (PipsPager)d;

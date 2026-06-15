@@ -31,6 +31,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -40,60 +41,56 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryIconsPage : UserControl
     {
-        private const string IconCatalogXamlSource = """
-<UserControl
-    x:Class="Fluence.Wpf.Demo.Pages.Icons.IconCatalog"
-    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
-    <Grid
-        MinHeight="48"
-        VerticalAlignment="Center">
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="56" />
-            <ColumnDefinition Width="*" />
-            <ColumnDefinition Width="96" />
-        </Grid.ColumnDefinitions>
+        private const string IconCatalogXamlSource = "<UserControl\n" +
+                                                     "    x:Class=\"Fluence.Wpf.Demo.Pages.Icons.IconCatalog\"\n" +
+                                                     "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
+                                                     "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
+                                                     "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                                     "    <Grid\n" +
+                                                     "        MinHeight=\"48\"\n" +
+                                                     "        VerticalAlignment=\"Center\">\n" +
+                                                     "        <Grid.ColumnDefinitions>\n" +
+                                                     "            <ColumnDefinition Width=\"56\" />\n" +
+                                                     "            <ColumnDefinition Width=\"*\" />\n" +
+                                                     "            <ColumnDefinition Width=\"96\" />\n" +
+                                                     "        </Grid.ColumnDefinitions>\n" +
+                                                     "\n" +
+                                                     "        <ui:FontIcon\n" +
+                                                     "            HorizontalAlignment=\"Center\"\n" +
+                                                     "            VerticalAlignment=\"Center\"\n" +
+                                                     "            Glyph=\"&#xE713;\"\n" +
+                                                     "            IconFontSize=\"24\" />\n" +
+                                                     "        <TextBlock\n" +
+                                                     "            Grid.Column=\"1\"\n" +
+                                                     "            HorizontalAlignment=\"Left\"\n" +
+                                                     "            VerticalAlignment=\"Center\"\n" +
+                                                     "            Foreground=\"{DynamicResource TextFillColorPrimaryBrush}\"\n" +
+                                                     "            Text=\"Settings\" />\n" +
+                                                     "        <TextBlock\n" +
+                                                     "            Grid.Column=\"2\"\n" +
+                                                     "            HorizontalAlignment=\"Left\"\n" +
+                                                     "            VerticalAlignment=\"Center\"\n" +
+                                                     "            FontFamily=\"Consolas\"\n" +
+                                                     "            Foreground=\"{DynamicResource TextFillColorSecondaryBrush}\"\n" +
+                                                     "            Text=\"U+E713\" />\n" +
+                                                     "    </Grid>\n" +
+                                                     "</UserControl>\n";
 
-        <ui:FontIcon
-            HorizontalAlignment="Center"
-            VerticalAlignment="Center"
-            Glyph="&#xE713;"
-            IconFontSize="24" />
-        <TextBlock
-            Grid.Column="1"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Center"
-            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-            Text="Settings" />
-        <TextBlock
-            Grid.Column="2"
-            HorizontalAlignment="Left"
-            VerticalAlignment="Center"
-            FontFamily="Consolas"
-            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-            Text="U+E713" />
-    </Grid>
-</UserControl>
-
-""";
-
-        private const string IconCatalogCSharpSource = @"using System.Windows.Controls;
-
-namespace Fluence.Wpf.Demo.Pages.Icons
-{
-    public partial class IconCatalog : UserControl
-    {
-        public IconCatalog()
-        {
-            InitializeComponent();
-        }
-    }
-}
-";
+        private const string IconCatalogCSharpSource = "using System.Windows.Controls;\n" +
+                                                       "\n" +
+                                                       "namespace Fluence.Wpf.Demo.Pages.Icons\n" +
+                                                       "{\n" +
+                                                       "    public partial class IconCatalog : UserControl\n" +
+                                                       "    {\n" +
+                                                       "        public IconCatalog()\n" +
+                                                       "        {\n" +
+                                                       "            InitializeComponent();\n" +
+                                                       "        }\n" +
+                                                       "    }\n" +
+                                                       "}\n";
 
         private const int IconsPerRow = 4;
-        private static readonly object IconRowsLock = new();
+        private static readonly Lock IconRowsLock = new();
         private static List<IconCatalogRow>? cachedIconRows;
         private static int cachedIconCount;
 
@@ -116,7 +113,7 @@ namespace Fluence.Wpf.Demo.Pages.Icons
                 SampleDescription = string.Empty,
                 XamlSource = IconCatalogXamlSource,
                 CSharpSource = IconCatalogCSharpSource,
-                DemoContent = FontIconSampleContent
+                DemoContent = FontIconSampleContent,
             };
             Grid.SetRow(sample, 2);
             PageContent.Children.Remove(FontIconSampleContent);
@@ -203,7 +200,7 @@ namespace Fluence.Wpf.Demo.Pages.Icons
         {
             StreamResourceInfo info = Application.GetResourceStream(KnownIconNamesResourceUri) ?? throw new InvalidOperationException("Segoe Fluent Icons name data was not found.");
             Dictionary<string, string> names = new(StringComparer.OrdinalIgnoreCase);
-            using (StreamReader reader = new(info.Stream, Encoding.UTF8, true))
+            using (StreamReader reader = new(info.Stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true))
             {
                 string? line;
                 while ((line = reader.ReadLine()) is not null)

@@ -75,7 +75,7 @@ namespace Fluence.Wpf.Tests
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
             application?.Resources.MergedDictionaries.Clear();
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
+            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
             Collection<ResourceDictionary>? dictionaries = application?.Resources.MergedDictionaries;
             return dictionaries?.Count > 0 ? dictionaries[^1] : null;
         }
@@ -127,7 +127,7 @@ namespace Fluence.Wpf.Tests
                         Top = -20000,
                         ExtendsContentIntoTitleBar = true,
                         WindowStartupLocation = WindowStartupLocation.Manual,
-                        ShowInTaskbar = false
+                        ShowInTaskbar = false,
                     };
                     window.Show();
                     window.Dispatcher.Invoke(() => { }, DispatcherPriority.Loaded);
@@ -194,7 +194,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ExtendsContentIntoTitleBar_DefaultIsFalse()
         {
-            RunWithWindow(w =>
+            RunWithWindow(static w =>
             {
                 Assert.IsFalse(w.ExtendsContentIntoTitleBar,
                     "ExtendsContentIntoTitleBar should default to false.");
@@ -208,7 +208,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void TitleBarHeight_DefaultIs48()
         {
-            RunWithWindow(w =>
+            RunWithWindow(static w =>
             {
                 Assert.AreEqual(48d, w.TitleBarHeight,
                     "TitleBarHeight should default to 48 (WinUI 3 canonical expanded title-bar height).");
@@ -218,7 +218,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void MinWidth_DefaultRemainsUnset()
         {
-            RunWithWindow(w =>
+            RunWithWindow(static w =>
             {
                 Assert.AreEqual(0d, w.MinWidth,
                     "FluenceWindow should leave MinWidth unset by default.");
@@ -232,13 +232,13 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ShowIcon_DefaultIsTrue()
         {
-            RunWithWindow(w => Assert.IsTrue(w.ShowIcon, "ShowIcon should default to true."));
+            RunWithWindow(static w => Assert.IsTrue(w.ShowIcon, "ShowIcon should default to true."));
         }
 
         [TestMethod]
         public void ShowTitle_DefaultIsTrue()
         {
-            RunWithWindow(w => Assert.IsTrue(w.ShowTitle, "ShowTitle should default to true."));
+            RunWithWindow(static w => Assert.IsTrue(w.ShowTitle, "ShowTitle should default to true."));
         }
 
         #endregion 3. ShowIcon and ShowTitle defaults
@@ -248,7 +248,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void CaptionButtonVisibility_DefaultsAreVisible()
         {
-            RunWithWindow(w =>
+            RunWithWindow(static w =>
             {
                 Assert.AreEqual(Visibility.Visible, w.IsMinimizeButtonVisible);
                 Assert.AreEqual(Visibility.Visible, w.IsMaximizeButtonVisible);
@@ -259,7 +259,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void CaptionButtonEnabled_DefaultsAreTrue()
         {
-            RunWithWindow(w =>
+            RunWithWindow(static w =>
             {
                 Assert.IsTrue(w.IsMinimizable);
                 Assert.IsTrue(w.IsMaximizable);
@@ -274,13 +274,13 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void HasShadow_DefaultIsTrue()
         {
-            RunWithWindow(w => Assert.IsTrue(w.HasShadow, "HasShadow should default to true."));
+            RunWithWindow(static w => Assert.IsTrue(w.HasShadow, "HasShadow should default to true."));
         }
 
         [TestMethod]
         public void BorderThickness_DefaultIsOne()
         {
-            RunWithWindow(w =>
+            RunWithWindow(static w =>
             {
                 Assert.AreEqual(new Thickness(1), w.BorderThickness,
                     "BorderThickness should default to 1 (window chrome stroke from default style).");
@@ -294,7 +294,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void SetTitleBar_SetsTitleBarProperty()
         {
-            RunWithWindow(w =>
+            RunWithWindow(static w =>
             {
                 System.Windows.Controls.TextBlock customElement = new() { Text = "Custom Title" };
                 w.SetTitleBar(customElement);
@@ -306,12 +306,12 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void SetTitleBar_NullReverts()
         {
-            RunWithWindow(w =>
+            RunWithWindow(static w =>
             {
                 System.Windows.Controls.TextBlock customElement = new() { Text = "Custom Title" };
                 w.SetTitleBar(customElement);
                 Assert.IsNotNull(w.TitleBar);
-                w.SetTitleBar(null);
+                w.SetTitleBar(titleBar: null);
                 Assert.IsNull(w.TitleBar,
                     "SetTitleBar(null) should clear the custom TitleBar content.");
             });
@@ -324,7 +324,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void CaptionHeight_AlwaysZero_RegardlessOfExtendsContentIntoTitleBar()
         {
-            RunWithWindow(w =>
+            RunWithWindow(static w =>
             {
                 WindowChrome chrome = WindowChrome.GetWindowChrome(w);
                 Assert.IsNotNull(chrome, "FluenceWindow should have a WindowChrome attached.");
@@ -341,7 +341,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void HasShadow_False_SetsGlassFrameToNearZero()
         {
-            RunWithWindow(w =>
+            RunWithWindow(static w =>
             {
                 WindowChrome chrome = WindowChrome.GetWindowChrome(w);
                 Assert.AreEqual(new Thickness(-1), chrome.GlassFrameThickness,
@@ -366,7 +366,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void CaptionHeight_IsZero_EvenBeforeExtendsContentIntoTitleBar()
         {
-            RunWithWindow(w =>
+            RunWithWindow(static w =>
             {
                 WindowChrome chrome = WindowChrome.GetWindowChrome(w);
                 Assert.IsNotNull(chrome);
@@ -378,7 +378,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void WindowChrome_AppliedInConstructor()
         {
-            RunWithWindow(w =>
+            RunWithWindow(static w =>
             {
                 WindowChrome chrome = WindowChrome.GetWindowChrome(w);
                 Assert.IsNotNull(chrome,
@@ -389,7 +389,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void DefaultBorderThickness_IsOne()
         {
-            RunWithWindow(w =>
+            RunWithWindow(static w =>
             {
                 Assert.AreEqual(new Thickness(1), w.BorderThickness,
                     "FluenceWindow default BorderThickness must be 1 (chrome border).");
@@ -399,7 +399,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ThemeSwitch_UpdatesWindowBackground()
         {
-            RunOnFreshStaThread(() =>
+            RunOnFreshStaThread(static () =>
             {
                 Application? app = EnsureApplication();
                 ResourceDictionary? dict = MergeTheme(app);
@@ -410,7 +410,7 @@ namespace Fluence.Wpf.Tests
                     window = new FluenceWindow();
                     Brush lightBg = window.Background;
 
-                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, true);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
                     Brush darkBg = window.Background;
 
                     Assert.AreNotEqual(lightBg, darkBg,
@@ -420,7 +420,7 @@ namespace Fluence.Wpf.Tests
                 {
                     window?.Close();
 
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
 
                     if (dict is not null)
                     {
@@ -446,14 +446,14 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     ApplicationThemeManager.Changed += handler;
-                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, true);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
                     Assert.AreEqual(1, fireCount,
                         "ApplicationThemeManager.Changed must fire exactly once per Apply call.");
                 }
                 finally
                 {
                     ApplicationThemeManager.Changed -= handler;
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
 
                     if (dict is not null)
                     {
@@ -481,13 +481,13 @@ namespace Fluence.Wpf.Tests
                     "TextFillColorDisabledBrush",
                     "SubtleFillColorSecondaryBrush",
                     "SubtleFillColorTertiaryBrush",
-                    "CardStrokeColorDefaultSolidBrush"
+                    "CardStrokeColorDefaultSolidBrush",
                 ];
 
                 foreach (string key in themeBrushKeys)
                 {
                     string staticPattern = "StaticResource " + key;
-                    Assert.IsFalse(xaml.Contains(staticPattern),
+                    Assert.IsFalse(xaml.Contains(staticPattern, StringComparison.Ordinal),
                         "FluenceWindow.xaml must not use StaticResource for theme brush: " + key);
                 }
             }
@@ -496,7 +496,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void FullThemeCycle_KeyBrushesResolve()
         {
-            RunOnFreshStaThread(() =>
+            RunOnFreshStaThread(static () =>
             {
                 Application? app = EnsureApplication();
                 ResourceDictionary? dict = MergeTheme(app);
@@ -505,7 +505,7 @@ namespace Fluence.Wpf.Tests
                 {
                     foreach (ApplicationTheme theme in (ApplicationTheme[])[ApplicationTheme.Dark, ApplicationTheme.Light])
                     {
-                        ApplicationThemeManager.Apply(theme, BackdropType.None, true);
+                        ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: true);
                         object? bg = app?.TryFindResource("ApplicationBackgroundBrush");
                         Assert.IsNotNull(bg,
                             "ApplicationBackgroundBrush must resolve after switching to " + theme);
@@ -516,7 +516,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
 
                     if (dict is not null)
                     {
@@ -529,7 +529,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void MergedDictionaries_CountStableAfterMultipleSwitches()
         {
-            RunOnFreshStaThread(() =>
+            RunOnFreshStaThread(static () =>
             {
                 Application? app = EnsureApplication();
                 ResourceDictionary? dict = MergeTheme(app);
@@ -541,7 +541,7 @@ namespace Fluence.Wpf.Tests
                     for (int i = 0; i < 5; i++)
                     {
                         ApplicationTheme theme = i % 2 == 0 ? ApplicationTheme.Dark : ApplicationTheme.Light;
-                        ApplicationThemeManager.Apply(theme, BackdropType.None, true);
+                        ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: true);
                     }
 
                     Assert.AreEqual(initialCount, app?.Resources.MergedDictionaries.Count,
@@ -549,7 +549,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
 
                     if (dict is not null)
                     {
@@ -589,7 +589,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void HitTestTitleBar_MinimizeButton_ReturnsZero_NotHtMinButton()
         {
-            RunWithShownWindow(w =>
+            RunWithShownWindow(static w =>
             {
                 System.Windows.Controls.Button? btn = GetCaptionButtonField(w, "_minimizeButton");
                 Assert.IsNotNull(btn, "Minimize template part should exist after Show.");
@@ -606,7 +606,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void HitTestTitleBar_CloseButton_ReturnsZero_NotHtClose()
         {
-            RunWithShownWindow(w =>
+            RunWithShownWindow(static w =>
             {
                 System.Windows.Controls.Button? btn = GetCaptionButtonField(w, "_closeButton");
                 Assert.IsNotNull(btn);
@@ -622,7 +622,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void HitTestTitleBar_MaximizeButton_ReturnsHtMaxButton()
         {
-            RunWithShownWindow(w =>
+            RunWithShownWindow(static w =>
             {
                 Assert.AreEqual(WindowState.Normal, w.WindowState);
                 System.Windows.Controls.Button? btn = GetCaptionButtonField(w, "_maximizeButton");
@@ -639,10 +639,10 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void HitTestTitleBar_MaximizeButtonHidden_DoesNotReturnHtMaxButton()
         {
-            RunWithShownWindow(w =>
+            RunWithShownWindow(static w =>
             {
                 w.IsMaximizeButtonVisible = Visibility.Hidden;
-                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+                w.Dispatcher.Invoke(static () => { }, DispatcherPriority.Render);
 
                 System.Windows.Controls.Button? btn = GetCaptionButtonField(w, "_maximizeButton");
                 Assert.IsNotNull(btn);
@@ -658,10 +658,10 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void HitTestTitleBar_MaximizeButtonDisabled_DoesNotReturnHtMaxButton()
         {
-            RunWithShownWindow(w =>
+            RunWithShownWindow(static w =>
             {
                 w.IsMaximizable = false;
-                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+                w.Dispatcher.Invoke(static () => { }, DispatcherPriority.Render);
 
                 System.Windows.Controls.Button? btn = GetCaptionButtonField(w, "_maximizeButton");
                 Assert.IsNotNull(btn);
@@ -678,7 +678,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void HitTestTitleBar_TitleBarDragArea_ReturnsHtCaption()
         {
-            RunWithShownWindow(w =>
+            RunWithShownWindow(static w =>
             {
                 w.UpdateLayout();
                 Point clientMidTitle = new(Math.Max(40, w.ActualWidth / 2), Math.Max(1, w.TitleBarHeight / 2));
@@ -692,7 +692,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void HitTestTitleBar_TopResizeBand_ReturnsHtTopBeforeCaption()
         {
-            RunWithShownWindow(w =>
+            RunWithShownWindow(static w =>
             {
                 w.UpdateLayout();
                 Point screen = w.PointToScreen(new Point(w.ActualWidth / 2.0, 1.0));
@@ -705,7 +705,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void HitTestTitleBar_UpperCorners_ReturnResizeCornersBeforeCaption()
         {
-            RunWithShownWindow(w =>
+            RunWithShownWindow(static w =>
             {
                 w.UpdateLayout();
 
@@ -724,7 +724,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void HitTestTitleBar_IsMoveableFalse_TitleBarDragAreaReturnsZero()
         {
-            RunWithShownWindow(w =>
+            RunWithShownWindow(static w =>
             {
                 w.IsMoveable = false;
                 w.UpdateLayout();
@@ -740,7 +740,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void WndProc_IsMoveableFalse_SuppressesSystemMove()
         {
-            RunWithWindow(w =>
+            RunWithWindow(static w =>
             {
                 w.IsMoveable = false;
                 _ = InvokeWndProc(w, NativeConstants.WM_SYSCOMMAND, new IntPtr(NativeConstants.SC_MOVE), IntPtr.Zero, out bool handled);
@@ -755,7 +755,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void WndProc_NcLeftButtonUpHtMaxButton_UsesDirectMaximizeAndRefreshesCaptionButtons()
         {
-            RunWithShownWindow(w =>
+            RunWithShownWindow(static w =>
             {
                 System.Windows.Controls.Button? max = GetCaptionButtonField(w, "_maximizeButton");
                 System.Windows.Controls.Button? restore = GetCaptionButtonField(w, "_restoreButton");
@@ -772,7 +772,7 @@ namespace Fluence.Wpf.Tests
                     new IntPtr(NativeConstants.HTMAXBUTTON),
                     IntPtr.Zero,
                     out bool handled);
-                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+                w.Dispatcher.Invoke(static () => { }, DispatcherPriority.Render);
 
                 Assert.IsTrue(handled,
                     "WM_NCLBUTTONUP/HTMAXBUTTON should be handled by FluenceWindow.");
@@ -789,7 +789,7 @@ namespace Fluence.Wpf.Tests
                     new IntPtr(NativeConstants.HTMAXBUTTON),
                     IntPtr.Zero,
                     out handled);
-                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+                w.Dispatcher.Invoke(static () => { }, DispatcherPriority.Render);
 
                 Assert.IsTrue(handled,
                     "Second WM_NCLBUTTONUP/HTMAXBUTTON should be handled by FluenceWindow.");
@@ -814,7 +814,7 @@ namespace Fluence.Wpf.Tests
             // paths cannot silently drift apart again. SetSnapHover is invoked directly (rather than
             // through WndProc) so the assertion does not depend on the machine's snap-layout setting,
             // OS build, or IsMaximizable gate that WM_NCHITTEST applies before reaching it.
-            RunWithShownWindow(w =>
+            RunWithShownWindow(static w =>
             {
                 System.Windows.Controls.Button? max = GetCaptionButtonField(w, "_maximizeButton");
                 Assert.IsNotNull(max, "Maximize template part should exist after Show.");
@@ -836,7 +836,7 @@ namespace Fluence.Wpf.Tests
                     BindingFlags.Instance | BindingFlags.NonPublic);
                 Assert.IsNotNull(setSnapHover, "SetSnapHover must exist for the snap-hover token test.");
                 _ = setSnapHover.Invoke(w, [max]);
-                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+                w.Dispatcher.Invoke(static () => { }, DispatcherPriority.Render);
 
                 Assert.AreSame(expectedBackground, max.Background,
                     "Snap hover must set the maximize button Background to SubtleFillColorSecondaryBrush, matching the WindowButtonStyle PointerOver state.");
@@ -851,8 +851,8 @@ namespace Fluence.Wpf.Tests
                     "ClearSnapHover",
                     BindingFlags.Instance | BindingFlags.NonPublic);
                 Assert.IsNotNull(clearSnapHover, "ClearSnapHover must exist for the snap-hover token test.");
-                _ = clearSnapHover.Invoke(w, null);
-                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+                _ = clearSnapHover.Invoke(w, parameters: null);
+                w.Dispatcher.Invoke(static () => { }, DispatcherPriority.Render);
 
                 Assert.AreEqual(DependencyProperty.UnsetValue, max.ReadLocalValue(System.Windows.Controls.Control.BackgroundProperty),
                     "ClearSnapHover must ClearValue the Background local value so the style/template default applies again.");
@@ -868,14 +868,14 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void IsMinimizeButtonVisible_ExplicitVisible_UnderNoResize_ShowsAndEnablesButton()
         {
-            RunWithShownWindow(w =>
+            RunWithShownWindow(static w =>
             {
                 // XAML sets IsMinimizeButtonVisible=Collapsed
                 // on the FluentDialog template, then code-behind flips it back to Visible when
                 // DialogAllowMinimize is honoured (IsMinimizeButtonVisible=Visibility.Visible).
                 w.IsMinimizeButtonVisible = Visibility.Collapsed;
                 w.ResizeMode = ResizeMode.NoResize;
-                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+                w.Dispatcher.Invoke(static () => { }, DispatcherPriority.Render);
 
                 System.Windows.Controls.Button? btn = GetCaptionButtonField(w, "_minimizeButton");
                 Assert.IsNotNull(btn);
@@ -884,7 +884,7 @@ namespace Fluence.Wpf.Tests
 
                 w.IsMinimizeButtonVisible = Visibility.Visible;
                 w.IsMinimizable = true;
-                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+                w.Dispatcher.Invoke(static () => { }, DispatcherPriority.Render);
 
                 Assert.AreEqual(Visibility.Visible, btn.Visibility,
                     "Explicit flip Collapsed->Visible must override the NoResize-derived Collapsed baseline.");
@@ -896,11 +896,11 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void IsMinimizeButtonVisible_ExplicitCollapsed_UnderCanResize_HidesButton()
         {
-            RunWithShownWindow(w =>
+            RunWithShownWindow(static w =>
             {
                 w.ResizeMode = ResizeMode.CanResize;
                 w.IsMinimizeButtonVisible = Visibility.Collapsed;
-                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+                w.Dispatcher.Invoke(static () => { }, DispatcherPriority.Render);
 
                 System.Windows.Controls.Button? btn = GetCaptionButtonField(w, "_minimizeButton");
                 Assert.IsNotNull(btn);
@@ -914,11 +914,11 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void IsMaximizeButtonVisible_ExplicitVisible_UnderNoResize_ShowsAndEnablesMaximize()
         {
-            RunWithShownWindow(w =>
+            RunWithShownWindow(static w =>
             {
                 w.IsMaximizeButtonVisible = Visibility.Collapsed;
                 w.ResizeMode = ResizeMode.NoResize;
-                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+                w.Dispatcher.Invoke(static () => { }, DispatcherPriority.Render);
 
                 System.Windows.Controls.Button? max = GetCaptionButtonField(w, "_maximizeButton");
                 Assert.IsNotNull(max);
@@ -927,7 +927,7 @@ namespace Fluence.Wpf.Tests
 
                 w.IsMaximizeButtonVisible = Visibility.Visible;
                 w.IsMaximizable = true;
-                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+                w.Dispatcher.Invoke(static () => { }, DispatcherPriority.Render);
 
                 Assert.AreEqual(Visibility.Visible, max.Visibility,
                     "Explicit flip Collapsed->Visible must override the NoResize-derived Collapsed baseline.");
@@ -940,10 +940,10 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void IsMaximizeButtonVisible_Hidden_ReservesOnlyTheActiveButtonSlot()
         {
-            RunWithShownWindow(w =>
+            RunWithShownWindow(static w =>
             {
                 w.IsMaximizeButtonVisible = Visibility.Hidden;
-                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+                w.Dispatcher.Invoke(static () => { }, DispatcherPriority.Render);
 
                 System.Windows.Controls.Button? max = GetCaptionButtonField(w, "_maximizeButton");
                 System.Windows.Controls.Button? restore = GetCaptionButtonField(w, "_restoreButton");
@@ -953,7 +953,7 @@ namespace Fluence.Wpf.Tests
                 Assert.IsFalse(restore?.IsEnabled ?? false);
 
                 w.WindowState = WindowState.Maximized;
-                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+                w.Dispatcher.Invoke(static () => { }, DispatcherPriority.Render);
 
                 Assert.AreEqual(Visibility.Collapsed, max?.Visibility);
                 Assert.AreEqual(Visibility.Hidden, restore?.Visibility);
@@ -965,7 +965,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void CaptionButtonVisibleProperties_SetTheVisibilityDps()
         {
-            RunWithWindow(w =>
+            RunWithWindow(static w =>
             {
                 foreach (Visibility value in (Visibility[])[Visibility.Visible, Visibility.Hidden, Visibility.Collapsed])
                 {
@@ -983,7 +983,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void CaptionButtonVisibilityProperties_ApplyVisibleHiddenCollapsedToTemplateButtons()
         {
-            RunWithShownWindow(w =>
+            RunWithShownWindow(static w =>
             {
                 System.Windows.Controls.Button? minimize = GetCaptionButtonField(w, "_minimizeButton");
                 System.Windows.Controls.Button? maximize = GetCaptionButtonField(w, "_maximizeButton");
@@ -999,7 +999,7 @@ namespace Fluence.Wpf.Tests
                     w.IsMinimizeButtonVisible = value;
                     w.IsMaximizeButtonVisible = value;
                     w.IsCloseButtonVisible = value;
-                    w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+                    w.Dispatcher.Invoke(static () => { }, DispatcherPriority.Render);
 
                     Assert.AreEqual(value, minimize.Visibility);
                     Assert.AreEqual(value, close.Visibility);
@@ -1019,9 +1019,9 @@ namespace Fluence.Wpf.Tests
         {
             ConstructorInfo? ctor = typeof(CanExecuteRoutedEventArgs).GetConstructor(
                 BindingFlags.Instance | BindingFlags.NonPublic,
-                null,
+binder: null,
                 [typeof(ICommand), typeof(object)],
-                null);
+modifiers: null);
             Assert.IsNotNull(ctor, "CanExecuteRoutedEventArgs should expose an internal (ICommand, object) ctor.");
             return (CanExecuteRoutedEventArgs)ctor.Invoke([command, null]);
         }
@@ -1040,9 +1040,9 @@ namespace Fluence.Wpf.Tests
         {
             ConstructorInfo? ctor = typeof(ExecutedRoutedEventArgs).GetConstructor(
                 BindingFlags.Instance | BindingFlags.NonPublic,
-                null,
+binder: null,
                 [typeof(ICommand), typeof(object)],
-                null);
+modifiers: null);
             Assert.IsNotNull(ctor, "ExecutedRoutedEventArgs should expose an internal (ICommand, object) ctor.");
             return (ExecutedRoutedEventArgs)ctor.Invoke([command, null]);
         }
@@ -1059,7 +1059,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void CanMinimizeWindow_RespectsExplicitDp_UnderNoResize()
         {
-            RunWithWindow(w =>
+            RunWithWindow(static w =>
             {
                 w.ResizeMode = ResizeMode.NoResize;
 
@@ -1080,7 +1080,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void CanMaximizeWindow_RespectsExplicitDp_UnderNoResize()
         {
-            RunWithWindow(w =>
+            RunWithWindow(static w =>
             {
                 w.ResizeMode = ResizeMode.NoResize;
 
@@ -1097,7 +1097,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void CaptionButtons_DefaultBehaviorUnchanged_WhenDpsNotTouched()
         {
-            RunWithShownWindow(w =>
+            RunWithShownWindow(static w =>
             {
                 Assert.AreEqual(ResizeMode.CanResize, w.ResizeMode,
                     "Default ResizeMode sanity check.");
@@ -1112,7 +1112,7 @@ namespace Fluence.Wpf.Tests
                 Assert.AreEqual(Visibility.Visible, closeBtn?.Visibility);
 
                 w.ResizeMode = ResizeMode.NoResize;
-                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+                w.Dispatcher.Invoke(static () => { }, DispatcherPriority.Render);
 
                 Assert.AreEqual(Visibility.Collapsed, minBtn?.Visibility,
                     "Pre-existing contract: untouched DPs hide min/max when ResizeMode=NoResize.");
@@ -1131,7 +1131,7 @@ namespace Fluence.Wpf.Tests
             // symptom that made the AllowMinimize caption button look clickable but
             // refuse to actually minimize. The Executed handler must bypass the sysmenu gate
             // by assigning WindowState directly so the transition always lands.
-            RunWithShownWindow(w =>
+            RunWithShownWindow(static w =>
             {
                 Assert.AreEqual(WindowState.Normal, w.WindowState,
                     "Precondition: freshly-shown window should start in Normal state.");
@@ -1141,7 +1141,7 @@ namespace Fluence.Wpf.Tests
                     "OnMinimizeWindow",
                     CreateExecutedArgs(SystemCommands.MinimizeWindowCommand));
 
-                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+                w.Dispatcher.Invoke(static () => { }, DispatcherPriority.Render);
 
                 Assert.AreEqual(WindowState.Minimized, w.WindowState,
                     "OnMinimizeWindow must drive WindowState=Minimized even when HideAllWindowButtons has stripped WS_SYSMENU.");
@@ -1151,7 +1151,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void OnMaximizeWindow_DrivesWindowStateMaximized_EvenAfterSysMenuStripped()
         {
-            RunWithShownWindow(w =>
+            RunWithShownWindow(static w =>
             {
                 Assert.AreEqual(WindowState.Normal, w.WindowState,
                     "Precondition: freshly-shown window should start in Normal state.");
@@ -1161,7 +1161,7 @@ namespace Fluence.Wpf.Tests
                     "OnMaximizeWindow",
                     CreateExecutedArgs(SystemCommands.MaximizeWindowCommand));
 
-                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+                w.Dispatcher.Invoke(static () => { }, DispatcherPriority.Render);
 
                 Assert.AreEqual(WindowState.Maximized, w.WindowState,
                     "OnMaximizeWindow must drive WindowState=Maximized even when HideAllWindowButtons has stripped WS_SYSMENU.");
@@ -1171,10 +1171,10 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void OnRestoreWindow_DrivesWindowStateNormal_FromMaximized()
         {
-            RunWithShownWindow(w =>
+            RunWithShownWindow(static w =>
             {
                 w.WindowState = WindowState.Maximized;
-                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+                w.Dispatcher.Invoke(static () => { }, DispatcherPriority.Render);
                 Assert.AreEqual(WindowState.Maximized, w.WindowState,
                     "Precondition: test setup failed to drive the window to Maximized state.");
 
@@ -1183,7 +1183,7 @@ namespace Fluence.Wpf.Tests
                     "OnRestoreWindow",
                     CreateExecutedArgs(SystemCommands.RestoreWindowCommand));
 
-                w.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+                w.Dispatcher.Invoke(static () => { }, DispatcherPriority.Render);
 
                 Assert.AreEqual(WindowState.Normal, w.WindowState,
                     "OnRestoreWindow must drive WindowState=Normal regardless of sysmenu/style gating.");
@@ -1201,7 +1201,7 @@ namespace Fluence.Wpf.Tests
             // OnMinimizeWindow) and asserts the caption is clickable AND the state lands on
             // Minimized. If this ever regresses to "visible but inert" we'll catch it here
             // instead of only in manual QA.
-            RunOnFreshStaThread(() =>
+            RunOnFreshStaThread(static () =>
             {
                 Application? app = EnsureApplication();
                 ResourceDictionary? dict = MergeTheme(app);
@@ -1226,14 +1226,14 @@ namespace Fluence.Wpf.Tests
                     };
 
                     window.Show();
-                    window.Dispatcher.Invoke(() => { }, DispatcherPriority.Loaded);
+                    window.Dispatcher.Invoke(static () => { }, DispatcherPriority.Loaded);
 
                     // Flip visibility after Show() to mirror PSADT's IsMinimizeButtonVisible=Visibility.Visible.
                     window.IsMinimizeButtonVisible = Visibility.Visible;
                     window.IsMinimizable = true;
-                    window.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
+                    window.Dispatcher.Invoke(static () => { }, DispatcherPriority.Render);
                     CommandManager.InvalidateRequerySuggested();
-                    window.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
+                    window.Dispatcher.Invoke(static () => { }, DispatcherPriority.ApplicationIdle);
 
                     System.Windows.Controls.Button? minBtn = GetCaptionButtonField(window, "_minimizeButton");
                     Assert.IsNotNull(minBtn, "Minimize template part must exist after Show.");
@@ -1243,7 +1243,7 @@ namespace Fluence.Wpf.Tests
                         "PSADT flow: Button.IsEnabled must be true so clicks dispatch the command.");
 
                     Assert.IsTrue(
-                        SystemCommands.MinimizeWindowCommand.CanExecute(null, minBtn),
+                        SystemCommands.MinimizeWindowCommand.CanExecute(parameter: null, minBtn),
                         "PSADT flow: MinimizeWindowCommand.CanExecute must be true once DPs are flipped and IsMinimizable=true.");
 
                     Assert.AreEqual(WindowState.Normal, window.WindowState,
@@ -1252,9 +1252,9 @@ namespace Fluence.Wpf.Tests
                     // Drive the same code path a real click would drive: the button's Command
                     // on its own DataContext (the button is the command target, the window is
                     // the CommandBinding host via routed-command bubbling).
-                    SystemCommands.MinimizeWindowCommand.Execute(null, minBtn);
-                    window.Dispatcher.Invoke(() => { }, DispatcherPriority.Render);
-                    window.Dispatcher.Invoke(() => { }, DispatcherPriority.ApplicationIdle);
+                    SystemCommands.MinimizeWindowCommand.Execute(parameter: null, minBtn);
+                    window.Dispatcher.Invoke(static () => { }, DispatcherPriority.Render);
+                    window.Dispatcher.Invoke(static () => { }, DispatcherPriority.ApplicationIdle);
 
                     Assert.AreEqual(WindowState.Minimized, window.WindowState,
                         "PSADT flow: SystemCommands.MinimizeWindowCommand.Execute must end with WindowState=Minimized even when Topmost=True + ResizeMode=NoResize + HideAllWindowButtons has stripped the sysmenu.");
@@ -1327,9 +1327,9 @@ namespace Fluence.Wpf.Tests
                                         System.Windows.Controls.Button minBtn = GetCaptionButtonField(capturedWindow, "_minimizeButton") ?? throw new InvalidOperationException("Minimize template part was not materialised inside ShowDialog modal frame.");
                                         minimizeButtonVisibility = minBtn.Visibility;
                                         minimizeButtonIsEnabled = minBtn.IsEnabled;
-                                        minimizeCommandCanExecute = SystemCommands.MinimizeWindowCommand.CanExecute(null, minBtn);
+                                        minimizeCommandCanExecute = SystemCommands.MinimizeWindowCommand.CanExecute(parameter: null, minBtn);
 
-                                        SystemCommands.MinimizeWindowCommand.Execute(null, minBtn);
+                                        SystemCommands.MinimizeWindowCommand.Execute(parameter: null, minBtn);
 
                                         _ = capturedWindow.Dispatcher.BeginInvoke(() =>
                                         {
@@ -1387,7 +1387,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void PasswordBox_SelectAll_DoesNotThrowWithoutTemplate()
         {
-            RunOnFreshStaThread(() =>
+            RunOnFreshStaThread(static () =>
             {
                 Application? app = EnsureApplication();
                 ResourceDictionary? dict = MergeTheme(app);
@@ -1396,7 +1396,7 @@ namespace Fluence.Wpf.Tests
                 {
                     PasswordBox passwordBox = new()
                     {
-                        Password = "hidden"
+                        Password = "hidden",
                     };
                     passwordBox.SelectAll();
 
@@ -1442,14 +1442,14 @@ namespace Fluence.Wpf.Tests
                 ptMaxPosition = new POINT { X = 10, Y = 20 },
                 ptMaxSize = new POINT { X = 1920, Y = 1040 },
                 ptMaxTrackSize = new POINT { X = 3840, Y = 2160 },
-                ptMinTrackSize = new POINT { X = 200, Y = 150 }
+                ptMinTrackSize = new POINT { X = 200, Y = 150 },
             };
 
             int size = System.Runtime.InteropServices.Marshal.SizeOf(typeof(MINMAXINFO));
             nint ptr = System.Runtime.InteropServices.Marshal.AllocHGlobal(size);
             try
             {
-                System.Runtime.InteropServices.Marshal.StructureToPtr(mmi, ptr, false);
+                System.Runtime.InteropServices.Marshal.StructureToPtr(mmi, ptr, fDeleteOld: false);
                 MINMAXINFO? result = (MINMAXINFO?)System.Runtime.InteropServices.Marshal.PtrToStructure(ptr, typeof(MINMAXINFO));
 
                 Assert.AreEqual(10, result?.ptMaxPosition.X);
@@ -1502,7 +1502,7 @@ namespace Fluence.Wpf.Tests
                     System.Windows.Controls.Border occluder = new()
                     {
                         Background = Brushes.Magenta,
-                        Name = "OccluderBorder"
+                        Name = "OccluderBorder",
                     };
 
                     window = new FluenceWindow
@@ -1514,7 +1514,7 @@ namespace Fluence.Wpf.Tests
                         ExtendsContentIntoTitleBar = true,
                         WindowStartupLocation = WindowStartupLocation.Manual,
                         ShowInTaskbar = false,
-                        Content = occluder
+                        Content = occluder,
                     };
 
                     window.Show();
@@ -1534,7 +1534,7 @@ namespace Fluence.Wpf.Tests
                         Visual? hitVisual = null;
                         VisualTreeHelper.HitTest(
                             window,
-                            null,
+filterCallback: null,
                             new HitTestResultCallback(r =>
                             {
                                 hitVisual = r.VisualHit as Visual;

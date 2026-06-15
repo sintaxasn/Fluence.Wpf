@@ -77,7 +77,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ContentDialog_DefaultStyle_AppliesAndTemplatePartsFound()
         {
-            RunOnStaThread(() =>
+            RunOnStaThread(static () =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -521,7 +521,7 @@ namespace Fluence.Wpf.Tests
                         0,
                         Key.Escape)
                     {
-                        RoutedEvent = UIElement.PreviewKeyDownEvent
+                        RoutedEvent = UIElement.PreviewKeyDownEvent,
                     });
 
                     bool completed = WaitUntil(window.Dispatcher, 2000, () => dialogTask.IsCompleted);
@@ -592,7 +592,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ContentDialog_SmokeFillBrush_ResolvesAcrossThemeCycle()
         {
-            RunOnStaThread(() =>
+            RunOnStaThread(static () =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);

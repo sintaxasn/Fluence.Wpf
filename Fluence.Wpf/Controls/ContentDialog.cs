@@ -97,7 +97,7 @@ namespace Fluence.Wpf.Controls
                 nameof(Title),
                 typeof(object),
                 typeof(ContentDialog),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Gets or sets the title shown at the top of the dialog.
@@ -116,7 +116,7 @@ namespace Fluence.Wpf.Controls
                 nameof(TitleTemplate),
                 typeof(DataTemplate),
                 typeof(ContentDialog),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Gets or sets the template used to display <see cref="Title"/>.
@@ -135,7 +135,7 @@ namespace Fluence.Wpf.Controls
                 nameof(PrimaryButtonText),
                 typeof(string),
                 typeof(ContentDialog),
-                new FrameworkPropertyMetadata(string.Empty, null, CoerceButtonText));
+                new FrameworkPropertyMetadata(string.Empty, propertyChangedCallback: null, CoerceButtonText));
 
         /// <summary>
         /// Gets or sets the text of the primary button. The button is collapsed while the
@@ -155,7 +155,7 @@ namespace Fluence.Wpf.Controls
                 nameof(SecondaryButtonText),
                 typeof(string),
                 typeof(ContentDialog),
-                new FrameworkPropertyMetadata(string.Empty, null, CoerceButtonText));
+                new FrameworkPropertyMetadata(string.Empty, propertyChangedCallback: null, CoerceButtonText));
 
         /// <summary>
         /// Gets or sets the text of the secondary button. The button is collapsed while the
@@ -175,7 +175,7 @@ namespace Fluence.Wpf.Controls
                 nameof(CloseButtonText),
                 typeof(string),
                 typeof(ContentDialog),
-                new FrameworkPropertyMetadata(string.Empty, null, CoerceButtonText));
+                new FrameworkPropertyMetadata(string.Empty, propertyChangedCallback: null, CoerceButtonText));
 
         /// <summary>
         /// Gets or sets the text of the close button. The button is collapsed while the
@@ -215,7 +215,7 @@ namespace Fluence.Wpf.Controls
                 nameof(IsPrimaryButtonEnabled),
                 typeof(bool),
                 typeof(ContentDialog),
-                new FrameworkPropertyMetadata(true));
+                new FrameworkPropertyMetadata(defaultValue: true));
 
         /// <summary>
         /// Gets or sets a value indicating whether the primary button is enabled.
@@ -234,7 +234,7 @@ namespace Fluence.Wpf.Controls
                 nameof(IsSecondaryButtonEnabled),
                 typeof(bool),
                 typeof(ContentDialog),
-                new FrameworkPropertyMetadata(true));
+                new FrameworkPropertyMetadata(defaultValue: true));
 
         /// <summary>
         /// Gets or sets a value indicating whether the secondary button is enabled.
@@ -253,7 +253,7 @@ namespace Fluence.Wpf.Controls
                 nameof(PrimaryButtonCommand),
                 typeof(ICommand),
                 typeof(ContentDialog),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Gets or sets the command executed when the primary button is invoked and the
@@ -273,7 +273,7 @@ namespace Fluence.Wpf.Controls
                 nameof(PrimaryButtonCommandParameter),
                 typeof(object),
                 typeof(ContentDialog),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Gets or sets the parameter passed to <see cref="PrimaryButtonCommand"/>.
@@ -292,7 +292,7 @@ namespace Fluence.Wpf.Controls
                 nameof(SecondaryButtonCommand),
                 typeof(ICommand),
                 typeof(ContentDialog),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Gets or sets the command executed when the secondary button is invoked and the
@@ -312,7 +312,7 @@ namespace Fluence.Wpf.Controls
                 nameof(SecondaryButtonCommandParameter),
                 typeof(object),
                 typeof(ContentDialog),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Gets or sets the parameter passed to <see cref="SecondaryButtonCommand"/>.
@@ -331,7 +331,7 @@ namespace Fluence.Wpf.Controls
                 nameof(CloseButtonCommand),
                 typeof(ICommand),
                 typeof(ContentDialog),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Gets or sets the command executed when the close button is invoked (or the dialog
@@ -352,7 +352,7 @@ namespace Fluence.Wpf.Controls
                 nameof(CloseButtonCommandParameter),
                 typeof(object),
                 typeof(ContentDialog),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Gets or sets the parameter passed to <see cref="CloseButtonCommand"/>.

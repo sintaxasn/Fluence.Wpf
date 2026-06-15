@@ -91,7 +91,7 @@ namespace Fluence.Wpf.Controls
                 nameof(Icon),
                 typeof(object),
                 typeof(TitleBar),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Identifies the <see cref="IsBackButtonVisible"/> dependency property.
@@ -101,7 +101,7 @@ namespace Fluence.Wpf.Controls
                 nameof(IsBackButtonVisible),
                 typeof(bool),
                 typeof(TitleBar),
-                new FrameworkPropertyMetadata(false));
+                new FrameworkPropertyMetadata(defaultValue: false));
 
         /// <summary>
         /// Identifies the <see cref="IsPaneToggleButtonVisible"/> dependency property.
@@ -111,7 +111,7 @@ namespace Fluence.Wpf.Controls
                 nameof(IsPaneToggleButtonVisible),
                 typeof(bool),
                 typeof(TitleBar),
-                new FrameworkPropertyMetadata(false));
+                new FrameworkPropertyMetadata(defaultValue: false));
 
         /// <summary>
         /// Identifies the <see cref="IsCompact"/> dependency property.
@@ -121,7 +121,7 @@ namespace Fluence.Wpf.Controls
                 nameof(IsCompact),
                 typeof(bool),
                 typeof(TitleBar),
-                new FrameworkPropertyMetadata(false));
+                new FrameworkPropertyMetadata(defaultValue: false));
 
         /// <summary>
         /// Identifies the <see cref="LeftHeader"/> dependency property.
@@ -131,7 +131,7 @@ namespace Fluence.Wpf.Controls
                 nameof(LeftHeader),
                 typeof(object),
                 typeof(TitleBar),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Identifies the <see cref="RightHeader"/> dependency property.
@@ -141,7 +141,7 @@ namespace Fluence.Wpf.Controls
                 nameof(RightHeader),
                 typeof(object),
                 typeof(TitleBar),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Identifies the <see cref="CustomContent"/> dependency property.
@@ -151,7 +151,7 @@ namespace Fluence.Wpf.Controls
                 nameof(CustomContent),
                 typeof(object),
                 typeof(TitleBar),
-                new FrameworkPropertyMetadata(null, OnCustomContentChanged));
+                new FrameworkPropertyMetadata(defaultValue: null, OnCustomContentChanged));
 
         /// <summary>
         /// Identifies the <see cref="BackCommand"/> dependency property.
@@ -161,7 +161,7 @@ namespace Fluence.Wpf.Controls
                 nameof(BackCommand),
                 typeof(ICommand),
                 typeof(TitleBar),
-                new FrameworkPropertyMetadata(null, OnBackCommandChanged));
+                new FrameworkPropertyMetadata(defaultValue: null, OnBackCommandChanged));
 
         /// <summary>
         /// Identifies the <see cref="BackCommandParameter"/> dependency property.
@@ -171,7 +171,7 @@ namespace Fluence.Wpf.Controls
                 nameof(BackCommandParameter),
                 typeof(object),
                 typeof(TitleBar),
-                new FrameworkPropertyMetadata(null, OnBackCommandParameterChanged));
+                new FrameworkPropertyMetadata(defaultValue: null, OnBackCommandParameterChanged));
 
         /// <summary>
         /// Identifies the <see cref="PaneToggleCommand"/> dependency property.
@@ -181,7 +181,7 @@ namespace Fluence.Wpf.Controls
                 nameof(PaneToggleCommand),
                 typeof(ICommand),
                 typeof(TitleBar),
-                new FrameworkPropertyMetadata(null, OnPaneToggleCommandChanged));
+                new FrameworkPropertyMetadata(defaultValue: null, OnPaneToggleCommandChanged));
 
         /// <summary>
         /// Identifies the <see cref="PaneToggleCommandParameter"/> dependency property.
@@ -191,7 +191,7 @@ namespace Fluence.Wpf.Controls
                 nameof(PaneToggleCommandParameter),
                 typeof(object),
                 typeof(TitleBar),
-                new FrameworkPropertyMetadata(null, OnPaneToggleCommandParameterChanged));
+                new FrameworkPropertyMetadata(defaultValue: null, OnPaneToggleCommandParameterChanged));
 
         #endregion Dependency properties
 

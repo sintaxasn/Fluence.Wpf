@@ -46,6 +46,6 @@ namespace Fluence.Wpf.Demo.Mvvm.ViewModels
         /// <summary>
         /// Show only completed tasks.
         /// </summary>
-        Completed = 2
+        Completed = 2,
     }
 }

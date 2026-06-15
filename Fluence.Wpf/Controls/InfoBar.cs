@@ -68,7 +68,7 @@ namespace Fluence.Wpf.Controls
                 nameof(Title),
                 typeof(string),
                 typeof(InfoBar),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Gets or sets the title text displayed in the info bar.
@@ -87,7 +87,7 @@ namespace Fluence.Wpf.Controls
                 nameof(Message),
                 typeof(string),
                 typeof(InfoBar),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Gets or sets the message text displayed in the info bar.
@@ -125,7 +125,7 @@ namespace Fluence.Wpf.Controls
                 nameof(IsOpen),
                 typeof(bool),
                 typeof(InfoBar),
-                new FrameworkPropertyMetadata(true));
+                new FrameworkPropertyMetadata(defaultValue: true));
 
         /// <summary>
         /// Gets or sets a value indicating whether the info bar is visible.
@@ -144,7 +144,7 @@ namespace Fluence.Wpf.Controls
                 nameof(IsClosable),
                 typeof(bool),
                 typeof(InfoBar),
-                new FrameworkPropertyMetadata(true));
+                new FrameworkPropertyMetadata(defaultValue: true));
 
         /// <summary>
         /// Gets or sets a value indicating whether the close button is displayed.
@@ -163,7 +163,7 @@ namespace Fluence.Wpf.Controls
                 nameof(IsIconVisible),
                 typeof(bool),
                 typeof(InfoBar),
-                new FrameworkPropertyMetadata(true));
+                new FrameworkPropertyMetadata(defaultValue: true));
 
         /// <summary>
         /// Gets or sets a value indicating whether the severity icon is displayed.
@@ -182,7 +182,7 @@ namespace Fluence.Wpf.Controls
                 nameof(Icon),
                 typeof(object),
                 typeof(InfoBar),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Gets or sets a custom icon that overrides the default severity icon.
@@ -201,7 +201,7 @@ namespace Fluence.Wpf.Controls
                 nameof(ActionButton),
                 typeof(object),
                 typeof(InfoBar),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Gets or sets the content placed in the action button slot.
@@ -255,12 +255,12 @@ namespace Fluence.Wpf.Controls
             base.OnApplyTemplate();
             _closeButton = GetTemplateChild(PART_CloseButton) as System.Windows.Controls.Button;
             _closeButton?.Click += OnCloseButtonClick;
-            UpdateSeverityState(false);
+            UpdateSeverityState(useTransitions: false);
         }
 
         private static void OnSeverityChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            ((InfoBar)d).UpdateSeverityState(true);
+            ((InfoBar)d).UpdateSeverityState(useTransitions: true);
         }
 
         /// <summary>

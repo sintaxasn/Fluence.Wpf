@@ -64,7 +64,7 @@ namespace Fluence.Wpf.Controls
                 nameof(LastChildFill),
                 typeof(bool),
                 typeof(DockPanel),
-                new FrameworkPropertyMetadata(true, FrameworkPropertyMetadataOptions.AffectsArrange));
+                new FrameworkPropertyMetadata(defaultValue: true, FrameworkPropertyMetadataOptions.AffectsArrange));
 
         /// <summary>
         /// Gets or sets whether the last child element stretches to fill the remaining space.

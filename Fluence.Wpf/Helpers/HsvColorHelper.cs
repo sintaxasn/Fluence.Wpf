@@ -95,7 +95,7 @@ namespace Fluence.Wpf.Helpers
             {
                 r = c; g = 0; b = x;
             }
-            return Color.FromRgb((byte)Math.Round((r + m) * 255), (byte)Math.Round((g + m) * 255), (byte)Math.Round((b + m) * 255));
+            return Color.FromRgb((byte)Math.Round((r + m) * 255, MidpointRounding.ToEven), (byte)Math.Round((g + m) * 255, MidpointRounding.ToEven), (byte)Math.Round((b + m) * 255, MidpointRounding.ToEven));
         }
 
         internal static Color GetLightVariant(Color baseColor, int level)
@@ -198,9 +198,9 @@ namespace Fluence.Wpf.Helpers
         {
             double scaled = intensity * 255.0 / 100.0;
             double inv = 255.0 - scaled;
-            byte r = (byte)Math.Round(((c1.R * scaled) + (c2.R * inv)) / 255.0);
-            byte g = (byte)Math.Round(((c1.G * scaled) + (c2.G * inv)) / 255.0);
-            byte b = (byte)Math.Round(((c1.B * scaled) + (c2.B * inv)) / 255.0);
+            byte r = (byte)Math.Round(((c1.R * scaled) + (c2.R * inv)) / 255.0, MidpointRounding.ToEven);
+            byte g = (byte)Math.Round(((c1.G * scaled) + (c2.G * inv)) / 255.0, MidpointRounding.ToEven);
+            byte b = (byte)Math.Round(((c1.B * scaled) + (c2.B * inv)) / 255.0, MidpointRounding.ToEven);
             return Color.FromRgb(r, g, b);
         }
 
@@ -330,7 +330,7 @@ namespace Fluence.Wpf.Helpers
             const double Epsilon = 1e-9;
             if (saturation < Epsilon)
             {
-                byte v = (byte)Math.Round(lightness * 255);
+                byte v = (byte)Math.Round(lightness * 255, MidpointRounding.ToEven);
                 return Color.FromArgb(0xFF, v, v, v);
             }
             // HlsToRgb / HueToChannel below take hue in normalized [0..1] form (h / 6).
@@ -353,7 +353,7 @@ namespace Fluence.Wpf.Helpers
             {
                 r = g = b = l;
             }
-            return Color.FromRgb((byte)Math.Round(r * 255), (byte)Math.Round(g * 255), (byte)Math.Round(b * 255));
+            return Color.FromRgb((byte)Math.Round(r * 255, MidpointRounding.ToEven), (byte)Math.Round(g * 255, MidpointRounding.ToEven), (byte)Math.Round(b * 255, MidpointRounding.ToEven));
         }
 
         private static double HueToChannel(double p, double q, double t)

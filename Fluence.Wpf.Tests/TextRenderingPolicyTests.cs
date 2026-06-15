@@ -46,7 +46,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void FluenceWindow_DefaultStyleOwnsCrispRootRenderingPolicy()
         {
-            WpfTestSta.Invoke(() =>
+            WpfTestSta.Invoke(static () =>
             {
                 Application? application = WpfTestSta.EnsureApplication();
                 ResetApplication(application);
@@ -55,7 +55,7 @@ namespace Fluence.Wpf.Tests
                 {
                     Width = 320,
                     Height = 240,
-                    Content = new Grid()
+                    Content = new Grid(),
                 };
 
                 try
@@ -79,7 +79,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void FluenceWindow_ChildInheritsPixelAlignmentPolicy()
         {
-            WpfTestSta.Invoke(() =>
+            WpfTestSta.Invoke(static () =>
             {
                 Application? application = WpfTestSta.EnsureApplication();
                 ResetApplication(application);
@@ -89,7 +89,7 @@ namespace Fluence.Wpf.Tests
                 {
                     Width = 320,
                     Height = 240,
-                    Content = child
+                    Content = child,
                 };
 
                 try
@@ -114,7 +114,7 @@ namespace Fluence.Wpf.Tests
             [
                 Path.Combine(repoRoot, "Fluence.Wpf"),
                 Path.Combine(repoRoot, "Fluence.Wpf.Demo"),
-                Path.Combine(repoRoot, "Fluence.Wpf.Demo.Mvvm")
+                Path.Combine(repoRoot, "Fluence.Wpf.Demo.Mvvm"),
             ];
 
             const string textOptionsPrefix = "TextOptions.";
@@ -128,13 +128,13 @@ namespace Fluence.Wpf.Tests
                 textOptionsPrefix + "SetTextHintingMode",
                 textOptionsPrefix + "GetTextFormattingMode",
                 textOptionsPrefix + "GetTextRenderingMode",
-                textOptionsPrefix + "GetTextHintingMode"
+                textOptionsPrefix + "GetTextHintingMode",
             ];
 
             string[] offenders =
             [
                 .. EnumerateProductionSources(productionRoots)
-                    .SelectMany(path => FindBannedFragments(path, bannedFragments))
+                    .SelectMany(path => FindBannedFragments(path, bannedFragments)),
             ];
 
             Assert.AreEqual(
@@ -151,7 +151,7 @@ namespace Fluence.Wpf.Tests
             [
                 Path.Combine(repoRoot, "Fluence.Wpf"),
                 Path.Combine(repoRoot, "Fluence.Wpf.Demo"),
-                Path.Combine(repoRoot, "Fluence.Wpf.Demo.Mvvm")
+                Path.Combine(repoRoot, "Fluence.Wpf.Demo.Mvvm"),
             ];
 
             string allowedPath = Path.Combine(
@@ -163,7 +163,7 @@ namespace Fluence.Wpf.Tests
             [
                 .. EnumerateProductionSources(productionRoots)
                     .Where(path => !string.Equals(GetRepoRelativePath(path), allowedPath, StringComparison.OrdinalIgnoreCase) && File.ReadAllText(path).IndexOf("SnapsToDevicePixels", StringComparison.Ordinal) >= 0)
-                    .Select(GetRepoRelativePath)
+                    .Select(GetRepoRelativePath),
             ];
 
             Assert.AreEqual(
@@ -175,7 +175,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void TypographyStyles_ApplyTypeRampMetrics()
         {
-            WpfTestSta.Invoke(() =>
+            WpfTestSta.Invoke(static () =>
             {
                 Application? application = WpfTestSta.EnsureApplication();
                 ResetApplication(application);
@@ -194,7 +194,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void TextBlockExtensions_Typography_AppliesTypeRampStyleOnly()
         {
-            WpfTestSta.Invoke(() =>
+            WpfTestSta.Invoke(static () =>
             {
                 Application? application = WpfTestSta.EnsureApplication();
                 ResetApplication(application);
@@ -216,7 +216,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void TextBlockExtensions_TypographyNone_DoesNotMutateExistingMetrics()
         {
-            WpfTestSta.Invoke(() =>
+            WpfTestSta.Invoke(static () =>
             {
                 WpfTextBlock textBlock = new();
                 textBlock.SetTypography(FluentTypography.Body);
@@ -243,7 +243,7 @@ namespace Fluence.Wpf.Tests
             ApplicationThemeManager.ResetForTesting();
             ApplicationAccentColorManager.ResetForTesting();
             application?.Resources.Clear();
-            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
+            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
         }
 
         private static void AssertTypographyMetrics(
@@ -258,7 +258,7 @@ namespace Fluence.Wpf.Tests
 
             WpfTextBlock textBlock = new()
             {
-                Style = style
+                Style = style,
             };
 
             Assert.AreEqual(expectedFontSize, textBlock.FontSize, 0.01d, styleKey + " should set FontSize.");

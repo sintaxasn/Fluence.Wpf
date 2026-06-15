@@ -30,6 +30,7 @@ using Fluence.Wpf.Native;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Win32;
 using System;
+using System.Globalization;
 using System.Threading;
 using System.Windows.Media;
 
@@ -173,7 +174,7 @@ namespace Fluence.Wpf.Tests
                     TestContext?.WriteLine("=== OS regenerated the palette - Option A viable ===");
                     for (int i = 0; i < 7; i++)
                     {
-                        TestContext?.WriteLine($"  palette[{i}] = #{newPalette[i * 4]:X2}{newPalette[(i * 4) + 1]:X2}{newPalette[(i * 4) + 2]:X2}");
+                        TestContext?.WriteLine($"  palette[{i.ToString(CultureInfo.InvariantCulture)}] = #{newPalette[i * 4]:X2}{newPalette[(i * 4) + 1]:X2}{newPalette[(i * 4) + 2]:X2}");
                     }
                 }
                 else

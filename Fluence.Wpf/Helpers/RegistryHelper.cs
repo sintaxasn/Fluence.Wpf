@@ -97,7 +97,7 @@ namespace Fluence.Wpf.Helpers
         /// <summary>
         /// Reads the active Windows theme file name from <c>HKCU\...\Themes\CurrentTheme</c>,
         /// strips the directory and extension, and returns the lowercased base name. Returns
-        /// <c>null</c> when the value is missing or empty. Used by <c>ResolveTheme</c> as a
+        /// <see langword="null"/> when the value is missing or empty. Used by <c>ResolveTheme</c> as a
         /// defensive dual-fallback ahead of <c>AppsUseLightTheme</c> so that named Windows 11
         /// themes (e.g. <c>themea.theme</c>) and high-contrast variants are recognised.
         /// </summary>

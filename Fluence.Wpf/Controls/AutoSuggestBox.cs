@@ -108,7 +108,7 @@ namespace Fluence.Wpf.Controls
                 nameof(ItemsSource),
                 typeof(IEnumerable),
                 typeof(AutoSuggestBox),
-                new FrameworkPropertyMetadata(null, OnItemsSourceChanged));
+                new FrameworkPropertyMetadata(defaultValue: null, OnItemsSourceChanged));
 
         /// <summary>
         /// Gets or sets the collection of suggestions shown in the suggestion list.
@@ -129,7 +129,7 @@ namespace Fluence.Wpf.Controls
                 nameof(IsSuggestionListOpen),
                 typeof(bool),
                 typeof(AutoSuggestBox),
-                new FrameworkPropertyMetadata(false));
+                new FrameworkPropertyMetadata(defaultValue: false));
 
         /// <summary>
         /// Gets or sets whether the suggestion list popup is open. The control opens the
@@ -210,7 +210,7 @@ namespace Fluence.Wpf.Controls
                 nameof(UpdateTextOnSelect),
                 typeof(bool),
                 typeof(AutoSuggestBox),
-                new FrameworkPropertyMetadata(true));
+                new FrameworkPropertyMetadata(defaultValue: true));
 
         /// <summary>
         /// Gets or sets whether choosing a suggestion updates <see cref="Text"/> with the
@@ -230,7 +230,7 @@ namespace Fluence.Wpf.Controls
                 nameof(QueryIcon),
                 typeof(object),
                 typeof(AutoSuggestBox),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Gets or sets the icon shown at the right edge of the text box, typically a
@@ -253,7 +253,7 @@ namespace Fluence.Wpf.Controls
                 nameof(Header),
                 typeof(object),
                 typeof(AutoSuggestBox),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Gets or sets the optional header content shown above the text box.
@@ -336,7 +336,7 @@ namespace Fluence.Wpf.Controls
             }
             else
             {
-                SetCurrentValue(IsSuggestionListOpenProperty, false);
+                SetCurrentValue(IsSuggestionListOpenProperty, value: false);
             }
         }
 
@@ -366,7 +366,7 @@ namespace Fluence.Wpf.Controls
             }
             else if (e.Key == Key.Escape && IsSuggestionListOpen)
             {
-                SetCurrentValue(IsSuggestionListOpenProperty, false);
+                SetCurrentValue(IsSuggestionListOpenProperty, value: false);
                 e.Handled = true;
             }
         }
@@ -406,7 +406,7 @@ namespace Fluence.Wpf.Controls
                     return null;
                 }
 
-                current = property.GetValue(current, null);
+                current = property.GetValue(current, index: null);
             }
 
             return current;
@@ -443,7 +443,7 @@ namespace Fluence.Wpf.Controls
         /// <param name="e">The event data.</param>
         private void OnQueryButtonClick(object sender, RoutedEventArgs e)
         {
-            SubmitQuery(null);
+            SubmitQuery(chosenSuggestion: null);
         }
 
         private void OnSuggestionsListPreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -472,7 +472,7 @@ namespace Fluence.Wpf.Controls
         private void OnPopupClosed(object? sender, EventArgs e)
         {
             _isPreviewingSuggestion = false;
-            SetCurrentValue(IsSuggestionListOpenProperty, false);
+            SetCurrentValue(IsSuggestionListOpenProperty, value: false);
             if (_suggestionsList is not null && _suggestionsList.SelectedIndex != -1)
             {
                 _suggestionsList.SelectedIndex = -1;
@@ -492,7 +492,7 @@ namespace Fluence.Wpf.Controls
             }
             else
             {
-                SubmitQuery(null);
+                SubmitQuery(chosenSuggestion: null);
             }
         }
 
@@ -530,7 +530,7 @@ namespace Fluence.Wpf.Controls
                 ChosenSuggestion = chosenSuggestion,
             };
             QuerySubmitted?.Invoke(this, args);
-            SetCurrentValue(IsSuggestionListOpenProperty, false);
+            SetCurrentValue(IsSuggestionListOpenProperty, value: false);
         }
 
         /// <summary>
@@ -598,13 +598,13 @@ namespace Fluence.Wpf.Controls
         {
             if (!HasSuggestions())
             {
-                SetCurrentValue(IsSuggestionListOpenProperty, false);
+                SetCurrentValue(IsSuggestionListOpenProperty, value: false);
                 return;
             }
 
             if (IsKeyboardFocusWithin)
             {
-                SetCurrentValue(IsSuggestionListOpenProperty, true);
+                SetCurrentValue(IsSuggestionListOpenProperty, value: true);
             }
         }
 

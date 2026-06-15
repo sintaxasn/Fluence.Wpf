@@ -60,7 +60,7 @@ namespace Fluence.Wpf.Demo.Pages
         {
             PlainText = 0,
             Xaml = 1,
-            CSharp = 2
+            CSharp = 2,
         }
 
         private static readonly HashSet<string> CSharpKeywords = new(StringComparer.Ordinal)
@@ -135,7 +135,7 @@ namespace Fluence.Wpf.Demo.Pages
             "virtual",
             "void",
             "volatile",
-            "while"
+            "while",
         };
 
         /// <summary>Identifies the <see cref="SampleDescription"/> dependency property.</summary>
@@ -168,7 +168,7 @@ namespace Fluence.Wpf.Demo.Pages
                 "DemoContent",
                 typeof(object),
                 typeof(DemoSampleControl),
-                new FrameworkPropertyMetadata(null, OnDemoContentChanged));
+                new FrameworkPropertyMetadata(defaultValue: null, OnDemoContentChanged));
 
         /// <summary>Identifies the <see cref="OutputContent"/> dependency property.</summary>
         public static readonly DependencyProperty OutputContentProperty =
@@ -176,7 +176,7 @@ namespace Fluence.Wpf.Demo.Pages
                 "OutputContent",
                 typeof(object),
                 typeof(DemoSampleControl),
-                new FrameworkPropertyMetadata(null, OnOutputContentChanged));
+                new FrameworkPropertyMetadata(defaultValue: null, OnOutputContentChanged));
 
         /// <summary>Identifies the <see cref="RightRailContent"/> dependency property.</summary>
         public static readonly DependencyProperty RightRailContentProperty =
@@ -184,7 +184,7 @@ namespace Fluence.Wpf.Demo.Pages
                 "RightRailContent",
                 typeof(object),
                 typeof(DemoSampleControl),
-                new FrameworkPropertyMetadata(null, OnRightRailContentChanged));
+                new FrameworkPropertyMetadata(defaultValue: null, OnRightRailContentChanged));
 
         private bool _sourceLoaded;
 
@@ -407,7 +407,7 @@ namespace Fluence.Wpf.Demo.Pages
             TabItem tab = new()
             {
                 Header = header,
-                Content = CreateSourcePane(source, language)
+                Content = CreateSourcePane(source, language),
             };
             _ = SourceTabControl.Items.Add(tab);
 
@@ -417,7 +417,7 @@ namespace Fluence.Wpf.Demo.Pages
             }
         }
 
-        private Grid CreateSourcePane(string source, SourceLanguage language)
+        private static Grid CreateSourcePane(string source, SourceLanguage language)
         {
             Grid panel = new();
 
@@ -439,13 +439,13 @@ namespace Fluence.Wpf.Demo.Pages
                 CornerRadius = new CornerRadius(4),
                 HorizontalAlignment = HorizontalAlignment.Right,
                 Margin = GetThicknessResource("DemoSourceCopyButtonHostMargin", new Thickness(0, 8, 8, 0)),
-                VerticalAlignment = VerticalAlignment.Top
+                VerticalAlignment = VerticalAlignment.Top,
             };
             border.SetResourceReference(BackgroundProperty, "CardBackgroundFillColorDefaultBrush");
             return border;
         }
 
-        private Controls.Button CreateCopyButton(string source)
+        private static Controls.Button CreateCopyButton(string source)
         {
             Controls.Button button = new()
             {
@@ -455,13 +455,13 @@ namespace Fluence.Wpf.Demo.Pages
                 HorizontalAlignment = HorizontalAlignment.Right,
                 MinWidth = 0,
                 Padding = GetThicknessResource("DemoSourceCopyButtonPadding", new Thickness(8, 4, 8, 4)),
-                Tag = source
+                Tag = source,
             };
             button.Click += OnCopySourceButtonClick;
             return button;
         }
 
-        private void OnCopySourceButtonClick(object sender, RoutedEventArgs e)
+        private static void OnCopySourceButtonClick(object sender, RoutedEventArgs e)
         {
             string? source = sender is FrameworkElement element ? element.Tag as string : null;
             if (!string.IsNullOrWhiteSpace(source))
@@ -482,7 +482,7 @@ namespace Fluence.Wpf.Demo.Pages
                 MinHeight = 220,
                 Name = "SourceTextViewer",
                 Padding = new Thickness(0),
-                VerticalScrollBarVisibility = ScrollBarVisibility.Auto
+                VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
             };
             viewer.SetResourceReference(BackgroundProperty, "SolidBackgroundFillColorBaseBrush");
             viewer.SetResourceReference(ForegroundProperty, "TextFillColorPrimaryBrush");
@@ -496,18 +496,18 @@ namespace Fluence.Wpf.Demo.Pages
             {
                 FontFamily = new FontFamily("Consolas"),
                 FontSize = 12,
-                PagePadding = GetThicknessResource("DemoSourceCodeDocumentPadding", new Thickness(12))
+                PagePadding = GetThicknessResource("DemoSourceCodeDocumentPadding", new Thickness(12)),
             };
             document.SetResourceReference(TextElement.ForegroundProperty, "TextFillColorPrimaryBrush");
 
             Paragraph paragraph = new()
             {
                 LineHeight = 18,
-                Margin = new Thickness(0)
+                Margin = new Thickness(0),
             };
             document.Blocks.Add(paragraph);
 
-            string normalized = (source ?? string.Empty).Replace("\r\n", "\n").Replace('\r', '\n');
+            string normalized = (source ?? string.Empty).Replace("\r\n", "\n", StringComparison.Ordinal).Replace('\r', '\n');
             string[] lines = normalized.Split('\n');
             for (int i = 0; i < lines.Length; i++)
             {

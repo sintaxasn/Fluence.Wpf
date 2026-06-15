@@ -39,13 +39,13 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void TextBlockExtensions_Typography_UsesNamedTextBlockStyleResource()
         {
-            WpfTestSta.Invoke(() =>
+            WpfTestSta.Invoke(static () =>
             {
                 Application? application = WpfTestSta.EnsureApplication();
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
                 application?.Resources.Clear();
-                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
 
                 try
                 {

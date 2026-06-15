@@ -47,7 +47,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void InfoBar_StyleApplies_RootBorderFound()
         {
-            WpfTestSta.Invoke(() =>
+            WpfTestSta.Invoke(static () =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -66,7 +66,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void InfoBar_SeverityLevelsVSM_AllStatesAccessible()
         {
-            WpfTestSta.Invoke(() =>
+            WpfTestSta.Invoke(static () =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -77,10 +77,10 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 // All 4 WI-3 B14 SeverityLevels states must be reachable via GoToState
-                bool ok1 = VisualStateManager.GoToState(bar, "Informational", false);
-                bool ok2 = VisualStateManager.GoToState(bar, "Success", false);
-                bool ok3 = VisualStateManager.GoToState(bar, "Warning", false);
-                bool ok4 = VisualStateManager.GoToState(bar, "Error", false);
+                bool ok1 = VisualStateManager.GoToState(bar, "Informational", useTransitions: false);
+                bool ok2 = VisualStateManager.GoToState(bar, "Success", useTransitions: false);
+                bool ok3 = VisualStateManager.GoToState(bar, "Warning", useTransitions: false);
+                bool ok4 = VisualStateManager.GoToState(bar, "Error", useTransitions: false);
 
                 Assert.IsTrue(ok1, "GoToState('Informational') must succeed - SeverityLevels VSM group must exist.");
                 Assert.IsTrue(ok2, "GoToState('Success') must succeed.");
@@ -93,7 +93,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void InfoBar_DefaultSeverity_IndicatorBarHasBackground()
         {
-            WpfTestSta.Invoke(() =>
+            WpfTestSta.Invoke(static () =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -113,7 +113,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void InfoBar_InformationalAccentBrushes_TrackAccentColorChange()
         {
-            WpfTestSta.Invoke(() =>
+            WpfTestSta.Invoke(static () =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -154,7 +154,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void InfoBar_SeverityChange_IndicatorBarBackgroundUpdates()
         {
-            WpfTestSta.Invoke(() =>
+            WpfTestSta.Invoke(static () =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -181,7 +181,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void InfoBar_ActionButton_IsNotClippedByRootBorder()
         {
-            WpfTestSta.Invoke(() =>
+            WpfTestSta.Invoke(static () =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -192,7 +192,7 @@ namespace Fluence.Wpf.Tests
                     Severity = InfoBarSeverity.Error,
                     Title = "Error",
                     Message = "Retry the operation.",
-                    ActionButton = new Button { Content = "Retry" }
+                    ActionButton = new Button { Content = "Retry" },
                 };
                 Window w = new() { Content = bar, Width = 520, Height = 120 };
                 w.Show();

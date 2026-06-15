@@ -135,7 +135,7 @@ namespace Fluence.Wpf.Controls
                 nameof(Header),
                 typeof(object),
                 typeof(NumberBox),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Identifies the <see cref="SpinButtonPlacementMode"/> dependency property.
@@ -155,7 +155,7 @@ namespace Fluence.Wpf.Controls
                 nameof(AcceptsExpression),
                 typeof(bool),
                 typeof(NumberBox),
-                new FrameworkPropertyMetadata(false));
+                new FrameworkPropertyMetadata(defaultValue: false));
 
         /// <summary>
         /// Identifies the <see cref="PlaceholderText"/> dependency property.
@@ -165,7 +165,7 @@ namespace Fluence.Wpf.Controls
                 nameof(PlaceholderText),
                 typeof(string),
                 typeof(NumberBox),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Identifies the <see cref="Description"/> dependency property.
@@ -175,7 +175,7 @@ namespace Fluence.Wpf.Controls
                 nameof(Description),
                 typeof(string),
                 typeof(NumberBox),
-                new FrameworkPropertyMetadata(null));
+                new FrameworkPropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Identifies the <see cref="Text"/> dependency property.
@@ -297,7 +297,7 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Updates <see cref="Value"/> from <see cref="Text"/> if parsing succeeds.
         /// </summary>
-        /// <returns><c>true</c> if a number was parsed and applied; otherwise <c>false</c>.</returns>
+        /// <returns><see langword="true"/> if a number was parsed and applied; otherwise <see langword="false"/>.</returns>
         public bool TryParseText()
         {
             string s = Text ?? string.Empty;

@@ -90,8 +90,8 @@ namespace Fluence.Wpf.Controls
         public static readonly IValueConverter IsNotNullConverter = new IsNotNullValueConverter();
 
         /// <summary>
-        /// One-way converter that maps a non-null value to <c>true</c> and <see langword="null"/> to
-        /// <c>false</c>. <see cref="ConvertBack(object, Type, object, CultureInfo)"/> is not
+        /// One-way converter that maps a non-null value to <see langword="true"/> and <see langword="null"/> to
+        /// <see langword="false"/>. <see cref="ConvertBack(object, Type, object, CultureInfo)"/> is not
         /// supported and throws <see cref="NotSupportedException"/>.
         /// </summary>
         private sealed class IsNotNullValueConverter : IValueConverter
@@ -151,7 +151,7 @@ namespace Fluence.Wpf.Controls
                 nameof(ExtendsContentIntoTitleBar),
                 typeof(bool),
                 typeof(FluenceWindow),
-                new PropertyMetadata(false, OnExtendsContentIntoTitleBarChanged));
+                new PropertyMetadata(defaultValue: false, OnExtendsContentIntoTitleBarChanged));
 
         /// <summary>
         /// Identifies the <see cref="TitleBar"/> dependency property.
@@ -161,7 +161,7 @@ namespace Fluence.Wpf.Controls
                 nameof(TitleBar),
                 typeof(UIElement),
                 typeof(FluenceWindow),
-                new PropertyMetadata(null));
+                new PropertyMetadata(propertyChangedCallback: null));
 
         /// <summary>
         /// Identifies the <see cref="TitleBarHeight"/> dependency property.
@@ -181,7 +181,7 @@ namespace Fluence.Wpf.Controls
                 nameof(ShowIcon),
                 typeof(bool),
                 typeof(FluenceWindow),
-                new PropertyMetadata(true));
+                new PropertyMetadata(defaultValue: true));
 
         /// <summary>
         /// Identifies the <see cref="ShowTitle"/> dependency property.
@@ -191,7 +191,7 @@ namespace Fluence.Wpf.Controls
                 nameof(ShowTitle),
                 typeof(bool),
                 typeof(FluenceWindow),
-                new PropertyMetadata(true));
+                new PropertyMetadata(defaultValue: true));
 
         /// <summary>
         /// Identifies the <see cref="IsMinimizeButtonVisible"/> dependency property.
@@ -231,7 +231,7 @@ namespace Fluence.Wpf.Controls
                 nameof(IsMinimizable),
                 typeof(bool),
                 typeof(FluenceWindow),
-                new PropertyMetadata(true, OnCaptionButtonChromeOverrideChanged));
+                new PropertyMetadata(defaultValue: true, OnCaptionButtonChromeOverrideChanged));
 
         /// <summary>
         /// Identifies the <see cref="IsMaximizable"/> dependency property.
@@ -241,7 +241,7 @@ namespace Fluence.Wpf.Controls
                 nameof(IsMaximizable),
                 typeof(bool),
                 typeof(FluenceWindow),
-                new PropertyMetadata(true, OnCaptionButtonChromeOverrideChanged));
+                new PropertyMetadata(defaultValue: true, OnCaptionButtonChromeOverrideChanged));
 
         /// <summary>
         /// Identifies the <see cref="IsClosable"/> dependency property.
@@ -251,7 +251,7 @@ namespace Fluence.Wpf.Controls
                 nameof(IsClosable),
                 typeof(bool),
                 typeof(FluenceWindow),
-                new PropertyMetadata(true, OnCaptionButtonChromeOverrideChanged));
+                new PropertyMetadata(defaultValue: true, OnCaptionButtonChromeOverrideChanged));
 
         /// <summary>
         /// Identifies the <see cref="IsMoveable"/> dependency property.
@@ -261,7 +261,7 @@ namespace Fluence.Wpf.Controls
                 nameof(IsMoveable),
                 typeof(bool),
                 typeof(FluenceWindow),
-                new PropertyMetadata(true));
+                new PropertyMetadata(defaultValue: true));
 
         /// <summary>
         /// Identifies the <see cref="HasShadow"/> dependency property.
@@ -271,7 +271,7 @@ namespace Fluence.Wpf.Controls
                 nameof(HasShadow),
                 typeof(bool),
                 typeof(FluenceWindow),
-                new PropertyMetadata(true, OnHasShadowChanged));
+                new PropertyMetadata(defaultValue: true, OnHasShadowChanged));
 
         #endregion Dependency Properties
 
@@ -319,7 +319,7 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         /// <remarks>
         /// Assigning <see langword="null"/> clears custom title-bar content. When <see cref="ExtendsContentIntoTitleBar"/>
-        /// is <c>true</c>, the control template falls back to the built-in icon and title presentation.
+        /// is <see langword="true"/>, the control template falls back to the built-in icon and title presentation.
         /// </remarks>
         public UIElement? TitleBar
         {
@@ -463,7 +463,7 @@ namespace Fluence.Wpf.Controls
             // merged-Generic path; this covers the unmerged path.
             ResourceDictionary resourceDictionary = new()
             {
-                Source = new Uri("pack://application:,,,/Fluence.Wpf;component/Themes/Controls/FluenceWindow.xaml", UriKind.Absolute)
+                Source = new Uri("pack://application:,,,/Fluence.Wpf;component/Themes/Controls/FluenceWindow.xaml", UriKind.Absolute),
             };
             Style = resourceDictionary[typeof(FluenceWindow)] as Style;
 
@@ -982,11 +982,11 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Returns <c>true</c> when the caption-chrome override property has been explicitly assigned
+        /// Returns <see langword="true"/> when the caption-chrome override property has been explicitly assigned
         /// (via code, XAML local value, style, binding, etc.) rather than left at its declared default.
         /// </summary>
         /// <param name="dp">The dependency property to check.</param>
-        /// <returns><c>true</c> if the property has been explicitly assigned; otherwise, <c>false</c>.</returns>
+        /// <returns><see langword="true"/> if the property has been explicitly assigned; otherwise, <see langword="false"/>.</returns>
         private bool IsCaptionChromeOverrideExplicit(DependencyProperty dp)
         {
             ValueSource source = DependencyPropertyHelper.GetValueSource(this, dp);
@@ -1140,7 +1140,7 @@ namespace Fluence.Wpf.Controls
                 }
             }
 
-            Marshal.StructureToPtr(mmi, lParam, false);
+            Marshal.StructureToPtr(mmi, lParam, fDeleteOld: false);
             handled = true;
         }
 
@@ -1243,7 +1243,7 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         /// <param name="point">The point to test, in window coordinates.</param>
         /// <param name="hit">The resulting resize hit, if any.</param>
-        /// <returns><c>true</c> if the point falls in the top resize band; otherwise, <c>false</c>.</returns>
+        /// <returns><see langword="true"/> if the point falls in the top resize band; otherwise, <see langword="false"/>.</returns>
         private bool TryGetTopResizeHit(Point point, out int hit)
         {
             hit = 0;
@@ -1311,12 +1311,12 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Returns <c>true</c> when <paramref name="windowPoint"/> (window-space) falls within the
+        /// Returns <see langword="true"/> when <paramref name="windowPoint"/> (window-space) falls within the
         /// rendered bounds of <paramref name="element"/>.
         /// </summary>
         /// <param name="element">The element to test.</param>
         /// <param name="windowPoint">The point to test, in window coordinates.</param>
-        /// <returns><c>true</c> if the point falls within the element's bounds; otherwise, <c>false</c>.</returns>
+        /// <returns><see langword="true"/> if the point falls within the element's bounds; otherwise, <see langword="false"/>.</returns>
         private bool IsOverElement(UIElement element, Point windowPoint)
         {
             if (element is null || element.Visibility != Visibility.Visible)
@@ -1330,9 +1330,9 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Returns <c>true</c> when the element under <paramref name="windowPoint"/> (or any of its
+        /// Returns <see langword="true"/> when the element under <paramref name="windowPoint"/> (or any of its
         /// visual ancestors) has <see cref="WindowChrome.IsHitTestVisibleInChromeProperty"/> set to
-        /// <c>true</c>.  Used by <see cref="HitTestTitleBar"/> to let clicks on interactive controls
+        /// <see langword="true"/>.  Used by <see cref="HitTestTitleBar"/> to let clicks on interactive controls
         /// inside the title bar (e.g. a search TextBox or ToggleSwitch) fall through to WPF instead
         /// of being swallowed as caption-area drag gestures.
         /// </summary>

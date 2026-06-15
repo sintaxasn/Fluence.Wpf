@@ -73,7 +73,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void TimePicker_DefaultStyle_AppliesTemplateParts()
         {
-            RunOnStaThread(() =>
+            RunOnStaThread(static () =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -126,7 +126,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void TimePicker_SelectedTime_UpdatesFieldSegmentsAndPlaceholder()
         {
-            RunOnStaThread(() =>
+            RunOnStaThread(static () =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -347,7 +347,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void TimePicker_ClockIdentifierAndMinuteIncrement_CoerceInvalidValues()
         {
-            RunOnStaThread(() =>
+            RunOnStaThread(static () =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -357,7 +357,7 @@ namespace Fluence.Wpf.Tests
                 // The default is regional: 24-hour when the culture short time pattern uses
                 // the 'H' specifier, otherwise 12-hour. Compute the expectation from the same
                 // rule so the assertion holds on any machine culture.
-                string expectedDefaultClock = CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern.Contains("H")
+                string expectedDefaultClock = CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern.Contains("H", StringComparison.Ordinal)
                     ? "24HourClock"
                     : "12HourClock";
                 Assert.AreEqual(expectedDefaultClock, picker.ClockIdentifier,
@@ -532,7 +532,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void TimePicker_AutomationPeer_ReportsNameFromTimeOrPlaceholder()
         {
-            RunOnStaThread(() =>
+            RunOnStaThread(static () =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -809,7 +809,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void TimePicker_OutOfRangeSelectedTime_NormalizesFieldText()
         {
-            RunOnStaThread(() =>
+            RunOnStaThread(static () =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -891,7 +891,7 @@ namespace Fluence.Wpf.Tests
 
                     // A light dismiss closes the popup outside the control's own pipeline,
                     // exactly like the StaysOpen=false dismissal on the field mousedown.
-                    popup.SetCurrentValue(Popup.IsOpenProperty, false);
+                    popup.SetCurrentValue(Popup.IsOpenProperty, value: false);
                     DrainDispatcher(window.Dispatcher);
 
                     // The click of the same press-release gesture must not reopen the flyout.
@@ -916,7 +916,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void TimePicker_SurfaceBrushes_ResolveAfterThemeCycle()
         {
-            RunOnStaThread(() =>
+            RunOnStaThread(static () =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
