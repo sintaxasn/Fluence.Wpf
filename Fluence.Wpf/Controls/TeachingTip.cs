@@ -607,8 +607,8 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         /// <param name="element">The element to detach.</param>
         /// <exception cref="InvalidOperationException">
-        /// The parent is not a <see cref="System.Windows.Controls.Panel"/>, a
-        /// <see cref="System.Windows.Controls.Decorator"/> (which includes Border), or a
+        /// The parent is not a <see cref="Panel"/>, a
+        /// <see cref="Decorator"/> (which includes Border), or a
         /// <see cref="ContentControl"/>.
         /// </exception>
         private static void DetachFromParent(FrameworkElement element)
@@ -619,11 +619,11 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            if (parent is System.Windows.Controls.Panel panel)
+            if (parent is Panel panel)
             {
                 panel.Children.Remove(element);
             }
-            else if (parent is System.Windows.Controls.Decorator decorator)
+            else if (parent is Decorator decorator)
             {
                 decorator.Child = null;
             }

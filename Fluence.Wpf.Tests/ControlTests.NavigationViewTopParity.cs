@@ -295,7 +295,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsTrue(overflowButton.ContextMenu.Items.Count > 0,
                         "Top pane overflow menu should contain hidden navigation items.");
 
-                    FluentMenuItem? overflowItem = overflowButton.ContextMenu.Items[overflowButton.ContextMenu.Items.Count - 1] as FluentMenuItem;
+                    FluentMenuItem? overflowItem = overflowButton.ContextMenu.Items[^1] as FluentMenuItem;
                     Assert.IsNotNull(overflowItem, "Overflow entries should be lightweight Fluence MenuItem rows.");
                     Assert.AreEqual(280.0, overflowItem.MinWidth, 0.01,
                         "Overflow entries should use the wider WinUI-style flyout row width.");

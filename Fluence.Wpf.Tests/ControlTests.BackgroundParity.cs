@@ -558,7 +558,7 @@ namespace Fluence.Wpf.Tests
                     continue;
                 }
 
-                string value = source.Substring(valueStart, valueEnd - valueStart);
+                string value = source[valueStart..valueEnd];
                 if (!IsLiteralBackgroundValue(value) || value.Equals("Transparent", StringComparison.Ordinal))
                 {
                     continue;
@@ -702,7 +702,7 @@ namespace Fluence.Wpf.Tests
                     (path[root.Length] == Path.DirectorySeparatorChar || path[root.Length] == Path.AltDirectorySeparatorChar)
                     ? 1
                     : 0;
-                return path.Substring(root.Length + separatorLength);
+                return path[(root.Length + separatorLength)..];
             }
 
             return path;

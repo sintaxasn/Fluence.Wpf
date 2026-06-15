@@ -73,7 +73,7 @@ namespace Fluence.Wpf.Tests
             application?.Resources.MergedDictionaries.Clear();
             ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
             Collection<ResourceDictionary>? dictionaries = application?.Resources.MergedDictionaries;
-            ResourceDictionary? genericDictionary = dictionaries?.Count > 0 ? dictionaries[dictionaries.Count - 1] : null;
+            ResourceDictionary? genericDictionary = dictionaries?.Count > 0 ? dictionaries[^1] : null;
 
             ResourceDictionary demoShared = new()
             {

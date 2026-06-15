@@ -444,7 +444,7 @@ namespace Fluence.Wpf.Demo.Pages.Menus
 
         private async Task ShowDialogAsync()
         {
-            Fluence.Wpf.Controls.ContentDialog dialog = new()
+            Controls.ContentDialog dialog = new()
             {
                 Title = "Delete file?",
                 Content = "Roadmap.md will be permanently deleted. This cannot be undone.",
@@ -453,7 +453,7 @@ namespace Fluence.Wpf.Demo.Pages.Menus
                 DefaultButton = Fluence.Wpf.ContentDialogButton.Close
             };
 
-            Fluence.Wpf.ContentDialogResult result = await dialog.ShowAsync();
+            ContentDialogResult result = await dialog.ShowAsync();
             DialogResultLabel.Text = string.Format(CultureInfo.CurrentCulture, "Dialog result: {0}", result);
         }
 

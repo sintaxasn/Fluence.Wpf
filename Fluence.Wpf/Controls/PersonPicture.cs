@@ -323,13 +323,13 @@ namespace Fluence.Wpf.Controls
             // Explicit initials take precedence.
             if (!string.IsNullOrWhiteSpace(Initials))
             {
-                return Initials.Length > 2 ? Initials.Substring(0, 2).ToUpperInvariant() : Initials.ToUpperInvariant();
+                return Initials.Length > 2 ? Initials[..2].ToUpperInvariant() : Initials.ToUpperInvariant();
             }
 
             // Derive from DisplayName: take first character of up to two words.
             string[] parts = (DisplayName ?? string.Empty).Trim().Split(InitialsSeparators, StringSplitOptions.RemoveEmptyEntries);
             return parts.Length > 1
-                ? (parts[0][0].ToString() + parts[parts.Length - 1][0].ToString()).ToUpperInvariant()
+                ? (parts[0][0].ToString() + parts[^1][0].ToString()).ToUpperInvariant()
                 : parts.Length == 1
                 ? parts[0][0].ToString().ToUpperInvariant()
                 : null;

@@ -71,7 +71,7 @@ namespace Fluence.Wpf.Tests
             application?.Resources.MergedDictionaries.Clear();
             ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, true);
             Collection<ResourceDictionary>? dictionaries = application?.Resources.MergedDictionaries;
-            return dictionaries?.Count > 0 ? dictionaries[dictionaries.Count - 1] : null;
+            return dictionaries?.Count > 0 ? dictionaries[^1] : null;
         }
 
         private static void RunWithComboBox(Action<ComboBox> testBody)

@@ -48,7 +48,7 @@ namespace Fluence.Wpf.Theming
         /// Adds and/or overrides the special brushes and shared resources on
         /// <paramref name="dict"/>. <paramref name="colors"/> is the computed color map for the
         /// resolved <paramref name="theme"/>; brush colors are resolved against it so they track
-        /// the active palette without any <see cref="System.Windows.DynamicResourceExtension"/>
+        /// the active palette without any <see cref="DynamicResourceExtension"/>
         /// indirection.
         /// </summary>
         internal static void Add(ResourceDictionary dict, IReadOnlyDictionary<string, Color> colors, ApplicationTheme theme)
@@ -113,7 +113,7 @@ namespace Fluence.Wpf.Theming
         /// <summary>
         /// Builds the two-border control focus visual (outer + inner stroke, 4 px radius),
         /// the WinUI 3 <c>DefaultControlFocusVisualStyle</c>. The border brushes are
-        /// resolved via <see cref="System.Windows.DynamicResourceExtension"/> so they re-evaluate
+        /// resolved via <see cref="DynamicResourceExtension"/> so they re-evaluate
         /// against whichever computed dictionary is active.
         /// </summary>
         private static Style BuildControlFocusVisualStyle()

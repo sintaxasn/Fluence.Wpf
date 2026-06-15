@@ -32,7 +32,7 @@ namespace Fluence.Wpf.Helpers
 {
     /// <summary>
     /// Carries the resolved DWM backdrop instructions computed by
-    /// <see cref="Fluence.Wpf.Controls.WindowPolicy.BuildBackdropPlan"/>. All fields are
+    /// <see cref="Controls.WindowPolicy.BuildBackdropPlan"/>. All fields are
     /// immutable after construction; callers read them and apply the instructions to the window
     /// handle without re-querying the OS.
     /// </summary>
@@ -72,9 +72,9 @@ namespace Fluence.Wpf.Helpers
 
         /// <summary>
         /// Gets the value to write to <c>DWMWA_CAPTION_COLOR</c>.
-        /// <see cref="Fluence.Wpf.Native.NativeConstants.DWMWA_COLOR_NONE"/> when a transparent
+        /// <see cref="Native.NativeConstants.DWMWA_COLOR_NONE"/> when a transparent
         /// backdrop is active (so the system backdrop shows through the caption strip);
-        /// <see cref="Fluence.Wpf.Native.NativeConstants.DWMWA_COLOR_DEFAULT"/> for
+        /// <see cref="Native.NativeConstants.DWMWA_COLOR_DEFAULT"/> for
         /// <see cref="BackdropType.None"/> (leave the DWM default in place).
         /// </summary>
         internal int CaptionColor { get; private set; } = captionColor;
@@ -100,7 +100,7 @@ namespace Fluence.Wpf.Helpers
         /// on the window handle. <see langword="true"/> when the resolved application theme is
         /// <see cref="ApplicationTheme.Dark"/>; the correct DWM attribute ordinal (19 or 20)
         /// is selected at apply-time by
-        /// <see cref="Fluence.Wpf.Native.NativeMethods.GetImmersiveDarkModeAttribute"/>.
+        /// <see cref="Native.NativeMethods.GetImmersiveDarkModeAttribute"/>.
         /// </summary>
         internal bool UseImmersiveDarkMode { get; private set; } = useImmersiveDarkMode;
     }

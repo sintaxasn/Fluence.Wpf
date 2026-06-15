@@ -141,7 +141,7 @@ namespace Fluence.Wpf.Tests
                 _ = MergeGenericDictionary(application);
                 ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.Mica, true);
 
-                Fluence.Wpf.Demo.MainWindow mw = new()
+                Demo.MainWindow mw = new()
                 {
                     ShowInTaskbar = false,
                     WindowStartupLocation = WindowStartupLocation.Manual,

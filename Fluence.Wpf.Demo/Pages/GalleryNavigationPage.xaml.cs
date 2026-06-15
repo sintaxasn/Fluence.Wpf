@@ -339,7 +339,7 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
 }
 ";
 
-        private void DemoPipsPager_SelectedIndexChanged(object sender, Fluence.Wpf.PipsPagerSelectedIndexChangedEventArgs e)
+        private void DemoPipsPager_SelectedIndexChanged(object sender, PipsPagerSelectedIndexChangedEventArgs e)
         {
             PipsPagerResultLabel.Text = string.Format(
                 System.Globalization.CultureInfo.CurrentCulture,
@@ -348,7 +348,7 @@ namespace Fluence.Wpf.Demo.Pages.Navigation
                 DemoPipsPager.NumberOfPages);
         }
 
-        private void DemoBreadcrumbBar_ItemClicked(object sender, Fluence.Wpf.BreadcrumbBarItemClickedEventArgs e)
+        private void DemoBreadcrumbBar_ItemClicked(object sender, BreadcrumbBarItemClickedEventArgs e)
         {
             for (int i = _breadcrumbPath.Count - 1; i > e.Index; i--)
             {

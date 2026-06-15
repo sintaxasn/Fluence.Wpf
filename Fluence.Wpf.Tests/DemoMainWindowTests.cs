@@ -315,7 +315,7 @@ namespace Fluence.Wpf.Tests
         {
             List<DemoNavigationItem> items = [.. DemoNavigationCatalog.Items];
             Assert.IsGreaterThanOrEqualTo(1, items.Count, "Navigation catalog should contain at least one entry.");
-            Assert.AreEqual("Accessibility", items[items.Count - 1].Title,
+            Assert.AreEqual("Accessibility", items[^1].Title,
                 "Accessibility should be the final regular NavigationView item after Windowing moves into Settings.");
             Assert.IsFalse(items.Any(item => string.Equals(item.Title, "Windowing", StringComparison.Ordinal)),
                 "Windowing should not remain as a regular NavigationView item.");
@@ -1682,7 +1682,7 @@ namespace Fluence.Wpf.Tests
                     int errorRingIndex = ringSample.XamlSource.IndexOf("x:Name=\"ErrorProgressRing\"", StringComparison.Ordinal);
                     Assert.IsGreaterThanOrEqualTo(0, pausedRingIndex, "ProgressRing source should include PausedProgressRing.");
                     Assert.IsTrue(errorRingIndex > pausedRingIndex, "ProgressRing source should place ErrorProgressRing after PausedProgressRing.");
-                    string pausedRingSource = ringSample.XamlSource.Substring(pausedRingIndex, errorRingIndex - pausedRingIndex);
+                    string pausedRingSource = ringSample.XamlSource[pausedRingIndex..errorRingIndex];
 
                     StringAssert.Contains(pausedRingSource, "IsIndeterminate=\"False\"");
                     StringAssert.Contains(pausedRingSource, "ProgressState=\"{x:Static uicore:ProgressRingState.Paused}\"");
@@ -2214,7 +2214,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsLessThan(list.Items.Count / 2, realizedBeforeScroll, "Initial layout should not realize most icon rows.");
                     Assert.IsNull(list.ItemContainerGenerator.ContainerFromIndex(list.Items.Count - 1), "Last row should stay unrealized before scrolling.");
 
-                    list.ScrollIntoView(list.Items[list.Items.Count - 1]);
+                    list.ScrollIntoView(list.Items[^1]);
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);

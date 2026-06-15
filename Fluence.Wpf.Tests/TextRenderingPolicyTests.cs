@@ -320,7 +320,7 @@ namespace Fluence.Wpf.Tests
                     (path[root.Length] == Path.DirectorySeparatorChar || path[root.Length] == Path.AltDirectorySeparatorChar)
                     ? 1
                     : 0;
-                return path.Substring(root.Length + separatorLength);
+                return path[(root.Length + separatorLength)..];
             }
 
             return path;

@@ -346,7 +346,7 @@ namespace Fluence.Wpf.Tests
             Assert.IsTrue(secondIndex >= 0, "Button trigger should contain condition: " + secondCondition);
             int endIndex = xaml.IndexOf("</MultiTrigger>", secondIndex, StringComparison.Ordinal);
             Assert.IsTrue(endIndex >= 0, "Button trigger should close after the requested conditions.");
-            return xaml.Substring(firstIndex, endIndex - firstIndex);
+            return xaml[firstIndex..endIndex];
         }
     }
 }

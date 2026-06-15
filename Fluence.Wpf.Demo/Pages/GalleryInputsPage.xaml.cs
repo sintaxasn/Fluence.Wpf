@@ -361,7 +361,7 @@ namespace Fluence.Wpf.Demo.Pages.Inputs
                 new DemoSampleSource(6, SliderInputXamlSource, SliderInputCSharpSource));
         }
 
-        private void DemoAutoSuggestBox_TextChanged(object sender, Fluence.Wpf.AutoSuggestBoxTextChangedEventArgs e)
+        private void DemoAutoSuggestBox_TextChanged(object sender, AutoSuggestBoxTextChangedEventArgs e)
         {
             if (e.Reason != Fluence.Wpf.AutoSuggestionBoxTextChangeReason.UserInput)
             {
@@ -382,7 +382,7 @@ namespace Fluence.Wpf.Demo.Pages.Inputs
             DemoAutoSuggestBox.ItemsSource = matches;
         }
 
-        private void DemoAutoSuggestBox_QuerySubmitted(object sender, Fluence.Wpf.AutoSuggestBoxQuerySubmittedEventArgs e)
+        private void DemoAutoSuggestBox_QuerySubmitted(object sender, AutoSuggestBoxQuerySubmittedEventArgs e)
         {
             string submitted = e.ChosenSuggestion as string ?? e.QueryText;
             AutoSuggestResultLabel.Text = string.Format(System.Globalization.CultureInfo.CurrentCulture, "Submitted: {0}", submitted);

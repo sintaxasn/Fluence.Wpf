@@ -815,8 +815,8 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    System.Windows.Controls.Panel? host =
-                        window.Template?.FindName("PART_DialogOverlayHost", window) as System.Windows.Controls.Panel;
+                    Panel? host =
+                        window.Template?.FindName("PART_DialogOverlayHost", window) as Panel;
                     Assert.IsNotNull(host, "FluenceWindow template must expose the full-window PART_DialogOverlayHost.");
 
                     Controls.ContentDialog dialog = new()

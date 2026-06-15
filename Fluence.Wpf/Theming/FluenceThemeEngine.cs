@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -128,7 +128,7 @@ namespace Fluence.Wpf.Theming
         /// Runs the same <see cref="ColorMap.Build"/> -> <see cref="BrushFactory.Build"/> ->
         /// <see cref="SpecialBrushes.Add"/> sequence as the live pipeline so the snapshot stays
         /// faithful to runtime. It deliberately omits <c>AcrylicNoiseBrush</c> (a runtime-generated
-        /// <see cref="System.Windows.Media.ImageBrush"/>), which the live
+        /// <see cref="ImageBrush"/>), which the live
         /// <see cref="BuildComputedDictionary"/> appends after the fact. Only
         /// <see cref="ApplicationTheme.Light"/> and <see cref="ApplicationTheme.Dark"/> are
         /// supported; high contrast is out of scope for design-time previews.

@@ -199,8 +199,8 @@ namespace Fluence.Wpf.Tests
                 Assert.IsTrue(compact.IsPaneToggleButtonVisible,
                     "Compact navigation sample should explicitly show the pane toggle button.");
 
-                System.Windows.Controls.Button? back = compact.Template.FindName(Controls.NavigationView.PartBackButton, compact) as System.Windows.Controls.Button;
-                System.Windows.Controls.Button? paneToggle = compact.Template.FindName(Controls.NavigationView.PartPaneToggleButton, compact) as System.Windows.Controls.Button;
+                Button? back = compact.Template.FindName(Controls.NavigationView.PartBackButton, compact) as Button;
+                Button? paneToggle = compact.Template.FindName(Controls.NavigationView.PartPaneToggleButton, compact) as Button;
                 Assert.IsNotNull(back, "Compact NavigationView template should expose PART_BackButton.");
                 Assert.IsNotNull(paneToggle, "Compact NavigationView template should expose PART_PaneToggleButton.");
                 Assert.AreEqual(Visibility.Visible, back.Visibility,

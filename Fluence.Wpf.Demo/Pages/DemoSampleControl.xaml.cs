@@ -551,7 +551,7 @@ namespace Fluence.Wpf.Demo.Pages
             {
                 if (StartsWith(line, index, "<!--"))
                 {
-                    AddRun(paragraph, line.Substring(index), "TextFillColorSecondaryBrush");
+                    AddRun(paragraph, line[index..], "TextFillColorSecondaryBrush");
                     return;
                 }
 
@@ -559,14 +559,14 @@ namespace Fluence.Wpf.Demo.Pages
                 if (current is '"' or '\'')
                 {
                     int end = FindQuotedTextEnd(line, index, current);
-                    AddRun(paragraph, line.Substring(index, end - index), "SystemFillColorCautionBrush");
+                    AddRun(paragraph, line[index..end], "SystemFillColorCautionBrush");
                     index = end;
                     continue;
                 }
 
                 if (current is '<' or '>' or '/')
                 {
-                    AddRun(paragraph, line.Substring(index, 1), "AccentTextFillColorPrimaryBrush");
+                    AddRun(paragraph, line[index..(index + 1)], "AccentTextFillColorPrimaryBrush");
                     index++;
                     continue;
                 }
@@ -579,7 +579,7 @@ namespace Fluence.Wpf.Demo.Pages
                         index++;
                     }
 
-                    string name = line.Substring(start, index - start);
+                    string name = line[start..index];
                     int next = SkipWhiteSpace(line, index);
                     string resourceKey = next < line.Length && line[next] == '='
                         ? "SystemFillColorSuccessBrush"
@@ -600,7 +600,7 @@ namespace Fluence.Wpf.Demo.Pages
                     index++;
                 }
 
-                AddRun(paragraph, line.Substring(plainStart, index - plainStart), "TextFillColorPrimaryBrush");
+                AddRun(paragraph, line[plainStart..index], "TextFillColorPrimaryBrush");
             }
         }
 
@@ -611,7 +611,7 @@ namespace Fluence.Wpf.Demo.Pages
             {
                 if (StartsWith(line, index, "//"))
                 {
-                    AddRun(paragraph, line.Substring(index), "TextFillColorSecondaryBrush");
+                    AddRun(paragraph, line[index..], "TextFillColorSecondaryBrush");
                     return;
                 }
 
@@ -619,7 +619,7 @@ namespace Fluence.Wpf.Demo.Pages
                 if (current == '"')
                 {
                     int end = FindQuotedTextEnd(line, index, current);
-                    AddRun(paragraph, line.Substring(index, end - index), "SystemFillColorCautionBrush");
+                    AddRun(paragraph, line[index..end], "SystemFillColorCautionBrush");
                     index = end;
                     continue;
                 }
@@ -627,7 +627,7 @@ namespace Fluence.Wpf.Demo.Pages
                 if (current == '\'' && index + 2 < line.Length)
                 {
                     int end = FindQuotedTextEnd(line, index, current);
-                    AddRun(paragraph, line.Substring(index, end - index), "SystemFillColorCautionBrush");
+                    AddRun(paragraph, line[index..end], "SystemFillColorCautionBrush");
                     index = end;
                     continue;
                 }
@@ -640,7 +640,7 @@ namespace Fluence.Wpf.Demo.Pages
                         index++;
                     }
 
-                    string word = line.Substring(start, index - start);
+                    string word = line[start..index];
                     AddRun(paragraph, word, CSharpKeywords.Contains(word)
                         ? "AccentTextFillColorPrimaryBrush"
                         : "TextFillColorPrimaryBrush");
@@ -658,7 +658,7 @@ namespace Fluence.Wpf.Demo.Pages
                     index++;
                 }
 
-                AddRun(paragraph, line.Substring(plainStart, index - plainStart), "TextFillColorPrimaryBrush");
+                AddRun(paragraph, line[plainStart..index], "TextFillColorPrimaryBrush");
             }
         }
 

@@ -674,7 +674,7 @@ namespace Fluence.Wpf.Demo
                 return;
             }
 
-            NavigationViewItem previousItem = _navigationBackStack[_navigationBackStack.Count - 1];
+            NavigationViewItem previousItem = _navigationBackStack[^1];
             _navigationBackStack.RemoveAt(_navigationBackStack.Count - 1);
 
             _isNavigatingBack = true;

@@ -368,9 +368,9 @@ namespace Fluence.Wpf.Tests
                     continue;
                 }
 
-                string classRemainder = trimmed.Substring(classPrefix.Length);
+                string classRemainder = trimmed[classPrefix.Length..];
                 int classNameEnd = classRemainder.IndexOfAny([' ', ':']);
-                string className = classNameEnd < 0 ? classRemainder : classRemainder.Substring(0, classNameEnd);
+                string className = classNameEnd < 0 ? classRemainder : classRemainder[..classNameEnd];
                 return namespaceName + "." + className;
             }
 
@@ -385,7 +385,7 @@ namespace Fluence.Wpf.Tests
                 const string namespacePrefix = "namespace ";
                 if (trimmed.StartsWith(namespacePrefix, StringComparison.Ordinal))
                 {
-                    return trimmed.Substring(namespacePrefix.Length).Trim();
+                    return trimmed[namespacePrefix.Length..].Trim();
                 }
             }
 

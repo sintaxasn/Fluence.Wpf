@@ -32,7 +32,7 @@ namespace Fluence.Wpf.Helpers
 {
     /// <summary>
     /// Carries the resolved window-border frame instructions computed by
-    /// <see cref="Fluence.Wpf.Controls.WindowPolicy.BuildFramePlan"/>. The plan separates the
+    /// <see cref="Controls.WindowPolicy.BuildFramePlan"/>. The plan separates the
     /// WPF-template border (driven by <see cref="TemplateBorderThickness"/> and
     /// <see cref="TemplateBorderBrushResourceKey"/>) from the DWM border color
     /// (<see cref="DwmBorderColor"/>), because only some OS builds support the DWM side.
@@ -59,7 +59,7 @@ namespace Fluence.Wpf.Helpers
 
         /// <summary>
         /// Gets the COLORREF (BGR, 24-bit) value to write to <c>DWMWA_BORDER_COLOR</c>, or
-        /// <see cref="Fluence.Wpf.Native.NativeConstants.DWMWA_COLOR_DEFAULT"/> when the OS
+        /// <see cref="Native.NativeConstants.DWMWA_COLOR_DEFAULT"/> when the OS
         /// does not expose that attribute (Windows 10) or the window is inactive. A caller
         /// must check <see cref="WindowCapabilities.SupportsBorderColor"/> before writing this
         /// value to the DWM attribute; the plan records the sentinel regardless so the caller

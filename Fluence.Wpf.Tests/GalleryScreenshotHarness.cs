@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -378,7 +378,7 @@ namespace Fluence.Wpf.Tests
 
             if (isCompleted && viewModel.DisplayedTasks.Count > 0)
             {
-                viewModel.DisplayedTasks[viewModel.DisplayedTasks.Count - 1].IsCompleted = true;
+                viewModel.DisplayedTasks[^1].IsCompleted = true;
             }
         }
 

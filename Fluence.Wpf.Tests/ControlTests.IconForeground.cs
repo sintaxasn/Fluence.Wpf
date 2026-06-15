@@ -642,7 +642,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        private static Color GetControlForegroundColor(System.Windows.Controls.Control control)
+        private static Color GetControlForegroundColor(Control control)
         {
             SolidColorBrush? brush = control.Foreground as SolidColorBrush;
             Assert.IsNotNull(brush, "The control Foreground should be a SolidColorBrush.");

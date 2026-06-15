@@ -61,7 +61,7 @@ namespace Fluence.Wpf.Controls
     /// permutations are deliberately omitted. The spectrum is fixed to saturation on the
     /// x axis by value on the y axis at the selected hue, with hue on a horizontal slider.
     /// </remarks>
-    [TemplatePart(Name = PART_SpectrumImage, Type = typeof(System.Windows.Controls.Image))]
+    [TemplatePart(Name = PART_SpectrumImage, Type = typeof(Image))]
     [TemplatePart(Name = PART_SpectrumArea, Type = typeof(FrameworkElement))]
     [TemplatePart(Name = PART_SpectrumThumb, Type = typeof(FrameworkElement))]
     [TemplatePart(Name = PART_HueSlider, Type = typeof(RangeBase))]
@@ -99,7 +99,7 @@ namespace Fluence.Wpf.Controls
         private static readonly Brush CheckerboardBrush = CreateCheckerboardBrush();
         private static readonly Brush HueRainbowBrush = CreateHueRainbowBrush();
 
-        private System.Windows.Controls.Image? _spectrumImage;
+        private Image? _spectrumImage;
         private FrameworkElement? _spectrumArea;
         private FrameworkElement? _spectrumThumb;
         private RangeBase? _hueSlider;
@@ -341,7 +341,7 @@ namespace Fluence.Wpf.Controls
 
             base.OnApplyTemplate();
 
-            _spectrumImage = GetTemplateChild(PART_SpectrumImage) as System.Windows.Controls.Image;
+            _spectrumImage = GetTemplateChild(PART_SpectrumImage) as Image;
             _spectrumArea = GetTemplateChild(PART_SpectrumArea) as FrameworkElement;
             _spectrumThumb = GetTemplateChild(PART_SpectrumThumb) as FrameworkElement;
             _hueSlider = GetTemplateChild(PART_HueSlider) as RangeBase;
@@ -790,7 +790,7 @@ namespace Fluence.Wpf.Controls
             string hex = text.Trim();
             if (hex.StartsWith("#", StringComparison.Ordinal))
             {
-                hex = hex.Substring(1);
+                hex = hex[1..];
             }
 
             if (hex.Length is not (6 or 8))

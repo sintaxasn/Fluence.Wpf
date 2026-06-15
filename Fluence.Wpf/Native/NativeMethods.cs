@@ -26,9 +26,9 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Fluence.Wpf.Helpers;
 using System;
 using System.Runtime.InteropServices;
+using Fluence.Wpf.Helpers;
 
 namespace Fluence.Wpf.Native
 {
@@ -39,7 +39,7 @@ namespace Fluence.Wpf.Native
     // "exceptional third-party interop" carve-out; no other file may use an inline pragma.
 #pragma warning disable SYSLIB1054
     /// <summary>
-    /// The native interop surface for <see cref="Fluence.Wpf.Controls.FluenceWindow"/> and its
+    /// The native interop surface for <see cref="Controls.FluenceWindow"/> and its
     /// policy/capability helpers: DWM backdrop and frame attributes, UxTheme caption suppression,
     /// immersive color queries, monitor and taskbar geometry, layered-window presentation, and the
     /// <c>RtlGetVersion</c> OS-build probe. Every method is best-effort and handle-safe so it can be
@@ -271,7 +271,7 @@ namespace Fluence.Wpf.Native
         /// <summary>
         /// Cloaks or uncloaks a window via <see cref="NativeConstants.DWMWA_CLOAK"/>. While cloaked,
         /// DWM keeps the window fully composed off-screen and does not present it. Retained as part
-        /// of the interop contract; <see cref="Fluence.Wpf.Controls.FluenceWindow"/> deliberately
+        /// of the interop contract; <see cref="Controls.FluenceWindow"/> deliberately
         /// does not cloak (its first-paint flash is solved by clearing the redirection surface), so
         /// the never-cloak invariant is asserted by the harden tests via
         /// <see cref="GetWindowCloakedState"/>. Any caller that does cloak MUST guarantee a matching
@@ -515,6 +515,7 @@ namespace Fluence.Wpf.Native
         /// </summary>
         /// <param name="mmi">The min/max info whose maximized rect is adjusted in place.</param>
         /// <param name="edge">The auto-hide taskbar edge (one of the <c>ABE_*</c> values).</param>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S3532:Empty \"default\" clauses should be removed", Justification = "This is deliberate.")]
         public static void ApplyAutoHideTaskbarShift(ref MINMAXINFO mmi, uint edge)
         {
             switch (edge)

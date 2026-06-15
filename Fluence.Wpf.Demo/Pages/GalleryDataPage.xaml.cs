@@ -440,7 +440,7 @@ namespace Fluence.Wpf.Demo.Pages.Data
                 return;
             }
 
-            object lastItem = EmptyStateListView.Items[EmptyStateListView.Items.Count - 1];
+            object lastItem = EmptyStateListView.Items[^1];
             EmptyStateListView.AnimateRemove(lastItem, null);
         }
     }
