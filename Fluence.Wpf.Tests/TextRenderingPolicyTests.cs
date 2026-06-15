@@ -117,7 +117,7 @@ namespace Fluence.Wpf.Tests
                 Path.Combine(repoRoot, "Fluence.Wpf.Demo.Mvvm")
             ];
 
-            string textOptionsPrefix = "Text" + "Options.";
+            const string textOptionsPrefix = "TextOptions.";
             string[] bannedFragments =
             [
                 textOptionsPrefix + "TextFormattingMode",
@@ -162,8 +162,7 @@ namespace Fluence.Wpf.Tests
             string[] offenders =
             [
                 .. EnumerateProductionSources(productionRoots)
-                    .Where(path => !string.Equals(GetRepoRelativePath(path), allowedPath, StringComparison.OrdinalIgnoreCase))
-                    .Where(path => File.ReadAllText(path).IndexOf("SnapsToDevicePixels", StringComparison.Ordinal) >= 0)
+                    .Where(path => !string.Equals(GetRepoRelativePath(path), allowedPath, StringComparison.OrdinalIgnoreCase) && File.ReadAllText(path).IndexOf("SnapsToDevicePixels", StringComparison.Ordinal) >= 0)
                     .Select(GetRepoRelativePath)
             ];
 
@@ -201,7 +200,7 @@ namespace Fluence.Wpf.Tests
                 ResetApplication(application);
 
                 WpfTextBlock textBlock = new();
-                TextBlockExtensions.SetTypography(textBlock, FluentTypography.Title);
+                textBlock.SetTypography(FluentTypography.Title);
 
                 Assert.AreSame(
                     application?.TryFindResource("TitleTextBlockStyle"),
@@ -220,7 +219,7 @@ namespace Fluence.Wpf.Tests
             WpfTestSta.Invoke(() =>
             {
                 WpfTextBlock textBlock = new();
-                TextBlockExtensions.SetTypography(textBlock, FluentTypography.Body);
+                textBlock.SetTypography(FluentTypography.Body);
 
                 FontFamily fontFamily = new("Arial");
                 textBlock.FontFamily = fontFamily;
@@ -229,7 +228,7 @@ namespace Fluence.Wpf.Tests
                 textBlock.LineHeight = 17;
                 textBlock.LineStackingStrategy = LineStackingStrategy.MaxHeight;
 
-                TextBlockExtensions.SetTypography(textBlock, FluentTypography.None);
+                textBlock.SetTypography(FluentTypography.None);
 
                 Assert.AreEqual(fontFamily, textBlock.FontFamily);
                 Assert.AreEqual(13d, textBlock.FontSize, 0.01d);

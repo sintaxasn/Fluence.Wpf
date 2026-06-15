@@ -349,7 +349,7 @@ namespace Fluence.Wpf.Controls
         protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
         {
             base.OnGotKeyboardFocus(e);
-            if (_partTextBox is not null && !_partTextBox.IsKeyboardFocusWithin)
+            if (_partTextBox?.IsKeyboardFocusWithin == false)
             {
                 _ = _partTextBox.Focus();
             }
@@ -359,7 +359,7 @@ namespace Fluence.Wpf.Controls
         protected override void OnPreviewMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             base.OnPreviewMouseLeftButtonDown(e);
-            if (_partTextBox is not null && !_partTextBox.IsKeyboardFocusWithin)
+            if (_partTextBox?.IsKeyboardFocusWithin == false)
             {
                 _ = _partTextBox.Focus();
             }
@@ -412,7 +412,7 @@ namespace Fluence.Wpf.Controls
         private static void OnMinMaxPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             // Re-coerce Value so it stays within the new bounds.
-            ((NumberBox)d).CoerceValue(ValueProperty);
+            d.CoerceValue(ValueProperty);
         }
 
         private static void OnTextPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

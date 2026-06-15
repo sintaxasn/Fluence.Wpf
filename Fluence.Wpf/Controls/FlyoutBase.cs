@@ -126,7 +126,7 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Gets a value indicating whether the flyout is currently open.
         /// </summary>
-        public bool IsOpen => HostPopup is not null && HostPopup.IsOpen;
+        public bool IsOpen => HostPopup?.IsOpen == true;
 
         /// <summary>
         /// Gets the popup that hosts the presenter. Created lazily on the first
@@ -232,7 +232,7 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public void Hide()
         {
-            if (HostPopup is null || !HostPopup.IsOpen)
+            if (HostPopup?.IsOpen != true)
             {
                 return;
             }
@@ -341,6 +341,9 @@ namespace Fluence.Wpf.Controls
         /// The popup's custom placement callback: centers the popup on the target edge
         /// selected by the current <see cref="Placement"/> value.
         /// </summary>
+        /// <param name="popupSize">The size of the popup.</param>
+        /// <param name="targetSize">The size of the target element.</param>
+        /// <param name="offset">The offset to apply to the placement.</param>
         private CustomPopupPlacement[] GetPlacements(Size popupSize, Size targetSize, Point offset)
         {
             return GetEdgeCenteredPlacements(MapPlacementSide(Placement), popupSize, targetSize, offset);
@@ -351,6 +354,8 @@ namespace Fluence.Wpf.Controls
         /// WinUI light-dismiss keyboard contract. Runs through <see cref="Hide"/> so a
         /// <see cref="Closing"/> handler can still cancel the close.
         /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The key event data.</param>
         private void OnPresenterPreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (!e.Handled && e.Key == Key.Escape)
@@ -366,6 +371,8 @@ namespace Fluence.Wpf.Controls
         /// flowed onto the presenter by <see cref="ShowAt"/>. The clear uses SetCurrentValue
         /// (ClearValue cannot undo a current-value override on a default-source property).
         /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
         private void OnPopupClosed(object? sender, EventArgs e)
         {
             _ = HostPopup?.PlacementTarget = null;

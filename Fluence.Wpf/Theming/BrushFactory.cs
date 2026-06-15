@@ -50,6 +50,7 @@ namespace Fluence.Wpf.Theming
         /// Color keys in the suppress-auto-twin list are published as Color tokens only; their
         /// brush twin uses an irregular name and is emitted by <see cref="SpecialBrushes"/>.
         /// </summary>
+        /// <param name="colors">The dictionary of color tokens to build brushes for.</param>
         internal static ResourceDictionary Build(IReadOnlyDictionary<string, Color> colors)
         {
             ResourceDictionary d = [];

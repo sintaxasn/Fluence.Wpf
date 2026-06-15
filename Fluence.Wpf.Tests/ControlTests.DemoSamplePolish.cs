@@ -389,11 +389,9 @@ namespace Fluence.Wpf.Tests
                     "PersonPicture sample should be horizontally centered.");
                 Assert.AreEqual(VerticalAlignment.Center, personPicturePanel.VerticalAlignment,
                     "PersonPicture sample should be vertically centered.");
-                Assert.IsTrue(personPictures.Any(picture => picture.ProfilePicture is not null &&
-                    picture.ProfilePicture.ToString().IndexOf("PersonPictureMadisonButler.png", StringComparison.Ordinal) >= 0),
+                Assert.IsTrue(personPictures.Any(picture => picture.ProfilePicture?.ToString().IndexOf("PersonPictureMadisonButler.png", StringComparison.Ordinal) >= 0),
                     "PersonPicture sample should include the Madison Butler portrait asset.");
-                Assert.IsFalse(personPictures.Any(picture => picture.ProfilePicture is not null &&
-                    picture.ProfilePicture.ToString().IndexOf("PersonPictureOscarWard.png", StringComparison.Ordinal) >= 0),
+                Assert.IsFalse(personPictures.Any(picture => picture.ProfilePicture?.ToString().IndexOf("PersonPictureOscarWard.png", StringComparison.Ordinal) >= 0),
                     "PersonPicture sample should remove the extra Oscar Ward portrait.");
                 Assert.IsFalse(personPictures.Any(picture => !string.IsNullOrWhiteSpace(picture.Initials)),
                     "PersonPicture sample should remove the initials fallback entry.");

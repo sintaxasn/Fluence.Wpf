@@ -36,61 +36,63 @@ namespace Fluence.Wpf.Demo.Pages
     {
         private bool _updatingSelectAll;
 
-        private const string CheckBoxStatesXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Selection.CheckBoxStates""
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+        private const string CheckBoxStatesXamlSource = """
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.Selection.CheckBoxStates"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
     <StackPanel>
-        <WrapPanel Margin=""0,0,0,16"">
+        <WrapPanel Margin="0,0,0,16">
             <ui:CheckBox
-                x:Name=""TwoStateCheckBox""
-                Margin=""0,0,32,10""
-                Content=""Two-state checkbox""
-                IsChecked=""True"" />
+                x:Name="TwoStateCheckBox"
+                Margin="0,0,32,10"
+                Content="Two-state checkbox"
+                IsChecked="True" />
             <ui:CheckBox
-                x:Name=""ThreeStateCheckBox""
-                Margin=""0,0,32,10""
-                Content=""Three-state checkbox""
-                IsChecked=""{x:Null}""
-                IsThreeState=""True"" />
+                x:Name="ThreeStateCheckBox"
+                Margin="0,0,32,10"
+                Content="Three-state checkbox"
+                IsChecked="{x:Null}"
+                IsThreeState="True" />
             <ui:CheckBox
-                Margin=""0,0,32,10""
-                Content=""Disabled""
-                IsChecked=""True""
-                IsEnabled=""False"" />
+                Margin="0,0,32,10"
+                Content="Disabled"
+                IsChecked="True"
+                IsEnabled="False" />
         </WrapPanel>
         <StackPanel>
             <ui:CheckBox
-                x:Name=""SelectAllCheckBox""
-                Margin=""0,0,0,8""
-                Checked=""SelectAllCheckBox_Changed""
-                Content=""Select all""
-                Indeterminate=""SelectAllCheckBox_Changed""
-                IsThreeState=""True""
-                Unchecked=""SelectAllCheckBox_Changed"" />
+                x:Name="SelectAllCheckBox"
+                Margin="0,0,0,8"
+                Checked="SelectAllCheckBox_Changed"
+                Content="Select all"
+                Indeterminate="SelectAllCheckBox_Changed"
+                IsThreeState="True"
+                Unchecked="SelectAllCheckBox_Changed" />
             <ui:CheckBox
-                x:Name=""OptionOneCheckBox""
-                Margin=""24,0,0,8""
-                Checked=""OptionCheckBox_Changed""
-                Content=""Option 1""
-                Unchecked=""OptionCheckBox_Changed"" />
+                x:Name="OptionOneCheckBox"
+                Margin="24,0,0,8"
+                Checked="OptionCheckBox_Changed"
+                Content="Option 1"
+                Unchecked="OptionCheckBox_Changed" />
             <ui:CheckBox
-                x:Name=""OptionTwoCheckBox""
-                Margin=""24,0,0,8""
-                Checked=""OptionCheckBox_Changed""
-                Content=""Option 2""
-                Unchecked=""OptionCheckBox_Changed"" />
+                x:Name="OptionTwoCheckBox"
+                Margin="24,0,0,8"
+                Checked="OptionCheckBox_Changed"
+                Content="Option 2"
+                Unchecked="OptionCheckBox_Changed" />
             <ui:CheckBox
-                x:Name=""OptionThreeCheckBox""
-                Margin=""24,0,0,0""
-                Checked=""OptionCheckBox_Changed""
-                Content=""Option 3""
-                Unchecked=""OptionCheckBox_Changed"" />
+                x:Name="OptionThreeCheckBox"
+                Margin="24,0,0,0"
+                Checked="OptionCheckBox_Changed"
+                Content="Option 3"
+                Unchecked="OptionCheckBox_Changed" />
         </StackPanel>
     </StackPanel>
 </UserControl>
-";
+
+""";
 
         private const string CheckBoxStatesCSharpSource = @"using System.Windows;
 using System.Windows.Controls;
@@ -137,50 +139,52 @@ namespace Fluence.Wpf.Demo.Pages.Selection
     }
 }
 ";
-        private const string RadioButtonGroupsXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Selection.RadioButtonGroups""
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+        private const string RadioButtonGroupsXamlSource = """
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.Selection.RadioButtonGroups"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
     <StackPanel>
         <TextBlock
-            Margin=""0,0,0,8""
-            FontWeight=""SemiBold""
-            Text=""Basic group"" />
-        <StackPanel Margin=""0,0,0,16"" Orientation=""Horizontal"">
+            Margin="0,0,0,8"
+            FontWeight="SemiBold"
+            Text="Basic group" />
+        <StackPanel Margin="0,0,0,16" Orientation="Horizontal">
             <ui:RadioButton
-                Margin=""0,0,16,0""
-                Content=""Option A""
-                GroupName=""BasicGroup""
-                IsChecked=""True"" />
+                Margin="0,0,16,0"
+                Content="Option A"
+                GroupName="BasicGroup"
+                IsChecked="True" />
             <ui:RadioButton
-                Margin=""0,0,16,0""
-                Content=""Option B""
-                GroupName=""BasicGroup"" />
-            <ui:RadioButton Content=""Option C"" GroupName=""BasicGroup"" />
+                Margin="0,0,16,0"
+                Content="Option B"
+                GroupName="BasicGroup" />
+            <ui:RadioButton Content="Option C" GroupName="BasicGroup" />
         </StackPanel>
         <TextBlock
-            Margin=""0,0,0,8""
-            FontWeight=""SemiBold""
-            Text=""With descriptions"" />
+            Margin="0,0,0,8"
+            FontWeight="SemiBold"
+            Text="With descriptions" />
         <ui:RadioButton
-            Margin=""0,0,0,8""
-            Content=""Standard""
-            Description=""Uses default application settings""
-            GroupName=""DescGroup""
-            IsChecked=""True"" />
+            Margin="0,0,0,8"
+            Content="Standard"
+            Description="Uses default application settings"
+            GroupName="DescGroup"
+            IsChecked="True" />
         <ui:RadioButton
-            Margin=""0,0,0,8""
-            Content=""Custom""
-            Description=""Allows manual configuration""
-            GroupName=""DescGroup"" />
+            Margin="0,0,0,8"
+            Content="Custom"
+            Description="Allows manual configuration"
+            GroupName="DescGroup" />
         <ui:RadioButton
-            Content=""Advanced""
-            Description=""Expert-level options""
-            GroupName=""DescGroup"" />
+            Content="Advanced"
+            Description="Expert-level options"
+            GroupName="DescGroup" />
     </StackPanel>
 </UserControl>
-";
+
+""";
 
         private const string RadioButtonGroupsCSharpSource = @"using System.Windows.Controls;
 
@@ -195,37 +199,39 @@ namespace Fluence.Wpf.Demo.Pages.Selection
     }
 }
 ";
-        private const string ToggleSwitchStatesXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Selection.ToggleSwitchStates""
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
-    <ui:StackPanel Spacing=""8"">
+        private const string ToggleSwitchStatesXamlSource = """
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.Selection.ToggleSwitchStates"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
+    <ui:StackPanel Spacing="8">
         <TextBlock
-            x:Name=""WorkToggleHeaderText""
-            Text=""Toggle work"" />
-        <ui:StackPanel Orientation=""Horizontal"">
+            x:Name="WorkToggleHeaderText"
+            Text="Toggle work" />
+        <ui:StackPanel Orientation="Horizontal">
             <ui:ToggleSwitch
-                x:Name=""WorkToggleSwitch""
-                VerticalAlignment=""Center""
-                IsChecked=""True"" />
+                x:Name="WorkToggleSwitch"
+                VerticalAlignment="Center"
+                IsChecked="True" />
             <TextBlock
-                x:Name=""WorkToggleStateText""
-                Margin=""12,0,0,0""
-                VerticalAlignment=""Center""
-                Text=""On"" />
+                x:Name="WorkToggleStateText"
+                Margin="12,0,0,0"
+                VerticalAlignment="Center"
+                Text="On" />
             <ui:ProgressRing
-                x:Name=""WorkToggleProgressRing""
-                Width=""36""
-                Height=""36""
-                Margin=""24,0,0,0""
-                VerticalAlignment=""Center""
-                IsActive=""{Binding IsChecked, ElementName=WorkToggleSwitch}""
-                IsIndeterminate=""True"" />
+                x:Name="WorkToggleProgressRing"
+                Width="36"
+                Height="36"
+                Margin="24,0,0,0"
+                VerticalAlignment="Center"
+                IsActive="{Binding IsChecked, ElementName=WorkToggleSwitch}"
+                IsIndeterminate="True" />
         </ui:StackPanel>
     </ui:StackPanel>
 </UserControl>
-";
+
+""";
 
         private const string ToggleSwitchStatesCSharpSource = @"using System.Windows.Controls;
 
@@ -240,24 +246,26 @@ namespace Fluence.Wpf.Demo.Pages.Selection
     }
 }
 ";
-        private const string RatingControlXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Selection.RatingControlSample""
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
-    <ui:StackPanel Spacing=""14"">
+        private const string RatingControlXamlSource = """
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.Selection.RatingControlSample"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
+    <ui:StackPanel Spacing="14">
         <ui:RatingControl
-            Caption=""Rate the experience""
-            MaxRating=""5""
-            Value=""3"" />
+            Caption="Rate the experience"
+            MaxRating="5"
+            Value="3" />
         <ui:RatingControl
-            Caption=""Read-only rating""
-            IsReadOnly=""True""
-            MaxRating=""5""
-            Value=""4"" />
+            Caption="Read-only rating"
+            IsReadOnly="True"
+            MaxRating="5"
+            Value="4" />
     </ui:StackPanel>
 </UserControl>
-";
+
+""";
 
         private const string RatingControlCSharpSource = @"using System.Windows.Controls;
 
@@ -272,41 +280,43 @@ namespace Fluence.Wpf.Demo.Pages.Selection
     }
 }
 ";
-        private const string ComboBoxSelectionXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Selection.ComboBoxSelection""
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
-    <ui:StackPanel Spacing=""20"">
+        private const string ComboBoxSelectionXamlSource = """
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.Selection.ComboBoxSelection"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
+    <ui:StackPanel Spacing="20">
         <ui:ComboBox
-            Width=""480""
-            HorizontalAlignment=""Left""
-            PlaceholderText=""Choose an option...""
-            SelectedIndex=""-1"">
-            <ComboBoxItem Content=""First item"" />
-            <ComboBoxItem Content=""Second item"" />
-            <ComboBoxItem Content=""Third item"" />
+            Width="480"
+            HorizontalAlignment="Left"
+            PlaceholderText="Choose an option..."
+            SelectedIndex="-1">
+            <ComboBoxItem Content="First item" />
+            <ComboBoxItem Content="Second item" />
+            <ComboBoxItem Content="Third item" />
         </ui:ComboBox>
         <ui:ComboBox
-            Width=""480""
-            HorizontalAlignment=""Left""
-            PlaceholderText=""With icon""
-            SelectedIndex=""-1"">
+            Width="480"
+            HorizontalAlignment="Left"
+            PlaceholderText="With icon"
+            SelectedIndex="-1">
             <ui:ComboBox.Icon>
-                <ui:FontIcon Glyph=""&#xE721;"" IconFontSize=""14"" />
+                <ui:FontIcon Glyph="&#xE721;" IconFontSize="14" />
             </ui:ComboBox.Icon>
-            <ComboBoxItem Content=""Alpha"" />
-            <ComboBoxItem Content=""Beta"" />
-            <ComboBoxItem Content=""Gamma"" />
+            <ComboBoxItem Content="Alpha" />
+            <ComboBoxItem Content="Beta" />
+            <ComboBoxItem Content="Gamma" />
         </ui:ComboBox>
         <ui:ComboBox
-            Width=""480""
-            HorizontalAlignment=""Left""
-            IsEnabled=""False""
-            PlaceholderText=""Disabled"" />
+            Width="480"
+            HorizontalAlignment="Left"
+            IsEnabled="False"
+            PlaceholderText="Disabled" />
     </ui:StackPanel>
 </UserControl>
-";
+
+""";
 
         private const string ComboBoxSelectionCSharpSource = @"using System.Windows.Controls;
 

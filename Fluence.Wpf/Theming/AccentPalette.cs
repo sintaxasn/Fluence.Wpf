@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,6 +31,13 @@ using System.Windows.Media;
 namespace Fluence.Wpf.Theming
 {
     /// <summary>The seven-rung Windows accent ramp, lightest to darkest.</summary>
+    /// <param name="light3">The lightest tint on the generated accent ramp.</param>
+    /// <param name="light2">The second light tint on the generated accent ramp.</param>
+    /// <param name="light1">The first light tint on the generated accent ramp.</param>
+    /// <param name="accent">The base accent color.</param>
+    /// <param name="dark1">The first dark shade on the generated accent ramp.</param>
+    /// <param name="dark2">The second dark shade on the generated accent ramp.</param>
+    /// <param name="dark3">The darkest shade on the generated accent ramp.</param>
     internal readonly struct AccentPalette(Color light3, Color light2, Color light1, Color accent, Color dark1, Color dark2, Color dark3)
     {
         /// <summary>Gets the lightest tint on the generated accent ramp.</summary>
@@ -74,6 +81,7 @@ namespace Fluence.Wpf.Theming
         public static AccentIntent System { get; } = new(true, default);
 
         /// <summary>Returns an <see cref="AccentIntent"/> that pins the ramp to the given color.</summary>
+        /// <param name="c">The color to use as the base accent color for the generated ramp.</param>
         public static AccentIntent FromCustom(Color c)
         {
             return new(false, c);

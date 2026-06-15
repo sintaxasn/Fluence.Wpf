@@ -341,6 +341,8 @@ namespace Fluence.Wpf.Controls
         /// Re-applies the resolved visual state when the control (re)enters a live visual tree,
         /// restarting the indeterminate animation that <see cref="OnUnloaded"/> stopped.
         /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             ApplyProgressMode();
@@ -350,6 +352,8 @@ namespace Fluence.Wpf.Controls
         /// Stops the repeat-forever indeterminate animation when the control leaves the visual
         /// tree so closed windows do not leak rooted animation clocks.
         /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
         private void OnUnloaded(object sender, RoutedEventArgs e)
         {
             StopIndeterminate();
@@ -387,6 +391,7 @@ namespace Fluence.Wpf.Controls
         /// primitives never writes back to <see cref="ProgressMode"/>, and <see cref="_syncingMode"/>
         /// suppresses the primitive callbacks so the resolver runs exactly once per mode change.
         /// </summary>
+        /// <param name="mode">The progress bar mode to synchronize from.</param>
         private void SyncPrimitivesFromMode(ProgressBarMode mode)
         {
             if (_syncingMode)

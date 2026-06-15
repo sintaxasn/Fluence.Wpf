@@ -81,6 +81,7 @@ namespace Fluence.Wpf.Tests
         /// expects them. This is the single canonical implementation; per-fixture wrappers forward
         /// here.
         /// </summary>
+        /// <param name="action">The action to run on the STA dispatcher.</param>
         internal static void RunOnSta(Action action)
         {
             Exception? captured = null;
@@ -106,6 +107,7 @@ namespace Fluence.Wpf.Tests
         /// Drains the dispatcher queue down to <see cref="DispatcherPriority.ApplicationIdle"/> so
         /// any queued layout, render, and idle callbacks complete before the caller samples state.
         /// </summary>
+        /// <param name="dispatcher">The dispatcher to drain.</param>
         internal static void DrainDispatcher(Dispatcher? dispatcher)
         {
             _ = dispatcher?.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
@@ -116,6 +118,8 @@ namespace Fluence.Wpf.Tests
         /// walking the <b>visual</b> tree only (depth-first, pre-order). This is the lightweight
         /// variant used by control-template tests where the visual tree is the source of truth.
         /// </summary>
+        /// <param name="root">The root element to start the search from.</param>
+        /// <typeparam name="T">The type of descendant to find.</typeparam>
         internal static IEnumerable<T> FindVisualDescendants<T>(DependencyObject? root)
             where T : DependencyObject
         {
@@ -147,6 +151,8 @@ namespace Fluence.Wpf.Tests
         /// tests where content can live in the logical tree before (or instead of) being realized in
         /// the visual tree.
         /// </summary>
+        /// <typeparam name="T">The type of descendant to find.</typeparam>
+        /// <param name="root">The root element to start the search from.</param>
         internal static IEnumerable<T> FindLogicalAndVisualDescendants<T>(DependencyObject? root)
             where T : DependencyObject
         {
@@ -203,7 +209,7 @@ namespace Fluence.Wpf.Tests
         {
             lock (LockObj)
             {
-                if (_dispatcher is not null && _dispatcher.Thread.IsAlive)
+                if (_dispatcher?.Thread.IsAlive == true)
                 {
                     return _dispatcher;
                 }

@@ -108,6 +108,7 @@ namespace Fluence.Wpf.Tests
         /// <summary>
         /// Shows a FluenceWindow off-screen so template parts (caption buttons) exist for hit-testing.
         /// </summary>
+        /// <param name="testBody">The action to run with the shown window.</param>
         private static void RunWithShownWindow(Action<FluenceWindow> testBody)
         {
             RunOnFreshStaThread(() =>
@@ -200,7 +201,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        #endregion
+        #endregion 1. ExtendsContentIntoTitleBar default
 
         #region 2. FluenceWindow sizing defaults
 
@@ -224,29 +225,23 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        #endregion
+        #endregion 2. FluenceWindow sizing defaults
 
         #region 3. ShowIcon and ShowTitle defaults
 
         [TestMethod]
         public void ShowIcon_DefaultIsTrue()
         {
-            RunWithWindow(w =>
-            {
-                Assert.IsTrue(w.ShowIcon, "ShowIcon should default to true.");
-            });
+            RunWithWindow(w => Assert.IsTrue(w.ShowIcon, "ShowIcon should default to true."));
         }
 
         [TestMethod]
         public void ShowTitle_DefaultIsTrue()
         {
-            RunWithWindow(w =>
-            {
-                Assert.IsTrue(w.ShowTitle, "ShowTitle should default to true.");
-            });
+            RunWithWindow(w => Assert.IsTrue(w.ShowTitle, "ShowTitle should default to true."));
         }
 
-        #endregion
+        #endregion 3. ShowIcon and ShowTitle defaults
 
         #region 4. Caption button visibility defaults
 
@@ -272,17 +267,14 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        #endregion
+        #endregion 4. Caption button visibility defaults
 
         #region 5. HasShadow and WindowBorder defaults
 
         [TestMethod]
         public void HasShadow_DefaultIsTrue()
         {
-            RunWithWindow(w =>
-            {
-                Assert.IsTrue(w.HasShadow, "HasShadow should default to true.");
-            });
+            RunWithWindow(w => Assert.IsTrue(w.HasShadow, "HasShadow should default to true."));
         }
 
         [TestMethod]
@@ -295,7 +287,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        #endregion
+        #endregion 5. HasShadow and WindowBorder defaults
 
         #region 6. SetTitleBar method
 
@@ -325,7 +317,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        #endregion
+        #endregion 6. SetTitleBar method
 
         #region 7. WindowChrome updates
 
@@ -367,7 +359,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        #endregion
+        #endregion 7. WindowChrome updates
 
         #region Bug Fix Tests - Title Bar Flash and Theme Switching
 
@@ -511,8 +503,7 @@ namespace Fluence.Wpf.Tests
 
                 try
                 {
-                    ApplicationTheme[] themes = [ApplicationTheme.Dark, ApplicationTheme.Light];
-                    foreach (ApplicationTheme theme in themes)
+                    foreach (ApplicationTheme theme in (ApplicationTheme[])[ApplicationTheme.Dark, ApplicationTheme.Light])
                     {
                         ApplicationThemeManager.Apply(theme, BackdropType.None, true);
                         object? bg = app?.TryFindResource("ApplicationBackgroundBrush");
@@ -568,7 +559,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        #endregion
+        #endregion Bug Fix Tests - Title Bar Flash and Theme Switching
 
         #region Caption button hit-test (WM_NCHITTEST vs WPF commands)
 
@@ -870,7 +861,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        #endregion
+        #endregion Caption button hit-test (WM_NCHITTEST vs WPF commands)
 
         #region Caption button DP overrides (authoritative when explicitly set)
 
@@ -976,8 +967,7 @@ namespace Fluence.Wpf.Tests
         {
             RunWithWindow(w =>
             {
-                Visibility[] values = [Visibility.Visible, Visibility.Hidden, Visibility.Collapsed];
-                foreach (Visibility value in values)
+                foreach (Visibility value in (Visibility[])[Visibility.Visible, Visibility.Hidden, Visibility.Collapsed])
                 {
                     w.IsMinimizeButtonVisible = value;
                     w.IsMaximizeButtonVisible = value;
@@ -1004,8 +994,7 @@ namespace Fluence.Wpf.Tests
                 Assert.IsNotNull(restore);
                 Assert.IsNotNull(close);
 
-                Visibility[] values = [Visibility.Visible, Visibility.Hidden, Visibility.Collapsed];
-                foreach (Visibility value in values)
+                foreach (Visibility value in (Visibility[])[Visibility.Visible, Visibility.Hidden, Visibility.Collapsed])
                 {
                     w.IsMinimizeButtonVisible = value;
                     w.IsMaximizeButtonVisible = value;
@@ -1378,7 +1367,7 @@ namespace Fluence.Wpf.Tests
                 }
                 finally
                 {
-                    if (window is not null && window.IsVisible)
+                    if (window?.IsVisible == true)
                     {
                         window.Close();
                     }
@@ -1391,7 +1380,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        #endregion
+        #endregion Caption button DP overrides (authoritative when explicitly set)
 
         #region 8. PasswordBox.SelectAll
 
@@ -1424,7 +1413,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        #endregion
+        #endregion 8. PasswordBox.SelectAll
 
         #region WM_GETMINMAXINFO
 
@@ -1486,7 +1475,7 @@ namespace Fluence.Wpf.Tests
             AssertNativeConstantValue("MONITOR_DEFAULTTONEAREST", 2u);
         }
 
-        #endregion
+        #endregion WM_GETMINMAXINFO
 
         #region WI-1 F4 - Caption buttons must remain hit-testable when ExtendsContentIntoTitleBar=true
 
@@ -1604,6 +1593,6 @@ namespace Fluence.Wpf.Tests
             return false;
         }
 
-        #endregion
+        #endregion WI-1 F4 - Caption buttons must remain hit-testable when ExtendsContentIntoTitleBar=true
     }
 }

@@ -132,8 +132,7 @@ namespace Fluence.Wpf.Tests
 
         private static void ResetApplication(Application application)
         {
-            Window[] windows = [.. application.Windows.Cast<Window>()];
-            foreach (Window window in windows)
+            foreach (Window window in (Window[])[.. application.Windows.Cast<Window>()])
             {
                 window.Content = null;
                 window.Close();

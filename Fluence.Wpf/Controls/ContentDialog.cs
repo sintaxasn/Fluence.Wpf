@@ -567,6 +567,8 @@ namespace Fluence.Wpf.Controls
         /// inside the dialog, so chrome outside the content adorner (such as a title-bar search
         /// box) cannot be clicked or focused while the dialog is modal.
         /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The mouse button event data.</param>
         private void OnOwnerPreviewMouseDown(object sender, MouseButtonEventArgs e)
         {
             if (_showCompletionSource is null)
@@ -589,6 +591,8 @@ namespace Fluence.Wpf.Controls
         /// while the dialog is modal. Key input sourced inside the dialog is left alone so the
         /// dialog's own Tab cycle and key handling keep working.
         /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The key event data.</param>
         private void OnOwnerPreviewKeyDown(object sender, KeyEventArgs e)
         {
             if (_showCompletionSource is null)
@@ -609,6 +613,8 @@ namespace Fluence.Wpf.Controls
         /// closes while the dialog is open, so the pending <see cref="ShowAsync"/> task always
         /// completes.
         /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
         private void OnOwnerClosed(object? sender, EventArgs e)
         {
             CloseDialog(ContentDialogResult.None);
@@ -674,6 +680,8 @@ namespace Fluence.Wpf.Controls
         /// Walks the visual (and, for non-visual sources, logical) tree from
         /// <paramref name="source"/> upward to determine whether it sits inside this dialog.
         /// </summary>
+        /// <param name="source">The starting point for the tree walk.</param>
+        /// <returns>True if the source is within the dialog; otherwise, false.</returns>
         private bool IsWithinDialog(DependencyObject source)
         {
             DependencyObject? current = source;
@@ -701,6 +709,7 @@ namespace Fluence.Wpf.Controls
         /// Resolves the window that hosts the modal overlay: the active window first, then
         /// the application main window.
         /// </summary>
+        /// <exception cref="InvalidOperationException">Thrown when no active or main window can be resolved.</exception>
         private static Window ResolveOwnerWindow()
         {
             Application application = Application.Current
@@ -742,6 +751,10 @@ namespace Fluence.Wpf.Controls
         /// Runs the shared command-button pipeline: raises the button's click event, and when
         /// not canceled executes the button's command and closes the dialog with the given result.
         /// </summary>
+        /// <param name="clickHandler">The button's click event handler to raise.</param>
+        /// <param name="command">The command to execute if the click is not canceled.</param>
+        /// <param name="commandParameter">The parameter to pass to the command.</param>
+        /// <param name="result">The result to close the dialog with.</param>
         private void HandleButtonInvoked(
             EventHandler<ContentDialogButtonClickEventArgs>? clickHandler,
             ICommand? command,
@@ -755,7 +768,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            if (command is not null && command.CanExecute(commandParameter))
+            if (command?.CanExecute(commandParameter) == true)
             {
                 command.Execute(commandParameter);
             }
@@ -811,7 +824,7 @@ namespace Fluence.Wpf.Controls
                 ContentDialogButton.None or _ => null,
             };
 
-            if (defaultButton is not null && defaultButton.IsEnabled && defaultButton.Visibility == Visibility.Visible)
+            if (defaultButton?.IsEnabled == true && defaultButton.Visibility == Visibility.Visible)
             {
                 _ = defaultButton.Focus();
                 return;
@@ -825,6 +838,7 @@ namespace Fluence.Wpf.Controls
         /// the pending <see cref="ShowAsync"/> task with <paramref name="result"/>, and
         /// raises <see cref="Closed"/>.
         /// </summary>
+        /// <param name="result">The result to close the dialog with.</param>
         private void CloseDialog(ContentDialogResult result)
         {
             if (_showCompletionSource is null)

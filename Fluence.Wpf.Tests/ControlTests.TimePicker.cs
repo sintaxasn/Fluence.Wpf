@@ -52,6 +52,8 @@ namespace Fluence.Wpf.Tests
         /// invariant "AM" when the culture (notably several .NET Framework NLS locales)
         /// reports an empty one.
         /// </summary>
+        /// <param name="culture">The culture to check for the AM designator.</param>
+        /// <returns>The expected AM designator.</returns>
         private static string ExpectedAmDesignator(CultureInfo culture)
         {
             return string.IsNullOrWhiteSpace(culture.DateTimeFormat.AMDesignator) ? "AM" : culture.DateTimeFormat.AMDesignator;
@@ -61,6 +63,8 @@ namespace Fluence.Wpf.Tests
         /// Mirrors the control's designator fallback: the culture PM designator, or the
         /// invariant "PM" when the culture reports an empty one.
         /// </summary>
+        /// <param name="culture">The culture to check for the PM designator.</param>
+        /// <returns>The expected PM designator.</returns>
         private static string ExpectedPmDesignator(CultureInfo culture)
         {
             return string.IsNullOrWhiteSpace(culture.DateTimeFormat.PMDesignator) ? "PM" : culture.DateTimeFormat.PMDesignator;

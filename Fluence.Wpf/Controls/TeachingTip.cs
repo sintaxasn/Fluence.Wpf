@@ -399,7 +399,7 @@ namespace Fluence.Wpf.Controls
         private static void OnPlacementInputChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TeachingTip tip = (TeachingTip)d;
-            if (tip.HostPopup is not null && tip.HostPopup.IsOpen)
+            if (tip.HostPopup?.IsOpen == true)
             {
                 tip.ApplyPlacement(tip.HostPopup);
             }
@@ -436,6 +436,8 @@ namespace Fluence.Wpf.Controls
         /// Resolves <see cref="TeachingTipPlacementMode.Auto"/> to the concrete edge used for
         /// the popup placement and the beak position.
         /// </summary>
+        /// <param name="preferred">The preferred placement mode.</param>
+        /// <returns>The resolved placement mode.</returns>
         private static TeachingTipPlacementMode ResolvePlacement(TeachingTipPlacementMode preferred)
         {
             return preferred == TeachingTipPlacementMode.Auto
@@ -488,7 +490,7 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         private void ClosePopup()
         {
-            if (HostPopup is not null && HostPopup.IsOpen)
+            if (HostPopup?.IsOpen == true)
             {
                 HostPopup.IsOpen = false;
             }
@@ -503,6 +505,7 @@ namespace Fluence.Wpf.Controls
         /// <see cref="TeachingTipPlacementMode.Center"/> so the beak stays hidden. The resolved
         /// placement is recorded in <see cref="ActualPlacement"/>.
         /// </summary>
+        /// <param name="popup">The popup to which the placement is being applied.</param>
         private void ApplyPlacement(Popup popup)
         {
             FrameworkElement? target = Target;
@@ -546,6 +549,10 @@ namespace Fluence.Wpf.Controls
         /// target edge selected by <see cref="PreferredPlacement"/>, sharing the
         /// <see cref="FlyoutBase.GetEdgeCenteredPlacements"/> math with the flyout family.
         /// </summary>
+        /// <param name="popupSize">The size of the popup.</param>
+        /// <param name="targetSize">The size of the target element.</param>
+        /// <param name="offset">The offset to apply to the placement.</param>
+        /// <returns>An array of custom popup placements.</returns>
         private CustomPopupPlacement[] GetEdgePlacements(Size popupSize, Size targetSize, Point offset)
         {
             return FlyoutBase.GetEdgeCenteredPlacements(
@@ -560,6 +567,10 @@ namespace Fluence.Wpf.Controls
         /// bottom-right corner of the fallback placement target (the active window content),
         /// matching the WinUI default position for untargeted teaching tips.
         /// </summary>
+        /// <param name="popupSize">The size of the popup.</param>
+        /// <param name="targetSize">The size of the target element.</param>
+        /// <param name="offset">The offset to apply to the placement.</param>
+        /// <returns>An array of custom popup placements.</returns>
         private static CustomPopupPlacement[] GetBottomRightPlacements(Size popupSize, Size targetSize, Point offset)
         {
             Point bottomRight = new(
@@ -660,7 +671,7 @@ namespace Fluence.Wpf.Controls
         {
             ActionButtonClick?.Invoke(this, EventArgs.Empty);
             ICommand? command = ActionButtonCommand;
-            if (command is not null && command.CanExecute(ActionButtonCommandParameter))
+            if (command?.CanExecute(ActionButtonCommandParameter) == true)
             {
                 command.Execute(ActionButtonCommandParameter);
             }

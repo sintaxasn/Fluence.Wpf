@@ -276,8 +276,7 @@ namespace Fluence.Wpf.Tests
         private static Application EnsureDemoTheme()
         {
             Application application = WpfTestSta.EnsureApplication() ?? throw new InvalidOperationException("WPF application was not created.");
-            Window[] windows = [.. application.Windows.Cast<Window>()];
-            foreach (Window window in windows)
+            foreach (Window window in (Window[])[.. application.Windows.Cast<Window>()])
             {
                 window.Content = null;
                 window.Close();

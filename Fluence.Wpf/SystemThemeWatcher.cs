@@ -211,6 +211,7 @@ namespace Fluence.Wpf
         /// user changes the Windows accent or app/system theme. WPF's HwndSource uses the
         /// Unicode window-class variant, so the string is UTF-16 LE.
         /// </summary>
+        /// <param name="lParam">A pointer to a Unicode string containing the setting change information.</param>
         private static bool IsImmersiveColorSetBroadcast(IntPtr lParam)
         {
             if (lParam == IntPtr.Zero)
@@ -249,7 +250,7 @@ namespace Fluence.Wpf
         /// <param name="window">The window instance to be tracked by this object. Cannot be null.</param>
         private class WatchedWindow(Window window)
         {
-            internal Window Window { get; private set; } = window;
+            internal Window Window { get; } = window;
             internal HwndSource? HwndSource { get; set; }
             internal bool IsHooked { get; set; }
         }

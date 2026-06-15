@@ -128,7 +128,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        #endregion
+        #endregion Defaults and DPs
 
         #region Template parts
 
@@ -180,7 +180,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        #endregion
+        #endregion Template parts
 
         #region Primary click
 
@@ -243,7 +243,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     int executed = 0;
-                    RelayCommand command = new(p => executed++);
+                    RelayCommand command = new(_ => executed++);
 
                     SplitButton splitButton = new()
                     {
@@ -276,7 +276,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        #endregion
+        #endregion Primary click
 
         #region Flyout open / close
 
@@ -338,7 +338,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        #endregion
+        #endregion Flyout open / close
 
         #region Automation
 
@@ -361,7 +361,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        #endregion
+        #endregion Automation
 
         private sealed class RelayCommand(Action<object?> execute) : ICommand
         {

@@ -169,13 +169,13 @@ namespace Fluence.Wpf.Demo.Pages
 
         private sealed class TypographyRow(string example, string variableFont, string sizeAndLineHeight, string styleKey)
         {
-            public string Example { get; private set; } = example;
+            public string Example { get; } = example;
 
-            public string VariableFont { get; private set; } = variableFont;
+            public string VariableFont { get; } = variableFont;
 
-            public string SizeAndLineHeight { get; private set; } = sizeAndLineHeight;
+            public string SizeAndLineHeight { get; } = sizeAndLineHeight;
 
-            public string StyleKey { get; private set; } = styleKey;
+            public string StyleKey { get; } = styleKey;
         }
     }
 }

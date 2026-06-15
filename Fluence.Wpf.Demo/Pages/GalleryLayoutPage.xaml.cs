@@ -32,60 +32,68 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryLayoutPage : UserControl
     {
-        private const string BorderStackPanelXamlSource = @"<!-- Intentionally partial layout snippet for a page that already declares the Fluence xmlns. -->
+        private const string BorderStackPanelXamlSource = """
+<!-- Intentionally partial layout snippet for a page that already declares the Fluence xmlns. -->
 <ui:Border
-    Padding=""14""
-    Background=""{DynamicResource CardBackgroundFillColorSecondaryBrush}""
-    BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
-    BorderThickness=""1""
-    CornerRadius=""8"">
-    <ui:StackPanel Spacing=""10"">
-        <TextBlock Style=""{StaticResource BodyStrongTextBlockStyle}""
-                   Text=""Settings group"" />
-        <TextBlock Text=""StackPanel spacing keeps rows readable while Border frames the group.""
-                   TextWrapping=""Wrap"" />
+    Padding="14"
+    Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}"
+    BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+    BorderThickness="1"
+    CornerRadius="8">
+    <ui:StackPanel Spacing="10">
+        <TextBlock Style="{StaticResource BodyStrongTextBlockStyle}"
+                   Text="Settings group" />
+        <TextBlock Text="StackPanel spacing keeps rows readable while Border frames the group."
+                   TextWrapping="Wrap" />
         <ui:Separator />
-        <TextBlock Text=""Separator divides related rows."" />
+        <TextBlock Text="Separator divides related rows." />
     </ui:StackPanel>
-</ui:Border>";
+</ui:Border>
+""";
 
-        private const string DockPanelXamlSource = @"<!-- Intentionally partial layout snippet for a page that already declares the Fluence xmlns. -->
-<DockPanel LastChildFill=""True"">
-    <ui:Button DockPanel.Dock=""Right""
-               Appearance=""Accent""
-               Content=""Apply"" />
-    <TextBlock VerticalAlignment=""Center""
-               Text=""DockPanel keeps the command aligned to the edge."" />
-</DockPanel>";
+        private const string DockPanelXamlSource = """
+<!-- Intentionally partial layout snippet for a page that already declares the Fluence xmlns. -->
+<DockPanel LastChildFill="True">
+    <ui:Button DockPanel.Dock="Right"
+               Appearance="Accent"
+               Content="Apply" />
+    <TextBlock VerticalAlignment="Center"
+               Text="DockPanel keeps the command aligned to the edge." />
+</DockPanel>
+""";
 
-        private const string ExpanderXamlSource = @"<!-- Intentionally partial layout snippet for a page that already declares the Fluence xmlns. -->
+        private const string ExpanderXamlSource = """
+<!-- Intentionally partial layout snippet for a page that already declares the Fluence xmlns. -->
 <ui:Expander
-    x:Name=""AdvancedOptionsExpander""
-    Header=""Advanced options"">
-    <TextBlock Text=""Expander shows secondary settings only when useful.""
-               Margin=""{DynamicResource DemoLargeTopGapMargin}""
-               TextWrapping=""Wrap"" />
-</ui:Expander>";
+    x:Name="AdvancedOptionsExpander"
+    Header="Advanced options">
+    <TextBlock Text="Expander shows secondary settings only when useful."
+               Margin="{DynamicResource DemoLargeTopGapMargin}"
+               TextWrapping="Wrap" />
+</ui:Expander>
+""";
 
-        private const string DockPanelExpanderXamlSource = @"<!-- Intentionally partial layout snippet for a page that already declares the Fluence xmlns. -->
-<ui:Expander x:Name=""DockPanelOptionsExpander"">
+        private const string DockPanelExpanderXamlSource = """
+<!-- Intentionally partial layout snippet for a page that already declares the Fluence xmlns. -->
+<ui:Expander x:Name="DockPanelOptionsExpander">
     <ui:Expander.Header>
-        <DockPanel LastChildFill=""True"">
-            <ui:Button DockPanel.Dock=""Right""
-                       Content=""Edit"" />
-            <TextBlock VerticalAlignment=""Center""
-                       Text=""Delivery options"" />
+        <DockPanel LastChildFill="True">
+            <ui:Button DockPanel.Dock="Right"
+                       Content="Edit" />
+            <TextBlock VerticalAlignment="Center"
+                       Text="Delivery options" />
         </DockPanel>
     </ui:Expander.Header>
-    <DockPanel LastChildFill=""True"">
-        <ui:ToggleSwitch DockPanel.Dock=""Right""
-                         OffContent=""Off""
-                         OnContent=""On"" />
-        <TextBlock VerticalAlignment=""Center""
-                   Text=""Notify me when the package ships.""
-                   TextWrapping=""Wrap"" />
+    <DockPanel LastChildFill="True">
+        <ui:ToggleSwitch DockPanel.Dock="Right"
+                         OffContent="Off"
+                         OnContent="On" />
+        <TextBlock VerticalAlignment="Center"
+                   Text="Notify me when the package ships."
+                   TextWrapping="Wrap" />
     </DockPanel>
-</ui:Expander>";
+</ui:Expander>
+""";
 
         public GalleryLayoutPage()
         {

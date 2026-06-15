@@ -280,6 +280,8 @@ namespace Fluence.Wpf.Demo
         /// <see cref="DemoNav_SelectionChanged"/>; footer items clear the main selection, so they are
         /// handled here instead.
         /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
         private void DemoNav_ItemInvoked(object? sender, NavigationViewItemInvokedEventArgs e)
         {
             if (DemoNav is null || !ReferenceEquals(e.InvokedItemContainer, SettingsNavigationItem))

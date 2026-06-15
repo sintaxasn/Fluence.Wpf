@@ -33,35 +33,37 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryTreesPage : UserControl
     {
-        private const string TreeViewHierarchyXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Trees.TreeViewHierarchy""
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+        private const string TreeViewHierarchyXamlSource = """
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.Trees.TreeViewHierarchy"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
     <ui:TreeView
-        x:Name=""HierarchyTreeView""
-        MaxHeight=""260""
-        BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
-        BorderThickness=""1"">
+        x:Name="HierarchyTreeView"
+        MaxHeight="260"
+        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+        BorderThickness="1">
         <ui:TreeViewItem
-            Header=""Workspace""
-            IsExpanded=""True"">
-            <ui:TreeViewItem Header=""Pages"" IsExpanded=""True"">
-                <ui:TreeViewItem Header=""GalleryButtonsPage.xaml"" />
-                <ui:TreeViewItem Header=""GalleryTreesPage.xaml"" />
-                <ui:TreeViewItem Header=""GalleryDataPage.xaml"" />
+            Header="Workspace"
+            IsExpanded="True">
+            <ui:TreeViewItem Header="Pages" IsExpanded="True">
+                <ui:TreeViewItem Header="GalleryButtonsPage.xaml" />
+                <ui:TreeViewItem Header="GalleryTreesPage.xaml" />
+                <ui:TreeViewItem Header="GalleryDataPage.xaml" />
             </ui:TreeViewItem>
-            <ui:TreeViewItem Header=""Samples"">
-                <ui:TreeViewItem Header=""Buttons"" />
-                <ui:TreeViewItem Header=""Trees"" />
+            <ui:TreeViewItem Header="Samples">
+                <ui:TreeViewItem Header="Buttons" />
+                <ui:TreeViewItem Header="Trees" />
             </ui:TreeViewItem>
         </ui:TreeViewItem>
-        <ui:TreeViewItem Header=""Resources"">
-            <ui:TreeViewItem Header=""DemoSharedStyles.xaml"" />
+        <ui:TreeViewItem Header="Resources">
+            <ui:TreeViewItem Header="DemoSharedStyles.xaml" />
         </ui:TreeViewItem>
     </ui:TreeView>
 </UserControl>
-";
+
+""";
 
         private const string TreeViewHierarchyCSharpSource = @"using System.Windows.Controls;
 
@@ -76,38 +78,40 @@ namespace Fluence.Wpf.Demo.Pages.Trees
     }
 }
 ";
-        private const string TreeViewSelectionXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Trees.TreeViewSelection""
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+        private const string TreeViewSelectionXamlSource = """
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.Trees.TreeViewSelection"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
     <StackPanel>
         <ui:TreeView
-            x:Name=""SelectionTreeView""
-            MaxHeight=""260""
-            Margin=""0,0,0,12""
-            BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
-            BorderThickness=""1"">
+            x:Name="SelectionTreeView"
+            MaxHeight="260"
+            Margin="0,0,0,12"
+            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1">
             <ui:TreeViewItem
-                Header=""Inbox""
-                IsExpanded=""True"">
-                <ui:TreeViewItem Header=""Priority"" IsExpanded=""True"">
-                    <ui:TreeViewItem Header=""Contract review"" />
-                    <ui:TreeViewItem Header=""Customer follow-up"" />
+                Header="Inbox"
+                IsExpanded="True">
+                <ui:TreeViewItem Header="Priority" IsExpanded="True">
+                    <ui:TreeViewItem Header="Contract review" />
+                    <ui:TreeViewItem Header="Customer follow-up" />
                 </ui:TreeViewItem>
-                <ui:TreeViewItem Header=""Later"">
-                    <ui:TreeViewItem Header=""Design notes"" />
-                    <ui:TreeViewItem Header=""Release checklist"" />
+                <ui:TreeViewItem Header="Later">
+                    <ui:TreeViewItem Header="Design notes" />
+                    <ui:TreeViewItem Header="Release checklist" />
                 </ui:TreeViewItem>
             </ui:TreeViewItem>
-            <ui:TreeViewItem Header=""Archive"">
-                <ui:TreeViewItem Header=""March"" />
-                <ui:TreeViewItem Header=""April"" />
+            <ui:TreeViewItem Header="Archive">
+                <ui:TreeViewItem Header="March" />
+                <ui:TreeViewItem Header="April" />
             </ui:TreeViewItem>
         </ui:TreeView>
     </StackPanel>
 </UserControl>
-";
+
+""";
 
         private const string TreeViewSelectionCSharpSource = @"using System.Windows.Controls;
 
@@ -122,34 +126,36 @@ namespace Fluence.Wpf.Demo.Pages.Trees
     }
 }
 ";
-        private const string TreeViewMultiSelectXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Trees.TreeViewMultiSelect""
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf""
-    xmlns:uicore=""clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"">
+        private const string TreeViewMultiSelectXamlSource = """
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.Trees.TreeViewMultiSelect"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
+    xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf">
     <ui:TreeView
-        x:Name=""MultiSelectTreeView""
-        MaxHeight=""260""
-        BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
-        BorderThickness=""1""
-        SelectionMode=""{x:Static uicore:TreeViewSelectionMode.Multiple}"">
+        x:Name="MultiSelectTreeView"
+        MaxHeight="260"
+        BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+        BorderThickness="1"
+        SelectionMode="{x:Static uicore:TreeViewSelectionMode.Multiple}">
         <ui:TreeViewItem
-            Header=""Documents""
-            IsExpanded=""True"">
-            <ui:TreeViewItem Header=""Contracts"" />
-            <ui:TreeViewItem Header=""Invoices"" />
-            <ui:TreeViewItem Header=""Receipts"" />
+            Header="Documents"
+            IsExpanded="True">
+            <ui:TreeViewItem Header="Contracts" />
+            <ui:TreeViewItem Header="Invoices" />
+            <ui:TreeViewItem Header="Receipts" />
         </ui:TreeViewItem>
         <ui:TreeViewItem
-            Header=""Pictures""
-            IsExpanded=""True"">
-            <ui:TreeViewItem Header=""Screenshots"" />
-            <ui:TreeViewItem Header=""Archive"" />
+            Header="Pictures"
+            IsExpanded="True">
+            <ui:TreeViewItem Header="Screenshots" />
+            <ui:TreeViewItem Header="Archive" />
         </ui:TreeViewItem>
     </ui:TreeView>
 </UserControl>
-";
+
+""";
 
         private const string TreeViewMultiSelectCSharpSource = @"using System.Windows.Controls;
 
@@ -164,49 +170,51 @@ namespace Fluence.Wpf.Demo.Pages.Trees
     }
 }
 ";
-        private const string TreeViewExpansionXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Trees.TreeViewExpansion""
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+        private const string TreeViewExpansionXamlSource = """
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.Trees.TreeViewExpansion"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
     <StackPanel>
         <ui:TreeView
-            x:Name=""ExpansionTreeView""
-            MaxHeight=""260""
-            Margin=""0,0,0,12""
-            BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
-            BorderThickness=""1"">
+            x:Name="ExpansionTreeView"
+            MaxHeight="260"
+            Margin="0,0,0,12"
+            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1">
             <ui:TreeViewItem
-                Header=""Project""
-                IsExpanded=""True"">
-                <ui:TreeViewItem Header=""Source"" IsExpanded=""True"">
-                    <ui:TreeViewItem Header=""Controls"" />
-                    <ui:TreeViewItem Header=""Themes"" />
+                Header="Project"
+                IsExpanded="True">
+                <ui:TreeViewItem Header="Source" IsExpanded="True">
+                    <ui:TreeViewItem Header="Controls" />
+                    <ui:TreeViewItem Header="Themes" />
                 </ui:TreeViewItem>
-                <ui:TreeViewItem Header=""Tests"">
-                    <ui:TreeViewItem Header=""Control tests"" />
-                    <ui:TreeViewItem Header=""Demo tests"" />
+                <ui:TreeViewItem Header="Tests">
+                    <ui:TreeViewItem Header="Control tests" />
+                    <ui:TreeViewItem Header="Demo tests" />
                 </ui:TreeViewItem>
             </ui:TreeViewItem>
         </ui:TreeView>
         <StackPanel
-            x:Name=""TreeExpansionActionsPanel""
-            HorizontalAlignment=""Center""
-            VerticalAlignment=""Center""
-            Orientation=""Horizontal"">
+            x:Name="TreeExpansionActionsPanel"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Orientation="Horizontal">
             <ui:Button
-                Margin=""0,0,8,0""
-                Click=""ExpandAll_Click""
-                Content=""Expand all""
-                MinWidth=""140"" />
+                Margin="0,0,8,0"
+                Click="ExpandAll_Click"
+                Content="Expand all"
+                MinWidth="140" />
             <ui:Button
-                Click=""CollapseAll_Click""
-                Content=""Collapse all""
-                MinWidth=""140"" />
+                Click="CollapseAll_Click"
+                Content="Collapse all"
+                MinWidth="140" />
         </StackPanel>
     </StackPanel>
 </UserControl>
-";
+
+""";
 
         private const string TreeViewExpansionCSharpSource = @"using System.Windows;
 using System.Windows.Controls;

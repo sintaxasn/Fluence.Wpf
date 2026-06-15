@@ -33,98 +33,99 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryDataPage : UserControl
     {
-        private const string ListViewItemsXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Data.ListViewItems""
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+        private const string ListViewItemsXamlSource = """
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.Data.ListViewItems"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width=""*"" />
-            <ColumnDefinition Width=""20"" />
-            <ColumnDefinition Width=""*"" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="20" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <Border
-            x:Name=""SimpleListViewBackground""
-            CornerRadius=""{DynamicResource ControlCornerRadius}"">
+            x:Name="SimpleListViewBackground"
+            CornerRadius="{DynamicResource ControlCornerRadius}">
             <ui:ListView
-                x:Name=""SimpleListView""
-                Height=""230""
-                BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
-                BorderThickness=""1"">
-                <ListViewItem Content=""Ana Bowman"" />
-                <ListViewItem Content=""Shawn Hughes"" />
-                <ListViewItem Content=""Oscar Ward"" />
-                <ListViewItem Content=""Madison Butler"" />
-                <ListViewItem Content=""Graham Barnes"" />
+                x:Name="SimpleListView"
+                Height="230"
+                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1">
+                <ListViewItem Content="Ana Bowman" />
+                <ListViewItem Content="Shawn Hughes" />
+                <ListViewItem Content="Oscar Ward" />
+                <ListViewItem Content="Madison Butler" />
+                <ListViewItem Content="Graham Barnes" />
             </ui:ListView>
         </Border>
         <Border
-            x:Name=""RichListViewBackground""
-            Grid.Column=""2""
-            CornerRadius=""{DynamicResource ControlCornerRadius}"">
+            x:Name="RichListViewBackground"
+            Grid.Column="2"
+            CornerRadius="{DynamicResource ControlCornerRadius}">
             <ui:ListView
-                x:Name=""RichListView""
-                Height=""230""
-                BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
-                BorderThickness=""1"">
+                x:Name="RichListView"
+                Height="230"
+                BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+                BorderThickness="1">
                 <ListViewItem>
-                    <Grid Margin=""0,4"">
+                    <Grid Margin="0,4">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width=""36"" />
-                            <ColumnDefinition Width=""*"" />
+                            <ColumnDefinition Width="36" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <ui:FontIcon
-                            VerticalAlignment=""Center""
-                            Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                            Glyph=""&#xE77B;""
-                            IconFontSize=""20"" />
-                        <StackPanel Grid.Column=""1"">
-                            <TextBlock FontWeight=""SemiBold"" Text=""Ana Bowman"" />
+                            VerticalAlignment="Center"
+                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                            Glyph="&#xE77B;"
+                            IconFontSize="20" />
+                        <StackPanel Grid.Column="1">
+                            <TextBlock FontWeight="SemiBold" Text="Ana Bowman" />
                             <TextBlock
-                                FontSize=""12""
-                                Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                                Text=""Support Engineer"" />
+                                FontSize="12"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                Text="Support Engineer" />
                         </StackPanel>
                     </Grid>
                 </ListViewItem>
                 <ListViewItem>
-                    <Grid Margin=""0,4"">
+                    <Grid Margin="0,4">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width=""36"" />
-                            <ColumnDefinition Width=""*"" />
+                            <ColumnDefinition Width="36" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <ui:FontIcon
-                            VerticalAlignment=""Center""
-                            Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                            Glyph=""&#xE77B;""
-                            IconFontSize=""20"" />
-                        <StackPanel Grid.Column=""1"">
-                            <TextBlock FontWeight=""SemiBold"" Text=""Shawn Hughes"" />
+                            VerticalAlignment="Center"
+                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                            Glyph="&#xE77B;"
+                            IconFontSize="20" />
+                        <StackPanel Grid.Column="1">
+                            <TextBlock FontWeight="SemiBold" Text="Shawn Hughes" />
                             <TextBlock
-                                FontSize=""12""
-                                Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                                Text=""Platform Specialist"" />
+                                FontSize="12"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                Text="Platform Specialist" />
                         </StackPanel>
                     </Grid>
                 </ListViewItem>
                 <ListViewItem>
-                    <Grid Margin=""0,4"">
+                    <Grid Margin="0,4">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width=""36"" />
-                            <ColumnDefinition Width=""*"" />
+                            <ColumnDefinition Width="36" />
+                            <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
                         <ui:FontIcon
-                            VerticalAlignment=""Center""
-                            Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                            Glyph=""&#xE77B;""
-                            IconFontSize=""20"" />
-                        <StackPanel Grid.Column=""1"">
-                            <TextBlock FontWeight=""SemiBold"" Text=""Oscar Ward"" />
+                            VerticalAlignment="Center"
+                            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                            Glyph="&#xE77B;"
+                            IconFontSize="20" />
+                        <StackPanel Grid.Column="1">
+                            <TextBlock FontWeight="SemiBold" Text="Oscar Ward" />
                             <TextBlock
-                                FontSize=""12""
-                                Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                                Text=""DevOps Lead"" />
+                                FontSize="12"
+                                Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                Text="DevOps Lead" />
                         </StackPanel>
                     </Grid>
                 </ListViewItem>
@@ -132,7 +133,7 @@ namespace Fluence.Wpf.Demo.Pages
         </Border>
     </Grid>
 </UserControl>
-";
+""";
 
         private const string ListViewItemsCSharpSource = @"using System.Windows.Controls;
 
@@ -147,48 +148,50 @@ namespace Fluence.Wpf.Demo.Pages.Data
     }
 }
 ";
-        private const string ListViewEmptyStateXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Data.ListViewEmptyState""
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+        private const string ListViewEmptyStateXamlSource = """
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.Data.ListViewEmptyState"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
     <StackPanel>
         <ui:ListView
-            x:Name=""EmptyStateListView""
-            Height=""180""
-            Margin=""0,0,0,12""
-            Background=""{DynamicResource CardBackgroundFillColorDefaultBrush}""
-            BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
-            BorderThickness=""1"">
+            x:Name="EmptyStateListView"
+            Height="180"
+            Margin="0,0,0,12"
+            Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1">
             <ui:ListView.EmptyContent>
                 <TextBlock
-                    HorizontalAlignment=""Center""
-                    VerticalAlignment=""Center""
-                    Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                    Text=""No items. Add one to begin."" />
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                    Text="No items. Add one to begin." />
             </ui:ListView.EmptyContent>
         </ui:ListView>
         <StackPanel
-            x:Name=""EmptyStateActionsPanel""
-            HorizontalAlignment=""Center""
-            VerticalAlignment=""Center""
-            Orientation=""Horizontal"">
+            x:Name="EmptyStateActionsPanel"
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Orientation="Horizontal">
             <ui:Button
-                Margin=""0,0,8,0""
-                Appearance=""Accent""
-                Click=""AddListItem_Click""
-                Content=""Add item""
-                MinWidth=""140"" />
+                Margin="0,0,8,0"
+                Appearance="Accent"
+                Click="AddListItem_Click"
+                Content="Add item"
+                MinWidth="140" />
             <ui:Button
-                Click=""RemoveListItem_Click""
-                Content=""Remove item""
-                MinWidth=""140"" />
+                Click="RemoveListItem_Click"
+                Content="Remove item"
+                MinWidth="140" />
         </StackPanel>
     </StackPanel>
 </UserControl>
-";
+""";
 
-        private const string ListViewEmptyStateCSharpSource = @"using System.Windows;
+        private const string ListViewEmptyStateCSharpSource = """
+using System.Windows;
 using System.Windows.Controls;
 
 namespace Fluence.Wpf.Demo.Pages.Data
@@ -199,11 +202,11 @@ namespace Fluence.Wpf.Demo.Pages.Data
 
         private static readonly string[] SampleNames =
         {
-            ""Liam Torres"",
-            ""Nora Fischer"",
-            ""Eli Nakamura"",
-            ""Priya Kapoor"",
-            ""Dante Reeves""
+            "Liam Torres",
+            "Nora Fischer",
+            "Eli Nakamura",
+            "Priya Kapoor",
+            "Dante Reeves"
         };
 
         public ListViewEmptyState()
@@ -231,45 +234,46 @@ namespace Fluence.Wpf.Demo.Pages.Data
         }
     }
 }
-";
-        private const string ListBoxSelectionXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Data.ListBoxSelection""
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+""";
+        private const string ListBoxSelectionXamlSource = """
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.Data.ListBoxSelection"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width=""*"" />
-            <ColumnDefinition Width=""20"" />
-            <ColumnDefinition Width=""*"" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="20" />
+            <ColumnDefinition Width="*" />
         </Grid.ColumnDefinitions>
         <ui:ListBox
-            x:Name=""SingleSelectListBox""
-            Height=""180""
-            BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
-            BorderThickness=""1"">
-            <ui:ListBoxItem Content=""Documents"" IsSelected=""True"" />
-            <ui:ListBoxItem Content=""Pictures"" />
-            <ui:ListBoxItem Content=""Music"" />
-            <ui:ListBoxItem Content=""Videos"" />
-            <ui:ListBoxItem Content=""Downloads"" />
+            x:Name="SingleSelectListBox"
+            Height="180"
+            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1">
+            <ui:ListBoxItem Content="Documents" IsSelected="True" />
+            <ui:ListBoxItem Content="Pictures" />
+            <ui:ListBoxItem Content="Music" />
+            <ui:ListBoxItem Content="Videos" />
+            <ui:ListBoxItem Content="Downloads" />
         </ui:ListBox>
         <ui:ListBox
-            x:Name=""MultiSelectListBox""
-            Grid.Column=""2""
-            Height=""180""
-            BorderBrush=""{DynamicResource CardStrokeColorDefaultBrush}""
-            BorderThickness=""1""
-            SelectionMode=""Extended"">
-            <ui:ListBoxItem Content=""Critical"" IsSelected=""True"" />
-            <ui:ListBoxItem Content=""Error"" IsSelected=""True"" />
-            <ui:ListBoxItem Content=""Warning"" />
-            <ui:ListBoxItem Content=""Information"" />
-            <ui:ListBoxItem Content=""Verbose"" />
+            x:Name="MultiSelectListBox"
+            Grid.Column="2"
+            Height="180"
+            BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
+            BorderThickness="1"
+            SelectionMode="Extended">
+            <ui:ListBoxItem Content="Critical" IsSelected="True" />
+            <ui:ListBoxItem Content="Error" IsSelected="True" />
+            <ui:ListBoxItem Content="Warning" />
+            <ui:ListBoxItem Content="Information" />
+            <ui:ListBoxItem Content="Verbose" />
         </ui:ListBox>
     </Grid>
 </UserControl>
-";
+""";
 
         private const string ListBoxSelectionCSharpSource = @"using System.Windows.Controls;
 
@@ -284,47 +288,48 @@ namespace Fluence.Wpf.Demo.Pages.Data
     }
 }
 ";
-        private const string CardVariantsXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Data.CardVariants""
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf""
-    xmlns:uicore=""clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"">
-    <UniformGrid Columns=""2"">
+        private const string CardVariantsXamlSource = """
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.Data.CardVariants"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
+    xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf">
+    <UniformGrid Columns="2">
         <ui:Card
-            MinHeight=""110""
-            Margin=""0,0,16,16""
-            Padding=""18""
-            Header=""Default""
-            Variant=""{x:Static uicore:CardVariant.Default}"">
-            <TextBlock Text=""Standard surface for grouped content."" TextWrapping=""Wrap"" />
+            MinHeight="110"
+            Margin="0,0,16,16"
+            Padding="18"
+            Header="Default"
+            Variant="{x:Static uicore:CardVariant.Default}">
+            <TextBlock Text="Standard surface for grouped content." TextWrapping="Wrap" />
         </ui:Card>
         <ui:Card
-            MinHeight=""110""
-            Margin=""0,0,0,16""
-            Padding=""18""
-            Header=""Outlined""
-            Variant=""{x:Static uicore:CardVariant.Outlined}"">
-            <TextBlock Text=""Emphasizes the boundary over fill."" TextWrapping=""Wrap"" />
+            MinHeight="110"
+            Margin="0,0,0,16"
+            Padding="18"
+            Header="Outlined"
+            Variant="{x:Static uicore:CardVariant.Outlined}">
+            <TextBlock Text="Emphasizes the boundary over fill." TextWrapping="Wrap" />
         </ui:Card>
         <ui:Card
-            MinHeight=""110""
-            Margin=""0,0,16,0""
-            Padding=""18""
-            Header=""Filled""
-            Variant=""{x:Static uicore:CardVariant.Filled}"">
-            <TextBlock Text=""Adds stronger container presence."" TextWrapping=""Wrap"" />
+            MinHeight="110"
+            Margin="0,0,16,0"
+            Padding="18"
+            Header="Filled"
+            Variant="{x:Static uicore:CardVariant.Filled}">
+            <TextBlock Text="Adds stronger container presence." TextWrapping="Wrap" />
         </ui:Card>
         <ui:Card
-            MinHeight=""110""
-            Padding=""18""
-            Header=""Subtle""
-            Variant=""{x:Static uicore:CardVariant.Subtle}"">
-            <TextBlock Text=""Keeps low-emphasis supporting content grouped."" TextWrapping=""Wrap"" />
+            MinHeight="110"
+            Padding="18"
+            Header="Subtle"
+            Variant="{x:Static uicore:CardVariant.Subtle}">
+            <TextBlock Text="Keeps low-emphasis supporting content grouped." TextWrapping="Wrap" />
         </ui:Card>
     </UniformGrid>
 </UserControl>
-";
+""";
 
         private const string CardVariantsCSharpSource = @"using System.Windows.Controls;
 
@@ -339,48 +344,49 @@ namespace Fluence.Wpf.Demo.Pages.Data
     }
 }
 ";
-        private const string PersonPictureXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Data.PersonPictureSample""
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+        private const string PersonPictureXamlSource = """
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.Data.PersonPictureSample"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
     <WrapPanel
-        HorizontalAlignment=""Center""
-        VerticalAlignment=""Center"">
+        HorizontalAlignment="Center"
+        VerticalAlignment="Center">
         <ui:PersonPicture
-            Width=""56""
-            Height=""56""
-            Margin=""0,0,12,12""
-            DisplayName=""Ana Bowman""
-            ProfilePicture=""pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureAnaBowman.png"" />
+            Width="56"
+            Height="56"
+            Margin="0,0,12,12"
+            DisplayName="Ana Bowman"
+            ProfilePicture="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureAnaBowman.png" />
         <ui:PersonPicture
-            Width=""56""
-            Height=""56""
-            Margin=""0,0,12,12""
-            DisplayName=""Shawn Hughes""
-            ProfilePicture=""pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureShawnHughes.png""
-            BadgeNumber=""3"" />
+            Width="56"
+            Height="56"
+            Margin="0,0,12,12"
+            DisplayName="Shawn Hughes"
+            ProfilePicture="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureShawnHughes.png"
+            BadgeNumber="3" />
         <ui:PersonPicture
-            Width=""56""
-            Height=""56""
-            Margin=""0,0,12,12""
-            DisplayName=""Priya Kapoor""
-            ProfilePicture=""pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPicturePriyaKapoor.png"" />
+            Width="56"
+            Height="56"
+            Margin="0,0,12,12"
+            DisplayName="Priya Kapoor"
+            ProfilePicture="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPicturePriyaKapoor.png" />
         <ui:PersonPicture
-            Width=""56""
-            Height=""56""
-            Margin=""0,0,12,12""
-            DisplayName=""Mateo Rivera""
-            ProfilePicture=""pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureMateoRivera.png"" />
+            Width="56"
+            Height="56"
+            Margin="0,0,12,12"
+            DisplayName="Mateo Rivera"
+            ProfilePicture="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureMateoRivera.png" />
         <ui:PersonPicture
-            Width=""56""
-            Height=""56""
-            Margin=""0,0,12,12""
-            DisplayName=""Madison Butler""
-            ProfilePicture=""pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureMadisonButler.png"" />
+            Width="56"
+            Height="56"
+            Margin="0,0,12,12"
+            DisplayName="Madison Butler"
+            ProfilePicture="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureMadisonButler.png" />
     </WrapPanel>
 </UserControl>
-";
+""";
 
         private const string PersonPictureCSharpSource = @"using System.Windows.Controls;
 

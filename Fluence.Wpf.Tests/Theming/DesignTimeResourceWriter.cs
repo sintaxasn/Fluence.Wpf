@@ -72,6 +72,8 @@ namespace Fluence.Wpf.Tests.Theming
         /// Must run on the WPF STA thread with an <see cref="Application"/> in scope (pack URIs
         /// in <c>BaseColorTables</c> require it).
         /// </summary>
+        /// <param name="theme">The theme to serialize.</param>
+        /// <returns>The canonical design-time XAML string for the specified theme.</returns>
         internal static string Generate(ApplicationTheme theme)
         {
             ResourceDictionary dict = FluenceThemeEngine.BuildStandalone(theme);
@@ -84,8 +86,7 @@ namespace Fluence.Wpf.Tests.Theming
             foreach (object keyObject in dict.Keys)
             {
                 if (keyObject is not string key) { continue; }
-                object value = dict[key];
-                switch (value)
+                switch (dict[key])
                 {
                     case Color c:
                         colors.Add(new KeyValuePair<string, Color>(key, c));
@@ -148,14 +149,21 @@ namespace Fluence.Wpf.Tests.Theming
             return sb.ToString();
         }
 
-        /// <summary>Writes the canonical XAML for <paramref name="theme"/> to its source path as UTF-8 with BOM.</summary>
+        /// <summary>
+        /// Writes the canonical XAML for <paramref name="theme"/> to its source path as UTF-8 with BOM.
+        /// </summary>
+        /// <param name="theme">The theme to write to disk.</param>
         internal static void WriteToDisk(ApplicationTheme theme)
         {
             string content = Generate(theme);
             File.WriteAllText(PathFor(theme), content, new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
         }
 
-        /// <summary>Returns the committed source-tree path of the generated file for <paramref name="theme"/>.</summary>
+        /// <summary>
+        /// Returns the committed source-tree path of the generated file for <paramref name="theme"/>.
+        /// </summary>
+        /// <param name="theme">The theme to get the path for.</param>
+        /// <returns>The path of the generated XAML file for the specified theme.</returns>
         internal static string PathFor(ApplicationTheme theme)
         {
             return Path.Combine(RepoRoot(), "Fluence.Wpf", "Properties", "DesignTime." + theme.ToString() + ".xaml");

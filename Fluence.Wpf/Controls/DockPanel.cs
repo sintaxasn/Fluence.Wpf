@@ -102,9 +102,7 @@ namespace Fluence.Wpf.Controls
 
                 child.Measure(available);
                 Size desired = child.DesiredSize;
-                Dock dock = System.Windows.Controls.DockPanel.GetDock(child);
-
-                switch (dock)
+                switch (System.Windows.Controls.DockPanel.GetDock(child))
                 {
                     case Dock.Left:
                     case Dock.Right:

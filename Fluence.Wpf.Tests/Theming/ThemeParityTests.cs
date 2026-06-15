@@ -72,6 +72,8 @@ namespace Fluence.Wpf.Tests.Theming
         /// Applies <paramref name="theme"/> with a pinned accent and returns a map of every
         /// resolved string key to its Color and/or Brush color value.
         /// </summary>
+        /// <param name="theme">The theme to apply.</param>
+        /// <returns>A dictionary mapping string keys to their resolved Color and Brush values.</returns>
         internal static IReadOnlyDictionary<string, (Color color, Color brush)> CaptureResolved(ApplicationTheme theme)
         {
             WpfTestSta.Dispatcher!.Invoke(() =>
@@ -176,7 +178,7 @@ namespace Fluence.Wpf.Tests.Theming
             // Custom(#0078D4) must use the generated ramp: Light2 must equal what the generator produces.
             Color customBase = Color.FromRgb(0x00, 0x78, 0xD4);
             AccentPalette custom = AccentResolver.Resolve(AccentIntent.FromCustom(customBase));
-            Fluence.Wpf.Helpers.HsvColorHelper.GenerateAccentRampWinaccent(customBase,
+            Helpers.HsvColorHelper.GenerateAccentRampWinaccent(customBase,
                 out _, out Color l2, out _, out _, out _, out _);
             Assert.AreEqual(l2, custom.Light2, "Custom accent must use the generated ramp, unchanged.");
         }
@@ -261,7 +263,7 @@ namespace Fluence.Wpf.Tests.Theming
                 ApplicationThemeManager.ResetForTesting();
                 ApplicationAccentColorManager.ResetForTesting();
                 ApplicationThemeManager.Apply(ApplicationTheme.Dark); // no ApplySystemAccent call
-                if (Fluence.Wpf.Helpers.RegistryHelper.TryGetAccentPalette(out Color[]? p) && p is not null)
+                if (Helpers.RegistryHelper.TryGetAccentPalette(out Color[]? p) && p is not null)
                 {
                     SolidColorBrush brush = (SolidColorBrush)Application.Current.Resources["AccentFillColorDefaultBrush"];
                     Assert.AreEqual(p[1], brush.Color, "Apply(theme) alone must use the OS palette Light2 in Dark.");

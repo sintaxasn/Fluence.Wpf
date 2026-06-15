@@ -2091,38 +2091,14 @@ namespace Fluence.Wpf.Tests
                     Assert.AreEqual(8, primary.Children.Count,
                         "Primary keyboard sample should contain four controls per row.");
 
-                    AssertGridCell(primary, delegate (UIElement child)
-                    {
-                        return child is Controls.Button button && string.Equals(button.Content as string, "Button 1", StringComparison.Ordinal);
-                    }, 0, 0, "Button 1");
-                    AssertGridCell(primary, delegate (UIElement child)
-                    {
-                        return child is Controls.Button button && string.Equals(button.Content as string, "Button 2", StringComparison.Ordinal);
-                    }, 0, 1, "Button 2");
-                    AssertGridCell(primary, delegate (UIElement child)
-                    {
-                        return child is Controls.TextBox;
-                    }, 0, 2, "TextBox");
-                    AssertGridCell(primary, delegate (UIElement child)
-                    {
-                        return child is Controls.ComboBox;
-                    }, 0, 3, "ComboBox");
-                    AssertGridCell(primary, delegate (UIElement child)
-                    {
-                        return child is Controls.CheckBox;
-                    }, 1, 0, "CheckBox");
-                    AssertGridCell(primary, delegate (UIElement child)
-                    {
-                        return child is ToggleSwitch;
-                    }, 1, 1, "ToggleSwitch");
-                    AssertGridCell(primary, delegate (UIElement child)
-                    {
-                        return child is Controls.Slider;
-                    }, 1, 2, "Slider");
-                    AssertGridCell(primary, delegate (UIElement child)
-                    {
-                        return child is HyperlinkButton;
-                    }, 1, 3, "HyperlinkButton");
+                    AssertGridCell(primary, child => child is Controls.Button button && string.Equals(button.Content as string, "Button 1", StringComparison.Ordinal), 0, 0, "Button 1");
+                    AssertGridCell(primary, child => child is Controls.Button button && string.Equals(button.Content as string, "Button 2", StringComparison.Ordinal), 0, 1, "Button 2");
+                    AssertGridCell(primary, child => child is Controls.TextBox, 0, 2, "TextBox");
+                    AssertGridCell(primary, child => child is Controls.ComboBox, 0, 3, "ComboBox");
+                    AssertGridCell(primary, child => child is Controls.CheckBox, 1, 0, "CheckBox");
+                    AssertGridCell(primary, child => child is ToggleSwitch, 1, 1, "ToggleSwitch");
+                    AssertGridCell(primary, child => child is Controls.Slider, 1, 2, "Slider");
+                    AssertGridCell(primary, child => child is HyperlinkButton, 1, 3, "HyperlinkButton");
 
                     Grid? tabOrder = FindByName<Grid>(page, "KeyboardSupportExplicitOrderControls");
                     Assert.IsNotNull(tabOrder, "Explicit tab order sample should use an alignment grid.");
@@ -2532,12 +2508,9 @@ namespace Fluence.Wpf.Tests
         private static T? FindByName<T>(DependencyObject? root, string name)
             where T : FrameworkElement
         {
-            if (root is FrameworkElement element)
+            if (root is FrameworkElement element && element.FindName(name) is T named)
             {
-                if (element.FindName(name) is T named)
-                {
-                    return named;
-                }
+                return named;
             }
 
             foreach (T item in FindAllVisualChildren<T>(root))
@@ -2634,9 +2607,9 @@ namespace Fluence.Wpf.Tests
 
         private sealed class DemoPageExpectation(string tag, Type pageType)
         {
-            public string Tag { get; private set; } = tag;
+            public string Tag { get; } = tag;
 
-            public Type PageType { get; private set; } = pageType;
+            public Type PageType { get; } = pageType;
         }
     }
 }

@@ -58,9 +58,9 @@ namespace Fluence.Wpf.Demo.Pages
     {
         private enum SourceLanguage
         {
-            PlainText,
-            Xaml,
-            CSharp
+            PlainText = 0,
+            Xaml = 1,
+            CSharp = 2
         }
 
         private static readonly HashSet<string> CSharpKeywords = new(StringComparer.Ordinal)
@@ -371,7 +371,7 @@ namespace Fluence.Wpf.Demo.Pages
             SourceTabControl?.Items.Clear();
 
             UpdateSourceVisibility();
-            if (SourceExpander is not null && SourceExpander.IsExpanded)
+            if (SourceExpander?.IsExpanded == true)
             {
                 LoadSourceTabs();
             }

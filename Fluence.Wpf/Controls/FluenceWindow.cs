@@ -79,7 +79,7 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         private const double DefaultTitleBarHeight = 48d;
 
-        #endregion
+        #endregion Constants
 
         #region Value converters
 
@@ -109,7 +109,7 @@ namespace Fluence.Wpf.Controls
             }
         }
 
-        #endregion
+        #endregion Value converters
 
         #region Dependency Properties
 
@@ -273,7 +273,7 @@ namespace Fluence.Wpf.Controls
                 typeof(FluenceWindow),
                 new PropertyMetadata(true, OnHasShadowChanged));
 
-        #endregion
+        #endregion Dependency Properties
 
         #region Properties
 
@@ -429,7 +429,7 @@ namespace Fluence.Wpf.Controls
             set => SetValue(HasShadowProperty, value);
         }
 
-        #endregion
+        #endregion Properties
 
         #region Construction
 
@@ -478,7 +478,7 @@ namespace Fluence.Wpf.Controls
             UpdateShellMetrics();
         }
 
-        #endregion
+        #endregion Construction
 
         #region Public methods
 
@@ -491,7 +491,7 @@ namespace Fluence.Wpf.Controls
             TitleBar = titleBar;
         }
 
-        #endregion
+        #endregion Public methods
 
         #region Lifecycle overrides
 
@@ -578,7 +578,7 @@ namespace Fluence.Wpf.Controls
             base.OnClosed(e);
         }
 
-        #endregion
+        #endregion Lifecycle overrides
 
         #region Dependency property change callbacks
 
@@ -636,7 +636,7 @@ namespace Fluence.Wpf.Controls
             }
         }
 
-        #endregion
+        #endregion Dependency property change callbacks
 
         #region Theme and accent manager handlers
 
@@ -666,7 +666,7 @@ namespace Fluence.Wpf.Controls
             ApplyFrame();
         }
 
-        #endregion
+        #endregion Theme and accent manager handlers
 
         #region Window shell (chrome, backdrop, corners, frame)
 
@@ -835,7 +835,7 @@ namespace Fluence.Wpf.Controls
                 : Color.FromRgb(0xFA, 0xFA, 0xFA);
         }
 
-        #endregion
+        #endregion Window shell (chrome, backdrop, corners, frame)
 
         #region Caption-button reflow
 
@@ -916,6 +916,10 @@ namespace Fluence.Wpf.Controls
         /// always anchored to the rightmost slot; the maximize/restore pair and minimize fill the
         /// remaining slots from the right.
         /// </summary>
+        /// <param name="minimizeVisibility">The visibility of the minimize button.</param>
+        /// <param name="maximizeVisibility">The visibility of the maximize button.</param>
+        /// <param name="restoreVisibility">The visibility of the restore button.</param>
+        /// <param name="closeVisibility">The visibility of the close button.</param>
         private void UpdateCaptionButtonSlots(
             Visibility minimizeVisibility,
             Visibility maximizeVisibility,
@@ -956,6 +960,9 @@ namespace Fluence.Wpf.Controls
         /// maximize / restore visibilities for the current window state (only one of the pair is ever
         /// shown).
         /// </summary>
+        /// <param name="visibility">The explicit visibility value to apply.</param>
+        /// <param name="maximizeVisibility">The resulting visibility of the maximize button.</param>
+        /// <param name="restoreVisibility">The resulting visibility of the restore button.</param>
         private void ApplyMaximizeRestoreVisibilityOverride(Visibility visibility, out Visibility maximizeVisibility, out Visibility restoreVisibility)
         {
             if (visibility == Visibility.Visible)
@@ -978,13 +985,15 @@ namespace Fluence.Wpf.Controls
         /// Returns <c>true</c> when the caption-chrome override property has been explicitly assigned
         /// (via code, XAML local value, style, binding, etc.) rather than left at its declared default.
         /// </summary>
+        /// <param name="dp">The dependency property to check.</param>
+        /// <returns><c>true</c> if the property has been explicitly assigned; otherwise, <c>false</c>.</returns>
         private bool IsCaptionChromeOverrideExplicit(DependencyProperty dp)
         {
             ValueSource source = DependencyPropertyHelper.GetValueSource(this, dp);
             return source.BaseValueSource is not BaseValueSource.Default and not BaseValueSource.Inherited;
         }
 
-        #endregion
+        #endregion Caption-button reflow
 
         #region WndProc and native hit-testing
 
@@ -993,6 +1002,12 @@ namespace Fluence.Wpf.Controls
         /// (hit-testing, snap-layout hover, move suppression, monitor clamp, direct maximize/restore).
         /// All other messages are left to WPF / <see cref="WindowChrome"/>.
         /// </summary>
+        /// <param name="hwnd">The window handle.</param>
+        /// <param name="msg">The message identifier.</param>
+        /// <param name="wParam">The message parameter.</param>
+        /// <param name="lParam">The message parameter.</param>
+        /// <param name="handled">Indicates whether the message was handled.</param>
+        /// <returns>The result of the message processing.</returns>
         private IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             if (msg == NativeConstants.WM_NCHITTEST)
@@ -1041,6 +1056,9 @@ namespace Fluence.Wpf.Controls
         /// Min/Max width/height on the native resize track (DPI-scaled). Marks the message handled so
         /// the clamped values are honoured.
         /// </summary>
+        /// <param name="hwnd">The window handle.</param>
+        /// <param name="lParam">The message parameter.</param>
+        /// <param name="handled">Indicates whether the message was handled.</param>
         private void HandleGetMinMaxInfo(IntPtr hwnd, IntPtr lParam, ref bool handled)
         {
             IntPtr monitor = NativeMethods.MonitorFromWindow(hwnd, NativeConstants.MONITOR_DEFAULTTONEAREST);
@@ -1074,7 +1092,7 @@ namespace Fluence.Wpf.Controls
             }
 
             double dpiX = 1.0, dpiY = 1.0;
-            if (_hwndSource is not null && _hwndSource.CompositionTarget is not null)
+            if (_hwndSource?.CompositionTarget is not null)
             {
                 Matrix transform = _hwndSource.CompositionTarget.TransformToDevice;
                 dpiX = transform.M11;
@@ -1131,6 +1149,7 @@ namespace Fluence.Wpf.Controls
         /// (<c>WM_NCLBUTTONUP</c> with <c>HTMAXBUTTON</c>) by toggling the window state through the
         /// same direct path as the command handlers and refreshing the caption buttons.
         /// </summary>
+        /// <param name="handled">Indicates whether the click was handled.</param>
         private void HandleMaxButtonClick(ref bool handled)
         {
             ClearSnapHover();
@@ -1156,6 +1175,7 @@ namespace Fluence.Wpf.Controls
         /// the WPF buttons fire; the remaining title-bar area returns <c>HTCAPTION</c> for dragging
         /// unless it is over interactive content or the window is not moveable.
         /// </summary>
+        /// <param name="lParam">The message parameter containing the screen-space point.</param>
         private int HitTestTitleBar(IntPtr lParam)
         {
             long lParamValue = lParam.ToInt64();
@@ -1221,6 +1241,9 @@ namespace Fluence.Wpf.Controls
         /// resize hit (<c>HTTOP</c>, <c>HTTOPLEFT</c>, or <c>HTTOPRIGHT</c>) applies. The band is
         /// suppressed when the window is maximized or not resizable.
         /// </summary>
+        /// <param name="point">The point to test, in window coordinates.</param>
+        /// <param name="hit">The resulting resize hit, if any.</param>
+        /// <returns><c>true</c> if the point falls in the top resize band; otherwise, <c>false</c>.</returns>
         private bool TryGetTopResizeHit(Point point, out int hit)
         {
             hit = 0;
@@ -1252,6 +1275,7 @@ namespace Fluence.Wpf.Controls
         /// WPF input routing, so the PointerOver state is driven manually via resource references so
         /// it tracks theme/accent changes.
         /// </summary>
+        /// <param name="button">The snap-layout button to apply the hover visual to.</param>
         private void SetSnapHover(System.Windows.Controls.Button? button)
         {
             if (_snapHoveredButton == button)
@@ -1260,7 +1284,7 @@ namespace Fluence.Wpf.Controls
             }
 
             ClearSnapHover();
-            if (button is not null && button.IsEnabled)
+            if (button?.IsEnabled == true)
             {
                 // Use resource references (not a TryFindResource snapshot) so the snap-hover colors
                 // track theme/accent/high-contrast changes and mirror the WindowButtonStyle
@@ -1290,6 +1314,9 @@ namespace Fluence.Wpf.Controls
         /// Returns <c>true</c> when <paramref name="windowPoint"/> (window-space) falls within the
         /// rendered bounds of <paramref name="element"/>.
         /// </summary>
+        /// <param name="element">The element to test.</param>
+        /// <param name="windowPoint">The point to test, in window coordinates.</param>
+        /// <returns><c>true</c> if the point falls within the element's bounds; otherwise, <c>false</c>.</returns>
         private bool IsOverElement(UIElement element, Point windowPoint)
         {
             if (element is null || element.Visibility != Visibility.Visible)
@@ -1309,6 +1336,7 @@ namespace Fluence.Wpf.Controls
         /// inside the title bar (e.g. a search TextBox or ToggleSwitch) fall through to WPF instead
         /// of being swallowed as caption-area drag gestures.
         /// </summary>
+        /// <param name="windowPoint">The point to test, in window coordinates.</param>
         private bool IsOverInteractiveContent(Point windowPoint)
         {
             DependencyObject? hit = InputHitTest(windowPoint) as DependencyObject;
@@ -1333,7 +1361,7 @@ namespace Fluence.Wpf.Controls
             return false;
         }
 
-        #endregion
+        #endregion WndProc and native hit-testing
 
         #region Command handlers
 
@@ -1430,7 +1458,7 @@ namespace Fluence.Wpf.Controls
             }
         }
 
-        #endregion
+        #endregion Command handlers
 
         #region Fields
 
@@ -1471,6 +1499,6 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         private System.Windows.Controls.Button? _snapHoveredButton;
 
-        #endregion
+        #endregion Fields
     }
 }

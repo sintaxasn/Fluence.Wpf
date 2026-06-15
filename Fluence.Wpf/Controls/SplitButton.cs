@@ -87,7 +87,7 @@ namespace Fluence.Wpf.Controls
             remove => RemoveHandler(ClickEvent, value);
         }
 
-        #endregion
+        #endregion Click routed event
 
         #region Command / CommandParameter / CommandTarget
 
@@ -148,7 +148,7 @@ namespace Fluence.Wpf.Controls
             set => SetValue(CommandTargetProperty, value);
         }
 
-        #endregion
+        #endregion Command / CommandParameter / CommandTarget
 
         #region Flyout / FlyoutTemplate / DropdownCornerRadius
 
@@ -209,7 +209,7 @@ namespace Fluence.Wpf.Controls
             set => SetValue(DropdownCornerRadiusProperty, value);
         }
 
-        #endregion
+        #endregion Flyout / FlyoutTemplate / DropdownCornerRadius
 
         #region CornerRadius
 
@@ -234,7 +234,7 @@ namespace Fluence.Wpf.Controls
             set => SetValue(CornerRadiusProperty, value);
         }
 
-        #endregion
+        #endregion CornerRadius
 
         #region Appearance
 
@@ -260,7 +260,7 @@ namespace Fluence.Wpf.Controls
             set => SetValue(AppearanceProperty, value);
         }
 
-        #endregion
+        #endregion Appearance
 
         #region IsFlyoutOpen (read-only)
 
@@ -282,7 +282,7 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         public bool IsFlyoutOpen => (bool)GetValue(IsFlyoutOpenProperty);
 
-        #endregion
+        #endregion IsFlyoutOpen (read-only)
 
         /// <inheritdoc />
         protected override AutomationPeer OnCreateAutomationPeer()

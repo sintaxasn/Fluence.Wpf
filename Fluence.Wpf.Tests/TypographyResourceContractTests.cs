@@ -50,7 +50,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     WpfTextBlock textBlock = new();
-                    TextBlockExtensions.SetTypography(textBlock, FluentTypography.BodyLarge);
+                    textBlock.SetTypography(FluentTypography.BodyLarge);
 
                     Assert.AreSame(
                         application?.TryFindResource("BodyLargeTextBlockStyle"),

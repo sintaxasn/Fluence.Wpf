@@ -299,6 +299,9 @@ namespace Fluence.Wpf.Controls
         /// Coerces <see cref="ClockIdentifier"/> to one of its two supported values,
         /// falling back to the 12-hour clock for anything unrecognized.
         /// </summary>
+        /// <param name="d">The dependency object on which the property is being set.</param>
+        /// <param name="baseValue">The proposed value for the property.</param>
+        /// <returns>The coerced value for the property.</returns>
         private static object CoerceClockIdentifier(DependencyObject d, object? baseValue)
         {
             return baseValue is string identifier && string.Equals(identifier, TwentyFourHourClock, StringComparison.Ordinal)
@@ -309,6 +312,9 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Clamps <see cref="MinuteIncrement"/> into the supported 1..59 range.
         /// </summary>
+        /// <param name="d">The dependency object on which the property is being set.</param>
+        /// <param name="baseValue">The proposed value for the property.</param>
+        /// <returns>The coerced value for the property.</returns>
         private static object CoerceMinuteIncrement(DependencyObject d, object baseValue)
         {
             return Math.Min(Math.Max((int)baseValue, 1), 59);
@@ -318,6 +324,8 @@ namespace Fluence.Wpf.Controls
         /// Maps an hour of day to its 12-hour display value, where both midnight (hour 0)
         /// and noon (hour 12) show as 12.
         /// </summary>
+        /// <param name="hour">The hour of day to map.</param>
+        /// <returns>The 12-hour display value.</returns>
         private static int GetTwelveHourDisplayHour(int hour)
         {
             int displayHour = hour % 12;
@@ -330,6 +338,8 @@ namespace Fluence.Wpf.Controls
         /// it-IT) report empty designators, which would otherwise render two blank,
         /// indistinguishable period values.
         /// </summary>
+        /// <param name="culture">The culture whose AM designator is being retrieved.</param>
+        /// <returns>The AM designator for the specified culture.</returns>
         private static string GetAmDesignator(CultureInfo culture)
         {
             string designator = culture.DateTimeFormat.AMDesignator;
@@ -341,6 +351,8 @@ namespace Fluence.Wpf.Controls
         /// culture provides none. See <see cref="GetAmDesignator"/> for the .NET Framework
         /// NLS rationale.
         /// </summary>
+        /// <param name="culture">The culture whose PM designator is being retrieved.</param>
+        /// <returns>The PM designator for the specified culture.</returns>
         private static string GetPmDesignator(CultureInfo culture)
         {
             string designator = culture.DateTimeFormat.PMDesignator;
@@ -351,6 +363,9 @@ namespace Fluence.Wpf.Controls
         /// Returns the current culture's AM or PM designator for an hour of day, with the
         /// invariant "AM"/"PM" fallback for cultures whose designators are empty.
         /// </summary>
+        /// <param name="hour">The hour of day to get the period designator for.</param>
+        /// <param name="culture">The culture whose period designator is being retrieved.</param>
+        /// <returns>The period designator for the specified hour and culture.</returns>
         private static string GetPeriodDesignator(int hour, CultureInfo culture)
         {
             return hour >= 12 ? GetPmDesignator(culture) : GetAmDesignator(culture);
@@ -359,6 +374,7 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Scrolls the selector's current selection into view when it is a ListBox.
         /// </summary>
+        /// <param name="selector">The selector whose selection should be scrolled into view.</param>
         private static void ScrollSelectionIntoView(Selector? selector)
         {
             if (selector is System.Windows.Controls.ListBox listBox && listBox.SelectedItem is not null)
@@ -401,6 +417,8 @@ namespace Fluence.Wpf.Controls
         /// <see cref="OnFlyoutButtonClick"/>. Accept, cancel, and Escape closes do not arm it,
         /// so programmatic close-and-reopen flows stay instant.
         /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
         private void OnPopupClosed(object? sender, EventArgs e)
         {
             if (_popupSelfClosing)
@@ -429,9 +447,11 @@ namespace Fluence.Wpf.Controls
         /// path). Enter is left alone while a flyout command button has keyboard focus so the
         /// button's native click handling wins.
         /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
         private void OnPopupPreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Handled || _popup is null || !_popup.IsOpen)
+            if (e.Handled || _popup?.IsOpen != true)
             {
                 return;
             }
@@ -463,7 +483,7 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         private void MoveFocusIntoPopup()
         {
-            if (_popup is null || !_popup.IsOpen)
+            if (_popup?.IsOpen != true)
             {
                 return;
             }
@@ -491,8 +511,7 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         private Selector? GetFirstVisibleSelectorColumn()
         {
-            Selector?[] columns = [_hourList, _minuteList, _periodList];
-            foreach (Selector? column in columns)
+            foreach (Selector? column in (Selector?[])[_hourList, _minuteList, _periodList])
             {
                 if (column is not null && column.Visibility == Visibility.Visible)
                 {
@@ -562,8 +581,7 @@ namespace Fluence.Wpf.Controls
                 }
                 else
                 {
-                    List<string> periods = [GetAmDesignator(culture), GetPmDesignator(culture)];
-                    _periodList.ItemsSource = periods;
+                    _periodList.ItemsSource = (List<string>)[GetAmDesignator(culture), GetPmDesignator(culture)];
                     _periodList.SelectedIndex = hour >= 12 ? 1 : 0;
                 }
             }
@@ -584,7 +602,7 @@ namespace Fluence.Wpf.Controls
 
         private void ClosePopup()
         {
-            if (_popup is not null && _popup.IsOpen)
+            if (_popup?.IsOpen == true)
             {
                 // Closing through the control's own pipeline must not arm the light-dismiss
                 // reopen lockout; Popup.Closed is raised synchronously from the set below.
@@ -615,7 +633,7 @@ namespace Fluence.Wpf.Controls
 
         private int GetPendingMinute()
         {
-            return _minuteList is not null && _minuteList.SelectedIndex >= 0
+            return _minuteList?.SelectedIndex >= 0
                 ? _minuteList.SelectedIndex * _populatedMinuteIncrement
                 : _flyoutBaseTime.Minutes;
         }
@@ -626,7 +644,7 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         private bool GetPendingIsPm()
         {
-            return _periodList is not null && _periodList.SelectedIndex >= 0
+            return _periodList?.SelectedIndex >= 0
                 ? _periodList.SelectedIndex == 1
                 : _flyoutBaseTime.Hours >= 12;
         }

@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -216,8 +216,7 @@ namespace Fluence.Wpf.Tests
                 Window window = new();
                 try
                 {
-                    NavigationView nav = CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.Left, true);
-                    window.Content = nav;
+                    window.Content = CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.Left, true);
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     // Settle until the footer item has stretched to the asserted pane width.
@@ -250,8 +249,7 @@ namespace Fluence.Wpf.Tests
                 Window window = new();
                 try
                 {
-                    NavigationView nav = CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.LeftCompact, false);
-                    window.Content = nav;
+                    window.Content = CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.LeftCompact, false);
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     WaitForAnimationAndDrain(window.Dispatcher, 300);
@@ -292,8 +290,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    NavigationViewAutomationPeer peer = new(nav);
-                    ISelectionProvider selectionProvider = peer;
+                    ISelectionProvider selectionProvider = (NavigationViewAutomationPeer)new(nav);
                     Assert.AreEqual(0, selectionProvider.GetSelection().Length,
                         "With nothing selected, the automation peer should report an empty selection.");
 

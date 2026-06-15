@@ -120,7 +120,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        #endregion
+        #endregion Dropdown placement
 
         #region Hover state (brush verification)
 
@@ -147,7 +147,7 @@ namespace Fluence.Wpf.Tests
             }
         }
 
-        #endregion
+        #endregion Hover state (brush verification)
 
         #region Popup corner tracking (bottom-rounded regression guard)
 
@@ -256,7 +256,7 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        #endregion
+        #endregion Popup corner tracking (bottom-rounded regression guard)
 
         #region Auto-select first item
 
@@ -327,6 +327,6 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        #endregion
+        #endregion Auto-select first item
     }
 }

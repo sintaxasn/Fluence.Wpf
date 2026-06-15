@@ -67,8 +67,7 @@ namespace Fluence.Wpf.Tests
             };
             Keyboard.ClearFocus();
 
-            Window[] windows = [.. application.Windows.Cast<Window>()];
-            foreach (Window? window in windows)
+            foreach (Window? window in (Window[])[.. application.Windows.Cast<Window>()])
             {
                 window.Content = null;
                 window.Close();
@@ -187,12 +186,9 @@ namespace Fluence.Wpf.Tests
             int childCount = VisualTreeHelper.GetChildrenCount(root);
             for (int index = 0; index < childCount; index++)
             {
-                if (VisualTreeHelper.GetChild(root, index) is FrameworkElement child && child.Name == name)
+                if (VisualTreeHelper.GetChild(root, index) is FrameworkElement child && child.Name == name && child is T match)
                 {
-                    if (child is T match)
-                    {
-                        return match;
-                    }
+                    return match;
                 }
 
                 T? found = FindVisualChildByName<T>(VisualTreeHelper.GetChild(root, index), name);
@@ -234,7 +230,7 @@ namespace Fluence.Wpf.Tests
             RunOnStaThread(() =>
             {
                 Controls.FontIcon fontIcon = new();
-                string testGlyph = "\uE710";
+                const string testGlyph = "\uE710";
 
                 fontIcon.Glyph = testGlyph;
 
@@ -273,7 +269,7 @@ namespace Fluence.Wpf.Tests
             RunOnStaThread(() =>
             {
                 Controls.TextBox textBox = new();
-                string placeholder = "Enter text here...";
+                const string placeholder = "Enter text here...";
 
                 textBox.PlaceholderText = placeholder;
 
@@ -969,7 +965,7 @@ namespace Fluence.Wpf.Tests
                         "#FF00E8"
                     ];
 
-                    CollectionAssert.AreEqual(expectedSwatches, accentSwatchButtons.Select(b => (string)b.Tag).ToList(),
+                    CollectionAssert.AreEqual(expectedSwatches, accentSwatchButtons.ConvertAll(b => (string)b.Tag),
                         "Settings page should expose the seven logo accent swatches.");
                     foreach (Controls.Button swatch in accentSwatchButtons)
                     {
@@ -2432,7 +2428,7 @@ namespace Fluence.Wpf.Tests
                     Title = "Cancelable"
                 };
 
-                infoBar.Closing += (sender, args) => { args.Cancel = true; };
+                infoBar.Closing += (sender, args) => args.Cancel = true;
 
                 try
                 {
@@ -2655,8 +2651,7 @@ namespace Fluence.Wpf.Tests
 
                     Assert.AreEqual(false, toggle.IsChecked, "ToggleSwitch should start unchecked.");
 
-                    ToggleButtonAutomationPeer peer = new(toggle);
-                    IToggleProvider toggleProvider = peer;
+                    IToggleProvider toggleProvider = (ToggleButtonAutomationPeer)new(toggle);
                     toggleProvider.Toggle();
                     DrainDispatcher(window.Dispatcher);
 
@@ -2806,7 +2801,7 @@ namespace Fluence.Wpf.Tests
             string? selectedLabel = selected is null ? null : selected.Content as string;
             string? selectedTag = selected is null ? null : selected.Tag as string;
             bool matchesRequest = string.Equals(selectedLabel, itemContent, StringComparison.OrdinalIgnoreCase) ||
-                (selectedTag is not null && selectedTag.IndexOf(itemContent, StringComparison.OrdinalIgnoreCase) >= 0);
+                (selectedTag?.IndexOf(itemContent, StringComparison.OrdinalIgnoreCase) >= 0);
             if (selected is null || nav.Content is null || !matchesRequest)
             {
                 Assert.Fail(string.Format("Navigation item '{0}' should exist.", itemContent));
@@ -2827,8 +2822,7 @@ namespace Fluence.Wpf.Tests
             {
                 FontFamily fontFamily = textBlock.FontFamily;
                 if (fontFamily is not null &&
-                    fontFamily.Source is not null &&
-                    fontFamily.Source.IndexOf("Segoe Fluent Icons", StringComparison.OrdinalIgnoreCase) >= 0)
+                    fontFamily.Source?.IndexOf("Segoe Fluent Icons", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     return textBlock;
                 }

@@ -96,8 +96,7 @@ namespace Fluence.Wpf.Tests
                 Window window = new();
                 try
                 {
-                    NavigationView nav = CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.Top, true);
-                    window.Content = nav;
+                    window.Content = CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.Top, true);
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
@@ -133,8 +132,7 @@ namespace Fluence.Wpf.Tests
                 Window window = new();
                 try
                 {
-                    NavigationView nav = CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.Left, true);
-                    window.Content = nav;
+                    window.Content = CreateNavWithFooterItem(out NavigationViewItem footer, NavigationViewPaneDisplayMode.Left, true);
                     window.Show();
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();

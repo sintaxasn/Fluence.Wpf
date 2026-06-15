@@ -709,7 +709,7 @@ namespace Fluence.Wpf.Tests
 
                     List<string> calls = [];
                     NavigationViewItemInvokedEventArgs? invokedArgs = null;
-                    nav.ItemInvoked += delegate (object? sender, NavigationViewItemInvokedEventArgs e)
+                    nav.ItemInvoked += (sender, e) =>
                     {
                         invokedArgs = e;
                         calls.Add("invoked:" + e.InvokedItemContainer.Content);
@@ -2668,6 +2668,8 @@ namespace Fluence.Wpf.Tests
         /// Asserts that <paramref name="brush"/> is null, Brushes.Transparent, or a
         /// SolidColorBrush whose alpha channel is zero - i.e. effectively transparent.
         /// </summary>
+        /// <param name="brush">The brush to check for transparency.</param>
+        /// <param name="message">The message to display if the assertion fails.</param>
         private static void AssertBrushIsTransparentOrNull(Brush brush, string message)
         {
             if (brush is null)

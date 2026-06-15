@@ -40,41 +40,43 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryIconsPage : UserControl
     {
-        private const string IconCatalogXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Icons.IconCatalog""
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+        private const string IconCatalogXamlSource = """
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.Icons.IconCatalog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
     <Grid
-        MinHeight=""48""
-        VerticalAlignment=""Center"">
+        MinHeight="48"
+        VerticalAlignment="Center">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width=""56"" />
-            <ColumnDefinition Width=""*"" />
-            <ColumnDefinition Width=""96"" />
+            <ColumnDefinition Width="56" />
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="96" />
         </Grid.ColumnDefinitions>
 
         <ui:FontIcon
-            HorizontalAlignment=""Center""
-            VerticalAlignment=""Center""
-            Glyph=""&#xE713;""
-            IconFontSize=""24"" />
+            HorizontalAlignment="Center"
+            VerticalAlignment="Center"
+            Glyph="&#xE713;"
+            IconFontSize="24" />
         <TextBlock
-            Grid.Column=""1""
-            HorizontalAlignment=""Left""
-            VerticalAlignment=""Center""
-            Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-            Text=""Settings"" />
+            Grid.Column="1"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+            Text="Settings" />
         <TextBlock
-            Grid.Column=""2""
-            HorizontalAlignment=""Left""
-            VerticalAlignment=""Center""
-            FontFamily=""Consolas""
-            Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-            Text=""U+E713"" />
+            Grid.Column="2"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            FontFamily="Consolas"
+            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+            Text="U+E713" />
     </Grid>
 </UserControl>
-";
+
+""";
 
         private const string IconCatalogCSharpSource = @"using System.Windows.Controls;
 
@@ -103,8 +105,7 @@ namespace Fluence.Wpf.Demo.Pages.Icons
         {
             InitializeComponent();
 
-            List<IconCatalogRow> rows = GetIconRows();
-            IconCatalogList.ItemsSource = rows;
+            IconCatalogList.ItemsSource = GetIconRows();
             IconCatalogCountText.Text = string.Format(
                 CultureInfo.InvariantCulture,
                 "{0:N0} Segoe Fluent Icons",
@@ -178,8 +179,7 @@ namespace Fluence.Wpf.Demo.Pages.Icons
                 }
             }
 
-            List<IconCatalogItem> icons = [.. namedIcons, .. unnamedIcons];
-            return icons;
+            return [.. namedIcons, .. unnamedIcons];
         }
 
         private static List<IconCatalogRow> CreateIconRows(List<IconCatalogItem> icons)
@@ -235,18 +235,18 @@ namespace Fluence.Wpf.Demo.Pages.Icons
 
         public sealed class IconCatalogRow(IList<IconCatalogItem> items)
         {
-            public IList<IconCatalogItem> Items { get; private set; } = items;
+            public IList<IconCatalogItem> Items { get; } = items;
         }
 
         public sealed class IconCatalogItem(string name, string code, string glyph)
         {
-            public string Name { get; private set; } = name;
+            public string Name { get; } = name;
 
-            public string Code { get; private set; } = code;
+            public string Code { get; } = code;
 
-            public string DisplayCode { get; private set; } = "U+" + code;
+            public string DisplayCode { get; } = "U+" + code;
 
-            public string Glyph { get; private set; } = glyph;
+            public string Glyph { get; } = glyph;
         }
     }
 }

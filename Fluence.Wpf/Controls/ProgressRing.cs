@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -643,14 +643,13 @@ namespace Fluence.Wpf.Controls
         {
             // Linear rotation of the template transform from 90 to 1170 degrees (three full
             // turns) per 2 second cycle, matching the arc-length pulse cadence.
-            DoubleAnimation animation = new()
+            return new()
             {
                 From = IndeterminateRotationStartAngle,
                 To = IndeterminateRotationEndAngle,
                 Duration = IndeterminateAnimationDuration,
                 RepeatBehavior = RepeatBehavior.Forever
             };
-            return animation;
         }
 
         private static void AddLinearKeyFrame(DoubleAnimationUsingKeyFrames animation, double value, double percent)

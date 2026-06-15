@@ -37,6 +37,9 @@ namespace Fluence.Wpf.Helpers
     /// <see cref="TemplateBorderBrushResourceKey"/>) from the DWM border color
     /// (<see cref="DwmBorderColor"/>), because only some OS builds support the DWM side.
     /// </summary>
+    /// <param name="templateBorderThickness">The thickness of the WPF-template border element.</param>
+    /// <param name="templateBorderBrushResourceKey">The <c>DynamicResource</c> key for the border brush.</param>
+    /// <param name="dwmBorderColor">The COLORREF (BGR, 24-bit) value for the DWM border color.</param>
     internal sealed class FramePlan(
         Thickness templateBorderThickness,
         string templateBorderBrushResourceKey,
@@ -55,7 +58,7 @@ namespace Fluence.Wpf.Helpers
         /// borders are enabled; <c>"CardStrokeColorDefaultSolidBrush"</c> when the window is
         /// inactive or accent borders are off.
         /// </summary>
-        internal string TemplateBorderBrushResourceKey { get; private set; } = templateBorderBrushResourceKey;
+        internal string TemplateBorderBrushResourceKey { get; } = templateBorderBrushResourceKey;
 
         /// <summary>
         /// Gets the COLORREF (BGR, 24-bit) value to write to <c>DWMWA_BORDER_COLOR</c>, or
@@ -65,6 +68,6 @@ namespace Fluence.Wpf.Helpers
         /// value to the DWM attribute; the plan records the sentinel regardless so the caller
         /// does not need a separate null check.
         /// </summary>
-        internal int DwmBorderColor { get; private set; } = dwmBorderColor;
+        internal int DwmBorderColor { get; } = dwmBorderColor;
     }
 }

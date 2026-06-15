@@ -113,7 +113,7 @@ namespace Fluence.Wpf
 
         internal static ApplicationTheme ResolveTheme(ApplicationTheme theme)
         {
-            return Theming.ThemeResolver.Resolve(theme);
+            return ThemeResolver.Resolve(theme);
         }
 
         internal static ApplicationTheme GetResolvedTheme()

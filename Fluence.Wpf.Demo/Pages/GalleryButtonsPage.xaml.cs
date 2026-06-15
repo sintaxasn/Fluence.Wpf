@@ -34,35 +34,37 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryButtonsPage : UserControl
     {
-        private const string ButtonAppearancesXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Buttons.ButtonAppearances""
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+        private const string ButtonAppearancesXamlSource = """
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.Buttons.ButtonAppearances"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
     <StackPanel>
-        <WrapPanel VerticalAlignment=""Center"">
+        <WrapPanel VerticalAlignment="Center">
             <ui:Button
-                Margin=""0,0,8,8""
-                Content=""Standard""
-                IsEnabled=""{Binding IsChecked, Source={x:Reference ButtonEnableCheckBox}}"" />
+                Margin="0,0,8,8"
+                Content="Standard"
+                IsEnabled="{Binding IsChecked, Source={x:Reference ButtonEnableCheckBox}}" />
             <ui:Button
-                Margin=""0,0,8,8""
-                Appearance=""Accent""
-                Content=""Accent""
-                IsEnabled=""{Binding IsChecked, Source={x:Reference ButtonEnableCheckBox}}"" />
+                Margin="0,0,8,8"
+                Appearance="Accent"
+                Content="Accent"
+                IsEnabled="{Binding IsChecked, Source={x:Reference ButtonEnableCheckBox}}" />
             <ui:Button
-                Margin=""0,0,8,8""
-                Appearance=""Subtle""
-                Content=""Subtle""
-                IsEnabled=""{Binding IsChecked, Source={x:Reference ButtonEnableCheckBox}}"" />
+                Margin="0,0,8,8"
+                Appearance="Subtle"
+                Content="Subtle"
+                IsEnabled="{Binding IsChecked, Source={x:Reference ButtonEnableCheckBox}}" />
         </WrapPanel>
         <ui:CheckBox
-            x:Name=""ButtonEnableCheckBox""
-            Content=""Enable buttons""
-            IsChecked=""True"" />
+            x:Name="ButtonEnableCheckBox"
+            Content="Enable buttons"
+            IsChecked="True" />
     </StackPanel>
 </UserControl>
-";
+
+""";
 
         private const string ButtonAppearancesCSharpSource = @"using System.Windows.Controls;
 
@@ -77,36 +79,38 @@ namespace Fluence.Wpf.Demo.Pages.Buttons
     }
 }
 ";
-        private const string ButtonIconsXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Buttons.ButtonIcons""
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
-    <WrapPanel VerticalAlignment=""Center"">
-        <ui:Button Margin=""0,0,8,8"" Content=""Icon Left"">
+        private const string ButtonIconsXamlSource = """
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.Buttons.ButtonIcons"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
+    <WrapPanel VerticalAlignment="Center">
+        <ui:Button Margin="0,0,8,8" Content="Icon Left">
             <ui:Button.Icon>
-                <ui:FontIcon Glyph=""&#xE774;"" IconFontSize=""14"" />
+                <ui:FontIcon Glyph="&#xE774;" IconFontSize="14" />
             </ui:Button.Icon>
         </ui:Button>
         <ui:Button
-            Margin=""0,0,8,8""
-            Content=""Icon Right""
-            IconPlacement=""Right"">
+            Margin="0,0,8,8"
+            Content="Icon Right"
+            IconPlacement="Right">
             <ui:Button.Icon>
-                <ui:FontIcon Glyph=""&#xE8D6;"" IconFontSize=""14"" />
+                <ui:FontIcon Glyph="&#xE8D6;" IconFontSize="14" />
             </ui:Button.Icon>
         </ui:Button>
         <ui:Button
-            Margin=""0,0,8,8""
-            Appearance=""Subtle""
-            Content=""Refresh"">
+            Margin="0,0,8,8"
+            Appearance="Subtle"
+            Content="Refresh">
             <ui:Button.Icon>
-                <ui:FontIcon Glyph=""&#xE72C;"" IconFontSize=""14"" />
+                <ui:FontIcon Glyph="&#xE72C;" IconFontSize="14" />
             </ui:Button.Icon>
         </ui:Button>
     </WrapPanel>
 </UserControl>
-";
+
+""";
 
         private const string ButtonIconsCSharpSource = @"using System.Windows.Controls;
 
@@ -121,35 +125,37 @@ namespace Fluence.Wpf.Demo.Pages.Buttons
     }
 }
 ";
-        private const string HyperlinkButtonsXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Buttons.HyperlinkButtons""
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
-    <WrapPanel VerticalAlignment=""Center"">
+        private const string HyperlinkButtonsXamlSource = """
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.Buttons.HyperlinkButtons"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
+    <WrapPanel VerticalAlignment="Center">
         <ui:HyperlinkButton
-            Margin=""0,0,16,8""
-            Content=""Documentation""
-            NavigateUri=""https://github.com/sintaxasn/Fluence.Wpf"" />
+            Margin="0,0,16,8"
+            Content="Documentation"
+            NavigateUri="https://github.com/sintaxasn/Fluence.Wpf" />
         <ui:HyperlinkButton
-            Margin=""0,0,16,8""
-            Content=""Release notes""
-            NavigateUri=""https://github.com/sintaxasn/Fluence.Wpf/releases"" />
+            Margin="0,0,16,8"
+            Content="Release notes"
+            NavigateUri="https://github.com/sintaxasn/Fluence.Wpf/releases" />
         <ui:HyperlinkButton
-            Margin=""0,0,16,8""
-            Content=""With icon""
-            NavigateUri=""https://github.com/sintaxasn/Fluence.Wpf"">
+            Margin="0,0,16,8"
+            Content="With icon"
+            NavigateUri="https://github.com/sintaxasn/Fluence.Wpf">
             <ui:HyperlinkButton.Icon>
-                <ui:FontIcon Glyph=""&#xE71B;"" IconFontSize=""14"" />
+                <ui:FontIcon Glyph="&#xE71B;" IconFontSize="14" />
             </ui:HyperlinkButton.Icon>
         </ui:HyperlinkButton>
         <ui:HyperlinkButton
-            Margin=""0,0,16,8""
-            Content=""Disabled""
-            IsEnabled=""False"" />
+            Margin="0,0,16,8"
+            Content="Disabled"
+            IsEnabled="False" />
     </WrapPanel>
 </UserControl>
-";
+
+""";
 
         private const string HyperlinkButtonsCSharpSource = @"using System.Windows.Controls;
 
@@ -164,58 +170,60 @@ namespace Fluence.Wpf.Demo.Pages.Buttons
     }
 }
 ";
-        private const string DropDownButtonsXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Buttons.DropDownButtons""
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
-    <WrapPanel VerticalAlignment=""Center"">
-        <ui:DropDownButton Margin=""0,0,8,8"" Content=""New"">
+        private const string DropDownButtonsXamlSource = """
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.Buttons.DropDownButtons"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
+    <WrapPanel VerticalAlignment="Center">
+        <ui:DropDownButton Margin="0,0,8,8" Content="New">
             <ui:DropDownButton.Flyout>
-                <StackPanel MinWidth=""180"" Margin=""4"">
+                <StackPanel MinWidth="180" Margin="4">
                     <ui:Button
-                        HorizontalAlignment=""Stretch""
-                        HorizontalContentAlignment=""Left""
-                        Appearance=""Subtle""
-                        Content=""Document"" />
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        Appearance="Subtle"
+                        Content="Document" />
                     <ui:Button
-                        HorizontalAlignment=""Stretch""
-                        HorizontalContentAlignment=""Left""
-                        Appearance=""Subtle""
-                        Content=""Spreadsheet"" />
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        Appearance="Subtle"
+                        Content="Spreadsheet" />
                     <ui:Button
-                        HorizontalAlignment=""Stretch""
-                        HorizontalContentAlignment=""Left""
-                        Appearance=""Subtle""
-                        Content=""Folder"" />
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        Appearance="Subtle"
+                        Content="Folder" />
                 </StackPanel>
             </ui:DropDownButton.Flyout>
         </ui:DropDownButton>
-        <ui:DropDownButton Margin=""0,0,8,8"" Content=""Details"">
+        <ui:DropDownButton Margin="0,0,8,8" Content="Details">
             <ui:DropDownButton.Flyout>
-                <StackPanel MaxWidth=""260"" Margin=""12"">
+                <StackPanel MaxWidth="260" Margin="12">
                     <TextBlock
-                        Margin=""0,0,0,6""
-                        Foreground=""{DynamicResource TextFillColorPrimaryBrush}""
-                        Text=""Project status"" />
+                        Margin="0,0,0,6"
+                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                        Text="Project status" />
                     <TextBlock
-                        Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-                        Text=""Flyout content can be any WPF content.""
-                        TextWrapping=""Wrap"" />
+                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                        Text="Flyout content can be any WPF content."
+                        TextWrapping="Wrap" />
                 </StackPanel>
             </ui:DropDownButton.Flyout>
         </ui:DropDownButton>
         <ui:DropDownButton
-            Margin=""0,0,8,8""
-            Content=""Disabled""
-            IsEnabled=""False"">
+            Margin="0,0,8,8"
+            Content="Disabled"
+            IsEnabled="False">
             <ui:DropDownButton.Flyout>
-                <TextBlock Margin=""12"" Text=""Unavailable"" />
+                <TextBlock Margin="12" Text="Unavailable" />
             </ui:DropDownButton.Flyout>
         </ui:DropDownButton>
     </WrapPanel>
 </UserControl>
-";
+
+""";
 
         private const string DropDownButtonsCSharpSource = @"using System.Windows.Controls;
 
@@ -230,63 +238,65 @@ namespace Fluence.Wpf.Demo.Pages.Buttons
     }
 }
 ";
-        private const string SplitButtonsXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Buttons.SplitButtons""
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
-    <WrapPanel VerticalAlignment=""Center"">
-        <ui:SplitButton Margin=""0,0,8,8"" Content=""Save"">
+        private const string SplitButtonsXamlSource = """
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.Buttons.SplitButtons"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
+    <WrapPanel VerticalAlignment="Center">
+        <ui:SplitButton Margin="0,0,8,8" Content="Save">
             <ui:SplitButton.Flyout>
-                <StackPanel MinWidth=""180"" Margin=""4"">
+                <StackPanel MinWidth="180" Margin="4">
                     <ui:Button
-                        HorizontalAlignment=""Stretch""
-                        HorizontalContentAlignment=""Left""
-                        Appearance=""Subtle""
-                        Content=""Save as"" />
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        Appearance="Subtle"
+                        Content="Save as" />
                     <ui:Button
-                        HorizontalAlignment=""Stretch""
-                        HorizontalContentAlignment=""Left""
-                        Appearance=""Subtle""
-                        Content=""Save a copy"" />
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        Appearance="Subtle"
+                        Content="Save a copy" />
                     <ui:Button
-                        HorizontalAlignment=""Stretch""
-                        HorizontalContentAlignment=""Left""
-                        Appearance=""Subtle""
-                        Content=""Export"" />
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        Appearance="Subtle"
+                        Content="Export" />
                 </StackPanel>
             </ui:SplitButton.Flyout>
         </ui:SplitButton>
         <ui:SplitButton
-            Margin=""0,0,8,8""
-            Appearance=""Accent""
-            Content=""Publish"">
+            Margin="0,0,8,8"
+            Appearance="Accent"
+            Content="Publish">
             <ui:SplitButton.Flyout>
-                <StackPanel MinWidth=""180"" Margin=""4"">
+                <StackPanel MinWidth="180" Margin="4">
                     <ui:Button
-                        HorizontalAlignment=""Stretch""
-                        HorizontalContentAlignment=""Left""
-                        Appearance=""Subtle""
-                        Content=""Publish draft"" />
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        Appearance="Subtle"
+                        Content="Publish draft" />
                     <ui:Button
-                        HorizontalAlignment=""Stretch""
-                        HorizontalContentAlignment=""Left""
-                        Appearance=""Subtle""
-                        Content=""Schedule publish"" />
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Left"
+                        Appearance="Subtle"
+                        Content="Schedule publish" />
                 </StackPanel>
             </ui:SplitButton.Flyout>
         </ui:SplitButton>
         <ui:SplitButton
-            Margin=""0,0,8,8""
-            Content=""Disabled""
-            IsEnabled=""False"">
+            Margin="0,0,8,8"
+            Content="Disabled"
+            IsEnabled="False">
             <ui:SplitButton.Flyout>
-                <TextBlock Margin=""12"" Text=""Unavailable"" />
+                <TextBlock Margin="12" Text="Unavailable" />
             </ui:SplitButton.Flyout>
         </ui:SplitButton>
     </WrapPanel>
 </UserControl>
-";
+
+""";
 
         private const string SplitButtonsCSharpSource = @"using System.Windows.Controls;
 
@@ -301,28 +311,31 @@ namespace Fluence.Wpf.Demo.Pages.Buttons
     }
 }
 ";
-        private const string ToggleAndRepeatButtonsXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Buttons.ToggleAndRepeatButtons""
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
-    <WrapPanel VerticalAlignment=""Center"">
+        private const string ToggleAndRepeatButtonsXamlSource = """
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.Buttons.ToggleAndRepeatButtons"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
+    <WrapPanel VerticalAlignment="Center">
         <ui:RepeatButton
-            x:Name=""RepeatCounterButton""
-            Margin=""0,0,8,8""
-            Click=""RepeatCounterButton_Click""
-            Content=""Hold to repeat"" />
+            x:Name="RepeatCounterButton"
+            Margin="0,0,8,8"
+            Click="RepeatCounterButton_Click"
+            Content="Hold to repeat" />
         <TextBlock
-            x:Name=""RepeatButtonCountText""
-            Margin=""0,0,16,8""
-            VerticalAlignment=""Center""
-            Foreground=""{DynamicResource TextFillColorSecondaryBrush}""
-            Text=""Clicks: 0"" />
+            x:Name="RepeatButtonCountText"
+            Margin="0,0,16,8"
+            VerticalAlignment="Center"
+            Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+            Text="Clicks: 0" />
     </WrapPanel>
 </UserControl>
-";
 
-        private const string ToggleAndRepeatButtonsCSharpSource = @"using System.Globalization;
+""";
+
+        private const string ToggleAndRepeatButtonsCSharpSource = """
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -342,12 +355,13 @@ namespace Fluence.Wpf.Demo.Pages.Buttons
             repeatButtonClickCount++;
             RepeatButtonCountText.Text = string.Format(
                 CultureInfo.CurrentCulture,
-                ""Clicks: {0}"",
+                "Clicks: {0}",
                 repeatButtonClickCount);
         }
     }
 }
-";
+
+""";
 
         // Click counter for the RepeatButton interactive demo; incremented by
         // RepeatCounterButton_Click and displayed in RepeatButtonCountText.

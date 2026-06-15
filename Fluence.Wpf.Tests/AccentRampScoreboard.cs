@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -299,11 +299,11 @@ namespace Fluence.Wpf.Tests
         {
             if (t < 0)
             {
-                t += 1;
+                t++;
             }
             if (t > 1)
             {
-                t -= 1;
+                t--;
             }
             return t < 1.0 / 6.0
                 ? p + ((q - p) * 6 * t)

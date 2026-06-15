@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -89,7 +89,7 @@ namespace Fluence.Wpf.Tests
             TestContext?.WriteLine($"Active set index (user's current): {activeSet}");
             TestContext?.WriteLine("");
 
-            uint validTypeId = 0xFFFFFFFF;
+            const uint validTypeId = 0xFFFFFFFF;
             if (typeBase == validTypeId || count == 0)
             {
                 Assert.Inconclusive("Immersive color APIs returned no data on this machine.");

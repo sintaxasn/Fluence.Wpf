@@ -267,6 +267,7 @@ namespace Fluence.Wpf.Controls
         /// Transitions the control to the visual state matching the current <see cref="Severity"/>.
         /// Called without transitions on initial template application; with transitions on runtime changes.
         /// </summary>
+        /// <param name="useTransitions">Indicates whether to use visual transitions.</param>
         private void UpdateSeverityState(bool useTransitions)
         {
             _ = VisualStateManager.GoToState(this, Severity switch

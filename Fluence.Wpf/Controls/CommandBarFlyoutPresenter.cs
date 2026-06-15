@@ -163,7 +163,7 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         private void UpdateMoreButtonVisibility()
         {
-            bool hasSecondaryCommands = Owner is not null && Owner.SecondaryCommands.Count > 0;
+            bool hasSecondaryCommands = Owner?.SecondaryCommands.Count > 0;
             _moreButton?.SetCurrentValue(VisibilityProperty, hasSecondaryCommands ? Visibility.Visible : Visibility.Collapsed);
         }
 

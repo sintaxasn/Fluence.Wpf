@@ -455,7 +455,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher();
 
                     nint handle = new System.Windows.Interop.WindowInteropHelper(w).Handle;
-                    Assert.AreEqual(0, Fluence.Wpf.Native.NativeMethods.GetWindowCloakedState(handle),
+                    Assert.AreEqual(0, Native.NativeMethods.GetWindowCloakedState(handle),
                         "FluenceWindow must never DWM-cloak its window (DWMWA_CLOAKED == 0); the first-paint flash is solved by clearing the redirection surface, not by cloaking.");
                 }
                 finally

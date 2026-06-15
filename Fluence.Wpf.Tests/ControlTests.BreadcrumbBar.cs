@@ -196,9 +196,10 @@ namespace Fluence.Wpf.Tests
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 200 };
-                Controls.BreadcrumbBar bar = new();
-                string[] crumbs = ["Home", "Documents", "Design"];
-                bar.ItemsSource = crumbs;
+                Controls.BreadcrumbBar bar = new()
+                {
+                    ItemsSource = (string[])["Home", "Documents", "Design"]
+                };
 
                 try
                 {
@@ -402,9 +403,10 @@ namespace Fluence.Wpf.Tests
                 _ = MergeGenericDictionary(app);
 
                 Window window = new() { Width = 500, Height = 200 };
-                Controls.BreadcrumbBar bar = new();
-                string[] crumbs = ["Home", "Documents"];
-                bar.ItemsSource = crumbs;
+                Controls.BreadcrumbBar bar = new()
+                {
+                    ItemsSource = (string[])["Home", "Documents"]
+                };
                 AutomationProperties.SetName(bar, "Navigation breadcrumb");
 
                 try

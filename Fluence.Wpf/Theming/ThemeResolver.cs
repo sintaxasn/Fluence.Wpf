@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,6 +41,7 @@ namespace Fluence.Wpf.Theming
         /// When <paramref name="theme"/> is <see cref="ApplicationTheme.Auto"/> the active Windows
         /// theme file and registry settings are consulted to determine Light, Dark, or HighContrast.
         /// </summary>
+        /// <param name="theme">The theme to resolve.</param>
         internal static ApplicationTheme Resolve(ApplicationTheme theme)
         {
             if (theme != ApplicationTheme.Auto)
@@ -58,7 +59,7 @@ namespace Fluence.Wpf.Theming
             // named themes (themea.theme ... themed.theme) and HC variants are recognised.
             // If the filename is unknown or absent, fall through to AppsUseLightTheme.
             string? themeFile = RegistryHelper.GetCurrentThemeFileNameLowerInvariant();
-            if (themeFile is not null && themeFile.Length > 0)
+            if (themeFile?.Length > 0)
             {
                 if (themeFile.Contains("hc1")
                     || themeFile.Contains("hc2")

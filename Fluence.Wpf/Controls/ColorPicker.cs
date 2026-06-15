@@ -435,6 +435,10 @@ namespace Fluence.Wpf.Controls
         /// refreshes the visuals even when the RGB value is unchanged (the spectrum thumb
         /// and hue slider can move while the color stays the same, e.g. on the grey axis).
         /// </summary>
+        /// <param name="hue">0-360</param>
+        /// <param name="saturation">0-1</param>
+        /// <param name="value">0-1</param>
+        /// <param name="alpha">0-255</param>
         private void SetColorFromHsv(double hue, double saturation, double value, byte alpha)
         {
             _hue = Math.Max(0, Math.Min(360, hue));
@@ -464,6 +468,7 @@ namespace Fluence.Wpf.Controls
         /// spectrum thumb and hue slider do not jump while the color sits on the grey axis.
         /// WinUI's ColorPicker behaves the same way.
         /// </summary>
+        /// <param name="color">The color to synchronize from.</param>
         private void SyncHsvFromColor(Color color)
         {
             (double hue, double saturation, double value) = HsvColorHelper.RgbToHsv(color);
@@ -525,7 +530,7 @@ namespace Fluence.Wpf.Controls
 
             _spectrumBitmap.WritePixels(new Int32Rect(0, 0, SpectrumSize, SpectrumSize), pixels, SpectrumSize * 4, 0);
             _spectrumBitmapHue = _hue;
-            _spectrumImage.SetCurrentValue(System.Windows.Controls.Image.SourceProperty, _spectrumBitmap);
+            _spectrumImage.SetCurrentValue(Image.SourceProperty, _spectrumBitmap);
         }
 
         /// <summary>
@@ -652,6 +657,7 @@ namespace Fluence.Wpf.Controls
         /// Internal so the test suite can drive the drag math deterministically; the mouse
         /// handlers funnel through here.
         /// </summary>
+        /// <param name="position">The point within the spectrum area to apply.</param>
         internal void ApplySpectrumPoint(Point position)
         {
             if (_spectrumArea is null)
@@ -779,6 +785,9 @@ namespace Fluence.Wpf.Controls
         /// Parses <c>#RRGGBB</c> / <c>#AARRGGBB</c> (leading <c>#</c> optional). Six-digit
         /// input is treated as fully opaque.
         /// </summary>
+        /// <param name="text">The hex color string to parse.</param>
+        /// <param name="color">The parsed color if successful; otherwise, <c>default</c>.</param>
+        /// <returns><c>true</c> if the hex color string was successfully parsed; otherwise, <c>false</c>.</returns>
         private static bool TryParseHexColor(string text, out Color color)
         {
             color = default;

@@ -106,8 +106,7 @@ namespace Fluence.Wpf.Tests
 
         private static bool IsDemoSharedStyles(ResourceDictionary dictionary)
         {
-            return dictionary.Source is not null &&
-                dictionary.Source.OriginalString.IndexOf("DemoSharedStyles.xaml", StringComparison.OrdinalIgnoreCase) >= 0;
+            return dictionary.Source?.OriginalString.IndexOf("DemoSharedStyles.xaml", StringComparison.OrdinalIgnoreCase) >= 0;
         }
     }
 }

@@ -179,6 +179,8 @@ namespace Fluence.Wpf.Helpers
         /// Determines whether white text should be used on a given background color.
         /// Uses the same weighted formula as Windows (winaccent): (5*G + 2*R + B) &lt;= 1024.
         /// </summary>
+        /// <param name="color">The background color to evaluate.</param>
+        /// <returns>True if white text should be used; otherwise, false.</returns>
         internal static bool ShouldUseWhiteText(Color color)
         {
             return ((5 * color.G) + (2 * color.R) + color.B) <= 1024;
@@ -188,6 +190,10 @@ namespace Fluence.Wpf.Helpers
         /// Linear RGB blend matching Windows' palette generation.
         /// <paramref name="intensity"/> is 0-100 weight toward <paramref name="c1"/>.
         /// </summary>
+        /// <param name="c1">The first color.</param>
+        /// <param name="c2">The second color.</param>
+        /// <param name="intensity">The intensity of the blend, 0-100.</param>
+        /// <returns>The blended color.</returns>
         internal static Color BlendColors(Color c1, Color c2, double intensity)
         {
             double scaled = intensity * 255.0 / 100.0;
@@ -202,6 +208,9 @@ namespace Fluence.Wpf.Helpers
         /// Boosts saturation in HLS color space by the given factor (capped at 1.0).
         /// Matches winaccent's increase_saturation which uses Python colorsys HLS (not HSV).
         /// </summary>
+        /// <param name="color">The color to adjust.</param>
+        /// <param name="factor">The factor by which to increase saturation.</param>
+        /// <returns>The color with increased saturation.</returns>
         internal static Color IncreaseSaturationHls(Color color, double factor)
         {
             double r = color.R / 255.0;
@@ -244,6 +253,13 @@ namespace Fluence.Wpf.Helpers
         /// transform modeling for the accent ramp" for the broader rationale.
         /// </para>
         /// </summary>
+        /// <param name="baseColor">The base color for the accent ramp.</param>
+        /// <param name="light1">The first light shade.</param>
+        /// <param name="light2">The second light shade.</param>
+        /// <param name="light3">The third light shade.</param>
+        /// <param name="dark1">The first dark shade.</param>
+        /// <param name="dark2">The second dark shade.</param>
+        /// <param name="dark3">The third dark shade.</param>
         internal static void GenerateAccentRampWinaccent(
             Color baseColor,
             out Color light1, out Color light2, out Color light3,
@@ -262,6 +278,9 @@ namespace Fluence.Wpf.Helpers
         /// the chroma ceiling (1.0). Achromatic inputs (S &lt; 0.05) are returned unchanged so
         /// greys do not develop hue.
         /// </summary>
+        /// <param name="baseColor">The base color to adjust.</param>
+        /// <param name="dL">The delta to apply to the lightness.</param>
+        /// <returns>The adjusted color.</returns>
         internal static Color ShiftHslMaxSat(Color baseColor, double dL)
         {
             RgbToHsl(baseColor, out double h, out double s, out double l);
@@ -277,6 +296,10 @@ namespace Fluence.Wpf.Helpers
         /// Converts <see cref="Color"/> to HSL space (Hue in degrees [0..360], Saturation
         /// and Lightness in [0..1]).
         /// </summary>
+        /// <param name="color">The color to convert.</param>
+        /// <param name="hue">The resulting hue.</param>
+        /// <param name="saturation">The resulting saturation.</param>
+        /// <param name="lightness">The resulting lightness.</param>
         internal static void RgbToHsl(Color color, out double hue, out double saturation, out double lightness)
         {
             const double Epsilon = 1e-9;
@@ -337,11 +360,11 @@ namespace Fluence.Wpf.Helpers
         {
             if (t < 0)
             {
-                t += 1;
+                t++;
             }
             if (t > 1)
             {
-                t -= 1;
+                t--;
             }
             return t < 1.0 / 6.0 ? p + ((q - p) * 6 * t) : t < 1.0 / 2.0 ? q : t < 2.0 / 3.0 ? p + ((q - p) * ((2.0 / 3.0) - t) * 6) : p;
         }

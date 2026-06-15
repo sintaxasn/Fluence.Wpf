@@ -48,6 +48,7 @@ namespace Fluence.Wpf.Demo
         /// sequence is: apply theme (seeds all three resource-dictionary slots) -&gt; apply accent
         /// -&gt; load demo shared styles -&gt; show window.
         /// </summary>
+        /// <param name="e">The startup event arguments.</param>
         protected override void OnStartup(StartupEventArgs e)
         {
             base.OnStartup(e);

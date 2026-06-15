@@ -143,7 +143,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void ContentDialog_DeclaredAsWindowContentChild_CollapsedAtRestAndShowsViaShowAsync()
+        public void ContentDialog_DeclaredAsWindowContentChild_CollapsedAtRestAndShowsViaShow()
         {
             RunOnStaThread(() =>
             {

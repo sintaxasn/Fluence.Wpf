@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -113,9 +113,9 @@ namespace Fluence.Wpf.Tests
 
         private enum WriteMode
         {
-            DwmAccentColorOnly,
-            AllAccentValues,
-            AllAccentValuesAndBroadcast,
+            DwmAccentColorOnly = 0,
+            AllAccentValues = 1,
+            AllAccentValuesAndBroadcast = 2,
         }
 
         private void RunExperiment(Color experimentalAccent, WriteMode writeMode, int waitMs)
@@ -160,7 +160,7 @@ namespace Fluence.Wpf.Tests
                 TestContext?.WriteLine($"After AccentPalette base (offset 12): {FormatPaletteBase(newPalette)}");
 
                 bool paletteChanged = !PaletteEquals(originalPalette, newPalette);
-                bool baseMatchesExperimental = newPalette is not null && newPalette.Length >= 16
+                bool baseMatchesExperimental = newPalette?.Length >= 16
                     && newPalette[12] == experimentalAccent.R
                     && newPalette[13] == experimentalAccent.G
                     && newPalette[14] == experimentalAccent.B;

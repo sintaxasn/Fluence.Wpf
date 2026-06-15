@@ -35,36 +35,38 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryFormsPage : UserControl
     {
-        private const string SignInFormXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Forms.SignInForm""
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
-    <StackPanel MaxWidth=""480"" HorizontalAlignment=""Left"">
-        <TextBlock Margin=""0,0,0,4"" Text=""Email"" />
+        private const string SignInFormXamlSource = """
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.Forms.SignInForm"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
+    <StackPanel MaxWidth="480" HorizontalAlignment="Left">
+        <TextBlock Margin="0,0,0,4" Text="Email" />
         <ui:TextBox
-            Margin=""0,0,0,12""
-            PlaceholderText=""name@example.com"" />
-        <TextBlock Margin=""0,0,0,4"" Text=""Password"" />
+            Margin="0,0,0,12"
+            PlaceholderText="name@example.com" />
+        <TextBlock Margin="0,0,0,4" Text="Password" />
         <ui:PasswordBox
-            Margin=""0,0,0,12""
-            PlaceholderText=""Password""
-            RevealButtonEnabled=""True""
-            ShowCapsLockIndicator=""True""
-            ShowPasswordStrength=""True"" />
+            Margin="0,0,0,12"
+            PlaceholderText="Password"
+            RevealButtonEnabled="True"
+            ShowCapsLockIndicator="True"
+            ShowPasswordStrength="True" />
         <ui:CheckBox
-            Margin=""0,0,0,24""
-            Content=""Remember me"" />
-        <StackPanel Orientation=""Horizontal"">
+            Margin="0,0,0,24"
+            Content="Remember me" />
+        <StackPanel Orientation="Horizontal">
             <ui:Button
-                Margin=""0,0,8,0""
-                Appearance=""Accent""
-                Content=""Sign in"" />
-            <ui:Button Content=""Create account"" />
+                Margin="0,0,8,0"
+                Appearance="Accent"
+                Content="Sign in" />
+            <ui:Button Content="Create account" />
         </StackPanel>
     </StackPanel>
 </UserControl>
-";
+
+""";
 
         private const string SignInFormCSharpSource = @"using System.Windows.Controls;
 
@@ -79,61 +81,63 @@ namespace Fluence.Wpf.Demo.Pages.Forms
     }
 }
 ";
-        private const string CheckoutFormXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Forms.CheckoutForm""
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
-    <StackPanel MaxWidth=""560"" HorizontalAlignment=""Left"">
-        <TextBlock Margin=""0,0,0,4"" Text=""Contact email"" />
+        private const string CheckoutFormXamlSource = """
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.Forms.CheckoutForm"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
+    <StackPanel MaxWidth="560" HorizontalAlignment="Left">
+        <TextBlock Margin="0,0,0,4" Text="Contact email" />
         <ui:TextBox
-            Margin=""0,0,0,12""
-            PlaceholderText=""name@example.com"" />
-        <TextBlock Margin=""0,0,0,4"" Text=""Shipping speed"" />
+            Margin="0,0,0,12"
+            PlaceholderText="name@example.com" />
+        <TextBlock Margin="0,0,0,4" Text="Shipping speed" />
         <ui:ComboBox
-            Margin=""0,0,0,12""
-            SelectedIndex=""1"">
-            <ComboBoxItem Content=""Standard"" />
-            <ComboBoxItem Content=""Priority"" />
-            <ComboBoxItem Content=""Overnight"" />
+            Margin="0,0,0,12"
+            SelectedIndex="1">
+            <ComboBoxItem Content="Standard" />
+            <ComboBoxItem Content="Priority" />
+            <ComboBoxItem Content="Overnight" />
         </ui:ComboBox>
-        <Grid x:Name=""CheckoutFieldsGrid"" Margin=""0,0,0,24"">
+        <Grid x:Name="CheckoutFieldsGrid" Margin="0,0,0,24">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width=""180"" />
-                <ColumnDefinition Width=""16"" />
-                <ColumnDefinition Width=""280"" />
+                <ColumnDefinition Width="180" />
+                <ColumnDefinition Width="16" />
+                <ColumnDefinition Width="280" />
             </Grid.ColumnDefinitions>
             <ui:NumberBox
-                x:Name=""QuantityNumberBox""
-                Grid.Column=""0""
-                Width=""180""
-                Header=""Quantity""
-                Maximum=""10""
-                Minimum=""1""
-                SpinButtonPlacementMode=""Compact""
-                Value=""2"" />
+                x:Name="QuantityNumberBox"
+                Grid.Column="0"
+                Width="180"
+                Header="Quantity"
+                Maximum="10"
+                Minimum="1"
+                SpinButtonPlacementMode="Compact"
+                Value="2" />
             <ui:TextBox
-                x:Name=""OptionalTextBox""
-                Grid.Column=""2""
-                Width=""280""
-                VerticalAlignment=""Bottom""
-                PlaceholderText=""Optional"" />
+                x:Name="OptionalTextBox"
+                Grid.Column="2"
+                Width="280"
+                VerticalAlignment="Bottom"
+                PlaceholderText="Optional" />
         </Grid>
         <ui:CheckBox
-            x:Name=""GiftCheckBox""
-            Margin=""0,0,0,24""
-            Content=""This is a gift""
-            Description=""Hide prices on the packing slip."" />
-        <StackPanel x:Name=""CheckoutButtonsPanel"" Orientation=""Horizontal"">
+            x:Name="GiftCheckBox"
+            Margin="0,0,0,24"
+            Content="This is a gift"
+            Description="Hide prices on the packing slip." />
+        <StackPanel x:Name="CheckoutButtonsPanel" Orientation="Horizontal">
             <ui:Button
-                Margin=""0,0,8,0""
-                Appearance=""Accent""
-                Content=""Place order"" />
-            <ui:Button Content=""Save for later"" />
+                Margin="0,0,8,0"
+                Appearance="Accent"
+                Content="Place order" />
+            <ui:Button Content="Save for later" />
         </StackPanel>
     </StackPanel>
 </UserControl>
-";
+
+""";
 
         private const string CheckoutFormCSharpSource = @"using System.Windows.Controls;
 
@@ -148,37 +152,39 @@ namespace Fluence.Wpf.Demo.Pages.Forms
     }
 }
 ";
-        private const string SettingsFormXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Forms.SettingsForm""
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
-    <StackPanel MaxWidth=""560"" HorizontalAlignment=""Left"">
-        <TextBlock Margin=""0,0,0,4"" Text=""Display name"" />
+        private const string SettingsFormXamlSource = """
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.Forms.SettingsForm"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
+    <StackPanel MaxWidth="560" HorizontalAlignment="Left">
+        <TextBlock Margin="0,0,0,4" Text="Display name" />
         <ui:TextBox
-            Margin=""0,0,0,12""
-            Text=""Avery Stone"" />
-        <TextBlock Margin=""0,0,0,4"" Text=""Theme"" />
+            Margin="0,0,0,12"
+            Text="Avery Stone" />
+        <TextBlock Margin="0,0,0,4" Text="Theme" />
         <ui:ComboBox
-            Margin=""0,0,0,12""
-            SelectedIndex=""0"">
-            <ComboBoxItem Content=""Use system setting"" />
-            <ComboBoxItem Content=""Light"" />
-            <ComboBoxItem Content=""Dark"" />
+            Margin="0,0,0,12"
+            SelectedIndex="0">
+            <ComboBoxItem Content="Use system setting" />
+            <ComboBoxItem Content="Light" />
+            <ComboBoxItem Content="Dark" />
         </ui:ComboBox>
         <ui:ToggleSwitch
-            Margin=""0,0,0,24""
-            Content=""Email updates""
-            IsChecked=""True""
-            OffContent=""Off""
-            OnContent=""On"" />
+            Margin="0,0,0,24"
+            Content="Email updates"
+            IsChecked="True"
+            OffContent="Off"
+            OnContent="On" />
         <ui:Button
-            HorizontalAlignment=""Left""
-            Appearance=""Accent""
-            Content=""Save settings"" />
+            HorizontalAlignment="Left"
+            Appearance="Accent"
+            Content="Save settings" />
     </StackPanel>
 </UserControl>
-";
+
+""";
 
         private const string SettingsFormCSharpSource = @"using System.Windows.Controls;
 
@@ -194,18 +200,20 @@ namespace Fluence.Wpf.Demo.Pages.Forms
 }
 ";
 
-        private const string DatePickerXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Forms.DueDateForm""
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+        private const string DatePickerXamlSource = """
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.Forms.DueDateForm"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
     <ui:DatePicker
-        x:Name=""DueDatePicker""
-        Header=""Due date""
-        PlaceholderText=""Pick a date""
-        SelectedDateChanged=""DueDatePicker_SelectedDateChanged"" />
+        x:Name="DueDatePicker"
+        Header="Due date"
+        PlaceholderText="Pick a date"
+        SelectedDateChanged="DueDatePicker_SelectedDateChanged" />
 </UserControl>
-";
+
+""";
 
         private const string DatePickerCSharpSource = @"using System.Windows.Controls;
 using Fluence.Wpf;
@@ -243,19 +251,21 @@ namespace Fluence.Wpf.Demo.Pages.Forms
             Loaded += GalleryFormsPage_Loaded;
         }
 
-        private const string TimePickerXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Forms.ReminderTimeForm""
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+        private const string TimePickerXamlSource = """
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.Forms.ReminderTimeForm"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
     <ui:TimePicker
-        x:Name=""ReminderTimePicker""
-        Header=""Reminder time""
-        MinuteIncrement=""5""
-        PlaceholderText=""Pick a time""
-        SelectedTimeChanged=""ReminderTimePicker_SelectedTimeChanged"" />
+        x:Name="ReminderTimePicker"
+        Header="Reminder time"
+        MinuteIncrement="5"
+        PlaceholderText="Pick a time"
+        SelectedTimeChanged="ReminderTimePicker_SelectedTimeChanged" />
 </UserControl>
-";
+
+""";
 
         private const string TimePickerCSharpSource = @"using System.Windows.Controls;
 using Fluence.Wpf;
@@ -277,17 +287,19 @@ namespace Fluence.Wpf.Demo.Pages.Forms
 }
 ";
 
-        private const string ColorPickerXamlSource = @"<UserControl
-    x:Class=""Fluence.Wpf.Demo.Pages.Forms.AccentColorForm""
-    xmlns=""http://schemas.microsoft.com/winfx/2006/xaml/presentation""
-    xmlns:x=""http://schemas.microsoft.com/winfx/2006/xaml""
-    xmlns:ui=""clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"">
+        private const string ColorPickerXamlSource = """
+<UserControl
+    x:Class="Fluence.Wpf.Demo.Pages.Forms.AccentColorForm"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf">
     <ui:ColorPicker
-        x:Name=""AccentColorPicker""
-        ColorChanged=""AccentColorPicker_ColorChanged""
-        IsAlphaEnabled=""True"" />
+        x:Name="AccentColorPicker"
+        ColorChanged="AccentColorPicker_ColorChanged"
+        IsAlphaEnabled="True" />
 </UserControl>
-";
+
+""";
 
         private const string ColorPickerCSharpSource = @"using System.Windows.Controls;
 using Fluence.Wpf;

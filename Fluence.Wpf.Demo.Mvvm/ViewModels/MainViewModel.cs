@@ -164,6 +164,7 @@ namespace Fluence.Wpf.Demo.Mvvm.ViewModels
         /// Removes a specific task. Bound in the DataTemplate via
         /// <c>RelativeSource AncestorType=Window</c> with <c>CommandParameter="{Binding}"</c>.
         /// </summary>
+        /// <param name="item">The task item to remove.</param>
         [RelayCommand]
         private void Delete(TaskItemViewModel item)
         {

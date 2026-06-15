@@ -71,7 +71,10 @@ namespace Fluence.Wpf.Theming
         /// </summary>
         internal static event EventHandler<EventArgs>? Published;
 
-        /// <summary>Sets the accent intent that the next <see cref="Apply"/> call will use.</summary>
+        /// <summary>
+        /// Sets the accent intent that the next <see cref="Apply"/> call will use.
+        /// </summary>
+        /// <param name="intent">The accent intent to set.</param>
         internal static void SetAccentIntent(AccentIntent intent)
         {
             _intent = intent;
@@ -81,6 +84,7 @@ namespace Fluence.Wpf.Theming
         /// Resolves the theme and accent, builds the computed dictionary, and publishes it into
         /// application resources.
         /// </summary>
+        /// <param name="request">The requested application theme.</param>
         internal static void Apply(ApplicationTheme request)
         {
             ApplicationTheme theme = ThemeResolver.Resolve(request);
@@ -102,6 +106,8 @@ namespace Fluence.Wpf.Theming
         /// (elevation gradients, High-Contrast SystemColors brushes, ScrollBar track, accent
         /// overrides) plus the shared layout/shadow/focus tokens. No brush XAML is merged.
         /// </summary>
+        /// <param name="theme">The application theme to use.</param>
+        /// <param name="palette">The accent palette to use.</param>
         private static ResourceDictionary BuildComputedDictionary(ApplicationTheme theme, AccentPalette palette)
         {
             Dictionary<string, Color> colors = ColorMap.Build(theme, palette, deterministicChrome: _deterministicChromeForTesting);
@@ -133,6 +139,7 @@ namespace Fluence.Wpf.Theming
         /// <see cref="ApplicationTheme.Light"/> and <see cref="ApplicationTheme.Dark"/> are
         /// supported; high contrast is out of scope for design-time previews.
         /// </remarks>
+        /// <param name="theme">The application theme to use.</param>
         internal static ResourceDictionary BuildStandalone(ApplicationTheme theme)
         {
             AccentPalette palette = AccentResolver.Resolve(AccentIntent.FromCustom(Color.FromRgb(0x00, 0x78, 0xD4)));
@@ -189,6 +196,7 @@ namespace Fluence.Wpf.Theming
         /// rebuild would read live OS personalization (HKCU DWM ColorPrevalence / AccentColor) and
         /// drift on machines that show the accent color on title bars.
         /// </summary>
+        /// <param name="enabled">Whether to enable deterministic chrome for testing.</param>
         internal static void SetDeterministicChromeForTesting(bool enabled)
         {
             _deterministicChromeForTesting = enabled;

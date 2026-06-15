@@ -26,10 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Fluence.Wpf.Controls;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
@@ -37,8 +34,9 @@ using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls.Primitives;
-using System.Windows.Media;
 using System.Windows.Threading;
+using Fluence.Wpf.Controls;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Fluence.Wpf.Tests
 {
@@ -84,82 +82,6 @@ namespace Fluence.Wpf.Tests
         private static void DrainDispatcher(Dispatcher dispatcher)
         {
             _ = dispatcher.Invoke(DispatcherPriority.ApplicationIdle, new Action(delegate { }));
-        }
-
-        private static T? FindVisualChild<T>(DependencyObject root) where T : DependencyObject
-        {
-            if (root is null)
-            {
-                return null;
-            }
-
-            int childCount = VisualTreeHelper.GetChildrenCount(root);
-            for (int index = 0; index < childCount; index++)
-            {
-                DependencyObject child = VisualTreeHelper.GetChild(root, index);
-                if (child is T match)
-                {
-                    return match;
-                }
-
-                if (FindVisualChild<T>(child) is T visual)
-                {
-                    return visual;
-                }
-            }
-
-            return null;
-        }
-
-        private static IEnumerable<T> FindVisualChildren<T>(DependencyObject root) where T : DependencyObject
-        {
-            if (root is null)
-            {
-                yield break;
-            }
-
-            int childCount = VisualTreeHelper.GetChildrenCount(root);
-            for (int index = 0; index < childCount; index++)
-            {
-                DependencyObject child = VisualTreeHelper.GetChild(root, index);
-                if (child is T match)
-                {
-                    yield return match;
-                }
-
-                foreach (T descendant in FindVisualChildren<T>(child))
-                {
-                    yield return descendant;
-                }
-            }
-        }
-
-        private static T? FindVisualChildByName<T>(DependencyObject root, string name) where T : FrameworkElement
-        {
-            if (root is null || string.IsNullOrWhiteSpace(name))
-            {
-                return null;
-            }
-
-            int childCount = VisualTreeHelper.GetChildrenCount(root);
-            for (int index = 0; index < childCount; index++)
-            {
-                if (VisualTreeHelper.GetChild(root, index) is FrameworkElement child && child.Name == name)
-                {
-                    if (child is T match)
-                    {
-                        return match;
-                    }
-                }
-
-                T? found = FindVisualChildByName<T>(VisualTreeHelper.GetChild(root, index), name);
-                if (found is not null)
-                {
-                    return found;
-                }
-            }
-
-            return null;
         }
 
         // ---- TabViewItem defaults ----
@@ -359,14 +281,8 @@ namespace Fluence.Wpf.Tests
 
                     TabViewTabCloseRequestedEventArgs? viewArgs = null;
                     int itemRaised = 0;
-                    first.CloseRequested += (s, e) =>
-                    {
-                        itemRaised++;
-                    };
-                    tabs.TabCloseRequested += (s, e) =>
-                    {
-                        viewArgs = e as TabViewTabCloseRequestedEventArgs;
-                    };
+                    first.CloseRequested += (s, e) => itemRaised++;
+                    tabs.TabCloseRequested += (s, e) => viewArgs = e as TabViewTabCloseRequestedEventArgs;
 
                     ButtonAutomationPeer peer = new(closeButton as System.Windows.Controls.Button);
                     IInvokeProvider? invoke = peer.GetPattern(PatternInterface.Invoke)

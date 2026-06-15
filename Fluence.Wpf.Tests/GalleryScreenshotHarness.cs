@@ -255,6 +255,12 @@ namespace Fluence.Wpf.Tests
         /// with the navigation pane forced to <paramref name="paneMode"/>, writing
         /// <c>{outputName}-{themeSlug}.png</c>.
         /// </summary>
+        /// <param name="theme">The theme to apply.</param>
+        /// <param name="themeSlug">The slug representing the theme.</param>
+        /// <param name="route">The route to navigate to.</param>
+        /// <param name="paneMode">The navigation pane display mode.</param>
+        /// <param name="outputName">The name of the output file.</param>
+        /// <param name="outputDirectory">The directory to save the output file.</param>
         private static void CaptureGalleryShellAt(
             ApplicationTheme theme,
             string themeSlug,
@@ -300,6 +306,7 @@ namespace Fluence.Wpf.Tests
         /// Reads the inline XAML here-string from <c>03-ControlsTour.ps1</c> so the captured window
         /// stays in lock-step with the script the screenshot documents.
         /// </summary>
+        /// <exception cref="InvalidOperationException">Thrown if the XAML here-string cannot be located.</exception>
         private static string ExtractControlsTourXaml()
         {
             string scriptPath = Path.Combine(FindRepoRoot(), "Fluence.Wpf.Demo.PowerShell", "03-ControlsTour.ps1");
