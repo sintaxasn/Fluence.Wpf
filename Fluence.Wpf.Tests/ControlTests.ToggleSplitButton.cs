@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -108,7 +108,7 @@ namespace Fluence.Wpf.Tests
                 () => new Controls.ToggleSplitButton
                 {
                     Content = "Toggle",
-                    IsHitTestVisible = false
+                    IsHitTestVisible = false,
                 },
                 (_, button) =>
                 {
@@ -129,7 +129,7 @@ namespace Fluence.Wpf.Tests
                 () => new Controls.ToggleSplitButton
                 {
                     Content = "Toggle",
-                    IsHitTestVisible = false
+                    IsHitTestVisible = false,
                 },
                 (_, button) =>
                 {
@@ -151,7 +151,7 @@ namespace Fluence.Wpf.Tests
             RunToggleSplitButtonTest(
                 () => new Controls.ToggleSplitButton
                 {
-                    Content = "Toggle"
+                    Content = "Toggle",
                 },
                 (_, button) =>
                 {
@@ -179,7 +179,7 @@ namespace Fluence.Wpf.Tests
             RunToggleSplitButtonTest(
                 () => new Controls.ToggleSplitButton
                 {
-                    Content = "Toggle"
+                    Content = "Toggle",
                 },
                 (_, button) =>
                 {
@@ -202,7 +202,7 @@ namespace Fluence.Wpf.Tests
             RunToggleSplitButtonTest(
                 () => new Controls.ToggleSplitButton
                 {
-                    Content = "Toggle"
+                    Content = "Toggle",
                 },
                 (_, button) =>
                 {
@@ -224,7 +224,7 @@ namespace Fluence.Wpf.Tests
                 () => new Controls.ToggleSplitButton
                 {
                     Content = "Toggle",
-                    IsHitTestVisible = false
+                    IsHitTestVisible = false,
                 },
                 (_, button) =>
                 {
@@ -256,7 +256,7 @@ namespace Fluence.Wpf.Tests
                 () => new Controls.ToggleSplitButton
                 {
                     Content = "Toggle",
-                    Flyout = "Flyout content"
+                    Flyout = "Flyout content",
                 },
                 (_, button) =>
                 {
@@ -287,7 +287,7 @@ namespace Fluence.Wpf.Tests
                 {
                     Content = "Toggle",
                     IsChecked = true,
-                    IsHitTestVisible = false
+                    IsHitTestVisible = false,
                 },
                 (application, button) =>
                 {
@@ -317,7 +317,7 @@ namespace Fluence.Wpf.Tests
                 () => new Controls.ToggleSplitButton
                 {
                     Content = "Toggle",
-                    IsHitTestVisible = false
+                    IsHitTestVisible = false,
                 },
                 (application, button) =>
                 {
@@ -347,7 +347,7 @@ namespace Fluence.Wpf.Tests
                 {
                     Content = "Toggle",
                     IsChecked = true,
-                    Flyout = "Flyout content"
+                    Flyout = "Flyout content",
                 },
                 (application, button) =>
                 {
@@ -379,7 +379,7 @@ namespace Fluence.Wpf.Tests
                 {
                     Content = "Toggle",
                     IsChecked = true,
-                    IsEnabled = false
+                    IsEnabled = false,
                 },
                 (application, button) =>
                 {
@@ -403,7 +403,7 @@ namespace Fluence.Wpf.Tests
                 () => new Controls.ToggleSplitButton
                 {
                     Content = "Toggle",
-                    IsHitTestVisible = false
+                    IsHitTestVisible = false,
                 },
                 (_, button) =>
                 {
@@ -425,7 +425,7 @@ namespace Fluence.Wpf.Tests
                 () => new Controls.ToggleSplitButton
                 {
                     Content = "Toggle",
-                    IsHitTestVisible = false
+                    IsHitTestVisible = false,
                 },
                 (_, button) =>
                 {
@@ -455,7 +455,7 @@ namespace Fluence.Wpf.Tests
                 () => new Controls.ToggleSplitButton
                 {
                     Content = "Toggle",
-                    Flyout = "Flyout content"
+                    Flyout = "Flyout content",
                 },
                 (_, button) =>
                 {
@@ -488,7 +488,7 @@ namespace Fluence.Wpf.Tests
                 () => new Controls.ToggleSplitButton
                 {
                     Content = "Toggle",
-                    IsHitTestVisible = false
+                    IsHitTestVisible = false,
                 },
                 (application, button) =>
                 {
@@ -516,7 +516,7 @@ namespace Fluence.Wpf.Tests
                 {
                     Content = "Toggle",
                     IsChecked = true,
-                    IsHitTestVisible = false
+                    IsHitTestVisible = false,
                 },
                 (application, button) =>
                 {

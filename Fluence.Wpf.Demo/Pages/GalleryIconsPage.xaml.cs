@@ -50,7 +50,7 @@ namespace Fluence.Wpf.Demo.Pages
         private const double TileGapWidth = 12.0;
         private const int DefaultColumns = 4;
 
-        private static readonly object IconCatalogLock = new();
+        private static readonly System.Threading.Lock IconCatalogLock = new();
         private static readonly char[] SearchTermSeparators = [' '];
         private static readonly CompareInfo OrdinalIgnoreCaseCompareInfo = CultureInfo.InvariantCulture.CompareInfo;
         private static List<IconCatalogItem>? cachedIcons;
@@ -197,7 +197,7 @@ namespace Fluence.Wpf.Demo.Pages
             TextBlock text = new()
             {
                 Text = tag,
-                VerticalAlignment = VerticalAlignment.Center
+                VerticalAlignment = VerticalAlignment.Center,
             };
             text.SetResourceReference(StyleProperty, "CaptionTextBlockStyle");
             text.SetResourceReference(TextBlock.ForegroundProperty, "TextFillColorSecondaryBrush");
@@ -209,7 +209,7 @@ namespace Fluence.Wpf.Demo.Pages
                 CornerRadius = new CornerRadius(12),
                 Margin = new Thickness(0, 0, 4, 4),
                 MinHeight = 24,
-                Padding = new Thickness(10, 2, 10, 3)
+                Padding = new Thickness(10, 2, 10, 3),
             };
             pill.SetResourceReference(Border.BackgroundProperty, "CardBackgroundFillColorDefaultBrush");
             pill.SetResourceReference(Border.BorderBrushProperty, "CardStrokeColorDefaultBrush");
@@ -343,8 +343,7 @@ namespace Fluence.Wpf.Demo.Pages
                 }
             }
 
-            List<IconCatalogItem> icons = [.. namedIcons, .. unnamedIcons];
-            return icons;
+            return [.. namedIcons, .. unnamedIcons];
         }
 
         /// <summary>
@@ -352,6 +351,8 @@ namespace Fluence.Wpf.Demo.Pages
         /// pills shown by the WinUI 3 Gallery. The shipped catalog data carries no tag
         /// column, so the name itself is the only available source.
         /// </summary>
+        /// <param name="name">The PascalCase icon name to derive tags from.</param>
+        /// <returns>A list of lowercase word tokens extracted from the name.</returns>
         private static List<string> DeriveTags(string name)
         {
             List<string> tags = [];
@@ -401,8 +402,8 @@ namespace Fluence.Wpf.Demo.Pages
         private static Dictionary<string, string> LoadKnownIconNames()
         {
             StreamResourceInfo info = Application.GetResourceStream(KnownIconNamesResourceUri) ?? throw new InvalidOperationException("Segoe Fluent Icons name data was not found.");
-            Dictionary<string, string> names = new(StringComparer.OrdinalIgnoreCase);
-            using (StreamReader reader = new(info.Stream, Encoding.UTF8, true))
+            Dictionary<string, string> names = new(comparer: StringComparer.OrdinalIgnoreCase);
+            using (StreamReader reader = new(info.Stream, Encoding.UTF8, detectEncodingFromByteOrderMarks: true))
             {
                 string? line;
                 while ((line = reader.ReadLine()) is not null)
@@ -434,7 +435,7 @@ namespace Fluence.Wpf.Demo.Pages
 
         public sealed class IconCatalogRow(IList<IconCatalogItem> items)
         {
-            public IList<IconCatalogItem> Items { get; private set; } = items;
+            public IList<IconCatalogItem> Items { get; } = items;
         }
 
         public sealed class IconCatalogItem(string name, string code, string glyph, IReadOnlyList<string> tags) : INotifyPropertyChanged

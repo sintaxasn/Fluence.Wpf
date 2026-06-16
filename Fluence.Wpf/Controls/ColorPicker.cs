@@ -154,10 +154,10 @@ namespace Fluence.Wpf.Controls
         // ColorUpdateReason skip; rewriting the active box would destroy the caret).
         private enum TextInputGroup
         {
-            None,
-            Rgb,
-            Hsv,
-            Alpha,
+            None = 0,
+            Rgb = 1,
+            Hsv = 2,
+            Alpha = 3,
         }
 
         /// <summary>
@@ -266,7 +266,7 @@ namespace Fluence.Wpf.Controls
                 nameof(IsColorPreviewVisible),
                 typeof(bool),
                 typeof(ColorPicker),
-                new FrameworkPropertyMetadata(true));
+                new FrameworkPropertyMetadata(defaultValue: true));
 
         /// <summary>
         /// Gets or sets a value indicating whether the current/previous preview swatch row
@@ -286,7 +286,7 @@ namespace Fluence.Wpf.Controls
                 nameof(IsColorSliderVisible),
                 typeof(bool),
                 typeof(ColorPicker),
-                new FrameworkPropertyMetadata(true));
+                new FrameworkPropertyMetadata(defaultValue: true));
 
         /// <summary>
         /// Gets or sets a value indicating whether the third-dimension color slider is
@@ -308,7 +308,7 @@ namespace Fluence.Wpf.Controls
                 nameof(IsAlphaSliderVisible),
                 typeof(bool),
                 typeof(ColorPicker),
-                new FrameworkPropertyMetadata(true));
+                new FrameworkPropertyMetadata(defaultValue: true));
 
         /// <summary>
         /// Gets or sets a value indicating whether the alpha slider is shown. The slider
@@ -329,7 +329,7 @@ namespace Fluence.Wpf.Controls
                 nameof(IsAlphaTextInputVisible),
                 typeof(bool),
                 typeof(ColorPicker),
-                new FrameworkPropertyMetadata(true));
+                new FrameworkPropertyMetadata(defaultValue: true));
 
         /// <summary>
         /// Gets or sets a value indicating whether the alpha percentage text input is
@@ -350,7 +350,7 @@ namespace Fluence.Wpf.Controls
                 nameof(IsHexInputVisible),
                 typeof(bool),
                 typeof(ColorPicker),
-                new FrameworkPropertyMetadata(true));
+                new FrameworkPropertyMetadata(defaultValue: true));
 
         /// <summary>
         /// Gets or sets a value indicating whether the hex text input is shown. The input
@@ -371,7 +371,7 @@ namespace Fluence.Wpf.Controls
                 nameof(IsMoreButtonVisible),
                 typeof(bool),
                 typeof(ColorPicker),
-                new FrameworkPropertyMetadata(false));
+                new FrameworkPropertyMetadata(defaultValue: false));
 
         /// <summary>
         /// Gets or sets a value indicating whether the text-entry area collapses behind a
@@ -765,14 +765,14 @@ namespace Fluence.Wpf.Controls
 
             if (_activeTextInputGroup != TextInputGroup.Hsv)
             {
-                _hueTextBox?.SetCurrentValue(System.Windows.Controls.TextBox.TextProperty, ((int)Math.Round(_hue)).ToString(CultureInfo.InvariantCulture));
-                _saturationTextBox?.SetCurrentValue(System.Windows.Controls.TextBox.TextProperty, ((int)Math.Round(_saturation * 100)).ToString(CultureInfo.InvariantCulture));
-                _valueTextBox?.SetCurrentValue(System.Windows.Controls.TextBox.TextProperty, ((int)Math.Round(_value * 100)).ToString(CultureInfo.InvariantCulture));
+                _hueTextBox?.SetCurrentValue(System.Windows.Controls.TextBox.TextProperty, ((int)Math.Round(_hue, MidpointRounding.ToEven)).ToString(CultureInfo.InvariantCulture));
+                _saturationTextBox?.SetCurrentValue(System.Windows.Controls.TextBox.TextProperty, ((int)Math.Round(_saturation * 100, MidpointRounding.ToEven)).ToString(CultureInfo.InvariantCulture));
+                _valueTextBox?.SetCurrentValue(System.Windows.Controls.TextBox.TextProperty, ((int)Math.Round(_value * 100, MidpointRounding.ToEven)).ToString(CultureInfo.InvariantCulture));
             }
 
             if (_activeTextInputGroup != TextInputGroup.Alpha)
             {
-                int percent = (int)Math.Round(_alpha / 255.0 * 100);
+                int percent = (int)Math.Round(_alpha / 255.0 * 100, MidpointRounding.ToEven);
                 _alphaTextBox?.SetCurrentValue(
                     System.Windows.Controls.TextBox.TextProperty,
                     string.Format(CultureInfo.InvariantCulture, "{0}%", percent));
@@ -1036,6 +1036,8 @@ namespace Fluence.Wpf.Controls
         /// keeps the spectrum thumb stable on greys. Invalid text is a no-op until Enter
         /// or focus loss restores it.
         /// </summary>
+        /// <param name="sender">The text box that raised the event.</param>
+        /// <param name="e">Event data for the text-changed event.</param>
         private void OnRgbTextBoxTextChanged(object sender, TextChangedEventArgs e)
         {
             if (_isUpdatingVisuals || sender is not System.Windows.Controls.TextBox box)
@@ -1074,6 +1076,8 @@ namespace Fluence.Wpf.Controls
         /// re-reads all three boxes and quantizes the untouched components to integers).
         /// Hue accepts 0 to 360 because the picker's model and slider use 360 inclusive.
         /// </summary>
+        /// <param name="sender">The text box that raised the event.</param>
+        /// <param name="e">Event data for the text-changed event.</param>
         private void OnHsvTextBoxTextChanged(object sender, TextChangedEventArgs e)
         {
             if (_isUpdatingVisuals || sender is not System.Windows.Controls.TextBox box)
@@ -1114,6 +1118,8 @@ namespace Fluence.Wpf.Controls
         /// optional trailing percent sign (auto-appended on normalize), mapped to the
         /// 0 to 255 alpha byte, like WinUI's opacity input.
         /// </summary>
+        /// <param name="sender">The text box that raised the event.</param>
+        /// <param name="e">Event data for the text-changed event.</param>
         private void OnAlphaTextBoxTextChanged(object sender, TextChangedEventArgs e)
         {
             if (_isUpdatingVisuals || _alphaTextBox is null)
@@ -1126,7 +1132,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            byte alpha = (byte)Math.Round(percent / 100.0 * 255);
+            byte alpha = (byte)Math.Round(percent / 100.0 * 255, MidpointRounding.ToEven);
             _activeTextInputGroup = TextInputGroup.Alpha;
             try
             {
@@ -1162,6 +1168,10 @@ namespace Fluence.Wpf.Controls
         /// <paramref name="max"/> inclusive. Signs, group separators, and embedded
         /// whitespace are rejected; surrounding whitespace is trimmed.
         /// </summary>
+        /// <param name="text">The text to parse.</param>
+        /// <param name="max">The inclusive upper bound for the parsed value.</param>
+        /// <param name="value">The parsed integer if successful; otherwise, zero.</param>
+        /// <returns><see langword="true"/> if the text was successfully parsed and is within range; otherwise, <see langword="false"/>.</returns>
         private static bool TryParseChannelValue(string text, int max, out int value)
         {
             value = 0;
@@ -1183,6 +1193,9 @@ namespace Fluence.Wpf.Controls
         /// Parses the alpha box text as a 0 to 100 percentage, tolerating one trailing
         /// percent sign.
         /// </summary>
+        /// <param name="text">The text to parse.</param>
+        /// <param name="percent">The parsed percentage value (0 to 100) if successful; otherwise, zero.</param>
+        /// <returns><see langword="true"/> if the text was successfully parsed as a valid percentage; otherwise, <see langword="false"/>.</returns>
         private static bool TryParseAlphaPercent(string text, out int percent)
         {
             percent = 0;
@@ -1192,9 +1205,9 @@ namespace Fluence.Wpf.Controls
             }
 
             string trimmed = text.Trim();
-            if (trimmed.EndsWith("%", StringComparison.Ordinal))
+            if (trimmed[^1] == '%')
             {
-                trimmed = trimmed.Substring(0, trimmed.Length - 1);
+                trimmed = trimmed[..^1];
             }
 
             return TryParseChannelValue(trimmed, 100, out percent);

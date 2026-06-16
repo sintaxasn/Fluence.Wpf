@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -65,7 +65,7 @@ namespace Fluence.Wpf.Controls
                 typeof(bool),
                 typeof(ToggleSplitButton),
                 new FrameworkPropertyMetadata(
-                    false,
+                    defaultValue: false,
                     FrameworkPropertyMetadataOptions.BindsTwoWayByDefault,
                     OnIsCheckedPropertyChanged));
 
@@ -118,6 +118,11 @@ namespace Fluence.Wpf.Controls
             SetCurrentValue(IsCheckedProperty, !IsChecked);
         }
 
+        private void RaiseIsCheckedChanged(bool newValue)
+        {
+            IsCheckedChanged?.Invoke(this, new ToggleSplitButtonIsCheckedChangedEventArgs(newValue));
+        }
+
         private static void OnIsCheckedPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             if (d is not ToggleSplitButton button)
@@ -126,7 +131,7 @@ namespace Fluence.Wpf.Controls
             }
 
             bool newValue = (bool)e.NewValue;
-            button.IsCheckedChanged?.Invoke(button, new ToggleSplitButtonIsCheckedChangedEventArgs(newValue));
+            button.RaiseIsCheckedChanged(newValue);
 
             // Mirror WinUI: notify UI Automation clients that the Toggle pattern state changed.
             if (AutomationPeer.ListenerExists(AutomationEvents.PropertyChanged)

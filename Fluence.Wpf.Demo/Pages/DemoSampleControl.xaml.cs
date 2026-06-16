@@ -458,7 +458,7 @@ namespace Fluence.Wpf.Demo.Pages
             _ = slide.KeyFrames.Add(new SplineDoubleKeyFrame(toValue, KeyTime.FromTimeSpan(duration), easing));
             slide.Completed += (_, _) =>
             {
-                translate.BeginAnimation(TranslateTransform.YProperty, null);
+                translate.BeginAnimation(TranslateTransform.YProperty, animation: null);
                 translate.Y = 0d;
             };
             translate.BeginAnimation(TranslateTransform.YProperty, slide);

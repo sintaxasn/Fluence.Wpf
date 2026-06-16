@@ -1,4 +1,4 @@
-/*
+﻿/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -102,7 +102,7 @@ namespace Fluence.Wpf.Tests
                 () => new Controls.ToggleButton
                 {
                     Content = "Toggle",
-                    IsHitTestVisible = false
+                    IsHitTestVisible = false,
                 },
                 (_, toggleButton) =>
                 {
@@ -122,7 +122,7 @@ namespace Fluence.Wpf.Tests
                 () => new Controls.ToggleButton
                 {
                     Content = "Toggle",
-                    IsHitTestVisible = false
+                    IsHitTestVisible = false,
                 },
                 (_, toggleButton) =>
                 {
@@ -140,7 +140,7 @@ namespace Fluence.Wpf.Tests
                 {
                     Content = "Toggle",
                     IsChecked = true,
-                    IsHitTestVisible = false
+                    IsHitTestVisible = false,
                 },
                 (application, toggleButton) =>
                 {
@@ -162,11 +162,11 @@ namespace Fluence.Wpf.Tests
                 () => new PressableToggleButtonProbe
                 {
                     Content = "Probe",
-                    IsChecked = true
+                    IsChecked = true,
                 },
                 (application, probe) =>
                 {
-                    probe.SetPressed(true);
+                    probe.SetPressed(value: true);
                     DrainDispatcher(probe.Dispatcher);
                     probe.UpdateLayout();
 
@@ -190,7 +190,7 @@ namespace Fluence.Wpf.Tests
                     Content = "Toggle",
                     IsThreeState = true,
                     IsChecked = null,
-                    IsHitTestVisible = false
+                    IsHitTestVisible = false,
                 },
                 (application, toggleButton) =>
                 {
@@ -213,11 +213,11 @@ namespace Fluence.Wpf.Tests
                 {
                     Content = "Probe",
                     IsThreeState = true,
-                    IsChecked = null
+                    IsChecked = null,
                 },
                 (application, probe) =>
                 {
-                    probe.SetPressed(true);
+                    probe.SetPressed(value: true);
                     DrainDispatcher(probe.Dispatcher);
                     probe.UpdateLayout();
 
@@ -241,7 +241,7 @@ namespace Fluence.Wpf.Tests
                     Content = "Toggle",
                     IsThreeState = true,
                     IsChecked = null,
-                    IsEnabled = false
+                    IsEnabled = false,
                 },
                 (application, toggleButton) =>
                 {
@@ -264,7 +264,7 @@ namespace Fluence.Wpf.Tests
                 {
                     Content = "Toggle",
                     IsChecked = true,
-                    IsEnabled = false
+                    IsEnabled = false,
                 },
                 (application, toggleButton) =>
                 {
@@ -285,7 +285,7 @@ namespace Fluence.Wpf.Tests
                     Content = "Toggle",
                     Appearance = ControlAppearance.Accent,
                     IsChecked = true,
-                    IsHitTestVisible = false
+                    IsHitTestVisible = false,
                 },
                 (application, toggleButton) =>
                 {
@@ -307,7 +307,7 @@ namespace Fluence.Wpf.Tests
                 () => new Controls.ToggleButton
                 {
                     Content = "Toggle",
-                    IsHitTestVisible = false
+                    IsHitTestVisible = false,
                 },
                 (_, toggleButton) =>
                 {
@@ -319,10 +319,10 @@ namespace Fluence.Wpf.Tests
                         triggerBase is Trigger trigger
                         && trigger.Property == System.Windows.Controls.Primitives.ToggleButton.IsCheckedProperty
                         && Equals(trigger.Value, true));
-                    int checkedHoverIndex = FindTriggerIndex(triggers, triggerBase => IsToggleHoverTrigger(triggerBase, true));
-                    int checkedPressedIndex = FindTriggerIndex(triggers, triggerBase => IsTogglePressedTrigger(triggerBase, true));
-                    int indeterminateHoverIndex = FindTriggerIndex(triggers, triggerBase => IsToggleHoverTrigger(triggerBase, null));
-                    int indeterminatePressedIndex = FindTriggerIndex(triggers, triggerBase => IsTogglePressedTrigger(triggerBase, null));
+                    int checkedHoverIndex = FindTriggerIndex(triggers, triggerBase => IsToggleHoverTrigger(triggerBase, isCheckedValue: true));
+                    int checkedPressedIndex = FindTriggerIndex(triggers, triggerBase => IsTogglePressedTrigger(triggerBase, isCheckedValue: true));
+                    int indeterminateHoverIndex = FindTriggerIndex(triggers, triggerBase => IsToggleHoverTrigger(triggerBase, isCheckedValue: null));
+                    int indeterminatePressedIndex = FindTriggerIndex(triggers, triggerBase => IsTogglePressedTrigger(triggerBase, isCheckedValue: null));
 
                     Assert.IsTrue(checkedRestIndex >= 0, "The checked rest trigger should exist.");
                     Assert.IsTrue(checkedHoverIndex >= 0, "The checked hover trigger should exist.");
@@ -344,7 +344,7 @@ namespace Fluence.Wpf.Tests
                 {
                     Content = "Toggle",
                     IsChecked = true,
-                    IsHitTestVisible = false
+                    IsHitTestVisible = false,
                 },
                 (application, toggleButton) =>
                 {
@@ -391,8 +391,8 @@ namespace Fluence.Wpf.Tests
             return triggerBase is MultiTrigger multiTrigger
                 && multiTrigger.Conditions.Count == 3
                 && HasTriggerCondition(multiTrigger, System.Windows.Controls.Primitives.ToggleButton.IsCheckedProperty, isCheckedValue)
-                && HasTriggerCondition(multiTrigger, UIElement.IsMouseOverProperty, true)
-                && HasTriggerCondition(multiTrigger, System.Windows.Controls.Primitives.ButtonBase.IsPressedProperty, false);
+                && HasTriggerCondition(multiTrigger, UIElement.IsMouseOverProperty, value: true)
+                && HasTriggerCondition(multiTrigger, System.Windows.Controls.Primitives.ButtonBase.IsPressedProperty, value: false);
         }
 
         private static bool IsTogglePressedTrigger(TriggerBase triggerBase, object? isCheckedValue)
@@ -400,7 +400,7 @@ namespace Fluence.Wpf.Tests
             return triggerBase is MultiTrigger multiTrigger
                 && multiTrigger.Conditions.Count == 2
                 && HasTriggerCondition(multiTrigger, System.Windows.Controls.Primitives.ToggleButton.IsCheckedProperty, isCheckedValue)
-                && HasTriggerCondition(multiTrigger, System.Windows.Controls.Primitives.ButtonBase.IsPressedProperty, true);
+                && HasTriggerCondition(multiTrigger, System.Windows.Controls.Primitives.ButtonBase.IsPressedProperty, value: true);
         }
     }
 }
