@@ -173,6 +173,14 @@
                                 <Trigger.EnterActions>
                                     <BeginStoryboard>
                                         <Storyboard>
+                                            <!--  Re-open the content row, overriding any held collapse animation: a filling animation outranks the trigger setter, so the row must be re-animated open or it stays closed on re-expand.  -->
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentRowDefinition" Storyboard.TargetProperty="Height">
+                                                <DiscreteObjectKeyFrame KeyTime="0:0:0">
+                                                    <DiscreteObjectKeyFrame.Value>
+                                                        <GridLength>Auto</GridLength>
+                                                    </DiscreteObjectKeyFrame.Value>
+                                                </DiscreteObjectKeyFrame>
+                                            </ObjectAnimationUsingKeyFrames>
                                             <!--  WinUI Gallery ControlExample ShowTransitions: Offset Y 24->0 over 0.4s, Opacity 0->1 over 0.2s, EaseOut.  -->
                                             <DoubleAnimation
                                                 Storyboard.TargetName="SourceContentTranslate"

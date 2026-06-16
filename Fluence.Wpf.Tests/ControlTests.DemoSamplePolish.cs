@@ -73,6 +73,69 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void DemoSampleControl_SourceExpander_ReopensAfterCollapse()
+        {
+            WpfTestSta.Invoke(static () =>
+            {
+                Application? application = EnsureApplication();
+                _ = MergeGenericDictionary(application);
+                MergeDemoSharedStyles(application);
+
+                DemoSampleControl sample = new()
+                {
+                    SampleDescription = "Sample",
+                    DemoContent = new TextBlock { Text = "Body" },
+                    XamlSource = "<Grid />",
+                    CSharpSource = "public void Demo() { }",
+                };
+                Window window = new()
+                {
+                    Content = sample,
+                    Width = 480,
+                    Height = 360,
+                };
+
+                try
+                {
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+
+                    Controls.Expander? expander = sample.FindName("SourceExpander") as Controls.Expander;
+                    Assert.IsNotNull(expander, "DemoSampleControl must expose SourceExpander.");
+
+                    expander.IsExpanded = true;
+                    Assert.IsTrue(
+                        WaitUntil(window.Dispatcher, milliseconds: 4000, () => SourceContentRowHeight(expander) > 1d),
+                        "First expand should open the source content row.");
+
+                    expander.IsExpanded = false;
+                    Assert.IsTrue(
+                        WaitUntil(window.Dispatcher, milliseconds: 4000, () => SourceContentRowHeight(expander) <= 0.5d),
+                        "Collapse should close the source content row.");
+
+                    // Regression guard: re-expanding after a collapse must reopen the row.
+                    // The collapse animation keeps filling and so holds the row closed, and a
+                    // filling animation outranks the trigger setter, so the expand path has to
+                    // re-animate the row back open or the dropdown never comes back.
+                    expander.IsExpanded = true;
+                    Assert.IsTrue(
+                        WaitUntil(window.Dispatcher, milliseconds: 4000, () => SourceContentRowHeight(expander) > 1d),
+                        "Re-expanding after a collapse must reopen the source content row.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        private static double SourceContentRowHeight(Controls.Expander expander)
+        {
+            FrameworkElement? clip = FindVisualChildByName<FrameworkElement>(expander, "SourceContentClip");
+            return clip?.ActualHeight ?? 0d;
+        }
+
+        [TestMethod]
         public void GalleryButtonsPage_SubtleButtonsUseWinUiTransparentRestBorderAndToggleButtonSampleIsRemoved()
         {
             RunDemoPageTest(static () => new GalleryButtonsPage(), static window =>
