@@ -30,6 +30,7 @@ using Fluence.Wpf.Demo.Pages;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -63,13 +64,13 @@ namespace Fluence.Wpf.Tests
             static () => new GalleryNavigationPage(),
             static () => new GalleryTabsPage(),
             static () => new GalleryLayoutPage(),
-            static () => new GalleryStatusPage()
+            static () => new GalleryStatusPage(),
         ];
 
         [TestMethod]
         public void DemoSamplePageWiring_MovesSlotContentAndAppliesTypedSources()
         {
-            DemoTestHost.RunOnSta(delegate
+            DemoTestHost.RunOnSta(static delegate
             {
                 _ = DemoTestHost.EnsureDemoTheme();
                 WpfTextBlock demoContent = new() { Text = "Demo" };
@@ -179,13 +180,13 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void DemoSampleControl_ReloadsExpandedSourceTabsWhenSourceChanges()
         {
-            DemoTestHost.RunOnSta(delegate
+            DemoTestHost.RunOnSta(static delegate
             {
                 _ = DemoTestHost.EnsureDemoTheme();
                 DemoSampleControl sample = new()
                 {
                     DemoContent = new WpfTextBlock { Text = "Body" },
-                    XamlSource = "<Grid />"
+                    XamlSource = "<Grid />",
                 };
                 Window window = DemoTestHost.CreateHostWindow(sample);
                 try
@@ -213,7 +214,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void GallerySamplePages_AllVisibleDemoSamplesExposeSource()
         {
-            DemoTestHost.RunOnSta(delegate
+            DemoTestHost.RunOnSta(static delegate
             {
                 foreach (Func<UIElement> factory in SamplePageFactories)
                 {
@@ -241,7 +242,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void GallerySamplePages_SourceContractsMatchDisplayedClasses()
         {
-            DemoTestHost.RunOnSta(delegate
+            DemoTestHost.RunOnSta(static delegate
             {
                 foreach (DemoSampleControl sample in CreateVisibleSamples())
                 {
@@ -267,7 +268,7 @@ namespace Fluence.Wpf.Tests
                         string.IsNullOrWhiteSpace(csharpSource),
                         "Displayed UserControl XAML should include matching C# source: " + sample.SampleDescription);
                     Assert.IsTrue(
-                        csharpSource.Contains("InitializeComponent();"),
+                        csharpSource.Contains("InitializeComponent();", StringComparison.Ordinal),
                         "Displayed C# source should use the UserControl InitializeComponent pattern: " + sample.SampleDescription);
                     Assert.AreEqual(
                         xamlClass,
@@ -280,7 +281,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void GallerySamplePages_CSharpSourcesUseReleaseReadySnippetStyle()
         {
-            DemoTestHost.RunOnSta(delegate
+            DemoTestHost.RunOnSta(static delegate
             {
                 foreach (DemoSampleControl sample in CreateVisibleSamples())
                 {
@@ -302,7 +303,7 @@ namespace Fluence.Wpf.Tests
             {
                 Name = name,
                 Content = content,
-                Visibility = Visibility.Collapsed
+                Visibility = Visibility.Collapsed,
             };
         }
 
@@ -342,7 +343,7 @@ namespace Fluence.Wpf.Tests
         private static bool IsIntentionalPartialSnippet(string xamlSource)
         {
             return xamlSource.StartsWith("<!--", StringComparison.Ordinal) &&
-                xamlSource.Contains(IntentionalPartialSnippetMarker);
+                xamlSource.Contains(IntentionalPartialSnippetMarker, StringComparison.Ordinal);
         }
 
         private static XDocument ParseXamlSource(string xamlSource, string sampleDescription)
@@ -369,9 +370,9 @@ namespace Fluence.Wpf.Tests
                     continue;
                 }
 
-                string classRemainder = trimmed.Substring(classPrefix.Length);
+                string classRemainder = trimmed[classPrefix.Length..];
                 int classNameEnd = classRemainder.IndexOfAny([' ', ':']);
-                string className = classNameEnd < 0 ? classRemainder : classRemainder.Substring(0, classNameEnd);
+                string className = classNameEnd < 0 ? classRemainder : classRemainder[..classNameEnd];
                 return namespaceName + "." + className;
             }
 
@@ -386,7 +387,7 @@ namespace Fluence.Wpf.Tests
                 const string namespacePrefix = "namespace ";
                 if (trimmed.StartsWith(namespacePrefix, StringComparison.Ordinal))
                 {
-                    return trimmed.Substring(namespacePrefix.Length).Trim();
+                    return trimmed[namespacePrefix.Length..].Trim();
                 }
             }
 
@@ -401,7 +402,7 @@ namespace Fluence.Wpf.Tests
                 lineNumber++;
                 if (ContainsWord(line, "var"))
                 {
-                    Assert.Fail("Displayed C# source should use explicit types: " + sampleDescription + " line " + lineNumber);
+                    Assert.Fail("Displayed C# source should use explicit types: " + sampleDescription + " line " + lineNumber.ToString(CultureInfo.InvariantCulture));
                 }
             }
         }
@@ -416,12 +417,12 @@ namespace Fluence.Wpf.Tests
                 bool isNonNullableAutoProperty =
                     (trimmed.StartsWith("public string ", StringComparison.Ordinal) ||
                      trimmed.StartsWith("public Brush ", StringComparison.Ordinal)) &&
-                    trimmed.Contains("{ get; set; }") &&
-                    !trimmed.Contains("=");
+                    trimmed.Contains("{ get; set; }", StringComparison.Ordinal) &&
+                    !trimmed.Contains("=", StringComparison.Ordinal);
 
                 if (isNonNullableAutoProperty)
                 {
-                    Assert.Fail("Displayed C# source should initialize non-nullable auto properties: " + sampleDescription + " line " + lineNumber);
+                    Assert.Fail("Displayed C# source should initialize non-nullable auto properties: " + sampleDescription + " line " + lineNumber.ToString(format: null, CultureInfo.InvariantCulture));
                 }
             }
         }

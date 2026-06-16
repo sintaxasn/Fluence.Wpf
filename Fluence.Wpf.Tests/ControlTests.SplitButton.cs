@@ -50,7 +50,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void SplitButton_AppearanceProperty_DefaultIsStandard()
         {
-            WpfTestSta.Invoke(() =>
+            WpfTestSta.Invoke(static () =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -66,7 +66,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void SplitButton_AppearanceProperty_CanBeSetToAccent()
         {
-            WpfTestSta.Invoke(() =>
+            WpfTestSta.Invoke(static () =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -87,7 +87,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void SplitButton_DividerRectangle_PresentInTemplate()
         {
-            WpfTestSta.Invoke(() =>
+            WpfTestSta.Invoke(static () =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -112,7 +112,7 @@ namespace Fluence.Wpf.Tests
             // rendered on click. Each half now carries the DefaultControlFocusVisualStyle
             // adorner instead, which WPF shows only for keyboard navigation (Tab),
             // matching DropDownButton.
-            WpfTestSta.Invoke(() =>
+            WpfTestSta.Invoke(static () =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -120,7 +120,7 @@ namespace Fluence.Wpf.Tests
                 SplitButton button = new()
                 {
                     Content = "Send",
-                    Width = 160
+                    Width = 160,
                 };
                 Window window = new() { Content = button, Width = 260, Height = 120 };
 
@@ -158,7 +158,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void SplitButton_Accent_DividerFillDiffersFromStandard()
         {
-            WpfTestSta.Invoke(() =>
+            WpfTestSta.Invoke(static () =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);

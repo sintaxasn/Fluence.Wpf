@@ -52,7 +52,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ColorPicker_DefaultStyle_AppliesTemplateParts()
         {
-            RunOnStaThread(() =>
+            RunOnStaThread(static () =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -111,7 +111,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ColorPicker_SpectrumBitmap_IsGenerated256x256AfterTemplateApply()
         {
-            RunOnStaThread(() =>
+            RunOnStaThread(static () =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -198,7 +198,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ColorPicker_HexEntry_CommitsOnEnterAndInvalidInputReverts()
         {
-            RunOnStaThread(() =>
+            RunOnStaThread(static () =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -315,7 +315,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ColorPicker_AlphaSlider_CollapsedByDefaultAndFunctionalWhenEnabled()
         {
-            RunOnStaThread(() =>
+            RunOnStaThread(static () =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -378,7 +378,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ColorPicker_SpectrumPoint_UpdatesSaturationAndValuePreservingHue()
         {
-            RunOnStaThread(() =>
+            RunOnStaThread(static () =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -440,7 +440,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ColorPicker_PreviousColor_TogglesPreviousSwatch()
         {
-            RunOnStaThread(() =>
+            RunOnStaThread(static () =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -496,7 +496,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ColorPicker_AutomationPeer_ReportsClassTypeAndHexName()
         {
-            RunOnStaThread(() =>
+            RunOnStaThread(static () =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
@@ -540,7 +540,7 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void ColorPicker_SurfaceBrushes_ResolveAfterThemeCycle()
         {
-            RunOnStaThread(() =>
+            RunOnStaThread(static () =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
