@@ -107,7 +107,7 @@
 
         <Style x:Key="DemoSampleSourceExpanderStyle" TargetType="{x:Type fluence:Expander}">
             <Setter Property="UseLayoutRounding" Value="True" />
-            <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorQuarternaryBrush}" />
+            <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorSecondaryBrush}" />
             <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
             <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
             <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
@@ -153,45 +153,81 @@
                                         x:Name="SourceContentBorder"
                                         Background="{DynamicResource SystemFillColorSolidAttentionBackgroundBrush}"
                                         CornerRadius="0,0,8,8">
-                                        <Border.RenderTransform>
-                                            <TranslateTransform x:Name="SourceContentTranslate" />
-                                        </Border.RenderTransform>
                                         <ContentPresenter
                                             x:Name="ExpandSite"
                                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                            Focusable="False" />
+                                            Focusable="False"
+                                            Opacity="0">
+                                            <ContentPresenter.RenderTransform>
+                                                <TranslateTransform x:Name="SourceContentTranslate" Y="24" />
+                                            </ContentPresenter.RenderTransform>
+                                        </ContentPresenter>
                                     </Border>
                                 </Border>
                             </Grid>
                         </Border>
                         <ControlTemplate.Triggers>
-                            <!--  WinUI Expander ExpandDown/CollapseUp: the row opens immediately on expand; on collapse it holds open for the 250 ms slide-up (code-behind) before releasing the space.  -->
                             <Trigger Property="IsExpanded" Value="True">
                                 <Setter TargetName="ContentRowDefinition" Property="Height" Value="Auto" />
                                 <Trigger.EnterActions>
                                     <BeginStoryboard>
                                         <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentRowDefinition" Storyboard.TargetProperty="Height">
-                                                <DiscreteObjectKeyFrame KeyTime="0:0:0">
-                                                    <DiscreteObjectKeyFrame.Value>
-                                                        <GridLength>Auto</GridLength>
-                                                    </DiscreteObjectKeyFrame.Value>
-                                                </DiscreteObjectKeyFrame>
-                                            </ObjectAnimationUsingKeyFrames>
+                                            <!--  WinUI Gallery ControlExample ShowTransitions: Offset Y 24->0 over 0.4s, Opacity 0->1 over 0.2s, EaseOut.  -->
+                                            <DoubleAnimation
+                                                Storyboard.TargetName="SourceContentTranslate"
+                                                Storyboard.TargetProperty="Y"
+                                                From="24"
+                                                To="0"
+                                                Duration="0:0:0.4">
+                                                <DoubleAnimation.EasingFunction>
+                                                    <CubicEase EasingMode="EaseOut" />
+                                                </DoubleAnimation.EasingFunction>
+                                            </DoubleAnimation>
+                                            <DoubleAnimation
+                                                Storyboard.TargetName="ExpandSite"
+                                                Storyboard.TargetProperty="Opacity"
+                                                From="0"
+                                                To="1"
+                                                Duration="0:0:0.2">
+                                                <DoubleAnimation.EasingFunction>
+                                                    <CubicEase EasingMode="EaseOut" />
+                                                </DoubleAnimation.EasingFunction>
+                                            </DoubleAnimation>
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </Trigger.EnterActions>
                                 <Trigger.ExitActions>
                                     <BeginStoryboard>
                                         <Storyboard>
+                                            <!--  WinUI Gallery ControlExample HideTransitions: Offset Y 0->24 over 0.2s, Opacity 1->0 over 0.1s, EaseOut; hold the row open for the slide then release.  -->
+                                            <DoubleAnimation
+                                                Storyboard.TargetName="SourceContentTranslate"
+                                                Storyboard.TargetProperty="Y"
+                                                From="0"
+                                                To="24"
+                                                Duration="0:0:0.2">
+                                                <DoubleAnimation.EasingFunction>
+                                                    <CubicEase EasingMode="EaseOut" />
+                                                </DoubleAnimation.EasingFunction>
+                                            </DoubleAnimation>
+                                            <DoubleAnimation
+                                                Storyboard.TargetName="ExpandSite"
+                                                Storyboard.TargetProperty="Opacity"
+                                                From="1"
+                                                To="0"
+                                                Duration="0:0:0.1">
+                                                <DoubleAnimation.EasingFunction>
+                                                    <CubicEase EasingMode="EaseOut" />
+                                                </DoubleAnimation.EasingFunction>
+                                            </DoubleAnimation>
                                             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentRowDefinition" Storyboard.TargetProperty="Height">
                                                 <DiscreteObjectKeyFrame KeyTime="0:0:0">
                                                     <DiscreteObjectKeyFrame.Value>
                                                         <GridLength>Auto</GridLength>
                                                     </DiscreteObjectKeyFrame.Value>
                                                 </DiscreteObjectKeyFrame>
-                                                <DiscreteObjectKeyFrame KeyTime="0:0:0.25">
+                                                <DiscreteObjectKeyFrame KeyTime="0:0:0.2">
                                                     <DiscreteObjectKeyFrame.Value>
                                                         <GridLength>0</GridLength>
                                                     </DiscreteObjectKeyFrame.Value>
@@ -290,7 +326,6 @@
             x:Name="SourceExpander"
             Grid.Row="2"
             BorderThickness="1"
-            Collapsed="SourceExpander_Collapsed"
             CornerRadius="0,0,8,8"
             Expanded="SourceExpander_Expanded"
             Header="Source code"

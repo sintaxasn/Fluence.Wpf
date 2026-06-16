@@ -32,8 +32,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Threading;
 
 namespace Fluence.Wpf.Demo.Pages
 {
@@ -382,91 +380,6 @@ namespace Fluence.Wpf.Demo.Pages
         private void SourceExpander_Expanded(object sender, RoutedEventArgs e)
         {
             LoadSourceTabs();
-
-            // The template trigger opens the content row in the same dispatcher operation
-            // that raised Expanded; defer the slide so it measures the opened row before
-            // the next render pass paints it.
-            _ = Dispatcher.BeginInvoke(DispatcherPriority.DataBind, new Action(PlaySourceExpandMotion));
-        }
-
-        private void SourceExpander_Collapsed(object sender, RoutedEventArgs e)
-        {
-            _ = Dispatcher.BeginInvoke(DispatcherPriority.DataBind, new Action(PlaySourceCollapseMotion));
-        }
-
-        /// <summary>
-        /// Mirrors the WinUI Expander ExpandDown storyboard: the row snaps open while the
-        /// source panel slides down into view from beneath the header, decelerating over
-        /// 333 ms (KeySpline 0,0,0,1 per WinUI Expander.xaml). The slide is driven by an
-        /// explicit from/to keyframe pair so the animation holds its final on-screen
-        /// position (HoldEnd) and the content can never strand off-screen.
-        /// </summary>
-        private void PlaySourceExpandMotion()
-        {
-            if (!SourceExpander.IsExpanded ||
-                FindSourceMotionPart<Border>("SourceContentBorder") is not Border content ||
-                FindSourceMotionPart<TranslateTransform>("SourceContentTranslate") is not TranslateTransform translate)
-            {
-                return;
-            }
-
-            content.UpdateLayout();
-            double height = content.ActualHeight;
-            if (height <= 0d)
-            {
-                return;
-            }
-
-            BeginSourceSlide(translate, -height, 0d, TimeSpan.FromMilliseconds(333), new KeySpline(0.0, 0.0, 0.0, 1.0));
-        }
-
-        /// <summary>
-        /// Slides the source panel up behind the header while the template trigger holds
-        /// the row open until the slide finishes and then releases the space. Deliberate
-        /// deviation from the WinUI Expander CollapseUp storyboard (167 ms, KeySpline
-        /// 1,1,0,1): that spline finishes nearly all of its travel in the first ~100 ms,
-        /// which reads as an instant snap in WPF, so the demo uses the Fluent accelerate
-        /// curve (slow into fast, KeySpline 0.7,0,1,0.5) over 250 ms to match the WinUI
-        /// Gallery's perceived collapse motion.
-        /// </summary>
-        private void PlaySourceCollapseMotion()
-        {
-            if (SourceExpander.IsExpanded ||
-                FindSourceMotionPart<Border>("SourceContentBorder") is not Border content ||
-                FindSourceMotionPart<TranslateTransform>("SourceContentTranslate") is not TranslateTransform translate)
-            {
-                return;
-            }
-
-            double height = content.ActualHeight;
-            if (height <= 0d)
-            {
-                return;
-            }
-
-            BeginSourceSlide(translate, 0d, -height, TimeSpan.FromMilliseconds(250), new KeySpline(0.7, 0.0, 1.0, 0.5));
-        }
-
-        // Drives translate.Y from fromValue to toValue with a leading zero-time keyframe so
-        // WPF animates the full path deterministically. HoldEnd keeps the final value, and
-        // the Completed handler clears the animation and pins the resting Y to 0 (content
-        // in place when expanded; harmlessly behind the collapsed, zero-height row).
-        private static void BeginSourceSlide(TranslateTransform translate, double fromValue, double toValue, TimeSpan duration, KeySpline easing)
-        {
-            DoubleAnimationUsingKeyFrames slide = new();
-            _ = slide.KeyFrames.Add(new DiscreteDoubleKeyFrame(fromValue, KeyTime.FromTimeSpan(TimeSpan.Zero)));
-            _ = slide.KeyFrames.Add(new SplineDoubleKeyFrame(toValue, KeyTime.FromTimeSpan(duration), easing));
-            slide.Completed += (_, _) =>
-            {
-                translate.BeginAnimation(TranslateTransform.YProperty, animation: null);
-                translate.Y = 0d;
-            };
-            translate.BeginAnimation(TranslateTransform.YProperty, slide);
-        }
-
-        private T? FindSourceMotionPart<T>(string partName) where T : class
-        {
-            return SourceExpander.Template?.FindName(partName, SourceExpander) as T;
         }
 
         private void LoadSourceTabs()
