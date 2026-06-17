@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,73 +28,26 @@
 
 using Fluence.Wpf.Controls;
 using System.Windows.Automation.Peers;
-using System.Windows.Automation.Provider;
 
 namespace Fluence.Wpf.Automation
 {
     /// <summary>
-    /// Exposes <see cref="NumberBox"/> to UI Automation as a spinner with range value.
+    /// Exposes <see cref="HyperlinkButton"/> to UI Automation with the Hyperlink control type.
     /// </summary>
     /// <remarks>Initializes a new instance.</remarks>
-    /// <param name="owner">The <see cref="NumberBox"/> control represented by this automation peer.</param>
-    public class NumberBoxAutomationPeer(NumberBox owner) : FrameworkElementAutomationPeer(owner), IRangeValueProvider
+    /// <param name="owner">The <see cref="HyperlinkButton"/> control represented by this automation peer.</param>
+    public class HyperlinkButtonAutomationPeer(HyperlinkButton owner) : ButtonAutomationPeer(owner)
     {
         /// <inheritdoc />
         protected override string GetClassNameCore()
         {
-            return "NumberBox";
-        }
-
-        /// <inheritdoc />
-        protected override string GetNameCore()
-        {
-            string baseName = base.GetNameCore();
-            return !string.IsNullOrWhiteSpace(baseName)
-                ? baseName
-                : NumberBox.Header?.ToString() ?? string.Empty;
+            return nameof(HyperlinkButton);
         }
 
         /// <inheritdoc />
         protected override AutomationControlType GetAutomationControlTypeCore()
         {
-            return AutomationControlType.Spinner;
+            return AutomationControlType.Hyperlink;
         }
-
-        /// <inheritdoc />
-        public override object GetPattern(PatternInterface patternInterface)
-        {
-            return patternInterface != PatternInterface.RangeValue
-                ? base.GetPattern(patternInterface)
-                : this;
-        }
-
-        /// <inheritdoc />
-        public virtual double Value => NumberBox.Value;
-
-        /// <inheritdoc />
-        public virtual double Minimum => NumberBox.Minimum;
-
-        /// <inheritdoc />
-        public virtual double Maximum => NumberBox.Maximum;
-
-        /// <inheritdoc />
-        public virtual double SmallChange => NumberBox.SmallChange;
-
-        /// <inheritdoc />
-        public virtual double LargeChange => NumberBox.LargeChange;
-
-        /// <inheritdoc />
-        public virtual bool IsReadOnly => !NumberBox.IsEnabled;
-
-        /// <inheritdoc />
-        public virtual void SetValue(double value)
-        {
-            NumberBox.Value = value;
-        }
-
-        /// <summary>
-        /// Gets the associated NumberBox control that owns this instance.
-        /// </summary>
-        private NumberBox NumberBox => (NumberBox)Owner;
     }
 }

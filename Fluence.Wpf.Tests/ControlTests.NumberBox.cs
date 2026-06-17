@@ -474,5 +474,54 @@ namespace Fluence.Wpf.Tests
                 }
             });
         }
+
+        [TestMethod]
+        public void NumberBox_Peer_LargeChange_MatchesControl()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+
+                try
+                {
+                    Fluent.NumberBox numberBox = new()
+                    {
+                        SmallChange = 1,
+                        LargeChange = 10,
+                        Width = 160,
+                    };
+                    window.Content = numberBox;
+                    window.Width = 240;
+                    window.Height = 120;
+                    window.Show();
+                    _ = numberBox.ApplyTemplate();
+                    DrainDispatcher(window.Dispatcher);
+
+                    AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(numberBox);
+                    IRangeValueProvider range = (IRangeValueProvider)peer.GetPattern(PatternInterface.RangeValue);
+
+                    Assert.AreEqual(
+                        10.0,
+                        range.LargeChange,
+                        0.001,
+                        "IRangeValueProvider.LargeChange must reflect NumberBox.LargeChange, not SmallChange.");
+                    Assert.AreEqual(
+                        1.0,
+                        range.SmallChange,
+                        0.001,
+                        "IRangeValueProvider.SmallChange must reflect NumberBox.SmallChange.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary is not null)
+                    {
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
     }
 }
