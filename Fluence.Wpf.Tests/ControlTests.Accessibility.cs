@@ -248,69 +248,126 @@ namespace Fluence.Wpf.Tests
                 Application? application = EnsureApplication();
                 ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
 
-                // --- InfoBar PART_CloseButton ---
-                Controls.InfoBar infoBar = new() { Message = "Test", Width = 400 };
-                Window infoBarWindow = new() { Content = infoBar, Width = 500, Height = 80 };
-
                 try
                 {
-                    infoBarWindow.Show();
-                    _ = infoBar.ApplyTemplate();
-                    DrainDispatcher(infoBarWindow.Dispatcher);
+                    // --- InfoBar PART_CloseButton ---
+                    Controls.InfoBar infoBar = new() { Message = "Test", Width = 400 };
+                    Window infoBarWindow = new() { Content = infoBar, Width = 500, Height = 80 };
 
-                    ControlTemplate? infoBarTemplate = infoBar.Template;
-                    Assert.IsNotNull(infoBarTemplate, "InfoBar must receive its themed template.");
-                    FrameworkElement? closeButton = infoBarTemplate.FindName("PART_CloseButton", infoBar) as FrameworkElement;
-                    Assert.IsNotNull(closeButton, "PART_CloseButton should exist in the InfoBar template.");
-                    string closeActualName = AutomationProperties.GetName(closeButton);
-                    Assert.IsTrue(
-                        string.Equals("Close", closeActualName, System.StringComparison.Ordinal),
-                        $"InfoBar PART_CloseButton must expose accessible name 'Close' for Narrator. Actual: '{closeActualName}'.");
-                }
-                finally
-                {
-                    infoBarWindow.Close();
-                }
-
-                // --- PipsPager PART_PreviousButton and PART_NextButton ---
-                Controls.PipsPager pipsPager = new()
-                {
-                    NumberOfPages = 5,
-                    PreviousButtonVisibility = Fluence.Wpf.PipsPagerButtonVisibility.Visible,
-                    NextButtonVisibility = Fluence.Wpf.PipsPagerButtonVisibility.Visible,
-                    Width = 200,
-                };
-                Window pipsWindow = new() { Content = pipsPager, Width = 300, Height = 80 };
-
-                try
-                {
-                    pipsWindow.Show();
-                    _ = pipsPager.ApplyTemplate();
-                    DrainDispatcher(pipsWindow.Dispatcher);
-
-                    ControlTemplate? pipsTemplate = pipsPager.Template;
-                    Assert.IsNotNull(pipsTemplate, "PipsPager must receive its themed template.");
-
-                    foreach ((string part, string expectedName) in new[]
+                    try
                     {
-                        ("PART_PreviousButton", "Previous page"),
-                        ("PART_NextButton", "Next page"),
-                    })
-                    {
-                        FrameworkElement? btn = pipsTemplate.FindName(part, pipsPager) as FrameworkElement;
-                        Assert.IsNotNull(btn, $"{part} should exist in the PipsPager template.");
-                        string actualName = AutomationProperties.GetName(btn);
+                        infoBarWindow.Show();
+                        _ = infoBar.ApplyTemplate();
+                        DrainDispatcher(infoBarWindow.Dispatcher);
+
+                        ControlTemplate? infoBarTemplate = infoBar.Template;
+                        Assert.IsNotNull(infoBarTemplate, "InfoBar must receive its themed template.");
+                        FrameworkElement? closeButton = infoBarTemplate.FindName("PART_CloseButton", infoBar) as FrameworkElement;
+                        Assert.IsNotNull(closeButton, "PART_CloseButton should exist in the InfoBar template.");
+                        string closeActualName = AutomationProperties.GetName(closeButton);
                         Assert.IsTrue(
-                            string.Equals(expectedName, actualName, System.StringComparison.Ordinal),
-                            $"{part} must expose accessible name '{expectedName}' for Narrator. Actual: '{actualName}'.");
+                            string.Equals("Close", closeActualName, System.StringComparison.Ordinal),
+                            $"InfoBar PART_CloseButton must expose accessible name 'Close' for Narrator. Actual: '{closeActualName}'.");
+                    }
+                    finally
+                    {
+                        infoBarWindow.Close();
+                    }
+
+                    // --- PipsPager PART_PreviousButton and PART_NextButton ---
+                    Controls.PipsPager pipsPager = new()
+                    {
+                        NumberOfPages = 5,
+                        PreviousButtonVisibility = Fluence.Wpf.PipsPagerButtonVisibility.Visible,
+                        NextButtonVisibility = Fluence.Wpf.PipsPagerButtonVisibility.Visible,
+                        Width = 200,
+                    };
+                    Window pipsWindow = new() { Content = pipsPager, Width = 300, Height = 80 };
+
+                    try
+                    {
+                        pipsWindow.Show();
+                        _ = pipsPager.ApplyTemplate();
+                        DrainDispatcher(pipsWindow.Dispatcher);
+
+                        ControlTemplate? pipsTemplate = pipsPager.Template;
+                        Assert.IsNotNull(pipsTemplate, "PipsPager must receive its themed template.");
+
+                        foreach ((string part, string expectedName) in new[]
+                        {
+                            ("PART_PreviousButton", "Previous page"),
+                            ("PART_NextButton", "Next page"),
+                        })
+                        {
+                            FrameworkElement? btn = pipsTemplate.FindName(part, pipsPager) as FrameworkElement;
+                            Assert.IsNotNull(btn, $"{part} should exist in the PipsPager template.");
+                            string actualName = AutomationProperties.GetName(btn);
+                            Assert.IsTrue(
+                                string.Equals(expectedName, actualName, System.StringComparison.Ordinal),
+                                $"{part} must expose accessible name '{expectedName}' for Narrator. Actual: '{actualName}'.");
+                        }
+                    }
+                    finally
+                    {
+                        pipsWindow.Close();
                     }
                 }
                 finally
                 {
-                    pipsWindow.Close();
                     _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
                 }
             });
         }
+
+        [TestMethod]
+        public void TabViewItem_CloseButton_HasAutomationName()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+
+                // TabViewItem is a ContentControl subclass; it can be templated standalone
+                // without a parent TabView. IsClosable defaults to true so PART_CloseButton
+                // is rendered (not collapsed by the IsClosable=False trigger).
+                Controls.TabViewItem item = new()
+                {
+                    Header = "Tab 1",
+                    IsClosable = true,
+                    Width = 160,
+                    Height = 40,
+                };
+                Window window = new() { Content = item, Width = 240, Height = 80 };
+
+                try
+                {
+                    window.Show();
+                    _ = item.ApplyTemplate();
+                    DrainDispatcher(window.Dispatcher);
+
+                    ControlTemplate? template = item.Template;
+                    Assert.IsNotNull(template, "TabViewItem must receive its themed template.");
+                    FrameworkElement? closeButton = template.FindName("PART_CloseButton", item) as FrameworkElement;
+                    Assert.IsNotNull(closeButton, "PART_CloseButton should exist in the TabViewItem template.");
+                    string actualName = AutomationProperties.GetName(closeButton);
+                    Assert.IsTrue(
+                        string.Equals("Close tab", actualName, System.StringComparison.Ordinal),
+                        $"PART_CloseButton must expose accessible name 'Close tab' for Narrator. Actual: '{actualName}'.");
+                }
+                finally
+                {
+                    window.Close();
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                }
+            });
+        }
+
+        // TeachingTip PART_AlternateCloseButton is deferred: the button is only visible when
+        // the tip is open inside its host Popup (IsOpen=true moves the tip into a detached Popup
+        // subtree). Opening the Popup during a headless test requires a visible active window for
+        // fallback placement resolution, and FindName / FindVisualChildByName do not cross into
+        // a detached Popup root. Reliable coverage needs a popup-aware traversal helper that is
+        // outside the current test harness scope; the XAML-level name is verified in the Task 5
+        // report (TeachingTip.xaml line 209, AutomationProperties.Name="Close").
     }
 }
