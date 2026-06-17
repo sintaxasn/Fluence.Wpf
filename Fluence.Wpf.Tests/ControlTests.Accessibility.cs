@@ -35,6 +35,49 @@ namespace Fluence.Wpf.Tests
     public partial class ControlTests
     {
         [TestMethod]
+        public void GlyphButtons_InPickersAndSpinners_HaveAutomationNames()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+
+                Controls.NumberBox numberBox = new()
+                {
+                    SpinButtonPlacementMode = Fluence.Wpf.SpinButtonPlacementMode.Inline,
+                    Width = 160,
+                };
+                Window window = new() { Content = numberBox, Width = 240, Height = 80 };
+
+                try
+                {
+                    window.Show();
+                    _ = numberBox.ApplyTemplate();
+                    DrainDispatcher(window.Dispatcher);
+
+                    foreach ((string part, string expectedName) in new[]
+                    {
+                        ("PART_UpButton", "Increase"),
+                        ("PART_DownButton", "Decrease"),
+                    })
+                    {
+                        FrameworkElement? btn = FindVisualChildByName<FrameworkElement>(numberBox, part);
+                        Assert.IsNotNull(btn, $"{part} should exist in the NumberBox template.");
+                        string actualName = AutomationProperties.GetName(btn);
+                        Assert.IsTrue(
+                            string.Equals(expectedName, actualName, System.StringComparison.Ordinal),
+                            $"{part} must expose accessible name for Narrator. Expected: '{expectedName}', actual: '{actualName}'.");
+                    }
+                }
+                finally
+                {
+                    window.Close();
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                }
+            });
+        }
+
+        [TestMethod]
         public void FluenceWindow_CaptionButtons_HaveAutomationNames()
         {
             RunOnStaThread(static () =>
