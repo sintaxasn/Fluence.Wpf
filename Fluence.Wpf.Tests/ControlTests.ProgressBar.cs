@@ -29,6 +29,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Media;
 using FluenceProgressBar = Fluence.Wpf.Controls.ProgressBar;
 using WpfBorder = System.Windows.Controls.Border;
@@ -407,6 +408,26 @@ namespace Fluence.Wpf.Tests
                 Assert.AreEqual(expected.Color, actual.Color, "ProgressBar fill should use the requested state primitive brush.");
 
                 w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void ProgressBar_DeclaresPoliteLiveSetting()
+        {
+            WpfTestSta.Invoke(static () =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                FluenceProgressBar progressBar = new() { Value = 50, Width = 240, Height = 24 };
+                Window window = new() { Content = progressBar };
+                window.Show();
+                _ = progressBar.ApplyTemplate();
+                DrainDispatcher(window.Dispatcher);
+
+                Assert.AreEqual(AutomationLiveSetting.Polite, AutomationProperties.GetLiveSetting(progressBar),
+                    "ProgressBar must declare a polite live region so Narrator announces error/paused state changes.");
+                window.Close();
             });
         }
 
