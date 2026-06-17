@@ -338,5 +338,42 @@ namespace Fluence.Wpf.Tests
                 w.Close();
             });
         }
+
+        [TestMethod]
+        public void TextBox_ValidationSuccess_ClearsHelpText()
+        {
+            WpfTestSta.Invoke(static () =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                FluenceTextBox tb = new()
+                {
+                    Width = 240,
+                    ValidationMessage = "Value is required",
+                    ValidationState = ValidationState.Error,
+                };
+                Window w = new() { Content = tb, Width = 320, Height = 120 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                // Error state must have set HelpText first (precondition).
+                Assert.AreEqual(
+                    "Value is required",
+                    AutomationProperties.GetHelpText(tb),
+                    "Precondition: Error state must set HelpText.");
+
+                // Transition to Success -- HelpText must be cleared.
+                tb.ValidationState = ValidationState.Success;
+                DrainDispatcher(w.Dispatcher);
+
+                Assert.AreEqual(
+                    string.Empty,
+                    AutomationProperties.GetHelpText(tb),
+                    "AutomationProperties.HelpText must be cleared when ValidationState transitions to Success.");
+
+                w.Close();
+            });
+        }
     }
 }

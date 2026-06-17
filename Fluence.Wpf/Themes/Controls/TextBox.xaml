@@ -200,6 +200,7 @@
                             <TextBlock
                                 x:Name="PART_HelperText"
                                 VerticalAlignment="Center"
+                                AutomationProperties.LiveSetting="Assertive"
                                 FontFamily="{TemplateBinding FontFamily}"
                                 FontSize="12"
                                 Foreground="{DynamicResource TextFillColorSecondaryBrush}"

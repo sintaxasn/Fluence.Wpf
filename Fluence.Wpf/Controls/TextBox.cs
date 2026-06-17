@@ -329,7 +329,6 @@ namespace Fluence.Wpf.Controls
             if (ValidationState != ValidationState.None)
             {
                 string message = !string.IsNullOrWhiteSpace(ValidationMessage) ? ValidationMessage : HelperText;
-                AutomationProperties.SetHelpText(this, message);
                 helper.Text = message;
                 helper.Visibility = string.IsNullOrWhiteSpace(message) ? Visibility.Collapsed : Visibility.Visible;
                 if (icon is not null)
@@ -359,13 +358,16 @@ namespace Fluence.Wpf.Controls
                 switch (ValidationState)
                 {
                     case ValidationState.Success:
+                        AutomationProperties.SetHelpText(this, string.Empty);
                         helper.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "SystemFillColorSuccessBrush");
                         break;
                     case ValidationState.Warning:
+                        AutomationProperties.SetHelpText(this, message);
                         helper.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "SystemFillColorCautionBrush");
                         AnnounceLiveRegion();
                         break;
                     case ValidationState.Error:
+                        AutomationProperties.SetHelpText(this, message);
                         helper.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "SystemFillColorCriticalBrush");
                         AnnounceLiveRegion();
                         break;
