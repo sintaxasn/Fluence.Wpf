@@ -175,14 +175,20 @@
                             </Grid.RowDefinitions>
 
                             <Grid Grid.Row="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
                                 <ScrollViewer
                                     x:Name="PART_ContentHost"
+                                    Grid.Column="0"
                                     Padding="{TemplateBinding Padding}"
                                     Focusable="False"
                                     HorizontalScrollBarVisibility="Hidden"
                                     VerticalScrollBarVisibility="Hidden" />
                                 <TextBlock
                                     x:Name="PlaceholderTextBlock"
+                                    Grid.Column="0"
                                     Margin="13,0,0,0"
                                     VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                     FontFamily="{TemplateBinding FontFamily}"
@@ -191,6 +197,14 @@
                                     IsHitTestVisible="False"
                                     Text="{TemplateBinding PlaceholderText}"
                                     Visibility="Collapsed" />
+                                <ui:FontIcon
+                                    x:Name="SearchIcon"
+                                    Grid.Column="1"
+                                    Margin="6,0,12,0"
+                                    VerticalAlignment="Center"
+                                    Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                    Glyph="&#xE721;"
+                                    IconFontSize="16" />
                             </Grid>
 
                             <!--  Rest underline: grey stroke  -->
@@ -200,13 +214,13 @@
                                 HorizontalAlignment="Stretch"
                                 Background="{DynamicResource ControlStrokeColorDefaultBrush}" />
 
-                            <!--  Focus underline: accent colour, overlays rest line when focused  -->
+                            <!--  Underline overlay: kept visible in every state but with no colour, so focus no longer paints an accent line over the neutral rest stroke.  -->
                             <Border
                                 x:Name="FocusLine"
                                 Grid.Row="1"
                                 HorizontalAlignment="Stretch"
-                                Background="{DynamicResource AccentFillColorDefaultBrush}"
-                                Opacity="0" />
+                                Background="Transparent"
+                                Opacity="1" />
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
@@ -224,7 +238,8 @@
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="True">
                             <Setter TargetName="MainBorder" Property="Background" Value="{DynamicResource ControlFillColorInputActiveBrush}" />
-                            <Setter TargetName="FocusLine" Property="Opacity" Value="1" />
+                            <Setter TargetName="FocusLine" Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}" />
+
                         </Trigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>

@@ -461,25 +461,25 @@ namespace Fluence.Wpf.Tests
                     Controls.TextBox? search = FindByName<Controls.TextBox>(window, "NavSearchBox");
                     Assert.IsNotNull(shellTitleBar, "Extended title bar should use the shared TitleBar control.");
                     Assert.IsNotNull(search, "Demo search box must be present.");
-                    Assert.AreEqual(230.0, search.Width, 0.01,
-                        "Demo title-bar search should use the requested 230px resting width.");
-                    Assert.AreEqual(230.0, search.MinWidth, 0.01,
-                        "Demo title-bar search should not shrink below the requested 230px resting width.");
+                    Assert.AreEqual(300.0, search.Width, 0.01,
+                        "Demo title-bar search should use the requested 300px resting width.");
+                    Assert.AreEqual(300.0, search.MinWidth, 0.01,
+                        "Demo title-bar search should not shrink below the requested 300px resting width.");
                     Assert.AreEqual(475.0, search.MaxWidth, 0.01,
                         "Demo title-bar search should keep the requested 475px expanded cap.");
-                    Assert.AreEqual(230.0, search.ActualWidth, 0.5,
-                        "Demo title-bar search should rest at 230px when not focused.");
+                    Assert.AreEqual(300.0, search.ActualWidth, 0.5,
+                        "Demo title-bar search should rest at 300px when not focused.");
                     Assert.AreEqual(window.ActualWidth / 2.0, GetVisualCenterX(search, window) ?? double.MaxValue, 1.0,
                         "Search should stay horizontally centered in the window.");
-                    Assert.AreEqual((GetVisualCenterY(shellTitleBar, window) ?? double.MinValue) + 2.0, GetVisualCenterY(search, window) ?? double.MaxValue, 1.0,
-                        "Search should sit 2px below the title-bar vertical center.");
+                    Assert.AreEqual((GetVisualCenterY(shellTitleBar, window) ?? double.MinValue) + 4.0, GetVisualCenterY(search, window) ?? double.MaxValue, 1.0,
+                        "Search should sit 4px below the title-bar vertical center.");
 
                     Assert.IsTrue(search.Focus(), "Search should accept keyboard focus.");
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
-                    Assert.AreEqual(230.0, search.ActualWidth, 0.5,
+                    Assert.AreEqual(300.0, search.ActualWidth, 0.5,
                         "Demo title-bar search should not expand just because it receives focus.");
                     Assert.AreEqual(window.ActualWidth / 2.0, GetVisualCenterX(search, window) ?? double.MaxValue, 1.0,
                         "Focused search should stay horizontally centered in the window.");

@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.8.1-preview] - 2026-06-17
+
 ### Added
 
 - Gallery Data page: a dedicated `ListBox` sample showing the default single-selection list next to an `Extended` multi-selection list, closing the last demo coverage gap in the control catalog. Covered by `ControlTests.DemoParity.cs`.

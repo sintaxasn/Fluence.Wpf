@@ -31,7 +31,7 @@ Fluence.Wpf.sln
 | ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `Fluence.Wpf`            | `ApplicationThemeManager`, `ApplicationAccentColorManager`, `SystemThemeWatcher`, `ThemeChangedEventArgs`, theme enums, control enums, and event args such as `TabViewTabCloseRequestedEventArgs`         |
 | `Fluence.Wpf.Controls`   | Custom controls (`Button`, `TabView`, `Card`, `NavigationView`, etc.), `FluenceWindow`, `TitleBar`, `WindowPolicy`, layout controls, and navigation view family                                            |
-| `Fluence.Wpf.Automation` | UI Automation peers for controls such as `NavigationView`, `ToggleSwitch`, `DropDownButton`, `SplitButton`, `NumberBox`, `InfoBar`, and `ProgressRing`                                                     |
+| `Fluence.Wpf.Automation` | UI Automation peers for controls such as `NavigationView`, `ToggleSwitch`, `DropDownButton`, `SplitButton`, `ToggleSplitButton`, `NumberBox`, `InfoBar`, and `ProgressRing`                                                     |
 | `Fluence.Wpf.Helpers`    | Internal helpers (`AcrylicNoiseHelper`, `BackdropPlan`, `FramePlan`, `GridLengthAnimation`, `HsvColorHelper`, `OsVersionHelper`, `RegistryHelper`, `WindowCapabilities`)                                  |
 | `Fluence.Wpf.Native`     | P/Invoke constants, structs, and methods                                                                                                                                                                  |
 
@@ -170,6 +170,7 @@ Names align with WinUI 3. Families currently used:
 - **Text**: `TextFillColorPrimary|Secondary|Tertiary|Disabled` (+ `Brush` suffix).
 - **Accent text**: `AccentTextFillColorPrimary|Secondary|Tertiary|Disabled`.
 - **Control fill**: `ControlFillColorDefault|Secondary|Tertiary|Disabled|InputActive|Transparent`.
+- **Control alt fill**: `ControlAltFillColorTransparent|Secondary|Tertiary|Quarternary|Disabled` (CheckBox / RadioButton / ToggleSwitch tracks, `Card` `Variant="Filled"`).
 - **Control stroke**: `ControlStrokeColorDefault|Secondary|OnAccentDefault|OnAccentSecondary|OnAccentTertiary|OnAccentDisabled`.
 - **Strong stroke** (ring-style selection / focus): `ControlStrongStrokeColorDefault|Disabled`.
 - **Card**: `CardBackgroundFillColorDefault|Secondary`, `CardStrokeColorDefault|DefaultSolid`.
