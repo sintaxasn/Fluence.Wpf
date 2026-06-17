@@ -2125,7 +2125,7 @@ StringComparison.Ordinal, "Rendered C# source should preserve leading indentatio
                     AssertNextFocus(window, tabOrderSecond, tabOrderThird, "Explicit tab-order group should move from 2 to 3.");
 
                     List<DemoSampleControl> samples = [.. FindAllVisualChildren<DemoSampleControl>(page)];
-                    Assert.AreEqual(4, samples.Count,
+                    Assert.AreEqual(6, samples.Count,
                         "Accessibility page should expose each discrete sample through DemoSampleControl.");
                     Assert.IsTrue(samples.TrueForAll(static sample => !string.IsNullOrWhiteSpace(sample.XamlSource)),
                         "Every accessibility sample should have inline XAML source.");

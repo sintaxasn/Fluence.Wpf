@@ -6,6 +6,55 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.8.2-preview] - 2026-06-17
+
+### Added
+
+- Accessibility pass across the full control library:
+  - Named glyph buttons throughout the shell and controls: window caption buttons
+    (minimize, maximize, restore, close), `TitleBar` back and pane-toggle buttons,
+    `DatePicker` and `TimePicker` field and column-selector buttons, `NumberBox`
+    increment and decrement spin buttons, `AutoSuggestBox` query button,
+    `TabView` close, add-tab, and scroll buttons, `InfoBar` close button,
+    `TeachingTip` close and alternate-close buttons, and `PipsPager` previous and
+    next navigation buttons. Every icon-only interactive element now has a
+    non-empty accessible name exposed through `AutomationProperties.Name` in XAML
+    or the automation peer.
+  - New automation peers in `Fluence.Wpf.Automation`: `RatingControlAutomationPeer`
+    (exposes `RangeValue` pattern, reports value and maximum as name), `PasswordBoxAutomationPeer`
+    (exposes `Value` pattern with protected value, reports reveal-button state),
+    `PersonPictureAutomationPeer` (reports display name or initials as name, Image
+    control type), `HyperlinkButtonAutomationPeer` (derives from
+    `ButtonAutomationPeer`, overrides control type to `Hyperlink`), and
+    `CardAutomationPeer` (exposes `Invoke` pattern when `IsClickable` is true,
+    reports clickable state in name).
+  - Header and `Label` accessible names propagated through `AutomationProperties.LabeledBy`
+    for `NumberBox`, `AutoSuggestBox`, `ToggleSwitch`, and `AppBarButton` so screen
+    readers announce the field label alongside the control name.
+  - `CheckBox` and `RadioButton` description text is now exposed through the
+    `AutomationProperties.HelpText` property rather than being lost in the
+    visual-only description `TextBlock`, so Narrator announces it as supplemental
+    help text.
+  - net472-safe live regions using `AutomationProperties.LiveSetting` plus
+    `RaiseAutomationEvent(AutomationEvents.LiveRegionChanged)` for `InfoBar`
+    (severity and message announced on `IsOpen` change), `ProgressBar` and
+    `ProgressRing` (error and paused state changes announced), `TeachingTip`
+    (title and subtitle announced on open), and `TextBox` validation (validation
+    message announced when `ValidationState` changes to an error state).
+  - `NumberBox` automation peer `LargeChange` value fixed: the peer now reports
+    `LargeChange` from `NumberBox.LargeChange` instead of the inherited
+    `RangeBase.LargeChange`, so assistive technologies request the correct
+    increment when invoking the large-change action.
+  - `ColorPicker` color spectrum keyboard operability: arrow keys adjust hue,
+    saturation, and value on the spectrum canvas, matching WinUI behavior and
+    enabling full keyboard-only color selection.
+  - `RatingControl` keyboard operability: left and right arrow keys change the
+    rating value, Home and End jump to minimum and maximum, and the automation
+    peer reports the current value and maximum via the `RangeValue` pattern.
+  - `PasswordBox` reveal button keyboard operability: Space and Enter toggle the
+    reveal state when the reveal button has keyboard focus, and the automation
+    peer reports the current `IsPasswordRevealed` state.
+
 ## [0.8.1-preview] - 2026-06-17
 
 ### Added

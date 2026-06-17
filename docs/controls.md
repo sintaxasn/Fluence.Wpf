@@ -337,9 +337,90 @@ Key API:
   <a href="../../api/Fluence.Wpf.Automation.NavigationViewAutomationPeer.html">NavigationViewAutomationPeer</a>
   <a href="../../api/Fluence.Wpf.Automation.ToggleSwitchAutomationPeer.html">ToggleSwitchAutomationPeer</a>
   <a href="../../api/Fluence.Wpf.Automation.InfoBarAutomationPeer.html">InfoBarAutomationPeer</a>
+  <a href="../../api/Fluence.Wpf.Automation.RatingControlAutomationPeer.html">RatingControlAutomationPeer</a>
+  <a href="../../api/Fluence.Wpf.Automation.PasswordBoxAutomationPeer.html">PasswordBoxAutomationPeer</a>
+  <a href="../../api/Fluence.Wpf.Automation.PersonPictureAutomationPeer.html">PersonPictureAutomationPeer</a>
+  <a href="../../api/Fluence.Wpf.Automation.HyperlinkButtonAutomationPeer.html">HyperlinkButtonAutomationPeer</a>
+  <a href="../../api/Fluence.Wpf.Automation.CardAutomationPeer.html">CardAutomationPeer</a>
 </div>
 
 Accessibility coverage includes focus visuals, high-contrast resources, automation peers, keyboard navigation, and right-to-left layout.
+
+#### Per-control roles, names, and patterns
+
+| Control | UIA Role | Name source | Patterns |
+|---|---|---|---|
+| `Button` | Button | `Content` or `AutomationProperties.Name` | Invoke |
+| `HyperlinkButton` | Hyperlink | `Content` or `AutomationProperties.Name` | Invoke |
+| `DropDownButton` | Button | `Content` or `AutomationProperties.Name` | Invoke, ExpandCollapse |
+| `SplitButton` | SplitButton | `Content` or `AutomationProperties.Name` | Invoke (primary), ExpandCollapse (chevron) |
+| `ToggleSplitButton` | SplitButton | `Content` or `AutomationProperties.Name` | Toggle (primary), ExpandCollapse (chevron) |
+| `ToggleButton` | Button | `Content` or `AutomationProperties.Name` | Toggle |
+| `CheckBox` | CheckBox | `Content`; `AutomationProperties.HelpText` carries description | Toggle |
+| `RadioButton` | RadioButton | `Content`; `AutomationProperties.HelpText` carries description | Selection |
+| `ToggleSwitch` | Button | `Header` via `LabeledBy` | Toggle |
+| `RatingControl` | Slider | Value and maximum in name (e.g. "Rating 3 of 5") | RangeValue |
+| `ComboBox` | ComboBox | `PlaceholderText` or `AutomationProperties.Name` | ExpandCollapse, Selection |
+| `Slider` | Slider | `AutomationProperties.Name` or labeled by adjacent `TextBlock` | RangeValue |
+| `NumberBox` | Spinner | `Header` via `LabeledBy` | RangeValue, Value |
+| `TextBox` | Edit | `Header` or `AutomationProperties.Name` | Value, Text |
+| `PasswordBox` | Edit | `Header` or `AutomationProperties.Name`; reveal button announces state | Value |
+| `AutoSuggestBox` | Edit | `Header` via `LabeledBy` | Value |
+| `NavigationView` | Navigation | `AutomationProperties.Name` on the control | Selection |
+| `NavigationViewItem` | ListItem | `Content` | SelectionItem |
+| `TabView` | Tab | `AutomationProperties.Name` on the control | Selection |
+| `TabViewItem` | TabItem | `Header` | SelectionItem |
+| `InfoBar` | StatusBar | Severity and message in name | none (live region) |
+| `ProgressBar` | ProgressBar | `AutomationProperties.Name` | RangeValue |
+| `ProgressRing` | ProgressBar | `AutomationProperties.Name` | RangeValue |
+| `Card` | Button (when clickable) / Custom (static) | `Header` or `AutomationProperties.Name` | Invoke (when clickable) |
+| `PersonPicture` | Image | Display name or initials | none |
+| `ContentDialog` | Window | `Title` | none (focus trapped inside) |
+| `TeachingTip` | ToolTip | `Title` and `Subtitle` (live region) | none |
+| `AppBarButton` | Button | `Label` via `LabeledBy` | Invoke |
+
+#### Live regions on net472
+
+`AutomationPeer.RaiseNotificationEvent` (which pushes ad-hoc announcements to
+screen readers) requires .NET Framework 4.8 and is not available on `net472`. All
+status-change announcements in this library instead use the net472-safe pattern:
+
+1. The control template or peer constructor sets `AutomationProperties.LiveSetting`
+   to `Polite` or `Assertive` on the announcing element.
+2. When the relevant state changes (severity, message, progress state, validation
+   message, or coaching text), the automation peer calls
+   `RaiseAutomationEvent(AutomationEvents.LiveRegionChanged)`.
+3. Screen readers that honour `LiveRegionChanged` (Narrator, NVDA, JAWS) then
+   read the element's current `GetNameCore` text.
+
+Controls that use this approach: `InfoBar`, `ProgressBar`, `ProgressRing`,
+`TeachingTip`, and `TextBox` validation feedback. This pattern requires no
+.NET 4.8 surface and works on both `net472` and `net10.0-windows10.0.26100.0`.
+
+#### Keyboard operability
+
+Beyond standard WPF focus and tab traversal, Fluence adds keyboard operability for
+controls that WPF does not natively make fully keyboard-accessible:
+
+- `ColorPicker` spectrum: arrow keys adjust the selected point on the hue-saturation-value
+  spectrum canvas; the spectrum canvas receives keyboard focus as a named focusable element.
+- `RatingControl`: Left/Right arrow keys decrement and increment the rating; Home and End
+  jump to the minimum and maximum values.
+- `PasswordBox` reveal button: Space and Enter toggle the reveal state when the reveal button
+  is keyboard-focused; the automation peer reports the current revealed state.
+- `NumberBox` spin buttons: the increment and decrement buttons are keyboard-accessible tab
+  stops with accessible names; the `LargeChange` value reported by the automation peer
+  matches the `NumberBox.LargeChange` property.
+
+#### Known net472 gaps
+
+Four UI Automation features available from .NET Framework 4.8 are absent on `net472`.
+See `KNOWN_ISSUES.md` for the full rationale and chosen fallbacks:
+
+- `AutomationPeer.RaiseNotificationEvent` - substituted with `LiveRegionChanged` (described above).
+- `AutomationProperties.IsDialog` - `ContentDialog` uses `ControlType.Window` and focus trapping as a fallback.
+- `AutomationProperties.HeadingLevel` - not used by the library; app-layer concern.
+- Automatic `PositionInSet`/`SizeOfSet` for `ItemsControl` - set explicitly in peers where meaningful.
 
 ## FluenceWindow
 
