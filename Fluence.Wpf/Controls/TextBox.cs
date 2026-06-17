@@ -364,12 +364,18 @@ namespace Fluence.Wpf.Controls
                     case ValidationState.Warning:
                         AutomationProperties.SetHelpText(this, message);
                         helper.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "SystemFillColorCautionBrush");
-                        AnnounceLiveRegion();
+                        if (ShouldAnnounce(ValidationState.Warning, message))
+                        {
+                            AnnounceLiveRegion();
+                        }
                         break;
                     case ValidationState.Error:
                         AutomationProperties.SetHelpText(this, message);
                         helper.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "SystemFillColorCriticalBrush");
-                        AnnounceLiveRegion();
+                        if (ShouldAnnounce(ValidationState.Error, message))
+                        {
+                            AnnounceLiveRegion();
+                        }
                         break;
                     case ValidationState.None:
                         break;
@@ -378,6 +384,10 @@ namespace Fluence.Wpf.Controls
                 }
                 return;
             }
+            // Leaving an active validation state: reset tracked announce state so a subsequent
+            // transition back to Warning/Error fires a fresh announcement.
+            _lastAnnouncedState = ValidationState.None;
+            _lastAnnouncedMessage = string.Empty;
             AutomationProperties.SetHelpText(this, string.Empty);
             _ = icon?.Visibility = Visibility.Collapsed;
             helper.Text = HelperText;
@@ -389,5 +399,38 @@ namespace Fluence.Wpf.Controls
         /// Represents a reference to the clear button control.
         /// </summary>
         private System.Windows.Controls.Button? _clearButton;
+
+        /// <summary>
+        /// Tracks the last validation state for which a live-region announcement was raised,
+        /// so repeated calls to <see cref="UpdateHelperText"/> while the control stays in the
+        /// same state do not re-announce on every keystroke.
+        /// </summary>
+        private ValidationState _lastAnnouncedState = ValidationState.None;
+
+        /// <summary>
+        /// Tracks the last validation message for which a live-region announcement was raised.
+        /// An announcement is re-raised when the message changes even if the state did not.
+        /// </summary>
+        private string _lastAnnouncedMessage = string.Empty;
+
+        /// <summary>
+        /// Returns <see langword="true"/> when the announce should fire and, if so, updates
+        /// the tracked state so subsequent identical calls are suppressed.
+        /// A transition is considered real when either the <see cref="ValidationState"/> or the
+        /// effective <paramref name="message"/> differs from the last announced combination.
+        /// </summary>
+        /// <param name="state">The current validation state that would trigger an announcement.</param>
+        /// <param name="message">The effective message text that would be announced.</param>
+        private bool ShouldAnnounce(ValidationState state, string message)
+        {
+            if (state == _lastAnnouncedState && string.Equals(message, _lastAnnouncedMessage, System.StringComparison.Ordinal))
+            {
+                return false;
+            }
+
+            _lastAnnouncedState = state;
+            _lastAnnouncedMessage = message;
+            return true;
+        }
     }
 }

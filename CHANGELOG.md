@@ -28,9 +28,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
     `ButtonAutomationPeer`, overrides control type to `Hyperlink`), and
     `CardAutomationPeer` (exposes `Invoke` pattern when `IsClickable` is true,
     reports clickable state in name).
-  - Header and `Label` accessible names propagated through `AutomationProperties.LabeledBy`
-    for `NumberBox`, `AutoSuggestBox`, `ToggleSwitch`, and `AppBarButton` so screen
-    readers announce the field label alongside the control name.
+  - Header and `Label` accessible names for `NumberBox`, `AutoSuggestBox`, `ToggleSwitch`,
+    and `AppBarButton` exposed as the accessible name via the control's automation peer
+    (`GetNameCore` override) and `AutomationProperties.Name`, so screen readers announce
+    the field label alongside the control name.
   - `CheckBox` and `RadioButton` description text is now exposed through the
     `AutomationProperties.HelpText` property rather than being lost in the
     visual-only description `TextBlock`, so Narrator announces it as supplemental

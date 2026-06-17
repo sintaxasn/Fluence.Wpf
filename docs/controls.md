@@ -358,14 +358,14 @@ Accessibility coverage includes focus visuals, high-contrast resources, automati
 | `ToggleButton` | Button | `Content` or `AutomationProperties.Name` | Toggle |
 | `CheckBox` | CheckBox | `Content`; `AutomationProperties.HelpText` carries description | Toggle |
 | `RadioButton` | RadioButton | `Content`; `AutomationProperties.HelpText` carries description | Selection |
-| `ToggleSwitch` | Button | `Header` via `LabeledBy` | Toggle |
+| `ToggleSwitch` | Button | `Header` via automation peer `GetNameCore` / `AutomationProperties.Name` | Toggle |
 | `RatingControl` | Slider | Value and maximum in name (e.g. "Rating 3 of 5") | RangeValue |
 | `ComboBox` | ComboBox | `PlaceholderText` or `AutomationProperties.Name` | ExpandCollapse, Selection |
 | `Slider` | Slider | `AutomationProperties.Name` or labeled by adjacent `TextBlock` | RangeValue |
-| `NumberBox` | Spinner | `Header` via `LabeledBy` | RangeValue, Value |
+| `NumberBox` | Spinner | `Header` via automation peer `GetNameCore` / `AutomationProperties.Name` | RangeValue, Value |
 | `TextBox` | Edit | `Header` or `AutomationProperties.Name` | Value, Text |
 | `PasswordBox` | Edit | `Header` or `AutomationProperties.Name`; reveal button announces state | Value |
-| `AutoSuggestBox` | Edit | `Header` via `LabeledBy` | Value |
+| `AutoSuggestBox` | Edit | `Header` via automation peer `GetNameCore` / `AutomationProperties.Name` | Value |
 | `NavigationView` | Navigation | `AutomationProperties.Name` on the control | Selection |
 | `NavigationViewItem` | ListItem | `Content` | SelectionItem |
 | `TabView` | Tab | `AutomationProperties.Name` on the control | Selection |
@@ -373,11 +373,11 @@ Accessibility coverage includes focus visuals, high-contrast resources, automati
 | `InfoBar` | StatusBar | Severity and message in name | none (live region) |
 | `ProgressBar` | ProgressBar | `AutomationProperties.Name` | RangeValue |
 | `ProgressRing` | ProgressBar | `AutomationProperties.Name` | RangeValue |
-| `Card` | Button (when clickable) / Custom (static) | `Header` or `AutomationProperties.Name` | Invoke (when clickable) |
+| `Card` | Button (when clickable) / Group (non-clickable) | `Header` or `AutomationProperties.Name` | Invoke (when clickable) |
 | `PersonPicture` | Image | Display name or initials | none |
 | `ContentDialog` | Window | `Title` | none (focus trapped inside) |
 | `TeachingTip` | ToolTip | `Title` and `Subtitle` (live region) | none |
-| `AppBarButton` | Button | `Label` via `LabeledBy` | Invoke |
+| `AppBarButton` | Button | `Label` via automation peer `GetNameCore` / `AutomationProperties.Name` | Invoke |
 
 #### Live regions on net472
 

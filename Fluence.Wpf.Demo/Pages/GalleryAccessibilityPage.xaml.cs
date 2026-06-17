@@ -593,6 +593,7 @@ namespace Fluence.Wpf.Demo.Pages
                 new DemoSampleSource(6, RatingKeyboardXamlSource, RatingKeyboardCSharpSource));
 
             Loaded += OnLoaded;
+            Unloaded += OnUnloaded;
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
@@ -600,6 +601,12 @@ namespace Fluence.Wpf.Demo.Pages
             Loaded -= OnLoaded;
             PopulateHcTable();
             SubscribeRatingValueChanged();
+        }
+
+        private void OnUnloaded(object sender, RoutedEventArgs e)
+        {
+            Unloaded -= OnUnloaded;
+            UnsubscribeRatingValueChanged();
         }
 
         private void SubscribeRatingValueChanged()
@@ -613,6 +620,19 @@ namespace Fluence.Wpf.Demo.Pages
                 RatingControl.ValueProperty,
                 typeof(RatingControl));
             descriptor.AddValueChanged(A11yRatingControl, A11yRatingControl_ValueChanged);
+        }
+
+        private void UnsubscribeRatingValueChanged()
+        {
+            if (A11yRatingControl is null)
+            {
+                return;
+            }
+
+            DependencyPropertyDescriptor descriptor = DependencyPropertyDescriptor.FromProperty(
+                RatingControl.ValueProperty,
+                typeof(RatingControl));
+            descriptor.RemoveValueChanged(A11yRatingControl, A11yRatingControl_ValueChanged);
         }
 
         private void PopulateHcTable()
