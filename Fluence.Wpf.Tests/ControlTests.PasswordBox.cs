@@ -32,6 +32,7 @@ using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
+using System.Windows.Input;
 using Fluent = Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Tests
@@ -131,6 +132,102 @@ namespace Fluence.Wpf.Tests
 
                     Assert.IsFalse(box.IsPasswordRevealed,
                         "A second invocation of PART_RevealButton must hide the password again.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary is not null)
+                    {
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void PasswordBox_RevealButton_MousePressAndHold_IsTransient()
+        {
+            // Regression test: a mouse press-and-release must NOT leave the password revealed.
+            // Contract: press-and-hold = transient reveal; release = hide immediately.
+            // Prior to the fix, OnRevealButtonUp reset _isMouseRevealActive before Click fired,
+            // causing the Click toggle branch to run and leaving IsPasswordRevealed = true.
+            RunOnStaThread(static () =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+
+                try
+                {
+                    Fluent.PasswordBox box = new()
+                    {
+                        Password = "secret",
+                        RevealButtonEnabled = true,
+                        Width = 200,
+                    };
+                    window.Content = box;
+                    window.Width = 280;
+                    window.Height = 80;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    _ = box.ApplyTemplate();
+                    DrainDispatcher(window.Dispatcher);
+
+                    Button? revealButton = FindVisualChildByName<Button>(box, "PART_RevealButton");
+                    Assert.IsNotNull(revealButton, "PART_RevealButton must be present in the PasswordBox template.");
+
+                    // Simulate PreviewMouseLeftButtonDown - password should reveal while held.
+                    MouseButtonEventArgs downArgs = new(
+                        Mouse.PrimaryDevice,
+                        0,
+                        MouseButton.Left)
+                    {
+                        RoutedEvent = UIElement.PreviewMouseLeftButtonDownEvent,
+                        Source = revealButton,
+                    };
+                    revealButton.RaiseEvent(downArgs);
+                    DrainDispatcher(window.Dispatcher);
+
+                    Assert.IsTrue(box.IsPasswordRevealed,
+                        "Password must be revealed while the mouse button is held down (press-and-hold).");
+
+                    // Simulate PreviewMouseLeftButtonUp - password should hide on release.
+                    MouseButtonEventArgs upArgs = new(
+                        Mouse.PrimaryDevice,
+                        0,
+                        MouseButton.Left)
+                    {
+                        RoutedEvent = UIElement.PreviewMouseLeftButtonUpEvent,
+                        Source = revealButton,
+                    };
+                    revealButton.RaiseEvent(upArgs);
+                    DrainDispatcher(window.Dispatcher);
+
+                    Assert.IsFalse(box.IsPasswordRevealed,
+                        "Password must be hidden immediately after mouse button is released.");
+
+                    // WPF fires Click after MouseLeftButtonUp completes. Explicitly raise it
+                    // here to reproduce the regression: without the fix the Click handler
+                    // toggled IsPasswordRevealed back to true because _isMouseRevealActive
+                    // had already been reset to false in OnRevealButtonUp.
+                    RoutedEventArgs clickArgs = new(Button.ClickEvent, revealButton);
+                    revealButton.RaiseEvent(clickArgs);
+                    DrainDispatcher(window.Dispatcher);
+
+                    Assert.IsFalse(box.IsPasswordRevealed,
+                        "Password must stay hidden after Click fires following a mouse press-and-release (press-and-hold is transient, not a toggle).");
+
+                    // Verify the gesture left no stale state: keyboard invocation must still toggle correctly.
+                    AutomationPeer revealPeer = UIElementAutomationPeer.CreatePeerForElement(revealButton);
+                    IInvokeProvider invoke = (IInvokeProvider)revealPeer.GetPattern(PatternInterface.Invoke);
+                    invoke.Invoke();
+                    DrainDispatcher(window.Dispatcher);
+                    Assert.IsTrue(box.IsPasswordRevealed,
+                        "Keyboard invocation after a mouse press-and-release must be able to reveal the password.");
+                    invoke.Invoke();
+                    DrainDispatcher(window.Dispatcher);
+                    Assert.IsFalse(box.IsPasswordRevealed,
+                        "Second keyboard invocation must hide the password again.");
                 }
                 finally
                 {

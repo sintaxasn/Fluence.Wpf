@@ -589,7 +589,9 @@ namespace Fluence.Wpf.Controls
 
         private void OnRevealButtonUp(object sender, MouseButtonEventArgs e)
         {
-            _isMouseRevealActive = false;
+            // Do not reset _isMouseRevealActive here; Click fires after Up and the
+            // Click handler reads the flag to determine whether to toggle. Leave and
+            // Click are the two paths that reset the flag.
             IsPasswordRevealed = false;
         }
 
@@ -601,12 +603,15 @@ namespace Fluence.Wpf.Controls
 
         private void OnRevealButtonClick(object sender, RoutedEventArgs e)
         {
-            // Space/Enter keyboard activation fires Click without preceding PreviewMouseLeftButtonDown,
-            // so _isMouseRevealActive stays false and we toggle. Mouse press-and-hold sets
-            // _isMouseRevealActive = true before Click could fire (Click requires release, which
-            // fires OnRevealButtonUp first, resetting the state), so mouse behavior is unchanged.
-            if (!_isMouseRevealActive)
+            if (_isMouseRevealActive)
             {
+                // Click fired as part of a mouse press-and-release cycle; the password
+                // was already hidden by OnRevealButtonUp, so just clear the flag.
+                _isMouseRevealActive = false;
+            }
+            else
+            {
+                // No mouse gesture active: Space/Enter keyboard activation.
                 IsPasswordRevealed = !IsPasswordRevealed;
                 UpdateRevealButtonAccessibleName();
             }
