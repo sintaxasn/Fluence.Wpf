@@ -27,6 +27,7 @@
  */
 
 using System.Windows;
+using System.Windows.Automation;
 
 namespace Fluence.Wpf.Controls
 {
@@ -82,7 +83,7 @@ namespace Fluence.Wpf.Controls
                 nameof(Label),
                 typeof(string),
                 typeof(AppBarButton),
-                new FrameworkPropertyMetadata(string.Empty));
+                new FrameworkPropertyMetadata(string.Empty, OnLabelChanged));
 
         /// <summary>
         /// Gets or sets the text label that describes the command. The compact default style
@@ -92,6 +93,16 @@ namespace Fluence.Wpf.Controls
         {
             get => (string)GetValue(LabelProperty);
             set => SetValue(LabelProperty, value);
+        }
+
+        private static void OnLabelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            AppBarButton button = (AppBarButton)d;
+            string? existing = AutomationProperties.GetName(button);
+            if (string.IsNullOrWhiteSpace(existing))
+            {
+                AutomationProperties.SetName(button, e.NewValue as string ?? string.Empty);
+            }
         }
     }
 }

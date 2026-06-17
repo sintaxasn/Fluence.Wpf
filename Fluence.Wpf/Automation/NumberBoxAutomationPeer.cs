@@ -46,6 +46,15 @@ namespace Fluence.Wpf.Automation
         }
 
         /// <inheritdoc />
+        protected override string GetNameCore()
+        {
+            string baseName = base.GetNameCore();
+            return !string.IsNullOrWhiteSpace(baseName)
+                ? baseName
+                : NumberBox.Header?.ToString() ?? string.Empty;
+        }
+
+        /// <inheritdoc />
         protected override AutomationControlType GetAutomationControlTypeCore()
         {
             return AutomationControlType.Spinner;

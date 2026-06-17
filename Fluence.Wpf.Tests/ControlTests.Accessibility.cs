@@ -27,8 +27,10 @@
  */
 
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Windows;
 using System.Windows.Automation;
+using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 
 namespace Fluence.Wpf.Tests
@@ -369,5 +371,45 @@ namespace Fluence.Wpf.Tests
         // a detached Popup root. Reliable coverage needs a popup-aware traversal helper that is
         // outside the current test harness scope; the XAML-level name is verified in the Task 5
         // report (TeachingTip.xaml line 209, AutomationProperties.Name="Close").
+
+        [TestMethod]
+        public void AppBarButton_Label_BecomesAccessibleName()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+
+                try
+                {
+                    Controls.AppBarButton button = new() { Label = "Share" };
+                    window.Content = button;
+                    window.Width = 120;
+                    window.Height = 80;
+                    window.Show();
+                    _ = button.ApplyTemplate();
+                    DrainDispatcher(window.Dispatcher);
+
+                    AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(button);
+                    Assert.IsTrue(
+                        string.Equals("Share", peer.GetName(), StringComparison.Ordinal),
+                        "AppBarButton Label must be the accessible name when no explicit AutomationProperties.Name is set.");
+
+                    button.SetValue(AutomationProperties.NameProperty, "Explicit");
+                    Assert.IsTrue(
+                        string.Equals("Explicit", peer.GetName(), StringComparison.Ordinal),
+                        "Explicit AutomationProperties.Name must win over Label.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary is not null)
+                    {
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
     }
 }
