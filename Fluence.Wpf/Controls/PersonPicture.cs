@@ -26,9 +26,11 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Automation;
 using System;
 using System.Globalization;
 using System.Windows;
+using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
@@ -223,6 +225,12 @@ namespace Fluence.Wpf.Controls
             _badgeText = GetTemplateChild(PART_BadgeText) as WpfTextBlock;
             UpdateVisualState(useTransitions: false);
             UpdateBadge();
+        }
+
+        /// <inheritdoc />
+        protected override AutomationPeer OnCreateAutomationPeer()
+        {
+            return new PersonPictureAutomationPeer(this);
         }
 
         private static void OnDisplayNameChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
