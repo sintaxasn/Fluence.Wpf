@@ -30,6 +30,7 @@ using System;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Threading;
@@ -313,6 +314,7 @@ namespace Fluence.Wpf.Controls
                 _revealButton.PreviewMouseLeftButtonDown -= OnRevealButtonDown;
                 _revealButton.PreviewMouseLeftButtonUp -= OnRevealButtonUp;
                 _revealButton.MouseLeave -= OnRevealButtonLeave;
+                _revealButton.Click -= OnRevealButtonClick;
             }
             StopCapsPoll();
 
@@ -331,9 +333,13 @@ namespace Fluence.Wpf.Controls
             }
             if (_revealButton is not null)
             {
+                _revealButton.Focusable = true;
+                _revealButton.IsTabStop = true;
+                AutomationProperties.SetName(_revealButton, IsPasswordRevealed ? "Hide password" : "Show password");
                 _revealButton.PreviewMouseLeftButtonDown += OnRevealButtonDown;
                 _revealButton.PreviewMouseLeftButtonUp += OnRevealButtonUp;
                 _revealButton.MouseLeave += OnRevealButtonLeave;
+                _revealButton.Click += OnRevealButtonClick;
             }
             if (_passwordBox is not null)
             {
@@ -569,19 +575,49 @@ namespace Fluence.Wpf.Controls
             }
         }
 
+        /// <inheritdoc />
+        protected override System.Windows.Automation.Peers.AutomationPeer OnCreateAutomationPeer()
+        {
+            return new Automation.PasswordBoxAutomationPeer(this);
+        }
+
         private void OnRevealButtonDown(object sender, MouseButtonEventArgs e)
         {
+            _isMouseRevealActive = true;
             IsPasswordRevealed = true;
         }
 
         private void OnRevealButtonUp(object sender, MouseButtonEventArgs e)
         {
+            _isMouseRevealActive = false;
             IsPasswordRevealed = false;
         }
 
         private void OnRevealButtonLeave(object sender, MouseEventArgs e)
         {
+            _isMouseRevealActive = false;
             IsPasswordRevealed = false;
+        }
+
+        private void OnRevealButtonClick(object sender, RoutedEventArgs e)
+        {
+            // Space/Enter keyboard activation fires Click without preceding PreviewMouseLeftButtonDown,
+            // so _isMouseRevealActive stays false and we toggle. Mouse press-and-hold sets
+            // _isMouseRevealActive = true before Click could fire (Click requires release, which
+            // fires OnRevealButtonUp first, resetting the state), so mouse behavior is unchanged.
+            if (!_isMouseRevealActive)
+            {
+                IsPasswordRevealed = !IsPasswordRevealed;
+                UpdateRevealButtonAccessibleName();
+            }
+        }
+
+        private void UpdateRevealButtonAccessibleName()
+        {
+            if (_revealButton is not null)
+            {
+                AutomationProperties.SetName(_revealButton, IsPasswordRevealed ? "Hide password" : "Show password");
+            }
         }
 
         /// <summary>
@@ -605,6 +641,12 @@ namespace Fluence.Wpf.Controls
         /// Indicates whether the password is currently being updated programmatically to prevent recursive updates.
         /// </summary>
         private bool _isUpdatingPassword;
+
+        /// <summary>
+        /// Tracks whether a mouse press-and-hold is currently active on the reveal button.
+        /// Prevents the keyboard-toggle Click handler from interfering with the mouse reveal gesture.
+        /// </summary>
+        private bool _isMouseRevealActive;
 
         /// <summary>
         /// Represents the timer used to periodically poll the Caps Lock state.
