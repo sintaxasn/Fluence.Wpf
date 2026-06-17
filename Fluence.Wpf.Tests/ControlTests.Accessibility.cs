@@ -239,5 +239,78 @@ namespace Fluence.Wpf.Tests
                 }
             });
         }
+
+        [TestMethod]
+        public void InfoBarAndPipsPager_GlyphButtons_HaveAutomationNames()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+
+                // --- InfoBar PART_CloseButton ---
+                Controls.InfoBar infoBar = new() { Message = "Test", Width = 400 };
+                Window infoBarWindow = new() { Content = infoBar, Width = 500, Height = 80 };
+
+                try
+                {
+                    infoBarWindow.Show();
+                    _ = infoBar.ApplyTemplate();
+                    DrainDispatcher(infoBarWindow.Dispatcher);
+
+                    ControlTemplate? infoBarTemplate = infoBar.Template;
+                    Assert.IsNotNull(infoBarTemplate, "InfoBar must receive its themed template.");
+                    FrameworkElement? closeButton = infoBarTemplate.FindName("PART_CloseButton", infoBar) as FrameworkElement;
+                    Assert.IsNotNull(closeButton, "PART_CloseButton should exist in the InfoBar template.");
+                    string closeActualName = AutomationProperties.GetName(closeButton);
+                    Assert.IsTrue(
+                        string.Equals("Close", closeActualName, System.StringComparison.Ordinal),
+                        $"InfoBar PART_CloseButton must expose accessible name 'Close' for Narrator. Actual: '{closeActualName}'.");
+                }
+                finally
+                {
+                    infoBarWindow.Close();
+                }
+
+                // --- PipsPager PART_PreviousButton and PART_NextButton ---
+                Controls.PipsPager pipsPager = new()
+                {
+                    NumberOfPages = 5,
+                    PreviousButtonVisibility = Fluence.Wpf.PipsPagerButtonVisibility.Visible,
+                    NextButtonVisibility = Fluence.Wpf.PipsPagerButtonVisibility.Visible,
+                    Width = 200,
+                };
+                Window pipsWindow = new() { Content = pipsPager, Width = 300, Height = 80 };
+
+                try
+                {
+                    pipsWindow.Show();
+                    _ = pipsPager.ApplyTemplate();
+                    DrainDispatcher(pipsWindow.Dispatcher);
+
+                    ControlTemplate? pipsTemplate = pipsPager.Template;
+                    Assert.IsNotNull(pipsTemplate, "PipsPager must receive its themed template.");
+
+                    foreach ((string part, string expectedName) in new[]
+                    {
+                        ("PART_PreviousButton", "Previous page"),
+                        ("PART_NextButton", "Next page"),
+                    })
+                    {
+                        FrameworkElement? btn = pipsTemplate.FindName(part, pipsPager) as FrameworkElement;
+                        Assert.IsNotNull(btn, $"{part} should exist in the PipsPager template.");
+                        string actualName = AutomationProperties.GetName(btn);
+                        Assert.IsTrue(
+                            string.Equals(expectedName, actualName, System.StringComparison.Ordinal),
+                            $"{part} must expose accessible name '{expectedName}' for Narrator. Actual: '{actualName}'.");
+                    }
+                }
+                finally
+                {
+                    pipsWindow.Close();
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                }
+            });
+        }
     }
 }
