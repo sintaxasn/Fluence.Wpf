@@ -28,6 +28,8 @@
 
 using System.Globalization;
 using System.Windows;
+using System.Windows.Automation;
+using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 
 namespace Fluence.Wpf.Controls
@@ -62,6 +64,9 @@ namespace Fluence.Wpf.Controls
             DefaultStyleKeyProperty.OverrideMetadata(
                 typeof(TextBox),
                 new FrameworkPropertyMetadata(typeof(TextBox)));
+            AutomationProperties.LiveSettingProperty.OverrideMetadata(
+                typeof(TextBox),
+                new FrameworkPropertyMetadata(AutomationLiveSetting.Assertive));
         }
 
         /// <summary>
@@ -297,6 +302,22 @@ namespace Fluence.Wpf.Controls
             counter.Text = string.Format(CultureInfo.CurrentCulture, "{0}/{1}", Text?.Length ?? 0, MaxLength);
         }
 
+        /// <summary>
+        /// Raises <see cref="AutomationEvents.LiveRegionChanged"/> on this control's automation peer
+        /// so Narrator announces the current validation message without moving focus.
+        /// Uses only net472-safe APIs (no RaiseNotificationEvent).
+        /// </summary>
+        private void AnnounceLiveRegion()
+        {
+            if (!AutomationPeer.ListenerExists(AutomationEvents.LiveRegionChanged))
+            {
+                return;
+            }
+
+            AutomationPeer peer = UIElementAutomationPeer.FromElement(this) ?? UIElementAutomationPeer.CreatePeerForElement(this);
+            peer.RaiseAutomationEvent(AutomationEvents.LiveRegionChanged);
+        }
+
         private void UpdateHelperText()
         {
             System.Windows.Controls.TextBlock? icon = GetTemplateChild(PART_ValidationIcon) as System.Windows.Controls.TextBlock;
@@ -308,6 +329,7 @@ namespace Fluence.Wpf.Controls
             if (ValidationState != ValidationState.None)
             {
                 string message = !string.IsNullOrWhiteSpace(ValidationMessage) ? ValidationMessage : HelperText;
+                AutomationProperties.SetHelpText(this, message);
                 helper.Text = message;
                 helper.Visibility = string.IsNullOrWhiteSpace(message) ? Visibility.Collapsed : Visibility.Visible;
                 if (icon is not null)
@@ -341,9 +363,11 @@ namespace Fluence.Wpf.Controls
                         break;
                     case ValidationState.Warning:
                         helper.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "SystemFillColorCautionBrush");
+                        AnnounceLiveRegion();
                         break;
                     case ValidationState.Error:
                         helper.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "SystemFillColorCriticalBrush");
+                        AnnounceLiveRegion();
                         break;
                     case ValidationState.None:
                         break;
@@ -352,6 +376,7 @@ namespace Fluence.Wpf.Controls
                 }
                 return;
             }
+            AutomationProperties.SetHelpText(this, string.Empty);
             _ = icon?.Visibility = Visibility.Collapsed;
             helper.Text = HelperText;
             helper.Visibility = string.IsNullOrWhiteSpace(HelperText) ? Visibility.Collapsed : Visibility.Visible;

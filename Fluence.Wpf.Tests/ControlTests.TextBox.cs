@@ -29,6 +29,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -241,6 +242,98 @@ namespace Fluence.Wpf.Tests
                     "Helper text should be vertically centered with the validation icon.");
                 Assert.AreEqual(VerticalAlignment.Center, icon.VerticalAlignment,
                     "Validation icon should be vertically centered with helper text.");
+
+                w.Close();
+            });
+        }
+
+        // ---------------------------------------------------------------------------
+        // Task 9 -- HelpText a11y: validation message surfaced via AutomationProperties
+        // ---------------------------------------------------------------------------
+
+        [TestMethod]
+        public void TextBox_ValidationError_SetsHelpText()
+        {
+            WpfTestSta.Invoke(static () =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                FluenceTextBox tb = new()
+                {
+                    Width = 240,
+                    ValidationMessage = "Value is required",
+                    ValidationState = ValidationState.Error,
+                };
+                Window w = new() { Content = tb, Width = 320, Height = 120 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                string helpText = AutomationProperties.GetHelpText(tb);
+                Assert.AreEqual(
+                    "Value is required",
+                    helpText,
+                    "AutomationProperties.HelpText must equal ValidationMessage when ValidationState is Error.");
+
+                w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void TextBox_ValidationNone_ClearsHelpText()
+        {
+            WpfTestSta.Invoke(static () =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                FluenceTextBox tb = new()
+                {
+                    Width = 240,
+                    ValidationMessage = "Temp error",
+                    ValidationState = ValidationState.Error,
+                };
+                Window w = new() { Content = tb, Width = 320, Height = 120 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                // Transition back to None.
+                tb.ValidationState = ValidationState.None;
+                DrainDispatcher(w.Dispatcher);
+
+                string helpText = AutomationProperties.GetHelpText(tb);
+                Assert.AreEqual(
+                    string.Empty,
+                    helpText,
+                    "AutomationProperties.HelpText must be cleared when ValidationState returns to None.");
+
+                w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void TextBox_ValidationWarning_SetsHelpText()
+        {
+            WpfTestSta.Invoke(static () =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                FluenceTextBox tb = new()
+                {
+                    Width = 240,
+                    ValidationMessage = "Check the value",
+                    ValidationState = ValidationState.Warning,
+                };
+                Window w = new() { Content = tb, Width = 320, Height = 120 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                string helpText = AutomationProperties.GetHelpText(tb);
+                Assert.AreEqual(
+                    "Check the value",
+                    helpText,
+                    "AutomationProperties.HelpText must equal ValidationMessage when ValidationState is Warning.");
 
                 w.Close();
             });
