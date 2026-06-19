@@ -53,7 +53,11 @@ namespace Fluence.Wpf
         public static BackdropType CurrentBackdrop { get; private set; } = BackdropType.Auto;
 
         /// <summary>
-        /// Gets the currently resolved theme after applying the resolution algorithm to <see cref="CurrentTheme"/>.
+        /// Gets the concrete theme (Light, Dark, or HighContrast) that was resolved and applied during
+        /// the most recent <see cref="Apply"/> call. When <see cref="CurrentTheme"/> is
+        /// <see cref="ApplicationTheme.Auto"/>, this reflects the OS theme at the time of the last
+        /// <c>Apply</c>; it does not update automatically when the OS theme changes without a subsequent
+        /// <c>Apply</c>.
         /// </summary>
         public static ApplicationTheme ResolvedTheme => FluenceThemeEngine.ResolvedTheme;
 
