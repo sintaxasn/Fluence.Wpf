@@ -257,7 +257,7 @@ namespace Fluence.Wpf.Tests
                 ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: false);
                 ApplicationTheme themeBeforeAccent = ApplicationThemeManager.ResolvedTheme;
 
-                ApplicationAccentColorManager.ApplyCustomAccent(System.Windows.Media.Color.FromRgb(0xFF, 0x00, 0x00));
+                ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0xFF, 0x00, 0x00));
 
                 Assert.AreEqual(themeBeforeAccent, ApplicationThemeManager.ResolvedTheme,
                     "ResolvedTheme should remain the same concrete theme after an accent change via ApplyCustomAccent.");
