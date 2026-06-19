@@ -56,14 +56,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
     next navigation buttons. Every icon-only interactive element now has a
     non-empty accessible name exposed through `AutomationProperties.Name` in XAML
     or the automation peer.
-  - New automation peers in `Fluence.Wpf.Automation`: `RatingControlAutomationPeer`
-    (exposes `RangeValue` pattern, reports value and maximum as name), `PasswordBoxAutomationPeer`
-    (exposes `Value` pattern with protected value, reports reveal-button state),
-    `PersonPictureAutomationPeer` (reports display name or initials as name, Image
-    control type), `HyperlinkButtonAutomationPeer` (derives from
-    `ButtonAutomationPeer`, overrides control type to `Hyperlink`), and
-    `CardAutomationPeer` (exposes `Invoke` pattern when `IsClickable` is true,
-    reports clickable state in name).
+- New automation peers in `Fluence.Wpf.Automation`: `RatingControlAutomationPeer`
+  (exposes the `RangeValue` pattern), `PasswordBoxAutomationPeer` (reports a
+  password edit field via `IsPassword=true`), `PersonPictureAutomationPeer` (reports
+  display name or initials as name, Image control type), `HyperlinkButtonAutomationPeer`
+  (derives from `ButtonAutomationPeer`, overrides control type to `Hyperlink`), and
+  `CardAutomationPeer` (exposes the `Invoke` pattern when `IsClickable` is true).
   - Header and `Label` accessible names for `NumberBox`, `AutoSuggestBox`, `ToggleSwitch`,
     and `AppBarButton` exposed as the accessible name via the control's automation peer
     (`GetNameCore` override) and `AutomationProperties.Name`, so screen readers announce
