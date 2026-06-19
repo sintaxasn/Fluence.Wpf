@@ -50,9 +50,18 @@ namespace Fluence.Wpf.Automation
         protected override string GetNameCore()
         {
             string baseName = base.GetNameCore();
-            return !string.IsNullOrWhiteSpace(baseName)
-                ? baseName
-                : ToggleSwitch.HeaderContent?.ToString() ?? string.Empty;
+            if (!string.IsNullOrWhiteSpace(baseName))
+            {
+                return baseName;
+            }
+
+            object? header = ToggleSwitch.HeaderContent;
+            return header switch
+            {
+                string s => s,
+                System.Windows.Controls.TextBlock tb => tb.Text,
+                _ => header?.ToString() ?? string.Empty,
+            };
         }
 
         /// <inheritdoc />
