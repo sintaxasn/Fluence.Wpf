@@ -53,6 +53,11 @@ namespace Fluence.Wpf
         public static BackdropType CurrentBackdrop { get; private set; } = BackdropType.Auto;
 
         /// <summary>
+        /// Gets the currently resolved theme after applying the resolution algorithm to <see cref="CurrentTheme"/>.
+        /// </summary>
+        public static ApplicationTheme ResolvedTheme => FluenceThemeEngine.ResolvedTheme;
+
+        /// <summary>
         /// Gets a value indicating whether the Windows system (window-chrome) color mode is currently Dark.
         /// Reflects the live registry value; independent of <see cref="CurrentTheme"/>.
         /// </summary>
