@@ -362,9 +362,9 @@ Accessibility coverage includes focus visuals, high-contrast resources, automati
 | `RatingControl` | Slider | `AutomationProperties.Name` (current and maximum value are exposed through the RangeValue pattern, not the name) | RangeValue |
 | `ComboBox` | ComboBox | `PlaceholderText` or `AutomationProperties.Name` | ExpandCollapse, Selection |
 | `Slider` | Slider | `AutomationProperties.Name` or labeled by adjacent `TextBlock` | RangeValue |
-| `NumberBox` | Spinner | `Header` via automation peer `GetNameCore` / `AutomationProperties.Name` | RangeValue, Value |
+| `NumberBox` | Spinner | `Header` via automation peer `GetNameCore` / `AutomationProperties.Name` | RangeValue |
 | `TextBox` | Edit | `Header` or `AutomationProperties.Name` | Value, Text |
-| `PasswordBox` | Edit | `AutomationProperties.Name` (app-provided label); reveal button announces its state | Value |
+| `PasswordBox` | Edit | `AutomationProperties.Name` (app-provided label); reveal button announces its state | none |
 | `AutoSuggestBox` | Edit | `Header` via automation peer `GetNameCore` / `AutomationProperties.Name` | Value |
 | `NavigationView` | Navigation | `AutomationProperties.Name` on the control | Selection |
 | `NavigationViewItem` | ListItem | `Content` | SelectionItem |
