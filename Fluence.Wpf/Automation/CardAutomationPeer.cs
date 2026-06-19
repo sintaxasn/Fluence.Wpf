@@ -71,6 +71,11 @@ namespace Fluence.Wpf.Automation
                 throw new ElementNotEnabledException();
             }
 
+            if (!CardOwner.IsClickable)
+            {
+                throw new System.InvalidOperationException("The card is not clickable.");
+            }
+
             Card card = CardOwner;
             card.RaiseEvent(new RoutedEventArgs(Card.ClickEvent, card));
         }
