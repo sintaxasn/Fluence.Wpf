@@ -266,5 +266,15 @@ namespace Fluence.Wpf.Tests
             });
         }
 
+        [TestMethod]
+        public void ResolvedTheme_DefaultsToLight_BeforeFirstApply()
+        {
+            WpfTestSta.Invoke(static () =>
+            {
+                Assert.AreEqual(ApplicationTheme.Light, ApplicationThemeManager.ResolvedTheme,
+                    "ResolvedTheme must default to Light before the first theme pipeline run.");
+            });
+        }
+
     }
 }
