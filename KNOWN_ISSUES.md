@@ -97,17 +97,16 @@ Reference: https://learn.microsoft.com/dotnet/framework/whats-new/whats-new-in-a
   .NET Framework 4.8) - on 4.8+ WPF automatically computes and exposes
   `PositionInSet` and `SizeOfSet` UI Automation properties for items inside an
   `ItemsControl`, so screen readers can announce "item 2 of 5" without explicit
-  annotation. On net472 these values are not computed automatically. Where
-  Fluence controls expose sets that benefit from explicit position annotation
-  (for example `NavigationViewItem` inside a `NavigationView`, `TabViewItem`
-  inside a `TabView`, and `PipsPager` dots) the automation peers set these
-  values explicitly in `GetSizeOfSetCore` and `GetPositionInSetCore`. Controls
-  whose set membership is determined entirely by application-supplied items
-  (`ListBox`, `ListView`, `TreeView`, `ComboBox`) do not override these methods;
-  on net472 those controls will not announce set position. Applications that
-  require position announcements on net472 should set
-  `AutomationProperties.PositionInSet` and `AutomationProperties.SizeOfSet`
-  explicitly on each item in XAML or code.
+  annotation. On net472 these values are not computed automatically. Fluence's
+  automation peers do not currently override `GetPositionInSetCore` /
+  `GetSizeOfSetCore`, so set position is not annotated explicitly on either TFM;
+  on net472, controls such as `NavigationViewItem` inside a `NavigationView`,
+  `TabViewItem` inside a `TabView`, and `PipsPager` dots therefore do not
+  announce set position, and the application-item controls (`ListBox`,
+  `ListView`, `TreeView`, `ComboBox`) rely solely on the 4.8+ automatic
+  computation. Applications that require position announcements on net472 (or for
+  any control) should set `AutomationProperties.PositionInSet` and
+  `AutomationProperties.SizeOfSet` explicitly on each item in XAML or code.
 
 ## Deferred runtime test coverage
 

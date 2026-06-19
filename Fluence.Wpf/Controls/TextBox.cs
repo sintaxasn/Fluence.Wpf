@@ -358,6 +358,11 @@ namespace Fluence.Wpf.Controls
                 switch (ValidationState)
                 {
                     case ValidationState.Success:
+                        // Success clears the error/warning text, so reset the announce gate: a
+                        // later transition back to Warning/Error must re-announce even if the
+                        // message is identical to the one announced before this success.
+                        _lastAnnouncedState = ValidationState.None;
+                        _lastAnnouncedMessage = string.Empty;
                         AutomationProperties.SetHelpText(this, string.Empty);
                         helper.SetResourceReference(System.Windows.Controls.TextBlock.ForegroundProperty, "SystemFillColorSuccessBrush");
                         break;
