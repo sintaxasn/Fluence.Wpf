@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- `ApplicationThemeManager.ResolvedTheme` - a new read-only public property that returns the concrete theme (`Light`, `Dark`, or `HighContrast`) resolved and applied during the most recent `Apply` call. When `CurrentTheme` is `Auto`, it reflects the OS theme at the time of the last `Apply` rather than `Auto` itself. Defaults to `Light` before the first `Apply`.
+
 ## [0.8.1-preview] - 2026-06-17
 
 ### Added

@@ -57,7 +57,8 @@ namespace Fluence.Wpf
         /// the most recent <see cref="Apply"/> call. When <see cref="CurrentTheme"/> is
         /// <see cref="ApplicationTheme.Auto"/>, this reflects the OS theme at the time of the last
         /// <c>Apply</c>; it does not update automatically when the OS theme changes without a subsequent
-        /// <c>Apply</c>.
+        /// <c>Apply</c>. Before the first <c>Apply</c> call, this property returns
+        /// <see cref="ApplicationTheme.Light"/> as the pre-initialization default.
         /// </summary>
         public static ApplicationTheme ResolvedTheme => FluenceThemeEngine.ResolvedTheme;
 
