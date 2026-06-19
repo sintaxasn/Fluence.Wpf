@@ -136,7 +136,7 @@ namespace Fluence.Wpf.Controls
                 nameof(IsPasswordRevealed),
                 typeof(bool),
                 typeof(PasswordBox),
-                new FrameworkPropertyMetadata(defaultValue: false));
+                new FrameworkPropertyMetadata(defaultValue: false, OnIsPasswordRevealedChanged));
 
         /// <summary>
         /// Identifies the <see cref="IsPasswordRevealed"/> dependency property.
@@ -611,10 +611,17 @@ namespace Fluence.Wpf.Controls
             }
             else
             {
-                // No mouse gesture active: Space/Enter keyboard activation.
+                // No mouse gesture active: Space/Enter keyboard activation. The reveal button's
+                // accessible name is refreshed by OnIsPasswordRevealedChanged when the value flips.
                 IsPasswordRevealed = !IsPasswordRevealed;
-                UpdateRevealButtonAccessibleName();
             }
+        }
+
+        private static void OnIsPasswordRevealedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            // Keep the reveal button's accessible name in sync for every path that toggles the
+            // revealed state (keyboard Space/Enter and mouse press-and-hold), not just the keyboard path.
+            ((PasswordBox)d).UpdateRevealButtonAccessibleName();
         }
 
         private void UpdateRevealButtonAccessibleName()

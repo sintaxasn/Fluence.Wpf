@@ -396,10 +396,22 @@ namespace Fluence.Wpf.Tests
                         string.Equals("Share", peer.GetName(), StringComparison.Ordinal),
                         "AppBarButton Label must be the accessible name when no explicit AutomationProperties.Name is set.");
 
+                    // A later Label change (e.g. via binding) must keep the auto-derived name in sync.
+                    button.Label = "Send";
+                    Assert.IsTrue(
+                        string.Equals("Send", peer.GetName(), StringComparison.Ordinal),
+                        "A later Label change must update the auto-derived accessible name.");
+
                     button.SetValue(AutomationProperties.NameProperty, "Explicit");
                     Assert.IsTrue(
                         string.Equals("Explicit", peer.GetName(), StringComparison.Ordinal),
                         "Explicit AutomationProperties.Name must win over Label.");
+
+                    // Once an explicit name diverges from the label, later Label changes must not clobber it.
+                    button.Label = "Forward";
+                    Assert.IsTrue(
+                        string.Equals("Explicit", peer.GetName(), StringComparison.Ordinal),
+                        "An explicit AutomationProperties.Name must survive later Label changes.");
                 }
                 finally
                 {

@@ -460,6 +460,10 @@ namespace Fluence.Wpf.Demo.Pages
                                                    "            Header=\"Email\"\n" +
                                                    "            PlaceholderText=\"Enter an email address\"\n" +
                                                    "            TextChanged=\"LiveRegionValidation_TextChanged\" />\n" +
+                                                   "        <TextBlock\n" +
+                                                   "            x:Name=\"LiveRegionValidationStatus\"\n" +
+                                                   "            Foreground=\"{DynamicResource SystemFillColorCriticalBrush}\"\n" +
+                                                   "            Text=\"\" />\n" +
                                                    "    </StackPanel>\n" +
                                                    "</UserControl>\n";
 

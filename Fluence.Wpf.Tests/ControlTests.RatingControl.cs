@@ -306,5 +306,45 @@ namespace Fluence.Wpf.Tests
                 window.Close();
             });
         }
+
+        [TestMethod]
+        public void RatingControl_Peer_SetValue_RespectsReadOnlyAndDisabled()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? application = EnsureApplication();
+                _ = MergeGenericDictionary(application);
+                RatingControl rating = new() { Value = 2 };
+                Window window = new() { Content = rating, Width = 300, Height = 100 };
+                window.Show();
+                _ = rating.ApplyTemplate();
+                DrainDispatcher(window.Dispatcher);
+
+                AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(rating);
+                IRangeValueProvider range = (IRangeValueProvider)peer.GetPattern(PatternInterface.RangeValue);
+
+                // Read-only: SetValue must throw and leave the value unchanged.
+                rating.IsReadOnly = true;
+                DrainDispatcher(window.Dispatcher);
+                Assert.IsTrue(range.IsReadOnly, "Peer must report read-only when the control is read-only.");
+                _ = Assert.ThrowsExactly<System.InvalidOperationException>(() => range.SetValue(4.0));
+                Assert.AreEqual(2.0, rating.Value, 0.001, "A read-only control's value must not change via UIA.");
+
+                // Disabled: SetValue must throw ElementNotEnabledException.
+                rating.IsReadOnly = false;
+                rating.IsEnabled = false;
+                DrainDispatcher(window.Dispatcher);
+                _ = Assert.ThrowsExactly<System.Windows.Automation.ElementNotEnabledException>(() => range.SetValue(4.0));
+                Assert.AreEqual(2.0, rating.Value, 0.001, "A disabled control's value must not change via UIA.");
+
+                // Enabled and writable: SetValue applies.
+                rating.IsEnabled = true;
+                DrainDispatcher(window.Dispatcher);
+                range.SetValue(4.0);
+                Assert.AreEqual(4.0, rating.Value, 0.001, "An enabled, writable control should accept the new value.");
+
+                window.Close();
+            });
+        }
     }
 }

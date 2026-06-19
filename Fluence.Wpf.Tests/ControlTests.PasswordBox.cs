@@ -190,6 +190,8 @@ namespace Fluence.Wpf.Tests
 
                     Assert.IsTrue(box.IsPasswordRevealed,
                         "Password must be revealed while the mouse button is held down (press-and-hold).");
+                    Assert.AreEqual("Hide password", AutomationProperties.GetName(revealButton),
+                        "The reveal button's accessible name must reflect the revealed state during a mouse press-and-hold.");
 
                     // Simulate PreviewMouseLeftButtonUp - password should hide on release.
                     MouseButtonEventArgs upArgs = new(
@@ -205,6 +207,8 @@ namespace Fluence.Wpf.Tests
 
                     Assert.IsFalse(box.IsPasswordRevealed,
                         "Password must be hidden immediately after mouse button is released.");
+                    Assert.AreEqual("Show password", AutomationProperties.GetName(revealButton),
+                        "The reveal button's accessible name must reset once the mouse press-and-hold ends.");
 
                     // WPF fires Click after MouseLeftButtonUp completes. Explicitly raise it
                     // here to reproduce the regression: without the fix the Click handler

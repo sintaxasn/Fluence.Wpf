@@ -99,7 +99,13 @@ namespace Fluence.Wpf.Controls
         {
             AppBarButton button = (AppBarButton)d;
             string? existing = AutomationProperties.GetName(button);
-            if (string.IsNullOrWhiteSpace(existing))
+
+            // Keep the accessible name in sync with Label while it was auto-derived: when no name is
+            // set, or when the current name still matches the previous label. This preserves an
+            // explicit name the app set to something other than the old label, while keeping
+            // binding-driven label changes reflected in the accessible name.
+            if (string.IsNullOrWhiteSpace(existing)
+                || string.Equals(existing, e.OldValue as string, System.StringComparison.Ordinal))
             {
                 AutomationProperties.SetName(button, e.NewValue as string ?? string.Empty);
             }

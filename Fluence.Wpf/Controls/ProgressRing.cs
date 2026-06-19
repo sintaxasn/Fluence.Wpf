@@ -527,6 +527,8 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
+            // CreatePeerForElement is annotated non-null, so peer is provably non-null here (CA1508
+            // rejects a redundant null guard); no NullReferenceException is possible.
             AutomationPeer peer = UIElementAutomationPeer.FromElement(this) ?? UIElementAutomationPeer.CreatePeerForElement(this);
             peer.RaiseAutomationEvent(AutomationEvents.LiveRegionChanged);
         }
@@ -605,8 +607,10 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            ProgressRingAutomationPeer peer = (ProgressRingAutomationPeer)(UIElementAutomationPeer.FromElement(this) ?? UIElementAutomationPeer.CreatePeerForElement(this));
-            peer.RaiseValuePropertyChangedEvent(oldValue, newValue);
+            if ((UIElementAutomationPeer.FromElement(this) ?? UIElementAutomationPeer.CreatePeerForElement(this)) is ProgressRingAutomationPeer peer)
+            {
+                peer.RaiseValuePropertyChangedEvent(oldValue, newValue);
+            }
         }
 
         private static void OnStrokeThicknessChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

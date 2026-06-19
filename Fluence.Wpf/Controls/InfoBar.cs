@@ -302,6 +302,8 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
+            // CreatePeerForElement is annotated non-null, so peer is provably non-null here (CA1508
+            // rejects a redundant null guard); no NullReferenceException is possible.
             AutomationPeer peer = UIElementAutomationPeer.FromElement(this) ?? UIElementAutomationPeer.CreatePeerForElement(this);
             peer.RaiseAutomationEvent(AutomationEvents.LiveRegionChanged);
         }

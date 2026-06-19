@@ -81,8 +81,20 @@ namespace Fluence.Wpf.Automation
         public virtual bool IsReadOnly => RatingControl.IsReadOnly || !RatingControl.IsEnabled;
 
         /// <inheritdoc />
+        /// <exception cref="ElementNotEnabledException">The control is disabled.</exception>
+        /// <exception cref="System.InvalidOperationException">The control is read-only.</exception>
         public virtual void SetValue(double value)
         {
+            if (!IsEnabled())
+            {
+                throw new ElementNotEnabledException();
+            }
+
+            if (RatingControl.IsReadOnly)
+            {
+                throw new System.InvalidOperationException("The rating control is read-only and its value cannot be set.");
+            }
+
             RatingControl.Value = value;
         }
 

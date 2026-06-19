@@ -359,25 +359,25 @@ Accessibility coverage includes focus visuals, high-contrast resources, automati
 | `CheckBox` | CheckBox | `Content`; `AutomationProperties.HelpText` carries description | Toggle |
 | `RadioButton` | RadioButton | `Content`; `AutomationProperties.HelpText` carries description | Selection |
 | `ToggleSwitch` | Button | `Header` via automation peer `GetNameCore` / `AutomationProperties.Name` | Toggle |
-| `RatingControl` | Slider | Value and maximum in name (e.g. "Rating 3 of 5") | RangeValue |
+| `RatingControl` | Slider | `AutomationProperties.Name` (current and maximum value are exposed through the RangeValue pattern, not the name) | RangeValue |
 | `ComboBox` | ComboBox | `PlaceholderText` or `AutomationProperties.Name` | ExpandCollapse, Selection |
 | `Slider` | Slider | `AutomationProperties.Name` or labeled by adjacent `TextBlock` | RangeValue |
 | `NumberBox` | Spinner | `Header` via automation peer `GetNameCore` / `AutomationProperties.Name` | RangeValue, Value |
 | `TextBox` | Edit | `Header` or `AutomationProperties.Name` | Value, Text |
-| `PasswordBox` | Edit | `Header` or `AutomationProperties.Name`; reveal button announces state | Value |
+| `PasswordBox` | Edit | `AutomationProperties.Name` (app-provided label); reveal button announces its state | Value |
 | `AutoSuggestBox` | Edit | `Header` via automation peer `GetNameCore` / `AutomationProperties.Name` | Value |
 | `NavigationView` | Navigation | `AutomationProperties.Name` on the control | Selection |
 | `NavigationViewItem` | ListItem | `Content` | SelectionItem |
 | `TabView` | Tab | `AutomationProperties.Name` on the control | Selection |
 | `TabViewItem` | TabItem | `Header` | SelectionItem |
-| `InfoBar` | StatusBar | Severity and message in name | none (live region) |
+| `InfoBar` | StatusBar | `Title` (or `AutomationProperties.Name`); message is announced via the live region | none (live region) |
 | `ProgressBar` | ProgressBar | `AutomationProperties.Name` | RangeValue |
 | `ProgressRing` | ProgressBar | `AutomationProperties.Name` | RangeValue |
-| `Card` | Button (when clickable) / Group (non-clickable) | `Header` or `AutomationProperties.Name` | Invoke (when clickable) |
+| `Card` | Button (when clickable) / Group (non-clickable) | `AutomationProperties.Name` (or its content) | Invoke (when clickable) |
 | `PersonPicture` | Image | Display name or initials | none |
 | `ContentDialog` | Window | `Title` | none (focus trapped inside) |
 | `TeachingTip` | ToolTip | `Title` and `Subtitle` (live region) | none |
-| `AppBarButton` | Button | `Label` via automation peer `GetNameCore` / `AutomationProperties.Name` | Invoke |
+| `AppBarButton` | Button | `Label` (surfaced as `AutomationProperties.Name`) or an explicit `AutomationProperties.Name` | Invoke |
 
 #### Live regions on net472
 
@@ -420,7 +420,7 @@ See `KNOWN_ISSUES.md` for the full rationale and chosen fallbacks:
 - `AutomationPeer.RaiseNotificationEvent` - substituted with `LiveRegionChanged` (described above).
 - `AutomationProperties.IsDialog` - `ContentDialog` uses `ControlType.Window` and focus trapping as a fallback.
 - `AutomationProperties.HeadingLevel` - not used by the library; app-layer concern.
-- Automatic `PositionInSet`/`SizeOfSet` for `ItemsControl` - set explicitly in peers where meaningful.
+- Automatic `PositionInSet`/`SizeOfSet` for `ItemsControl` - peers do not override `GetPositionInSetCore`/`GetSizeOfSetCore` on either TFM; apps set `AutomationProperties.PositionInSet`/`SizeOfSet` explicitly on items where meaningful.
 
 ## FluenceWindow
 

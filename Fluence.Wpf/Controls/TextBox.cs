@@ -303,9 +303,12 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Raises <see cref="AutomationEvents.LiveRegionChanged"/> on this control's automation peer
-        /// so Narrator announces the current validation message without moving focus.
-        /// Uses only net472-safe APIs (no RaiseNotificationEvent).
+        /// Raises <see cref="AutomationEvents.LiveRegionChanged"/> on the helper-text element so
+        /// Narrator announces the current validation message without moving focus. The helper text
+        /// (whose <see cref="System.Windows.Controls.TextBlock.Text"/> is the message and which declares
+        /// <see cref="AutomationProperties.LiveSettingProperty"/> in the template) is the correct target;
+        /// the control falls back to its own peer only when the part is unavailable. Uses only
+        /// net472-safe APIs (no RaiseNotificationEvent).
         /// </summary>
         private void AnnounceLiveRegion()
         {
@@ -314,7 +317,10 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            AutomationPeer peer = UIElementAutomationPeer.FromElement(this) ?? UIElementAutomationPeer.CreatePeerForElement(this);
+            // CreatePeerForElement is annotated non-null, so peer is provably non-null here (CA1508
+            // rejects a redundant null guard); no NullReferenceException is possible.
+            UIElement target = GetTemplateChild(PART_HelperText) as System.Windows.Controls.TextBlock ?? (UIElement)this;
+            AutomationPeer peer = UIElementAutomationPeer.FromElement(target) ?? UIElementAutomationPeer.CreatePeerForElement(target);
             peer.RaiseAutomationEvent(AutomationEvents.LiveRegionChanged);
         }
 
