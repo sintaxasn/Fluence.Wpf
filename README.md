@@ -33,11 +33,11 @@ Windows 11 Fluent Design controls and theming for WPF applications targeting **.
 
 | Light Mode | Dark Mode       |
 |:----------:|:---------------:|
-| ![Home (Light)](https://github.com/user-attachments/assets/edbba17f-347e-4a7c-bb37-0a39b9e849dd) | ![Home (Dark)](https://github.com/user-attachments/assets/358f7804-9d13-4f2f-9167-1eacef6350fa) |
-| ![Buttons (Light)](https://github.com/user-attachments/assets/77eeeab8-e5bd-4b34-a3ce-186783990dc0) | ![Buttons (Dark)](https://github.com/user-attachments/assets/f6499937-f4a8-449c-959a-2e0167613d37) |
-| ![Status (Light)](https://github.com/user-attachments/assets/b5dc5bfe-3c73-49b1-8ccd-c6769027ff2e) | ![Status (Dark)](https://github.com/user-attachments/assets/9b50b401-f79c-4940-a6c8-05ba5be6355d) |
-| ![MVVM (Light)](https://github.com/user-attachments/assets/cb3d6401-59f5-46a2-81d3-404806b2ec9f) | ![MVVM (Dark)](https://github.com/user-attachments/assets/bb5d9c26-c8d9-4890-9c02-f0baed88bc97) |
-| ![PowerShell (Light)](https://github.com/user-attachments/assets/5b271459-2fe6-4edc-8431-2a7fd0b6aa71) | ![PowerShell (Dark)](https://github.com/user-attachments/assets/3b7bead7-a567-457c-a89d-4c9bd97c3a48) |
+| ![Home (Light)](./docs/screenshots/gallery-home-light.png) | ![Home (Dark)](./docs/screenshots/gallery-home-dark.png) |
+| ![Buttons (Light)](./docs/screenshots/gallery-buttons-light.png) | ![Buttons (Dark)](./docs/screenshots/gallery-buttons-dark.png) |
+| ![Status (Light)](./docs/screenshots/gallery-status-light.png) | ![Status (Dark)](./docs/screenshots/gallery-status-dark.png) |
+| ![MVVM (Light)](./docs/screenshots/mvvm-light.png) | ![MVVM (Dark)](./docs/screenshots/mvvm-dark.png) |
+| ![PowerShell (Light)](./docs/screenshots/powershell-light.png) | ![PowerShell (Dark)](./docs/screenshots/powershell-dark.png) |
 
 ## Quick Start
 
