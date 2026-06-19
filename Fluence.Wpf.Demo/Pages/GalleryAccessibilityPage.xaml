@@ -62,7 +62,7 @@
                         <ui:TextBox
                             Grid.Row="0"
                             Grid.Column="2"
-                            Margin="0,0,12,12"
+                            Margin="0,8,12,12"
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Center"
                             AutomationProperties.Name="Focusable text input"
@@ -239,12 +239,12 @@
             <ContentControl x:Name="DemoSampleSlot03DemoContentHost" Visibility="Collapsed">
                 <StackPanel>
                     <TextBlock
-                        Margin="0,0,0,8"
+                        Margin="0,0,0,16"
                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                         Style="{StaticResource BodyTextBlockStyle}"
                         Text="These icon-only buttons all have AutomationProperties.Name so Narrator announces their purpose:"
                         TextWrapping="Wrap" />
-                    <StackPanel Orientation="Horizontal">
+                    <ui:StackPanel Orientation="Horizontal" Spacing="16">
                         <ui:Button
                             x:Name="AutomationNewDocumentButton"
                             Width="36"
@@ -294,7 +294,7 @@
                             AutomationProperties.Name="Share">
                             <ui:FontIcon Glyph="&#xE72D;" IconFontSize="18" />
                         </ui:Button>
-                    </StackPanel>
+                    </ui:StackPanel>
                     <TextBlock
                         Margin="0,12,0,0"
                         Foreground="{DynamicResource TextFillColorTertiaryBrush}"
@@ -356,7 +356,10 @@
                 Text="Fluence uses AutomationProperties.LiveSetting and LiveRegionChanged to announce status changes to screen readers on both net472 and net10. Trigger an InfoBar or a validation error below and listen with Narrator to hear the announcement." />
             <ContentControl x:Name="DemoSampleSlot05DemoContentHost" Visibility="Collapsed">
                 <StackPanel>
-                    <StackPanel Margin="0,0,0,12" Orientation="Horizontal">
+                    <ui:StackPanel
+                        Margin="0,0,0,12"
+                        Orientation="Horizontal"
+                        Spacing="8">
                         <ui:Button
                             x:Name="LiveRegionInfoButton"
                             Margin="0,0,8,0"
@@ -369,7 +372,7 @@
                             AutomationProperties.Name="Dismiss announcement"
                             Click="LiveRegionDismissButton_Click"
                             Content="Dismiss" />
-                    </StackPanel>
+                    </ui:StackPanel>
                     <ui:InfoBar
                         x:Name="LiveRegionInfoBar"
                         Title="Live region demo"
@@ -378,7 +381,7 @@
                         Message="This message was announced by a live region when the InfoBar opened."
                         Severity="{x:Static uicore:InfoBarSeverity.Informational}" />
                     <TextBlock
-                        Margin="0,16,0,4"
+                        Margin="0,8,0,16"
                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                         Style="{StaticResource BodyTextBlockStyle}"
                         Text="Validation error live region:"

@@ -8,7 +8,7 @@
     <RootNamespace>Fluence.Wpf.Demo.Mvvm</RootNamespace>
     <AssemblyName>Fluence.Wpf.Demo.Mvvm</AssemblyName>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-    <ApplicationIcon>Resources\fluence-wpf-appicon-256.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\Fluence.ico</ApplicationIcon>
     <NoWarn>$(NoWarn);CS1591;VSTHRD001</NoWarn>
   </PropertyGroup>
 
@@ -21,7 +21,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Resources\fluence-wpf-appicon-256.ico" />
+    <Resource Include="Resources\Fluence.ico" />
   </ItemGroup>
 
   <ItemGroup>

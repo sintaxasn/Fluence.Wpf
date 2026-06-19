@@ -1,9 +1,9 @@
 ﻿# Repo-owned XAML formatter hook (PostToolUse on Edit/Write/MultiEdit).
 # Formats each edited .xaml with the pinned XAML Styler tool and the committed reference
-# style (Settings.XamlStyler), via eng/Format-Xaml.ps1 (single source of truth, which also
+# style (Settings.XamlStyler), via .claude/hooks/Format-Xaml.ps1 (single source of truth, which also
 # enforces LF + single UTF-8 BOM and skips generated XAML). Runs BEFORE post-tool-util.ps1
 # so the linter sees the already-formatted result. Non-blocking: formatting issues never
-# fail the tool call; the CI check (eng/Format-Xaml.ps1 -Check) is the hard gate.
+# fail the tool call; the CI check (.claude/hooks/Format-Xaml.ps1 -Check) is the hard gate.
 $ErrorActionPreference = "Stop"
 
 function Get-ProjectRoot {
@@ -31,7 +31,7 @@ if ($null -ne $payload.tool_input.edits) {
     }
 }
 
-$formatter = Join-Path $projectRoot "eng/Format-Xaml.ps1"
+$formatter = Join-Path $projectRoot ".claude/hooks/Format-Xaml.ps1"
 if (-not (Test-Path -LiteralPath $formatter)) { exit 0 }
 
 $seen = New-Object "System.Collections.Generic.HashSet[string]" ([System.StringComparer]::OrdinalIgnoreCase)
@@ -47,7 +47,7 @@ foreach ($raw in $paths) {
 
     try {
         # Use the same host the hook runs under (powershell.exe per .claude/settings.json);
-        # eng/Format-Xaml.ps1 is 5.1-compatible, so this avoids a hard dependency on pwsh 7.
+        # .claude/hooks/Format-Xaml.ps1 is 5.1-compatible, so this avoids a hard dependency on pwsh 7.
         & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $formatter -Path $full *> $null
     }
     catch {

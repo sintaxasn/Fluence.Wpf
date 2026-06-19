@@ -6,6 +6,38 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.8.5-preview] - 2026-06-19
+
+### Changed
+
+- Refreshed brand assets across the project to the updated Fluence logo. The NuGet
+  package icon now uses the dual-use `Fluence_Logo_128.png`; the gallery and MVVM
+  demos share an updated multi-resolution `Fluence.ico` app icon; the gallery
+  home-page hero banner uses the side-by-side lockup (`Fluence_Lockup_SideBySide_*`),
+  selected by ink color so the wordmark stays legible in every theme; and the README
+  header uses the theme-aware Open Graph card (`Fluence_OGImage_*`) via a
+  `prefers-color-scheme` `<picture>` element. Documentation screenshots regenerated.
+- Polished the gallery Accessibility page demo layout: consistent inter-control
+  spacing via `Spacing` on `StackPanel` and tightened margins in the focusable-input,
+  icon-only-button, and live-region samples.
+- Relocated the XAML formatter script from `eng/Format-Xaml.ps1` to
+  `.claude/hooks/Format-Xaml.ps1`, co-located with the formatting hook that wraps it;
+  updated the CI workflow, PR template, hook, and contributor docs to match.
+
+### Fixed
+
+- Gallery home-page hero banner stays legible under High Contrast. The new lockups
+  are transparent (the previous banners carried an opaque background), so the wordmark
+  ink is now selected from the live surface luminance instead of assuming a light
+  surface, keeping it readable on a High-Contrast-Dark scheme.
+
+### Removed
+
+- Retired the previous brand asset family (`fluence-wpf-banner-*`,
+  `fluence-wpf-appicon-*`, `fluence-wpf-nuget-icon-128`, `fluence-wpf-og-card-*`,
+  `fluence-wpf-square-*`, `fluence-wpf-twitter-header-*`, `fluence-wpf-github-header`)
+  and the generated banner vector XAML.
+
 ## [0.8.2-preview] - 2026-06-17
 
 ### Added

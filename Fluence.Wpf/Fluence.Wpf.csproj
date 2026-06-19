@@ -12,7 +12,7 @@
     <Product>Fluence.Wpf</Product>
     <Title>Fluence.Wpf</Title>
     <PackageId>Fluence.Wpf</PackageId>
-    <VersionPrefix>0.8.2</VersionPrefix>
+    <VersionPrefix>0.8.5</VersionPrefix>
     <VersionSuffix>preview</VersionSuffix>
     <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/sintaxasn/Fluence.Wpf</PackageProjectUrl>
@@ -20,7 +20,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>wpf;fluent;fluent-design;windows11;controls;theme</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageIcon>fluence-wpf-nuget-icon-128.png</PackageIcon>
+    <PackageIcon>Fluence_Logo_128.png</PackageIcon>
   </PropertyGroup>
 
 
@@ -34,7 +34,7 @@
 
   <ItemGroup Label="NuGet package content">
     <None Include="..\README.md" Pack="true" PackagePath="\" />
-    <None Include="..\assets\fluence-wpf-nuget-icon-128.png" Pack="true" PackagePath="\" />
+    <None Include="..\assets\Fluence_Logo_128.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">

@@ -13,7 +13,6 @@
     Generated XAML is excluded (it must not be reformatted):
       * Fluence.Wpf/Properties/DesignTime.*.xaml  - emitted byte-for-byte by DesignTimeResourceWriter;
         reformatting would break the DesignTimeResources_AreCurrent drift guard.
-      * **/Resources/fluence-wpf-banner-*.xaml     - generated vector geometry (excluded from Page compile).
 
     After styling, LF line endings and a UTF-8 BOM are enforced to satisfy the repo's
     .gitattributes (eol=lf) and .editorconfig (charset=utf-8-bom).
@@ -25,11 +24,11 @@
     One or more specific .xaml files to process. When omitted, all git-tracked .xaml are processed.
 
 .EXAMPLE
-    pwsh eng/Format-Xaml.ps1            # format all authored XAML
+    pwsh .claude/hooks/Format-Xaml.ps1            # format all authored XAML
 .EXAMPLE
-    pwsh eng/Format-Xaml.ps1 -Check     # CI: fail if any authored XAML is unformatted
+    pwsh .claude/hooks/Format-Xaml.ps1 -Check     # CI: fail if any authored XAML is unformatted
 .EXAMPLE
-    pwsh eng/Format-Xaml.ps1 -Path Fluence.Wpf.Demo/MainWindow.xaml
+    pwsh .claude/hooks/Format-Xaml.ps1 -Path Fluence.Wpf.Demo/MainWindow.xaml
 #>
 [CmdletBinding()]
 param(
@@ -39,7 +38,8 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-$repoRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
+# This script lives in .claude/hooks/, so the repo root is two levels up.
+$repoRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..'))
 $config = Join-Path $repoRoot 'Settings.XamlStyler'
 
 if (-not (Test-Path -LiteralPath $config)) {
@@ -51,7 +51,6 @@ if (-not (Test-Path -LiteralPath $config)) {
 function Test-Excluded {
     param([string]$RelativePath)
     if ($RelativePath -match '(^|/)Fluence\.Wpf/Properties/DesignTime\.[^/]+\.xaml$') { return $true }
-    if ($RelativePath -match '(^|/)Resources/fluence-wpf-banner-[^/]*\.xaml$') { return $true }
     return $false
 }
 
@@ -127,7 +126,7 @@ try {
 
     if ($Check) {
         if ($failed.Count -gt 0) {
-            Write-Error ("XAML format check failed for $($failed.Count) file(s). Run 'pwsh eng/Format-Xaml.ps1' to fix:`n  " + ($failed -join "`n  "))
+            Write-Error ("XAML format check failed for $($failed.Count) file(s). Run 'pwsh .claude/hooks/Format-Xaml.ps1' to fix:`n  " + ($failed -join "`n  "))
             exit 1
         }
         Write-Host "XAML format check passed ($($targets.Count) files)."

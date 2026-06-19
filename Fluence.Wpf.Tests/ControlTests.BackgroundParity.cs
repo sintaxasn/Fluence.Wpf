@@ -658,9 +658,7 @@ namespace Fluence.Wpf.Tests
         private static bool IsBackgroundLiteralAllowedPath(string path)
         {
             string fileName = Path.GetFileName(path);
-            return fileName.Equals("fluence-wpf-banner-light.xaml", StringComparison.OrdinalIgnoreCase) ||
-                fileName.Equals("fluence-wpf-banner-dark.xaml", StringComparison.OrdinalIgnoreCase) ||
-                fileName.Equals("GalleryAccessibilityPage.xaml", StringComparison.OrdinalIgnoreCase);
+            return fileName.Equals("GalleryAccessibilityPage.xaml", StringComparison.OrdinalIgnoreCase);
         }
 
         private static bool IsBackgroundLiteralAllowedValue(string path, string value)

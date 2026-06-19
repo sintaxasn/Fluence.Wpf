@@ -39,11 +39,14 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryHomePage : UserControl
     {
+        // The lockup assets are named by ink color (the "_Dark" lockup paints dark text for a
+        // light surface; the "_Light" lockup paints light text for a dark surface), so the light
+        // theme pairs with the dark-ink lockup and the dark theme pairs with the light-ink lockup.
         private static readonly Uri LightBannerUri =
-            new("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/fluence-wpf-banner-light.png", UriKind.Absolute);
+            new("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/Fluence_Lockup_SideBySide_Dark.png", UriKind.Absolute);
 
         private static readonly Uri DarkBannerUri =
-            new("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/fluence-wpf-banner-dark.png", UriKind.Absolute);
+            new("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/Fluence_Lockup_SideBySide_Light.png", UriKind.Absolute);
 
         private Uri? _currentBannerUri;
 
@@ -73,19 +76,18 @@ namespace Fluence.Wpf.Demo.Pages
 
         private void UpdateBrandBanner()
         {
-            ApplicationTheme theme = ApplicationThemeManager.CurrentTheme;
-            if (theme is ApplicationTheme.Light or ApplicationTheme.Dark or ApplicationTheme.HighContrast)
-            {
-                UpdateBrandBanner(theme);
-                return;
-            }
-
-            UpdateBrandBanner(IsCurrentBackgroundDark() ? ApplicationTheme.Dark : ApplicationTheme.Light);
+            UpdateBrandBanner(ApplicationThemeManager.CurrentTheme);
         }
 
         private void UpdateBrandBanner(ApplicationTheme theme)
         {
-            Uri bannerUri = theme is ApplicationTheme.Light or ApplicationTheme.HighContrast ? LightBannerUri : DarkBannerUri;
+            // The lockups are transparent and sit directly on the page surface with no backplate,
+            // so the wordmark ink must match the surface luminance. Light and Dark themes map
+            // directly; high contrast (and any unresolved theme such as Auto) can present either a
+            // light or a dark surface, so probe the live background and pick the legible ink.
+            bool darkSurface = theme is ApplicationTheme.Dark
+                || (theme is not ApplicationTheme.Light && IsCurrentBackgroundDark());
+            Uri bannerUri = darkSurface ? DarkBannerUri : LightBannerUri;
             if (Equals(_currentBannerUri, bannerUri))
             {
                 return;

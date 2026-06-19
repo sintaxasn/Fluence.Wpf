@@ -1,8 +1,11 @@
-﻿![Fluence.Wpf](./assets/fluence-wpf-github-header.png)
+﻿<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./assets/Fluence_OGImage_Dark.png" />
+  <img alt="Fluence.Wpf" src="./assets/Fluence_OGImage_Light.png" />
+</picture>
 
 Windows 11 Fluent Design controls and theming for WPF applications targeting **.NET Framework 4.7.2** and **Windows 10** (1809+), with enhanced visuals on **Windows 11**.
 
-**Current build:** `0.8.2-preview` (2026-06-17).
+**Current build:** `0.8.5-preview` (2026-06-19).
 
 **Docs:** see the Markdown guides under [`docs/`](docs/) (start with [Getting started](docs/getting-started.md)).
 

@@ -161,8 +161,8 @@ namespace Fluence.Wpf.Tests
                     Image? image = FindByName<Image>(page, "BrandBannerImage");
                     Assert.IsNotNull(image, "Home page should expose the brand banner image.");
                     Assert.IsInstanceOfType(image.Source, typeof(BitmapImage), "The light banner PNG should load as an image source.");
-                    Assert.AreEqual("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/fluence-wpf-banner-light.png", image.Tag as string,
-                        "Light theme should use the light banner graphic.");
+                    Assert.AreEqual("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/Fluence_Lockup_SideBySide_Dark.png", image.Tag as string,
+                        "Light theme should use the dark-ink lockup (dark text on a light surface).");
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
                     Drain(window.Dispatcher);
@@ -170,16 +170,61 @@ namespace Fluence.Wpf.Tests
                     Drain(window.Dispatcher);
 
                     Assert.IsInstanceOfType(image.Source, typeof(BitmapImage), "The dark banner PNG should load as an image source.");
-                    Assert.AreEqual("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/fluence-wpf-banner-dark.png", image.Tag as string,
-                        "Dark theme should use the dark banner graphic.");
+                    Assert.AreEqual("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/Fluence_Lockup_SideBySide_Light.png", image.Tag as string,
+                        "Dark theme should use the light-ink lockup (light text on a dark surface).");
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
-                    Assert.AreEqual("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/fluence-wpf-banner-light.png", image.Tag as string,
-                        "Returning to light theme should restore the light banner graphic.");
+                    Assert.AreEqual("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/Fluence_Lockup_SideBySide_Dark.png", image.Tag as string,
+                        "Returning to light theme should restore the dark-ink lockup.");
+                }
+                finally
+                {
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
+        public void GalleryHomePage_BrandBannerInkMatchesHighContrastSurface()
+        {
+            RunOnSta(static delegate
+            {
+                EnsureTheme();
+                GalleryHomePage page = new();
+                Window window = CreateHostWindow(page);
+                try
+                {
+                    ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, updateAccent: true);
+                    Drain(window.Dispatcher);
+                    window.UpdateLayout();
+                    Drain(window.Dispatcher);
+
+                    Image? image = FindByName<Image>(page, "BrandBannerImage");
+                    Assert.IsNotNull(image, "Home page should expose the brand banner image.");
+
+                    // The transparent lockups carry no backplate, so under high contrast the
+                    // wordmark ink must follow the live surface luminance. Regression guard: a
+                    // fixed "high contrast -> dark ink" mapping goes invisible on a dark HC scheme.
+                    SolidColorBrush? surface = Application.Current.TryFindResource("SolidBackgroundFillColorBaseBrush") as SolidColorBrush;
+                    Assert.IsNotNull(surface, "High contrast surface brush should resolve.");
+                    double red = surface.Color.R / 255.0;
+                    double green = surface.Color.G / 255.0;
+                    double blue = surface.Color.B / 255.0;
+                    bool darkSurface = ((red * 0.2126) + (green * 0.7152) + (blue * 0.0722)) < 0.5;
+
+                    string expected = darkSurface
+                        ? "pack://application:,,,/Fluence.Wpf.Demo;component/Resources/Fluence_Lockup_SideBySide_Light.png"
+                        : "pack://application:,,,/Fluence.Wpf.Demo;component/Resources/Fluence_Lockup_SideBySide_Dark.png";
+
+                    Assert.AreEqual(expected, image.Tag as string,
+                        "High contrast banner ink must contrast with the live surface luminance.");
+
+                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                    Drain(window.Dispatcher);
                 }
                 finally
                 {
@@ -192,8 +237,7 @@ namespace Fluence.Wpf.Tests
         public void GalleryHomePage_UsesPngBannerResourcesAndGitHubLink()
         {
             string project = ReadRepositoryFile("Fluence.Wpf.Demo", "Fluence.Wpf.Demo.csproj");
-            StringAssert.Contains(project, "<Resource Include=\"Resources\\fluence-wpf-banner-*.png\" />", StringComparison.Ordinal);
-            StringAssert.Contains(project, "<Page Remove=\"Resources\\fluence-wpf-banner-*.xaml\" />", StringComparison.Ordinal);
+            StringAssert.Contains(project, "<Resource Include=\"Resources\\Fluence_Lockup_SideBySide_*.png\" />", StringComparison.Ordinal);
 
             string homePage = ReadRepositoryFile("Fluence.Wpf.Demo", "Pages", "GalleryHomePage.xaml");
             StringAssert.Contains(homePage, "https://github.com/sintaxasn/fluence.wpf", StringComparison.Ordinal);
@@ -202,19 +246,19 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void DemoProjects_UseSharedFluenceIcoIcon()
         {
-            const string iconPath = @"Resources\fluence-wpf-appicon-256.ico";
+            const string iconPath = @"Resources\Fluence.ico";
 
             AssertProjectUsesIcon("Fluence.Wpf.Demo", "Fluence.Wpf.Demo.csproj", iconPath);
             AssertProjectUsesIcon("Fluence.Wpf.Demo.Mvvm", "Fluence.Wpf.Demo.Mvvm.csproj", iconPath);
 
             StringAssert.Contains(ReadRepositoryFile("Fluence.Wpf.Demo", "MainWindow.xaml"),
-                "Icon=\"Resources/fluence-wpf-appicon-256.ico\"", StringComparison.Ordinal);
+                "Icon=\"Resources/Fluence.ico\"", StringComparison.Ordinal);
             StringAssert.Contains(ReadRepositoryFile("Fluence.Wpf.Demo.Mvvm", "MainWindow.xaml"),
-                "Icon=\"Resources/fluence-wpf-appicon-256.ico\"", StringComparison.Ordinal);
+                "Icon=\"Resources/Fluence.ico\"", StringComparison.Ordinal);
 
-            Assert.IsTrue(File.Exists(GetRepositoryFilePath("Fluence.Wpf.Demo", "Resources", "fluence-wpf-appicon-256.ico")),
+            Assert.IsTrue(File.Exists(GetRepositoryFilePath("Fluence.Wpf.Demo", "Resources", "Fluence.ico")),
                 "The gallery demo icon should exist.");
-            Assert.IsTrue(File.Exists(GetRepositoryFilePath("Fluence.Wpf.Demo.Mvvm", "Resources", "fluence-wpf-appicon-256.ico")),
+            Assert.IsTrue(File.Exists(GetRepositoryFilePath("Fluence.Wpf.Demo.Mvvm", "Resources", "Fluence.ico")),
                 "The MVVM demo icon should exist.");
         }
 

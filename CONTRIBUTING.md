@@ -23,11 +23,11 @@ Authored XAML is formatted by XAML Styler against the committed `Settings.XamlSt
 
 ```powershell
 dotnet tool restore
-pwsh eng/Format-Xaml.ps1            # format all authored XAML
-pwsh eng/Format-Xaml.ps1 -Check     # CI gate, non-destructive
+pwsh .claude/hooks/Format-Xaml.ps1            # format all authored XAML
+pwsh .claude/hooks/Format-Xaml.ps1 -Check     # CI gate, non-destructive
 ```
 
-Run the formatter and commit its output; do not hand-fight it. Generated XAML (`Properties/DesignTime.*.xaml`, `**/Resources/fluence-wpf-banner-*.xaml`) is excluded.
+Run the formatter and commit its output; do not hand-fight it. Generated XAML (`Properties/DesignTime.*.xaml`) is excluded.
 
 ## Adding or changing a control
 

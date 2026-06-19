@@ -112,10 +112,10 @@ Prefer `EventArgs.Empty`, `nameof(...)`, explicit `readonly`, and immutable help
 
 Authored XAML is formatted by **XAML Styler** against the committed reference style `Settings.XamlStyler` at the repo root. The tool is pinned in `.config/dotnet-tools.json` (`dotnet tool restore`), so formatting is reproducible and does not depend on any editor plugin.
 
-- **Format** all authored XAML: `pwsh eng/Format-Xaml.ps1`. Format one file: `pwsh eng/Format-Xaml.ps1 -Path <file>`.
-- **Check** (CI gate, non-destructive): `pwsh eng/Format-Xaml.ps1 -Check` - fails if any authored XAML is not conformant. Wired into `.github/workflows/build.yml` and run on every edit by `.claude/hooks/post-tool-format-xaml.ps1`.
-- The reference style is attribute-per-line beyond two attributes (`AttributesTolerance: 2`), first attribute on a new line, 4-space indent. `eng/Format-Xaml.ps1` also enforces LF + a single UTF-8 BOM.
-- **Generated XAML is excluded** from formatting and the check: `Fluence.Wpf/Properties/DesignTime.*.xaml` (emitted byte-for-byte by `DesignTimeResourceWriter`; reformatting would break the `DesignTimeResources_AreCurrent` drift guard) and `**/Resources/fluence-wpf-banner-*.xaml` (generated vector geometry). Do not run the formatter on these; update the exclusion list in `eng/Format-Xaml.ps1` if new generated XAML is added.
+- **Format** all authored XAML: `pwsh .claude/hooks/Format-Xaml.ps1`. Format one file: `pwsh .claude/hooks/Format-Xaml.ps1 -Path <file>`.
+- **Check** (CI gate, non-destructive): `pwsh .claude/hooks/Format-Xaml.ps1 -Check` - fails if any authored XAML is not conformant. Wired into `.github/workflows/build.yml` and run on every edit by `.claude/hooks/post-tool-format-xaml.ps1`.
+- The reference style is attribute-per-line beyond two attributes (`AttributesTolerance: 2`), first attribute on a new line, 4-space indent. `.claude/hooks/Format-Xaml.ps1` also enforces LF + a single UTF-8 BOM.
+- **Generated XAML is excluded** from formatting and the check: `Fluence.Wpf/Properties/DesignTime.*.xaml` (emitted byte-for-byte by `DesignTimeResourceWriter`; reformatting would break the `DesignTimeResources_AreCurrent` drift guard). Do not run the formatter on these; update the exclusion list in `.claude/hooks/Format-Xaml.ps1` if new generated XAML is added.
 - Do not hand-fight the formatter: run it and commit its output. XAML Styler's own `-p` passive mode is unreliable (false positives), which is why the check formats a temp copy and compares.
 
 ---
@@ -302,7 +302,7 @@ flowchart TD
     C --> D[Cache NuGet packages]
     D --> E[dotnet restore]
     E --> F[dotnet tool restore]
-    F --> G[XAML format check<br/>pwsh eng/Format-Xaml.ps1 -Check]
+    F --> G[XAML format check<br/>pwsh .claude/hooks/Format-Xaml.ps1 -Check]
     G --> H[Build solution Release]
     H --> I[Test net472<br/>filter TestCategory!=Screenshots, TRX]
     I --> J[Test net10.0-windows10.0.26100.0<br/>filter TestCategory!=Screenshots, TRX]
@@ -321,7 +321,7 @@ flowchart TD
 - `MainWindow` is a `FluenceWindow` with `ExtendsContentIntoTitleBar="False"` in source, `SystemBackdropType="Mica"`, and a custom `TitleBar` slot hosting the app icon, title, a `TextBox` **search** bound to filter menu items, and caption buttons.
 - `NavigationView` named `DemoNav`: default `PaneDisplayMode="Left"` in source and opens expanded with `IsPaneOpen="True"` to showcase the full pane.
 - Menu items carry `Tag` strings; `MainWindow.NavigateTo(string tag)` does a switch to the matching `Gallery*Page` inside the content frame. Navigation remains tag-driven, with a lightweight visited-page stack only for the shell Back button.
-- `GalleryHomePage` shows a theme-aware hero banner (`BannerLight.png` / `BannerDark.png`) and large **clickable `Card`** tiles that route through the same `NavigateTo` helper. Window controls and app-level theme/navigation/backdrop options live on the Settings page.
+- `GalleryHomePage` shows a theme-aware hero banner (`Fluence_Lockup_SideBySide_Dark.png` on a light theme, `Fluence_Lockup_SideBySide_Light.png` on a dark theme) and large **clickable `Card`** tiles that route through the same `NavigateTo` helper. Window controls and app-level theme/navigation/backdrop options live on the Settings page.
 - 17 navigation-catalog pages: Home, Colors, Icons, Typography, Buttons, Selection, Inputs, Forms, Data, Data binding, Trees, Menus, Navigation, Tabs, Layout, Status, and Accessibility. Settings is a `NavigationView.FooterMenuItems` entry (a real, selectable footer nav item with the shared selection indicator), not a `DemoNavigationCatalog` item; footer navigation is routed through `DemoNav.ItemInvoked`.
 - Run: `dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -f net472` or `dotnet run --project Fluence.Wpf.Demo/Fluence.Wpf.Demo.csproj -f net10.0-windows10.0.26100.0`.
 
@@ -461,7 +461,7 @@ Hooks run automatically on tool events; you do not invoke them:
 | Hook | Behavior |
 | --- | --- |
 | `pre-tool-theme-slot.ps1` | PreToolUse advisory on theme-slot-critical edits (`ApplicationThemeManager.cs`, `Themes/Generic.xaml`). Injects a non-blocking `<system-reminder>` restating the three-slot invariant and the `BrushFactory` auto-twin rule. |
-| `post-tool-format-xaml.ps1` | PostToolUse formatter that runs the pinned XAML Styler (`eng/Format-Xaml.ps1`) over each edited authored `.xaml`, enforcing the committed reference style plus LF + single UTF-8 BOM. Non-blocking; the CI `-Check` gate is the hard fail. |
+| `post-tool-format-xaml.ps1` | PostToolUse formatter that runs the pinned XAML Styler (`.claude/hooks/Format-Xaml.ps1`) over each edited authored `.xaml`, enforcing the committed reference style plus LF + single UTF-8 BOM. Non-blocking; the CI `-Check` gate is the hard fail. |
 | `post-tool-util.ps1` | PostToolUse linter that blocks the write on text-policy violations: missing UTF-8 BOM, CRLF/CR line endings, `string.IsNullOrEmpty`, `TextOptions.*`, hard-coded hex in `Themes/Controls/**`, em/en dashes in `.cs` / `.md`, and `git diff --check` whitespace errors. |
 
 ### 15.4 Gating principle
