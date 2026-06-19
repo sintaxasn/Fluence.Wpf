@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- `ApplicationThemeManager.ResolvedTheme` - a new read-only public property that returns the concrete theme (`Light`, `Dark`, or `HighContrast`) resolved and applied during the most recent `Apply` call. When `CurrentTheme` is `Auto`, it reflects the OS theme at the time of the last `Apply` rather than `Auto` itself. Defaults to `Light` before the first `Apply`.
+- `ApplicationThemeManager.ResolvedTheme` - a new read-only public property that returns the concrete theme (`Light`, `Dark`, or `HighContrast`) resolved during the most recent theme pipeline run. The pipeline is triggered by `ApplicationThemeManager.Apply` and also by `ApplicationAccentColorManager.ApplySystemAccent`, `ApplyApplicationAccent`, and `ApplyCustomAccent`, so an accent change alone can update `ResolvedTheme`. When `CurrentTheme` is `Auto`, it reflects the OS theme at the time of the last pipeline run rather than `Auto` itself. Defaults to `Light` before the first pipeline run.
 
 ## [0.8.1-preview] - 2026-06-17
 
