@@ -55,12 +55,15 @@ namespace Fluence.Wpf.Automation
                 return baseName;
             }
 
-            object? header = ToggleSwitch.HeaderContent;
-            return header switch
+            // Access HeaderContent inline (not via a local): a local would let CA1508 pin its
+            // non-null flow state and flag the ?. below as dead, but the DP default is null so the
+            // header can be null at runtime. Re-reading the property keeps the ?. valid and safe,
+            // mirroring NumberBoxAutomationPeer.
+            return ToggleSwitch.HeaderContent switch
             {
                 string s => s,
                 System.Windows.Controls.TextBlock tb => tb.Text,
-                _ => header?.ToString() ?? string.Empty,
+                _ => ToggleSwitch.HeaderContent?.ToString() ?? string.Empty,
             };
         }
 
