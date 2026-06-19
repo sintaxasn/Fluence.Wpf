@@ -1,6 +1,6 @@
 ﻿<picture>
   <source media="(prefers-color-scheme: dark)" srcset="./assets/Fluence_OGImage_Dark.png" />
-  <img alt="Fluence.Wpf" src="./assets/Fluence_OGImage_Light.png" />
+  <img alt="Fluence.Wpf" src="./assets/Fluence_OGImage.png" />
 </picture>
 
 Windows 11 Fluent Design controls and theming for WPF applications targeting **.NET Framework 4.7.2** and **Windows 10** (1809+), with enhanced visuals on **Windows 11**.
