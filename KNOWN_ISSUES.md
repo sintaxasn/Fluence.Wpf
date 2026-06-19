@@ -52,3 +52,79 @@ maintainers.
   65-70). It does **not** implement WinUI's edge-pip scale-down or the
   stationary edge-scrolling viewport, and the navigation buttons do **not** use
   WinUI's pressed `0.875` scale.
+
+## net472 accessibility API gaps
+
+The following Windows Presentation Foundation accessibility APIs were introduced
+in .NET Framework 4.8 and are **not available on the `net472` TFM** this library
+supports. Each entry documents the chosen fallback and why the gap is acceptable.
+Reference: https://learn.microsoft.com/dotnet/framework/whats-new/whats-new-in-accessibility
+
+- **`AutomationPeer.RaiseNotificationEvent`** (available from .NET Framework 4.8) - this
+  API pushes an ad-hoc text announcement to assistive technologies without a
+  corresponding UI Automation element. All live-region controls in this library
+  (`InfoBar`, `ProgressBar`, `ProgressRing`, `TeachingTip`, and `TextBox`
+  validation) use the net472-safe substitute: the element sets
+  `AutomationProperties.LiveSetting` to `Polite` or `Assertive` in its template
+  or peer constructor, and the peer calls
+  `RaiseAutomationEvent(AutomationEvents.LiveRegionChanged)` when state changes.
+  Screen readers that honour `LiveRegionChanged` (Narrator, NVDA, JAWS) announce
+  the current `GetNameCore` text of the peer on that event, which is equivalent
+  for the controlled-status use cases in this library.
+
+- **`AutomationProperties.IsDialog`** (available from .NET Framework 4.8) - this
+  property marks an element as a modal dialog surface so screen readers announce
+  it as such when focus enters. `ContentDialog` does not set this property on
+  net472. The fallback used is: the `ContentDialogAutomationPeer` returns
+  `AutomationControlType.Window` from `GetAutomationControlTypeCore` and the
+  dialog traps Tab focus inside its bounds during `ShowAsync`, so assistive
+  technologies observe both a Window-role boundary and the focus containment
+  that characterise a modal dialog. The behaviour gap is limited to the
+  explicit "dialog" announcement phrase that Narrator and JAWS emit when
+  `IsDialog=true`; the structural and focus semantics are present.
+
+- **`AutomationProperties.HeadingLevel`** (available from .NET Framework 4.8) - this
+  property allows elements to be reported as heading levels H1-H9 to assistive
+  technologies, enabling document-style navigation with Narrator's heading-scan
+  mode. Fluence controls do not use heading levels internally; applications
+  consuming the library on net10.0-windows10.0.26100.0 may set this property
+  freely. On net472 the property is absent and any XAML that references it will
+  fail to compile unless guarded. The gap is acceptable because Fluence is a
+  controls library, not a document renderer; section headings in consuming
+  applications are app-layer concerns.
+
+- **Automatic `PositionInSet` and `SizeOfSet` for `ItemsControl`** (available from
+  .NET Framework 4.8) - on 4.8+ WPF automatically computes and exposes
+  `PositionInSet` and `SizeOfSet` UI Automation properties for items inside an
+  `ItemsControl`, so screen readers can announce "item 2 of 5" without explicit
+  annotation. On net472 these values are not computed automatically. Fluence's
+  automation peers do not currently override `GetPositionInSetCore` /
+  `GetSizeOfSetCore`, so set position is not annotated explicitly on either TFM;
+  on net472, controls such as `NavigationViewItem` inside a `NavigationView`,
+  `TabViewItem` inside a `TabView`, and `PipsPager` dots therefore do not
+  announce set position, and the application-item controls (`ListBox`,
+  `ListView`, `TreeView`, `ComboBox`) rely solely on the 4.8+ automatic
+  computation. Applications that require position announcements on net472 (or for
+  any control) should set `AutomationProperties.PositionInSet` and
+  `AutomationProperties.SizeOfSet` explicitly on each item in XAML or code.
+
+## Deferred runtime test coverage
+
+The following accessibility items are XAML-verified (the names and parts exist in
+the committed templates) but do not have automated runtime interaction tests
+because their rendering depends on host shell state that is difficult to
+reproduce in the headless test harness:
+
+- **`TeachingTip` `PART_AlternateCloseButton`** - the alternate close button lives
+  inside a `Popup` subtree that is only in the visual tree while the tip is
+  open and the primary close button is hidden. Its `AutomationProperties.Name`
+  is verified by inspection of `TeachingTip.xaml`; an automated test would
+  require the popup to be open, the primary close hidden, and Narrator focus
+  routed into the popup subtree.
+
+- **`TabView` scroll buttons** (`PART_ScrollDecreaseButton`, `PART_ScrollIncreaseButton`) -
+  these buttons appear only when the tab strip overflows its container. Their
+  `AutomationProperties.Name` values are verified by inspection of `TabView.xaml`;
+  an automated test would require a `TabView` with enough tabs to trigger
+  overflow in a measured layout pass, which the current STA test infrastructure
+  does not size windows to guarantee.

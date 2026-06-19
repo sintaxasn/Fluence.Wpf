@@ -337,9 +337,90 @@ Key API:
   <a href="../../api/Fluence.Wpf.Automation.NavigationViewAutomationPeer.html">NavigationViewAutomationPeer</a>
   <a href="../../api/Fluence.Wpf.Automation.ToggleSwitchAutomationPeer.html">ToggleSwitchAutomationPeer</a>
   <a href="../../api/Fluence.Wpf.Automation.InfoBarAutomationPeer.html">InfoBarAutomationPeer</a>
+  <a href="../../api/Fluence.Wpf.Automation.RatingControlAutomationPeer.html">RatingControlAutomationPeer</a>
+  <a href="../../api/Fluence.Wpf.Automation.PasswordBoxAutomationPeer.html">PasswordBoxAutomationPeer</a>
+  <a href="../../api/Fluence.Wpf.Automation.PersonPictureAutomationPeer.html">PersonPictureAutomationPeer</a>
+  <a href="../../api/Fluence.Wpf.Automation.HyperlinkButtonAutomationPeer.html">HyperlinkButtonAutomationPeer</a>
+  <a href="../../api/Fluence.Wpf.Automation.CardAutomationPeer.html">CardAutomationPeer</a>
 </div>
 
 Accessibility coverage includes focus visuals, high-contrast resources, automation peers, keyboard navigation, and right-to-left layout.
+
+#### Per-control roles, names, and patterns
+
+| Control | UIA Role | Name source | Patterns |
+|---|---|---|---|
+| `Button` | Button | `Content` or `AutomationProperties.Name` | Invoke |
+| `HyperlinkButton` | Hyperlink | `Content` or `AutomationProperties.Name` | Invoke |
+| `DropDownButton` | Button | `Content` or `AutomationProperties.Name` | Invoke, ExpandCollapse |
+| `SplitButton` | SplitButton | `Content` or `AutomationProperties.Name` | Invoke (primary), ExpandCollapse (chevron) |
+| `ToggleSplitButton` | SplitButton | `Content` or `AutomationProperties.Name` | Toggle (primary), ExpandCollapse (chevron) |
+| `ToggleButton` | Button | `Content` or `AutomationProperties.Name` | Toggle |
+| `CheckBox` | CheckBox | `Content`; `AutomationProperties.HelpText` carries description | Toggle |
+| `RadioButton` | RadioButton | `Content`; `AutomationProperties.HelpText` carries description | Selection |
+| `ToggleSwitch` | Button | `Header` via automation peer `GetNameCore` / `AutomationProperties.Name` | Toggle |
+| `RatingControl` | Slider | `AutomationProperties.Name` (current and maximum value are exposed through the RangeValue pattern, not the name) | RangeValue |
+| `ComboBox` | ComboBox | `PlaceholderText` or `AutomationProperties.Name` | ExpandCollapse, Selection |
+| `Slider` | Slider | `AutomationProperties.Name` or labeled by adjacent `TextBlock` | RangeValue |
+| `NumberBox` | Spinner | `Header` via automation peer `GetNameCore` / `AutomationProperties.Name` | RangeValue |
+| `TextBox` | Edit | `Header` or `AutomationProperties.Name` | Value, Text |
+| `PasswordBox` | Edit | `AutomationProperties.Name` (app-provided label); reveal button announces its state | none |
+| `AutoSuggestBox` | Edit | `Header` via automation peer `GetNameCore` / `AutomationProperties.Name` | Value |
+| `NavigationView` | Navigation | `AutomationProperties.Name` on the control | Selection |
+| `NavigationViewItem` | ListItem | `Content` | SelectionItem |
+| `TabView` | Tab | `AutomationProperties.Name` on the control | Selection |
+| `TabViewItem` | TabItem | `Header` | SelectionItem |
+| `InfoBar` | StatusBar | `Title` (or `AutomationProperties.Name`); message is announced via the live region | none (live region) |
+| `ProgressBar` | ProgressBar | `AutomationProperties.Name` | RangeValue |
+| `ProgressRing` | ProgressBar | `AutomationProperties.Name` | RangeValue |
+| `Card` | Button (when clickable) / Group (non-clickable) | `AutomationProperties.Name` (or its content) | Invoke (when clickable) |
+| `PersonPicture` | Image | Display name or initials | none |
+| `ContentDialog` | Window | `Title` | none (focus trapped inside) |
+| `TeachingTip` | ToolTip | `Title` and `Subtitle` (live region) | none |
+| `AppBarButton` | Button | `Label` (surfaced as `AutomationProperties.Name`) or an explicit `AutomationProperties.Name` | Invoke |
+
+#### Live regions on net472
+
+`AutomationPeer.RaiseNotificationEvent` (which pushes ad-hoc announcements to
+screen readers) requires .NET Framework 4.8 and is not available on `net472`. All
+status-change announcements in this library instead use the net472-safe pattern:
+
+1. The control template or peer constructor sets `AutomationProperties.LiveSetting`
+   to `Polite` or `Assertive` on the announcing element.
+2. When the relevant state changes (severity, message, progress state, validation
+   message, or coaching text), the automation peer calls
+   `RaiseAutomationEvent(AutomationEvents.LiveRegionChanged)`.
+3. Screen readers that honour `LiveRegionChanged` (Narrator, NVDA, JAWS) then
+   read the element's current `GetNameCore` text.
+
+Controls that use this approach: `InfoBar`, `ProgressBar`, `ProgressRing`,
+`TeachingTip`, and `TextBox` validation feedback. This pattern requires no
+.NET 4.8 surface and works on both `net472` and `net10.0-windows10.0.26100.0`.
+
+#### Keyboard operability
+
+Beyond standard WPF focus and tab traversal, Fluence adds keyboard operability for
+controls that WPF does not natively make fully keyboard-accessible:
+
+- `ColorPicker` spectrum: arrow keys adjust the selected point on the hue-saturation-value
+  spectrum canvas; the spectrum canvas receives keyboard focus as a named focusable element.
+- `RatingControl`: Left/Right arrow keys decrement and increment the rating; Home and End
+  jump to the minimum and maximum values.
+- `PasswordBox` reveal button: Space and Enter toggle the reveal state when the reveal button
+  is keyboard-focused; the reveal button’s accessible name updates to announce the current state.
+- `NumberBox` spin buttons: the increment and decrement buttons are keyboard-accessible tab
+  stops with accessible names; the `LargeChange` value reported by the automation peer
+  matches the `NumberBox.LargeChange` property.
+
+#### Known net472 gaps
+
+Four UI Automation features available from .NET Framework 4.8 are absent on `net472`.
+See `KNOWN_ISSUES.md` for the full rationale and chosen fallbacks:
+
+- `AutomationPeer.RaiseNotificationEvent` - substituted with `LiveRegionChanged` (described above).
+- `AutomationProperties.IsDialog` - `ContentDialog` uses `ControlType.Window` and focus trapping as a fallback.
+- `AutomationProperties.HeadingLevel` - not used by the library; app-layer concern.
+- Automatic `PositionInSet`/`SizeOfSet` for `ItemsControl` - peers do not override `GetPositionInSetCore`/`GetSizeOfSetCore` on either TFM; apps set `AutomationProperties.PositionInSet`/`SizeOfSet` explicitly on items where meaningful.
 
 ## FluenceWindow
 

@@ -26,9 +26,11 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Automation;
 using System;
 using System.Diagnostics;
 using System.Windows;
+using System.Windows.Automation.Peers;
 using System.Windows.Input;
 
 namespace Fluence.Wpf.Controls
@@ -144,6 +146,12 @@ namespace Fluence.Wpf.Controls
             {
                 _ = Process.Start(uri.AbsoluteUri);
             }
+        }
+
+        /// <inheritdoc />
+        protected override AutomationPeer OnCreateAutomationPeer()
+        {
+            return new HyperlinkButtonAutomationPeer(this);
         }
     }
 }

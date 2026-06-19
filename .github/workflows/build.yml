@@ -32,7 +32,7 @@ jobs:
         run: dotnet tool restore
 
       - name: Check XAML formatting
-        run: pwsh eng/Format-Xaml.ps1 -Check
+        run: pwsh .claude/hooks/Format-Xaml.ps1 -Check
 
       - name: Build solution (Release)
         run: dotnet build Fluence.Wpf.sln -c Release --no-restore -v minimal

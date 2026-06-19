@@ -26,8 +26,10 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Automation;
 using System;
 using System.Windows;
+using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -64,6 +66,8 @@ namespace Fluence.Wpf.Controls
             DefaultStyleKeyProperty.OverrideMetadata(
                 typeof(RatingControl),
                 new FrameworkPropertyMetadata(typeof(RatingControl)));
+            FocusableProperty.OverrideMetadata(typeof(RatingControl), new FrameworkPropertyMetadata(defaultValue: true));
+            IsTabStopProperty.OverrideMetadata(typeof(RatingControl), new FrameworkPropertyMetadata(defaultValue: true));
         }
 
         /// <summary>
@@ -159,9 +163,52 @@ namespace Fluence.Wpf.Controls
             UpdateCaption();
         }
 
+        /// <inheritdoc />
+        protected override AutomationPeer OnCreateAutomationPeer()
+        {
+            return new RatingControlAutomationPeer(this);
+        }
+
+        /// <inheritdoc />
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            if (e.Handled || IsReadOnly || !IsEnabled)
+            {
+                return;
+            }
+
+            const double step = 1d;
+            if (e.Key is Key.Right or Key.Up)
+            {
+                SetCurrentValue(ValueProperty, Math.Min(MaxRating, Value + step));
+                e.Handled = true;
+            }
+            else if (e.Key is Key.Left or Key.Down)
+            {
+                SetCurrentValue(ValueProperty, Math.Max(0d, Value - step));
+                e.Handled = true;
+            }
+            else if (e.Key is Key.Home)
+            {
+                SetCurrentValue(ValueProperty, 0d);
+                e.Handled = true;
+            }
+            else if (e.Key is Key.End)
+            {
+                SetCurrentValue(ValueProperty, (double)MaxRating);
+                e.Handled = true;
+            }
+        }
+
         private static void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            ((RatingControl)d).RefreshStars();
+            RatingControl ctrl = (RatingControl)d;
+            ctrl.RefreshStars();
+            if (UIElementAutomationPeer.FromElement(ctrl) is RatingControlAutomationPeer peer)
+            {
+                peer.RaiseValueChanged((double)e.OldValue, (double)e.NewValue);
+            }
         }
 
         private static object CoerceValue(DependencyObject d, object baseValue)

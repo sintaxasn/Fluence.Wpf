@@ -47,6 +47,27 @@ namespace Fluence.Wpf.Automation
         }
 
         /// <inheritdoc />
+        protected override string GetNameCore()
+        {
+            string baseName = base.GetNameCore();
+            if (!string.IsNullOrWhiteSpace(baseName))
+            {
+                return baseName;
+            }
+
+            // Access HeaderContent inline (not via a local): a local would let CA1508 pin its
+            // non-null flow state and flag the ?. below as dead, but the DP default is null so the
+            // header can be null at runtime. Re-reading the property keeps the ?. valid and safe,
+            // mirroring NumberBoxAutomationPeer.
+            return ToggleSwitch.HeaderContent switch
+            {
+                string s => s,
+                System.Windows.Controls.TextBlock tb => tb.Text,
+                _ => ToggleSwitch.HeaderContent?.ToString() ?? string.Empty,
+            };
+        }
+
+        /// <inheritdoc />
         protected override AutomationControlType GetAutomationControlTypeCore()
         {
             return AutomationControlType.Button;

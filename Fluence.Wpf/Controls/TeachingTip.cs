@@ -29,6 +29,7 @@
 using Fluence.Wpf.Automation;
 using System;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -66,6 +67,9 @@ namespace Fluence.Wpf.Controls
             DefaultStyleKeyProperty.OverrideMetadata(
                 typeof(TeachingTip),
                 new FrameworkPropertyMetadata(typeof(TeachingTip)));
+            AutomationProperties.LiveSettingProperty.OverrideMetadata(
+                typeof(TeachingTip),
+                new FrameworkPropertyMetadata(AutomationLiveSetting.Polite));
         }
 
         /// <summary>
@@ -389,11 +393,30 @@ namespace Fluence.Wpf.Controls
             if ((bool)e.NewValue)
             {
                 tip.OpenPopup();
+                tip.AnnounceLiveRegion();
             }
             else
             {
                 tip.ClosePopup();
             }
+        }
+
+        /// <summary>
+        /// Raises <see cref="AutomationEvents.LiveRegionChanged"/> on this control's automation peer
+        /// so Narrator announces the tip content without moving focus when the tip opens.
+        /// Uses only net472-safe APIs (no RaiseNotificationEvent).
+        /// </summary>
+        private void AnnounceLiveRegion()
+        {
+            if (!AutomationPeer.ListenerExists(AutomationEvents.LiveRegionChanged))
+            {
+                return;
+            }
+
+            // CreatePeerForElement is annotated non-null, so peer is provably non-null here (CA1508
+            // rejects a redundant null guard); no NullReferenceException is possible.
+            AutomationPeer peer = UIElementAutomationPeer.FromElement(this) ?? UIElementAutomationPeer.CreatePeerForElement(this);
+            peer.RaiseAutomationEvent(AutomationEvents.LiveRegionChanged);
         }
 
         private static void OnPlacementInputChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)

@@ -110,6 +110,18 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         private const int SpectrumSize = 256;
 
+        /// <summary>
+        /// Small step applied to saturation or value when the user presses an arrow key
+        /// on the focused spectrum area. Matches a 1% increment on the 0-1 scale.
+        /// </summary>
+        private const double SpectrumSmallStep = 0.01;
+
+        /// <summary>
+        /// Large step applied to saturation or value when the user presses PageUp or
+        /// PageDown on the focused spectrum area. Matches a 10% increment on the 0-1 scale.
+        /// </summary>
+        private const double SpectrumLargeStep = 0.1;
+
         // Frozen, theme-independent brushes shared by every picker instance: the
         // checkerboard under translucent surfaces and the hue rainbow track. Both are
         // generated in code; asset/pixel math may use literal channel values, unlike
@@ -937,6 +949,71 @@ namespace Fluence.Wpf.Controls
         private void OnSpectrumLostMouseCapture(object sender, MouseEventArgs e)
         {
             _isDraggingSpectrum = false;
+        }
+
+        /// <summary>
+        /// Handles arrow and page key presses when keyboard focus is on the spectrum area,
+        /// adjusting saturation (Left/Right) or value (Up/Down/PageUp/PageDown) and routing
+        /// through the HSV funnel so there is no RGB round-trip drift.
+        /// </summary>
+        /// <param name="e">The key event arguments.</param>
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            if (e.Handled || _spectrumArea is null)
+            {
+                return;
+            }
+
+            // Only intercept when the event originates from the spectrum area so arrow keys
+            // continue to work normally for sliders and text boxes elsewhere in the picker.
+            if (e.OriginalSource is not DependencyObject originalSource
+                || (!ReferenceEquals(originalSource, _spectrumArea)
+                    && !_spectrumArea.IsAncestorOf(originalSource)))
+            {
+                return;
+            }
+
+            double saturationDelta;
+            double valueDelta;
+
+            if (e.Key is Key.Right)
+            {
+                saturationDelta = SpectrumSmallStep;
+                valueDelta = 0;
+            }
+            else if (e.Key is Key.Left)
+            {
+                saturationDelta = -SpectrumSmallStep;
+                valueDelta = 0;
+            }
+            else if (e.Key is Key.Up)
+            {
+                saturationDelta = 0;
+                valueDelta = SpectrumSmallStep;
+            }
+            else if (e.Key is Key.Down)
+            {
+                saturationDelta = 0;
+                valueDelta = -SpectrumSmallStep;
+            }
+            else if (e.Key is Key.PageUp)
+            {
+                saturationDelta = 0;
+                valueDelta = SpectrumLargeStep;
+            }
+            else if (e.Key is Key.PageDown)
+            {
+                saturationDelta = 0;
+                valueDelta = -SpectrumLargeStep;
+            }
+            else
+            {
+                return;
+            }
+
+            SetColorFromHsv(_hue, _saturation + saturationDelta, _value + valueDelta, _alpha);
+            e.Handled = true;
         }
 
         private void OnSpectrumAreaSizeChanged(object sender, SizeChangedEventArgs e)

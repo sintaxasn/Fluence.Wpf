@@ -50,7 +50,7 @@ namespace Fluence.Wpf.Demo.Pages
         private const double CompactCaptionPickerWidth = 140.0;
         private static readonly Uri RepositoryUri = new UriBuilder("https", "github.com", -1, "sintaxasn/fluence.wpf").Uri;
         private static readonly Uri DemoAppIconUri = new(
-            "pack://application:,,,/Fluence.Wpf.Demo;component/Resources/fluence-wpf-appicon-256.ico",
+            "pack://application:,,,/Fluence.Wpf.Demo;component/Resources/Fluence.ico",
             UriKind.Absolute);
         private readonly MainWindow? _owner;
         private bool _syncing;

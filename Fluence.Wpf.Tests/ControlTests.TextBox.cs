@@ -29,6 +29,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Reflection;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -241,6 +242,211 @@ namespace Fluence.Wpf.Tests
                     "Helper text should be vertically centered with the validation icon.");
                 Assert.AreEqual(VerticalAlignment.Center, icon.VerticalAlignment,
                     "Validation icon should be vertically centered with helper text.");
+
+                w.Close();
+            });
+        }
+
+        // ---------------------------------------------------------------------------
+        // Task 9 -- HelpText a11y: validation message surfaced via AutomationProperties
+        // ---------------------------------------------------------------------------
+
+        [TestMethod]
+        public void TextBox_ValidationError_SetsHelpText()
+        {
+            WpfTestSta.Invoke(static () =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                FluenceTextBox tb = new()
+                {
+                    Width = 240,
+                    ValidationMessage = "Value is required",
+                    ValidationState = ValidationState.Error,
+                };
+                Window w = new() { Content = tb, Width = 320, Height = 120 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                string helpText = AutomationProperties.GetHelpText(tb);
+                Assert.AreEqual(
+                    "Value is required",
+                    helpText,
+                    "AutomationProperties.HelpText must equal ValidationMessage when ValidationState is Error.");
+
+                w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void TextBox_ValidationNone_ClearsHelpText()
+        {
+            WpfTestSta.Invoke(static () =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                FluenceTextBox tb = new()
+                {
+                    Width = 240,
+                    ValidationMessage = "Temp error",
+                    ValidationState = ValidationState.Error,
+                };
+                Window w = new() { Content = tb, Width = 320, Height = 120 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                // Transition back to None.
+                tb.ValidationState = ValidationState.None;
+                DrainDispatcher(w.Dispatcher);
+
+                string helpText = AutomationProperties.GetHelpText(tb);
+                Assert.AreEqual(
+                    string.Empty,
+                    helpText,
+                    "AutomationProperties.HelpText must be cleared when ValidationState returns to None.");
+
+                w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void TextBox_ValidationWarning_SetsHelpText()
+        {
+            WpfTestSta.Invoke(static () =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                FluenceTextBox tb = new()
+                {
+                    Width = 240,
+                    ValidationMessage = "Check the value",
+                    ValidationState = ValidationState.Warning,
+                };
+                Window w = new() { Content = tb, Width = 320, Height = 120 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                string helpText = AutomationProperties.GetHelpText(tb);
+                Assert.AreEqual(
+                    "Check the value",
+                    helpText,
+                    "AutomationProperties.HelpText must equal ValidationMessage when ValidationState is Warning.");
+
+                w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void TextBox_ValidationSuccess_ClearsHelpText()
+        {
+            WpfTestSta.Invoke(static () =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                FluenceTextBox tb = new()
+                {
+                    Width = 240,
+                    ValidationMessage = "Value is required",
+                    ValidationState = ValidationState.Error,
+                };
+                Window w = new() { Content = tb, Width = 320, Height = 120 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                // Error state must have set HelpText first (precondition).
+                Assert.AreEqual(
+                    "Value is required",
+                    AutomationProperties.GetHelpText(tb),
+                    "Precondition: Error state must set HelpText.");
+
+                // Transition to Success -- HelpText must be cleared.
+                tb.ValidationState = ValidationState.Success;
+                DrainDispatcher(w.Dispatcher);
+
+                Assert.AreEqual(
+                    string.Empty,
+                    AutomationProperties.GetHelpText(tb),
+                    "AutomationProperties.HelpText must be cleared when ValidationState transitions to Success.");
+
+                w.Close();
+            });
+        }
+
+        // ---------------------------------------------------------------------------
+        // Announce-gating: ShouldAnnounce tracks last announced state+message
+        // ---------------------------------------------------------------------------
+
+        /// <summary>
+        /// Verifies that typing additional characters while the control remains in Error state
+        /// with the same ValidationMessage does not reset the tracked announce state (i.e. the
+        /// gating fields remain stable). Asserted indirectly by confirming HelpText stays
+        /// consistent (the idempotent path) and that the control compiles and functions with
+        /// the gating fields present. A reliable in-process event-frequency count via
+        /// <c>AutomationEventHandler</c> requires an out-of-process UIA client because the
+        /// WPF automation event bus does not deliver events back to in-process listeners on
+        /// net472 without the COM server running; therefore, this test validates observable
+        /// state invariants rather than raw event counts.
+        /// </summary>
+        [TestMethod]
+        public void TextBox_ValidationError_HelpText_StableAfterAdditionalKeystrokes()
+        {
+            WpfTestSta.Invoke(static () =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                FluenceTextBox tb = new()
+                {
+                    Width = 240,
+                    ValidationMessage = "Value is required",
+                    ValidationState = ValidationState.Error,
+                };
+                Window w = new() { Content = tb, Width = 320, Height = 120 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                // Precondition: HelpText is set after the initial Error transition.
+                Assert.AreEqual(
+                    "Value is required",
+                    AutomationProperties.GetHelpText(tb),
+                    "Precondition: HelpText must be set after entering Error state.");
+
+                // Simulate repeated keystrokes while staying in Error with the same message.
+                // Each Text assignment triggers OnTextChanged -> UpdateHelperText without
+                // changing ValidationState or ValidationMessage.
+                tb.Text = "a";
+                DrainDispatcher(w.Dispatcher);
+                tb.Text = "ab";
+                DrainDispatcher(w.Dispatcher);
+                tb.Text = "abc";
+                DrainDispatcher(w.Dispatcher);
+
+                // HelpText must remain stable -- UpdateHelperText is idempotent for SetHelpText.
+                Assert.AreEqual(
+                    "Value is required",
+                    AutomationProperties.GetHelpText(tb),
+                    "HelpText must remain stable while ValidationState and ValidationMessage are unchanged.");
+
+                // Transition to None resets tracked state, then re-entering Error fires fresh.
+                tb.ValidationState = ValidationState.None;
+                DrainDispatcher(w.Dispatcher);
+
+                Assert.AreEqual(
+                    string.Empty,
+                    AutomationProperties.GetHelpText(tb),
+                    "HelpText must be cleared after transitioning to None.");
+
+                tb.ValidationState = ValidationState.Error;
+                DrainDispatcher(w.Dispatcher);
+
+                Assert.AreEqual(
+                    "Value is required",
+                    AutomationProperties.GetHelpText(tb),
+                    "HelpText must be set again after re-entering Error state following a None reset.");
 
                 w.Close();
             });

@@ -27,6 +27,7 @@
  */
 
 using System.Windows;
+using System.Windows.Automation;
 
 namespace Fluence.Wpf.Controls
 {
@@ -75,7 +76,18 @@ namespace Fluence.Wpf.Controls
                 nameof(Description),
                 typeof(string),
                 typeof(CheckBox),
-                new FrameworkPropertyMetadata(propertyChangedCallback: null));
+                new FrameworkPropertyMetadata(propertyChangedCallback: OnDescriptionChanged));
+
+        private static void OnDescriptionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is CheckBox checkBox)
+            {
+                string? description = e.NewValue as string;
+                AutomationProperties.SetHelpText(
+                    checkBox,
+                    string.IsNullOrWhiteSpace(description) ? string.Empty : description);
+            }
+        }
 
         /// <summary>
         /// Gets or sets the description text displayed below the check box content.

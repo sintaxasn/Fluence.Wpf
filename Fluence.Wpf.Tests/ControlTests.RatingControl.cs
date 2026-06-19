@@ -29,6 +29,9 @@
 using Fluence.Wpf.Controls;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows;
+using System.Windows.Automation.Peers;
+using System.Windows.Automation.Provider;
+using System.Windows.Input;
 using System.Windows.Media;
 using WpfStackPanel = System.Windows.Controls.StackPanel;
 using WpfTextBlock = System.Windows.Controls.TextBlock;
@@ -262,6 +265,85 @@ namespace Fluence.Wpf.Tests
                 Assert.IsNotNull(panel,
                     "PART_StarsPanel must still be present after theme cycle.");
                 w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void RatingControl_AutomationPeer_ExposesRangeValueAndIsKeyboardSettable()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? application = EnsureApplication();
+                _ = MergeGenericDictionary(application);
+                RatingControl rating = new() { Value = 2 };
+                Window window = new() { Content = rating, Width = 300, Height = 100 };
+                window.Show();
+                _ = rating.ApplyTemplate();
+                DrainDispatcher(window.Dispatcher);
+
+                AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(rating);
+                Assert.IsInstanceOfType(peer, typeof(Automation.RatingControlAutomationPeer));
+                Assert.AreEqual(AutomationControlType.Slider, peer.GetAutomationControlType());
+
+                IRangeValueProvider range = (IRangeValueProvider)peer.GetPattern(PatternInterface.RangeValue);
+                Assert.AreEqual(2.0, range.Value, 0.001);
+
+                // Keyboard: Right arrow raises the rating.
+                Assert.IsTrue(rating.Focusable, "RatingControl must be focusable.");
+                Assert.IsTrue(rating.IsTabStop, "RatingControl must be a tab stop.");
+                _ = rating.Focus();
+                DrainDispatcher(window.Dispatcher);
+
+                PresentationSource? source = PresentationSource.FromVisual(rating);
+                Assert.IsNotNull(source, "RatingControl must have a presentation source once the window is shown.");
+                rating.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice, source, 0, Key.Right)
+                {
+                    RoutedEvent = Keyboard.KeyDownEvent,
+                });
+                DrainDispatcher(window.Dispatcher);
+                Assert.AreEqual(3.0, rating.Value, 0.001, "Right arrow should increase the rating by one.");
+
+                window.Close();
+            });
+        }
+
+        [TestMethod]
+        public void RatingControl_Peer_SetValue_RespectsReadOnlyAndDisabled()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? application = EnsureApplication();
+                _ = MergeGenericDictionary(application);
+                RatingControl rating = new() { Value = 2 };
+                Window window = new() { Content = rating, Width = 300, Height = 100 };
+                window.Show();
+                _ = rating.ApplyTemplate();
+                DrainDispatcher(window.Dispatcher);
+
+                AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(rating);
+                IRangeValueProvider range = (IRangeValueProvider)peer.GetPattern(PatternInterface.RangeValue);
+
+                // Read-only: SetValue must throw and leave the value unchanged.
+                rating.IsReadOnly = true;
+                DrainDispatcher(window.Dispatcher);
+                Assert.IsTrue(range.IsReadOnly, "Peer must report read-only when the control is read-only.");
+                _ = Assert.ThrowsExactly<System.InvalidOperationException>(() => range.SetValue(4.0));
+                Assert.AreEqual(2.0, rating.Value, 0.001, "A read-only control's value must not change via UIA.");
+
+                // Disabled: SetValue must throw ElementNotEnabledException.
+                rating.IsReadOnly = false;
+                rating.IsEnabled = false;
+                DrainDispatcher(window.Dispatcher);
+                _ = Assert.ThrowsExactly<System.Windows.Automation.ElementNotEnabledException>(() => range.SetValue(4.0));
+                Assert.AreEqual(2.0, rating.Value, 0.001, "A disabled control's value must not change via UIA.");
+
+                // Enabled and writable: SetValue applies.
+                rating.IsEnabled = true;
+                DrainDispatcher(window.Dispatcher);
+                range.SetValue(4.0);
+                Assert.AreEqual(4.0, rating.Value, 0.001, "An enabled, writable control should accept the new value.");
+
+                window.Close();
             });
         }
     }

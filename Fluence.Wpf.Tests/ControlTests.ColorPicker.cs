@@ -961,5 +961,100 @@ namespace Fluence.Wpf.Tests
                         "With alpha enabled the hex box must cap at nine characters (#AARRGGBB).");
                 });
         }
+
+        [TestMethod]
+        public void ColorPicker_SpectrumArea_IsFocusableTabStop()
+        {
+            RunColorPickerOptionTest(
+                () => new Controls.ColorPicker(),
+                (picker, template, _) =>
+                {
+                    FrameworkElement spectrumArea = GetTemplateElement<FrameworkElement>(
+                        template, picker, "PART_SpectrumArea");
+
+                    Assert.IsTrue(spectrumArea.Focusable,
+                        "PART_SpectrumArea must be Focusable so keyboard users can reach the spectrum.");
+                    Assert.IsTrue(KeyboardNavigation.GetIsTabStop(spectrumArea),
+                        "PART_SpectrumArea must be a tab stop so it is reachable via Tab.");
+                    string automationName = AutomationProperties.GetName(spectrumArea);
+                    Assert.IsFalse(string.IsNullOrWhiteSpace(automationName),
+                        "PART_SpectrumArea must have a non-empty AutomationProperties.Name.");
+                    Assert.AreEqual("Color spectrum", automationName,
+                        "The AutomationProperties.Name on PART_SpectrumArea must be \"Color spectrum\".");
+                });
+        }
+
+        [TestMethod]
+        public void ColorPicker_SpectrumKeyboard_RightKeyIncreasesSaturation()
+        {
+            // Start with a mid-saturation color: FromRgb(128, 64, 64) has saturation ~0.5
+            // (Max=128, Min=64, S=(128-64)/128=0.5) so pressing Right has room to increase it.
+            RunColorPickerOptionTest(
+                () => new Controls.ColorPicker { Color = Color.FromRgb(0x80, 0x40, 0x40) },
+                (picker, template, window) =>
+                {
+                    FrameworkElement spectrumArea = GetTemplateElement<FrameworkElement>(
+                        template, picker, "PART_SpectrumArea");
+                    Color colorBefore = picker.Color;
+
+                    _ = spectrumArea.Focus();
+                    DrainDispatcher(window.Dispatcher);
+
+                    PresentationSource? source = PresentationSource.FromVisual(spectrumArea);
+                    Assert.IsNotNull(source,
+                        "PART_SpectrumArea must have a PresentationSource once the window is shown.");
+
+                    spectrumArea.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice, source, 0, Key.Right)
+                    {
+                        RoutedEvent = Keyboard.KeyDownEvent,
+                    });
+                    DrainDispatcher(window.Dispatcher);
+
+                    Color colorAfter = picker.Color;
+                    Assert.AreNotEqual(colorBefore, colorAfter,
+                        "Key.Right on the focused spectrum must change the color.");
+
+                    // For this orange hue saturation steps right -> R channel brightens.
+                    Assert.IsTrue(
+                        colorAfter.R >= colorBefore.R,
+                        "Pressing Right on the spectrum must increase saturation, brightening the hue channel.");
+                });
+        }
+
+        [TestMethod]
+        public void ColorPicker_SpectrumKeyboard_UpKeyIncreasesValue()
+        {
+            // Start dark so Value (brightness) has room to increase.
+            RunColorPickerOptionTest(
+                () => new Controls.ColorPicker { Color = Color.FromRgb(0x40, 0x20, 0x00) },
+                (picker, template, window) =>
+                {
+                    FrameworkElement spectrumArea = GetTemplateElement<FrameworkElement>(
+                        template, picker, "PART_SpectrumArea");
+                    Color colorBefore = picker.Color;
+
+                    _ = spectrumArea.Focus();
+                    DrainDispatcher(window.Dispatcher);
+
+                    PresentationSource? source = PresentationSource.FromVisual(spectrumArea);
+                    Assert.IsNotNull(source,
+                        "PART_SpectrumArea must have a PresentationSource once the window is shown.");
+
+                    spectrumArea.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice, source, 0, Key.Up)
+                    {
+                        RoutedEvent = Keyboard.KeyDownEvent,
+                    });
+                    DrainDispatcher(window.Dispatcher);
+
+                    Color colorAfter = picker.Color;
+                    Assert.AreNotEqual(colorBefore, colorAfter,
+                        "Key.Up on the focused spectrum must change the color.");
+
+                    // Value (brightness) increases: at least one channel brightens.
+                    Assert.IsTrue(
+                        colorAfter.R > colorBefore.R || colorAfter.G > colorBefore.G || colorAfter.B > colorBefore.B,
+                        "Pressing Up on the spectrum must increase Value, making channels brighter.");
+                });
+        }
     }
 }

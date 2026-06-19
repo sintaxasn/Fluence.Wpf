@@ -145,7 +145,10 @@
                                     x:Name="PART_SpectrumArea"
                                     Width="256"
                                     Height="256"
-                                    Background="Transparent">
+                                    AutomationProperties.Name="Color spectrum"
+                                    Background="Transparent"
+                                    Focusable="True"
+                                    KeyboardNavigation.IsTabStop="True">
                                     <Image x:Name="PART_SpectrumImage" Stretch="Fill" />
                                     <Ellipse
                                         x:Name="PART_SpectrumThumb"

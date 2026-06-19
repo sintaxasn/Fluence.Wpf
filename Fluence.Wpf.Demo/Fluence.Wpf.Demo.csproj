@@ -7,7 +7,7 @@
     <RootNamespace>Fluence.Wpf.Demo</RootNamespace>
     <AssemblyName>Fluence.Wpf.Demo</AssemblyName>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-    <ApplicationIcon>Resources\fluence-wpf-appicon-256.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\Fluence.ico</ApplicationIcon>
     <NoWarn>$(NoWarn);CS1591;IDE0330;VSTHRD001</NoWarn>
   </PropertyGroup>
 
@@ -21,9 +21,8 @@
       <ContainsDesignTimeResources>true</ContainsDesignTimeResources>
     </Page>
     <Resource Include="Resources\ControlImages\*.png" />
-    <Resource Include="Resources\fluence-wpf-appicon-256.ico" />
-    <Resource Include="Resources\fluence-wpf-banner-*.png" />
-    <Page Remove="Resources\fluence-wpf-banner-*.xaml" />
+    <Resource Include="Resources\Fluence.ico" />
+    <Resource Include="Resources\Fluence_Lockup_SideBySide_*.png" />
     <Resource Include="Resources\SegoeFluentIcons.tsv" />
   </ItemGroup>
 

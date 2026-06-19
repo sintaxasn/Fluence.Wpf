@@ -26,9 +26,12 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Automation;
 using Fluence.Wpf.Controls;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows;
+using System.Windows.Automation;
+using System.Windows.Automation.Peers;
 using System.Windows.Shapes;
 using WpfBorder = System.Windows.Controls.Border;
 using WpfGrid = System.Windows.Controls.Grid;
@@ -309,6 +312,113 @@ namespace Fluence.Wpf.Tests
                 WpfTextBlock? initialsText = FindVisualChildByName<WpfTextBlock>(pp, "PART_InitialsText");
                 Assert.IsNotNull(initialsText,
                     "PART_InitialsText must still be present after theme cycle.");
+                w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void PersonPicture_AutomationPeer_IsPersonPictureAutomationPeer()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                PersonPicture pp = new() { DisplayName = "Ada Lovelace" };
+                Window w = new() { Content = pp, Width = 200, Height = 200 };
+                w.Show();
+                _ = pp.ApplyTemplate();
+                DrainDispatcher(w.Dispatcher);
+
+                AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(pp);
+                _ = Assert.IsInstanceOfType<PersonPictureAutomationPeer>(peer,
+                    "PersonPicture must create a PersonPictureAutomationPeer.");
+                w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void PersonPicture_AutomationPeer_ControlTypeIsImage()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                PersonPicture pp = new() { DisplayName = "Ada Lovelace" };
+                Window w = new() { Content = pp, Width = 200, Height = 200 };
+                w.Show();
+                _ = pp.ApplyTemplate();
+                DrainDispatcher(w.Dispatcher);
+
+                AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(pp);
+                Assert.AreEqual(AutomationControlType.Image, peer.GetAutomationControlType(),
+                    "PersonPicture automation peer must report control type Image.");
+                w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void PersonPicture_AutomationPeer_GetName_ReturnsDisplayName()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                PersonPicture pp = new() { DisplayName = "Ada Lovelace" };
+                Window w = new() { Content = pp, Width = 200, Height = 200 };
+                w.Show();
+                _ = pp.ApplyTemplate();
+                DrainDispatcher(w.Dispatcher);
+
+                AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(pp);
+                Assert.AreEqual("Ada Lovelace", peer.GetName(),
+                    "GetName() must return the DisplayName when no AutomationProperties.Name is set.");
+                w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void PersonPicture_AutomationPeer_GetName_FallsBackToInitials()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                // No DisplayName, but Initials set explicitly.
+                PersonPicture pp = new() { Initials = "AL" };
+                Window w = new() { Content = pp, Width = 200, Height = 200 };
+                w.Show();
+                _ = pp.ApplyTemplate();
+                DrainDispatcher(w.Dispatcher);
+
+                AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(pp);
+                Assert.AreEqual("AL", peer.GetName(),
+                    "GetName() must fall back to Initials when DisplayName is empty.");
+                w.Close();
+            });
+        }
+
+        [TestMethod]
+        public void PersonPicture_AutomationPeer_ExplicitAutomationName_Wins()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                PersonPicture pp = new() { DisplayName = "Ada Lovelace" };
+                AutomationProperties.SetName(pp, "Profile picture for Ada");
+                Window w = new() { Content = pp, Width = 200, Height = 200 };
+                w.Show();
+                _ = pp.ApplyTemplate();
+                DrainDispatcher(w.Dispatcher);
+
+                AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(pp);
+                Assert.AreEqual("Profile picture for Ada", peer.GetName(),
+                    "Explicit AutomationProperties.Name must take precedence over DisplayName.");
                 w.Close();
             });
         }

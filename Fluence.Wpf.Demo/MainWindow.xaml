@@ -11,7 +11,7 @@
     Background="{DynamicResource ApplicationBackgroundBrush}"
     CornerStyle="Round"
     ExtendsContentIntoTitleBar="False"
-    Icon="Resources/fluence-wpf-appicon-256.ico"
+    Icon="Resources/Fluence.ico"
     RenderOptions.BitmapScalingMode="HighQuality"
     SystemBackdropType="Mica"
     TitleBarHeight="42"

@@ -46,6 +46,15 @@ namespace Fluence.Wpf.Automation
         }
 
         /// <inheritdoc />
+        protected override string GetNameCore()
+        {
+            string baseName = base.GetNameCore();
+            return !string.IsNullOrWhiteSpace(baseName)
+                ? baseName
+                : NumberBox.Header?.ToString() ?? string.Empty;
+        }
+
+        /// <inheritdoc />
         protected override AutomationControlType GetAutomationControlTypeCore()
         {
             return AutomationControlType.Spinner;
@@ -72,7 +81,7 @@ namespace Fluence.Wpf.Automation
         public virtual double SmallChange => NumberBox.SmallChange;
 
         /// <inheritdoc />
-        public virtual double LargeChange => NumberBox.SmallChange;
+        public virtual double LargeChange => NumberBox.LargeChange;
 
         /// <inheritdoc />
         public virtual bool IsReadOnly => !NumberBox.IsEnabled;
