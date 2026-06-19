@@ -175,5 +175,106 @@ namespace Fluence.Wpf.Tests
             Assert.AreEqual(!registryLight, result);
         }
 
+        [TestMethod]
+        public void Apply_Light_ResolvedThemeIsLight()
+        {
+            WpfTestSta.Invoke(static () =>
+            {
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
+                Assert.AreEqual(ApplicationTheme.Light, ApplicationThemeManager.ResolvedTheme,
+                    "ResolvedTheme must be Light after Apply(Light).");
+            });
+        }
+
+        [TestMethod]
+        public void Apply_Dark_ResolvedThemeIsDark()
+        {
+            WpfTestSta.Invoke(static () =>
+            {
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: false);
+                Assert.AreEqual(ApplicationTheme.Dark, ApplicationThemeManager.ResolvedTheme,
+                    "ResolvedTheme must be Dark after Apply(Dark).");
+            });
+        }
+
+        [TestMethod]
+        public void Apply_HighContrast_ResolvedThemeIsHighContrast()
+        {
+            WpfTestSta.Invoke(static () =>
+            {
+                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, updateAccent: false);
+                Assert.AreEqual(ApplicationTheme.HighContrast, ApplicationThemeManager.ResolvedTheme,
+                    "ResolvedTheme must be HighContrast after Apply(HighContrast).");
+            });
+        }
+
+        [TestMethod]
+        public void Apply_ExplicitTheme_ResolvedThemeNeverReturnsAuto()
+        {
+            WpfTestSta.Invoke(static () =>
+            {
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
+                Assert.AreNotEqual(ApplicationTheme.Auto, ApplicationThemeManager.ResolvedTheme,
+                    "ResolvedTheme must never be Auto; it must always be a concrete resolved value.");
+            });
+        }
+
+        [TestMethod]
+        public void Apply_Auto_ResolvedThemeIsNotAuto()
+        {
+            WpfTestSta.Invoke(static () =>
+            {
+                ApplicationThemeManager.Apply(ApplicationTheme.Auto, BackdropType.None, updateAccent: false);
+                Assert.AreNotEqual(ApplicationTheme.Auto, ApplicationThemeManager.ResolvedTheme,
+                    "ResolvedTheme must never be Auto; even when CurrentTheme is Auto it must resolve to a concrete value.");
+            });
+        }
+
+        [TestMethod]
+        public void ResolvedTheme_TracksLastAppliedTheme()
+        {
+            WpfTestSta.Invoke(static () =>
+            {
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
+                Assert.AreEqual(ApplicationTheme.Light, ApplicationThemeManager.ResolvedTheme,
+                    "ResolvedTheme should be Light after first Apply(Light).");
+
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: false);
+                Assert.AreEqual(ApplicationTheme.Dark, ApplicationThemeManager.ResolvedTheme,
+                    "ResolvedTheme should update to Dark after Apply(Dark).");
+
+                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, updateAccent: false);
+                Assert.AreEqual(ApplicationTheme.HighContrast, ApplicationThemeManager.ResolvedTheme,
+                    "ResolvedTheme should update to HighContrast after Apply(HighContrast).");
+            });
+        }
+
+        [TestMethod]
+        public void ResolvedTheme_RemainsConsistentAfterAccentChange()
+        {
+            WpfTestSta.Invoke(static () =>
+            {
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: false);
+                ApplicationTheme themeBeforeAccent = ApplicationThemeManager.ResolvedTheme;
+
+                ApplicationAccentColorManager.ApplyCustomAccent(Color.FromRgb(0xFF, 0x00, 0x00));
+
+                Assert.AreEqual(themeBeforeAccent, ApplicationThemeManager.ResolvedTheme,
+                    "ResolvedTheme should remain the same concrete theme after an accent change via ApplyCustomAccent.");
+                Assert.AreNotEqual(ApplicationTheme.Auto, ApplicationThemeManager.ResolvedTheme,
+                    "ResolvedTheme must never be Auto after an accent pipeline run.");
+            });
+        }
+
+        [TestMethod]
+        public void ResolvedTheme_DefaultsToLight_BeforeFirstApply()
+        {
+            WpfTestSta.Invoke(static () =>
+            {
+                Assert.AreEqual(ApplicationTheme.Light, ApplicationThemeManager.ResolvedTheme,
+                    "ResolvedTheme must default to Light before the first theme pipeline run.");
+            });
+        }
+
     }
 }
