@@ -362,9 +362,9 @@ Accessibility coverage includes focus visuals, high-contrast resources, automati
 | `RatingControl` | Slider | `AutomationProperties.Name` (current and maximum value are exposed through the RangeValue pattern, not the name) | RangeValue |
 | `ComboBox` | ComboBox | `PlaceholderText` or `AutomationProperties.Name` | ExpandCollapse, Selection |
 | `Slider` | Slider | `AutomationProperties.Name` or labeled by adjacent `TextBlock` | RangeValue |
-| `NumberBox` | Spinner | `Header` via automation peer `GetNameCore` / `AutomationProperties.Name` | RangeValue, Value |
+| `NumberBox` | Spinner | `Header` via automation peer `GetNameCore` / `AutomationProperties.Name` | RangeValue |
 | `TextBox` | Edit | `Header` or `AutomationProperties.Name` | Value, Text |
-| `PasswordBox` | Edit | `AutomationProperties.Name` (app-provided label); reveal button announces its state | Value |
+| `PasswordBox` | Edit | `AutomationProperties.Name` (app-provided label); reveal button announces its state | none |
 | `AutoSuggestBox` | Edit | `Header` via automation peer `GetNameCore` / `AutomationProperties.Name` | Value |
 | `NavigationView` | Navigation | `AutomationProperties.Name` on the control | Selection |
 | `NavigationViewItem` | ListItem | `Content` | SelectionItem |
@@ -407,7 +407,7 @@ controls that WPF does not natively make fully keyboard-accessible:
 - `RatingControl`: Left/Right arrow keys decrement and increment the rating; Home and End
   jump to the minimum and maximum values.
 - `PasswordBox` reveal button: Space and Enter toggle the reveal state when the reveal button
-  is keyboard-focused; the automation peer reports the current revealed state.
+  is keyboard-focused; the reveal button’s accessible name updates to announce the current state.
 - `NumberBox` spin buttons: the increment and decrement buttons are keyboard-accessible tab
   stops with accessible names; the `LargeChange` value reported by the automation peer
   matches the `NumberBox.LargeChange` property.
