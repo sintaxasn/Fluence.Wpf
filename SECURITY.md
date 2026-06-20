@@ -27,7 +27,7 @@ The following are generally **not** security issues; file them as normal bugs in
 
 ## Reporting a vulnerability
 
-Use GitHub private vulnerability reporting for this repository (Security tab -> "Report a vulnerability") at https://github.com/sintaxasn/Fluence.Wpf. If private reporting is not available, open a minimal public issue asking for a private contact path; do **not** include exploit details, secrets, or weaponized proof-of-concept material in a public issue.
+Use GitHub private vulnerability reporting for this repository (Security tab -> "Report a vulnerability") at <https://github.com/sintaxasn/Fluence.Wpf>. If private reporting is not available, open a minimal public issue asking for a private contact path; do **not** include exploit details, secrets, or weaponized proof-of-concept material in a public issue.
 
 Please include:
 

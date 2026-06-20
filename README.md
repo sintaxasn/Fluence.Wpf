@@ -1,7 +1,6 @@
-﻿<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./assets/Fluence_OGImage_Dark.png" />
-  <img alt="Fluence.Wpf" src="./assets/Fluence_OGImage.png" />
-</picture>
+﻿# ![Fluence.WPF Banner](./assets/Fluence_OGImage.png)
+
+## Introduction
 
 Windows 11 Fluent Design controls and theming for WPF applications targeting **.NET Framework 4.7.2** and **Windows 10** (1809+), with enhanced visuals on **Windows 11**.
 
@@ -9,7 +8,7 @@ Windows 11 Fluent Design controls and theming for WPF applications targeting **.
 
 **Docs:** see the Markdown guides under [`docs/`](docs/) (start with [Getting started](docs/getting-started.md)).
 
-## Features
+<!-- ## Features -->
 
 - **Theming with auto Light / Dark mode** - Auto (follow Windows), Light, Dark, or High Contrast.
 - **Accent colors** - System accent palette, app-defined accent, and custom accent ramps mapped to WinUI-style resource keys.
@@ -18,6 +17,7 @@ Windows 11 Fluent Design controls and theming for WPF applications targeting **.
 - **Small footprint** - ~480 KB per assembly.
 
 ## Key controls
+
 - **FluenceWindow** - A window with **Mica**, **Acrylic**, and **Tabbed (Mica Alt)** backdrops, rounded corners, configurable minimize / maximize / close buttons, and an extensible title bar for a WinUI-style search box or custom content.
 - **Controls** - 50+ Fluent-styled controls including Button, HyperlinkButton, DropDownButton, SplitButton, ToggleSplitButton, RepeatButton, ToggleButton, CheckBox, RadioButton, ToggleSwitch, TextBox, PasswordBox, AutoSuggestBox, ComboBox, Slider, NumberBox, DatePicker, TimePicker, ColorPicker, ProgressBar, ProgressRing, InfoBar, InfoBadge, RatingControl, PersonPicture, ListView, ListBox, Expander, Card (clickable), NavigationView, BreadcrumbBar, PipsPager, ContextMenu, MenuItem, Menu, ToolTip, Flyout, TeachingTip, CommandBarFlyout, ContentDialog, TreeView, TreeViewItem, Separator, FontIcon, Border, StackPanel, DockPanel, SmoothScrollViewer, plus TabView and ScrollBar themes. See the [control catalog](#control-catalog) for the full list.
 - **Typography** - Styles or Attached properties on `TextBlock` for the WinUI type ramp (Caption / Body / BodyStrong / Subtitle / Title / TitleLarge / Display).
@@ -25,6 +25,7 @@ Windows 11 Fluent Design controls and theming for WPF applications targeting **.
 - **NavigationView** - `Top`, `Left`, and `LeftCompact` pane modes with animated shared selection indicator, pane toggle + back button in the 48 px rail, and WinUI 3 content-region border (`CornerRadius="8,0,0,0"`, `NavigationViewContentSeparatorBrush` top/left stroke).
 
 ## Demos
+
 - **Gallery** - A code-behind WPF app for visual verification: theme swatches, accent picker, DWM backdrops, grouped control pages (Colors, Icons, Typography, Buttons, Selection, Inputs, Forms, Data, Data Binding, Trees, Menus, Navigation, Tabs, Layout, Status, Accessibility, Settings), inline examples, and embedded source for each one.
 - **MVVM Pattern** - A minimal Task Manager (`Fluence.Wpf.Demo.Mvvm`) built with CommunityToolkit.Mvvm. It uses `[ObservableProperty]`, `[RelayCommand]`, filter bindings, and progress reporting with no code-behind.
 - **PowerShell** - Build UIs for scripts from Windows PowerShell 5.1, without installing PowerShell 7, .NET 9 / 10, or the Windows App SDK.
@@ -52,7 +53,7 @@ Fluence.Wpf.ApplicationThemeManager.Apply(
 Fluence.Wpf.ApplicationAccentColorManager.ApplySystemAccent();
 ```
 
-3. Use `Fluence.Wpf.Controls.FluenceWindow`, or call `ApplicationThemeManager.Apply(...)` at startup and place Fluence controls in a standard `Window`.
+1. Use `Fluence.Wpf.Controls.FluenceWindow`, or call `ApplicationThemeManager.Apply(...)` at startup and place Fluence controls in a standard `Window`.
 
 Optional XML namespace mapping:
 
@@ -86,6 +87,7 @@ A NuGet package is coming. For now, use a project reference or build a local pac
 ```powershell
 dotnet pack Fluence.Wpf/Fluence.Wpf.csproj -c Release -o ./artifacts
 ```
+
 Or clone or submodule this repository and add a **project reference** to `Fluence.Wpf/Fluence.Wpf.csproj`.
 
 ## Requirements
