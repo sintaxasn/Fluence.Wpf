@@ -1,4 +1,4 @@
-Fluence.Wpf ships as a standard .NET Framework 4.7.2 assembly. Windows PowerShell 5.1
+﻿Fluence.Wpf ships as a standard .NET Framework 4.7.2 assembly. Windows PowerShell 5.1
 (built into every Windows installation) can load that assembly at runtime and create a
 fully themed Fluent window from a single script file, with no project of your own to
 compile.
@@ -223,22 +223,22 @@ theme of a running window. All `DynamicResource` bindings update immediately.
 
 ### ApplicationTheme enum values
 
-| Value | Behavior |
-|-------|----------|
-| `Auto` | Follows the Windows light/dark system setting |
-| `Light` | Forces light theme |
-| `Dark` | Forces dark theme |
-| `HighContrast` | Forces high contrast mode |
+| Value          | Behavior                                      |
+| -------------- | --------------------------------------------- |
+| `Auto`         | Follows the Windows light/dark system setting |
+| `Light`        | Forces light theme                            |
+| `Dark`         | Forces dark theme                             |
+| `HighContrast` | Forces high contrast mode                     |
 
 ### BackdropType enum values
 
-| Value | Behavior |
-|-------|----------|
-| `None` | Solid window background, no system material |
-| `Auto` | Let Fluence choose the best available backdrop |
-| `Mica` | Mica (Windows 11 only; falls back on Windows 10) |
-| `Acrylic` | Acrylic (Windows 10 1809+) |
-| `Tabbed` | Tabbed / Mica Alt (Windows 11 only) |
+| Value     | Behavior                                         |
+| --------- | ------------------------------------------------ |
+| `None`    | Solid window background, no system material      |
+| `Auto`    | Let Fluence choose the best available backdrop   |
+| `Mica`    | Mica (Windows 11 only; falls back on Windows 10) |
+| `Acrylic` | Acrylic (Windows 10 1809+)                       |
+| `Tabbed`  | Tabbed / Mica Alt (Windows 11 only)              |
 
 ### Reading the current state
 
@@ -303,13 +303,13 @@ Use `ui:FluenceWindow` as the root element instead of the standard WPF `Window`.
 
 ### Key dependency properties
 
-| Property | Type | Default | Notes |
-|----------|------|---------|-------|
-| `SystemBackdropType` | `BackdropType` | `Auto` | Sets the DWM system material |
-| `ExtendsContentIntoTitleBar` | `bool` | `false` | When `true`, content fills the title bar area |
-| `TitleBar` | content slot | - | Custom content placed in the title bar |
-| `TitleBarHeight` | `double` | - | Override the title bar height |
-| `CornerStyle` | enum | `Round` | Controls window corner rounding |
+| Property                     | Type           | Default | Notes                                         |
+| ---------------------------- | -------------- | ------- | --------------------------------------------- |
+| `SystemBackdropType`         | `BackdropType` | `Auto`  | Sets the DWM system material                  |
+| `ExtendsContentIntoTitleBar` | `bool`         | `false` | When `true`, content fills the title bar area |
+| `TitleBar`                   | content slot   | -       | Custom content placed in the title bar        |
+| `TitleBarHeight`             | `double`       | -       | Override the title bar height                 |
+| `CornerStyle`                | enum           | `Round` | Controls window corner rounding               |
 
 ### Switching the backdrop at runtime
 

@@ -1,4 +1,4 @@
-# Fluence.Wpf - Developer Handbook
+﻿# Fluence.Wpf - Developer Handbook
 
 Self-contained persistent memory for engineers (human and AI) working in this repository. Read top-to-bottom before touching code. This file is the single source of truth for conventions, architecture, reference authority, testing policy, and workflow; do **not** rely on out-of-repo agent bundles, external skill packs, or downstream-consumer-specific paths.
 
@@ -45,7 +45,6 @@ XAML themes are under `Fluence.Wpf/Themes/` and are **not** a CLR namespace.
 
 Every `.cs` file in the library, demo, and tests starts with the BSD 3-Clause header used by any existing source file (e.g. `Fluence.Wpf/ApplicationThemeManager.cs` lines 1-27). Never delete, shorten, or paraphrase it.
 
-
 ### Language features
 
 - Avoid em dash or en dash characters anywhere in documentation or comments.
@@ -66,11 +65,13 @@ Every `.cs` file in the library, demo, and tests starts with the BSD 3-Clause he
 - **`Microsoft.Extensions.StaticAnalysis`** (SonarAnalyzer): Sxxx rules run as errors; see `.editorconfig` for the suppressed subset.
 
 **Suppressions in `.editorconfig`** - do not re-enable without discussion:
+
 - `IDE0056` / `IDE0057` - index/range operators (net472 runtime gap)
 - `CA1307` / `CA1310` / `CA1847` / `CA1866` - string ordinal/span overloads (net472 API gap)
 - SonarAnalyzer: `S103`, `S104`, `S107`, `S109`, `S1067`, `S1121`, `S1449`, `S1659`, `S3358`, `S3458`, `S3532`, `S3869`
 
 **Per-library suppressions** (in `Fluence.Wpf.csproj` `<NoWarn>`):
+
 - `SYSLIB1045` - regex source generator (not available on `net472`)
 - `IDE0330` - `System.Threading.Lock` preference (not available on `net472`)
 - `S1244` - floating-point equality (necessary for pixel math)

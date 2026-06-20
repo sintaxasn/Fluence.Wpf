@@ -24,14 +24,14 @@ ScrollViewer
 
 Demo sample surfaces use the native Fluence brush resources and control defaults directly. Do not add demo-only brush aliases, do not shadow color-key names with brush resources, and do not reintroduce a demo refresh layer for surface promotion.
 
-| Layer | Brush resource |
-| --- | --- |
-| Page background | Leave to `NavigationView` / `SmoothScrollViewer` control defaults unless a specific page has no host surface. |
-| Sample card surface | `CardBackgroundFillColorDefaultBrush` |
-| Right rail / options pane | `CardBackgroundFillColorSecondaryBrush` |
-| Expander header | `ControlFillColorDefaultBrush` |
-| Expander expanded content | `SolidBackgroundFillColorBaseBrush` |
-| Secondary labels | `TextFillColorSecondaryBrush` |
+| Layer                     | Brush resource                                                                                                |
+| ------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| Page background           | Leave to `NavigationView` / `SmoothScrollViewer` control defaults unless a specific page has no host surface. |
+| Sample card surface       | `CardBackgroundFillColorDefaultBrush`                                                                         |
+| Right rail / options pane | `CardBackgroundFillColorSecondaryBrush`                                                                       |
+| Expander header           | `ControlFillColorDefaultBrush`                                                                                |
+| Expander expanded content | `SolidBackgroundFillColorBaseBrush`                                                                           |
+| Secondary labels          | `TextFillColorSecondaryBrush`                                                                                 |
 
 The page background has no dedicated brush (it uses the host control defaults), so the other five rows are the surface-token brushes that the Definition of done checks resolve across themes.
 

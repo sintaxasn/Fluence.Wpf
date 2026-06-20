@@ -58,7 +58,7 @@ maintainers.
 The following Windows Presentation Foundation accessibility APIs were introduced
 in .NET Framework 4.8 and are **not available on the `net472` TFM** this library
 supports. Each entry documents the chosen fallback and why the gap is acceptable.
-Reference: https://learn.microsoft.com/dotnet/framework/whats-new/whats-new-in-accessibility
+Reference: <https://learn.microsoft.com/dotnet/framework/whats-new/whats-new-in-accessibility>
 
 - **`AutomationPeer.RaiseNotificationEvent`** (available from .NET Framework 4.8) - this
   API pushes an ad-hoc text announcement to assistive technologies without a
