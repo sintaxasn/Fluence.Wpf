@@ -29,13 +29,13 @@
     <Authors>Dan Cunningham</Authors>
     <Company>Dan Cunningham</Company>
     <AssemblyCompany>Dan Cunningham</AssemblyCompany>
-    <VersionPrefix>0.8.5</VersionPrefix>
+    <VersionPrefix>0.8.6</VersionPrefix>
     <VersionSuffix>preview</VersionSuffix>
-    <PackageVersion>0.8.5-preview</PackageVersion>
-    <AssemblyVersion>0.8.5.0</AssemblyVersion>
-    <FileVersion>0.8.5.0</FileVersion>
-    <InformationalVersion>0.8.5-preview</InformationalVersion>
-    <BuildDate>2026-06-19</BuildDate>
+    <PackageVersion>0.8.6-preview</PackageVersion>
+    <AssemblyVersion>0.8.6.0</AssemblyVersion>
+    <FileVersion>0.8.6.0</FileVersion>
+    <InformationalVersion>0.8.6-preview</InformationalVersion>
+    <BuildDate>2026-06-22</BuildDate>
     <Copyright>Copyright © 2026 Dan Cunningham. All rights reserved.</Copyright>
   </PropertyGroup>
 
