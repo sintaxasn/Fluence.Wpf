@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+
+- NavigationView pane-toggle (hamburger) and back buttons now expose accessible
+  names ("Navigation" and "Back") so Windows Narrator and NVDA announce their
+  purpose instead of a bare "Button".
+
 ## [0.8.6-preview] - 2026-06-22
 
 ### Added
