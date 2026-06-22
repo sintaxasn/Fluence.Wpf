@@ -459,6 +459,36 @@ namespace Fluence.Wpf.Tests
             });
         }
 
+        [TestMethod]
+        public void FontIcon_AutomationPeer_IsExcludedFromControlTree()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+
+                try
+                {
+                    Controls.FontIcon icon = new() { Glyph = "" };
+                    System.Windows.Automation.Peers.AutomationPeer peer =
+                        System.Windows.Automation.Peers.UIElementAutomationPeer.CreatePeerForElement(icon);
+
+                    Assert.IsNotNull(peer, "FontIcon must create an automation peer.");
+                    Assert.IsInstanceOfType(peer, typeof(Automation.FontIconAutomationPeer));
+                    Assert.IsFalse(
+                        peer.IsControlElement(),
+                        "Decorative FontIcon must be excluded from the UI Automation control view (AccessibilityView=Raw equivalent).");
+                    Assert.IsFalse(
+                        peer.IsContentElement(),
+                        "Decorative FontIcon must be excluded from the UI Automation content view.");
+                }
+                finally
+                {
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                }
+            });
+        }
+
         // TeachingTip PART_AlternateCloseButton is deferred: the button is only visible when
         // the tip is open inside its host Popup (IsOpen=true moves the tip into a detached Popup
         // subtree). Opening the Popup during a headless test requires a visible active window for

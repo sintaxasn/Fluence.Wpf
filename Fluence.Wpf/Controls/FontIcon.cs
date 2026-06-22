@@ -28,6 +28,7 @@
 
 using System;
 using System.Windows;
+using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
@@ -203,6 +204,12 @@ namespace Fluence.Wpf.Controls
 
             ApplyMirrorState();
             ApplySpinState();
+        }
+
+        /// <inheritdoc />
+        protected override AutomationPeer OnCreateAutomationPeer()
+        {
+            return new Fluence.Wpf.Automation.FontIconAutomationPeer(this);
         }
 
         /// <inheritdoc />

@@ -11,6 +11,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - NavigationView pane-toggle (hamburger) and back buttons now expose accessible
   names ("Navigation" and "Back") so Windows Narrator and NVDA announce their
   purpose instead of a bare "Button".
+- Decorative FontIcon glyphs are now excluded from the UI Automation tree
+  (AccessibilityView=Raw equivalent), so screen readers no longer stop on
+  unnamed icon nodes; the labelled parent control is announced instead.
 
 ## [0.8.6-preview] - 2026-06-22
 
