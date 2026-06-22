@@ -845,6 +845,7 @@
                             Margin="24,0,4,0"
                             Padding="6"
                             VerticalAlignment="Center"
+                            AutomationProperties.Name="Back"
                             Background="Transparent"
                             BorderThickness="0"
                             Focusable="True"

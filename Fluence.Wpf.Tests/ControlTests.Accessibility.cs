@@ -413,6 +413,52 @@ namespace Fluence.Wpf.Tests
             });
         }
 
+        [TestMethod]
+        public void NavigationView_TopPane_BackButton_HasAutomationName()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+
+                try
+                {
+                    Controls.NavigationView nav = new()
+                    {
+                        PaneDisplayMode = Fluence.Wpf.NavigationViewPaneDisplayMode.Top,
+                        Width = 640,
+                        Height = 240,
+                    };
+                    Window navWindow = new() { Content = nav, Width = 700, Height = 300 };
+
+                    try
+                    {
+                        navWindow.Show();
+                        _ = nav.ApplyTemplate();
+                        DrainDispatcher(navWindow.Dispatcher);
+
+                        ControlTemplate? navTemplate = nav.Template;
+                        Assert.IsNotNull(navTemplate, "NavigationView must receive its themed template in Top mode.");
+
+                        FrameworkElement? backButton = navTemplate.FindName("PART_BackButton", nav) as FrameworkElement;
+                        Assert.IsNotNull(backButton, "PART_BackButton should exist in the NavigationView Top template.");
+                        string actualName = AutomationProperties.GetName(backButton);
+                        Assert.IsTrue(
+                            string.Equals("Back", actualName, System.StringComparison.Ordinal),
+                            $"PART_BackButton must expose accessible name 'Back' for Narrator in Top mode. Actual: '{actualName}'.");
+                    }
+                    finally
+                    {
+                        navWindow.Close();
+                    }
+                }
+                finally
+                {
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                }
+            });
+        }
+
         // TeachingTip PART_AlternateCloseButton is deferred: the button is only visible when
         // the tip is open inside its host Popup (IsOpen=true moves the tip into a detached Popup
         // subtree). Opening the Popup during a headless test requires a visible active window for
