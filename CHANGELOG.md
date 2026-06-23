@@ -8,6 +8,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- `ContentDialog` is now announced by screen readers when it opens. The dialog
+  declares an assertive UI Automation live region and raises `LiveRegionChanged`
+  as it appears, so Windows Narrator, NVDA, and JAWS read the dialog `Title` on
+  open instead of staying silent. Because the dialog is hosted in an overlay (not
+  a separate window), nothing previously prompted assistive technologies to read
+  it. This is the net472-safe substitute for `AutomationProperties.IsDialog` (a
+  .NET Framework 4.8 API absent on the `net472` target) and complements the
+  existing `ControlType.Window` automation peer and Tab focus trapping.
 - NavigationView pane-toggle (hamburger) and back buttons now expose accessible
   names ("Navigation" and "Back") so Windows Narrator and NVDA announce their
   purpose instead of a bare "Button".

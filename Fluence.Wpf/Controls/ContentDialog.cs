@@ -30,6 +30,7 @@ using Fluence.Wpf.Automation;
 using System;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -75,6 +76,14 @@ namespace Fluence.Wpf.Controls
             DefaultStyleKeyProperty.OverrideMetadata(
                 typeof(ContentDialog),
                 new FrameworkPropertyMetadata(typeof(ContentDialog)));
+
+            // A modal dialog is an interrupting surface, so declare an assertive UI Automation
+            // live region. Paired with AnnounceLiveRegion on open, this is the net472-safe
+            // substitute for AutomationProperties.IsDialog (a .NET Framework 4.8 API absent on
+            // the net472 target) that makes Narrator read the dialog Title the moment it appears.
+            AutomationProperties.LiveSettingProperty.OverrideMetadata(
+                typeof(ContentDialog),
+                new FrameworkPropertyMetadata(AutomationLiveSetting.Assertive));
         }
 
         /// <summary>
@@ -816,6 +825,10 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
+            // Announce the dialog to assistive technologies before focus moves inside it, so
+            // Narrator reads the dialog name (Title) and then the focused command button.
+            AnnounceLiveRegion();
+
             ButtonBase? defaultButton = DefaultButton switch
             {
                 ContentDialogButton.Primary => _primaryButton,
@@ -831,6 +844,26 @@ namespace Fluence.Wpf.Controls
             }
 
             _ = Focus();
+        }
+
+        /// <summary>
+        /// Raises <see cref="AutomationEvents.LiveRegionChanged"/> on this dialog's automation peer
+        /// so Narrator announces the dialog by its <see cref="Title"/> (the peer name) the moment it
+        /// opens. This is the net472-safe substitute for the .NET Framework 4.8
+        /// <c>AutomationProperties.IsDialog</c> announcement, paired with the assertive live setting
+        /// declared in the static constructor. Uses only net472-safe APIs (no RaiseNotificationEvent).
+        /// </summary>
+        private void AnnounceLiveRegion()
+        {
+            if (!AutomationPeer.ListenerExists(AutomationEvents.LiveRegionChanged))
+            {
+                return;
+            }
+
+            // CreatePeerForElement is annotated non-null, so peer is provably non-null here (CA1508
+            // rejects a redundant null guard); no NullReferenceException is possible.
+            AutomationPeer peer = UIElementAutomationPeer.FromElement(this) ?? UIElementAutomationPeer.CreatePeerForElement(this);
+            peer.RaiseAutomationEvent(AutomationEvents.LiveRegionChanged);
         }
 
         /// <summary>

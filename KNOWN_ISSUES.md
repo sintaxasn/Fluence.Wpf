@@ -76,12 +76,17 @@ Reference: <https://learn.microsoft.com/dotnet/framework/whats-new/whats-new-in-
   property marks an element as a modal dialog surface so screen readers announce
   it as such when focus enters. `ContentDialog` does not set this property on
   net472. The fallback used is: the `ContentDialogAutomationPeer` returns
-  `AutomationControlType.Window` from `GetAutomationControlTypeCore` and the
-  dialog traps Tab focus inside its bounds during `ShowAsync`, so assistive
-  technologies observe both a Window-role boundary and the focus containment
-  that characterise a modal dialog. The behaviour gap is limited to the
-  explicit "dialog" announcement phrase that Narrator and JAWS emit when
-  `IsDialog=true`; the structural and focus semantics are present.
+  `AutomationControlType.Window` from `GetAutomationControlTypeCore`, the dialog
+  traps Tab focus inside its bounds during `ShowAsync`, and on open it declares
+  an assertive UI Automation live region (`AutomationProperties.LiveSetting`) and
+  raises `LiveRegionChanged` so Narrator, NVDA, and JAWS read the dialog `Title`
+  as it appears. Assistive technologies therefore observe a Window-role boundary,
+  focus containment, and an explicit open announcement, which together characterise
+  a modal dialog. The behaviour gap is limited to the literal "dialog" role phrase
+  that Narrator and JAWS emit when `IsDialog=true`; the structural, focus, and
+  announcement semantics are present. Without the live region the overlay-hosted
+  dialog (not a separate HWND) raised no event for assistive technologies to act
+  on, so it was not read on open.
 
 - **`AutomationProperties.HeadingLevel`** (available from .NET Framework 4.8) - this
   property allows elements to be reported as heading levels H1-H9 to assistive

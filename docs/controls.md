@@ -375,7 +375,7 @@ Accessibility coverage includes focus visuals, high-contrast resources, automati
 | `ProgressRing` | ProgressBar | `AutomationProperties.Name` | RangeValue |
 | `Card` | Button (when clickable) / Group (non-clickable) | `AutomationProperties.Name` (or its content) | Invoke (when clickable) |
 | `PersonPicture` | Image | Display name or initials | none |
-| `ContentDialog` | Window | `Title` | none (focus trapped inside) |
+| `ContentDialog` | Window | `Title` | none (focus trapped inside; assertive live region announces `Title` on open) |
 | `TeachingTip` | ToolTip | `Title` and `Subtitle` (live region) | none |
 | `AppBarButton` | Button | `Label` (surfaced as `AutomationProperties.Name`) or an explicit `AutomationProperties.Name` | Invoke |
 
@@ -393,9 +393,10 @@ status-change announcements in this library instead use the net472-safe pattern:
 3. Screen readers that honour `LiveRegionChanged` (Narrator, NVDA, JAWS) then
    read the element's current `GetNameCore` text.
 
-Controls that use this approach: `InfoBar`, `ProgressBar`, `ProgressRing`,
-`TeachingTip`, and `TextBox` validation feedback. This pattern requires no
-.NET 4.8 surface and works on both `net472` and `net10.0-windows10.0.26100.0`.
+Controls that use this approach: `ContentDialog` (announces its `Title` when the
+dialog opens), `InfoBar`, `ProgressBar`, `ProgressRing`, `TeachingTip`, and
+`TextBox` validation feedback. This pattern requires no .NET 4.8 surface and works
+on both `net472` and `net10.0-windows10.0.26100.0`.
 
 #### Keyboard operability
 
@@ -418,7 +419,7 @@ Four UI Automation features available from .NET Framework 4.8 are absent on `net
 See `KNOWN_ISSUES.md` for the full rationale and chosen fallbacks:
 
 - `AutomationPeer.RaiseNotificationEvent` - substituted with `LiveRegionChanged` (described above).
-- `AutomationProperties.IsDialog` - `ContentDialog` uses `ControlType.Window` and focus trapping as a fallback.
+- `AutomationProperties.IsDialog` - `ContentDialog` uses `ControlType.Window`, Tab focus trapping, and an assertive live-region announcement of its `Title` on open as the fallback.
 - `AutomationProperties.HeadingLevel` - not used by the library; app-layer concern.
 - Automatic `PositionInSet`/`SizeOfSet` for `ItemsControl` - peers do not override `GetPositionInSetCore`/`GetSizeOfSetCore` on either TFM; apps set `AutomationProperties.PositionInSet`/`SizeOfSet` explicitly on items where meaningful.
 
