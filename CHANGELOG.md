@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.8.7-preview] - 2026-06-23
+
 ### Fixed
 
 - `ContentDialog` is now announced by screen readers when it opens. The dialog
@@ -22,6 +24,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Decorative FontIcon glyphs are now excluded from the UI Automation tree
   (AccessibilityView=Raw equivalent), so screen readers no longer stop on
   unnamed icon nodes; the labelled parent control is announced instead.
+- `TextBlock` now correctly reports `ControlType.Text` to UI Automation via a
+  new `TextBlockAutomationPeer`. Previously, because `Fluence.Wpf.Controls.TextBlock`
+  is a `ContentControl` subclass rather than a `System.Windows.Controls.TextBlock`
+  subclass, WPF assigned it a generic peer that reported `ControlType.Pane`,
+  placing a spurious container node in the UIA tree and breaking
+  `AutomationProperties.LabeledBy` relationships. Only instances with an explicit
+  `AutomationProperties.Name` are visible in the control view; decorative body-copy
+  instances without a name are excluded so Narrator does not announce them.
 
 ## [0.8.6-preview] - 2026-06-22
 
