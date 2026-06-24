@@ -22,13 +22,6 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Decorative FontIcon glyphs are now excluded from the UI Automation tree
   (AccessibilityView=Raw equivalent), so screen readers no longer stop on
   unnamed icon nodes; the labelled parent control is announced instead.
-- The demo gallery source-code viewer now renders each source line as a
-  separate `Paragraph` instead of using `LineBreak` inlines inside a single
-  block. WPF does not derive per-line bounding rectangles from inline
-  `LineBreak` positions, so Narrator's focus bar previously landed on the
-  wrong visual row. The one-paragraph-per-line layout gives UIA text ranges
-  correct coordinates and makes keyboard navigation through sample code
-  reliable for screen-reader users.
 
 ## [0.8.6-preview] - 2026-06-22
 
