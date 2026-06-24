@@ -13,7 +13,7 @@ Self-contained persistent memory for engineers (human and AI) working in this re
 - **Language**: `LangVersion=latest` across all TFMs, set centrally in `Directory.Build.props` - no per-TFM language restriction. `net472` still constrains **runtime API** availability (see [Section 4.3](#43-feasibility-test-for-net472)); avoid APIs that don't ship in `net472`, but C# language features themselves are not restricted. Nullable reference types are **enabled** (`Nullable=enable` in `Directory.Build.props`); individual projects may override with `<Nullable>disable</Nullable>` (e.g. `Fluence.Wpf.Demo.Mvvm`).
 - **License**: BSD 3-Clause. Every `.cs` file begins with the same 27-line header; copy it verbatim from any existing library file when adding new sources. Do not edit the copyright year unless the user asks.
 - **OS**: Windows 10 1809+ baseline. Mica and rounded-corner extras light up on Windows 11.
-- **XML namespace URI**: `http://schemas.fluencewpf.com` - suggested prefix `fluence`.
+- **XML namespace URI**: `http://schemas.fluencewpf.com` - suggested prefix `ui`.
 
 ### Solution layout
 
@@ -207,16 +207,16 @@ Undocumented "looks right" choices are not acceptable in a PR. If nothing in the
 
 ### 4.2 Per-domain authority
 
-| Concern                                                                           | Primary authority                                                                                                                                                                                                                                     | Rationale                                                                            |
-| --------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------ |
-| Visual tokens (colors, brushes, typography, spacing, corner radii, timing curves) | [**WinUI 3 CommonStyles**](https://github.com/microsoft/microsoft-ui-xaml/tree/main/src/controls/dev/CommonStyles)                                                                                                                                    | Canonical Microsoft-owned Fluent design tokens and control visuals.                  |
-| WPF-native window chrome (`WindowChrome`, DWM extension, caption buttons)         | [**.NET 10 WPF Themes**](https://github.com/dotnet/wpf/tree/main/src/Microsoft.DotNet.Wpf/src/Themes)                                                                                                                                                 | WPF-specific idioms that WinUI 3 does not express; known to work on `net472`.        |
-| Navigation patterns (`NavigationView` layout, selection indicator, pane modes)    | [**WinUI 3 CommonStyles**](https://github.com/microsoft/microsoft-ui-xaml/tree/main/src/controls/dev/CommonStyles) (visual) + [**.NET 10 WPF Themes**](https://github.com/dotnet/wpf/tree/main/src/Microsoft.DotNet.Wpf/src/Themes) (WPF translation) | Visuals are Fluent-canonical; composition must respect WPF templating constraints.   |
-| Accent ramp generation and HSV tint math                                          | [**.NET 10 WPF Themes**](https://github.com/dotnet/wpf/tree/main/src/Microsoft.DotNet.Wpf/src/Themes)                                                                                                                                                 | Includes a proven WPF implementation of the Windows accent ramp.                     |
-| System theme detection (Light/Dark/HighContrast)                                  | [**.NET 10 WPF Themes**](https://github.com/dotnet/wpf/tree/main/src/Microsoft.DotNet.Wpf/src/Themes)                                                                                                                                                 | WPF-compatible registry reads and `WM_SETTINGCHANGE` handling suitable for `net472`. |
-| Individual controls (Button, CheckBox, RadioButton, ComboBox, ToggleSwitch, etc.) | [**WinUI 3 CommonStyles**](https://github.com/microsoft/microsoft-ui-xaml/tree/main/src/controls/dev/CommonStyles)                                                                                                                                    | Canonical Fluent templates and visual states.                                        |
-| Acrylic / Mica backdrops, rounded corners                                         | [**.NET 10 WPF Themes**](https://github.com/dotnet/wpf/tree/main/src/Microsoft.DotNet.Wpf/src/Themes) + [DWM API docs on Microsoft Learn](https://learn.microsoft.com/windows/win32/api/dwmapi/)                                                      | DWM interop is the mechanism; .NET 10 WPF demonstrates the WPF hook.                 |
-| Accessibility / automation peers                                                  | WinUI 3 CommonStyles + Windows UI Automation docs on Microsoft Learn                                                                                                                                                                                  | Behavioural contract, not visual.                                                    |
+| Concern                                                                           | Primary authority                                                                                                                                               | Rationale                                                                            |
+| --------------------------------------------------------------------------------- | -----------------------------------------------------------------------------------------------------------------------	| ------------------------------------------------------------------------------------ |
+| Visual tokens (colors, brushes, typography, spacing, corner radii, timing curves) | [**WinUI 3 CommonStyles**](https://github.com/microsoft/microsoft-ui-xaml/tree/main/src/controls/dev/CommonStyles)	| Canonical Microsoft-owned Fluent design tokens and control visuals.                  |
+| WPF-native window chrome (`WindowChrome`, DWM extension, caption buttons)         | [**.NET 10 WPF Themes**](https://github.com/dotnet/wpf/tree/main/src/Microsoft.DotNet.Wpf/src/Themes)			| WPF-specific idioms that WinUI 3 does not express; known to work on `net472`.        |
+| Navigation patterns (`NavigationView` layout, selection indicator, pane modes)    | WinUI 3 CommonStyles (visual) + .NET 10 WPF Themes (WPF translation)							| Visuals are Fluent-canonical; composition must respect WPF templating constraints.   |
+| Accent ramp generation and HSV tint math                                          | .NET 10 WPF Themes												| Includes a proven WPF implementation of the Windows accent ramp.                     |
+| System theme detection (Light/Dark/HighContrast)                                  | .NET 10 WPF Themes												| WPF-compatible registry reads and `WM_SETTINGCHANGE` handling suitable for `net472`. |
+| Individual controls (Button, CheckBox, RadioButton, ComboBox, ToggleSwitch, etc.) | WinUI 3 CommonStyles												| Canonical Fluent templates and visual states.                                        |
+| Acrylic / Mica backdrops, rounded corners                                         | .NET 10 WPF Themes + [DWM API docs on Microsoft Learn](https://learn.microsoft.com/windows/win32/api/dwmapi/)		| DWM interop is the mechanism; .NET 10 WPF demonstrates the WPF hook.                 |
+| Accessibility / automation peers                                                  | WinUI 3 CommonStyles + Windows UI Automation docs on Microsoft Learn							| Behavioural contract, not visual.                                                    |
 
 ### 4.3 Feasibility test for `net472`
 
@@ -229,6 +229,8 @@ When a reference pattern depends on an API that is not available on `net472` (Cs
 ---
 
 ## 5. Control authoring checklist
+
+When adding a new control, always use skill `new-control`
 
 When adding a new control or materially changing an existing one:
 
@@ -375,8 +377,6 @@ Public and repository documentation:
 - [docs/migration-guide.md](docs/migration-guide.md)
 - [docs/contributing.md](docs/contributing.md)
 - [docs/release.md](docs/release.md)
-- [docs/skill_templated-prompts.md](docs/skill_templated-prompts.md) - canonical task templates (referenced from Section 13)
-- [docs/skill_demo-sample-pages.md](docs/skill_demo-sample-pages.md) - demo sample-page standard (referenced from Section 14)
 - [KNOWN_ISSUES.md](KNOWN_ISSUES.md)
 
 Maintainer / AI context (this file and its siblings):
@@ -392,7 +392,7 @@ Anything under `docs/_internal/` is not part of the public doc set. Do not link 
 
 ## 11. Role definition and quality gates
 
-When you are editing this repository, you are acting as a **senior C#/.NET WPF engineer and Windows-theme specialist**. Every change must honour the following gates:
+When you are editing this repository, you are acting as a **senior C#/.NET WPF engineer and Windows-theme specialist**. Every change must honor the following gates:
 
 1. **Standards respected**: BSD header, `LangVersion=latest` with nullable-clean code, XML docs on public API, `DynamicResource` for theme-bound values, no hard-coded RGB, canonical WinUI key names, no banned APIs (`string.IsNullOrEmpty` etc.).
 2. **Reference authority followed**: any visual or behavioural decision is backed by [Section 4](#4-reference-priority) (in-tree precedent -> per-domain authority -> Windows 11 docs). Fabricated design choices do not pass review.
@@ -419,23 +419,11 @@ Consumer build compatibility is a release gate. For build-policy, public API, pr
 
 ---
 
-## 13. Templated prompts
-
-Two canonical task templates (a generic development workflow plus its acceptance gates) live in [docs/skill_templated-prompts.md](docs/skiLL_templated-prompts.md). Copy the relevant block, fill in the `TASK` line, and execute end-to-end.
-
----
-
-## 14. Demo Sample Pages
-
-The full demo sample-page standard - page skeleton, color layering, the `DemoSampleControl` contract, catalog surfaces, and definition of done - lives in [docs/skill_demo-sample-pages.md](docs/skill_demo-sample-pages.md). Control samples in `Fluence.Wpf.Demo` render through `DemoSampleControl`; design reference pages that mirror WinUI Gallery catalog surfaces (such as Typography) may render directly.
-
----
-
-## 15. AI contributor workflow
+## 13. AI contributor workflow
 
 LLM-assisted work in this repo is gated through the `.claude/` automation directory. Agents are explicit review/scaffold lanes you invoke; skills are scaffolding playbooks; hooks run automatically around tool calls and either inject `<system-reminder>` context or enforce file policy. This makes the conventions above discoverable and self-enforcing instead of relying on memory.
 
-### 15.1 Agents (`.claude/agents/`)
+### 13.1 Agents (`.claude/agents/`)
 
 Read-only or scaffolding subagents. Use the one whose lane matches your change:
 
@@ -446,16 +434,16 @@ Read-only or scaffolding subagents. Use the one whose lane matches your change:
 | `net472-feasibility-checker` | After adding APIs, language features, or dependencies - confirms the code still runs on the separate `net472` test lane (Section 4.3). |
 | `documentation-updater` | After code changes that cause doc drift, or when writing/updating READMEs, getting-started guides, API references, CHANGELOGs, inline docs, or GitHub special files. |
 
-### 15.2 Skills (`.claude/skills/`)
+### 13.2 Skills (`.claude/skills/`)
 
 Step-by-step scaffolding playbooks that bake the checklists into the work:
 
 | Skill | Use when |
-| --- | --- |
+| --- | --- | --- |
 | `new-control` | Scaffold a new custom control end to end against the Section 5 control authoring checklist (CLR type, template wired into `Generic.xaml`, design-time/demo entries, MSTest partial, docs/CHANGELOG). |
-| `demo-sample-page` | Scaffold or extend a `Fluence.Wpf.Demo` gallery sample page against the Section 14 `DemoSampleControl` contract. |
+|| `demo-sample-page` | Scaffold or extend a `Fluence.Wpf.Demo` gallery sample page. The full demo sample-page spec - page skeleton, color layering, the `DemoSampleControl` contract, catalog surfaces, and definition of done - lives in [.claude/skills/demo_sample_page/SPEC.md](.claude/skills/demo_sample_page/SPEC.md). Control samples in `Fluence.Wpf.Demo` render through `DemoSampleControl`; design reference pages that mirror WinUI Gallery catalog surfaces (such as Typography) may render directly. |
 
-### 15.3 Hooks (`.claude/hooks/`)
+### 13.3 Hooks (`.claude/hooks/`)
 
 Hooks run automatically on tool events; you do not invoke them:
 
@@ -465,7 +453,7 @@ Hooks run automatically on tool events; you do not invoke them:
 | `post-tool-format-xaml.ps1` | PostToolUse formatter that runs the pinned XAML Styler (`.claude/hooks/Format-Xaml.ps1`) over each edited authored `.xaml`, enforcing the committed reference style plus LF + single UTF-8 BOM. Non-blocking; the CI `-Check` gate is the hard fail. |
 | `post-tool-util.ps1` | PostToolUse linter that blocks the write on text-policy violations: missing UTF-8 BOM, CRLF/CR line endings, `string.IsNullOrEmpty`, `TextOptions.*`, hard-coded hex in `Themes/Controls/**`, em/en dashes in `.cs` / `.md`, and `git diff --check` whitespace errors. |
 
-### 15.4 Gating principle
+### 13.4 Gating principle
 
 - Theme, brush, or color changes -> review with `theme-slot-auditor`.
 - Visual or control-template changes -> review with `winui-parity-reviewer`.

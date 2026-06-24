@@ -502,22 +502,21 @@ namespace Fluence.Wpf.Demo.Pages
             };
             document.SetResourceReference(TextElement.ForegroundProperty, "TextFillColorPrimaryBrush");
 
-            Paragraph paragraph = new()
-            {
-                LineHeight = 18,
-                Margin = new Thickness(0),
-            };
-            document.Blocks.Add(paragraph);
-
             string normalized = (source ?? string.Empty).Replace("\r\n", "\n", StringComparison.Ordinal).Replace('\r', '\n');
-            string[] lines = normalized.Split('\n');
-            for (int i = 0; i < lines.Length; i++)
+
+            // One Paragraph per source line so UIA text ranges have correct per-line bounding
+            // rectangles. A single paragraph with LineBreak inlines causes Narrator's focus bar
+            // to land on the wrong visual row because WPF does not derive per-line coordinates
+            // from inline LineBreak positions.
+            foreach (string line in normalized.Split('\n'))
             {
-                AddFormattedLine(paragraph, lines[i], language);
-                if (i < lines.Length - 1)
+                Paragraph paragraph = new()
                 {
-                    paragraph.Inlines.Add(new LineBreak());
-                }
+                    LineHeight = 18,
+                    Margin = new Thickness(0),
+                };
+                AddFormattedLine(paragraph, line, language);
+                document.Blocks.Add(paragraph);
             }
 
             return document;
