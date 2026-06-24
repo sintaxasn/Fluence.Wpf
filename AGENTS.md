@@ -439,9 +439,9 @@ Read-only or scaffolding subagents. Use the one whose lane matches your change:
 Step-by-step scaffolding playbooks that bake the checklists into the work:
 
 | Skill | Use when |
-| --- | --- | --- |
+| --- | --- |
 | `new-control` | Scaffold a new custom control end to end against the Section 5 control authoring checklist (CLR type, template wired into `Generic.xaml`, design-time/demo entries, MSTest partial, docs/CHANGELOG). |
-|| `demo-sample-page` | Scaffold or extend a `Fluence.Wpf.Demo` gallery sample page. The full demo sample-page spec - page skeleton, color layering, the `DemoSampleControl` contract, catalog surfaces, and definition of done - lives in [.claude/skills/demo_sample_page/SPEC.md](.claude/skills/demo_sample_page/SPEC.md). Control samples in `Fluence.Wpf.Demo` render through `DemoSampleControl`; design reference pages that mirror WinUI Gallery catalog surfaces (such as Typography) may render directly. |
+| `demo-sample-page` | Scaffold or extend a `Fluence.Wpf.Demo` gallery sample page. The full demo sample-page spec - page skeleton, color layering, the `DemoSampleControl` contract, catalog surfaces, and definition of done - lives in [.claude/skills/demo-sample-page/SPEC.md](.claude/skills/demo-sample-page/SPEC.md). Control samples in `Fluence.Wpf.Demo` render through `DemoSampleControl`; design reference pages that mirror WinUI Gallery catalog surfaces (such as Typography) may render directly. |
 
 ### 13.3 Hooks (`.claude/hooks/`)
 
