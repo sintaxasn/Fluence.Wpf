@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.8.7-preview] - 2026-06-23
+
 ### Fixed
 
 - `ContentDialog` is now announced by screen readers when it opens. The dialog
