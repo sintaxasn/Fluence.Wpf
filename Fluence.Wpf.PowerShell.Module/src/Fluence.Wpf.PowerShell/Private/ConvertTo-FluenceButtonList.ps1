@@ -26,7 +26,14 @@
     {
         if ($item -is [string])
         {
-            $result += New-FluenceButton -Text $item
+            if ($item -eq 'Cancel')
+            {
+                $result += New-FluenceButton -Text $item -IsCancel
+            }
+            else
+            {
+                $result += New-FluenceButton -Text $item
+            }
         }
         elseif ($item.PSObject.TypeNames -contains 'Fluence.Button')
         {

@@ -23,4 +23,22 @@ Describe 'ConvertTo-FluenceButtonList' {
         $list[0].PSObject.TypeNames[0] | Should -Be 'Fluence.Button'
         $list[0].Text | Should -Be 'OK'
     }
+    It "bare 'Cancel' becomes IsCancel=true" {
+        $list = ConvertTo-FluenceButtonList -InputObject @('Cancel')
+        $list[0].Text | Should -Be 'Cancel'
+        $list[0].IsCancel | Should -Be $true
+    }
+    It "bare 'cancel' (lowercase) becomes IsCancel=true (case-insensitive)" {
+        $list = ConvertTo-FluenceButtonList -InputObject @('cancel')
+        $list[0].IsCancel | Should -Be $true
+    }
+    It "bare 'OK' stays IsCancel=false" {
+        $list = ConvertTo-FluenceButtonList -InputObject @('OK')
+        $list[0].IsCancel | Should -Be $false
+    }
+    It 'explicit Fluence.Button with IsCancel=false passes through unchanged' {
+        $btn = New-FluenceButton -Text 'Cancel'
+        $list = ConvertTo-FluenceButtonList -InputObject @($btn)
+        $list[0].IsCancel | Should -Be $false
+    }
 }
