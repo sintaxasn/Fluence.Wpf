@@ -122,12 +122,6 @@
     $State.InfoBar = $infoBar
     $null = $root.Children.Add($infoBar)
 
-    # Button row.
-    $buttonPanel = [System.Windows.Controls.StackPanel]::new()
-    $buttonPanel.Orientation = [System.Windows.Controls.Orientation]::Horizontal
-    $buttonPanel.HorizontalAlignment = [System.Windows.HorizontalAlignment]::Right
-    $buttonPanel.Margin = [System.Windows.Thickness]::new(0, 16, 0, 0)
-
     # Initialize the result: Cancelled and TimedOut flags plus a false entry per button, before
     # wiring. TimedOut is carried for forward compatibility with the design's result contract; the
     # -Timeout/-Countdown features that would set it are deferred to a later phase.
@@ -157,14 +151,71 @@
         }
     }
 
-    foreach ($button in $Spec.Buttons)
+    # Button row: equal-fill Grid mirroring ContentDialog CommandSpace.
+    # Layout order: IsDefault left, neither-default-nor-cancel in the middle (preserving $Spec.Buttons
+    # order among them), IsCancel right. $Spec.Buttons itself is not reordered; the Closed handler and
+    # Result init above continue to iterate it. The ordered list is layout-only.
+    $orderedButtons = @($Spec.Buttons | Where-Object { $_.IsDefault }) `
+        + @($Spec.Buttons | Where-Object { -not $_.IsDefault -and -not $_.IsCancel }) `
+        + @($Spec.Buttons | Where-Object { $_.IsCancel -and -not $_.IsDefault })
+
+    $grid = [System.Windows.Controls.Grid]::new()
+    $grid.HorizontalAlignment = [System.Windows.HorizontalAlignment]::Stretch
+    $grid.Margin = [System.Windows.Thickness]::new(0, 16, 0, 0)
+
+    $n = $orderedButtons.Count
+
+    # A single button is sized as if there were two (half width) and pinned to the right column,
+    # leaving the left column empty. For 2+ buttons, one equal Star column per button. The single
+    # button therefore needs an extra empty leading column.
+    $columnCount = if ($n -eq 1) { 2 } else { $n }
+    $starWidth = [System.Windows.GridLength]::new(1, [System.Windows.GridUnitType]::Star)
+    for ($c = 0; $c -lt $columnCount; $c++)
     {
+        $col = [System.Windows.Controls.ColumnDefinition]::new()
+        $col.Width = $starWidth
+        $null = $grid.ColumnDefinitions.Add($col)
+    }
+
+    for ($i = 0; $i -lt $n; $i++)
+    {
+        $button = $orderedButtons[$i]
         $wpfButton = [Fluence.Wpf.Controls.Button]::new()
         $wpfButton.Content = $button.Text
-        $wpfButton.MinWidth = 88
-        $wpfButton.Margin = [System.Windows.Thickness]::new(8, 0, 0, 0)
+        $wpfButton.HorizontalAlignment = [System.Windows.HorizontalAlignment]::Stretch
+        $wpfButton.MinWidth = 0
+
+        # 4px half-margins produce 8px gaps between adjacent buttons, 0 at the outer edges,
+        # matching ContentDialog CommandSpace: left (0,0,4,0), middle (4,0,4,0), right (4,0,0,0).
+        # A lone button sits in the right column, so it takes the right-most margin (4,0,0,0).
+        if ($n -eq 1)
+        {
+            $wpfButton.Margin = [System.Windows.Thickness]::new(4, 0, 0, 0)
+        }
+        elseif ($i -eq 0)
+        {
+            $wpfButton.Margin = [System.Windows.Thickness]::new(0, 0, 4, 0)
+        }
+        elseif ($i -eq ($n - 1))
+        {
+            $wpfButton.Margin = [System.Windows.Thickness]::new(4, 0, 0, 0)
+        }
+        else
+        {
+            $wpfButton.Margin = [System.Windows.Thickness]::new(4, 0, 4, 0)
+        }
+
         $wpfButton.IsDefault = [bool]$button.IsDefault
         $wpfButton.IsCancel = [bool]$button.IsCancel
+
+        if ($button.IsDefault)
+        {
+            $wpfButton.Appearance = [Fluence.Wpf.ControlAppearance]::Accent
+        }
+
+        # Lone button -> right column (index 1 of 2); otherwise its position in the ordered list.
+        $targetColumn = if ($n -eq 1) { 1 } else { $i }
+        [System.Windows.Controls.Grid]::SetColumn($wpfButton, $targetColumn)
 
         if ($button.IsCancel)
         {
@@ -197,10 +248,10 @@
             }.GetNewClosure())
         }
 
-        $null = $buttonPanel.Children.Add($wpfButton)
+        $null = $grid.Children.Add($wpfButton)
     }
 
-    $null = $root.Children.Add($buttonPanel)
+    $null = $root.Children.Add($grid)
     $window.Content = $border
 
     # When the window closes by any path, mark Cancelled unless a button reported success.

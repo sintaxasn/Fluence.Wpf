@@ -272,4 +272,314 @@ Describe 'Show-FluenceDialog render' -Tag UI {
         }
         $result.Cancelled | Should -BeTrue
     }
+
+    It 'button Grid: 2-button layout has equal columns, Stretch, Accent on default, correct order' -Skip:($env:FLUENCE_PS_UI -ne '1') {
+        # Custom harness: builds the window and inspects the button Grid before ShowDialog.
+        # Returns a hashtable of observable layout properties without requiring a live render cycle.
+        $layoutHarness2 = {
+            param($spec)
+
+            if ($null -eq [System.Windows.Application]::Current)
+            {
+                $app = [System.Windows.Application]::new()
+                $app.ShutdownMode = [System.Windows.ShutdownMode]::OnExplicitShutdown
+            }
+
+            $theme = [Fluence.Wpf.ApplicationTheme]$spec.Theme
+            $backdrop = [Fluence.Wpf.BackdropType]$spec.Backdrop
+            [Fluence.Wpf.ApplicationThemeManager]::Apply($theme, $backdrop, $true)
+            [Fluence.Wpf.ApplicationAccentColorManager]::ApplySystemAccent()
+
+            $module = Get-Module Fluence.Wpf.PowerShell
+            $state = @{ Result = @{}; Window = $null }
+            $window = & $module {
+                param($s, $st)
+                New-FluenceDialogWindow -Spec $s -State $st
+            } $spec $state
+            $state.Window = $window
+
+            # Locate the button Grid: last direct child of the root StackPanel (the Border's child).
+            $border = $window.Content
+            $panel = $border.Child
+            $buttonGrid = $panel.Children[$panel.Children.Count - 1]
+
+            # Collect per-button observable properties by walking Grid.Children.
+            $buttonProps = @()
+            foreach ($child in $buttonGrid.Children)
+            {
+                if ($child -is [Fluence.Wpf.Controls.Button])
+                {
+                    $buttonProps += @{
+                        Col         = [System.Windows.Controls.Grid]::GetColumn($child)
+                        IsDefault   = $child.IsDefault
+                        IsCancel    = $child.IsCancel
+                        Appearance  = $child.Appearance
+                        HAlign      = $child.HorizontalAlignment
+                        MinWidth    = $child.MinWidth
+                    }
+                }
+            }
+
+            $timer = [System.Windows.Threading.DispatcherTimer]::new()
+            $timer.Interval = [timespan]::FromMilliseconds(400)
+            $timer.add_Tick({
+                $timer.Stop()
+                if ($window.IsVisible)
+                {
+                    $window.Close()
+                }
+            }.GetNewClosure())
+            $timer.Start()
+
+            $null = $window.ShowDialog()
+            return @{
+                ColumnCount = $buttonGrid.ColumnDefinitions.Count
+                Buttons     = $buttonProps
+            }
+        }
+
+        $spec2 = @{
+            Title        = 'Layout 2'
+            Message      = @()
+            Prompts      = @()
+            Buttons      = @(
+                New-FluenceButton -Text 'OK' -IsDefault
+                New-FluenceButton -Text 'Cancel' -IsCancel
+            )
+            Theme        = 'Light'
+            Backdrop     = 'None'
+            AccentColor  = $null
+            MinWidth     = 360
+            Topmost      = $false
+            ParentWindow = $null
+        }
+
+        $raw2 = script:RunHarness -Harness $layoutHarness2 -Arguments @($spec2)
+        $r2 = script:Unwrap -Raw $raw2
+
+        # Grid must have exactly as many columns as buttons.
+        $r2.ColumnCount | Should -Be 2
+
+        # Every button must be Stretch / MinWidth 0.
+        foreach ($bp in $r2.Buttons)
+        {
+            $bp.HAlign | Should -Be ([System.Windows.HorizontalAlignment]::Stretch)
+            $bp.MinWidth | Should -Be 0
+        }
+
+        # IsDefault button occupies column 0 and is Accent.
+        $defaultBtn = $r2.Buttons | Where-Object { $_.IsDefault }
+        $defaultBtn.Col | Should -Be 0
+        $defaultBtn.Appearance | Should -Be ([Fluence.Wpf.ControlAppearance]::Accent)
+
+        # IsCancel button occupies the last column and is not Accent.
+        $cancelBtn = $r2.Buttons | Where-Object { $_.IsCancel }
+        $cancelBtn.Col | Should -Be ($r2.ColumnCount - 1)
+        $cancelBtn.Appearance | Should -Not -Be ([Fluence.Wpf.ControlAppearance]::Accent)
+    }
+
+    It 'button Grid: 3-button layout has equal columns, default col 0, cancel col 2, middle not Accent' -Skip:($env:FLUENCE_PS_UI -ne '1') {
+        $layoutHarness3 = {
+            param($spec)
+
+            if ($null -eq [System.Windows.Application]::Current)
+            {
+                $app = [System.Windows.Application]::new()
+                $app.ShutdownMode = [System.Windows.ShutdownMode]::OnExplicitShutdown
+            }
+
+            $theme = [Fluence.Wpf.ApplicationTheme]$spec.Theme
+            $backdrop = [Fluence.Wpf.BackdropType]$spec.Backdrop
+            [Fluence.Wpf.ApplicationThemeManager]::Apply($theme, $backdrop, $true)
+            [Fluence.Wpf.ApplicationAccentColorManager]::ApplySystemAccent()
+
+            $module = Get-Module Fluence.Wpf.PowerShell
+            $state = @{ Result = @{}; Window = $null }
+            $window = & $module {
+                param($s, $st)
+                New-FluenceDialogWindow -Spec $s -State $st
+            } $spec $state
+            $state.Window = $window
+
+            $border = $window.Content
+            $panel = $border.Child
+            $buttonGrid = $panel.Children[$panel.Children.Count - 1]
+
+            $buttonProps = @()
+            foreach ($child in $buttonGrid.Children)
+            {
+                if ($child -is [Fluence.Wpf.Controls.Button])
+                {
+                    $buttonProps += @{
+                        Col        = [System.Windows.Controls.Grid]::GetColumn($child)
+                        IsDefault  = $child.IsDefault
+                        IsCancel   = $child.IsCancel
+                        Appearance = $child.Appearance
+                        HAlign     = $child.HorizontalAlignment
+                        MinWidth   = $child.MinWidth
+                    }
+                }
+            }
+
+            $timer = [System.Windows.Threading.DispatcherTimer]::new()
+            $timer.Interval = [timespan]::FromMilliseconds(400)
+            $timer.add_Tick({
+                $timer.Stop()
+                if ($window.IsVisible)
+                {
+                    $window.Close()
+                }
+            }.GetNewClosure())
+            $timer.Start()
+
+            $null = $window.ShowDialog()
+            return @{
+                ColumnCount = $buttonGrid.ColumnDefinitions.Count
+                Buttons     = $buttonProps
+            }
+        }
+
+        $spec3 = @{
+            Title        = 'Layout 3'
+            Message      = @()
+            Prompts      = @()
+            Buttons      = @(
+                New-FluenceButton -Text 'Apply' -IsDefault
+                New-FluenceButton -Text 'More'
+                New-FluenceButton -Text 'Cancel' -IsCancel
+            )
+            Theme        = 'Light'
+            Backdrop     = 'None'
+            AccentColor  = $null
+            MinWidth     = 360
+            Topmost      = $false
+            ParentWindow = $null
+        }
+
+        $raw3 = script:RunHarness -Harness $layoutHarness3 -Arguments @($spec3)
+        $r3 = script:Unwrap -Raw $raw3
+
+        $r3.ColumnCount | Should -Be 3
+
+        foreach ($bp in $r3.Buttons)
+        {
+            $bp.HAlign | Should -Be ([System.Windows.HorizontalAlignment]::Stretch)
+            $bp.MinWidth | Should -Be 0
+        }
+
+        $defaultBtn = $r3.Buttons | Where-Object { $_.IsDefault }
+        $defaultBtn.Col | Should -Be 0
+        $defaultBtn.Appearance | Should -Be ([Fluence.Wpf.ControlAppearance]::Accent)
+
+        $cancelBtn = $r3.Buttons | Where-Object { $_.IsCancel }
+        $cancelBtn.Col | Should -Be ($r3.ColumnCount - 1)
+        $cancelBtn.Appearance | Should -Not -Be ([Fluence.Wpf.ControlAppearance]::Accent)
+
+        # The middle button (neither default nor cancel) must be in column 1 and not Accent.
+        $middleBtn = $r3.Buttons | Where-Object { -not $_.IsDefault -and -not $_.IsCancel }
+        $middleBtn.Col | Should -Be 1
+        $middleBtn.Appearance | Should -Not -Be ([Fluence.Wpf.ControlAppearance]::Accent)
+    }
+
+    It 'button Grid: 1-button layout has 2 columns, button in right column sized as half the grid' -Skip:($env:FLUENCE_PS_UI -ne '1') {
+        # Custom harness that measures rendered widths in the timer tick (so layout has run), then
+        # closes. Width facts are carried back through the $state hashtable (a reference shared with
+        # the timer closure), since assignment to a $script: variable inside GetNewClosure does not
+        # surface to the harness return value.
+        $layoutHarness1 = {
+            param($spec)
+
+            if ($null -eq [System.Windows.Application]::Current)
+            {
+                $app = [System.Windows.Application]::new()
+                $app.ShutdownMode = [System.Windows.ShutdownMode]::OnExplicitShutdown
+            }
+
+            $theme = [Fluence.Wpf.ApplicationTheme]$spec.Theme
+            $backdrop = [Fluence.Wpf.BackdropType]$spec.Backdrop
+            [Fluence.Wpf.ApplicationThemeManager]::Apply($theme, $backdrop, $true)
+            [Fluence.Wpf.ApplicationAccentColorManager]::ApplySystemAccent()
+
+            $module = Get-Module Fluence.Wpf.PowerShell
+            $state = @{ Result = @{}; Window = $null; Facts = $null }
+            $window = & $module {
+                param($s, $st)
+                New-FluenceDialogWindow -Spec $s -State $st
+            } $spec $state
+            $state.Window = $window
+
+            $border = $window.Content
+            $panel = $border.Child
+            $buttonGrid = $panel.Children[$panel.Children.Count - 1]
+
+            $timer = [System.Windows.Threading.DispatcherTimer]::new()
+            $timer.Interval = [timespan]::FromMilliseconds(500)
+            $timer.add_Tick({
+                $timer.Stop()
+                try
+                {
+                    $theButton = $null
+                    foreach ($child in $buttonGrid.Children)
+                    {
+                        if ($child -is [Fluence.Wpf.Controls.Button])
+                        {
+                            $theButton = $child
+                        }
+                    }
+                    $state.Facts = @{
+                        ColumnCount = $buttonGrid.ColumnDefinitions.Count
+                        Col         = [System.Windows.Controls.Grid]::GetColumn($theButton)
+                        HAlign      = $theButton.HorizontalAlignment
+                        MinWidth    = $theButton.MinWidth
+                        IsDefault   = $theButton.IsDefault
+                        Appearance  = $theButton.Appearance
+                        GridWidth   = $buttonGrid.ActualWidth
+                        ButtonWidth = $theButton.ActualWidth
+                    }
+                }
+                finally
+                {
+                    if ($window.IsVisible)
+                    {
+                        $window.Close()
+                    }
+                }
+            }.GetNewClosure())
+            $timer.Start()
+
+            $null = $window.ShowDialog()
+            return $state.Facts
+        }
+
+        $spec1 = @{
+            Title        = 'Layout 1'
+            Message      = @('A message line giving the dialog a stable width to measure against.')
+            Prompts      = @()
+            Buttons      = @(New-FluenceButton -Text 'OK' -IsDefault)
+            Theme        = 'Light'
+            Backdrop     = 'None'
+            AccentColor  = $null
+            MinWidth     = 360
+            Topmost      = $false
+            ParentWindow = $null
+        }
+
+        $raw1 = script:RunHarness -Harness $layoutHarness1 -Arguments @($spec1)
+        $f1 = script:Unwrap -Raw $raw1
+
+        # Two columns so the lone button occupies half the width; it sits in the right column.
+        $f1.ColumnCount | Should -Be 2
+        $f1.Col | Should -Be 1
+        $f1.HAlign | Should -Be ([System.Windows.HorizontalAlignment]::Stretch)
+        $f1.MinWidth | Should -Be 0
+        $f1.IsDefault | Should -BeTrue
+        $f1.Appearance | Should -Be ([Fluence.Wpf.ControlAppearance]::Accent)
+
+        # "Sized as if there were two buttons": its rendered width is about half the grid.
+        # (A lone button in a half column carries a 4px left margin, so it is just under half.)
+        $f1.GridWidth | Should -BeGreaterThan 0
+        $half = $f1.GridWidth / 2
+        $f1.ButtonWidth | Should -BeGreaterThan ($half - 12)
+        $f1.ButtonWidth | Should -BeLessThan ($half + 1)
+    }
 }
