@@ -9,6 +9,10 @@
     #>
     [CmdletBinding()]
     [OutputType([void])]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidAssignmentToAutomaticVariable', '',
+        Justification = 'Parameters named sender and eventArgs match the .NET ResolveEventHandler delegate signature; they are not PS automatic variable assignments.')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'sender',
+        Justification = 'sender is a required positional parameter of the ResolveEventHandler delegate; the .NET runtime passes it but the scriptblock intentionally uses only eventArgs.')]
     param
     (
         [Parameter(Mandatory = $true)]

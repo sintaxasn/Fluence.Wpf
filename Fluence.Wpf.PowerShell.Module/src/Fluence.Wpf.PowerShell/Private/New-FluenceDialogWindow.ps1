@@ -22,6 +22,8 @@
     #>
     [CmdletBinding()]
     [OutputType([Fluence.Wpf.Controls.FluenceWindow])]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '',
+        Justification = 'Builds a WPF window object in memory; changes no external system state.')]
     param
     (
         [Parameter(Mandatory = $true)]

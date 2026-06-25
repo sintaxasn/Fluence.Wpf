@@ -21,6 +21,8 @@
     #>
     [CmdletBinding()]
     [OutputType([System.Windows.FrameworkElement])]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '',
+        Justification = 'Builds a WPF control tree in memory; changes no external system state.')]
     param
     (
         [Parameter(Mandatory = $true)]

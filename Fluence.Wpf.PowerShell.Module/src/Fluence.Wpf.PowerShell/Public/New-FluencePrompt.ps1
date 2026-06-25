@@ -34,6 +34,8 @@
     #>
     [CmdletBinding()]
     [OutputType('Fluence.Prompt')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '',
+        Justification = 'Builds an in-memory specification object; changes no system state.')]
     param
     (
         [Parameter()]

@@ -11,6 +11,12 @@
 # so it behaves identically whether Invoke-OnFluenceUi runs it inline or transports it by text to
 # the STA runspace (where only public functions sit at top level).
 
+# PSScriptAnalyzer cannot trace parameter usage inside a nested scriptblock assigned to a variable;
+# $clickFirstButton is read at runtime inside $script:RenderHarness via the timer Tick closure.
+[Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'clickFirstButton',
+    Justification = 'Parameter is used inside a scriptblock that PSScriptAnalyzer cannot statically trace.')]
+param()
+
 BeforeAll {
     $script:ModulePath = Join-Path $PSScriptRoot '..\src\Fluence.Wpf.PowerShell\Fluence.Wpf.PowerShell.psd1'
     Import-Module $script:ModulePath -Force

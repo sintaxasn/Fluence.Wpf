@@ -11,7 +11,7 @@ param
 )
 
 $ErrorActionPreference = 'Stop'
-$repo = 'F:\FRebuild\Fluence.Wpf'
+$repo = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 $lib  = Join-Path $repo 'Fluence.Wpf.PowerShell.Module\src\Fluence.Wpf.PowerShell\lib'
 $proj = Join-Path $repo 'Fluence.Wpf\Fluence.Wpf.csproj'
 
@@ -33,4 +33,4 @@ foreach ($dest in $map.Keys)
     Get-ChildItem -Path $src -Filter '*.dll' | Copy-Item -Destination $out -Force
 }
 
-Write-Host 'Staged Fluence.Wpf assemblies into the module lib folder.'
+Write-Output 'Staged Fluence.Wpf assemblies into the module lib folder.'

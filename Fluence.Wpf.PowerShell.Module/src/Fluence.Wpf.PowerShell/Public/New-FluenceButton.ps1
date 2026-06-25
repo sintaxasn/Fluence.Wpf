@@ -18,6 +18,8 @@
     #>
     [CmdletBinding()]
     [OutputType('Fluence.Button')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '',
+        Justification = 'Builds an in-memory specification object; changes no system state.')]
     param
     (
         [Parameter(Mandatory = $true, Position = 0)]
