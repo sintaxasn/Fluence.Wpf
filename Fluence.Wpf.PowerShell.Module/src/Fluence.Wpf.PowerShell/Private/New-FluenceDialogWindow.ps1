@@ -53,8 +53,35 @@
     $root.Orientation = [System.Windows.Controls.Orientation]::Vertical
     $border.Child = $root
 
-    # Message lines.
-    if ($null -ne $Spec.Message)
+    # Message lines. When an Icon is specified (not None), render as a leading InfoBar so the
+    # severity glyph and color appear. When Icon is None (or absent), render plain TextBlocks.
+    $iconValue = $null
+    if ($Spec.ContainsKey('Icon'))
+    {
+        $iconValue = $Spec.Icon
+    }
+    $useIconBar = (-not [string]::IsNullOrWhiteSpace($iconValue)) -and ($iconValue -ne 'None')
+
+    if ($useIconBar -and $null -ne $Spec.Message)
+    {
+        $joinedMessage = [string]::Join(' ', $Spec.Message)
+        $leadingBar = [Fluence.Wpf.Controls.InfoBar]::new()
+        $leadingBar.IsOpen = $true
+        $leadingBar.Message = $joinedMessage
+        $leadingBar.Margin = [System.Windows.Thickness]::new(0, 0, 0, 8)
+
+        $severity = [Fluence.Wpf.InfoBarSeverity]::Informational
+        switch ($iconValue)
+        {
+            'Success'  { $severity = [Fluence.Wpf.InfoBarSeverity]::Success }
+            'Warning'  { $severity = [Fluence.Wpf.InfoBarSeverity]::Warning }
+            'Error'    { $severity = [Fluence.Wpf.InfoBarSeverity]::Error }
+        }
+        $leadingBar.Severity = $severity
+
+        $null = $root.Children.Add($leadingBar)
+    }
+    elseif ($null -ne $Spec.Message)
     {
         foreach ($line in $Spec.Message)
         {
@@ -131,7 +158,11 @@
         else
         {
             $wpfButton.add_Click({
-                $validation = & $validateInput -Prompts $Spec.Prompts -Values $State.Result
+                $validation = @{ IsValid = $true; Message = '' }
+                if ($Spec.Prompts.Count -gt 0)
+                {
+                    $validation = & $validateInput -Prompts $Spec.Prompts -Values $State.Result
+                }
                 if (-not $validation.IsValid)
                 {
                     $State.InfoBar.Message = $validation.Message

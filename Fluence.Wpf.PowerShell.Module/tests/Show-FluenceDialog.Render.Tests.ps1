@@ -145,6 +145,86 @@ Describe 'Show-FluenceDialog render' -Tag UI {
         $result.Cancelled | Should -BeFalse
     }
 
+    It 'renders a leading icon InfoBar when Icon is Success' -Skip:($env:FLUENCE_PS_UI -ne '1') {
+        # Custom harness that builds the window, walks the logical children for an open InfoBar
+        # before ShowDialog, then closes. Returns @{ NoException=$true; FoundInfoBar=$bool }.
+        $iconHarness = {
+            param($spec)
+
+            if ($null -eq [System.Windows.Application]::Current)
+            {
+                $app = [System.Windows.Application]::new()
+                $app.ShutdownMode = [System.Windows.ShutdownMode]::OnExplicitShutdown
+            }
+
+            $theme = [Fluence.Wpf.ApplicationTheme]$spec.Theme
+            $backdrop = [Fluence.Wpf.BackdropType]$spec.Backdrop
+            [Fluence.Wpf.ApplicationThemeManager]::Apply($theme, $backdrop, $true)
+            [Fluence.Wpf.ApplicationAccentColorManager]::ApplySystemAccent()
+
+            $module = Get-Module Fluence.Wpf.PowerShell
+            $state = @{ Result = @{}; Window = $null }
+            $window = & $module {
+                param($s, $st)
+                New-FluenceDialogWindow -Spec $s -State $st
+            } $spec $state
+            $state.Window = $window
+
+            # Inspect logical children of the root border's StackPanel for an open InfoBar.
+            # Do this before ShowDialog so the check is synchronous and reliable.
+            $foundOpenInfoBar = $false
+            $border = $window.Content
+            if ($null -ne $border)
+            {
+                $panel = $border.Child
+                if ($null -ne $panel)
+                {
+                    foreach ($child in $panel.Children)
+                    {
+                        if ($child -is [Fluence.Wpf.Controls.InfoBar] -and $child.IsOpen -eq $true)
+                        {
+                            $foundOpenInfoBar = $true
+                        }
+                    }
+                }
+            }
+
+            $timer = [System.Windows.Threading.DispatcherTimer]::new()
+            $timer.Interval = [timespan]::FromMilliseconds(400)
+            $timer.add_Tick({
+                $timer.Stop()
+                if ($window.IsVisible)
+                {
+                    $window.Close()
+                }
+            }.GetNewClosure())
+            $timer.Start()
+
+            $null = $window.ShowDialog()
+            return @{ NoException = $true; FoundInfoBar = $foundOpenInfoBar }
+        }
+
+        $spec = @{
+            Title        = 'Icon InfoBar'
+            Message      = @('Operation completed successfully.')
+            Icon         = 'Success'
+            Prompts      = @()
+            Buttons      = @(New-FluenceButton -Text 'OK' -IsDefault)
+            Theme        = 'Light'
+            Backdrop     = 'None'
+            AccentColor  = $null
+            MinWidth     = 360
+            Topmost      = $false
+            ParentWindow = $null
+        }
+
+        $raw = script:RunHarness -Harness $iconHarness -Arguments @($spec)
+        $result = script:Unwrap -Raw $raw
+
+        $result.NoException | Should -BeTrue
+        $result.FoundInfoBar | Should -BeTrue
+    }
+
     It 'constructs every input type and returns a key per prompt' -Skip:($env:FLUENCE_PS_UI -ne '1') {
         $prompts = @(
             New-FluencePrompt -Name P_Text -Message 'Text' -InputType Text -DefaultValue 'abc'

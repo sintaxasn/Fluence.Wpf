@@ -12,7 +12,8 @@
         'Show-FluenceDialog',
         'New-FluencePrompt',
         'New-FluenceButton',
-        'Show-FluenceMessage'
+        'Show-FluenceMessage',
+        'Get-FluenceInput'
     )
     CmdletsToExport      = @()
     VariablesToExport    = @()

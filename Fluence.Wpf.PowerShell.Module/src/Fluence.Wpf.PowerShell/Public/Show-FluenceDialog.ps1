@@ -11,6 +11,10 @@
         The window title.
     .PARAMETER Message
         One or more message lines shown above the prompts.
+    .PARAMETER Icon
+        Optional icon severity shown as a leading InfoBar above the message area.
+        None (default) renders the message as plain text. Info, Success, Warning, Error, and
+        Question map to the corresponding InfoBarSeverity (Question uses Informational).
     .PARAMETER Prompts
         Strings or Fluence.Prompt objects (see New-FluencePrompt). A bare string becomes a Text prompt.
     .PARAMETER Buttons
@@ -44,6 +48,10 @@
 
         [Parameter()]
         [string[]]$Message,
+
+        [Parameter()]
+        [ValidateSet('None', 'Info', 'Success', 'Warning', 'Error', 'Question')]
+        [string]$Icon = 'None',
 
         [Parameter()]
         [object[]]$Prompts,
@@ -89,6 +97,7 @@
     $spec = @{
         Title        = $Title
         Message      = $Message
+        Icon         = $Icon
         Prompts      = $promptList
         Buttons      = $buttonList
         Theme        = $Theme
