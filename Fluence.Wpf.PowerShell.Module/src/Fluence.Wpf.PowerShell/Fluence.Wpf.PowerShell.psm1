@@ -1,6 +1,11 @@
 ﻿$script:ModuleRoot = $PSScriptRoot
 $script:ModuleManifestPath = Join-Path $PSScriptRoot 'Fluence.Wpf.PowerShell.psd1'
 
+# Load the WPF framework assemblies before dot-sourcing functions, so that System.Windows.* types
+# resolve both for the host router and for public function parameter types that are bound at
+# dot-source time (for example Show-FluenceDialog's -Accent and -ParentWindow).
+Add-Type -AssemblyName PresentationFramework, PresentationCore, WindowsBase
+
 # Dot-source private then public functions.
 $private = @(Get-ChildItem -Path (Join-Path $script:ModuleRoot 'Private') -Filter '*.ps1' -ErrorAction SilentlyContinue)
 $public  = @(Get-ChildItem -Path (Join-Path $script:ModuleRoot 'Public')  -Filter '*.ps1' -ErrorAction SilentlyContinue)
