@@ -19,6 +19,9 @@
         Strings or Fluence.Prompt objects (see New-FluencePrompt). A bare string becomes a Text prompt.
     .PARAMETER Buttons
         Strings or Fluence.Button objects (see New-FluenceButton). Defaults to a single OK button.
+        A bare 'Cancel' string is treated as a cancel button (closes on Esc, no validation); any
+        other bare string (for example 'No' or 'Close') is a plain button, so build it with
+        New-FluenceButton -IsCancel if you want it to act as the Esc/cancel affordance.
     .PARAMETER Theme
         Auto (default), Light, Dark, or HighContrast.
     .PARAMETER Backdrop

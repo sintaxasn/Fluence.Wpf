@@ -14,7 +14,9 @@
         The window title. Defaults to 'Fluence'.
     .PARAMETER Icon
         The icon and color to display in the leading InfoBar.
-        Info (default), Success, Warning, Error, or Question.
+        Info (default), Success, Warning, Error, or Question. InfoBarSeverity has no Question or Info
+        member, so Info and Question both render as the Informational severity (no distinct question
+        glyph); use the button set (for example -Buttons YesNo) to convey a confirmation.
     .PARAMETER Buttons
         Named button set: OK (default), OKCancel, YesNo, or YesNoCancel.
     .PARAMETER Theme

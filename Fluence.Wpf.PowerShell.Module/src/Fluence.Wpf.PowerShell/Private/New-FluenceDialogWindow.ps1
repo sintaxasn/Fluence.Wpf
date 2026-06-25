@@ -128,8 +128,11 @@
     $buttonPanel.HorizontalAlignment = [System.Windows.HorizontalAlignment]::Right
     $buttonPanel.Margin = [System.Windows.Thickness]::new(0, 16, 0, 0)
 
-    # Initialize the result: Cancelled plus a false entry per button, before wiring.
+    # Initialize the result: Cancelled and TimedOut flags plus a false entry per button, before
+    # wiring. TimedOut is carried for forward compatibility with the design's result contract; the
+    # -Timeout/-Countdown features that would set it are deferred to a later phase.
     $State.Result['Cancelled'] = $false
+    $State.Result['TimedOut'] = $false
     foreach ($button in $Spec.Buttons)
     {
         $State.Result[$button.Name] = $false
@@ -140,6 +143,19 @@
     # module-private function by name when the deferred WPF Click event fires, but it can call a
     # captured scriptblock.
     $validateInput = ${function:Test-FluenceInput}
+
+    # Pull-at-commit refresh for controls with no usable change event (PasswordBox). Reading the
+    # live value here at each click avoids a persistent DependencyPropertyDescriptor subscription
+    # (which would leak the control + $State for the life of the reused STA Application).
+    $refreshPullControls = {
+        if ($null -ne $State.PullControls)
+        {
+            foreach ($pull in $State.PullControls)
+            {
+                $State.Result[$pull.Name] = $pull.Control.Password
+            }
+        }
+    }
 
     foreach ($button in $Spec.Buttons)
     {
@@ -153,13 +169,17 @@
         if ($button.IsCancel)
         {
             $wpfButton.add_Click({
-                # Cancel closes without validating; the Closed handler marks Cancelled.
+                # Cancel closes without validating; the Closed handler marks Cancelled. Pull anyway
+                # so the captured result reflects the latest values regardless of close path.
+                & $refreshPullControls
                 $State.Window.Close()
             }.GetNewClosure())
         }
         else
         {
             $wpfButton.add_Click({
+                # Capture the latest pull-only values (PasswordBox) before validating and closing.
+                & $refreshPullControls
                 $validation = @{ IsValid = $true; Message = '' }
                 if ($Spec.Prompts.Count -gt 0)
                 {

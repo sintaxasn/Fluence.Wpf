@@ -62,13 +62,16 @@
             {
                 $ctl.Password = [string]$Prompt.DefaultValue
             }
-            # PasswordBox exposes no PasswordChanged event; observe the DP instead.
-            $descriptor = [System.ComponentModel.DependencyPropertyDescriptor]::FromProperty(
-                [Fluence.Wpf.Controls.PasswordBox]::PasswordProperty,
-                [Fluence.Wpf.Controls.PasswordBox])
-            $descriptor.AddValueChanged($ctl, {
-                $State.Result[$name] = $ctl.Password
-            }.GetNewClosure())
+            # Pull, not push: PasswordBox exposes no PasswordChanged event. A
+            # DependencyPropertyDescriptor.AddValueChanged subscription would root the control and
+            # the captured $State for the life of the reused STA Application (a leak) and is never
+            # detached. Instead register the control for pull at commit time; New-FluenceDialogWindow
+            # reads $ctl.Password into $State.Result at the start of each button Click handler.
+            if (-not $State.ContainsKey('PullControls'))
+            {
+                $State.PullControls = @()
+            }
+            $State.PullControls += [pscustomobject]@{ Name = $name; Control = $ctl }
             return $ctl
         }
 

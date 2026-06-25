@@ -95,6 +95,27 @@ jobs:
             throw "Pester: $($result.FailedCount) test(s) failed"
           }
 
+      # A `shell: pwsh` step runs STA; the default `pwsh` experience is MTA, where public cmdlets
+      # transport their UI scriptblock to a module-owned STA runspace. Run the logic lane explicitly
+      # under `pwsh -mta` so the C1 regression test (private-function resolution across that
+      # transport) cannot regress.
+      - name: Test PowerShell module (logic lane, MTA)
+        shell: pwsh
+        run: |
+          pwsh -mta -NoProfile -Command @'
+            $config = New-PesterConfiguration
+            $config.Run.Path = 'Fluence.Wpf.PowerShell.Module/tests'
+            $config.Run.PassThru = $true
+            $config.Filter.ExcludeTag = 'UI'
+            $config.TestResult.Enabled = $true
+            $config.TestResult.OutputFormat = 'NUnitXml'
+            $config.TestResult.OutputPath = 'TestResults/pester/module-logic-mta.xml'
+            $result = Invoke-Pester -Configuration $config
+            if ($result.FailedCount -gt 0) {
+              throw "Pester (MTA): $($result.FailedCount) test(s) failed"
+            }
+          '@
+
       - name: Upload module test results
         if: always()
         uses: actions/upload-artifact@v7
