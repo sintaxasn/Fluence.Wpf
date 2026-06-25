@@ -2,9 +2,9 @@
     . "$PSScriptRoot/../src/Fluence.Wpf.PowerShell/Private/Get-FluenceLibraryPath.ps1"
     $script:root = Join-Path $TestDrive 'modroot'
     New-Item -ItemType Directory -Path (Join-Path $script:root 'lib/net472') -Force | Out-Null
-    New-Item -ItemType Directory -Path (Join-Path $script:root 'lib/net8.0-windows') -Force | Out-Null
+    New-Item -ItemType Directory -Path (Join-Path $script:root 'lib/net8.0-windows10.0.26100.0') -Force | Out-Null
     New-Item -ItemType File -Path (Join-Path $script:root 'lib/net472/Fluence.Wpf.dll') -Force | Out-Null
-    New-Item -ItemType File -Path (Join-Path $script:root 'lib/net8.0-windows/Fluence.Wpf.dll') -Force | Out-Null
+    New-Item -ItemType File -Path (Join-Path $script:root 'lib/net8.0-windows10.0.26100.0/Fluence.Wpf.dll') -Force | Out-Null
 }
 
 Describe 'Get-FluenceLibraryPath' {

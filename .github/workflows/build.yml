@@ -103,6 +103,29 @@ jobs:
           path: TestResults/pester/
           retention-days: 14
 
+      - name: Package PowerShell module
+        shell: pwsh
+        run: |
+          & "Fluence.Wpf.PowerShell.Module/build/Package-Module.ps1" -Configuration Release -OutputPath module-artifacts
+
+      - name: Upload PowerShell module package
+        uses: actions/upload-artifact@v7
+        with:
+          name: fluence-ps-module-package
+          path: module-artifacts/
+          retention-days: 14
+
+      # Publishing to PowerShell Gallery is a manual release decision.
+      # To publish: uncomment this step, add the PSGALLERY_API_KEY secret to the repository,
+      # and trigger on a tagged release (e.g. if: startsWith(github.ref, 'refs/tags/v')).
+      # - name: Publish to PowerShell Gallery (tagged releases only)
+      #   shell: pwsh
+      #   if: startsWith(github.ref, 'refs/tags/v')
+      #   run: |
+      #     Publish-Module -Path Fluence.Wpf.PowerShell.Module/src/Fluence.Wpf.PowerShell `
+      #       -NuGetApiKey ${{ secrets.PSGALLERY_API_KEY }} `
+      #       -Repository PSGallery
+
       # - name: Generate SBOM (.NET 10.x)
       #   uses: anchore/sbom-action@v0
       #   with:
