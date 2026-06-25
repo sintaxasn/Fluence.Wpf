@@ -124,6 +124,8 @@ dotnet run --project Fluence.Wpf.Demo.Mvvm/Fluence.Wpf.Demo.Mvvm.csproj
 
 Or set either project as the startup project in Visual Studio and press F5.
 
+- **PowerShell module** - `Fluence.Wpf.PowerShell` adds declarative Fluent dialogs for Windows PowerShell 5.1 and PowerShell 7+, with no WPF authoring required. See [Fluence.Wpf.PowerShell.Module/README.md](./Fluence.Wpf.PowerShell.Module/README.md).
+
 - **PowerShell demos** - four standalone scripts for PowerShell 5.1 that build WinUI-styled WPF UIs without writing C#:
 
 See the [README.md](./Fluence.Wpf.Demo.PowerShell/README.md) for details.

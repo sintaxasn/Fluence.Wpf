@@ -1,4 +1,36 @@
-﻿Fluence.Wpf ships as a standard .NET Framework 4.7.2 assembly. Windows PowerShell 5.1
+﻿## Fluence.Wpf.PowerShell module
+
+For most scripting use cases the `Fluence.Wpf.PowerShell` module is the recommended
+starting point. It wraps the Fluence.Wpf theme engine behind five declarative cmdlets and
+requires no WPF knowledge:
+
+```powershell
+# One-liner message
+Show-FluenceMessage -Message 'Install complete.' -Icon Success
+
+# Quick single input
+$name = Get-FluenceInput -Message 'Your name?'
+
+# Full form
+$r = Show-FluenceDialog -Title 'Sign in' -Prompts @(
+    New-FluencePrompt -Name User -Message 'Account'  -InputType Text     -ValidateNotEmpty
+    New-FluencePrompt -Name Pass -Message 'Password' -InputType Password -ValidateNotEmpty
+) -Buttons (New-FluenceButton -Text 'Login' -IsDefault), 'Cancel'
+if ($r.Login) { Write-Output "Signed in as: $($r.User)" }
+```
+
+See [Fluence.Wpf.PowerShell.Module/README.md](../Fluence.Wpf.PowerShell.Module/README.md)
+for setup, the full command reference, and runnable examples.
+
+---
+
+## Raw WPF from PowerShell
+
+The sections below cover the lower-level path: loading the Fluence.Wpf assembly directly
+with `Add-Type` and constructing windows from XAML strings. Use this approach when you
+need full WPF composition control beyond what the module cmdlets expose.
+
+Fluence.Wpf ships as a standard .NET Framework 4.7.2 assembly. Windows PowerShell 5.1
 (built into every Windows installation) can load that assembly at runtime and create a
 fully themed Fluent window from a single script file, with no project of your own to
 compile.

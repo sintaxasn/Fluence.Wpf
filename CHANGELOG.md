@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- `Fluence.Wpf.PowerShell` module - declarative Fluent dialogs for Windows PowerShell 5.1 and PowerShell 7+, built on the Fluence.Wpf theme engine with no WPF authoring required by the caller.
+- `net8.0-windows` target added to `Fluence.Wpf` to enable PowerShell 7 (.NET 8) in-process consumption alongside the existing `net472` and `net10.0-windows10.0.26100.0` targets.
+
 ## [0.8.7-preview] - 2026-06-23
 
 ### Fixed
