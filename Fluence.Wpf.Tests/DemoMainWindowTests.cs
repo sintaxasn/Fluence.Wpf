@@ -246,20 +246,32 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void DemoProjects_UseSharedFluenceIcoIcon()
         {
-            const string iconPath = @"Resources\Fluence.ico";
+            // The Fluence brand icon is consolidated to a single canonical assets\Fluence.ico,
+            // embedded in Fluence.Wpf.dll (via the Linked Resource) and shared by both demo
+            // executables only as their ApplicationIcon (taskbar/alt-tab). The title-bar/window
+            // Icon now comes from the FluenceWindow embedded default, so neither demo bundles its
+            // own per-demo Resources\Fluence.ico nor sets Icon= in XAML.
+            const string sharedApplicationIcon = @"..\assets\Fluence.ico";
 
-            AssertProjectUsesIcon("Fluence.Wpf.Demo", "Fluence.Wpf.Demo.csproj", iconPath);
-            AssertProjectUsesIcon("Fluence.Wpf.Demo.Mvvm", "Fluence.Wpf.Demo.Mvvm.csproj", iconPath);
+            AssertProjectUsesApplicationIcon("Fluence.Wpf.Demo", "Fluence.Wpf.Demo.csproj", sharedApplicationIcon);
+            AssertProjectUsesApplicationIcon("Fluence.Wpf.Demo.Mvvm", "Fluence.Wpf.Demo.Mvvm.csproj", sharedApplicationIcon);
 
-            StringAssert.Contains(ReadRepositoryFile("Fluence.Wpf.Demo", "MainWindow.xaml"),
-                "Icon=\"Resources/Fluence.ico\"", StringComparison.Ordinal);
-            StringAssert.Contains(ReadRepositoryFile("Fluence.Wpf.Demo.Mvvm", "MainWindow.xaml"),
-                "Icon=\"Resources/Fluence.ico\"", StringComparison.Ordinal);
+            Assert.IsFalse(ReadRepositoryFile("Fluence.Wpf.Demo", "MainWindow.xaml").Contains("Icon=\"", StringComparison.Ordinal),
+                "The gallery demo window should inherit the embedded FluenceWindow icon, not set Icon= itself.");
+            Assert.IsFalse(ReadRepositoryFile("Fluence.Wpf.Demo.Mvvm", "MainWindow.xaml").Contains("Icon=\"", StringComparison.Ordinal),
+                "The MVVM demo window should inherit the embedded FluenceWindow icon, not set Icon= itself.");
 
-            Assert.IsTrue(File.Exists(GetRepositoryFilePath("Fluence.Wpf.Demo", "Resources", "Fluence.ico")),
-                "The gallery demo icon should exist.");
-            Assert.IsTrue(File.Exists(GetRepositoryFilePath("Fluence.Wpf.Demo.Mvvm", "Resources", "Fluence.ico")),
-                "The MVVM demo icon should exist.");
+            // The library embeds the canonical icon under a pack-resolvable path via a Linked Resource.
+            StringAssert.Contains(ReadRepositoryFile("Fluence.Wpf", "Fluence.Wpf.csproj"),
+                "<Resource Include=\"..\\assets\\Fluence.ico\" Link=\"Resources\\Fluence.ico\" />",
+                StringComparison.Ordinal);
+
+            Assert.IsTrue(File.Exists(GetRepositoryFilePath("assets", "Fluence.ico")),
+                "The canonical shared Fluence icon should exist at assets\\Fluence.ico.");
+            Assert.IsFalse(File.Exists(GetRepositoryFilePath("Fluence.Wpf.Demo", "Resources", "Fluence.ico")),
+                "The per-demo gallery icon should be removed in favor of the shared canonical asset.");
+            Assert.IsFalse(File.Exists(GetRepositoryFilePath("Fluence.Wpf.Demo.Mvvm", "Resources", "Fluence.ico")),
+                "The per-demo MVVM icon should be removed in favor of the shared canonical asset.");
         }
 
         [TestMethod]
@@ -2331,11 +2343,12 @@ StringComparison.Ordinal, "Rendered C# source should preserve leading indentatio
             application?.Resources.MergedDictionaries.Add(demoShared);
         }
 
-        private static void AssertProjectUsesIcon(string projectDirectory, string projectFile, string iconPath)
+        private static void AssertProjectUsesApplicationIcon(string projectDirectory, string projectFile, string applicationIcon)
         {
             string project = ReadRepositoryFile(projectDirectory, projectFile);
-            StringAssert.Contains(project, "<ApplicationIcon>" + iconPath + "</ApplicationIcon>", StringComparison.Ordinal);
-            StringAssert.Contains(project, "<Resource Include=\"" + iconPath + "\" />", StringComparison.Ordinal);
+            StringAssert.Contains(project, "<ApplicationIcon>" + applicationIcon + "</ApplicationIcon>", StringComparison.Ordinal);
+            Assert.IsFalse(project.Contains("<Resource Include=\"Resources\\Fluence.ico\"", StringComparison.Ordinal),
+                "The demo should no longer bundle its own per-demo Fluence.ico resource.");
         }
 
         private static string GetRepositoryFilePath(params string[] relativeSegments)

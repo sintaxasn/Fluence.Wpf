@@ -30,6 +30,7 @@ using Fluence.Wpf.Helpers;
 using Fluence.Wpf.Native;
 using System;
 using System.Globalization;
+using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -37,6 +38,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using System.Windows.Shell;
 
 namespace Fluence.Wpf.Controls
@@ -434,6 +436,32 @@ namespace Fluence.Wpf.Controls
         #region Construction
 
         /// <summary>
+        /// The Fluence brand icon embedded in this assembly, loaded once and shared (frozen) as the
+        /// default <see cref="Window.Icon"/> for every <see cref="FluenceWindow"/>. <see langword="null"/>
+        /// only if the embedded resource cannot be loaded.
+        /// </summary>
+        private static readonly ImageSource? DefaultIcon = CreateDefaultIcon();
+
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1075:URIs should not be hardcoded", Justification = "This is an internal resource URI.")]
+        private static ImageSource? CreateDefaultIcon()
+        {
+            try
+            {
+                Uri uri = new("pack://application:,,,/Fluence.Wpf;component/Resources/Fluence.ico", UriKind.Absolute);
+                BitmapFrame frame = BitmapFrame.Create(uri, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
+                if (frame.CanFreeze)
+                {
+                    frame.Freeze();
+                }
+                return frame;
+            }
+            catch (IOException)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
         /// Overrides the default style key so WPF resolves the <see cref="FluenceWindow"/> style by
         /// type. Runs once before any instance is created.
         /// </summary>
@@ -466,6 +494,13 @@ namespace Fluence.Wpf.Controls
                 Source = new Uri("pack://application:,,,/Fluence.Wpf;component/Themes/Controls/FluenceWindow.xaml", UriKind.Absolute),
             };
             Style = resourceDictionary[typeof(FluenceWindow)] as Style;
+
+            // Default the window icon to the embedded Fluence brand icon. A consumer-assigned Icon
+            // (XAML attribute or code) is applied after construction and overrides this default.
+            if (DefaultIcon is not null)
+            {
+                Icon = DefaultIcon;
+            }
 
             _ = CommandBindings.Add(new CommandBinding(SystemCommands.CloseWindowCommand, OnCloseWindow));
             _ = CommandBindings.Add(new CommandBinding(SystemCommands.MaximizeWindowCommand, OnMaximizeWindow, OnCanResizeWindow));

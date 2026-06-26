@@ -37,6 +37,10 @@
     <None Include="..\assets\Fluence_Logo_128.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Resource Include="..\assets\Fluence.ico" Link="Resources\Fluence.ico" />
+  </ItemGroup>
+
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">
     <PackageReference Include="Meziantou.Polyfill" Version="1.0.152">
       <PrivateAssets>all</PrivateAssets>
