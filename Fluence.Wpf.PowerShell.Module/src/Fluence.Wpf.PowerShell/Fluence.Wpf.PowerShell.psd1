@@ -13,7 +13,12 @@
         'New-FluencePrompt',
         'New-FluenceButton',
         'Show-FluenceMessage',
-        'Get-FluenceInput'
+        'Get-FluenceInput',
+        'Set-FluenceTheme',
+        'Set-FluenceAccent',
+        'Set-FluenceBackdrop',
+        'Close-FluenceWindow',
+        'Get-FluenceTheme'
     )
     CmdletsToExport      = @()
     VariablesToExport    = @()
