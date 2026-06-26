@@ -10,6 +10,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - `Fluence.Wpf.PowerShell` module - declarative Fluent dialogs for Windows PowerShell 5.1 and PowerShell 7+, built on the Fluence.Wpf theme engine with no WPF authoring required by the caller.
 - `net8.0-windows` target added to `Fluence.Wpf` to enable PowerShell 7 (.NET 8) in-process consumption alongside the existing `net472` and `net10.0-windows10.0.26100.0` targets.
+- `Show-FluenceWindow` plus runtime theming and lifetime helpers (`Set-FluenceTheme`, `Set-FluenceAccent`, `Set-FluenceBackdrop`, `Close-FluenceWindow`, `Get-FluenceTheme`) in the `Fluence.Wpf.PowerShell` module: host an arbitrary themed FluenceWindow from a content scriptblock, a XAML string, or a XAML file, with chrome, runtime theme/accent/backdrop switching, OS theme following via `-WatchSystemTheme`, and a `-Data` channel for state. On a multi-threaded-apartment host (`pwsh -mta`), content and handler scriptblocks run on a module-owned UI runspace and cannot reference caller scope, so values are passed through `-Data`.
 
 ## [0.8.7-preview] - 2026-06-23
 

@@ -55,6 +55,30 @@ $r = Show-FluenceDialog -Title 'Sign in' -Prompts @(
 if ($r.Login) { Write-Output "Signed in as: $($r.User)" }
 ```
 
+### Level 4 - interactive window
+
+Host a full, persistent themed window from a XAML string (or a content scriptblock, or a `.xaml`
+file) and wire its named controls in `-Initialize`:
+
+```powershell
+Show-FluenceWindow -Xaml $xaml -WatchSystemTheme -Data @{ Tick = 0 } -Initialize {
+    param($Window, $Data)
+    $Window.FindName('CycleButton').add_Click({
+            $Data.Tick++
+            Set-FluenceBackdrop -Backdrop 'Acrylic' -Window $Window
+        }.GetNewClosure())
+}
+```
+
+`Set-FluenceTheme`, `Set-FluenceAccent`, and `Set-FluenceBackdrop` switch the theme, accent, and
+backdrop at runtime; `-WatchSystemTheme` follows the OS light/dark setting while the window is open;
+and `Close-FluenceWindow -Result <value>` closes the window and sets its return value.
+
+> **Note - multi-threaded-apartment hosts.** On `pwsh -mta`, the `-Content`, `-Initialize`, and
+> handler scriptblocks run on a separate module-owned UI runspace and cannot reference caller-defined
+> functions, variables, or closures. Pass values in through the `-Data` hashtable, hold mutable
+> cross-click state in `-Data` (not `$script:` variables), and keep each block self-contained.
+
 ---
 
 ## Commands
@@ -66,18 +90,25 @@ if ($r.Login) { Write-Output "Signed in as: $($r.User)" }
 | `Get-FluenceInput` | Show a single-prompt dialog; returns the captured value, or `$null` on cancel. |
 | `New-FluencePrompt` | Build a prompt specification (label, input type, validation) for use with `Show-FluenceDialog`. |
 | `New-FluenceButton` | Build a button specification (caption, default/cancel flags) for use with `Show-FluenceDialog`. |
+| `Show-FluenceWindow` | Host an arbitrary themed FluenceWindow from a content scriptblock, a XAML string, or a XAML file; blocks until closed and returns the stashed result. |
+| `Set-FluenceTheme` | Switch the process-wide theme (Auto, Light, Dark, HighContrast) at runtime, optionally with a backdrop. |
+| `Set-FluenceAccent` | Set the accent color to a custom color, or reset it to the system accent. |
+| `Set-FluenceBackdrop` | Set the system backdrop (Mica, Acrylic, Tabbed, None) for the process and optionally a window. |
+| `Close-FluenceWindow` | Close a hosted window on its UI thread, optionally stashing a result for the host to return. |
+| `Get-FluenceTheme` | Read the current theme state (current theme, resolved theme, backdrop, dark-mode flag). |
 
 ---
 
 ## Theming
 
-Dialogs render using the Fluence.Wpf theme engine: Auto theme (follows Windows light/dark), system accent color, and Mica backdrop by default. Pass `-Theme`, `-Backdrop`, or `-Accent` to `Show-FluenceDialog` to override.
+Dialogs and windows render using the Fluence.Wpf theme engine: Auto theme (follows Windows light/dark), system accent color, and Mica backdrop by default. Pass `-Theme`, `-Backdrop`, or `-Accent` to `Show-FluenceDialog` or `Show-FluenceWindow` to override. While a window is open, `Set-FluenceTheme`, `Set-FluenceAccent`, and `Set-FluenceBackdrop` change the theme, accent, and backdrop at runtime, and `Get-FluenceTheme` reads the current state.
 
 ---
 
 ## Examples
 
-The `examples\` directory contains four ready-to-run scripts:
+The `examples\` directory contains ready-to-run scripts. The first four are dialog examples; the
+last four host a persistent interactive window with `Show-FluenceWindow`:
 
 | Script | What it shows |
 |---|---|
@@ -85,6 +116,10 @@ The `examples\` directory contains four ready-to-run scripts:
 | `Message.ps1` | YesNo confirmation with branch logic |
 | `SignIn.ps1` | Account and password form with validation |
 | `Form.ps1` | Mixed form: Text, Number, Choice, Date, Checkbox |
+| `HelloWindow.ps1` | A Mica window whose button cycles the backdrop and rotates a greeting |
+| `ThemeAndAccent.ps1` | Switch Light/Dark/Auto themes and cycle custom accent colors at runtime |
+| `ControlsTour.ps1` | Common controls in scrolling cards; a toggle drives an InfoBar message |
+| `LoadXamlFile.ps1` | Load the window UI from `MainWindow.xaml` on disk and wire its named controls |
 
 Run any example:
 
