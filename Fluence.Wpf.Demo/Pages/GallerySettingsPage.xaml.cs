@@ -32,7 +32,6 @@ using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 
 namespace Fluence.Wpf.Demo.Pages
 {
@@ -49,9 +48,6 @@ namespace Fluence.Wpf.Demo.Pages
         private const double RegularCaptionPickerWidth = 160.0;
         private const double CompactCaptionPickerWidth = 140.0;
         private static readonly Uri RepositoryUri = new UriBuilder("https", "github.com", -1, "sintaxasn/fluence.wpf").Uri;
-        private static readonly Uri DemoAppIconUri = new(
-            "pack://application:,,,/Fluence.Wpf;component/Resources/Fluence.ico",
-            UriKind.Absolute);
         private readonly MainWindow? _owner;
         private bool _syncing;
 
@@ -312,7 +308,11 @@ namespace Fluence.Wpf.Demo.Pages
             _owner.SetUserShowTitle(showTitle, title);
 
             bool showIcon = ShowWindowIconToggle.IsChecked == true;
-            ImageSource? icon = showIcon ? new BitmapImage(DemoAppIconUri) : null;
+            // The demo window icon is the resolution-independent Fluence brand vector merged into
+            // application resources by Generic.xaml; FluenceWindow rasterizes it for the taskbar.
+            ImageSource? icon = showIcon
+                ? Application.Current?.TryFindResource("FluenceIconBrandDrawingImage") as ImageSource
+                : null;
             _owner.SetUserShowIcon(showIcon, icon);
         }
 

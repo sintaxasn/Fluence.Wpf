@@ -27,90 +27,18 @@
  */
 
 using Fluence.Wpf.Controls;
-using System;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 
 namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryHomePage : UserControl
     {
-        // The lockup assets are named by ink color (the "_Dark" lockup paints dark text for a
-        // light surface; the "_Light" lockup paints light text for a dark surface), so the light
-        // theme pairs with the dark-ink lockup and the dark theme pairs with the light-ink lockup.
-        private static readonly Uri LightBannerUri =
-            new("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/Fluence_Lockup_SideBySide_Dark.png", UriKind.Absolute);
-
-        private static readonly Uri DarkBannerUri =
-            new("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/Fluence_Lockup_SideBySide_Light.png", UriKind.Absolute);
-
-        private Uri? _currentBannerUri;
-
         public GalleryHomePage()
         {
             InitializeComponent();
-            Loaded += OnLoaded;
-            Unloaded += OnUnloaded;
-            UpdateBrandBanner();
-        }
-
-        private void OnLoaded(object sender, RoutedEventArgs e)
-        {
-            ApplicationThemeManager.Changed += ApplicationThemeManager_Changed;
-            UpdateBrandBanner();
-        }
-
-        private void OnUnloaded(object sender, RoutedEventArgs e)
-        {
-            ApplicationThemeManager.Changed -= ApplicationThemeManager_Changed;
-        }
-
-        private void ApplicationThemeManager_Changed(object? sender, ThemeChangedEventArgs e)
-        {
-            UpdateBrandBanner(e.Theme);
-        }
-
-        private void UpdateBrandBanner()
-        {
-            UpdateBrandBanner(ApplicationThemeManager.CurrentTheme);
-        }
-
-        private void UpdateBrandBanner(ApplicationTheme theme)
-        {
-            // The lockups are transparent and sit directly on the page surface with no backplate,
-            // so the wordmark ink must match the surface luminance. Light and Dark themes map
-            // directly; high contrast (and any unresolved theme such as Auto) can present either a
-            // light or a dark surface, so probe the live background and pick the legible ink.
-            bool darkSurface = theme is ApplicationTheme.Dark
-                || (theme is not ApplicationTheme.Light && IsCurrentBackgroundDark());
-            Uri bannerUri = darkSurface ? DarkBannerUri : LightBannerUri;
-            if (Equals(_currentBannerUri, bannerUri))
-            {
-                return;
-            }
-
-            BrandBannerImage.Source = new BitmapImage(bannerUri);
-            BrandBannerImage.Tag = bannerUri.OriginalString;
-            _currentBannerUri = bannerUri;
-        }
-
-        private static bool IsCurrentBackgroundDark()
-        {
-            Application app = Application.Current;
-            if (app?.TryFindResource("SolidBackgroundFillColorBaseBrush") is not SolidColorBrush brush)
-            {
-                return ApplicationThemeManager.CurrentTheme != ApplicationTheme.Light;
-            }
-
-            Color color = brush.Color;
-            double red = color.R / 255.0;
-            double green = color.G / 255.0;
-            double blue = color.B / 255.0;
-            return ((red * 0.2126) + (green * 0.7152) + (blue * 0.0722)) < 0.5;
         }
 
         // Handles a click on any featured-control or action Card tile; reads the Card's

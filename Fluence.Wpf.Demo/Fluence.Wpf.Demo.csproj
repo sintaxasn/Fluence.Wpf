@@ -7,7 +7,6 @@
     <RootNamespace>Fluence.Wpf.Demo</RootNamespace>
     <AssemblyName>Fluence.Wpf.Demo</AssemblyName>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-    <ApplicationIcon>..\assets\Fluence.ico</ApplicationIcon>
     <NoWarn>$(NoWarn);CS1591;IDE0330;VSTHRD001</NoWarn>
   </PropertyGroup>
 

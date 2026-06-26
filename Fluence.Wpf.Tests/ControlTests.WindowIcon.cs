@@ -34,12 +34,13 @@ using System.Windows.Media.Imaging;
 
 namespace Fluence.Wpf.Tests
 {
-    // FluenceWindow defaults Window.Icon to the Fluence brand icon embedded in Fluence.Wpf.dll
-    // (FluenceWindow.CreateDefaultIcon loads it once via the pack URI
-    // "pack://application:,,,/Fluence.Wpf;component/Resources/Fluence.ico", backed by the
-    // Resource Include + Link in Fluence.Wpf.csproj). These tests pin both halves of the contract:
-    // the embedded resource resolves to a real BitmapSource by default, and a consumer-assigned
-    // Icon overrides that default instead of being clobbered by it.
+    // FluenceWindow defaults Window.Icon to the Fluence brand icon embedded in Fluence.Wpf.dll.
+    // FluenceWindow.CreateDefaultIcon loads the brand vector DrawingImage
+    // (FluenceIconBrandDrawingImage from Themes/Icons/FluenceIcons.xaml) once and rasterizes it to a
+    // frozen RenderTargetBitmap, because Window.Icon drives the Win32 taskbar HICON, which does not
+    // render a vector. These tests pin both halves of the contract: the default resolves to a real
+    // BitmapSource (the rasterized vector), and a consumer-assigned Icon overrides that default
+    // instead of being clobbered by it.
     public partial class ControlTests
     {
         [TestMethod]
@@ -56,8 +57,8 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(window.Icon,
                         "FluenceWindow should default Icon to the embedded Fluence brand icon.");
                     Assert.IsInstanceOfType(window.Icon, typeof(BitmapSource),
-                        "The default Icon must resolve from the embedded Fluence.ico via the pack URI, " +
-                        "which proves the Resource Include + Link in Fluence.Wpf.csproj is correct.");
+                        "The default Icon must be the rasterized brand vector (a BitmapSource), which proves " +
+                        "FluenceIcons.xaml resolves and CreateDefaultIcon rasterizes it for the Win32 HICON.");
                 }
                 finally
                 {

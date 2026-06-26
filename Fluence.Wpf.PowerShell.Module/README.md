@@ -117,7 +117,7 @@ last four host a persistent interactive window with `Show-FluenceWindow`:
 | `SignIn.ps1` | Account and password form with validation |
 | `Form.ps1` | Mixed form: Text, Number, Choice, Date, Checkbox |
 | `HelloWindow.ps1` | A Mica window whose button cycles the backdrop and rotates a greeting |
-| `ThemeAndAccent.ps1` | Switch Light/Dark/Auto themes and cycle custom accent colors at runtime |
+| `ThemeAndAccent.ps1` | Switch Light/Dark/Auto themes and cycle custom accent colors at runtime; the window icon follows the theme |
 | `ControlsTour.ps1` | Common controls in scrolling cards; a toggle drives an InfoBar message |
 | `LoadXamlFile.ps1` | Load the window UI from `MainWindow.xaml` on disk and wire its named controls |
 

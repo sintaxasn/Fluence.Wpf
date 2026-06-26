@@ -1,12 +1,15 @@
-﻿# ThemeAndAccent.ps1 - Switch Light/Dark/Auto themes and cycle custom accent colors live. The module
-# handles STA, assembly loading, the Application, and the message loop; runtime theming goes through
-# Set-FluenceTheme and Set-FluenceAccent, and -WatchSystemTheme follows the OS setting while open.
+﻿# ThemeAndAccent.ps1 - Switch Light/Dark/Auto themes and cycle custom accent colors live, and watch
+# the window icon follow the theme. The module handles STA, assembly loading, the Application, and the
+# message loop; runtime theming goes through Set-FluenceTheme and Set-FluenceAccent, -WatchSystemTheme
+# follows the OS setting while open, and the brand Light/Dark vector icons (merged into application
+# resources by the library) are rasterized once and swapped to match the resolved theme.
 # Run: powershell.exe -File ThemeAndAccent.ps1   OR   pwsh -File ThemeAndAccent.ps1
 
-# $Data is read inside the add_Click closure (via .GetNewClosure()), which the analyzer cannot trace
-# statically; it is the sanctioned cross-click state channel on an MTA UI runspace, not a defect.
+# $Data is read inside the add_Click / theme-change closures (via .GetNewClosure()), which the analyzer
+# cannot trace statically; it is the sanctioned cross-handler state channel on an MTA UI runspace, not
+# a defect.
 [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', 'Data',
-    Justification = '$Data is read inside the GetNewClosure handler, which the analyzer cannot trace.')]
+    Justification = '$Data is read inside the GetNewClosure handlers, which the analyzer cannot trace.')]
 param()
 
 Import-Module "$PSScriptRoot/../src/Fluence.Wpf.PowerShell/Fluence.Wpf.PowerShell.psd1" -Force
@@ -18,7 +21,7 @@ $xaml = @'
     xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
     Title="Fluence.Wpf - Theme and Accent"
     Width="560"
-    Height="360"
+    Height="380"
     SystemBackdropType="Mica"
     ExtendsContentIntoTitleBar="False">
     <StackPanel Margin="24" VerticalAlignment="Center">
@@ -33,7 +36,7 @@ $xaml = @'
             <ui:Button x:Name="AccentBtn" Content="Cycle custom accent" Appearance="Accent" Margin="0,0,8,0" />
             <ui:Button x:Name="SystemAccentBtn" Content="Use system accent" />
         </StackPanel>
-        <ui:InfoBar x:Name="StatusBar" IsOpen="True" IsClosable="False" Severity="Informational" Title="Tip" Message="Change the Windows theme while this is open - Auto follows it live." />
+        <ui:InfoBar x:Name="StatusBar" IsOpen="True" IsClosable="False" Severity="Informational" Title="Tip" Message="Switch the theme (or change Windows while Auto is on) - the title-bar and taskbar icon follow it." />
     </StackPanel>
 </ui:FluenceWindow>
 '@
@@ -48,6 +51,41 @@ Show-FluenceWindow -Xaml $xaml -WatchSystemTheme -Data @{ AccentIndex = 0 } -Ini
         [System.Windows.Media.Color]::FromRgb(0xC4, 0x2B, 0x1C),
         [System.Windows.Media.Color]::FromRgb(0x74, 0x37, 0xC9)
     )
+
+    # The brand Light/Dark icons are resolution-independent DrawingImages merged into application
+    # resources by the library. Window.Icon drives the Win32 taskbar/alt-tab HICON, which does not
+    # render a vector DrawingImage, so rasterize each variant once to a frozen bitmap (the same
+    # approach FluenceWindow uses for its own default icon).
+    $rasterize = {
+        param($DrawingImage)
+        if ($null -eq $DrawingImage) { return $null }
+        $px = 256
+        $visual = [System.Windows.Media.DrawingVisual]::new()
+        $context = $visual.RenderOpen()
+        $context.DrawImage($DrawingImage, [System.Windows.Rect]::new(0, 0, $px, $px))
+        $context.Close()
+        $bitmap = [System.Windows.Media.Imaging.RenderTargetBitmap]::new(
+            $px, $px, 96, 96, [System.Windows.Media.PixelFormats]::Pbgra32)
+        $bitmap.Render($visual)
+        if ($bitmap.CanFreeze) { $bitmap.Freeze() }
+        return $bitmap
+    }
+
+    $resources = [System.Windows.Application]::Current
+    $lightIcon = & $rasterize ($resources.TryFindResource('FluenceIconLightDrawingImage'))
+    $darkIcon = & $rasterize ($resources.TryFindResource('FluenceIconDarkDrawingImage'))
+
+    # Pick the icon variant whose plate matches the resolved theme (dark icon for a dark theme, light
+    # icon for a light theme). ResolvedTheme reflects what is actually showing, so a forced Light/Dark
+    # wins over the OS setting and an Auto window still tracks Windows.
+    $applyIcon = {
+        $dark = [Fluence.Wpf.ApplicationThemeManager]::ResolvedTheme -eq [Fluence.Wpf.ApplicationTheme]::Dark
+        $Window.Icon = if ($dark) { $darkIcon } else { $lightIcon }
+    }.GetNewClosure()
+
+    & $applyIcon
+    [Fluence.Wpf.ApplicationThemeManager]::add_Changed($applyIcon)
+    $Window.add_Closed({ [Fluence.Wpf.ApplicationThemeManager]::remove_Changed($applyIcon) }.GetNewClosure())
 
     $Window.FindName('LightBtn').add_Click({ Set-FluenceTheme -Theme Light }.GetNewClosure())
     $Window.FindName('DarkBtn').add_Click({ Set-FluenceTheme -Theme Dark }.GetNewClosure())

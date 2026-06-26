@@ -442,18 +442,49 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         private static readonly ImageSource? DefaultIcon = CreateDefaultIcon();
 
+        /// <summary>
+        /// Edge length, in pixels, of the rasterized default window icon. 256 is the largest standard
+        /// Windows icon size, so the single rendered bitmap stays crisp at every taskbar / alt-tab /
+        /// title-bar size the shell scales it down to.
+        /// </summary>
+        private const int DefaultIconSizePixels = 256;
+
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1075:URIs should not be hardcoded", Justification = "This is an internal resource URI.")]
         private static ImageSource? CreateDefaultIcon()
         {
             try
             {
-                Uri uri = new("pack://application:,,,/Fluence.Wpf;component/Resources/Fluence.ico", UriKind.Absolute);
-                BitmapFrame frame = BitmapFrame.Create(uri, BitmapCreateOptions.None, BitmapCacheOption.OnLoad);
-                if (frame.CanFreeze)
+                // The brand icon ships as a resolution-independent vector DrawingImage. Window.Icon
+                // drives the Win32 taskbar / alt-tab HICON, which does not reliably render a vector
+                // DrawingImage, so rasterize the vector once into a frozen BitmapSource. That single
+                // bitmap backs both the title-bar Image (TemplateBinding Icon) and the shell HICON.
+                ResourceDictionary dictionary = new()
                 {
-                    frame.Freeze();
+                    Source = new Uri("pack://application:,,,/Fluence.Wpf;component/Themes/Icons/FluenceIcons.xaml", UriKind.Absolute),
+                };
+                if (dictionary["FluenceIconBrandDrawingImage"] is not DrawingImage drawingImage)
+                {
+                    return null;
                 }
-                return frame;
+
+                DrawingVisual visual = new();
+                using (DrawingContext context = visual.RenderOpen())
+                {
+                    context.DrawImage(drawingImage, new Rect(0, 0, DefaultIconSizePixels, DefaultIconSizePixels));
+                }
+
+                RenderTargetBitmap bitmap = new(
+                    DefaultIconSizePixels,
+                    DefaultIconSizePixels,
+                    96,
+                    96,
+                    PixelFormats.Pbgra32);
+                bitmap.Render(visual);
+                if (bitmap.CanFreeze)
+                {
+                    bitmap.Freeze();
+                }
+                return bitmap;
             }
             catch (IOException)
             {

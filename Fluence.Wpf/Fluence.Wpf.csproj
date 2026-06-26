@@ -20,7 +20,7 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>wpf;fluent;fluent-design;windows11;controls;theme</PackageTags>
     <PackageReadmeFile>README.md</PackageReadmeFile>
-    <PackageIcon>Fluence_Logo_128.png</PackageIcon>
+    <PackageIcon>Fluence_Icon_Light_128.png</PackageIcon>
   </PropertyGroup>
 
 
@@ -34,11 +34,7 @@
 
   <ItemGroup Label="NuGet package content">
     <None Include="..\README.md" Pack="true" PackagePath="\" />
-    <None Include="..\assets\Fluence_Logo_128.png" Pack="true" PackagePath="\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Resource Include="..\assets\Fluence.ico" Link="Resources\Fluence.ico" />
+    <None Include="..\assets\Fluence_Icon_Light_128.png" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">

@@ -42,7 +42,6 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using FluenceExpander = Fluence.Wpf.Controls.Expander;
 using FluenceListView = Fluence.Wpf.Controls.ListView;
@@ -149,7 +148,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void GalleryHomePage_BrandBannerImageSwitchesWithTheme()
+        public void GalleryHomePage_HeroUsesBrandVectorIconAcrossThemes()
         {
             RunOnSta(static delegate
             {
@@ -158,70 +157,29 @@ namespace Fluence.Wpf.Tests
                 Window window = CreateHostWindow(page);
                 try
                 {
-                    Image? image = FindByName<Image>(page, "BrandBannerImage");
-                    Assert.IsNotNull(image, "Home page should expose the brand banner image.");
-                    Assert.IsInstanceOfType(image.Source, typeof(BitmapImage), "The light banner PNG should load as an image source.");
-                    Assert.AreEqual("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/Fluence_Lockup_SideBySide_Dark.png", image.Tag as string,
-                        "Light theme should use the dark-ink lockup (dark text on a light surface).");
+                    Image? image = FindByName<Image>(page, "BrandHeroImage");
+                    Assert.IsNotNull(image, "Home page should expose the brand hero image.");
 
+                    // The hero renders the resolution-independent brand vector, which carries no
+                    // plate and reads on every theme, so it must resolve to the same DrawingImage
+                    // the library merges into application resources - not a per-theme PNG.
+                    DrawingImage? expected = Application.Current.TryFindResource("FluenceIconBrandDrawingImage") as DrawingImage;
+                    Assert.IsNotNull(expected, "The brand vector should resolve from merged application resources.");
+                    Assert.IsInstanceOfType(image.Source, typeof(DrawingImage), "The hero should render the brand vector DrawingImage.");
+                    Assert.AreSame(expected, image.Source, "The hero should bind the merged brand DrawingImage resource.");
+
+                    // A theme cycle must not swap the hero image: the brand mark is theme-independent.
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
+                    Assert.AreSame(expected, image.Source, "The brand hero should stay the same vector under the dark theme.");
 
-                    Assert.IsInstanceOfType(image.Source, typeof(BitmapImage), "The dark banner PNG should load as an image source.");
-                    Assert.AreEqual("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/Fluence_Lockup_SideBySide_Light.png", image.Tag as string,
-                        "Dark theme should use the light-ink lockup (light text on a dark surface).");
-
-                    ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
-                    Drain(window.Dispatcher);
-                    window.UpdateLayout();
-                    Drain(window.Dispatcher);
-
-                    Assert.AreEqual("pack://application:,,,/Fluence.Wpf.Demo;component/Resources/Fluence_Lockup_SideBySide_Dark.png", image.Tag as string,
-                        "Returning to light theme should restore the dark-ink lockup.");
-                }
-                finally
-                {
-                    window.Close();
-                }
-            });
-        }
-
-        [TestMethod]
-        public void GalleryHomePage_BrandBannerInkMatchesHighContrastSurface()
-        {
-            RunOnSta(static delegate
-            {
-                EnsureTheme();
-                GalleryHomePage page = new();
-                Window window = CreateHostWindow(page);
-                try
-                {
                     ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, updateAccent: true);
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
-
-                    Image? image = FindByName<Image>(page, "BrandBannerImage");
-                    Assert.IsNotNull(image, "Home page should expose the brand banner image.");
-
-                    // The transparent lockups carry no backplate, so under high contrast the
-                    // wordmark ink must follow the live surface luminance. Regression guard: a
-                    // fixed "high contrast -> dark ink" mapping goes invisible on a dark HC scheme.
-                    SolidColorBrush? surface = Application.Current.TryFindResource("SolidBackgroundFillColorBaseBrush") as SolidColorBrush;
-                    Assert.IsNotNull(surface, "High contrast surface brush should resolve.");
-                    double red = surface.Color.R / 255.0;
-                    double green = surface.Color.G / 255.0;
-                    double blue = surface.Color.B / 255.0;
-                    bool darkSurface = ((red * 0.2126) + (green * 0.7152) + (blue * 0.0722)) < 0.5;
-
-                    string expected = darkSurface
-                        ? "pack://application:,,,/Fluence.Wpf.Demo;component/Resources/Fluence_Lockup_SideBySide_Light.png"
-                        : "pack://application:,,,/Fluence.Wpf.Demo;component/Resources/Fluence_Lockup_SideBySide_Dark.png";
-
-                    Assert.AreEqual(expected, image.Tag as string,
-                        "High contrast banner ink must contrast with the live surface luminance.");
+                    Assert.AreSame(expected, image.Source, "The brand hero should stay the same vector under high contrast.");
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
                     Drain(window.Dispatcher);
@@ -234,44 +192,56 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void GalleryHomePage_UsesPngBannerResourcesAndGitHubLink()
+        public void GalleryHomePage_UsesBrandVectorHeroAndGitHubLink()
         {
-            string project = ReadRepositoryFile("Fluence.Wpf.Demo", "Fluence.Wpf.Demo.csproj");
-            StringAssert.Contains(project, "<Resource Include=\"Resources\\Fluence_Lockup_SideBySide_*.png\" />", StringComparison.Ordinal);
-
             string homePage = ReadRepositoryFile("Fluence.Wpf.Demo", "Pages", "GalleryHomePage.xaml");
+            StringAssert.Contains(homePage, "FluenceIconBrandDrawingImage", StringComparison.Ordinal,
+                "The home hero should bind the brand vector icon.");
             StringAssert.Contains(homePage, "https://github.com/sintaxasn/fluence.wpf", StringComparison.Ordinal);
         }
 
         [TestMethod]
-        public void DemoProjects_UseSharedFluenceIcoIcon()
+        public void Library_EmbedsXamlBrandIcons_AndDemosDropTheIco()
         {
-            // The Fluence brand icon is consolidated to a single canonical assets\Fluence.ico,
-            // embedded in Fluence.Wpf.dll (via the Linked Resource) and shared by both demo
-            // executables only as their ApplicationIcon (taskbar/alt-tab). The title-bar/window
-            // Icon now comes from the FluenceWindow embedded default, so neither demo bundles its
-            // own per-demo Resources\Fluence.ico nor sets Icon= in XAML.
-            const string sharedApplicationIcon = @"..\assets\Fluence.ico";
+            // The Fluence brand icon ships as resolution-independent vector DrawingImages in
+            // Fluence.Wpf\Themes\Icons\FluenceIcons.xaml (merged into Generic.xaml), replacing the
+            // multi-resolution assets\Fluence.ico that previously dominated the library binary.
+            // FluenceWindow rasterizes the brand vector for its default Window.Icon, so neither demo
+            // sets ApplicationIcon (which requires a .ico) nor Icon= in XAML; both inherit the
+            // embedded default.
+            string libraryProject = ReadRepositoryFile("Fluence.Wpf", "Fluence.Wpf.csproj");
+            Assert.IsFalse(libraryProject.Contains("Fluence.ico", StringComparison.Ordinal),
+                "The library should no longer embed assets\\Fluence.ico now that the brand icon is a XAML vector.");
+            StringAssert.Contains(libraryProject, "<PackageIcon>Fluence_Icon_Light_128.png</PackageIcon>",
+                StringComparison.Ordinal,
+                "PackageIcon should be repointed to the surviving Fluence_Icon_Light_128.png asset.");
 
-            AssertProjectUsesApplicationIcon("Fluence.Wpf.Demo", "Fluence.Wpf.Demo.csproj", sharedApplicationIcon);
-            AssertProjectUsesApplicationIcon("Fluence.Wpf.Demo.Mvvm", "Fluence.Wpf.Demo.Mvvm.csproj", sharedApplicationIcon);
+            // The three brand DrawingImages live in a dedicated icon dictionary that is merged into
+            // Generic.xaml so the keys resolve from application resources.
+            Assert.IsTrue(File.Exists(GetRepositoryFilePath("Fluence.Wpf", "Themes", "Icons", "FluenceIcons.xaml")),
+                "The brand icon dictionary should exist at Fluence.Wpf\\Themes\\Icons\\FluenceIcons.xaml.");
+            string iconDictionary = ReadRepositoryFile("Fluence.Wpf", "Themes", "Icons", "FluenceIcons.xaml");
+            StringAssert.Contains(iconDictionary, "FluenceIconBrandDrawingImage", StringComparison.Ordinal);
+            StringAssert.Contains(iconDictionary, "FluenceIconLightDrawingImage", StringComparison.Ordinal);
+            StringAssert.Contains(iconDictionary, "FluenceIconDarkDrawingImage", StringComparison.Ordinal);
+            StringAssert.Contains(ReadRepositoryFile("Fluence.Wpf", "Themes", "Generic.xaml"),
+                "Themes/Icons/FluenceIcons.xaml", StringComparison.Ordinal,
+                "Generic.xaml should merge the brand icon dictionary so the keys resolve at runtime.");
+
+            // Neither demo bundles a .ico application icon anymore.
+            Assert.IsFalse(ReadRepositoryFile("Fluence.Wpf.Demo", "Fluence.Wpf.Demo.csproj").Contains("ApplicationIcon", StringComparison.Ordinal),
+                "The gallery demo should not set an ApplicationIcon now that the .ico is removed.");
+            Assert.IsFalse(ReadRepositoryFile("Fluence.Wpf.Demo.Mvvm", "Fluence.Wpf.Demo.Mvvm.csproj").Contains("ApplicationIcon", StringComparison.Ordinal),
+                "The MVVM demo should not set an ApplicationIcon now that the .ico is removed.");
 
             Assert.IsFalse(ReadRepositoryFile("Fluence.Wpf.Demo", "MainWindow.xaml").Contains("Icon=\"", StringComparison.Ordinal),
                 "The gallery demo window should inherit the embedded FluenceWindow icon, not set Icon= itself.");
             Assert.IsFalse(ReadRepositoryFile("Fluence.Wpf.Demo.Mvvm", "MainWindow.xaml").Contains("Icon=\"", StringComparison.Ordinal),
                 "The MVVM demo window should inherit the embedded FluenceWindow icon, not set Icon= itself.");
 
-            // The library embeds the canonical icon under a pack-resolvable path via a Linked Resource.
-            StringAssert.Contains(ReadRepositoryFile("Fluence.Wpf", "Fluence.Wpf.csproj"),
-                "<Resource Include=\"..\\assets\\Fluence.ico\" Link=\"Resources\\Fluence.ico\" />",
-                StringComparison.Ordinal);
-
-            Assert.IsTrue(File.Exists(GetRepositoryFilePath("assets", "Fluence.ico")),
-                "The canonical shared Fluence icon should exist at assets\\Fluence.ico.");
-            Assert.IsFalse(File.Exists(GetRepositoryFilePath("Fluence.Wpf.Demo", "Resources", "Fluence.ico")),
-                "The per-demo gallery icon should be removed in favor of the shared canonical asset.");
-            Assert.IsFalse(File.Exists(GetRepositoryFilePath("Fluence.Wpf.Demo.Mvvm", "Resources", "Fluence.ico")),
-                "The per-demo MVVM icon should be removed in favor of the shared canonical asset.");
+            // The retired .ico is gone from the tree.
+            Assert.IsFalse(File.Exists(GetRepositoryFilePath("assets", "Fluence.ico")),
+                "assets\\Fluence.ico should be deleted once the XAML vector icons replace it.");
         }
 
         [TestMethod]
@@ -2341,14 +2311,6 @@ StringComparison.Ordinal, "Rendered C# source should preserve leading indentatio
                 Source = new Uri("/Fluence.Wpf.Demo;component/Resources/DemoSharedStyles.xaml", UriKind.Relative),
             };
             application?.Resources.MergedDictionaries.Add(demoShared);
-        }
-
-        private static void AssertProjectUsesApplicationIcon(string projectDirectory, string projectFile, string applicationIcon)
-        {
-            string project = ReadRepositoryFile(projectDirectory, projectFile);
-            StringAssert.Contains(project, "<ApplicationIcon>" + applicationIcon + "</ApplicationIcon>", StringComparison.Ordinal);
-            Assert.IsFalse(project.Contains("<Resource Include=\"Resources\\Fluence.ico\"", StringComparison.Ordinal),
-                "The demo should no longer bundle its own per-demo Fluence.ico resource.");
         }
 
         private static string GetRepositoryFilePath(params string[] relativeSegments)
