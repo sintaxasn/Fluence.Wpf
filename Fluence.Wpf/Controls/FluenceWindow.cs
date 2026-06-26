@@ -558,6 +558,12 @@ namespace Fluence.Wpf.Controls
             SystemThemeWatcher.Watch(this);
             ApplicationThemeManager.Changed += OnThemeChanged;
             ApplicationAccentColorManager.AccentColorChanged += OnAccentColorChanged;
+
+            // SizeToContent leaves the template root arranged one layout pass behind the realised
+            // client size (see FillClientAreaForSizeToContent); correct it once the window has its
+            // SizeToContent-driven size and on every subsequent SizeToContent-driven resize.
+            SizeChanged += OnSizeChangedForSizeToContent;
+            FillClientAreaForSizeToContent();
         }
 
         /// <inheritdoc />
@@ -606,6 +612,7 @@ namespace Fluence.Wpf.Controls
             SystemThemeWatcher.UnWatch(this);
             ApplicationThemeManager.Changed -= OnThemeChanged;
             ApplicationAccentColorManager.AccentColorChanged -= OnAccentColorChanged;
+            SizeChanged -= OnSizeChangedForSizeToContent;
 
             // A FromHwnd source is WPF-owned; release the hook and the reference without disposing.
             _hwndSource?.RemoveHook(WndProc);
@@ -871,6 +878,91 @@ namespace Fluence.Wpf.Controls
         }
 
         #endregion Window shell (chrome, backdrop, corners, frame)
+
+        #region SizeToContent client-area fill
+
+        /// <summary>
+        /// <see cref="FrameworkElement.SizeChanged"/> handler that re-runs the SizeToContent
+        /// client-area fill on every size change while <see cref="Window.SizeToContent"/> is active.
+        /// </summary>
+        /// <param name="sender">The event source.</param>
+        /// <param name="e">The size-changed payload (unused).</param>
+        private void OnSizeChangedForSizeToContent(object sender, SizeChangedEventArgs e)
+        {
+            FillClientAreaForSizeToContent();
+        }
+
+        /// <summary>
+        /// Forces the template root visual to fill the realised client area when
+        /// <see cref="Window.SizeToContent"/> is active.
+        /// </summary>
+        /// <remarks>
+        /// A <see cref="Window"/> sizes its HWND to the latest content-desired size, but on a
+        /// SizeToContent-driven resize the root visual's arrange lags one layout pass behind the new
+        /// client size: the HWND (and <see cref="FrameworkElement.ActualWidth"/> /
+        /// <see cref="FrameworkElement.ActualHeight"/>) already reflect the grown size while the
+        /// template root <c>Border</c> is still arranged to the previous, smaller desired size. The
+        /// gap reads as a rounded accent border floating inside the DWM border (set via
+        /// <c>DWMWA_BORDER_COLOR</c>) on every edge, because the template border and the DWM border no
+        /// longer coincide. An interactive resize hides it because it ends with a real <c>WM_SIZE</c>
+        /// that re-arranges the content; a SizeToContent first paint or auto-grow never produces that
+        /// <c>WM_SIZE</c>.
+        /// <para>
+        /// The correction directly arranges the single visual child to a rect of the window's current
+        /// <see cref="FrameworkElement.ActualWidth"/> x <see cref="FrameworkElement.ActualHeight"/>
+        /// (which equal the client area in DIPs), reproducing the re-arrange a real <c>WM_SIZE</c>
+        /// would trigger without freezing <see cref="Window.SizeToContent"/> - so the window still
+        /// grows when its content grows and stays single-bordered after growing. The
+        /// <c>SizeToContent != Manual</c> guard makes it a no-op for fixed-size windows, which already
+        /// render with the borders coincident, and a re-entrancy guard prevents the child arrange from
+        /// recursing through <see cref="FrameworkElement.SizeChanged"/>.
+        /// </para>
+        /// </remarks>
+        private void FillClientAreaForSizeToContent()
+        {
+            if (SizeToContent == SizeToContent.Manual || _isFillingClientArea)
+            {
+                return;
+            }
+
+            if (VisualChildrenCount == 0 || GetVisualChild(0) is not UIElement child)
+            {
+                return;
+            }
+
+            double width = ActualWidth;
+            double height = ActualHeight;
+            if (width <= 0.0 || height <= 0.0)
+            {
+                return;
+            }
+
+            // Already filling the client area: the child's arranged size already spans it. Skip to
+            // avoid a redundant arrange pass (and the SizeChanged recursion it would otherwise risk).
+            // A sub-pixel tolerance absorbs the layout-rounding error between the DIP client size and
+            // the child's arranged render size.
+            const double tolerance = 0.5;
+            Size arranged = child.RenderSize;
+            if (Math.Abs(arranged.Width - width) <= tolerance && Math.Abs(arranged.Height - height) <= tolerance)
+            {
+                return;
+            }
+
+            _isFillingClientArea = true;
+            try
+            {
+                // Re-arrange the root visual to the full client area. This mirrors the re-arrange a
+                // real WM_SIZE performs, collapsing the inset so the template border coincides with
+                // the DWM border. SizeToContent stays active for the next content change.
+                child.Arrange(new Rect(0.0, 0.0, width, height));
+            }
+            finally
+            {
+                _isFillingClientArea = false;
+            }
+        }
+
+        #endregion SizeToContent client-area fill
 
         #region Caption-button reflow
 
@@ -1533,6 +1625,13 @@ namespace Fluence.Wpf.Controls
         /// <see langword="null"/> when none is hovered.
         /// </summary>
         private System.Windows.Controls.Button? _snapHoveredButton;
+
+        /// <summary>
+        /// Re-entrancy guard for <see cref="FillClientAreaForSizeToContent"/>: forcing the root visual
+        /// to re-arrange can itself raise <see cref="FrameworkElement.SizeChanged"/>, so the fill must
+        /// not recurse into itself.
+        /// </summary>
+        private bool _isFillingClientArea;
 
         #endregion Fields
     }
