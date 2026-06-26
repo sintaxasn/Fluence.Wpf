@@ -10,6 +10,7 @@
     CompatiblePSEditions = @('Desktop', 'Core')
     FunctionsToExport    = @(
         'Show-FluenceDialog',
+        'Show-FluenceWindow',
         'New-FluencePrompt',
         'New-FluenceButton',
         'Show-FluenceMessage',
