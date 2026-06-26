@@ -14,25 +14,9 @@
         [hashtable]$Spec
     )
 
-    if ($null -eq [System.Windows.Application]::Current)
-    {
-        $app = [System.Windows.Application]::new()
-        $app.ShutdownMode = [System.Windows.ShutdownMode]::OnExplicitShutdown
-    }
-
-    # Seed the three theme slots. Mandatory before showing a FluenceWindow.
-    $theme    = [Fluence.Wpf.ApplicationTheme]$Spec.Theme
-    $backdrop = [Fluence.Wpf.BackdropType]$Spec.Backdrop
-    [Fluence.Wpf.ApplicationThemeManager]::Apply($theme, $backdrop, $true)
-
-    if ($null -ne $Spec.AccentColor)
-    {
-        [Fluence.Wpf.ApplicationAccentColorManager]::ApplyCustomAccent([System.Windows.Media.Color]$Spec.AccentColor)
-    }
-    else
-    {
-        [Fluence.Wpf.ApplicationAccentColorManager]::ApplySystemAccent()
-    }
+    # Ensure the Application exists and seed the three theme slots and accent. Mandatory before
+    # showing a FluenceWindow; shared with the window host.
+    Initialize-FluenceApplication -Theme $Spec.Theme -Backdrop $Spec.Backdrop -Accent $Spec.AccentColor
 
     $state = @{ Result = @{}; Window = $null }
     $window = New-FluenceDialogWindow -Spec $Spec -State $state
