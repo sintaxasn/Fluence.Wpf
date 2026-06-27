@@ -201,14 +201,14 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void Library_EmbedsXamlBrandIcons_AndDemosDropTheIco()
+        public void Library_EmbedsXamlBrandIcons_AndDemosSetBrandApplicationIcon()
         {
             // The Fluence brand icon ships as resolution-independent vector DrawingImages in
             // Fluence.Wpf\Themes\Icons\FluenceIcons.xaml (merged into Generic.xaml), replacing the
             // multi-resolution assets\Fluence.ico that previously dominated the library binary.
             // FluenceWindow rasterizes the brand vector for its default Window.Icon, so neither demo
-            // sets ApplicationIcon (which requires a .ico) nor Icon= in XAML; both inherit the
-            // embedded default.
+            // sets Icon= in XAML (both inherit the embedded default at runtime). The demo executables
+            // do set ApplicationIcon to the brand .ico so the .exe file icon in Explorer is the brand mark.
             string libraryProject = ReadRepositoryFile("Fluence.Wpf", "Fluence.Wpf.csproj");
             Assert.IsFalse(libraryProject.Contains("Fluence.ico", StringComparison.Ordinal),
                 "The library should no longer embed assets\\Fluence.ico now that the brand icon is a XAML vector.");
@@ -228,11 +228,18 @@ namespace Fluence.Wpf.Tests
                 "Themes/Icons/FluenceIcons.xaml", StringComparison.Ordinal,
                 "Generic.xaml should merge the brand icon dictionary so the keys resolve at runtime.");
 
-            // Neither demo bundles a .ico application icon anymore.
-            Assert.IsFalse(ReadRepositoryFile("Fluence.Wpf.Demo", "Fluence.Wpf.Demo.csproj").Contains("ApplicationIcon", StringComparison.Ordinal),
-                "The gallery demo should not set an ApplicationIcon now that the .ico is removed.");
-            Assert.IsFalse(ReadRepositoryFile("Fluence.Wpf.Demo.Mvvm", "Fluence.Wpf.Demo.Mvvm.csproj").Contains("ApplicationIcon", StringComparison.Ordinal),
-                "The MVVM demo should not set an ApplicationIcon now that the .ico is removed.");
+            // Both demo executables set their ApplicationIcon to the Fluence brand .ico so the .exe
+            // shows the brand mark in Explorer and on a pre-launch taskbar pin.
+            string galleryProject = ReadRepositoryFile("Fluence.Wpf.Demo", "Fluence.Wpf.Demo.csproj");
+            StringAssert.Contains(galleryProject, "<ApplicationIcon>", StringComparison.Ordinal,
+                "The gallery demo should set an ApplicationIcon to the brand .ico.");
+            StringAssert.Contains(galleryProject, "Fluence_Icon_Light.ico", StringComparison.Ordinal,
+                "The gallery demo ApplicationIcon should point to the Fluence brand .ico.");
+            string mvvmProject = ReadRepositoryFile("Fluence.Wpf.Demo.Mvvm", "Fluence.Wpf.Demo.Mvvm.csproj");
+            StringAssert.Contains(mvvmProject, "<ApplicationIcon>", StringComparison.Ordinal,
+                "The MVVM demo should set an ApplicationIcon to the brand .ico.");
+            StringAssert.Contains(mvvmProject, "Fluence_Icon_Light.ico", StringComparison.Ordinal,
+                "The MVVM demo ApplicationIcon should point to the Fluence brand .ico.");
 
             Assert.IsFalse(ReadRepositoryFile("Fluence.Wpf.Demo", "MainWindow.xaml").Contains("Icon=\"", StringComparison.Ordinal),
                 "The gallery demo window should inherit the embedded FluenceWindow icon, not set Icon= itself.");
