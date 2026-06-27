@@ -6,6 +6,7 @@
     <UseWPF>true</UseWPF>
     <RootNamespace>Fluence.Wpf.Demo</RootNamespace>
     <AssemblyName>Fluence.Wpf.Demo</AssemblyName>
+    <ApplicationIcon>..\assets\Fluence_Icon_Light.ico</ApplicationIcon>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
     <NoWarn>$(NoWarn);CS1591;IDE0330;VSTHRD001</NoWarn>
   </PropertyGroup>

@@ -17,7 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
-- `Fluence.Wpf` NuGet `PackageIcon` repointed from the retired `Fluence_Logo_128.png` to `Fluence_Icon_Light_128.png`. The demo executables no longer set a Windows `ApplicationIcon` (which requires a `.ico`); their window and taskbar icon comes from the `FluenceWindow` rasterized brand vector, so the `.exe` file icon in Explorer falls back to the default .NET icon.
+- `Fluence.Wpf` NuGet `PackageIcon` repointed from the retired `Fluence_Logo_128.png` to `Fluence_Icon_Light_128.png`. The demo executables set their Windows `ApplicationIcon` to `assets/Fluence_Icon_Light.ico`, so the `.exe` shows the Fluence brand mark in Explorer and on a pre-launch taskbar pin; the runtime window and title-bar icon come from the `FluenceWindow` rasterized brand vector.
 - `Fluence.Wpf.PowerShell`: dialog messages now render as wrapping TextBlocks with a standalone leading severity FontIcon instead of inside an InfoBar; `-Icon Question` shows a dedicated Help glyph. The transient input-validation banner is unchanged.
 
 ### Removed
