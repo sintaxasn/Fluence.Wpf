@@ -5,18 +5,22 @@
         Shows a themed Fluent message dialog and returns the name of the button the user clicked.
     .DESCRIPTION
         A thin wrapper around Show-FluenceDialog that maps a named button preset (OK, OKCancel,
-        YesNo, YesNoCancel) to the correct button objects, passes an optional icon severity to
-        render a leading InfoBar, and returns the clicked button name as a string instead of the
-        full DialogResult.
+        YesNo, YesNoCancel) to the correct button objects, renders the message as wrapping
+        TextBlocks with an optional leading severity FontIcon, and returns the clicked button name
+        as a string instead of the full DialogResult. For cancel-less presets (OK, YesNo), closing
+        the dialog with the title-bar X or Esc returns the safe button name (OK or No) rather than
+        $null, so a guard such as `if ($answer -ne 'No')` does not run the affirmative branch on a
+        dismiss.
     .PARAMETER Message
         One or more message lines displayed in the dialog.
     .PARAMETER Title
         The window title. Defaults to 'Fluence'.
     .PARAMETER Icon
-        The icon and color to display in the leading InfoBar.
-        Info (default), Success, Warning, Error, or Question. InfoBarSeverity has no Question or Info
-        member, so Info and Question both render as the Informational severity (no distinct question
-        glyph); use the button set (for example -Buttons YesNo) to convey a confirmation.
+        The severity icon to display to the left of the message text.
+        Info (default), Success, Warning, Error, or Question. Each severity maps to a distinct
+        Segoe Fluent glyph and themed brush: Success, Warning, and Error use the InfoBar severity
+        glyphs; Info uses the Informational glyph; Question uses the Segoe Fluent Help glyph with
+        the neutral brush. The message renders as wrapping TextBlocks - not inside an InfoBar.
     .PARAMETER Buttons
         Named button set: OK (default), OKCancel, YesNo, or YesNoCancel.
     .PARAMETER Theme

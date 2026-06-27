@@ -86,14 +86,14 @@ and `Close-FluenceWindow -Result <value>` closes the window and sets its return 
 | Command | Description |
 |---|---|
 | `Show-FluenceDialog` | Show a dialog built from prompt and button specs; returns a `Fluence.DialogResult` object. |
-| `Show-FluenceMessage` | Show a message or confirmation dialog; returns the clicked button name as a string. |
+| `Show-FluenceMessage` | Show a message or confirmation dialog; returns the clicked button name as a string. For cancel-less presets (`OK`, `YesNo`), closing the dialog with the title-bar X or Esc returns the safe button name (`OK` or `No`) rather than `$null`. |
 | `Get-FluenceInput` | Show a single-prompt dialog; returns the captured value, or `$null` on cancel. |
 | `New-FluencePrompt` | Build a prompt specification (label, input type, validation) for use with `Show-FluenceDialog`. |
 | `New-FluenceButton` | Build a button specification (caption, default/cancel flags) for use with `Show-FluenceDialog`. |
 | `Show-FluenceWindow` | Host an arbitrary themed FluenceWindow from a content scriptblock, a XAML string, or a XAML file; blocks until closed and returns the stashed result. |
 | `Set-FluenceTheme` | Switch the process-wide theme (Auto, Light, Dark, HighContrast) at runtime, optionally with a backdrop. |
 | `Set-FluenceAccent` | Set the accent color to a custom color, or reset it to the system accent. |
-| `Set-FluenceBackdrop` | Set the system backdrop (Mica, Acrylic, Tabbed, None) for the process and optionally a window. |
+| `Set-FluenceBackdrop` | Set the system backdrop (Mica, Acrylic, Tabbed, None) for the process and optionally a window. On an MTA host, passing `-Window` for a window created on a different thread raises a clear error rather than an opaque cross-thread exception. |
 | `Close-FluenceWindow` | Close a hosted window on its UI thread, optionally stashing a result for the host to return. |
 | `Get-FluenceTheme` | Read the current theme state (current theme, resolved theme, backdrop, dark-mode flag). |
 
@@ -118,7 +118,7 @@ last four host a persistent interactive window with `Show-FluenceWindow`:
 | `Form.ps1` | Mixed form: Text, Number, Choice, Date, Checkbox |
 | `HelloWindow.ps1` | A Mica window whose button cycles the backdrop and rotates a greeting |
 | `ThemeAndAccent.ps1` | Switch Light/Dark/Auto themes and cycle custom accent colors at runtime; the window icon follows the theme |
-| `ControlsTour.ps1` | Common controls in scrolling cards; a toggle drives an InfoBar message |
+| `ControlsTour.ps1` | Common controls in scrolling cards (Button, DropDownButton, SplitButton, ToggleSplitButton, Slider, RatingControl, Expander, ListView, FontIcon, and more); a toggle drives an InfoBar message |
 | `LoadXamlFile.ps1` | Load the window UI from `MainWindow.xaml` on disk and wire its named controls |
 
 Run any example:

@@ -76,6 +76,8 @@ Key API:
 
 Primary members include `SystemBackdropType`, `CornerStyle`, `ExtendsContentIntoTitleBar`, `TitleBar`, `TitleBarHeight`, caption-button visibility properties, and title-bar events for back and pane-toggle requests.
 
+`FluenceWindow.DefaultIcon` is a public static `BitmapSource` that exposes the rasterized Fluence brand icon. Every `FluenceWindow` defaults its `Icon` property to this value so the brand mark appears in the title bar and taskbar without any caller setup; a consumer can also apply `DefaultIcon` to its own non-`FluenceWindow` windows. A consumer-assigned `Icon` overrides the default. The value is `null` if the brand resource is unavailable (for example in a headless or session-0 process).
+
 ### Basic Actions
 
 Key API:
@@ -327,6 +329,13 @@ Key API:
 </div>
 
 Status controls cover severity, closable state, determinate and indeterminate progress, paused and error states, and count or attention badge styling.
+
+`InfoBar` exposes two public static helpers for use outside the bar itself:
+
+- `InfoBar.GetSeverityGlyph(InfoBarSeverity)` - returns the canonical Segoe Fluent glyph character for the given severity, so a consumer can render the severity icon in any `FontIcon` without hardcoding codepoints.
+- `InfoBar.GetSeverityBrushKey(InfoBarSeverity)` - returns the theme brush resource key for the given severity, suitable for a `SetResourceReference` call or a `DynamicResource` binding.
+
+Both helpers stay in sync with the `InfoBar` control template; use them instead of hardcoding glyph or brush values.
 
 ### Accessibility
 
