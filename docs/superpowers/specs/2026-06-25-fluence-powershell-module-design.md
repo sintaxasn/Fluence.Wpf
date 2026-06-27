@@ -15,7 +15,7 @@
 
 Ship a declarative, in-process PowerShell module that lets a scripter produce a themed
 Windows 11 / Fluent dialog and receive the user's input back as data, without writing any
-WPF. It rebuilds the ergonomics of AnyBox on top of the Fluence.Wpf control library and its
+WPF. It rebuilds the ergonomics of a declarative dialog module on top of the Fluence.Wpf control library and its
 theme engine, written to the PSAppDeployToolkit (PSADT) PowerShell conventions so it is
 release-gate clean for that downstream consumer while remaining a useful standalone module.
 
@@ -38,9 +38,9 @@ if ($r.Login) { Connect -User $r.User -Password $r.Pass }
 
 ### Non-goals (v1)
 
-- No control-builder cmdlet per control (the ShowUI model). Deferred to phase 2 as an
+- No control-builder cmdlet per control. Deferred to phase 2 as an
   escape hatch.
-- No out-of-process server / RPC host (the WinUIShell model). WPF loads in-process in both
+- No out-of-process server / RPC host. WPF loads in-process in both
   PowerShell editions, so that complexity is unnecessary.
 - No data binding surface, DataGrid, tabs/groups, inline images, or progress dialogs in v1.
   All deferred to phase 2.
@@ -49,13 +49,13 @@ if ($r.Login) { Connect -User $r.User -Password $r.Pass }
 
 ---
 
-## 2. Background: lessons from the three reference modules
+## 2. Background: lessons from prior art
 
-| Module | Model | Lesson taken |
+| Model | Approach | Lesson taken |
 | --- | --- | --- |
-| WinUIShell | Out-of-process `Server.exe` hosts WinUI 3; PowerShell talks JSON-RPC; source-generated object API mirrors WinUI namespaces; PowerShell 7.4+/.NET 8 only | The non-blocking, no-Dispatcher feel is the goal. The out-of-process machinery exists only because WinUI 3 cannot be hosted in-process; WPF can, so we stay in-process. |
-| ShowUI | Code-generated `New-<Control>` cmdlet per WPF type, in-process, data-binding and pipeline centric | Maximum flexibility but a sprawling surface that is hard to keep clean under strict analyzers. Kept as a phase 2 escape-hatch idea only. |
-| AnyBox | One `Show-AnyBox` renders a themed window from a declarative Prompts + Buttons spec; returns a result hashtable; spec builders `New-AnyBoxPrompt` / `New-AnyBoxButton`; enums and spec classes in `Types\*.cs` | This is the chosen shape. We modernize it: render on Fluence Fluent controls + theming instead of hand-rolled raw WPF with hard-coded colors, and follow PSADT conventions. |
+| Out-of-process RPC host | A separate host process renders the UI; PowerShell talks to it over JSON-RPC; a source-generated object API mirrors the UI framework's namespaces; modern PowerShell / .NET only | The non-blocking, no-Dispatcher feel is the goal. That out-of-process machinery exists only because the UI framework cannot be hosted in-process; WPF can, so we stay in-process. |
+| Per-control builder cmdlets | A code-generated `New-<Control>` cmdlet per WPF type, in-process, data-binding and pipeline centric | Maximum flexibility but a sprawling surface that is hard to keep clean under strict analyzers. Kept as a phase 2 escape-hatch idea only. |
+| Declarative Prompts + Buttons spec | One `Show-<Dialog>` cmdlet renders a themed window from a declarative Prompts + Buttons spec and returns a result hashtable, with spec-builder cmdlets and the enums / spec types they need | This is the chosen shape. We modernize it: render on Fluence Fluent controls + theming instead of hand-rolled raw WPF with hard-coded colors, and follow PSADT conventions. |
 
 Reference instruction documents that govern the work:
 
@@ -112,7 +112,7 @@ Runs in the `.psm1` at import.
   handler (or sibling-directory probing) resolves these so a simple `Add-Type -Path` or
   `Assembly.LoadFrom` succeeds. A dedicated load context may be required on PowerShell 7 if
   default-context probing proves insufficient; treat that as an implementation risk to verify
-  early (the WinUIShell custom `AssemblyLoadContext` is the reference pattern if needed).
+  early (a custom `AssemblyLoadContext` is the reference pattern if needed).
 
 ### 4.2 STA host and dispatcher
 
@@ -145,8 +145,8 @@ Runs in the `.psm1` at import.
   `Fluence.Button`), validated inside the builder function. We deliberately do not use
   PowerShell `class` types as parameter types, because consuming an exported class needs
   `using module` and is fragile across editions. Enumerations are expressed as
-  `[ValidateSet()]` strings. This is the one intentional divergence from AnyBox's compiled
-  `Types\AnyBox.cs`, driven by the minimal-C# packaging decision.
+  `[ValidateSet()]` strings. This is the one intentional divergence from a compiled-types
+  approach, driven by the minimal-C# packaging decision.
 
 ---
 
@@ -190,8 +190,7 @@ Win32 dialogs), and `Link` (Fluence `HyperlinkButton`).
 ### Per-prompt validation
 
 `-ValidateNotEmpty`, `-ValidateSet`, `-ValidatePattern`, and `-ValidateScript`. A failed
-validation surfaces inline (a Fluence `InfoBar`) and blocks the dialog from closing, mirroring
-AnyBox's `Test-ValidInput` behavior.
+validation surfaces inline (a Fluence `InfoBar`) and blocks the dialog from closing.
 
 ### Deferred to phase 2
 
@@ -328,7 +327,6 @@ Open defaults (chosen, easily changed if you object):
 
 ## 14. References
 
-- Reference modules: `F:\FRebuild\WinUIShell`, `F:\FRebuild\ShowUI`, `F:\FRebuild\AnyBox`.
 - Conventions: `AGENTS.md`; `psadt4\.github\instructions\powershell.md`, `pester.md`,
   `csharp.md`.
 - In-repo proven patterns: `WpfTestSta` (STA host), `ApplicationThemeManager.Apply` (theme
