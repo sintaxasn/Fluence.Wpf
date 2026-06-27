@@ -62,7 +62,7 @@ namespace Fluence.Wpf.Demo
             new("Data", "data", "card listbox listview collection empty state", "\uE8FD", isDefault: false),
             new("Data binding", "data binding", "observablecollection binding selection datatemplate", "\uE8FD", isDefault: false),
             new("Trees", "trees", "treeview hierarchy expand collapse selection", "\uE8EB", isDefault: false),
-            new("Menus", "menus", "menu menubar contextmenu tooltip dropdown split flyout command", "\uE115", isDefault: false),
+            new("Menus", "menus", "menu menubar contextmenu tooltip dropdown split flyout command dialog message box contentdialog teachingtip commandbar", "\uE115", isDefault: false),
             new("Navigation", "navigation", "navigationview pane left top compact", "\uE700", isDefault: false),
             new("Tabs", "tabs", "tabcontrol tabview tab tabs document close add", "\uF22C", isDefault: false),
             new("Layout", "layout", "border dockpanel stackpanel expander separator layout surface", "\uECA5", isDefault: false),
