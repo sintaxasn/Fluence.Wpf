@@ -65,43 +65,57 @@
     $root.Orientation = [System.Windows.Controls.Orientation]::Vertical
     $border.Child = $root
 
-    # Message lines. When an Icon is specified (not None), render as a leading InfoBar so the
-    # severity glyph and color appear. When Icon is None (or absent), render plain TextBlocks.
-    $iconValue = $null
-    if ($Spec.ContainsKey('Icon'))
+    # Message lines render as wrapping TextBlocks. When an icon severity is set, a leading colored
+    # FontIcon (the same glyph and brush the InfoBar uses) sits to their left. The message no longer
+    # renders inside an InfoBar.
+    if ($null -ne $Spec.Message)
     {
-        $iconValue = $Spec.Icon
-    }
-    $useIconBar = (-not [string]::IsNullOrWhiteSpace($iconValue)) -and ($iconValue -ne 'None')
-
-    if ($useIconBar -and $null -ne $Spec.Message)
-    {
-        $joinedMessage = [string]::Join(' ', $Spec.Message)
-        $leadingBar = [Fluence.Wpf.Controls.InfoBar]::new()
-        $leadingBar.IsOpen = $true
-        $leadingBar.Message = $joinedMessage
-        $leadingBar.Margin = [System.Windows.Thickness]::new(0, 0, 0, 8)
-
-        $severity = [Fluence.Wpf.InfoBarSeverity]::Informational
-        switch ($iconValue)
+        $iconValue = $null
+        if ($Spec.ContainsKey('Icon'))
         {
-            'Success'  { $severity = [Fluence.Wpf.InfoBarSeverity]::Success }
-            'Warning'  { $severity = [Fluence.Wpf.InfoBarSeverity]::Warning }
-            'Error'    { $severity = [Fluence.Wpf.InfoBarSeverity]::Error }
+            $iconValue = $Spec.Icon
         }
-        $leadingBar.Severity = $severity
+        $severityIcon = Get-FluenceSeverityIcon -Icon ([string]$iconValue)
 
-        $null = $root.Children.Add($leadingBar)
-    }
-    elseif ($null -ne $Spec.Message)
-    {
+        $messageStack = [System.Windows.Controls.StackPanel]::new()
+        $messageStack.Orientation = [System.Windows.Controls.Orientation]::Vertical
         foreach ($line in $Spec.Message)
         {
             $text = [System.Windows.Controls.TextBlock]::new()
             $text.Text = $line
             $text.TextWrapping = [System.Windows.TextWrapping]::Wrap
-            $text.Margin = [System.Windows.Thickness]::new(0, 0, 0, 8)
-            $null = $root.Children.Add($text)
+            $text.Margin = [System.Windows.Thickness]::new(0, 0, 0, 4)
+            $null = $messageStack.Children.Add($text)
+        }
+
+        if ($null -ne $severityIcon)
+        {
+            $messageRow = [System.Windows.Controls.Grid]::new()
+            $messageRow.Margin = [System.Windows.Thickness]::new(0, 0, 0, 8)
+            $iconColumn = [System.Windows.Controls.ColumnDefinition]::new()
+            $iconColumn.Width = [System.Windows.GridLength]::Auto
+            $textColumn = [System.Windows.Controls.ColumnDefinition]::new()
+            $textColumn.Width = [System.Windows.GridLength]::new(1, [System.Windows.GridUnitType]::Star)
+            $null = $messageRow.ColumnDefinitions.Add($iconColumn)
+            $null = $messageRow.ColumnDefinitions.Add($textColumn)
+
+            $fontIcon = [Fluence.Wpf.Controls.FontIcon]::new()
+            $fontIcon.Glyph = $severityIcon.Glyph
+            $fontIcon.IconFontSize = 20
+            $fontIcon.VerticalAlignment = [System.Windows.VerticalAlignment]::Top
+            $fontIcon.Margin = [System.Windows.Thickness]::new(0, 0, 12, 0)
+            $fontIcon.SetResourceReference([System.Windows.Controls.Control]::ForegroundProperty, $severityIcon.BrushKey)
+
+            [System.Windows.Controls.Grid]::SetColumn($fontIcon, 0)
+            [System.Windows.Controls.Grid]::SetColumn($messageStack, 1)
+            $null = $messageRow.Children.Add($fontIcon)
+            $null = $messageRow.Children.Add($messageStack)
+            $null = $root.Children.Add($messageRow)
+        }
+        else
+        {
+            $messageStack.Margin = [System.Windows.Thickness]::new(0, 0, 0, 8)
+            $null = $root.Children.Add($messageStack)
         }
     }
 
