@@ -151,9 +151,10 @@ Describe 'Show-FluenceDialog render' -Tag UI {
         $result.Cancelled | Should -BeFalse
     }
 
-    It 'renders a leading icon InfoBar when Icon is Success' -Skip:($env:FLUENCE_PS_UI -ne '1') {
-        # Custom harness that builds the window, walks the logical children for an open InfoBar
-        # before ShowDialog, then closes. Returns @{ NoException=$true; FoundInfoBar=$bool }.
+    It 'renders a leading severity FontIcon when Icon is Success' -Skip:($env:FLUENCE_PS_UI -ne '1') {
+        # Custom harness that builds the window, walks the root panel for the leading severity
+        # FontIcon (the message no longer renders inside an InfoBar), then closes.
+        # Returns @{ NoException=$true; FoundFontIcon=$bool; Glyph=$string }.
         $iconHarness = {
             param($spec)
 
@@ -176,9 +177,11 @@ Describe 'Show-FluenceDialog render' -Tag UI {
             } $spec $state
             $state.Window = $window
 
-            # Inspect logical children of the root border's StackPanel for an open InfoBar.
+            # The message row is a Grid (leading FontIcon + message StackPanel) added to the root
+            # StackPanel. Walk the root panel's children for that Grid and find the FontIcon inside.
             # Do this before ShowDialog so the check is synchronous and reliable.
-            $foundOpenInfoBar = $false
+            $foundFontIcon = $false
+            $glyph = $null
             $border = $window.Content
             if ($null -ne $border)
             {
@@ -187,9 +190,16 @@ Describe 'Show-FluenceDialog render' -Tag UI {
                 {
                     foreach ($child in $panel.Children)
                     {
-                        if ($child -is [Fluence.Wpf.Controls.InfoBar] -and $child.IsOpen -eq $true)
+                        if ($child -is [System.Windows.Controls.Grid])
                         {
-                            $foundOpenInfoBar = $true
+                            foreach ($gridChild in $child.Children)
+                            {
+                                if ($gridChild -is [Fluence.Wpf.Controls.FontIcon])
+                                {
+                                    $foundFontIcon = $true
+                                    $glyph = $gridChild.Glyph
+                                }
+                            }
                         }
                     }
                 }
@@ -207,11 +217,11 @@ Describe 'Show-FluenceDialog render' -Tag UI {
             $timer.Start()
 
             $null = $window.ShowDialog()
-            return @{ NoException = $true; FoundInfoBar = $foundOpenInfoBar }
+            return @{ NoException = $true; FoundFontIcon = $foundFontIcon; Glyph = $glyph }
         }
 
         $spec = @{
-            Title        = 'Icon InfoBar'
+            Title        = 'Icon FontIcon'
             Message      = @('Operation completed successfully.')
             Icon         = 'Success'
             Prompts      = @()
@@ -228,7 +238,8 @@ Describe 'Show-FluenceDialog render' -Tag UI {
         $result = script:Unwrap -Raw $raw
 
         $result.NoException | Should -BeTrue
-        $result.FoundInfoBar | Should -BeTrue
+        $result.FoundFontIcon | Should -BeTrue
+        $result.Glyph | Should -Not -BeNullOrEmpty
     }
 
     It 'constructs every input type and returns a key per prompt' -Skip:($env:FLUENCE_PS_UI -ne '1') {
