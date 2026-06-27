@@ -122,6 +122,45 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
+        /// Returns the Segoe Fluent Icons glyph that represents <paramref name="severity"/>. This is the
+        /// single programmatic source for the severity glyphs; it mirrors the <c>Severity</c> triggers in
+        /// Themes/Controls/InfoBar.xaml (WPF property triggers cannot call this method, so keep both in sync).
+        /// </summary>
+        /// <param name="severity">The severity to map.</param>
+        /// <returns>A single-character glyph string in the Segoe Fluent Icons font.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="severity"/> is not a defined <see cref="InfoBarSeverity"/> value.</exception>
+        public static string GetSeverityGlyph(InfoBarSeverity severity)
+        {
+            return severity switch
+            {
+                InfoBarSeverity.Informational => "",
+                InfoBarSeverity.Success => "",
+                InfoBarSeverity.Warning => "",
+                InfoBarSeverity.Error => "",
+                _ => throw new ArgumentOutOfRangeException(nameof(severity), severity, message: null),
+            };
+        }
+
+        /// <summary>
+        /// Returns the theme brush resource key (for a <c>DynamicResource</c> reference) that colors
+        /// <paramref name="severity"/>. Mirrors the <c>Severity</c> triggers in Themes/Controls/InfoBar.xaml.
+        /// </summary>
+        /// <param name="severity">The severity to map.</param>
+        /// <returns>A brush key resolvable against the Fluence theme dictionaries.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">Thrown when <paramref name="severity"/> is not a defined <see cref="InfoBarSeverity"/> value.</exception>
+        public static string GetSeverityBrushKey(InfoBarSeverity severity)
+        {
+            return severity switch
+            {
+                InfoBarSeverity.Informational => "SystemFillColorAttentionBrush",
+                InfoBarSeverity.Success => "SystemFillColorSuccessBrush",
+                InfoBarSeverity.Warning => "SystemFillColorCautionBrush",
+                InfoBarSeverity.Error => "SystemFillColorCriticalBrush",
+                _ => throw new ArgumentOutOfRangeException(nameof(severity), severity, message: null),
+            };
+        }
+
+        /// <summary>
         /// Identifies the <see cref="IsOpen"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty IsOpenProperty =
