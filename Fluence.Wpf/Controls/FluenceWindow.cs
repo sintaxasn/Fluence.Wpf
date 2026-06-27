@@ -30,7 +30,6 @@ using Fluence.Wpf.Helpers;
 using Fluence.Wpf.Native;
 using System;
 using System.Globalization;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
@@ -438,9 +437,11 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// The Fluence brand icon embedded in this assembly, loaded once and shared (frozen) as the
         /// default <see cref="Window.Icon"/> for every <see cref="FluenceWindow"/>. <see langword="null"/>
-        /// only if the embedded resource cannot be loaded.
+        /// only if the embedded resource cannot be loaded. Exposed so a consumer can apply the same
+        /// rasterized brand mark - which renders correctly as a Win32 HICON, unlike the vector
+        /// <c>FluenceIconBrandDrawingImage</c> resource - to its own windows.
         /// </summary>
-        private static readonly ImageSource? DefaultIcon = CreateDefaultIcon();
+        public static ImageSource? DefaultIcon { get; } = CreateDefaultIcon();
 
         /// <summary>
         /// Edge length, in pixels, of the rasterized default window icon. 256 is the largest standard
@@ -486,7 +487,15 @@ namespace Fluence.Wpf.Controls
                 }
                 return bitmap;
             }
-            catch (IOException)
+            // The default icon is a best-effort enhancement. Any failure to load the brand resource
+            // or rasterize it (a missing or renamed resource key, or a COM / GPU / memory failure in
+            // RenderTargetBitmap under a headless or session-0 host such as PSADT running as SYSTEM)
+            // must degrade to a null icon, never escape this static field initializer and fault the
+            // FluenceWindow type with a TypeInitializationException - that would break every window
+            // construction in the process. The when-filter is always true (Exception.Message is never
+            // null); it catches broadly while satisfying the no-general-catch analyzers, matching the
+            // filtered-catch idiom used elsewhere in this assembly.
+            catch (Exception ex) when (ex.Message is not null)
             {
                 return null;
             }

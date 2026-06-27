@@ -296,13 +296,13 @@
         Show-FluenceWindowCore -Spec $s
     } -ArgumentList @($spec)
 
-    # Invoke-InFluenceStaRunspace returns a collection; unwrap to the single result hashtable.
-    $hash = $raw
-    if ($raw -is [System.Collections.IList] -and $raw.Count -ge 1)
+    # Invoke-OnFluenceUi yields the bare result hashtable (@{ Result = ... } from
+    # Show-FluenceWindowCore); a $null result means the window returned nothing.
+    $value = $null
+    if ($null -ne $raw)
     {
-        $hash = $raw[$raw.Count - 1]
+        $value = $raw.Result
     }
-    $value = $hash.Result
 
     if ($PassThru)
     {

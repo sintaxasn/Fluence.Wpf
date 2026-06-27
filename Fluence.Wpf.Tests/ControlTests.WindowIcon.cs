@@ -95,5 +95,21 @@ namespace Fluence.Wpf.Tests
                 }
             });
         }
+
+        [TestMethod]
+        public void FluenceWindow_DefaultIcon_IsRasterizedBitmapSource()
+        {
+            RunOnStaThread(static delegate
+            {
+                _ = EnsureApplication();
+                _ = MergeGenericDictionary(Application.Current);
+
+                Assert.IsNotNull(FluenceWindow.DefaultIcon,
+                    "FluenceWindow.DefaultIcon should expose the embedded Fluence brand icon.");
+                Assert.IsInstanceOfType(FluenceWindow.DefaultIcon, typeof(BitmapSource),
+                    "DefaultIcon must be the rasterized brand vector (a BitmapSource) so a consumer can apply " +
+                    "it as a Win32 HICON, which the vector DrawingImage resource cannot reliably drive.");
+            });
+        }
     }
 }

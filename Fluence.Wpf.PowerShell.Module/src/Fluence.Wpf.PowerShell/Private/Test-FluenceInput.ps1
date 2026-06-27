@@ -42,7 +42,11 @@
             $ok = $false
             try
             {
-                $ok = [bool](& $p.ValidateScript $value)
+                # A multi-statement validator that does not suppress intermediate output returns an
+                # array; [bool] of a 2+-element array is always $true, which would bypass validation.
+                # Use the LAST object the scriptblock emits as the result.
+                $output = & $p.ValidateScript $value
+                $ok = [bool](@($output)[-1])
             }
             catch
             {

@@ -79,6 +79,30 @@
         $Name = 'Input_' + [guid]::NewGuid().ToString('N').Substring(0, 8)
     }
 
+    # Coerce a provided DefaultValue to the type the input control expects, so a non-coercible value
+    # fails fast here (at spec-build time, with a clear message) instead of throwing deep inside the
+    # UI thread when New-FluenceInputControl casts it at render time. [Convert]::ToBoolean is used for
+    # Checkbox/Toggle so the string 'false' becomes $false (a plain [bool] cast treats any non-empty
+    # string as $true).
+    if ($PSBoundParameters.ContainsKey('DefaultValue') -and $null -ne $DefaultValue)
+    {
+        try
+        {
+            switch ($InputType)
+            {
+                'Number'   { $DefaultValue = [double]$DefaultValue }
+                'Date'     { $DefaultValue = [datetime]$DefaultValue }
+                'Time'     { $DefaultValue = [timespan]$DefaultValue }
+                'Checkbox' { $DefaultValue = [System.Convert]::ToBoolean($DefaultValue) }
+                'Toggle'   { $DefaultValue = [System.Convert]::ToBoolean($DefaultValue) }
+            }
+        }
+        catch
+        {
+            throw "DefaultValue '$DefaultValue' is not valid for an InputType of '$InputType': $($_.Exception.Message)"
+        }
+    }
+
     $prompt = [pscustomobject]@{
         PSTypeName       = 'Fluence.Prompt'
         Name             = $Name

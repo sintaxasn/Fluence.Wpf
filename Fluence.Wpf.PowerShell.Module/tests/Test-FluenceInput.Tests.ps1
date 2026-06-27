@@ -24,4 +24,14 @@ Describe 'Test-FluenceInput' {
         (Test-FluenceInput -Prompts @($p) -Values @{ N = '3' }).IsValid | Should -BeFalse
         (Test-FluenceInput -Prompts @($p) -Values @{ N = '9' }).IsValid | Should -BeTrue
     }
+    It 'fails validation when the script emits extra output before a false final result' {
+        # A multi-statement validator that does not suppress intermediate output emits an array;
+        # the meaningful result is the LAST element, not the truthiness of the whole stream.
+        $p = New-FluencePrompt -Name N -Message 'n' -ValidateScript { param($v) $v; [int]$v -gt 5 }
+        (Test-FluenceInput -Prompts @($p) -Values @{ N = '3' }).IsValid | Should -BeFalse
+    }
+    It 'passes validation when extra output precedes a true final result' {
+        $p = New-FluencePrompt -Name N -Message 'n' -ValidateScript { param($v) $v; [int]$v -gt 5 }
+        (Test-FluenceInput -Prompts @($p) -Values @{ N = '9' }).IsValid | Should -BeTrue
+    }
 }

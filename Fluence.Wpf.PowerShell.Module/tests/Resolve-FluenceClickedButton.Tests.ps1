@@ -32,13 +32,19 @@ Describe 'Resolve-FluenceClickedButton' {
         Resolve-FluenceClickedButton -Result $result -Buttons $buttons | Should -Be 'No'
     }
 
-    It 'returns null when Cancelled is true and no cancel button exists' {
+    It 'maps a dismissal to the last (safe) button when no cancel button exists' {
         $buttons = @(
             New-FluenceButton 'Yes' -IsDefault
             New-FluenceButton 'No'
         )
         $result = @{ Yes = $false; No = $false; Cancelled = $true }
-        Resolve-FluenceClickedButton -Result $result -Buttons $buttons | Should -BeNullOrEmpty
+        Resolve-FluenceClickedButton -Result $result -Buttons $buttons | Should -Be 'No'
+    }
+
+    It 'maps a dismissal to OK for a single-button OK preset' {
+        $buttons = @(New-FluenceButton 'OK' -IsDefault)
+        $result = @{ OK = $false; Cancelled = $true }
+        Resolve-FluenceClickedButton -Result $result -Buttons $buttons | Should -Be 'OK'
     }
 
     # --- Runtime shape: [pscustomobject] / Fluence.DialogResult via ConvertTo-FluenceResult ---
@@ -58,12 +64,12 @@ Describe 'Resolve-FluenceClickedButton' {
         Resolve-FluenceClickedButton -Result $result -Buttons $buttons | Should -Be 'Cancel'
     }
 
-    It 'returns null when pscustomobject result is cancelled but no cancel button exists' {
+    It 'maps a dismissal to the last (safe) button for a pscustomobject result with no cancel button' {
         $buttons = @(
             New-FluenceButton 'Yes' -IsDefault
             New-FluenceButton 'No'
         )
         $result = ConvertTo-FluenceResult -Result @{ Yes = $false; No = $false; Cancelled = $true }
-        Resolve-FluenceClickedButton -Result $result -Buttons $buttons | Should -BeNullOrEmpty
+        Resolve-FluenceClickedButton -Result $result -Buttons $buttons | Should -Be 'No'
     }
 }

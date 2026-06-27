@@ -13,4 +13,8 @@ Describe 'ConvertTo-FluenceResult' {
         (ConvertTo-FluenceResult -Result @{ Cancelled = $true }).PSObject.TypeNames[0] |
             Should -Be 'Fluence.DialogResult'
     }
+    It 'keeps the Fluence.DialogResult type even when a result key is named PSTypeName' {
+        $o = ConvertTo-FluenceResult -Result @{ PSTypeName = 'Hacked'; Cancelled = $true }
+        $o.PSObject.TypeNames[0] | Should -Be 'Fluence.DialogResult'
+    }
 }

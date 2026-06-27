@@ -25,5 +25,21 @@ Describe 'New-FluencePrompt' {
         It 'requires Choice prompts to supply a ValidateSet' {
             { New-FluencePrompt -Name X -Message 'x' -InputType Choice } | Should -Throw '*ValidateSet*'
         }
+        It 'throws a clear error when a Number DefaultValue is not coercible' {
+            { New-FluencePrompt -Name X -Message 'x' -InputType Number -DefaultValue 'n/a' } |
+                Should -Throw '*Number*'
+        }
+        It 'throws a clear error when a Date DefaultValue is not coercible' {
+            { New-FluencePrompt -Name X -Message 'x' -InputType Date -DefaultValue 'soon' } |
+                Should -Throw '*Date*'
+        }
+        It 'coerces a Number DefaultValue to [double]' {
+            (New-FluencePrompt -Name X -Message 'x' -InputType Number -DefaultValue '42').DefaultValue |
+                Should -BeOfType ([double])
+        }
+        It 'coerces a Checkbox string DefaultValue to [bool] without the non-empty-string footgun' {
+            (New-FluencePrompt -Name X -Message 'x' -InputType Checkbox -DefaultValue 'false').DefaultValue |
+                Should -BeFalse
+        }
     }
 }

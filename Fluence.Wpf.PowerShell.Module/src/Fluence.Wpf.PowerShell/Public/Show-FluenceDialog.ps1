@@ -116,12 +116,14 @@
         Invoke-FluenceWindow -Spec $s
     } -ArgumentList @($spec)
 
-    # Invoke-InFluenceStaRunspace returns a collection; unwrap to the single hashtable.
-    $hash = $result
-    if ($result -is [System.Collections.IList] -and $result.Count -ge 1)
+    # Invoke-OnFluenceUi yields the bare result hashtable. A $null result means the UI returned
+    # nothing (for example a swallowed fault on an MTA host); surface a cancelled result instead of
+    # passing $null to ConvertTo-FluenceResult's Mandatory [hashtable] parameter, which would raise a
+    # confusing parameter-binding error far from the real cause.
+    if ($null -eq $result)
     {
-        $hash = $result[$result.Count - 1]
+        return ConvertTo-FluenceResult -Result @{ Cancelled = $true }
     }
 
-    return ConvertTo-FluenceResult -Result $hash
+    return ConvertTo-FluenceResult -Result $result
 }

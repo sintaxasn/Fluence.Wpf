@@ -44,14 +44,9 @@ Describe 'Invoke-OnFluenceUi private-scope transport (C1 regression)' {
             } -ArgumentList @()
         }
 
-        # Invoke-InFluenceStaRunspace returns a collection; unwrap to the single hashtable.
-        $hash = $result
-        if ($result -is [System.Collections.IList] -and $result.Count -ge 1)
-        {
-            $hash = $result[$result.Count - 1]
-        }
-
-        $hash.IsValid | Should -BeTrue
+        # Invoke-OnFluenceUi yields the bare result hashtable (it unwraps the single-element runspace
+        # collection internally), so the result is asserted directly.
+        $result.IsValid | Should -BeTrue
     }
 
     It 'passes ArgumentList through the transport to the private function in module scope' {
@@ -72,12 +67,6 @@ Describe 'Invoke-OnFluenceUi private-scope transport (C1 regression)' {
             } -ArgumentList @(@{ U = 'present' })
         }
 
-        $hash = $result
-        if ($result -is [System.Collections.IList] -and $result.Count -ge 1)
-        {
-            $hash = $result[$result.Count - 1]
-        }
-
-        $hash.IsValid | Should -BeTrue
+        $result.IsValid | Should -BeTrue
     }
 }

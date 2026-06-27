@@ -43,8 +43,18 @@
     $window.Topmost = [bool]$Spec.Topmost
     if ($null -ne $Spec.ParentWindow)
     {
-        $window.Owner = $Spec.ParentWindow
-        $window.WindowStartupLocation = [System.Windows.WindowStartupLocation]::CenterOwner
+        # A WPF window's Owner must live on the same thread as the window (built on the Fluence UI
+        # thread). A ParentWindow from another thread cannot parent it; parent only when they share a
+        # thread, otherwise show the dialog unparented rather than throwing a cross-thread error.
+        if ($Spec.ParentWindow.Dispatcher.CheckAccess())
+        {
+            $window.Owner = $Spec.ParentWindow
+            $window.WindowStartupLocation = [System.Windows.WindowStartupLocation]::CenterOwner
+        }
+        else
+        {
+            Write-Warning "The -ParentWindow belongs to a different thread than the Fluence UI thread; modal owner parenting is not available here. Showing the dialog without an owner."
+        }
     }
 
     # Root stack inside a padded border. Controls resolve their own themed brushes.

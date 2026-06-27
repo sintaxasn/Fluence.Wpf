@@ -69,6 +69,16 @@
         {
             return $cancelButton.Name
         }
+
+        # No explicit cancel button (for example the YesNo or OK preset): a title-bar X or Esc
+        # dismissal maps to the safe/negative choice - the last (right-most) button in the set, by
+        # the Win32 convention that the dismissing action sits last (YesNo -> No, OK -> OK). This
+        # avoids returning $null, which a caller guard like `if ($answer -ne 'No')` would treat as
+        # "proceed" and run a destructive branch on a dismiss.
+        if ($Buttons.Count -ge 1)
+        {
+            return $Buttons[$Buttons.Count - 1].Name
+        }
     }
 
     return $null

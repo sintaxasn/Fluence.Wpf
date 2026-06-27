@@ -46,6 +46,15 @@
         $bd = [Fluence.Wpf.BackdropType]$backdropName
         if ($null -ne $window)
         {
+            # SystemBackdropType is a DependencyProperty; it can only be set on the window's own
+            # dispatcher thread. CheckAccess is true when the Fluence UI thread running this block
+            # owns the window (the supported case). A window from another thread (the documented
+            # contract violation) would otherwise throw an opaque cross-thread InvalidOperationException,
+            # so fail with a clear, actionable message instead.
+            if (-not $window.Dispatcher.CheckAccess())
+            {
+                throw "The -Window passed to Set-FluenceBackdrop is owned by a different thread than the Fluence UI thread. Pass a window created on the Fluence UI thread (for example one shown via Show-FluenceWindow)."
+            }
             $window.SystemBackdropType = $bd
         }
 

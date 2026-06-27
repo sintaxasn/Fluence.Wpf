@@ -81,8 +81,11 @@
             if ($null -ne $Prompt.DefaultValue)
             {
                 $ctl.Value = [double]$Prompt.DefaultValue
-                $State.Result[$name] = $ctl.Value
             }
+            # Seed from the control's live value (the NumberBox Value default is 0, not $null) so an
+            # untouched field returns a number rather than $null; ValueChanged does not fire on the
+            # initial render.
+            $State.Result[$name] = $ctl.Value
             $ctl.add_ValueChanged({
                 $State.Result[$name] = $ctl.Value
             }.GetNewClosure())
@@ -97,6 +100,9 @@
             {
                 $ctl.IsChecked = [bool]$Prompt.DefaultValue
             }
+            # Seed from the control's live state so an untouched checkbox returns a [bool] (false when
+            # there is no default), not the raw/typeless pre-seed; Click only fires on interaction.
+            $State.Result[$name] = $ctl.IsChecked
             $ctl.add_Click({
                 $State.Result[$name] = $ctl.IsChecked
             }.GetNewClosure())
@@ -112,6 +118,9 @@
             {
                 $ctl.IsChecked = [bool]$Prompt.DefaultValue
             }
+            # Seed from the control's live state so an untouched toggle returns a [bool] (false when
+            # there is no default), not the raw/typeless pre-seed; Click only fires on interaction.
+            $State.Result[$name] = $ctl.IsChecked
             $ctl.add_Click({
                 $State.Result[$name] = $ctl.IsChecked
             }.GetNewClosure())

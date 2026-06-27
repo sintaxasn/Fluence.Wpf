@@ -37,8 +37,19 @@
 
     if ($null -ne $Spec.Owner)
     {
-        $window.Owner = $Spec.Owner
-        $window.WindowStartupLocation = [System.Windows.WindowStartupLocation]::CenterOwner
+        # A WPF window's Owner must live on the same thread as the window. On an MTA host the window
+        # is built on the module's UI runspace, so an Owner created on another thread cannot parent it
+        # and assigning it would throw. Parent only when the Owner shares this thread; otherwise show
+        # the window unparented rather than failing the whole call.
+        if ($Spec.Owner.Dispatcher.CheckAccess())
+        {
+            $window.Owner = $Spec.Owner
+            $window.WindowStartupLocation = [System.Windows.WindowStartupLocation]::CenterOwner
+        }
+        else
+        {
+            Write-Warning "The -Owner window belongs to a different thread than the Fluence UI thread; modal owner parenting is not available here. Showing the window without an owner."
+        }
     }
     return $window
 }
