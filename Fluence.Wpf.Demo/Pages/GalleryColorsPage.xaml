@@ -7,11 +7,18 @@
     xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
     d:DesignHeight="900"
     d:DesignWidth="980"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    >
     <ui:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
         <StackPanel Style="{StaticResource GalleryPageContentStackStyle}">
-            <TextBlock Style="{StaticResource PageTitleStyle}" Text="Colors" />
-            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Use Fluence theme brushes for text, fills, strokes, backgrounds, semantic states, and high contrast mappings." />
+            <TextBlock
+                Style="{StaticResource PageTitleStyle}"
+                Text="Colors"
+                />
+            <TextBlock
+                Style="{StaticResource SectionDescriptionStyle}"
+                Text="Use Fluence theme brushes for text, fills, strokes, backgrounds, semantic states, and high contrast mappings."
+                />
 
             <ui:Border
                 x:Name="CodeSampleCard"
@@ -20,7 +27,8 @@
                 Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
-                CornerRadius="{DynamicResource OverlayCornerRadius}">
+                CornerRadius="{DynamicResource OverlayCornerRadius}"
+                >
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -33,7 +41,8 @@
                         FontSize="13"
                         Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                         Text="&lt;TextBlock Foreground=&quot;{DynamicResource TextFillColorPrimaryBrush}&quot; /&gt;"
-                        TextWrapping="Wrap" />
+                        TextWrapping="Wrap"
+                        />
                     <ui:Button
                         x:Name="CopyCodeSampleButton"
                         Grid.Column="1"
@@ -42,15 +51,22 @@
                         Padding="8,4"
                         Appearance="Subtle"
                         Click="CopyCodeSampleButton_Click"
-                        ToolTip="Copy sample">
+                        ToolTip="Copy sample"
+                        >
                         <ui:Button.Icon>
-                            <ui:FontIcon Glyph="&#xE8C8;" IconFontSize="14" />
+                            <ui:FontIcon
+                                Glyph="&#xE8C8;"
+                                IconFontSize="14"
+                                />
                         </ui:Button.Icon>
                     </ui:Button>
                 </Grid>
             </ui:Border>
 
-            <TabControl x:Name="ColorSectionTabs" Margin="0,12,0,0" />
+            <TabControl
+                x:Name="ColorSectionTabs"
+                Margin="0,12,0,0"
+                />
         </StackPanel>
     </ui:SmoothScrollViewer>
 </UserControl>

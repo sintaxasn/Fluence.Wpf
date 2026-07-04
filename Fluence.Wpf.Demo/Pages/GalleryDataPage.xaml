@@ -9,27 +9,41 @@
     xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
     d:DesignHeight="900"
     d:DesignWidth="900"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    >
     <ui:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
         <StackPanel Style="{StaticResource GalleryPageContentStackStyle}">
-            <TextBlock Style="{StaticResource PageTitleStyle}" Text="Data" />
-            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Data controls present lists, empty states, and related content groups for scanning and selection." />
+            <TextBlock
+                Style="{StaticResource PageTitleStyle}"
+                Text="Data"
+                />
+            <TextBlock
+                Style="{StaticResource SectionDescriptionStyle}"
+                Text="Data controls present lists, empty states, and related content groups for scanning and selection."
+                />
 
 
-            <ContentControl x:Name="DemoSampleSlot01DemoContentHost" Visibility="Collapsed">
+            <ContentControl
+                x:Name="DemoSampleSlot01DemoContentHost"
+                Visibility="Collapsed"
+                >
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="20" />
                         <ColumnDefinition Width="*" />
                     </Grid.ColumnDefinitions>
-                    <Border x:Name="SimpleListViewBackground" CornerRadius="{DynamicResource ControlCornerRadius}">
+                    <Border
+                        x:Name="SimpleListViewBackground"
+                        CornerRadius="{DynamicResource ControlCornerRadius}"
+                        >
                         <ui:ListView
                             x:Name="SimpleListView"
                             Height="230"
                             Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                            BorderThickness="1">
+                            BorderThickness="1"
+                            >
                             <ListViewItem Content="Ana Bowman" />
                             <ListViewItem Content="Shawn Hughes" />
                             <ListViewItem Content="Oscar Ward" />
@@ -40,13 +54,15 @@
                     <Border
                         x:Name="RichListViewBackground"
                         Grid.Column="2"
-                        CornerRadius="{DynamicResource ControlCornerRadius}">
+                        CornerRadius="{DynamicResource ControlCornerRadius}"
+                        >
                         <ui:ListView
                             x:Name="RichListView"
                             Height="230"
                             Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                            BorderThickness="1">
+                            BorderThickness="1"
+                            >
                             <ListViewItem>
                                 <Grid Margin="{DynamicResource DemoListItemMargin}">
                                     <Grid.ColumnDefinitions>
@@ -57,13 +73,18 @@
                                         VerticalAlignment="Center"
                                         Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                                         Glyph="&#xE77B;"
-                                        IconFontSize="20" />
+                                        IconFontSize="20"
+                                        />
                                     <StackPanel Grid.Column="1">
-                                        <TextBlock FontWeight="SemiBold" Text="Ana Bowman" />
+                                        <TextBlock
+                                            FontWeight="SemiBold"
+                                            Text="Ana Bowman"
+                                            />
                                         <TextBlock
                                             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                             Style="{StaticResource CaptionTextBlockStyle}"
-                                            Text="Support Engineer" />
+                                            Text="Support Engineer"
+                                            />
                                     </StackPanel>
                                 </Grid>
                             </ListViewItem>
@@ -77,13 +98,18 @@
                                         VerticalAlignment="Center"
                                         Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                                         Glyph="&#xE77B;"
-                                        IconFontSize="20" />
+                                        IconFontSize="20"
+                                        />
                                     <StackPanel Grid.Column="1">
-                                        <TextBlock FontWeight="SemiBold" Text="Shawn Hughes" />
+                                        <TextBlock
+                                            FontWeight="SemiBold"
+                                            Text="Shawn Hughes"
+                                            />
                                         <TextBlock
                                             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                             Style="{StaticResource CaptionTextBlockStyle}"
-                                            Text="Platform Specialist" />
+                                            Text="Platform Specialist"
+                                            />
                                     </StackPanel>
                                 </Grid>
                             </ListViewItem>
@@ -97,13 +123,18 @@
                                         VerticalAlignment="Center"
                                         Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                                         Glyph="&#xE77B;"
-                                        IconFontSize="20" />
+                                        IconFontSize="20"
+                                        />
                                     <StackPanel Grid.Column="1">
-                                        <TextBlock FontWeight="SemiBold" Text="Oscar Ward" />
+                                        <TextBlock
+                                            FontWeight="SemiBold"
+                                            Text="Oscar Ward"
+                                            />
                                         <TextBlock
                                             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                             Style="{StaticResource CaptionTextBlockStyle}"
-                                            Text="DevOps Lead" />
+                                            Text="DevOps Lead"
+                                            />
                                     </StackPanel>
                                 </Grid>
                             </ListViewItem>
@@ -114,43 +145,57 @@
             <local:DemoSampleControl SampleDescription="Use ListView for compact single-column collections and richer item layouts." />
 
 
-            <ContentControl x:Name="DemoSampleSlot02DemoContentHost" Visibility="Collapsed">
+            <ContentControl
+                x:Name="DemoSampleSlot02DemoContentHost"
+                Visibility="Collapsed"
+                >
                 <ui:ListView
                     x:Name="EmptyStateListView"
                     Height="180"
                     Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                     BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                    BorderThickness="1">
+                    BorderThickness="1"
+                    >
                     <ui:ListView.EmptyContent>
                         <TextBlock
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
                             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                            Text="No items. Add one to begin." />
+                            Text="No items. Add one to begin."
+                            />
                     </ui:ListView.EmptyContent>
                 </ui:ListView>
             </ContentControl>
-            <ContentControl x:Name="DemoSampleSlot02RightRailContentHost" Visibility="Collapsed">
+            <ContentControl
+                x:Name="DemoSampleSlot02RightRailContentHost"
+                Visibility="Collapsed"
+                >
                 <StackPanel
                     x:Name="EmptyStateActionsPanel"
                     HorizontalAlignment="Center"
-                    VerticalAlignment="Center">
+                    VerticalAlignment="Center"
+                    >
                     <ui:Button
                         MinWidth="140"
                         Appearance="Accent"
                         Click="AddListItem_Click"
-                        Content="Add item" />
+                        Content="Add item"
+                        />
                     <ui:Button
                         MinWidth="140"
                         Margin="{DynamicResource DemoTextTopGapMargin}"
                         Click="RemoveListItem_Click"
-                        Content="Remove item" />
+                        Content="Remove item"
+                        />
                 </StackPanel>
             </ContentControl>
             <local:DemoSampleControl SampleDescription="Set EmptyContent for an intentional no-data state and animate removals when items leave the list." />
 
 
-            <ContentControl x:Name="DemoSampleSlot03DemoContentHost" Visibility="Collapsed">
+            <ContentControl
+                x:Name="DemoSampleSlot03DemoContentHost"
+                Visibility="Collapsed"
+                >
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
@@ -162,8 +207,12 @@
                         Height="180"
                         Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                        BorderThickness="1">
-                        <ui:ListBoxItem Content="Documents" IsSelected="True" />
+                        BorderThickness="1"
+                        >
+                        <ui:ListBoxItem
+                            Content="Documents"
+                            IsSelected="True"
+                            />
                         <ui:ListBoxItem Content="Pictures" />
                         <ui:ListBoxItem Content="Music" />
                         <ui:ListBoxItem Content="Videos" />
@@ -176,9 +225,16 @@
                         Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                         BorderThickness="1"
-                        SelectionMode="Extended">
-                        <ui:ListBoxItem Content="Critical" IsSelected="True" />
-                        <ui:ListBoxItem Content="Error" IsSelected="True" />
+                        SelectionMode="Extended"
+                        >
+                        <ui:ListBoxItem
+                            Content="Critical"
+                            IsSelected="True"
+                            />
+                        <ui:ListBoxItem
+                            Content="Error"
+                            IsSelected="True"
+                            />
                         <ui:ListBoxItem Content="Warning" />
                         <ui:ListBoxItem Content="Information" />
                         <ui:ListBoxItem Content="Verbose" />
@@ -188,77 +244,107 @@
             <local:DemoSampleControl SampleDescription="Use ListBox for compact selection lists; set SelectionMode to Extended to allow selecting multiple items." />
 
 
-            <ContentControl x:Name="DemoSampleSlot04DemoContentHost" Visibility="Collapsed">
-                <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <ContentControl
+                x:Name="DemoSampleSlot04DemoContentHost"
+                Visibility="Collapsed"
+                >
+                <WrapPanel
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    >
                     <ui:PersonPicture
                         Width="56"
                         Height="56"
                         Margin="{DynamicResource DemoControlGroupItemMargin}"
                         DisplayName="Ana Bowman"
-                        ProfilePicture="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureAnaBowman.png" />
+                        ProfilePicture="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureAnaBowman.png"
+                        />
                     <ui:PersonPicture
                         Width="56"
                         Height="56"
                         Margin="{DynamicResource DemoControlGroupItemMargin}"
                         BadgeNumber="3"
                         DisplayName="Shawn Hughes"
-                        ProfilePicture="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureShawnHughes.png" />
+                        ProfilePicture="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureShawnHughes.png"
+                        />
                     <ui:PersonPicture
                         Width="56"
                         Height="56"
                         Margin="{DynamicResource DemoControlGroupItemMargin}"
                         DisplayName="Priya Kapoor"
-                        ProfilePicture="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPicturePriyaKapoor.png" />
+                        ProfilePicture="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPicturePriyaKapoor.png"
+                        />
                     <ui:PersonPicture
                         Width="56"
                         Height="56"
                         Margin="{DynamicResource DemoControlGroupItemMargin}"
                         DisplayName="Mateo Rivera"
-                        ProfilePicture="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureMateoRivera.png" />
+                        ProfilePicture="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureMateoRivera.png"
+                        />
                     <ui:PersonPicture
                         Width="56"
                         Height="56"
                         Margin="{DynamicResource DemoControlGroupItemMargin}"
                         DisplayName="Madison Butler"
-                        ProfilePicture="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureMadisonButler.png" />
+                        ProfilePicture="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureMadisonButler.png"
+                        />
                 </WrapPanel>
             </ContentControl>
             <local:DemoSampleControl SampleDescription="Use PersonPicture to represent people and contact status in data-heavy views." />
 
 
-            <ContentControl x:Name="DemoSampleSlot05DemoContentHost" Visibility="Collapsed">
+            <ContentControl
+                x:Name="DemoSampleSlot05DemoContentHost"
+                Visibility="Collapsed"
+                >
                 <UniformGrid Columns="2">
                     <ui:Card
                         MinHeight="110"
                         Margin="{DynamicResource DemoControlGroupItemMargin}"
                         Padding="{DynamicResource DemoSampleInnerCardPadding}"
                         Header="Default"
-                        Variant="{x:Static uicore:CardVariant.Default}">
-                        <TextBlock Text="Standard surface for grouped content." TextWrapping="Wrap" />
+                        Variant="{x:Static uicore:CardVariant.Default}"
+                        >
+                        <TextBlock
+                            Text="Standard surface for grouped content."
+                            TextWrapping="Wrap"
+                            />
                     </ui:Card>
                     <ui:Card
                         MinHeight="110"
                         Margin="{DynamicResource DemoControlGroupItemMargin}"
                         Padding="{DynamicResource DemoSampleInnerCardPadding}"
                         Header="Outlined"
-                        Variant="{x:Static uicore:CardVariant.Outlined}">
-                        <TextBlock Text="Emphasizes the boundary over fill." TextWrapping="Wrap" />
+                        Variant="{x:Static uicore:CardVariant.Outlined}"
+                        >
+                        <TextBlock
+                            Text="Emphasizes the boundary over fill."
+                            TextWrapping="Wrap"
+                            />
                     </ui:Card>
                     <ui:Card
                         MinHeight="110"
                         Margin="{DynamicResource DemoControlGroupItemMargin}"
                         Padding="{DynamicResource DemoSampleInnerCardPadding}"
                         Header="Filled"
-                        Variant="{x:Static uicore:CardVariant.Filled}">
-                        <TextBlock Text="Adds stronger container presence." TextWrapping="Wrap" />
+                        Variant="{x:Static uicore:CardVariant.Filled}"
+                        >
+                        <TextBlock
+                            Text="Adds stronger container presence."
+                            TextWrapping="Wrap"
+                            />
                     </ui:Card>
                     <ui:Card
                         MinHeight="110"
                         Margin="{DynamicResource DemoControlGroupItemMargin}"
                         Padding="{DynamicResource DemoSampleInnerCardPadding}"
                         Header="Subtle"
-                        Variant="{x:Static uicore:CardVariant.Subtle}">
-                        <TextBlock Text="Keeps low-emphasis supporting content grouped." TextWrapping="Wrap" />
+                        Variant="{x:Static uicore:CardVariant.Subtle}"
+                        >
+                        <TextBlock
+                            Text="Keeps low-emphasis supporting content grouped."
+                            TextWrapping="Wrap"
+                            />
                     </ui:Card>
                 </UniformGrid>
             </ContentControl>

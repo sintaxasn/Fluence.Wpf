@@ -1,7 +1,8 @@
 ﻿<Application
     x:Class="Fluence.Wpf.Demo.Mvvm.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    >
     <!--
         No ResourceDictionary.MergedDictionaries here.
         ApplicationThemeManager.Apply (called from App.xaml.cs OnStartup) seeds all

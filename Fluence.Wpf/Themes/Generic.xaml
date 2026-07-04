@@ -1,18 +1,21 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    >
 
     <ResourceDictionary.MergedDictionaries>
-        <!--  Brand icons (resolution-independent vector DrawingImages)  -->
+        <!-- Brand icons (resolution-independent vector DrawingImages) -->
         <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Icons/FluenceIcons.xaml" />
 
-        <!--  FluenceWindow  -->
+        <!-- FluenceWindow -->
         <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/FluenceWindow.xaml" />
 
-        <!--  Common Controls  -->
+        <!-- Common Controls -->
         <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/ScrollBar.xaml" />
         <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/TabControl.xaml" />
         <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/TabView.xaml" />
 
-        <!--  Custom Controls  -->
+        <!-- Custom Controls -->
         <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/FontIcon.xaml" />
         <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/Button.xaml" />
         <ResourceDictionary Source="/Fluence.Wpf;component/Themes/Controls/HyperlinkButton.xaml" />

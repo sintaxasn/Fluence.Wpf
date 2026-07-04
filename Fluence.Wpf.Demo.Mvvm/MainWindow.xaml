@@ -19,7 +19,8 @@
     ExtendsContentIntoTitleBar="False"
     SystemBackdropType="Mica"
     UseLayoutRounding="True"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    >
 
     <ui:FluenceWindow.Resources>
         <converters:EnumToBoolConverter x:Key="EnumToBool" />
@@ -34,7 +35,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <!--  Row 0: Title  -->
+        <!-- Row 0: Title -->
         <TextBlock
             Grid.Row="0"
             Margin="0,0,0,16"
@@ -42,35 +43,41 @@
             FontSize="28"
             FontWeight="SemiBold"
             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-            Text="Task Manager" />
+            Text="Task Manager"
+            />
 
-        <!--  Row 1: Filter RadioButtons  -->
+        <!-- Row 1: Filter RadioButtons -->
         <StackPanel
             Grid.Row="1"
             Margin="0,0,0,12"
-            Orientation="Horizontal">
+            Orientation="Horizontal"
+            >
             <ui:RadioButton
                 Margin="0,0,16,0"
                 Content="All"
                 GroupName="FilterGroup"
-                IsChecked="{Binding ActiveFilter, Mode=TwoWay, Converter={StaticResource EnumToBool}, ConverterParameter={x:Static vm:FilterMode.All}}" />
+                IsChecked="{Binding ActiveFilter, Mode=TwoWay, Converter={StaticResource EnumToBool}, ConverterParameter={x:Static vm:FilterMode.All}}"
+                />
             <ui:RadioButton
                 Margin="0,0,16,0"
                 Content="Pending"
                 GroupName="FilterGroup"
-                IsChecked="{Binding ActiveFilter, Mode=TwoWay, Converter={StaticResource EnumToBool}, ConverterParameter={x:Static vm:FilterMode.Pending}}" />
+                IsChecked="{Binding ActiveFilter, Mode=TwoWay, Converter={StaticResource EnumToBool}, ConverterParameter={x:Static vm:FilterMode.Pending}}"
+                />
             <ui:RadioButton
                 Content="Completed"
                 GroupName="FilterGroup"
-                IsChecked="{Binding ActiveFilter, Mode=TwoWay, Converter={StaticResource EnumToBool}, ConverterParameter={x:Static vm:FilterMode.Completed}}" />
+                IsChecked="{Binding ActiveFilter, Mode=TwoWay, Converter={StaticResource EnumToBool}, ConverterParameter={x:Static vm:FilterMode.Completed}}"
+                />
         </StackPanel>
 
-        <!--  Row 2: Task list  -->
+        <!-- Row 2: Task list -->
         <ui:SmoothScrollViewer
             Grid.Row="2"
             Margin="0,0,0,12"
             HorizontalScrollBarVisibility="Disabled"
-            VerticalScrollBarVisibility="Auto">
+            VerticalScrollBarVisibility="Auto"
+            >
             <ItemsControl ItemsSource="{Binding DisplayedTasks}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type vm:TaskItemViewModel}">
@@ -80,7 +87,8 @@
                             Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                             BorderThickness="1"
-                            CornerRadius="{DynamicResource ControlCornerRadius}">
+                            CornerRadius="{DynamicResource ControlCornerRadius}"
+                            >
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="Auto" />
@@ -92,7 +100,8 @@
                                     Grid.Column="0"
                                     Margin="0,0,10,0"
                                     VerticalAlignment="Center"
-                                    IsChecked="{Binding IsCompleted, Mode=TwoWay}" />
+                                    IsChecked="{Binding IsCompleted, Mode=TwoWay}"
+                                    />
 
                                 <TextBlock
                                     Grid.Column="1"
@@ -100,7 +109,8 @@
                                     FontFamily="{DynamicResource FluentFontFamily}"
                                     FontSize="14"
                                     Text="{Binding Title}"
-                                    TextWrapping="Wrap">
+                                    TextWrapping="Wrap"
+                                    >
                                     <TextBlock.Style>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
@@ -128,8 +138,12 @@
                                     VerticalAlignment="Center"
                                     Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=Window}}"
                                     CommandParameter="{Binding}"
-                                    ToolTip="Delete task">
-                                    <ui:FontIcon Glyph="&#xE74D;" IconFontSize="12" />
+                                    ToolTip="Delete task"
+                                    >
+                                    <ui:FontIcon
+                                        Glyph="&#xE74D;"
+                                        IconFontSize="12"
+                                        />
                                 </ui:Button>
                             </Grid>
                         </Border>
@@ -138,8 +152,11 @@
             </ItemsControl>
         </ui:SmoothScrollViewer>
 
-        <!--  Row 3: Add input  -->
-        <Grid Grid.Row="3" Margin="0,0,0,16">
+        <!-- Row 3: Add input -->
+        <Grid
+            Grid.Row="3"
+            Margin="0,0,0,16"
+            >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="8" />
@@ -149,9 +166,13 @@
             <ui:TextBox
                 Grid.Column="0"
                 PlaceholderText="New task…"
-                Text="{Binding NewTaskText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                Text="{Binding NewTaskText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                >
                 <ui:TextBox.InputBindings>
-                    <KeyBinding Key="Return" Command="{Binding AddCommand}" />
+                    <KeyBinding
+                        Key="Return"
+                        Command="{Binding AddCommand}"
+                        />
                 </ui:TextBox.InputBindings>
             </ui:TextBox>
 
@@ -160,10 +181,11 @@
                 MinWidth="80"
                 Appearance="Accent"
                 Command="{Binding AddCommand}"
-                Content="Add" />
+                Content="Add"
+                />
         </Grid>
 
-        <!--  Row 4: Footer  -->
+        <!-- Row 4: Footer -->
         <Grid Grid.Row="4">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*" />
@@ -176,12 +198,14 @@
                     Margin="0,0,0,4"
                     Maximum="100"
                     Minimum="0"
-                    Value="{Binding ProgressValue, Mode=OneWay}" />
+                    Value="{Binding ProgressValue, Mode=OneWay}"
+                    />
                 <TextBlock
                     FontFamily="{DynamicResource FluentFontFamily}"
                     FontSize="12"
                     Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                    Text="{Binding StatusText, Mode=OneWay}" />
+                    Text="{Binding StatusText, Mode=OneWay}"
+                    />
             </StackPanel>
 
             <ui:Button
@@ -189,7 +213,8 @@
                 MinWidth="120"
                 VerticalAlignment="Bottom"
                 Command="{Binding ClearCompletedCommand}"
-                Content="Clear Completed" />
+                Content="Clear Completed"
+                />
         </Grid>
     </Grid>
 </ui:FluenceWindow>

@@ -115,7 +115,7 @@ Authored XAML is formatted by **XAML Styler** against the committed reference st
 
 - **Format** all authored XAML: `pwsh .claude/hooks/Format-Xaml.ps1`. Format one file: `pwsh .claude/hooks/Format-Xaml.ps1 -Path <file>`.
 - **Check** (CI gate, non-destructive): `pwsh .claude/hooks/Format-Xaml.ps1 -Check` - fails if any authored XAML is not conformant. Wired into `.github/workflows/build.yml` and run on every edit by `.claude/hooks/post-tool-format-xaml.ps1`.
-- The reference style is attribute-per-line beyond two attributes (`AttributesTolerance: 2`), first attribute on a new line, 4-space indent. `.claude/hooks/Format-Xaml.ps1` also enforces LF + a single UTF-8 BOM.
+- The reference style is attribute-per-line beyond one attribute (`AttributesTolerance: 1`), first attribute on a new line, the ending bracket of a multi-line element on its own line (`PutEndingBracketOnNewLine: true`), single-space comment padding, grid children ordered by row/column, 4-space indent. `.claude/hooks/Format-Xaml.ps1` also enforces LF + a single UTF-8 BOM.
 - **Generated XAML is excluded** from formatting and the check: `Fluence.Wpf/Properties/DesignTime.*.xaml` (emitted byte-for-byte by `DesignTimeResourceWriter`; reformatting would break the `DesignTimeResources_AreCurrent` drift guard). Do not run the formatter on these; update the exclusion list in `.claude/hooks/Format-Xaml.ps1` if new generated XAML is added.
 - Do not hand-fight the formatter: run it and commit its output. XAML Styler's own `-p` passive mode is unreliable (false positives), which is why the check formats a temp copy and compares.
 

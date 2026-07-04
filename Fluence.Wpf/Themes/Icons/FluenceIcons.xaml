@@ -1,4 +1,7 @@
-﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+﻿<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    >
 
     <!--
         Fluence brand icons as resolution-independent vector DrawingImages. These replace the
@@ -29,7 +32,8 @@
                             EndLineCap="Flat"
                             LineJoin="Round"
                             StartLineCap="Flat"
-                            Thickness="7.66024">
+                            Thickness="7.66024"
+                            >
                             <Pen.Brush>
                                 <SolidColorBrush Opacity="0.9" Color="#FFFFFFFF" />
                             </Pen.Brush>
@@ -49,7 +53,8 @@
                             EndLineCap="Flat"
                             LineJoin="Round"
                             StartLineCap="Flat"
-                            Thickness="7.66024">
+                            Thickness="7.66024"
+                            >
                             <Pen.Brush>
                                 <SolidColorBrush Opacity="0.9" Color="#FFFFFFFF" />
                             </Pen.Brush>
@@ -69,7 +74,8 @@
                             EndLineCap="Flat"
                             LineJoin="Round"
                             StartLineCap="Flat"
-                            Thickness="7.66024">
+                            Thickness="7.66024"
+                            >
                             <Pen.Brush>
                                 <SolidColorBrush Opacity="0.9" Color="#FFFFFFFF" />
                             </Pen.Brush>
@@ -89,7 +95,8 @@
                             EndLineCap="Flat"
                             LineJoin="Round"
                             StartLineCap="Flat"
-                            Thickness="7.66024">
+                            Thickness="7.66024"
+                            >
                             <Pen.Brush>
                                 <SolidColorBrush Opacity="0.9" Color="#FFFFFFFF" />
                             </Pen.Brush>
@@ -109,7 +116,8 @@
                             EndLineCap="Flat"
                             LineJoin="Round"
                             StartLineCap="Flat"
-                            Thickness="7.66024">
+                            Thickness="7.66024"
+                            >
                             <Pen.Brush>
                                 <SolidColorBrush Opacity="0.9" Color="#FFFFFFFF" />
                             </Pen.Brush>
@@ -129,7 +137,8 @@
                             EndLineCap="Flat"
                             LineJoin="Round"
                             StartLineCap="Flat"
-                            Thickness="7.66024">
+                            Thickness="7.66024"
+                            >
                             <Pen.Brush>
                                 <SolidColorBrush Opacity="0.9" Color="#FFFFFFFF" />
                             </Pen.Brush>
@@ -149,7 +158,8 @@
                             EndLineCap="Flat"
                             LineJoin="Round"
                             StartLineCap="Flat"
-                            Thickness="7.66024">
+                            Thickness="7.66024"
+                            >
                             <Pen.Brush>
                                 <SolidColorBrush Opacity="0.9" Color="#FFFFFFFF" />
                             </Pen.Brush>
@@ -178,7 +188,8 @@
                                 EndLineCap="Flat"
                                 LineJoin="Round"
                                 StartLineCap="Flat"
-                                Thickness="5" />
+                                Thickness="5"
+                                />
                         </GeometryDrawing.Pen>
                     </GeometryDrawing>
                 </DrawingGroup>
@@ -208,7 +219,8 @@
                                 EndLineCap="Flat"
                                 LineJoin="Round"
                                 StartLineCap="Flat"
-                                Thickness="7.66024">
+                                Thickness="7.66024"
+                                >
                                 <Pen.Brush>
                                     <SolidColorBrush Opacity="0.9" Color="#FFFFFFFF" />
                                 </Pen.Brush>
@@ -232,7 +244,8 @@
                                 EndLineCap="Flat"
                                 LineJoin="Round"
                                 StartLineCap="Flat"
-                                Thickness="7.66024">
+                                Thickness="7.66024"
+                                >
                                 <Pen.Brush>
                                     <SolidColorBrush Opacity="0.9" Color="#FFFFFFFF" />
                                 </Pen.Brush>
@@ -256,7 +269,8 @@
                                 EndLineCap="Flat"
                                 LineJoin="Round"
                                 StartLineCap="Flat"
-                                Thickness="7.66024">
+                                Thickness="7.66024"
+                                >
                                 <Pen.Brush>
                                     <SolidColorBrush Opacity="0.9" Color="#FFFFFFFF" />
                                 </Pen.Brush>
@@ -280,7 +294,8 @@
                                 EndLineCap="Flat"
                                 LineJoin="Round"
                                 StartLineCap="Flat"
-                                Thickness="7.66024">
+                                Thickness="7.66024"
+                                >
                                 <Pen.Brush>
                                     <SolidColorBrush Opacity="0.9" Color="#FFFFFFFF" />
                                 </Pen.Brush>
@@ -304,7 +319,8 @@
                                 EndLineCap="Flat"
                                 LineJoin="Round"
                                 StartLineCap="Flat"
-                                Thickness="7.66024">
+                                Thickness="7.66024"
+                                >
                                 <Pen.Brush>
                                     <SolidColorBrush Opacity="0.9" Color="#FFFFFFFF" />
                                 </Pen.Brush>
@@ -328,7 +344,8 @@
                                 EndLineCap="Flat"
                                 LineJoin="Round"
                                 StartLineCap="Flat"
-                                Thickness="7.66024">
+                                Thickness="7.66024"
+                                >
                                 <Pen.Brush>
                                     <SolidColorBrush Opacity="0.9" Color="#FFFFFFFF" />
                                 </Pen.Brush>
@@ -352,7 +369,8 @@
                                 EndLineCap="Flat"
                                 LineJoin="Round"
                                 StartLineCap="Flat"
-                                Thickness="7.66024">
+                                Thickness="7.66024"
+                                >
                                 <Pen.Brush>
                                     <SolidColorBrush Opacity="0.9" Color="#FFFFFFFF" />
                                 </Pen.Brush>
@@ -382,7 +400,8 @@
                                 EndLineCap="Flat"
                                 LineJoin="Round"
                                 StartLineCap="Flat"
-                                Thickness="5" />
+                                Thickness="5"
+                                />
                         </GeometryDrawing.Pen>
                     </GeometryDrawing>
                 </DrawingGroup>
@@ -413,7 +432,8 @@
                                 EndLineCap="Flat"
                                 LineJoin="Round"
                                 StartLineCap="Flat"
-                                Thickness="7.66024">
+                                Thickness="7.66024"
+                                >
                                 <Pen.Brush>
                                     <SolidColorBrush Opacity="0.9" Color="#FFFFFFFF" />
                                 </Pen.Brush>
@@ -437,7 +457,8 @@
                                 EndLineCap="Flat"
                                 LineJoin="Round"
                                 StartLineCap="Flat"
-                                Thickness="7.66024">
+                                Thickness="7.66024"
+                                >
                                 <Pen.Brush>
                                     <SolidColorBrush Opacity="0.9" Color="#FFFFFFFF" />
                                 </Pen.Brush>
@@ -461,7 +482,8 @@
                                 EndLineCap="Flat"
                                 LineJoin="Round"
                                 StartLineCap="Flat"
-                                Thickness="7.66024">
+                                Thickness="7.66024"
+                                >
                                 <Pen.Brush>
                                     <SolidColorBrush Opacity="0.9" Color="#FFFFFFFF" />
                                 </Pen.Brush>
@@ -485,7 +507,8 @@
                                 EndLineCap="Flat"
                                 LineJoin="Round"
                                 StartLineCap="Flat"
-                                Thickness="7.66024">
+                                Thickness="7.66024"
+                                >
                                 <Pen.Brush>
                                     <SolidColorBrush Opacity="0.9" Color="#FFFFFFFF" />
                                 </Pen.Brush>
@@ -509,7 +532,8 @@
                                 EndLineCap="Flat"
                                 LineJoin="Round"
                                 StartLineCap="Flat"
-                                Thickness="7.66024">
+                                Thickness="7.66024"
+                                >
                                 <Pen.Brush>
                                     <SolidColorBrush Opacity="0.9" Color="#FFFFFFFF" />
                                 </Pen.Brush>
@@ -533,7 +557,8 @@
                                 EndLineCap="Flat"
                                 LineJoin="Round"
                                 StartLineCap="Flat"
-                                Thickness="7.66024">
+                                Thickness="7.66024"
+                                >
                                 <Pen.Brush>
                                     <SolidColorBrush Opacity="0.9" Color="#FFFFFFFF" />
                                 </Pen.Brush>
@@ -557,7 +582,8 @@
                                 EndLineCap="Flat"
                                 LineJoin="Round"
                                 StartLineCap="Flat"
-                                Thickness="7.66024">
+                                Thickness="7.66024"
+                                >
                                 <Pen.Brush>
                                     <SolidColorBrush Opacity="0.9" Color="#FFFFFFFF" />
                                 </Pen.Brush>

@@ -9,30 +9,41 @@
     xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
     d:DesignHeight="900"
     d:DesignWidth="900"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    >
     <ui:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
         <StackPanel Style="{StaticResource GalleryPageContentStackStyle}">
             <TextBlock
                 Margin="0,0,0,4"
                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                 Style="{DynamicResource TitleTextBlockStyle}"
-                Text="Accessibility" />
+                Text="Accessibility"
+                />
             <TextBlock
                 Margin="0,0,0,24"
                 Style="{StaticResource SectionDescriptionStyle}"
-                Text="These examples show keyboard focus, tab order, high contrast brushes, automation names, and right-to-left layout in a simple code-behind demo." />
+                Text="These examples show keyboard focus, tab order, high contrast brushes, automation names, and right-to-left layout in a simple code-behind demo."
+                />
 
             <TextBlock
                 Margin="0,0,0,4"
                 Style="{StaticResource SectionHeaderStyle}"
-                Text="Focus and tab order" />
+                Text="Focus and tab order"
+                />
             <TextBlock
                 Margin="0,0,0,8"
                 Style="{StaticResource SectionDescriptionStyle}"
-                Text="Press Tab to move keyboard focus. Fluence controls render the two-tone focus ring and follow visual tab order unless TabIndex overrides it." />
-            <ContentControl x:Name="DemoSampleSlot01DemoContentHost" Visibility="Collapsed">
+                Text="Press Tab to move keyboard focus. Fluence controls render the two-tone focus ring and follow visual tab order unless TabIndex overrides it."
+                />
+            <ContentControl
+                x:Name="DemoSampleSlot01DemoContentHost"
+                Visibility="Collapsed"
+                >
                 <StackPanel>
-                    <Grid x:Name="KeyboardSupportPrimaryControls" Margin="0,0,0,8">
+                    <Grid
+                        x:Name="KeyboardSupportPrimaryControls"
+                        Margin="0,0,0,8"
+                        >
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
@@ -50,7 +61,8 @@
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Center"
                             AutomationProperties.Name="First focusable button"
-                            Content="Button 1" />
+                            Content="Button 1"
+                            />
                         <ui:Button
                             Grid.Row="0"
                             Grid.Column="1"
@@ -58,7 +70,8 @@
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Center"
                             AutomationProperties.Name="Second focusable button"
-                            Content="Button 2" />
+                            Content="Button 2"
+                            />
                         <ui:TextBox
                             Grid.Row="0"
                             Grid.Column="2"
@@ -66,15 +79,20 @@
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Center"
                             AutomationProperties.Name="Focusable text input"
-                            PlaceholderText="TextBox" />
+                            PlaceholderText="TextBox"
+                            />
                         <ui:ComboBox
                             Grid.Row="0"
                             Grid.Column="3"
                             Margin="0,0,0,12"
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Center"
-                            AutomationProperties.Name="Focusable combo box">
-                            <ComboBoxItem Content="Option A" IsSelected="True" />
+                            AutomationProperties.Name="Focusable combo box"
+                            >
+                            <ComboBoxItem
+                                Content="Option A"
+                                IsSelected="True"
+                                />
                             <ComboBoxItem Content="Option B" />
                         </ui:ComboBox>
                         <ui:CheckBox
@@ -84,14 +102,16 @@
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
                             AutomationProperties.Name="Focusable checkbox"
-                            Content="CheckBox" />
+                            Content="CheckBox"
+                            />
                         <ui:ToggleSwitch
                             Grid.Row="1"
                             Grid.Column="1"
                             Margin="0,0,12,0"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
-                            AutomationProperties.Name="Focusable toggle" />
+                            AutomationProperties.Name="Focusable toggle"
+                            />
                         <ui:Slider
                             Grid.Row="1"
                             Grid.Column="2"
@@ -101,25 +121,29 @@
                             AutomationProperties.Name="Focusable slider"
                             Maximum="100"
                             Minimum="0"
-                            Value="40" />
+                            Value="40"
+                            />
                         <ui:HyperlinkButton
                             Grid.Row="1"
                             Grid.Column="3"
                             HorizontalAlignment="Stretch"
                             VerticalAlignment="Center"
                             AutomationProperties.Name="Focusable hyperlink"
-                            Content="HyperlinkButton" />
+                            Content="HyperlinkButton"
+                            />
                     </Grid>
 
                     <TextBlock
                         Margin="0,12,0,8"
                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                         Style="{DynamicResource CaptionTextBlockStyle}"
-                        Text="The buttons below have an explicit reverse tab order: 3, 2, 1." />
+                        Text="The buttons below have an explicit reverse tab order: 3, 2, 1."
+                        />
                     <Grid
                         x:Name="KeyboardSupportExplicitOrderControls"
                         Margin="0,0,0,8"
-                        KeyboardNavigation.TabNavigation="Local">
+                        KeyboardNavigation.TabNavigation="Local"
+                        >
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*" />
                             <ColumnDefinition Width="*" />
@@ -131,21 +155,24 @@
                             Margin="0,0,12,0"
                             HorizontalAlignment="Stretch"
                             Content="Tab order: 3"
-                            TabIndex="3" />
+                            TabIndex="3"
+                            />
                         <ui:Button
                             x:Name="ExplicitTabOrderSecondButton"
                             Grid.Column="1"
                             Margin="0,0,12,0"
                             HorizontalAlignment="Stretch"
                             Content="Tab order: 2"
-                            TabIndex="2" />
+                            TabIndex="2"
+                            />
                         <ui:Button
                             x:Name="ExplicitTabOrderFirstButton"
                             Grid.Column="2"
                             HorizontalAlignment="Stretch"
                             Appearance="Accent"
                             Content="Tab order: 1 (first)"
-                            TabIndex="1" />
+                            TabIndex="1"
+                            />
                     </Grid>
                 </StackPanel>
             </ContentControl>
@@ -154,18 +181,26 @@
             <TextBlock
                 Margin="0,0,0,4"
                 Style="{StaticResource SectionHeaderStyle}"
-                Text="High contrast brush mapping" />
+                Text="High contrast brush mapping"
+                />
             <TextBlock
                 Margin="0,0,0,8"
                 Style="{StaticResource SectionDescriptionStyle}"
-                Text="In High Contrast mode, Fluence maps canonical WinUI keys to Windows system colors. Switch to High Contrast from Settings to verify contrast live." />
-            <ContentControl x:Name="DemoSampleSlot02DemoContentHost" Visibility="Collapsed">
+                Text="In High Contrast mode, Fluence maps canonical WinUI keys to Windows system colors. Switch to High Contrast from Settings to verify contrast live."
+                />
+            <ContentControl
+                x:Name="DemoSampleSlot02DemoContentHost"
+                Visibility="Collapsed"
+                >
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <Border Padding="12,8" Background="{DynamicResource ControlFillColorDefaultBrush}">
+                    <Border
+                        Padding="12,8"
+                        Background="{DynamicResource ControlFillColorDefaultBrush}"
+                        >
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -175,26 +210,33 @@
                             <TextBlock
                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                 Style="{DynamicResource BodyStrongTextBlockStyle}"
-                                Text="Fluence key" />
+                                Text="Fluence key"
+                                />
                             <TextBlock
                                 Grid.Column="1"
                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                 Style="{StaticResource BodyStrongTextBlockStyle}"
-                                Text="HC system color" />
+                                Text="HC system color"
+                                />
                             <TextBlock
                                 Grid.Column="2"
                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                 Style="{StaticResource BodyStrongTextBlockStyle}"
-                                Text="Live swatch" />
+                                Text="Live swatch"
+                                />
                         </Grid>
                     </Border>
-                    <ItemsControl x:Name="HcMappingTable" Grid.Row="1">
+                    <ItemsControl
+                        x:Name="HcMappingTable"
+                        Grid.Row="1"
+                        >
                         <ItemsControl.ItemTemplate>
                             <DataTemplate>
                                 <Border
                                     Padding="12,6"
                                     BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
-                                    BorderThickness="0,0,0,1">
+                                    BorderThickness="0,0,0,1"
+                                    >
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
@@ -204,12 +246,14 @@
                                         <TextBlock
                                             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                             Style="{StaticResource CaptionTextBlockStyle}"
-                                            Text="{Binding Key}" />
+                                            Text="{Binding Key}"
+                                            />
                                         <TextBlock
                                             Grid.Column="1"
                                             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                             Style="{StaticResource CaptionTextBlockStyle}"
-                                            Text="{Binding HcMapping}" />
+                                            Text="{Binding HcMapping}"
+                                            />
                                         <Border
                                             Grid.Column="2"
                                             Width="32"
@@ -218,7 +262,8 @@
                                             Background="{Binding Brush}"
                                             BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
                                             BorderThickness="1"
-                                            CornerRadius="2" />
+                                            CornerRadius="2"
+                                            />
                                     </Grid>
                                 </Border>
                             </DataTemplate>
@@ -231,20 +276,29 @@
             <TextBlock
                 Margin="0,0,0,4"
                 Style="{StaticResource SectionHeaderStyle}"
-                Text="Automation properties" />
+                Text="Automation properties"
+                />
             <TextBlock
                 Margin="0,0,0,8"
                 Style="{StaticResource SectionDescriptionStyle}"
-                Text="Set AutomationProperties.Name for screen readers on controls that have no visible label." />
-            <ContentControl x:Name="DemoSampleSlot03DemoContentHost" Visibility="Collapsed">
+                Text="Set AutomationProperties.Name for screen readers on controls that have no visible label."
+                />
+            <ContentControl
+                x:Name="DemoSampleSlot03DemoContentHost"
+                Visibility="Collapsed"
+                >
                 <StackPanel>
                     <TextBlock
                         Margin="0,0,0,16"
                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                         Style="{StaticResource BodyTextBlockStyle}"
                         Text="These icon-only buttons all have AutomationProperties.Name so Narrator announces their purpose:"
-                        TextWrapping="Wrap" />
-                    <ui:StackPanel Orientation="Horizontal" Spacing="16">
+                        TextWrapping="Wrap"
+                        />
+                    <ui:StackPanel
+                        Orientation="Horizontal"
+                        Spacing="16"
+                        >
                         <ui:Button
                             x:Name="AutomationNewDocumentButton"
                             Width="36"
@@ -252,8 +306,12 @@
                             MinWidth="36"
                             Margin="0,0,8,0"
                             Padding="0"
-                            AutomationProperties.Name="New document">
-                            <ui:FontIcon Glyph="&#xE8A5;" IconFontSize="18" />
+                            AutomationProperties.Name="New document"
+                            >
+                            <ui:FontIcon
+                                Glyph="&#xE8A5;"
+                                IconFontSize="18"
+                                />
                         </ui:Button>
                         <ui:Button
                             x:Name="AutomationOpenFileButton"
@@ -262,8 +320,12 @@
                             MinWidth="36"
                             Margin="0,0,8,0"
                             Padding="0"
-                            AutomationProperties.Name="Open file">
-                            <ui:FontIcon Glyph="&#xE8E5;" IconFontSize="18" />
+                            AutomationProperties.Name="Open file"
+                            >
+                            <ui:FontIcon
+                                Glyph="&#xE8E5;"
+                                IconFontSize="18"
+                                />
                         </ui:Button>
                         <ui:Button
                             x:Name="AutomationSaveButton"
@@ -272,8 +334,12 @@
                             MinWidth="36"
                             Margin="0,0,8,0"
                             Padding="0"
-                            AutomationProperties.Name="Save">
-                            <ui:FontIcon Glyph="&#xE74E;" IconFontSize="18" />
+                            AutomationProperties.Name="Save"
+                            >
+                            <ui:FontIcon
+                                Glyph="&#xE74E;"
+                                IconFontSize="18"
+                                />
                         </ui:Button>
                         <ui:Button
                             x:Name="AutomationDeleteButton"
@@ -282,8 +348,12 @@
                             MinWidth="36"
                             Margin="0,0,8,0"
                             Padding="0"
-                            AutomationProperties.Name="Delete">
-                            <ui:FontIcon Glyph="&#xE74D;" IconFontSize="18" />
+                            AutomationProperties.Name="Delete"
+                            >
+                            <ui:FontIcon
+                                Glyph="&#xE74D;"
+                                IconFontSize="18"
+                                />
                         </ui:Button>
                         <ui:Button
                             x:Name="AutomationShareButton"
@@ -291,8 +361,12 @@
                             Height="36"
                             MinWidth="36"
                             Padding="0"
-                            AutomationProperties.Name="Share">
-                            <ui:FontIcon Glyph="&#xE72D;" IconFontSize="18" />
+                            AutomationProperties.Name="Share"
+                            >
+                            <ui:FontIcon
+                                Glyph="&#xE72D;"
+                                IconFontSize="18"
+                                />
                         </ui:Button>
                     </ui:StackPanel>
                     <TextBlock
@@ -300,7 +374,8 @@
                         Foreground="{DynamicResource TextFillColorTertiaryBrush}"
                         Style="{StaticResource CaptionTextBlockStyle}"
                         Text="Tip: use Windows Narrator or Inspect.exe to verify automation names at runtime."
-                        TextWrapping="Wrap" />
+                        TextWrapping="Wrap"
+                        />
                 </StackPanel>
             </ContentControl>
             <pages:DemoSampleControl SampleDescription="Icon-only buttons expose AutomationProperties.Name for screen readers." />
@@ -308,12 +383,17 @@
             <TextBlock
                 Margin="0,0,0,4"
                 Style="{StaticResource SectionHeaderStyle}"
-                Text="Right-to-left (RTL) layout" />
+                Text="Right-to-left (RTL) layout"
+                />
             <TextBlock
                 Margin="0,0,0,8"
                 Style="{StaticResource SectionDescriptionStyle}"
-                Text="Toggle FlowDirection=RightToLeft on a card to verify Fluence controls mirror correctly for Arabic, Hebrew, and Farsi locales." />
-            <ContentControl x:Name="DemoSampleSlot04DemoContentHost" Visibility="Collapsed">
+                Text="Toggle FlowDirection=RightToLeft on a card to verify Fluence controls mirror correctly for Arabic, Hebrew, and Farsi locales."
+                />
+            <ContentControl
+                x:Name="DemoSampleSlot04DemoContentHost"
+                Visibility="Collapsed"
+                >
                 <StackPanel>
                     <ui:ToggleSwitch
                         x:Name="RtlToggle"
@@ -321,23 +401,27 @@
                         Checked="RtlToggle_Changed"
                         Content="Enable RTL on demo card"
                         IsChecked="True"
-                        Unchecked="RtlToggle_Changed" />
+                        Unchecked="RtlToggle_Changed"
+                        />
                     <ui:Card
                         x:Name="RtlDemoCard"
                         Padding="16"
                         FlowDirection="RightToLeft"
-                        Variant="{x:Static uicore:CardVariant.Outlined}">
+                        Variant="{x:Static uicore:CardVariant.Outlined}"
+                        >
                         <StackPanel>
                             <TextBlock
                                 Margin="0,0,0,8"
                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                 Style="{StaticResource BodyStrongTextBlockStyle}"
-                                Text="نموذج عنصر تحكم" />
+                                Text="نموذج عنصر تحكم"
+                                />
                             <StackPanel Orientation="Horizontal">
                                 <ui:Button
                                     Margin="0,0,8,0"
                                     Appearance="Accent"
-                                    Content="زر رئيسي" />
+                                    Content="زر رئيسي"
+                                    />
                                 <ui:Button Content="إلغاء" />
                             </StackPanel>
                         </StackPanel>
@@ -349,29 +433,37 @@
             <TextBlock
                 Margin="0,0,0,4"
                 Style="{StaticResource SectionHeaderStyle}"
-                Text="Live region announcements" />
+                Text="Live region announcements"
+                />
             <TextBlock
                 Margin="0,0,0,8"
                 Style="{StaticResource SectionDescriptionStyle}"
-                Text="Fluence uses AutomationProperties.LiveSetting and LiveRegionChanged to announce status changes to screen readers on both net472 and net10. Trigger an InfoBar or a validation error below and listen with Narrator to hear the announcement." />
-            <ContentControl x:Name="DemoSampleSlot05DemoContentHost" Visibility="Collapsed">
+                Text="Fluence uses AutomationProperties.LiveSetting and LiveRegionChanged to announce status changes to screen readers on both net472 and net10. Trigger an InfoBar or a validation error below and listen with Narrator to hear the announcement."
+                />
+            <ContentControl
+                x:Name="DemoSampleSlot05DemoContentHost"
+                Visibility="Collapsed"
+                >
                 <StackPanel>
                     <ui:StackPanel
                         Margin="0,0,0,12"
                         Orientation="Horizontal"
-                        Spacing="8">
+                        Spacing="8"
+                        >
                         <ui:Button
                             x:Name="LiveRegionInfoButton"
                             Margin="0,0,8,0"
                             Appearance="Accent"
                             AutomationProperties.Name="Show informational announcement"
                             Click="LiveRegionInfoButton_Click"
-                            Content="Show InfoBar" />
+                            Content="Show InfoBar"
+                            />
                         <ui:Button
                             x:Name="LiveRegionDismissButton"
                             AutomationProperties.Name="Dismiss announcement"
                             Click="LiveRegionDismissButton_Click"
-                            Content="Dismiss" />
+                            Content="Dismiss"
+                            />
                     </ui:StackPanel>
                     <ui:InfoBar
                         x:Name="LiveRegionInfoBar"
@@ -379,34 +471,42 @@
                         IsClosable="True"
                         IsOpen="False"
                         Message="This message was announced by a live region when the InfoBar opened."
-                        Severity="{x:Static uicore:InfoBarSeverity.Informational}" />
+                        Severity="{x:Static uicore:InfoBarSeverity.Informational}"
+                        />
                     <TextBlock
                         Margin="0,8,0,16"
                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                         Style="{StaticResource BodyTextBlockStyle}"
                         Text="Validation error live region:"
-                        TextWrapping="Wrap" />
-                    <StackPanel Margin="0,0,0,0" Orientation="Horizontal">
+                        TextWrapping="Wrap"
+                        />
+                    <StackPanel
+                        Margin="0,0,0,0"
+                        Orientation="Horizontal"
+                        >
                         <ui:TextBox
                             x:Name="LiveRegionValidationTextBox"
                             Width="200"
                             Margin="0,0,8,0"
                             AutomationProperties.Name="Email"
                             PlaceholderText="Enter an email address"
-                            TextChanged="LiveRegionValidation_TextChanged" />
+                            TextChanged="LiveRegionValidation_TextChanged"
+                            />
                         <TextBlock
                             x:Name="LiveRegionValidationStatus"
                             VerticalAlignment="Bottom"
                             Foreground="{DynamicResource SystemFillColorCriticalBrush}"
                             Style="{StaticResource CaptionTextBlockStyle}"
-                            Text="" />
+                            Text=""
+                            />
                     </StackPanel>
                     <TextBlock
                         Margin="0,8,0,0"
                         Foreground="{DynamicResource TextFillColorTertiaryBrush}"
                         Style="{StaticResource CaptionTextBlockStyle}"
                         Text="Tip: run Windows Narrator (Win+Ctrl+Enter) and interact with these controls to hear live region announcements."
-                        TextWrapping="Wrap" />
+                        TextWrapping="Wrap"
+                        />
                 </StackPanel>
             </ContentControl>
             <pages:DemoSampleControl SampleDescription="InfoBar and TextBox validation use LiveRegionChanged to announce status changes without interrupting the user." />
@@ -414,12 +514,17 @@
             <TextBlock
                 Margin="0,0,0,4"
                 Style="{StaticResource SectionHeaderStyle}"
-                Text="RatingControl keyboard operability" />
+                Text="RatingControl keyboard operability"
+                />
             <TextBlock
                 Margin="0,0,0,8"
                 Style="{StaticResource SectionDescriptionStyle}"
-                Text="RatingControl is fully keyboard-operable: Tab to focus it, then use Left/Right arrow keys to change the value, Home to clear to zero, and End to set the maximum. The automation peer exposes the RangeValue pattern so Narrator reports the current rating." />
-            <ContentControl x:Name="DemoSampleSlot06DemoContentHost" Visibility="Collapsed">
+                Text="RatingControl is fully keyboard-operable: Tab to focus it, then use Left/Right arrow keys to change the value, Home to clear to zero, and End to set the maximum. The automation peer exposes the RangeValue pattern so Narrator reports the current rating."
+                />
+            <ContentControl
+                x:Name="DemoSampleSlot06DemoContentHost"
+                Visibility="Collapsed"
+                >
                 <StackPanel>
                     <ui:RatingControl
                         x:Name="A11yRatingControl"
@@ -427,19 +532,22 @@
                         AutomationProperties.Name="Keyboard rating demo"
                         Caption="Use arrow keys to change the rating"
                         MaxRating="5"
-                        Value="3" />
+                        Value="3"
+                        />
                     <TextBlock
                         x:Name="A11yRatingStatusText"
                         Margin="0,4,0,0"
                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                         Style="{StaticResource CaptionTextBlockStyle}"
-                        Text="Current rating: 3 of 5" />
+                        Text="Current rating: 3 of 5"
+                        />
                     <TextBlock
                         Margin="0,12,0,0"
                         Foreground="{DynamicResource TextFillColorTertiaryBrush}"
                         Style="{StaticResource CaptionTextBlockStyle}"
                         Text="Tip: Narrator announces the rating change as you press the arrow keys because the peer exposes the RangeValue pattern."
-                        TextWrapping="Wrap" />
+                        TextWrapping="Wrap"
+                        />
                 </StackPanel>
             </ContentControl>
             <pages:DemoSampleControl SampleDescription="RatingControl supports full keyboard navigation and exposes the RangeValue automation pattern." />

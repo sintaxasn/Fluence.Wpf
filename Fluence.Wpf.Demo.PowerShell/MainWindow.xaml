@@ -11,7 +11,8 @@
     ExtendsContentIntoTitleBar="False"
     SnapsToDevicePixels="True"
     SystemBackdropType="Mica"
-    UseLayoutRounding="True">
+    UseLayoutRounding="True"
+    >
 
     <Grid Margin="24,20,24,20">
         <Grid.RowDefinitions>
@@ -20,30 +21,37 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Margin="0,0,0,18">
+        <StackPanel
+            Grid.Row="0"
+            Margin="0,0,0,18"
+            >
             <TextBlock
                 FontFamily="{DynamicResource FluentFontFamily}"
                 FontSize="28"
                 FontWeight="SemiBold"
                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                Text="Fluence.Wpf from Windows PowerShell" />
+                Text="Fluence.Wpf from Windows PowerShell"
+                />
             <TextBlock
                 Margin="0,4,0,0"
                 FontFamily="{DynamicResource FluentFontFamily}"
                 FontSize="14"
                 Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                Text="This window is loaded from XAML at runtime and uses Fluence.Wpf theme resources." />
+                Text="This window is loaded from XAML at runtime and uses Fluence.Wpf theme resources."
+                />
         </StackPanel>
 
         <ui:SmoothScrollViewer
             Grid.Row="1"
             HorizontalScrollBarVisibility="Disabled"
-            VerticalScrollBarVisibility="Auto">
+            VerticalScrollBarVisibility="Auto"
+            >
             <StackPanel>
                 <ui:Card
                     Margin="0,0,0,14"
                     Padding="16"
-                    Variant="Default">
+                    Variant="Default"
+                    >
                     <StackPanel>
                         <TextBlock
                             Margin="0,0,0,12"
@@ -51,31 +59,58 @@
                             FontSize="18"
                             FontWeight="SemiBold"
                             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                            Text="Theme and accent" />
+                            Text="Theme and accent"
+                            />
 
                         <WrapPanel Margin="0,0,0,10">
-                            <StackPanel Width="220" Margin="0,0,16,12">
+                            <StackPanel
+                                Width="220"
+                                Margin="0,0,16,12"
+                                >
                                 <TextBlock
                                     Margin="0,0,0,4"
                                     FontFamily="{DynamicResource FluentFontFamily}"
                                     FontSize="12"
                                     Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                    Text="Theme" />
-                                <ui:ComboBox x:Name="ThemeComboBox" SelectedIndex="0">
-                                    <ComboBoxItem Content="Use system setting" Tag="Auto" />
-                                    <ComboBoxItem Content="Light" Tag="Light" />
-                                    <ComboBoxItem Content="Dark" Tag="Dark" />
-                                    <ComboBoxItem Content="High contrast" Tag="HighContrast" />
+                                    Text="Theme"
+                                    />
+                                <ui:ComboBox
+                                    x:Name="ThemeComboBox"
+                                    SelectedIndex="0"
+                                    >
+                                    <ComboBoxItem
+                                        Content="Use system setting"
+                                        Tag="Auto"
+                                        />
+                                    <ComboBoxItem
+                                        Content="Light"
+                                        Tag="Light"
+                                        />
+                                    <ComboBoxItem
+                                        Content="Dark"
+                                        Tag="Dark"
+                                        />
+                                    <ComboBoxItem
+                                        Content="High contrast"
+                                        Tag="HighContrast"
+                                        />
                                 </ui:ComboBox>
                             </StackPanel>
 
-                            <StackPanel Margin="0,16,0,12" Orientation="Horizontal">
+                            <StackPanel
+                                Margin="0,16,0,12"
+                                Orientation="Horizontal"
+                                >
                                 <ui:Button
                                     x:Name="AccentButton"
                                     Margin="0,0,8,0"
                                     Appearance="Accent"
-                                    Content="Cycle accent" />
-                                <ui:Button x:Name="SystemAccentButton" Content="System accent" />
+                                    Content="Cycle accent"
+                                    />
+                                <ui:Button
+                                    x:Name="SystemAccentButton"
+                                    Content="System accent"
+                                    />
                             </StackPanel>
                         </WrapPanel>
 
@@ -85,14 +120,16 @@
                             IsClosable="False"
                             IsOpen="True"
                             Message="Theme watcher is enabled after the window is created."
-                            Severity="Informational" />
+                            Severity="Informational"
+                            />
                     </StackPanel>
                 </ui:Card>
 
                 <ui:Card
                     Margin="0,0,0,14"
                     Padding="16"
-                    Variant="Default">
+                    Variant="Default"
+                    >
                     <StackPanel>
                         <TextBlock
                             Margin="0,0,0,12"
@@ -100,34 +137,43 @@
                             FontSize="18"
                             FontWeight="SemiBold"
                             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                            Text="Controls" />
+                            Text="Controls"
+                            />
 
                         <WrapPanel>
                             <ui:Button
                                 x:Name="PrimaryActionButton"
                                 Margin="0,0,8,8"
                                 Appearance="Accent"
-                                Content="Primary action" />
-                            <ui:Button Margin="0,0,8,8" Content="Standard button" />
+                                Content="Primary action"
+                                />
+                            <ui:Button
+                                Margin="0,0,8,8"
+                                Content="Standard button"
+                                />
                             <ui:ToggleSwitch
                                 Margin="0,0,16,8"
                                 Content="Notifications"
                                 IsChecked="True"
                                 OffContent="Off"
-                                OnContent="On" />
+                                OnContent="On"
+                                />
                             <ui:CheckBox
                                 Margin="0,0,16,8"
                                 Content="Remember choice"
-                                IsChecked="True" />
+                                IsChecked="True"
+                                />
                             <ui:RadioButton
                                 Margin="0,0,16,8"
                                 Content="Option A"
                                 GroupName="DemoOptions"
-                                IsChecked="True" />
+                                IsChecked="True"
+                                />
                             <ui:RadioButton
                                 Margin="0,0,16,8"
                                 Content="Option B"
-                                GroupName="DemoOptions" />
+                                GroupName="DemoOptions"
+                                />
                         </WrapPanel>
 
                         <Grid Margin="0,8,0,0">
@@ -139,19 +185,24 @@
                             <ui:TextBox
                                 Grid.Column="0"
                                 PlaceholderText="Type a message"
-                                Text="Loaded from MainWindow.xaml" />
+                                Text="Loaded from MainWindow.xaml"
+                                />
                             <ui:NumberBox
                                 Grid.Column="2"
                                 Header="Count"
                                 Maximum="10"
                                 Minimum="0"
                                 SpinButtonPlacementMode="Compact"
-                                Value="3" />
+                                Value="3"
+                                />
                         </Grid>
                     </StackPanel>
                 </ui:Card>
 
-                <ui:Card Padding="16" Variant="Default">
+                <ui:Card
+                    Padding="16"
+                    Variant="Default"
+                    >
                     <StackPanel>
                         <TextBlock
                             Margin="16,4,16,4"
@@ -159,19 +210,25 @@
                             FontSize="18"
                             FontWeight="SemiBold"
                             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                            Text="Progress" />
-                        <ui:ProgressBar Margin="16,4,16,8" ProgressMode="Indeterminate" />
+                            Text="Progress"
+                            />
+                        <ui:ProgressBar
+                            Margin="16,4,16,8"
+                            ProgressMode="Indeterminate"
+                            />
                         <StackPanel Orientation="Horizontal">
                             <ui:ProgressRing
                                 Margin="16"
                                 HorizontalAlignment="Center"
-                                IsIndeterminate="True" />
+                                IsIndeterminate="True"
+                                />
                             <TextBlock
                                 Margin="16,4,16,4"
                                 FontFamily="{DynamicResource FluentFontFamily}"
                                 FontSize="14"
                                 Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                Text="Indeterminate progress ring" />
+                                Text="Indeterminate progress ring"
+                                />
                         </StackPanel>
                     </StackPanel>
                 </ui:Card>
@@ -184,6 +241,7 @@
             FontFamily="{DynamicResource FluentFontFamily}"
             FontSize="12"
             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-            Text="Close the window to stop the dispatcher and return to the console." />
+            Text="Close the window to stop the dispatcher and return to the console."
+            />
     </Grid>
 </ui:FluenceWindow>

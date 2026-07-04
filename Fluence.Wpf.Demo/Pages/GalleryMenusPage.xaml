@@ -9,43 +9,64 @@
     xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
     d:DesignHeight="900"
     d:DesignWidth="900"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    >
     <ui:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
         <StackPanel Style="{StaticResource GalleryPageContentStackStyle}">
-            <TextBlock Style="{StaticResource PageTitleStyle}" Text="Menus" />
-            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Menus group commands, contextual actions, hints, and split choices near the work they affect." />
+            <TextBlock
+                Style="{StaticResource PageTitleStyle}"
+                Text="Menus"
+                />
+            <TextBlock
+                Style="{StaticResource SectionDescriptionStyle}"
+                Text="Menus group commands, contextual actions, hints, and split choices near the work they affect."
+                />
 
 
-            <ContentControl x:Name="DemoSampleSlot01DemoContentHost" Visibility="Collapsed">
-                <ui:Menu VerticalAlignment="Center" Background="{DynamicResource CardBackgroundFillColorDefaultBrush}">
+            <ContentControl
+                x:Name="DemoSampleSlot01DemoContentHost"
+                Visibility="Collapsed"
+                >
+                <ui:Menu
+                    VerticalAlignment="Center"
+                    Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
+                    >
                     <ui:MenuItem Header="_File">
                         <ui:MenuItem
                             Click="MenuBar_Click"
                             Header="_New"
                             InputGestureText="Ctrl+N"
-                            Tag="File - New" />
+                            Tag="File - New"
+                            />
                         <ui:MenuItem
                             Click="MenuBar_Click"
                             Header="_Open..."
                             InputGestureText="Ctrl+O"
-                            Tag="File - Open" />
+                            Tag="File - Open"
+                            />
                         <ui:MenuItem Header="Open _Recent">
                             <ui:MenuItem
                                 Click="MenuBar_Click"
                                 Header="Roadmap.md"
-                                Tag="File - Recent - Roadmap.md" />
+                                Tag="File - Recent - Roadmap.md"
+                                />
                             <ui:MenuItem
                                 Click="MenuBar_Click"
                                 Header="LaunchPlan.xlsx"
-                                Tag="File - Recent - LaunchPlan.xlsx" />
+                                Tag="File - Recent - LaunchPlan.xlsx"
+                                />
                         </ui:MenuItem>
                         <Separator />
                         <ui:MenuItem
                             Click="MenuBar_Click"
                             Header="_Save"
                             InputGestureText="Ctrl+S"
-                            Tag="File - Save" />
-                        <ui:MenuItem Header="Print" IsEnabled="False" />
+                            Tag="File - Save"
+                            />
+                        <ui:MenuItem
+                            Header="Print"
+                            IsEnabled="False"
+                            />
                     </ui:MenuItem>
                     <ui:MenuItem Header="_View">
                         <ui:MenuItem
@@ -53,79 +74,100 @@
                             Header="Status bar"
                             IsCheckable="True"
                             IsChecked="True"
-                            Tag="View - Status bar" />
+                            Tag="View - Status bar"
+                            />
                         <ui:MenuItem
                             Click="MenuBar_Click"
                             Header="Word wrap"
                             IsCheckable="True"
-                            Tag="View - Word wrap" />
+                            Tag="View - Word wrap"
+                            />
                         <Separator />
                         <ui:MenuItem
                             Click="MenuBar_Click"
                             Header="Zoom in"
                             InputGestureText="Ctrl++"
-                            Tag="View - Zoom in" />
+                            Tag="View - Zoom in"
+                            />
                     </ui:MenuItem>
                     <ui:MenuItem Header="_Help">
                         <ui:MenuItem
                             Click="MenuBar_Click"
                             Header="Documentation"
-                            Tag="Help - Documentation" />
-                        <ui:MenuItem Header="About" IsEnabled="False" />
+                            Tag="Help - Documentation"
+                            />
+                        <ui:MenuItem
+                            Header="About"
+                            IsEnabled="False"
+                            />
                     </ui:MenuItem>
                 </ui:Menu>
             </ContentControl>
-            <ContentControl x:Name="DemoSampleSlot01OutputContentHost" Visibility="Collapsed">
+            <ContentControl
+                x:Name="DemoSampleSlot01OutputContentHost"
+                Visibility="Collapsed"
+                >
                 <TextBlock
                     x:Name="MenuBarResultLabel"
                     Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                     Style="{StaticResource CaptionTextBlockStyle}"
-                    Text="Last menu action: None" />
+                    Text="Last menu action: None"
+                    />
             </ContentControl>
             <local:DemoSampleControl SampleDescription="Use Menu for persistent command groups with submenus, keyboard cues, separators, and checked states." />
 
 
-            <ContentControl x:Name="DemoSampleSlot02DemoContentHost" Visibility="Collapsed">
+            <ContentControl
+                x:Name="DemoSampleSlot02DemoContentHost"
+                Visibility="Collapsed"
+                >
                 <ui:Border
                     Padding="{DynamicResource DemoSampleInnerCardPadding}"
                     VerticalAlignment="Center"
-                    Variant="{x:Static uicore:BorderVariant.Subtle}">
+                    Variant="{x:Static uicore:BorderVariant.Subtle}"
+                    >
                     <ui:Border.ContextMenu>
                         <ui:ContextMenu>
                             <ui:MenuItem
                                 Click="ContextMenu_Click"
                                 Header="Cut"
                                 InputGestureText="Ctrl+X"
-                                Tag="Cut">
+                                Tag="Cut"
+                                >
                                 <ui:MenuItem.Icon>
                                     <ui:FontIcon
                                         Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                                         Glyph="&#xE8C6;"
-                                        IconFontSize="16" />
+                                        IconFontSize="16"
+                                        />
                                 </ui:MenuItem.Icon>
                             </ui:MenuItem>
                             <ui:MenuItem
                                 Click="ContextMenu_Click"
                                 Header="Copy"
                                 InputGestureText="Ctrl+C"
-                                Tag="Copy">
+                                Tag="Copy"
+                                >
                                 <ui:MenuItem.Icon>
                                     <ui:FontIcon
                                         Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                                         Glyph="&#xE8C8;"
-                                        IconFontSize="16" />
+                                        IconFontSize="16"
+                                        />
                                 </ui:MenuItem.Icon>
                             </ui:MenuItem>
                             <ui:MenuItem
                                 Click="ContextMenu_Click"
                                 Header="Paste"
                                 InputGestureText="Ctrl+V"
-                                Tag="Paste">
+                                Tag="Paste"
+                                >
                                 <ui:MenuItem.Icon>
                                     <ui:FontIcon
                                         Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}"
                                         Glyph="&#xE77F;"
-                                        IconFontSize="16" />
+                                        IconFontSize="16"
+                                        />
                                 </ui:MenuItem.Icon>
                             </ui:MenuItem>
                             <Separator />
@@ -133,55 +175,84 @@
                                 Click="ContextMenu_Click"
                                 Header="Add to favorites"
                                 IsCheckable="True"
-                                Tag="Add to favorites" />
+                                Tag="Add to favorites"
+                                />
                             <ui:MenuItem Header="Share">
                                 <ui:MenuItem
                                     Click="ContextMenu_Click"
                                     Header="Copy link"
-                                    Tag="Share - Copy link" />
+                                    Tag="Share - Copy link"
+                                    />
                                 <ui:MenuItem
                                     Click="ContextMenu_Click"
                                     Header="Send email"
-                                    Tag="Share - Send email" />
-                                <ui:MenuItem Header="Export PDF" IsEnabled="False" />
+                                    Tag="Share - Send email"
+                                    />
+                                <ui:MenuItem
+                                    Header="Export PDF"
+                                    IsEnabled="False"
+                                    />
                             </ui:MenuItem>
                         </ui:ContextMenu>
                     </ui:Border.ContextMenu>
                     <StackPanel>
-                        <TextBlock Foreground="{DynamicResource TextFillColorPrimaryBrush}" Text="Right-click this note" />
+                        <TextBlock
+                            Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                            Text="Right-click this note"
+                            />
                     </StackPanel>
                 </ui:Border>
             </ContentControl>
-            <ContentControl x:Name="DemoSampleSlot02OutputContentHost" Visibility="Collapsed">
+            <ContentControl
+                x:Name="DemoSampleSlot02OutputContentHost"
+                Visibility="Collapsed"
+                >
                 <TextBlock
                     x:Name="ContextMenuResultLabel"
                     Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                    Text="Last action: None" />
+                    Text="Last action: None"
+                    />
             </ContentControl>
             <local:DemoSampleControl SampleDescription="Use ContextMenu for actions that apply to a selected item or region." />
 
 
-            <ContentControl x:Name="DemoSampleSlot03DemoContentHost" Visibility="Collapsed">
+            <ContentControl
+                x:Name="DemoSampleSlot03DemoContentHost"
+                Visibility="Collapsed"
+                >
                 <WrapPanel>
-                    <ui:Button Margin="{DynamicResource DemoSmallInlineControlGapMargin}" Content="Save">
+                    <ui:Button
+                        Margin="{DynamicResource DemoSmallInlineControlGapMargin}"
+                        Content="Save"
+                        >
                         <ui:Button.ToolTip>
                             <ui:ToolTip Content="Save changes (Ctrl+S)" />
                         </ui:Button.ToolTip>
                     </ui:Button>
-                    <ui:Button Margin="{DynamicResource DemoSmallInlineControlGapMargin}" Content="Delete">
+                    <ui:Button
+                        Margin="{DynamicResource DemoSmallInlineControlGapMargin}"
+                        Content="Delete"
+                        >
                         <ui:Button.ToolTip>
                             <ui:ToolTip Content="Delete the selected item" />
                         </ui:Button.ToolTip>
                     </ui:Button>
-                    <ui:Button Margin="{DynamicResource DemoSmallInlineControlGapMargin}" Content="Share">
+                    <ui:Button
+                        Margin="{DynamicResource DemoSmallInlineControlGapMargin}"
+                        Content="Share"
+                        >
                         <ui:Button.ToolTip>
                             <ui:ToolTip>
                                 <StackPanel>
                                     <TextBlock
                                         FontWeight="SemiBold"
                                         Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                        Text="Share" />
-                                    <TextBlock Foreground="{DynamicResource TextFillColorSecondaryBrush}" Text="Copy a link or send an email." />
+                                        Text="Share"
+                                        />
+                                    <TextBlock
+                                        Foreground="{DynamicResource TextFillColorSecondaryBrush}"
+                                        Text="Copy a link or send an email."
+                                        />
                                 </StackPanel>
                             </ui:ToolTip>
                         </ui:Button.ToolTip>
@@ -190,7 +261,8 @@
                         Margin="{DynamicResource DemoSmallInlineControlGapMargin}"
                         Content="Settings"
                         IsEnabled="False"
-                        ToolTipService.ShowOnDisabled="True">
+                        ToolTipService.ShowOnDisabled="True"
+                        >
                         <ui:Button.ToolTip>
                             <ui:ToolTip Content="Settings are disabled for this item" />
                         </ui:Button.ToolTip>
@@ -200,11 +272,15 @@
             <local:DemoSampleControl SampleDescription="Use ToolTip for short hints that clarify icons, disabled commands, or risky actions." />
 
 
-            <ContentControl x:Name="DemoSampleSlot04DemoContentHost" Visibility="Collapsed">
+            <ContentControl
+                x:Name="DemoSampleSlot04DemoContentHost"
+                Visibility="Collapsed"
+                >
                 <ui:Button
                     VerticalAlignment="Center"
                     Click="FlyoutButton_Click"
-                    Content="Show flyout">
+                    Content="Show flyout"
+                    >
                     <ui:FlyoutBase.AttachedFlyout>
                         <ui:Flyout Placement="Bottom">
                             <ui:Flyout.Content>
@@ -212,12 +288,14 @@
                                     <TextBlock
                                         FontWeight="SemiBold"
                                         Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                        Text="Quick note" />
+                                        Text="Quick note"
+                                        />
                                     <TextBlock
                                         Margin="0,4,0,0"
                                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                         Text="A Flyout is a lightweight, light-dismiss popup anchored to its owner. Click outside to dismiss it."
-                                        TextWrapping="Wrap" />
+                                        TextWrapping="Wrap"
+                                        />
                                 </StackPanel>
                             </ui:Flyout.Content>
                         </ui:Flyout>
@@ -227,89 +305,106 @@
             <local:DemoSampleControl SampleDescription="Use Flyout for lightweight, light-dismiss popups (details, quick forms, confirmations) anchored to a control." />
 
 
-            <ContentControl x:Name="DemoSampleSlot05DemoContentHost" Visibility="Collapsed">
+            <ContentControl
+                x:Name="DemoSampleSlot05DemoContentHost"
+                Visibility="Collapsed"
+                >
                 <ui:Button
                     VerticalAlignment="Center"
                     Click="ShowDialogButton_Click"
-                    Content="Show dialog" />
+                    Content="Show dialog"
+                    />
             </ContentControl>
-            <ContentControl x:Name="DemoSampleSlot05OutputContentHost" Visibility="Collapsed">
+            <ContentControl
+                x:Name="DemoSampleSlot05OutputContentHost"
+                Visibility="Collapsed"
+                >
                 <TextBlock
                     x:Name="DialogResultLabel"
                     Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                     Style="{StaticResource CaptionTextBlockStyle}"
-                    Text="Dialog result: None" />
+                    Text="Dialog result: None"
+                    />
             </ContentControl>
             <local:DemoSampleControl SampleDescription="Use ContentDialog for modal prompts that require an explicit choice (confirmations, errors, sign-in)." />
 
 
-            <ContentControl x:Name="DemoSampleSlot06DemoContentHost" Visibility="Collapsed">
+            <ContentControl
+                x:Name="DemoSampleSlot06DemoContentHost"
+                Visibility="Collapsed"
+                >
                 <Grid>
                     <ui:Button
                         x:Name="TeachingTipButton"
                         VerticalAlignment="Center"
                         Click="ShowTeachingTipButton_Click"
-                        Content="Show teaching tip" />
+                        Content="Show teaching tip"
+                        />
                     <ui:TeachingTip
                         x:Name="DemoTeachingTip"
                         Title="Pro tip"
                         CloseButtonContent="Got it"
                         IsLightDismissEnabled="True"
                         PreferredPlacement="Bottom"
-                        Subtitle="A TeachingTip points at a target element to coach the user without blocking. Click Got it to dismiss." />
+                        Subtitle="A TeachingTip points at a target element to coach the user without blocking. Click Got it to dismiss."
+                        />
                 </Grid>
             </ContentControl>
             <local:DemoSampleControl SampleDescription="Use TeachingTip for contextual, non-blocking coaching anchored to a UI element." />
 
 
-            <ContentControl x:Name="DemoSampleSlot07DemoContentHost" Visibility="Collapsed">
+            <ContentControl
+                x:Name="DemoSampleSlot07DemoContentHost"
+                Visibility="Collapsed"
+                >
                 <ui:Button
                     VerticalAlignment="Center"
                     Click="FlyoutButton_Click"
-                    Content="Show command bar">
+                    Content="Show command bar"
+                    >
                     <ui:FlyoutBase.AttachedFlyout>
                         <ui:CommandBarFlyout>
                             <ui:CommandBarFlyout.PrimaryCommands>
-                                <ui:AppBarButton
-                                    Click="CommandBarAction_Click"
-                                    Label="Cut"
-                                    Tag="Cut">
+                                <ui:AppBarButton Click="CommandBarAction_Click" Label="Cut" Tag="Cut">
                                     <ui:AppBarButton.Icon>
-                                        <ui:FontIcon Glyph="&#xE8C6;" IconFontSize="16" />
+                                        <ui:FontIcon
+                                            Glyph="&#xE8C6;"
+                                            IconFontSize="16"
+                                            />
                                     </ui:AppBarButton.Icon>
                                 </ui:AppBarButton>
-                                <ui:AppBarButton
-                                    Click="CommandBarAction_Click"
-                                    Label="Copy"
-                                    Tag="Copy">
+                                <ui:AppBarButton Click="CommandBarAction_Click" Label="Copy" Tag="Copy">
                                     <ui:AppBarButton.Icon>
-                                        <ui:FontIcon Glyph="&#xE8C8;" IconFontSize="16" />
+                                        <ui:FontIcon
+                                            Glyph="&#xE8C8;"
+                                            IconFontSize="16"
+                                            />
                                     </ui:AppBarButton.Icon>
                                 </ui:AppBarButton>
-                                <ui:AppBarButton
-                                    Click="CommandBarAction_Click"
-                                    Label="Paste"
-                                    Tag="Paste">
+                                <ui:AppBarButton Click="CommandBarAction_Click" Label="Paste" Tag="Paste">
                                     <ui:AppBarButton.Icon>
-                                        <ui:FontIcon Glyph="&#xE77F;" IconFontSize="16" />
+                                        <ui:FontIcon
+                                            Glyph="&#xE77F;"
+                                            IconFontSize="16"
+                                            />
                                     </ui:AppBarButton.Icon>
                                 </ui:AppBarButton>
                             </ui:CommandBarFlyout.PrimaryCommands>
                             <ui:CommandBarFlyout.SecondaryCommands>
-                                <ui:AppBarButton
-                                    Click="CommandBarAction_Click"
-                                    Label="Rename"
-                                    Tag="Rename">
+                                <ui:AppBarButton Click="CommandBarAction_Click" Label="Rename" Tag="Rename">
                                     <ui:AppBarButton.Icon>
-                                        <ui:FontIcon Glyph="&#xE8AC;" IconFontSize="16" />
+                                        <ui:FontIcon
+                                            Glyph="&#xE8AC;"
+                                            IconFontSize="16"
+                                            />
                                     </ui:AppBarButton.Icon>
                                 </ui:AppBarButton>
-                                <ui:AppBarButton
-                                    Click="CommandBarAction_Click"
-                                    Label="Delete"
-                                    Tag="Delete">
+                                <ui:AppBarButton Click="CommandBarAction_Click" Label="Delete" Tag="Delete">
                                     <ui:AppBarButton.Icon>
-                                        <ui:FontIcon Glyph="&#xE74D;" IconFontSize="16" />
+                                        <ui:FontIcon
+                                            Glyph="&#xE74D;"
+                                            IconFontSize="16"
+                                            />
                                     </ui:AppBarButton.Icon>
                                 </ui:AppBarButton>
                             </ui:CommandBarFlyout.SecondaryCommands>
@@ -317,12 +412,16 @@
                     </ui:FlyoutBase.AttachedFlyout>
                 </ui:Button>
             </ContentControl>
-            <ContentControl x:Name="DemoSampleSlot07OutputContentHost" Visibility="Collapsed">
+            <ContentControl
+                x:Name="DemoSampleSlot07OutputContentHost"
+                Visibility="Collapsed"
+                >
                 <TextBlock
                     x:Name="CommandBarResultLabel"
                     Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                     Style="{StaticResource CaptionTextBlockStyle}"
-                    Text="Last command: None" />
+                    Text="Last command: None"
+                    />
             </ContentControl>
             <local:DemoSampleControl SampleDescription="Use CommandBarFlyout for a compact command strip with an overflow menu; commands dismiss the flyout when invoked." />
 

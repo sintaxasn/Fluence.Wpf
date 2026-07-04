@@ -17,6 +17,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- XAML reference style (`Settings.XamlStyler`) revised so one style is shared with downstream consumers: attributes split beyond one per element (`AttributesTolerance: 1`), the ending bracket of a multi-line element on its own line, single-space comment padding, and grid children ordered by row/column. All authored XAML reformatted accordingly; the TeachingTip beak paths gained an explicit `Panel.ZIndex` so their paint order over the tip surface no longer depends on document order. No functional changes.
 - Demo: the gallery Menus page is now found when searching "dialog" or "message" (its ContentDialog sample lives there), and the PowerShell `ControlsTour` example showcases more controls (DropDownButton/SplitButton/ToggleSplitButton, Slider, RatingControl, Expander, ListView, FontIcon).
 - `Fluence.Wpf` NuGet `PackageIcon` repointed from the retired `Fluence_Logo_128.png` to `Fluence_Icon_Light_128.png`. The demo executables set their Windows `ApplicationIcon` to `assets/Fluence_Icon_Light.ico`, so the `.exe` shows the Fluence brand mark in Explorer and on a pre-launch taskbar pin; the runtime window and title-bar icon come from the `FluenceWindow` rasterized brand vector.
 - `Fluence.Wpf.PowerShell`: dialog messages now render as wrapping TextBlocks with a standalone leading severity FontIcon instead of inside an InfoBar; `-Icon Question` shows a dedicated Help glyph. The transient input-validation banner is unchanged.

@@ -3,7 +3,8 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:fluence="http://schemas.fluencewpf.com"
-    x:Name="Root">
+    x:Name="Root"
+    >
     <ContentControl.Resources>
         <Style x:Key="DemoSampleSourceHeaderToggleButtonStyle" TargetType="{x:Type ToggleButton}">
             <Setter Property="UseLayoutRounding" Value="True" />
@@ -19,7 +20,8 @@
                         <Border
                             x:Name="HeaderBorder"
                             Background="{TemplateBinding Background}"
-                            CornerRadius="0,0,8,8">
+                            CornerRadius="0,0,8,8"
+                            >
                             <Grid Margin="{TemplateBinding Padding}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -32,8 +34,9 @@
                                     RecognizesAccessKey="True"
                                     TextElement.FontFamily="{TemplateBinding FontFamily}"
                                     TextElement.FontSize="{TemplateBinding FontSize}"
-                                    TextElement.Foreground="{TemplateBinding Foreground}" />
-                                <!--  WinUI Expander chevron backplate: 32x32, ControlCornerRadius, transparent at rest; hover/press feedback paints only this plate.  -->
+                                    TextElement.Foreground="{TemplateBinding Foreground}"
+                                    />
+                                <!-- WinUI Expander chevron backplate: 32x32, ControlCornerRadius, transparent at rest; hover/press feedback paints only this plate. -->
                                 <Border
                                     x:Name="ChevronBackplate"
                                     Grid.Column="1"
@@ -42,7 +45,8 @@
                                     Margin="{DynamicResource DemoSourceChevronMargin}"
                                     VerticalAlignment="Center"
                                     Background="{DynamicResource SubtleFillColorTransparentBrush}"
-                                    CornerRadius="{DynamicResource ControlCornerRadius}">
+                                    CornerRadius="{DynamicResource ControlCornerRadius}"
+                                    >
                                     <Path
                                         x:Name="Chevron"
                                         Width="12"
@@ -55,7 +59,8 @@
                                         StrokeEndLineCap="Round"
                                         StrokeLineJoin="Round"
                                         StrokeStartLineCap="Round"
-                                        StrokeThickness="1.5">
+                                        StrokeThickness="1.5"
+                                        >
                                         <Path.RenderTransform>
                                             <RotateTransform x:Name="ChevronRotation" Angle="0" />
                                         </Path.RenderTransform>
@@ -64,7 +69,7 @@
                             </Grid>
                         </Border>
                         <ControlTemplate.Triggers>
-                            <!--  WinUI Expander header: only the chevron plate reacts (ExpanderChevronPointerOverBackground / ExpanderChevronPressedBackground); the header surface itself never lights up.  -->
+                            <!-- WinUI Expander header: only the chevron plate reacts (ExpanderChevronPointerOverBackground / ExpanderChevronPressedBackground); the header surface itself never lights up. -->
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="ChevronBackplate" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
                             </Trigger>
@@ -79,7 +84,8 @@
                                                 Storyboard.TargetName="ChevronRotation"
                                                 Storyboard.TargetProperty="Angle"
                                                 To="180"
-                                                Duration="0:0:0.167" />
+                                                Duration="0:0:0.167"
+                                                />
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </Trigger.EnterActions>
@@ -90,7 +96,8 @@
                                                 Storyboard.TargetName="ChevronRotation"
                                                 Storyboard.TargetProperty="Angle"
                                                 To="0"
-                                                Duration="0:0:0.167" />
+                                                Duration="0:0:0.167"
+                                                />
                                         </Storyboard>
                                     </BeginStoryboard>
                                 </Trigger.ExitActions>
@@ -123,7 +130,8 @@
                             Background="{TemplateBinding Background}"
                             BorderBrush="{TemplateBinding BorderBrush}"
                             BorderThickness="{TemplateBinding BorderThickness}"
-                            CornerRadius="{TemplateBinding CornerRadius}">
+                            CornerRadius="{TemplateBinding CornerRadius}"
+                            >
                             <Grid>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
@@ -141,24 +149,28 @@
                                     Foreground="{TemplateBinding Foreground}"
                                     IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
                                     OverridesDefaultStyle="True"
-                                    Style="{StaticResource DemoSampleSourceHeaderToggleButtonStyle}" />
+                                    Style="{StaticResource DemoSampleSourceHeaderToggleButtonStyle}"
+                                    />
 
-                                <!--  WinUI Expander composition: an outer clip hosts the translated content panel so the expand/collapse slide stays inside the source section bounds.  -->
+                                <!-- WinUI Expander composition: an outer clip hosts the translated content panel so the expand/collapse slide stays inside the source section bounds. -->
                                 <Border
                                     x:Name="SourceContentClip"
                                     Grid.Row="1"
                                     ClipToBounds="True"
-                                    CornerRadius="0,0,8,8">
+                                    CornerRadius="0,0,8,8"
+                                    >
                                     <Border
                                         x:Name="SourceContentBorder"
                                         Background="{DynamicResource SystemFillColorSolidAttentionBackgroundBrush}"
-                                        CornerRadius="0,0,8,8">
+                                        CornerRadius="0,0,8,8"
+                                        >
                                         <ContentPresenter
                                             x:Name="ExpandSite"
                                             HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                             VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                             Focusable="False"
-                                            Opacity="0">
+                                            Opacity="0"
+                                            >
                                             <ContentPresenter.RenderTransform>
                                                 <TranslateTransform x:Name="SourceContentTranslate" Y="24" />
                                             </ContentPresenter.RenderTransform>
@@ -173,7 +185,7 @@
                                 <Trigger.EnterActions>
                                     <BeginStoryboard>
                                         <Storyboard>
-                                            <!--  Re-open the content row, overriding any held collapse animation: a filling animation outranks the trigger setter, so the row must be re-animated open or it stays closed on re-expand.  -->
+                                            <!-- Re-open the content row, overriding any held collapse animation: a filling animation outranks the trigger setter, so the row must be re-animated open or it stays closed on re-expand. -->
                                             <ObjectAnimationUsingKeyFrames Storyboard.TargetName="ContentRowDefinition" Storyboard.TargetProperty="Height">
                                                 <DiscreteObjectKeyFrame KeyTime="0:0:0">
                                                     <DiscreteObjectKeyFrame.Value>
@@ -181,13 +193,14 @@
                                                     </DiscreteObjectKeyFrame.Value>
                                                 </DiscreteObjectKeyFrame>
                                             </ObjectAnimationUsingKeyFrames>
-                                            <!--  WinUI Gallery ControlExample ShowTransitions: Offset Y 24->0 over 0.4s, Opacity 0->1 over 0.2s, EaseOut.  -->
+                                            <!-- WinUI Gallery ControlExample ShowTransitions: Offset Y 24->0 over 0.4s, Opacity 0->1 over 0.2s, EaseOut. -->
                                             <DoubleAnimation
                                                 Storyboard.TargetName="SourceContentTranslate"
                                                 Storyboard.TargetProperty="Y"
                                                 From="24"
                                                 To="0"
-                                                Duration="0:0:0.4">
+                                                Duration="0:0:0.4"
+                                                >
                                                 <DoubleAnimation.EasingFunction>
                                                     <CubicEase EasingMode="EaseOut" />
                                                 </DoubleAnimation.EasingFunction>
@@ -197,7 +210,8 @@
                                                 Storyboard.TargetProperty="Opacity"
                                                 From="0"
                                                 To="1"
-                                                Duration="0:0:0.2">
+                                                Duration="0:0:0.2"
+                                                >
                                                 <DoubleAnimation.EasingFunction>
                                                     <CubicEase EasingMode="EaseOut" />
                                                 </DoubleAnimation.EasingFunction>
@@ -208,13 +222,14 @@
                                 <Trigger.ExitActions>
                                     <BeginStoryboard>
                                         <Storyboard>
-                                            <!--  WinUI Gallery ControlExample HideTransitions: Offset Y 0->24 over 0.2s, Opacity 1->0 over 0.1s, EaseOut; hold the row open for the slide then release.  -->
+                                            <!-- WinUI Gallery ControlExample HideTransitions: Offset Y 0->24 over 0.2s, Opacity 1->0 over 0.1s, EaseOut; hold the row open for the slide then release. -->
                                             <DoubleAnimation
                                                 Storyboard.TargetName="SourceContentTranslate"
                                                 Storyboard.TargetProperty="Y"
                                                 From="0"
                                                 To="24"
-                                                Duration="0:0:0.2">
+                                                Duration="0:0:0.2"
+                                                >
                                                 <DoubleAnimation.EasingFunction>
                                                     <CubicEase EasingMode="EaseOut" />
                                                 </DoubleAnimation.EasingFunction>
@@ -224,7 +239,8 @@
                                                 Storyboard.TargetProperty="Opacity"
                                                 From="1"
                                                 To="0"
-                                                Duration="0:0:0.1">
+                                                Duration="0:0:0.1"
+                                                >
                                                 <DoubleAnimation.EasingFunction>
                                                     <CubicEase EasingMode="EaseOut" />
                                                 </DoubleAnimation.EasingFunction>
@@ -270,7 +286,8 @@
             Margin="{DynamicResource DemoSampleDescriptionMargin}"
             Style="{StaticResource BodyStrongTextBlockStyle}"
             Text="{Binding SampleDescription, ElementName=Root}"
-            TextWrapping="Wrap" />
+            TextWrapping="Wrap"
+            />
 
         <Border
             x:Name="SampleCard"
@@ -278,7 +295,8 @@
             Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
             BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
             BorderThickness="1"
-            CornerRadius="8,8,0,0">
+            CornerRadius="8,8,0,0"
+            >
             <Grid x:Name="SampleContentGrid">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
@@ -288,7 +306,8 @@
                 <Grid
                     x:Name="DemoRegionGrid"
                     Grid.Column="0"
-                    Margin="{DynamicResource DemoSampleCardPadding}">
+                    Margin="{DynamicResource DemoSampleCardPadding}"
+                    >
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
@@ -299,7 +318,8 @@
                         Grid.Column="0"
                         HorizontalAlignment="Stretch"
                         VerticalAlignment="Center"
-                        Content="{Binding DemoContent, ElementName=Root}" />
+                        Content="{Binding DemoContent, ElementName=Root}"
+                        />
 
                     <Border
                         x:Name="OutputRegion"
@@ -308,10 +328,14 @@
                         Margin="{DynamicResource DemoSampleOutputMargin}"
                         Padding="{DynamicResource DemoSampleOutputPadding}"
                         VerticalAlignment="Center"
-                        CornerRadius="{DynamicResource ControlCornerRadius}">
+                        CornerRadius="{DynamicResource ControlCornerRadius}"
+                        >
                         <StackPanel>
                             <TextBlock Text="Output:" />
-                            <ContentPresenter x:Name="OutputContentPresenter" Content="{Binding OutputContent, ElementName=Root}" />
+                            <ContentPresenter
+                                x:Name="OutputContentPresenter"
+                                Content="{Binding OutputContent, ElementName=Root}"
+                                />
                         </StackPanel>
                     </Border>
                 </Grid>
@@ -324,8 +348,12 @@
                     Background="{DynamicResource CardBackgroundFillColorSecondaryBrush}"
                     BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                     BorderThickness="0,1,1,1"
-                    CornerRadius="0,8,0,0">
-                    <ContentPresenter x:Name="RightRailContentPresenter" Content="{Binding RightRailContent, ElementName=Root}" />
+                    CornerRadius="0,8,0,0"
+                    >
+                    <ContentPresenter
+                        x:Name="RightRailContentPresenter"
+                        Content="{Binding RightRailContent, ElementName=Root}"
+                        />
                 </Border>
             </Grid>
         </Border>
@@ -337,8 +365,12 @@
             CornerRadius="0,0,8,8"
             Expanded="SourceExpander_Expanded"
             Header="Source code"
-            Style="{StaticResource DemoSampleSourceExpanderStyle}">
-            <TabControl x:Name="SourceTabControl" Margin="{DynamicResource DemoSampleSourceTabMargin}" />
+            Style="{StaticResource DemoSampleSourceExpanderStyle}"
+            >
+            <TabControl
+                x:Name="SourceTabControl"
+                Margin="{DynamicResource DemoSampleSourceTabMargin}"
+                />
         </fluence:Expander>
     </Grid>
 </ContentControl>

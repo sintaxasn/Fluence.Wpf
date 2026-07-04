@@ -9,41 +9,63 @@
     xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
     d:DesignHeight="900"
     d:DesignWidth="900"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    >
     <ui:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
         <StackPanel Style="{StaticResource GalleryPageContentStackStyle}">
-            <TextBlock Style="{StaticResource PageTitleStyle}" Text="Navigation" />
-            <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="NavigationView organizes top-level destinations and can place the pane on the left, across the top, or in compact left mode." />
+            <TextBlock
+                Style="{StaticResource PageTitleStyle}"
+                Text="Navigation"
+                />
+            <TextBlock
+                Style="{StaticResource SectionDescriptionStyle}"
+                Text="NavigationView organizes top-level destinations and can place the pane on the left, across the top, or in compact left mode."
+                />
 
 
-            <ContentControl x:Name="DemoSampleSlot01DemoContentHost" Visibility="Collapsed">
+            <ContentControl
+                x:Name="DemoSampleSlot01DemoContentHost"
+                Visibility="Collapsed"
+                >
                 <Border Height="320">
                     <ui:NavigationView
                         x:Name="LeftNavigationDemo"
                         ItemInvoked="NavigationDemo_ItemInvoked"
-                        PaneDisplayMode="Left">
+                        PaneDisplayMode="Left"
+                        >
                         <ui:NavigationView.PaneHeader>
                             <TextBlock
                                 Margin="{DynamicResource DemoNavigationHeaderMargin}"
                                 Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                Text="Navigation" />
+                                Text="Navigation"
+                                />
                         </ui:NavigationView.PaneHeader>
                         <ui:NavigationViewItem
                             x:Name="LeftNavigationHomeItem"
                             Content="Home"
-                            IsSelected="True">
+                            IsSelected="True"
+                            >
                             <ui:NavigationViewItem.Icon>
-                                <ui:FontIcon Glyph="&#xE80F;" IconFontSize="16" />
+                                <ui:FontIcon
+                                    Glyph="&#xE80F;"
+                                    IconFontSize="16"
+                                    />
                             </ui:NavigationViewItem.Icon>
                         </ui:NavigationViewItem>
                         <ui:NavigationViewItem Content="Files">
                             <ui:NavigationViewItem.Icon>
-                                <ui:FontIcon Glyph="&#xE8B7;" IconFontSize="16" />
+                                <ui:FontIcon
+                                    Glyph="&#xE8B7;"
+                                    IconFontSize="16"
+                                    />
                             </ui:NavigationViewItem.Icon>
                         </ui:NavigationViewItem>
                         <ui:NavigationViewItem Content="Reports">
                             <ui:NavigationViewItem.Icon>
-                                <ui:FontIcon Glyph="&#xE9D9;" IconFontSize="16" />
+                                <ui:FontIcon
+                                    Glyph="&#xE9D9;"
+                                    IconFontSize="16"
+                                    />
                             </ui:NavigationViewItem.Icon>
                         </ui:NavigationViewItem>
                     </ui:NavigationView>
@@ -52,29 +74,43 @@
             <local:DemoSampleControl SampleDescription="Use a left pane when the app has several persistent destinations and enough horizontal space." />
 
 
-            <ContentControl x:Name="DemoSampleSlot02DemoContentHost" Visibility="Collapsed">
+            <ContentControl
+                x:Name="DemoSampleSlot02DemoContentHost"
+                Visibility="Collapsed"
+                >
                 <Border Height="240">
                     <ui:NavigationView
                         x:Name="TopNavigationDemo"
                         Header="Insights"
                         ItemInvoked="NavigationDemo_ItemInvoked"
-                        PaneDisplayMode="Top">
+                        PaneDisplayMode="Top"
+                        >
                         <ui:NavigationViewItem
                             x:Name="TopNavigationOverviewItem"
                             Content="Overview"
-                            IsSelected="True">
+                            IsSelected="True"
+                            >
                             <ui:NavigationViewItem.Icon>
-                                <ui:FontIcon Glyph="&#xE9D2;" IconFontSize="16" />
+                                <ui:FontIcon
+                                    Glyph="&#xE9D2;"
+                                    IconFontSize="16"
+                                    />
                             </ui:NavigationViewItem.Icon>
                         </ui:NavigationViewItem>
                         <ui:NavigationViewItem Content="Activity">
                             <ui:NavigationViewItem.Icon>
-                                <ui:FontIcon Glyph="&#xE7F4;" IconFontSize="16" />
+                                <ui:FontIcon
+                                    Glyph="&#xE7F4;"
+                                    IconFontSize="16"
+                                    />
                             </ui:NavigationViewItem.Icon>
                         </ui:NavigationViewItem>
                         <ui:NavigationViewItem Content="Settings">
                             <ui:NavigationViewItem.Icon>
-                                <ui:FontIcon Glyph="&#xE713;" IconFontSize="16" />
+                                <ui:FontIcon
+                                    Glyph="&#xE713;"
+                                    IconFontSize="16"
+                                    />
                             </ui:NavigationViewItem.Icon>
                         </ui:NavigationViewItem>
                     </ui:NavigationView>
@@ -83,11 +119,15 @@
             <local:DemoSampleControl SampleDescription="Use top navigation for a small set of peer destinations that should leave the full width for content." />
 
 
-            <ContentControl x:Name="DemoSampleSlot03DemoContentHost" Visibility="Collapsed">
+            <ContentControl
+                x:Name="DemoSampleSlot03DemoContentHost"
+                Visibility="Collapsed"
+                >
                 <Border
                     Height="300"
                     BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                    BorderThickness="{DynamicResource DemoSingleBorderThickness}">
+                    BorderThickness="{DynamicResource DemoSingleBorderThickness}"
+                    >
                     <ui:NavigationView
                         x:Name="CompactNavigationDemo"
                         IsBackButtonVisible="True"
@@ -95,50 +135,78 @@
                         IsPaneOpen="False"
                         IsPaneToggleButtonVisible="True"
                         ItemInvoked="NavigationDemo_ItemInvoked"
-                        PaneDisplayMode="LeftCompact">
+                        PaneDisplayMode="LeftCompact"
+                        >
                         <ui:NavigationView.PaneFooter>
-                            <ui:NavigationViewItem x:Name="CompactNavigationFooterItem" Content="Settings">
+                            <ui:NavigationViewItem
+                                x:Name="CompactNavigationFooterItem"
+                                Content="Settings"
+                                >
                                 <ui:NavigationViewItem.Icon>
-                                    <ui:FontIcon Glyph="&#xE713;" IconFontSize="16" />
+                                    <ui:FontIcon
+                                        Glyph="&#xE713;"
+                                        IconFontSize="16"
+                                        />
                                 </ui:NavigationViewItem.Icon>
                             </ui:NavigationViewItem>
                         </ui:NavigationView.PaneFooter>
                         <ui:NavigationViewItem
                             x:Name="CompactNavigationDashboardItem"
                             Content="Dashboard"
-                            IsSelected="True">
+                            IsSelected="True"
+                            >
                             <ui:NavigationViewItem.Icon>
-                                <ui:FontIcon Glyph="&#xE80F;" IconFontSize="16" />
+                                <ui:FontIcon
+                                    Glyph="&#xE80F;"
+                                    IconFontSize="16"
+                                    />
                             </ui:NavigationViewItem.Icon>
                         </ui:NavigationViewItem>
                         <ui:NavigationViewItem Content="Messages">
                             <ui:NavigationViewItem.Icon>
-                                <ui:FontIcon Glyph="&#xE8BD;" IconFontSize="16" />
+                                <ui:FontIcon
+                                    Glyph="&#xE8BD;"
+                                    IconFontSize="16"
+                                    />
                             </ui:NavigationViewItem.Icon>
                         </ui:NavigationViewItem>
                     </ui:NavigationView>
                 </Border>
             </ContentControl>
-            <ContentControl x:Name="DemoSampleSlot03RightRailContentHost" Visibility="Collapsed">
+            <ContentControl
+                x:Name="DemoSampleSlot03RightRailContentHost"
+                Visibility="Collapsed"
+                >
                 <StackPanel>
                     <ui:CheckBox
                         x:Name="BackEnabledToggle"
                         Content="Back enabled"
-                        IsChecked="True" />
+                        IsChecked="True"
+                        />
                 </StackPanel>
             </ContentControl>
             <local:DemoSampleControl SampleDescription="Use compact mode to preserve space, and enable the back button when the current view can navigate backward." />
 
 
-            <ContentControl x:Name="DemoSampleSlot04DemoContentHost" Visibility="Collapsed">
+            <ContentControl
+                x:Name="DemoSampleSlot04DemoContentHost"
+                Visibility="Collapsed"
+                >
                 <Border Height="260">
                     <ui:NavigationView
                         Header="Inbox"
                         IsPaneOpen="True"
-                        PaneDisplayMode="Left">
-                        <ui:NavigationViewItem Content="Inbox" IsSelected="True">
+                        PaneDisplayMode="Left"
+                        >
+                        <ui:NavigationViewItem
+                            Content="Inbox"
+                            IsSelected="True"
+                            >
                             <ui:NavigationViewItem.Icon>
-                                <ui:FontIcon Glyph="&#xE715;" IconFontSize="16" />
+                                <ui:FontIcon
+                                    Glyph="&#xE715;"
+                                    IconFontSize="16"
+                                    />
                             </ui:NavigationViewItem.Icon>
                             <ui:NavigationViewItem.InfoBadge>
                                 <ui:InfoBadge Value="12" />
@@ -146,7 +214,10 @@
                         </ui:NavigationViewItem>
                         <ui:NavigationViewItem Content="Approvals">
                             <ui:NavigationViewItem.Icon>
-                                <ui:FontIcon Glyph="&#xE73E;" IconFontSize="16" />
+                                <ui:FontIcon
+                                    Glyph="&#xE73E;"
+                                    IconFontSize="16"
+                                    />
                             </ui:NavigationViewItem.Icon>
                             <ui:NavigationViewItem.InfoBadge>
                                 <ui:InfoBadge BadgeStyle="{x:Static uicore:InfoBadgeStyle.Caution}" />
@@ -154,10 +225,16 @@
                         </ui:NavigationViewItem>
                         <ui:NavigationViewItem Content="Alerts">
                             <ui:NavigationViewItem.Icon>
-                                <ui:FontIcon Glyph="&#xE7BA;" IconFontSize="16" />
+                                <ui:FontIcon
+                                    Glyph="&#xE7BA;"
+                                    IconFontSize="16"
+                                    />
                             </ui:NavigationViewItem.Icon>
                             <ui:NavigationViewItem.InfoBadge>
-                                <ui:InfoBadge BadgeStyle="{x:Static uicore:InfoBadgeStyle.Critical}" Value="2" />
+                                <ui:InfoBadge
+                                    BadgeStyle="{x:Static uicore:InfoBadgeStyle.Critical}"
+                                    Value="2"
+                                    />
                             </ui:NavigationViewItem.InfoBadge>
                         </ui:NavigationViewItem>
                     </ui:NavigationView>
@@ -166,32 +243,50 @@
             <local:DemoSampleControl SampleDescription="Use InfoBadge in NavigationViewItem to call attention to item state without changing the item label." />
 
 
-            <ContentControl x:Name="DemoSampleSlot05DemoContentHost" Visibility="Collapsed">
-                <ui:StackPanel HorizontalAlignment="Left" Spacing="8">
-                    <ui:BreadcrumbBar x:Name="DemoBreadcrumbBar" ItemClicked="DemoBreadcrumbBar_ItemClicked" />
+            <ContentControl
+                x:Name="DemoSampleSlot05DemoContentHost"
+                Visibility="Collapsed"
+                >
+                <ui:StackPanel
+                    HorizontalAlignment="Left"
+                    Spacing="8"
+                    >
+                    <ui:BreadcrumbBar
+                        x:Name="DemoBreadcrumbBar"
+                        ItemClicked="DemoBreadcrumbBar_ItemClicked"
+                        />
                     <TextBlock
                         x:Name="BreadcrumbResultLabel"
                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                         Style="{StaticResource CaptionTextBlockStyle}"
-                        Text="Click a crumb to navigate up" />
+                        Text="Click a crumb to navigate up"
+                        />
                 </ui:StackPanel>
             </ContentControl>
             <local:DemoSampleControl SampleDescription="Use BreadcrumbBar to show the path to the current location and jump back to any ancestor." />
 
 
-            <ContentControl x:Name="DemoSampleSlot06DemoContentHost" Visibility="Collapsed">
-                <ui:StackPanel HorizontalAlignment="Left" Spacing="8">
+            <ContentControl
+                x:Name="DemoSampleSlot06DemoContentHost"
+                Visibility="Collapsed"
+                >
+                <ui:StackPanel
+                    HorizontalAlignment="Left"
+                    Spacing="8"
+                    >
                     <ui:PipsPager
                         x:Name="DemoPipsPager"
                         NextButtonVisibility="Visible"
                         NumberOfPages="8"
                         PreviousButtonVisibility="Visible"
-                        SelectedIndexChanged="DemoPipsPager_SelectedIndexChanged" />
+                        SelectedIndexChanged="DemoPipsPager_SelectedIndexChanged"
+                        />
                     <TextBlock
                         x:Name="PipsPagerResultLabel"
                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                         Style="{StaticResource CaptionTextBlockStyle}"
-                        Text="Page 1 of 8" />
+                        Text="Page 1 of 8"
+                        />
                 </ui:StackPanel>
             </ContentControl>
             <local:DemoSampleControl SampleDescription="Use PipsPager for compact page indication and switching, as in carousels and onboarding flows." />

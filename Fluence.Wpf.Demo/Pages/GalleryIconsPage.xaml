@@ -7,7 +7,8 @@
     xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
     d:DesignHeight="900"
     d:DesignWidth="1200"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    >
     <UserControl.Resources>
         <!--
             Iconography tile mirroring the WinUI 3 Gallery icon grid: a flat near-square card
@@ -26,17 +27,20 @@
                             x:Name="SelectionRing"
                             BorderBrush="Transparent"
                             BorderThickness="2"
-                            CornerRadius="6">
+                            CornerRadius="6"
+                            >
                             <Border
                                 Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                                 BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                                 BorderThickness="1"
-                                CornerRadius="4">
+                                CornerRadius="4"
+                                >
                                 <Grid>
                                     <Border
                                         x:Name="HoverLayer"
                                         Background="Transparent"
-                                        CornerRadius="3" />
+                                        CornerRadius="3"
+                                        />
                                     <Grid>
                                         <Grid.RowDefinitions>
                                             <RowDefinition Height="*" />
@@ -49,7 +53,8 @@
                                             FontSize="30"
                                             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                                             Text="{Binding Glyph}"
-                                            TextAlignment="Center" />
+                                            TextAlignment="Center"
+                                            />
                                         <TextBlock
                                             Grid.Row="1"
                                             Margin="8,0,8,10"
@@ -59,7 +64,8 @@
                                             Text="{Binding Name}"
                                             TextAlignment="Center"
                                             TextTrimming="CharacterEllipsis"
-                                            TextWrapping="NoWrap" />
+                                            TextWrapping="NoWrap"
+                                            />
                                     </Grid>
                                 </Grid>
                             </Border>
@@ -81,11 +87,8 @@
             <Setter Property="Width" Value="115" />
         </Style>
 
-        <!--  Monospace value text for the details rows (Consolas precedent from the previous catalog).  -->
-        <Style
-            x:Key="IconDetailValueStyle"
-            BasedOn="{StaticResource {x:Type TextBlock}}"
-            TargetType="{x:Type TextBlock}">
+        <!-- Monospace value text for the details rows (Consolas precedent from the previous catalog). -->
+        <Style x:Key="IconDetailValueStyle" BasedOn="{StaticResource {x:Type TextBlock}}" TargetType="{x:Type TextBlock}">
             <Setter Property="FontFamily" Value="Consolas" />
             <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
             <Setter Property="TextWrapping" Value="Wrap" />
@@ -93,8 +96,14 @@
         </Style>
     </UserControl.Resources>
 
-    <Grid x:Name="PageRoot" Style="{StaticResource GalleryPageRootStyle}">
-        <Grid x:Name="PageContent" Style="{StaticResource GalleryPageContentGridStyle}">
+    <Grid
+        x:Name="PageRoot"
+        Style="{StaticResource GalleryPageRootStyle}"
+        >
+        <Grid
+            x:Name="PageContent"
+            Style="{StaticResource GalleryPageContentGridStyle}"
+            >
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
@@ -102,11 +111,15 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <TextBlock Style="{StaticResource PageTitleStyle}" Text="Iconography" />
+            <TextBlock
+                Style="{StaticResource PageTitleStyle}"
+                Text="Iconography"
+                />
             <TextBlock
                 Grid.Row="1"
                 Style="{StaticResource SectionDescriptionStyle}"
-                Text="The icons below use Segoe Fluent Icons, the standard icon font on Windows 11." />
+                Text="The icons below use Segoe Fluent Icons, the standard icon font on Windows 11."
+                />
 
             <ui:AutoSuggestBox
                 x:Name="IconSearchBox"
@@ -115,7 +128,8 @@
                 Margin="0,0,0,16"
                 HorizontalAlignment="Left"
                 PlaceholderText="Search icons by name, code, or tags"
-                TextChanged="IconSearchBox_TextChanged">
+                TextChanged="IconSearchBox_TextChanged"
+                >
                 <ui:AutoSuggestBox.QueryIcon>
                     <ui:FontIcon Glyph="&#xE721;" />
                 </ui:AutoSuggestBox.QueryIcon>
@@ -127,7 +141,8 @@
                 Background="{DynamicResource SolidBackgroundFillColorBaseBrush}"
                 BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
-                CornerRadius="8">
+                CornerRadius="8"
+                >
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*" MinWidth="160" />
@@ -147,7 +162,8 @@
                         SizeChanged="IconCatalogList_SizeChanged"
                         VirtualizingPanel.ScrollUnit="Pixel"
                         VirtualizingStackPanel.IsVirtualizing="True"
-                        VirtualizingStackPanel.VirtualizationMode="Recycling">
+                        VirtualizingStackPanel.VirtualizationMode="Recycling"
+                        >
                         <ui:ListView.ItemContainerStyle>
                             <Style TargetType="{x:Type ListViewItem}">
                                 <Setter Property="Focusable" Value="False" />
@@ -161,7 +177,8 @@
                                                 VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                                 Content="{TemplateBinding Content}"
                                                 ContentStringFormat="{TemplateBinding ContentStringFormat}"
-                                                ContentTemplate="{TemplateBinding ContentTemplate}" />
+                                                ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                />
                                         </ControlTemplate>
                                     </Setter.Value>
                                 </Setter>
@@ -174,7 +191,10 @@
                         </ui:ListView.ItemsPanel>
                         <ui:ListView.ItemTemplate>
                             <DataTemplate>
-                                <ItemsControl Focusable="False" ItemsSource="{Binding Items}">
+                                <ItemsControl
+                                    Focusable="False"
+                                    ItemsSource="{Binding Items}"
+                                    >
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
                                             <StackPanel Orientation="Horizontal" />
@@ -186,7 +206,8 @@
                                                 AutomationProperties.Name="{Binding Name}"
                                                 Click="IconTile_Click"
                                                 Style="{StaticResource IconTileButtonStyle}"
-                                                ToolTip="{Binding Name}" />
+                                                ToolTip="{Binding Name}"
+                                                />
                                         </DataTemplate>
                                     </ItemsControl.ItemTemplate>
                                 </ItemsControl>
@@ -201,7 +222,8 @@
                         VerticalAlignment="Top"
                         Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                         Text="No icons found."
-                        Visibility="Collapsed" />
+                        Visibility="Collapsed"
+                        />
 
                     <Border
                         x:Name="IconDetailsPanel"
@@ -209,7 +231,8 @@
                         Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                         BorderBrush="{DynamicResource DividerStrokeColorDefaultBrush}"
                         BorderThickness="1,0,0,0"
-                        CornerRadius="0,7,7,0">
+                        CornerRadius="0,7,7,0"
+                        >
                         <ui:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
                             <StackPanel Margin="20,20,12,20">
                                 <Border
@@ -220,21 +243,29 @@
                                     Background="{DynamicResource ControlFillColorDefaultBrush}"
                                     BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
                                     BorderThickness="1"
-                                    CornerRadius="{DynamicResource ControlCornerRadius}">
+                                    CornerRadius="{DynamicResource ControlCornerRadius}"
+                                    >
                                     <ui:FontIcon
                                         x:Name="IconPreviewGlyph"
                                         HorizontalAlignment="Center"
                                         VerticalAlignment="Center"
-                                        IconFontSize="40" />
+                                        IconFontSize="40"
+                                        />
                                 </Border>
 
-                                <TextBlock Style="{StaticResource FieldLabelStyle}" Text="Icon name" />
+                                <TextBlock
+                                    Style="{StaticResource FieldLabelStyle}"
+                                    Text="Icon name"
+                                    />
                                 <Grid Margin="0,0,0,14">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock x:Name="IconNameValueText" Style="{StaticResource IconDetailValueStyle}" />
+                                    <TextBlock
+                                        x:Name="IconNameValueText"
+                                        Style="{StaticResource IconDetailValueStyle}"
+                                        />
                                     <ui:Button
                                         x:Name="CopyIconNameButton"
                                         Grid.Column="1"
@@ -245,18 +276,28 @@
                                         Padding="0"
                                         VerticalAlignment="Center"
                                         AutomationProperties.Name="Copy icon name"
-                                        ToolTip="Copy icon name">
-                                        <ui:FontIcon Glyph="&#xE8C8;" IconFontSize="16" />
+                                        ToolTip="Copy icon name"
+                                        >
+                                        <ui:FontIcon
+                                            Glyph="&#xE8C8;"
+                                            IconFontSize="16"
+                                            />
                                     </ui:Button>
                                 </Grid>
 
-                                <TextBlock Style="{StaticResource FieldLabelStyle}" Text="Text glyph" />
+                                <TextBlock
+                                    Style="{StaticResource FieldLabelStyle}"
+                                    Text="Text glyph"
+                                    />
                                 <Grid Margin="0,0,0,14">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock x:Name="IconTextGlyphValueText" Style="{StaticResource IconDetailValueStyle}" />
+                                    <TextBlock
+                                        x:Name="IconTextGlyphValueText"
+                                        Style="{StaticResource IconDetailValueStyle}"
+                                        />
                                     <ui:Button
                                         x:Name="CopyTextGlyphButton"
                                         Grid.Column="1"
@@ -267,18 +308,28 @@
                                         Padding="0"
                                         VerticalAlignment="Center"
                                         AutomationProperties.Name="Copy text glyph"
-                                        ToolTip="Copy text glyph">
-                                        <ui:FontIcon Glyph="&#xE8C8;" IconFontSize="16" />
+                                        ToolTip="Copy text glyph"
+                                        >
+                                        <ui:FontIcon
+                                            Glyph="&#xE8C8;"
+                                            IconFontSize="16"
+                                            />
                                     </ui:Button>
                                 </Grid>
 
-                                <TextBlock Style="{StaticResource FieldLabelStyle}" Text="Code glyph" />
+                                <TextBlock
+                                    Style="{StaticResource FieldLabelStyle}"
+                                    Text="Code glyph"
+                                    />
                                 <Grid Margin="0,0,0,14">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock x:Name="IconCodeGlyphValueText" Style="{StaticResource IconDetailValueStyle}" />
+                                    <TextBlock
+                                        x:Name="IconCodeGlyphValueText"
+                                        Style="{StaticResource IconDetailValueStyle}"
+                                        />
                                     <ui:Button
                                         x:Name="CopyCodeGlyphButton"
                                         Grid.Column="1"
@@ -289,18 +340,28 @@
                                         Padding="0"
                                         VerticalAlignment="Center"
                                         AutomationProperties.Name="Copy code glyph"
-                                        ToolTip="Copy code glyph">
-                                        <ui:FontIcon Glyph="&#xE8C8;" IconFontSize="16" />
+                                        ToolTip="Copy code glyph"
+                                        >
+                                        <ui:FontIcon
+                                            Glyph="&#xE8C8;"
+                                            IconFontSize="16"
+                                            />
                                     </ui:Button>
                                 </Grid>
 
-                                <TextBlock Style="{StaticResource FieldLabelStyle}" Text="FontIcon XAML" />
+                                <TextBlock
+                                    Style="{StaticResource FieldLabelStyle}"
+                                    Text="FontIcon XAML"
+                                    />
                                 <Grid Margin="0,0,0,14">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock x:Name="IconXamlValueText" Style="{StaticResource IconDetailValueStyle}" />
+                                    <TextBlock
+                                        x:Name="IconXamlValueText"
+                                        Style="{StaticResource IconDetailValueStyle}"
+                                        />
                                     <ui:Button
                                         x:Name="CopyXamlButton"
                                         Grid.Column="1"
@@ -311,18 +372,28 @@
                                         Padding="0"
                                         VerticalAlignment="Center"
                                         AutomationProperties.Name="Copy FontIcon XAML"
-                                        ToolTip="Copy FontIcon XAML">
-                                        <ui:FontIcon Glyph="&#xE8C8;" IconFontSize="16" />
+                                        ToolTip="Copy FontIcon XAML"
+                                        >
+                                        <ui:FontIcon
+                                            Glyph="&#xE8C8;"
+                                            IconFontSize="16"
+                                            />
                                     </ui:Button>
                                 </Grid>
 
-                                <TextBlock Style="{StaticResource FieldLabelStyle}" Text="FontIcon C#" />
+                                <TextBlock
+                                    Style="{StaticResource FieldLabelStyle}"
+                                    Text="FontIcon C#"
+                                    />
                                 <Grid Margin="0,0,0,14">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="Auto" />
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock x:Name="IconCSharpValueText" Style="{StaticResource IconDetailValueStyle}" />
+                                    <TextBlock
+                                        x:Name="IconCSharpValueText"
+                                        Style="{StaticResource IconDetailValueStyle}"
+                                        />
                                     <ui:Button
                                         x:Name="CopyCSharpButton"
                                         Grid.Column="1"
@@ -333,19 +404,30 @@
                                         Padding="0"
                                         VerticalAlignment="Center"
                                         AutomationProperties.Name="Copy FontIcon C#"
-                                        ToolTip="Copy FontIcon C#">
-                                        <ui:FontIcon Glyph="&#xE8C8;" IconFontSize="16" />
+                                        ToolTip="Copy FontIcon C#"
+                                        >
+                                        <ui:FontIcon
+                                            Glyph="&#xE8C8;"
+                                            IconFontSize="16"
+                                            />
                                     </ui:Button>
                                 </Grid>
 
-                                <TextBlock Style="{StaticResource FieldLabelStyle}" Text="Tags" />
-                                <WrapPanel x:Name="IconTagsPanel" Margin="0,2,0,0" />
+                                <TextBlock
+                                    Style="{StaticResource FieldLabelStyle}"
+                                    Text="Tags"
+                                    />
+                                <WrapPanel
+                                    x:Name="IconTagsPanel"
+                                    Margin="0,2,0,0"
+                                    />
                                 <TextBlock
                                     x:Name="IconNoTagsText"
                                     Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                     Style="{StaticResource CaptionTextBlockStyle}"
                                     Text="No tags available."
-                                    Visibility="Collapsed" />
+                                    Visibility="Collapsed"
+                                    />
                             </StackPanel>
                         </ui:SmoothScrollViewer>
                     </Border>

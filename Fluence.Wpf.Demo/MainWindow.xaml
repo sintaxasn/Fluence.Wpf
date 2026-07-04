@@ -14,7 +14,8 @@
     RenderOptions.BitmapScalingMode="HighQuality"
     SystemBackdropType="Mica"
     TitleBarHeight="42"
-    UseLayoutRounding="True">
+    UseLayoutRounding="True"
+    >
 
     <ui:FluenceWindow.TitleBar>
         <ui:TitleBar
@@ -22,7 +23,8 @@
             Height="{Binding TitleBarHeight, RelativeSource={RelativeSource AncestorType=ui:FluenceWindow}}"
             BackRequested="ShellTitleBar_BackRequested"
             PaneToggleRequested="ShellTitleBar_PaneToggleRequested"
-            SizeChanged="TitleBarLayout_SizeChanged">
+            SizeChanged="TitleBarLayout_SizeChanged"
+            >
             <ui:TextBox
                 x:Name="NavSearchBox"
                 Width="300"
@@ -35,11 +37,15 @@
                 PreviewKeyDown="NavSearchBox_PreviewKeyDown"
                 Style="{StaticResource TitleBarSearchBoxStyle}"
                 TextChanged="NavSearchBox_TextChanged"
-                WindowChrome.IsHitTestVisibleInChrome="True" />
+                WindowChrome.IsHitTestVisibleInChrome="True"
+                />
         </ui:TitleBar>
     </ui:FluenceWindow.TitleBar>
 
-    <Grid x:Name="ShellRoot" ClipToBounds="True">
+    <Grid
+        x:Name="ShellRoot"
+        ClipToBounds="True"
+        >
         <ui:NavigationView
             x:Name="DemoNav"
             Background="Transparent"
@@ -48,16 +54,21 @@
             IsPaneOpen="True"
             IsPaneToggleButtonVisible="True"
             PaneDisplayMode="Left"
-            SelectedIndex="0">
+            SelectedIndex="0"
+            >
             <ui:NavigationView.FooterMenuItems>
                 <ui:NavigationViewItem
                     x:Name="SettingsNavigationItem"
                     AutomationProperties.Name="Settings"
                     Content="Settings"
                     Tag="settings"
-                    ToolTip="Settings">
+                    ToolTip="Settings"
+                    >
                     <ui:NavigationViewItem.Icon>
-                        <ui:FontIcon Glyph="&#xE713;" IconFontSize="16" />
+                        <ui:FontIcon
+                            Glyph="&#xE713;"
+                            IconFontSize="16"
+                            />
                     </ui:NavigationViewItem.Icon>
                 </ui:NavigationViewItem>
             </ui:NavigationView.FooterMenuItems>
