@@ -49,4 +49,19 @@ foreach ($dest in $map.Keys)
     Get-ChildItem -Path $src -Filter '*.dll' | Copy-Item -Destination $out -Force
 }
 
-Write-Output 'Staged Fluence.Wpf assemblies into the module lib folder.'
+# Stage the out-of-process dialog host. It is launched with Process.Start and never loaded
+# in-process, so it ships as a single modern TFM regardless of the caller's PowerShell edition.
+# The stale-cleanup loop above deletes every lib subfolder, so lib\host is recreated each run.
+$hostTfm  = 'net10.0-windows10.0.26100.0'
+$hostProj = Join-Path $repo 'Fluence.Wpf.Specs.Host\Fluence.Wpf.Specs.Host.csproj'
+& dotnet build $hostProj -c $Configuration -f $hostTfm
+if ($LASTEXITCODE -ne 0) { throw 'Build failed for Fluence.Wpf.Specs.Host' }
+
+$hostSrc = Join-Path $repo "Fluence.Wpf.Specs.Host\bin\$Configuration\$hostTfm"
+$hostOut = Join-Path $lib 'host'
+New-Item -ItemType Directory -Path $hostOut -Force | Out-Null
+Get-ChildItem -Path $hostSrc -File |
+    Where-Object { $_.Extension -in '.dll', '.exe', '.json' } |
+    Copy-Item -Destination $hostOut -Force
+
+Write-Output 'Staged Fluence.Wpf assemblies and the remote host into the module lib folder.'

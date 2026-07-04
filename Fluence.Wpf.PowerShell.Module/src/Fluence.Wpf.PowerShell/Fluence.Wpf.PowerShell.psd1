@@ -23,7 +23,9 @@
         'New-FluenceSpec',
         'New-FluenceRule',
         'New-FluenceDialogSpec',
-        'Show-FluenceDialogSpec'
+        'Show-FluenceDialogSpec',
+        'Show-FluenceRemoteDialog',
+        'Close-FluenceRemoteHost'
     )
     CmdletsToExport      = @()
     VariablesToExport    = @()

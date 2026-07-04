@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <RootNamespace>Fluence.Wpf.Specs.Host</RootNamespace>
+    <AssemblyName>Fluence.Wpf.Specs.Host</AssemblyName>
+    <Description>Standalone same-user Fluence UI host showing composed spec dialogs out of process</Description>
+    <ApplicationIcon>..\assets\Fluence_Icon_Light.ico</ApplicationIcon>
+    <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
+    <!--
+      VSTHRD002: the synchronous [STAThread] Main must join the background pipe loop's exit code
+      after Application.Run returns; there is no async entry point alternative for a WPF host.
+    -->
+    <NoWarn>$(NoWarn);CS1591;VSTHRD001;VSTHRD002</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Fluence.Wpf\Fluence.Wpf.csproj" />
+  </ItemGroup>
+
+</Project>

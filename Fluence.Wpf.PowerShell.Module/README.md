@@ -100,6 +100,8 @@ and `Close-FluenceWindow -Result <value>` closes the window and sets its return 
 | `New-FluenceRule` | Build declarative validation rules (NotEmpty, Pattern, Length, Range) for spec input elements. |
 | `New-FluenceDialogSpec` | Compose a serializable DialogSpec from spec elements and buttons, validated fail-fast. |
 | `Show-FluenceDialogSpec` | Materialize and show a DialogSpec in-process (round-tripped through the versioned spec serializer); returns the clicked button and harvested values. |
+| `Show-FluenceRemoteDialog` | Show a DialogSpec in a separate, same-user host process (avoiding the in-process second-`ShowDialog()` hang); same parameters and `Fluence.SpecDialogResult` shape as `Show-FluenceDialogSpec`, plus `-TimeoutSeconds` for unattended self-dismiss. |
+| `Close-FluenceRemoteHost` | Tear down the out-of-process dialog host started by `Show-FluenceRemoteDialog` (also runs automatically on module removal). |
 
 ---
 

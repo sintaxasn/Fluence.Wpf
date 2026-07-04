@@ -8,6 +8,14 @@
     <Product>Fluence.Wpf.Specs</Product>
     <Title>Fluence.Wpf.Specs</Title>
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <!--
+      VSTHRD002: FluenceRemoteHostController is deliberately a synchronous facade for PowerShell
+      callers (no synchronization context involved), so its bounded sync-over-async waits are the
+      design, not an oversight. S2952: the controller disposes its pipe/process fields from a
+      shared cleanup path reused by both Dispose and the relaunch-after-host-exit path; Sonar only
+      credits disposals lexically inside Dispose.
+    -->
+    <NoWarn>$(NoWarn);VSTHRD002;S2952</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

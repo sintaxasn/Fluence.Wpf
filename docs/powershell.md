@@ -50,6 +50,58 @@ for setup, the full command reference, and runnable examples.
 
 ---
 
+## Remote dialogs (out-of-process host)
+
+`Show-FluenceDialogSpec` renders a composed dialog spec in the calling PowerShell process. That
+is fine for a single dialog, but a second `ShowDialog()` in the same process is a well-known
+hang risk in PowerShell. `Show-FluenceRemoteDialog` sidesteps it entirely: it shows the
+identical dialog in a separate, same-user host process (`Fluence.Wpf.Specs.Host.exe`), so a
+script can open dialog after dialog in one session without ever blocking its own thread.
+
+```powershell
+$dialog = New-FluenceDialogSpec -Title 'Contoso IT' -Content @(
+    New-FluenceSpec TextBlock -Text 'Before we upgrade, tell us where you sit.'
+    New-FluenceSpec TextBox   -Name Desk -PlaceholderText 'Desk number' -Rules (New-FluenceRule -NotEmpty)
+) -Buttons (New-FluenceButton -Text 'Continue' -IsDefault), 'Defer'
+
+# Same parameters and same Fluence.SpecDialogResult shape as Show-FluenceDialogSpec,
+# plus an optional -TimeoutSeconds for unattended self-dismiss.
+$result = Show-FluenceRemoteDialog -Spec $dialog -Theme Dark -TimeoutSeconds 120
+$result.Button        # 'Continue', 'Defer', or 'Cancelled' (timeout / window close)
+$result.Values.Desk
+
+Close-FluenceRemoteHost   # explicit teardown; also runs automatically on module removal
+```
+
+The host process starts lazily on the first `Show-FluenceRemoteDialog` call and is reused for
+the rest of the session. The spec crosses the process boundary as the same opaque, versioned
+binary envelope the in-process path already round-trips, so the returned object is a
+`Fluence.SpecDialogResult` with the identical `Button` / `Values` shape - a drop-in swap for
+`Show-FluenceDialogSpec`. `-TimeoutSeconds` asks the host to close the dialog by itself after
+that many seconds, yielding `Button = 'Cancelled'` exactly as a user dismissal would;
+`RemoteDialogStress.ps1` in the module's `examples` folder demonstrates many timeout-dismissed
+cycles completing without a hang.
+
+Because the caller and host never share a process, the calling PowerShell edition does not
+matter - the same feature works from Windows PowerShell 5.1 and PowerShell 7+, on STA or MTA
+hosts.
+
+### Troubleshooting
+
+- **`Fluence.Wpf.Specs.Host.exe not found ...`** - the module was imported before the remote
+  host was staged into `lib\host\`. Run `build\Build-Module.ps1` (which builds and stages the
+  host alongside the per-edition `Fluence.Wpf.dll`), then re-import the module.
+- **`The Fluence remote host pipe closed unexpectedly ...`** - the host process exited before it
+  answered. The message includes the exit code and any host `stderr`; the most common cause is a
+  missing .NET Desktop Runtime for the host's target framework on the machine. Install the
+  matching runtime, or run the host executable directly to see its startup error.
+- **`The Fluence remote host did not respond within ...`** - the dialog stayed open past the
+  transport timeout. Provide a `-TimeoutSeconds` for unattended runs so the dialog self-dismisses
+  instead of waiting on a human. On timeout the host process is terminated and the next call
+  starts a fresh one.
+
+---
+
 ## Raw WPF from PowerShell
 
 The sections below cover the lower-level path: loading the Fluence.Wpf assembly directly

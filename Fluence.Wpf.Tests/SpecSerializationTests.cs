@@ -144,6 +144,76 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void SerializeRemoteRequest_RoundTrips_ByteStable()
+        {
+            RemoteDialogRequest request = new()
+            {
+                SpecBase64 = SpecSerialization.SerializeToBase64(BuildUserFlowSpec()),
+                Theme = "Dark",
+                Backdrop = "Acrylic",
+                AccentColorText = "#FF0078D4",
+                Topmost = true,
+                TimeoutSeconds = 30,
+            };
+
+            byte[] first = SpecSerialization.SerializeRemoteRequest(request);
+            RemoteDialogRequest back = SpecSerialization.DeserializeRemoteRequest(first);
+            byte[] second = SpecSerialization.SerializeRemoteRequest(back);
+
+            CollectionAssert.AreEqual(first, second, "serialize(deserialize(bytes)) must be byte-identical");
+            Assert.AreEqual("Dark", back.Theme);
+            Assert.AreEqual("Acrylic", back.Backdrop);
+            Assert.AreEqual("#FF0078D4", back.AccentColorText);
+            Assert.IsTrue(back.Topmost);
+            Assert.AreEqual(30, back.TimeoutSeconds);
+            Assert.IsNotNull(back.SpecBase64);
+            DialogSpec nested = SpecSerialization.DeserializeFromBase64(back.SpecBase64);
+            Assert.AreEqual("Contoso IT", nested.Title, "the nested spec envelope must survive the outer round-trip");
+        }
+
+        [TestMethod]
+        public void SerializeResult_RoundTrips_ByteStable_PreservingValueTypes()
+        {
+            SpecDialogResult result = new()
+            {
+                Button = "Continue",
+            };
+            result.Values["Desk"] = "42";
+            result.Values["Vpn"] = true;
+            result.Values["Count"] = 3.5;
+            result.Values["When"] = new DateTime(2026, 7, 4, 9, 30, 0, DateTimeKind.Unspecified);
+            result.Values["Span"] = TimeSpan.FromMinutes(90);
+            result.Values["Empty"] = null;
+
+            byte[] first = SpecSerialization.SerializeResult(result);
+            SpecDialogResult back = SpecSerialization.DeserializeResult(first);
+            byte[] second = SpecSerialization.SerializeResult(back);
+
+            CollectionAssert.AreEqual(first, second, "serialize(deserialize(bytes)) must be byte-identical");
+            Assert.AreEqual("Continue", back.Button);
+            Assert.AreEqual("42", back.Values["Desk"]);
+            Assert.IsTrue(back.Values["Vpn"] is true, "a boolean value must survive as a boxed bool");
+            Assert.AreEqual(3.5, back.Values["Count"]);
+            Assert.AreEqual(new DateTime(2026, 7, 4, 9, 30, 0, DateTimeKind.Unspecified), back.Values["When"]);
+            Assert.AreEqual(TimeSpan.FromMinutes(90), back.Values["Span"]);
+            Assert.IsNull(back.Values["Empty"]);
+        }
+
+        [TestMethod]
+        public void SerializeRemoteRequest_RejectsNull()
+        {
+            _ = Assert.ThrowsExactly<ArgumentNullException>(() => SpecSerialization.SerializeRemoteRequest(null!));
+            _ = Assert.ThrowsExactly<ArgumentNullException>(() => SpecSerialization.SerializeResult(null!));
+        }
+
+        [TestMethod]
+        public void DeserializeResult_RejectsEmptyData()
+        {
+            _ = Assert.ThrowsExactly<ArgumentException>(() => SpecSerialization.DeserializeResult([]));
+            _ = Assert.ThrowsExactly<ArgumentException>(() => SpecSerialization.DeserializeRemoteRequest([]));
+        }
+
+        [TestMethod]
         public void Deserialize_RejectsNewerSchemaVersion_WithActionableMessage()
         {
             // A contract-shaped stand-in lets the test author a future-versioned envelope without

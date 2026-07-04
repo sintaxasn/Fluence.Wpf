@@ -76,10 +76,7 @@ namespace Fluence.Wpf.Specs
                 throw new ArgumentNullException(nameof(spec));
             }
             SpecTreeValidator.Validate(spec);
-            byte[] payload = SerializeCore(spec, typeof(DialogSpec), SpecSettings);
-            string version = typeof(SpecSerialization).Assembly.GetName().Version?.ToString() ?? "0.0.0.0";
-            SpecEnvelope envelope = new(CurrentSchemaVersion, version, payload);
-            return SerializeCore(envelope, typeof(SpecEnvelope), EnvelopeSettings);
+            return SerializeEnveloped(spec, typeof(DialogSpec), SpecSettings);
         }
 
         /// <summary>
@@ -94,22 +91,63 @@ namespace Fluence.Wpf.Specs
         /// <exception cref="SerializationException">Thrown when the envelope or payload is malformed.</exception>
         public static DialogSpec Deserialize(byte[] data)
         {
-            if (data is null)
-            {
-                throw new ArgumentNullException(nameof(data));
-            }
-            if (data.Length == 0)
-            {
-                throw new ArgumentException("The spec envelope data is empty.", nameof(data));
-            }
-            SpecEnvelope envelope = (SpecEnvelope)DeserializeCore(data, typeof(SpecEnvelope), EnvelopeSettings);
-            return envelope.SchemaVersion < 1
-                ? throw new SerializationException(FormattableString.Invariant($"The spec envelope declares an invalid schema version ({envelope.SchemaVersion})."))
-                : envelope.SchemaVersion > CurrentSchemaVersion
-                ? throw new NotSupportedException(FormattableString.Invariant($"The spec envelope declares schema version {envelope.SchemaVersion} (written by Fluence.Wpf.Specs {envelope.SpecsAssemblyVersion}), which is newer than the highest version this build supports ({CurrentSchemaVersion}). Update Fluence.Wpf and Fluence.Wpf.Specs to a matching or newer build."))
-                : envelope.Payload is not byte[] payload || payload.Length == 0
-                ? throw new SerializationException("The spec envelope payload is missing or empty.")
-                : (DialogSpec)DeserializeCore(payload, typeof(DialogSpec), SpecSettings);
+            return (DialogSpec)DeserializeEnveloped(data, typeof(DialogSpec), SpecSettings);
+        }
+
+        /// <summary>
+        /// Serializes a remote dialog request into a versioned envelope blob for the host pipe.
+        /// </summary>
+        /// <param name="request">The remote dialog request to serialize.</param>
+        /// <returns>The envelope bytes.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="request"/> is null.</exception>
+        public static byte[] SerializeRemoteRequest(RemoteDialogRequest request)
+        {
+            return request is null
+                ? throw new ArgumentNullException(nameof(request))
+                : SerializeEnveloped(request, typeof(RemoteDialogRequest), EnvelopeSettings);
+        }
+
+        /// <summary>
+        /// Deserializes a versioned envelope blob back into a remote dialog request, failing loudly
+        /// on a newer-than-supported schema version.
+        /// </summary>
+        /// <param name="data">The envelope bytes produced by <see cref="SerializeRemoteRequest"/>.</param>
+        /// <returns>The remote dialog request.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="data"/> is null.</exception>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="data"/> is empty.</exception>
+        /// <exception cref="NotSupportedException">Thrown when the envelope schema version is newer than <see cref="CurrentSchemaVersion"/>.</exception>
+        /// <exception cref="SerializationException">Thrown when the envelope or payload is malformed.</exception>
+        public static RemoteDialogRequest DeserializeRemoteRequest(byte[] data)
+        {
+            return (RemoteDialogRequest)DeserializeEnveloped(data, typeof(RemoteDialogRequest), EnvelopeSettings);
+        }
+
+        /// <summary>
+        /// Serializes a dialog result into a versioned envelope blob for the host pipe.
+        /// </summary>
+        /// <param name="result">The dialog result to serialize.</param>
+        /// <returns>The envelope bytes.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="result"/> is null.</exception>
+        public static byte[] SerializeResult(SpecDialogResult result)
+        {
+            return result is null
+                ? throw new ArgumentNullException(nameof(result))
+                : SerializeEnveloped(result, typeof(SpecDialogResult), EnvelopeSettings);
+        }
+
+        /// <summary>
+        /// Deserializes a versioned envelope blob back into a dialog result, failing loudly on a
+        /// newer-than-supported schema version.
+        /// </summary>
+        /// <param name="data">The envelope bytes produced by <see cref="SerializeResult"/>.</param>
+        /// <returns>The dialog result.</returns>
+        /// <exception cref="ArgumentNullException">Thrown when <paramref name="data"/> is null.</exception>
+        /// <exception cref="ArgumentException">Thrown when <paramref name="data"/> is empty.</exception>
+        /// <exception cref="NotSupportedException">Thrown when the envelope schema version is newer than <see cref="CurrentSchemaVersion"/>.</exception>
+        /// <exception cref="SerializationException">Thrown when the envelope or payload is malformed.</exception>
+        public static SpecDialogResult DeserializeResult(byte[] data)
+        {
+            return (SpecDialogResult)DeserializeEnveloped(data, typeof(SpecDialogResult), EnvelopeSettings);
         }
 
         /// <summary>
@@ -133,6 +171,34 @@ namespace Fluence.Wpf.Specs
             return string.IsNullOrWhiteSpace(data)
                 ? throw new ArgumentException("The spec envelope string is null or empty.", nameof(data))
                 : Deserialize(Convert.FromBase64String(data));
+        }
+
+        private static byte[] SerializeEnveloped(object graph, Type rootType, DataContractSerializerSettings settings)
+        {
+            byte[] payload = SerializeCore(graph, rootType, settings);
+            string version = typeof(SpecSerialization).Assembly.GetName().Version?.ToString() ?? "0.0.0.0";
+            SpecEnvelope envelope = new(CurrentSchemaVersion, version, payload);
+            return SerializeCore(envelope, typeof(SpecEnvelope), EnvelopeSettings);
+        }
+
+        private static object DeserializeEnveloped(byte[] data, Type rootType, DataContractSerializerSettings settings)
+        {
+            if (data is null)
+            {
+                throw new ArgumentNullException(nameof(data));
+            }
+            if (data.Length == 0)
+            {
+                throw new ArgumentException("The spec envelope data is empty.", nameof(data));
+            }
+            SpecEnvelope envelope = (SpecEnvelope)DeserializeCore(data, typeof(SpecEnvelope), EnvelopeSettings);
+            return envelope.SchemaVersion < 1
+                ? throw new SerializationException(FormattableString.Invariant($"The spec envelope declares an invalid schema version ({envelope.SchemaVersion})."))
+                : envelope.SchemaVersion > CurrentSchemaVersion
+                ? throw new NotSupportedException(FormattableString.Invariant($"The spec envelope declares schema version {envelope.SchemaVersion} (written by Fluence.Wpf.Specs {envelope.SpecsAssemblyVersion}), which is newer than the highest version this build supports ({CurrentSchemaVersion}). Update Fluence.Wpf and Fluence.Wpf.Specs to a matching or newer build."))
+                : envelope.Payload is not byte[] payload || payload.Length == 0
+                ? throw new SerializationException("The spec envelope payload is missing or empty.")
+                : DeserializeCore(payload, rootType, settings);
         }
 
         private static byte[] SerializeCore(object graph, Type rootType, DataContractSerializerSettings settings)
