@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
+    xmlns:controls="clr-namespace:Fluence.Wpf.Controls"
+    >
 
     <!--
         Fluent Design ColorPicker style.
@@ -37,15 +38,22 @@
                             VerticalAlignment="Center"
                             Maximum="{TemplateBinding Maximum}"
                             Minimum="{TemplateBinding Minimum}"
-                            Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Value, Mode=TwoWay}">
+                            Value="{Binding RelativeSource={RelativeSource TemplatedParent}, Path=Value, Mode=TwoWay}"
+                            >
                             <Track.DecreaseRepeatButton>
-                                <RepeatButton Command="Slider.DecreaseLarge" Style="{DynamicResource SliderTrackSegmentStyle}" />
+                                <RepeatButton
+                                    Command="Slider.DecreaseLarge"
+                                    Style="{DynamicResource SliderTrackSegmentStyle}"
+                                    />
                             </Track.DecreaseRepeatButton>
                             <Track.Thumb>
                                 <Thumb Style="{DynamicResource SliderThumbStyle}" />
                             </Track.Thumb>
                             <Track.IncreaseRepeatButton>
-                                <RepeatButton Command="Slider.IncreaseLarge" Style="{DynamicResource SliderTrackSegmentStyle}" />
+                                <RepeatButton
+                                    Command="Slider.IncreaseLarge"
+                                    Style="{DynamicResource SliderTrackSegmentStyle}"
+                                    />
                             </Track.IncreaseRepeatButton>
                         </Track>
                     </Grid>
@@ -78,7 +86,8 @@
                     <Border
                         x:Name="MoreButtonFill"
                         Background="{TemplateBinding Background}"
-                        CornerRadius="{DynamicResource ControlCornerRadius}">
+                        CornerRadius="{DynamicResource ControlCornerRadius}"
+                        >
                         <ContentPresenter
                             Margin="{TemplateBinding Padding}"
                             HorizontalAlignment="Center"
@@ -86,7 +95,8 @@
                             RecognizesAccessKey="True"
                             TextElement.FontFamily="{TemplateBinding FontFamily}"
                             TextElement.FontSize="{TemplateBinding FontSize}"
-                            TextElement.Foreground="{TemplateBinding Foreground}" />
+                            TextElement.Foreground="{TemplateBinding Foreground}"
+                            />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -124,7 +134,8 @@
                         Padding="{TemplateBinding Padding}"
                         Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}">
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        >
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto" />
@@ -134,13 +145,14 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <!--  Saturation (x) by value (y) spectrum at the selected hue  -->
+                            <!-- Saturation (x) by value (y) spectrum at the selected hue -->
                             <Border
                                 x:Name="SpectrumSection"
                                 Grid.Row="0"
                                 HorizontalAlignment="Left"
                                 BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
-                                BorderThickness="1">
+                                BorderThickness="1"
+                                >
                                 <Grid
                                     x:Name="PART_SpectrumArea"
                                     Width="256"
@@ -148,8 +160,12 @@
                                     AutomationProperties.Name="Color spectrum"
                                     Background="Transparent"
                                     Focusable="True"
-                                    KeyboardNavigation.IsTabStop="True">
-                                    <Image x:Name="PART_SpectrumImage" Stretch="Fill" />
+                                    KeyboardNavigation.IsTabStop="True"
+                                    >
+                                    <Image
+                                        x:Name="PART_SpectrumImage"
+                                        Stretch="Fill"
+                                        />
                                     <Ellipse
                                         x:Name="PART_SpectrumThumb"
                                         Width="16"
@@ -158,66 +174,78 @@
                                         VerticalAlignment="Top"
                                         Fill="Transparent"
                                         IsHitTestVisible="False"
-                                        StrokeThickness="2" />
+                                        StrokeThickness="2"
+                                        />
                                 </Grid>
                             </Border>
 
-                            <!--  Hue channel: rainbow underlay painted by code-behind  -->
+                            <!-- Hue channel: rainbow underlay painted by code-behind -->
                             <Grid
                                 x:Name="HueSection"
                                 Grid.Row="1"
                                 Height="32"
-                                Margin="0,12,0,0">
+                                Margin="0,12,0,0"
+                                >
                                 <Border
                                     x:Name="HueGradientBorder"
                                     Height="12"
                                     VerticalAlignment="Center"
                                     BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
                                     BorderThickness="1"
-                                    CornerRadius="6" />
+                                    CornerRadius="6"
+                                    />
                                 <Slider
                                     x:Name="PART_HueSlider"
                                     LargeChange="30"
                                     Maximum="360"
                                     Minimum="0"
                                     SmallChange="1"
-                                    Style="{StaticResource ColorPickerChannelSliderStyle}" />
+                                    Style="{StaticResource ColorPickerChannelSliderStyle}"
+                                    />
                             </Grid>
 
-                            <!--  Alpha channel: checkerboard + live gradient painted by code-behind  -->
+                            <!-- Alpha channel: checkerboard + live gradient painted by code-behind -->
                             <Grid
                                 x:Name="AlphaSection"
                                 Grid.Row="2"
                                 Height="32"
-                                Margin="0,12,0,0">
+                                Margin="0,12,0,0"
+                                >
                                 <Border
                                     x:Name="AlphaCheckerboardBorder"
                                     Height="12"
                                     VerticalAlignment="Center"
-                                    CornerRadius="6" />
+                                    CornerRadius="6"
+                                    />
                                 <Border
                                     x:Name="AlphaGradientBorder"
                                     Height="12"
                                     VerticalAlignment="Center"
                                     BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
                                     BorderThickness="1"
-                                    CornerRadius="6" />
+                                    CornerRadius="6"
+                                    />
                                 <Slider
                                     x:Name="PART_AlphaSlider"
                                     LargeChange="16"
                                     Maximum="255"
                                     Minimum="0"
                                     SmallChange="1"
-                                    Style="{StaticResource ColorPickerChannelSliderStyle}" />
+                                    Style="{StaticResource ColorPickerChannelSliderStyle}"
+                                    />
                             </Grid>
 
-                            <!--  Preview swatches: current color and optional previous color  -->
+                            <!-- Preview swatches: current color and optional previous color -->
                             <Grid
                                 x:Name="SwatchSection"
                                 Grid.Row="3"
                                 Height="24"
-                                Margin="0,12,0,0">
-                                <Border x:Name="SwatchCheckerboardBorder" CornerRadius="4" />
+                                Margin="0,12,0,0"
+                                >
+                                <Border
+                                    x:Name="SwatchCheckerboardBorder"
+                                    CornerRadius="4"
+                                    />
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
@@ -226,16 +254,19 @@
                                     <Border
                                         x:Name="CurrentSwatchBorder"
                                         Grid.Column="0"
-                                        CornerRadius="4,0,0,4" />
+                                        CornerRadius="4,0,0,4"
+                                        />
                                     <Border
                                         x:Name="PreviousSwatchBorder"
                                         Grid.Column="1"
-                                        CornerRadius="0,4,4,0" />
+                                        CornerRadius="0,4,4,0"
+                                        />
                                 </Grid>
                                 <Border
                                     BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}"
                                     BorderThickness="1"
-                                    CornerRadius="4" />
+                                    CornerRadius="4"
+                                    />
                             </Grid>
 
                             <!--
@@ -245,7 +276,10 @@
                                 and alpha boxes commit live per keystroke via code-behind; the
                                 hex box commits on Enter or focus loss.
                             -->
-                            <StackPanel x:Name="TextEntryArea" Grid.Row="4">
+                            <StackPanel
+                                x:Name="TextEntryArea"
+                                Grid.Row="4"
+                                >
                                 <controls:ToggleButton
                                     x:Name="MoreButton"
                                     MinWidth="120"
@@ -253,17 +287,25 @@
                                     HorizontalAlignment="Right"
                                     AutomationProperties.Name="More options"
                                     Style="{StaticResource ColorPickerMoreButtonStyle}"
-                                    Visibility="Collapsed">
+                                    Visibility="Collapsed"
+                                    >
                                     <StackPanel Orientation="Horizontal">
-                                        <TextBlock x:Name="MoreButtonLabel" Text="More" />
+                                        <TextBlock
+                                            x:Name="MoreButtonLabel"
+                                            Text="More"
+                                            />
                                         <controls:FontIcon
                                             x:Name="MoreButtonGlyph"
                                             Margin="8,0,0,0"
                                             Glyph="&#xE70D;"
-                                            IconFontSize="12" />
+                                            IconFontSize="12"
+                                            />
                                     </StackPanel>
                                 </controls:ToggleButton>
-                                <Grid x:Name="TextEntryGrid" Margin="0,12,0,0">
+                                <Grid
+                                    x:Name="TextEntryGrid"
+                                    Margin="0,12,0,0"
+                                    >
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*" />
                                         <ColumnDefinition Width="8" />
@@ -280,7 +322,8 @@
                                         Width="120"
                                         HorizontalAlignment="Left"
                                         AutomationProperties.Name="Color model"
-                                        SelectedIndex="0">
+                                        SelectedIndex="0"
+                                        >
                                         <ComboBoxItem Content="RGB" />
                                         <ComboBoxItem Content="HSV" />
                                     </controls:ComboBox>
@@ -293,11 +336,13 @@
                                         AutomationProperties.Name="Hex"
                                         FontFamily="{TemplateBinding FontFamily}"
                                         FontSize="{TemplateBinding FontSize}"
-                                        MaxLength="9" />
+                                        MaxLength="9"
+                                        />
                                     <StackPanel
                                         Grid.Row="1"
                                         Grid.Column="0"
-                                        Grid.ColumnSpan="3">
+                                        Grid.ColumnSpan="3"
+                                        >
                                         <StackPanel x:Name="ColorChannelTextInputPanel">
                                             <Grid x:Name="RgbChannelPanel">
                                                 <Grid.ColumnDefinitions>
@@ -319,14 +364,16 @@
                                                     AutomationProperties.Name="Red"
                                                     FontFamily="{TemplateBinding FontFamily}"
                                                     FontSize="{TemplateBinding FontSize}"
-                                                    MaxLength="3" />
+                                                    MaxLength="3"
+                                                    />
                                                 <TextBlock
                                                     Grid.Row="0"
                                                     Grid.Column="2"
                                                     Margin="0,12,0,0"
                                                     VerticalAlignment="Center"
                                                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                    Text="Red" />
+                                                    Text="Red"
+                                                    />
                                                 <controls:TextBox
                                                     x:Name="PART_GreenTextBox"
                                                     Grid.Row="1"
@@ -336,14 +383,16 @@
                                                     AutomationProperties.Name="Green"
                                                     FontFamily="{TemplateBinding FontFamily}"
                                                     FontSize="{TemplateBinding FontSize}"
-                                                    MaxLength="3" />
+                                                    MaxLength="3"
+                                                    />
                                                 <TextBlock
                                                     Grid.Row="1"
                                                     Grid.Column="2"
                                                     Margin="0,12,0,0"
                                                     VerticalAlignment="Center"
                                                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                    Text="Green" />
+                                                    Text="Green"
+                                                    />
                                                 <controls:TextBox
                                                     x:Name="PART_BlueTextBox"
                                                     Grid.Row="2"
@@ -353,16 +402,21 @@
                                                     AutomationProperties.Name="Blue"
                                                     FontFamily="{TemplateBinding FontFamily}"
                                                     FontSize="{TemplateBinding FontSize}"
-                                                    MaxLength="3" />
+                                                    MaxLength="3"
+                                                    />
                                                 <TextBlock
                                                     Grid.Row="2"
                                                     Grid.Column="2"
                                                     Margin="0,12,0,0"
                                                     VerticalAlignment="Center"
                                                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                    Text="Blue" />
+                                                    Text="Blue"
+                                                    />
                                             </Grid>
-                                            <Grid x:Name="HsvChannelPanel" Visibility="Collapsed">
+                                            <Grid
+                                                x:Name="HsvChannelPanel"
+                                                Visibility="Collapsed"
+                                                >
                                                 <Grid.ColumnDefinitions>
                                                     <ColumnDefinition Width="Auto" />
                                                     <ColumnDefinition Width="8" />
@@ -382,14 +436,16 @@
                                                     AutomationProperties.Name="Hue"
                                                     FontFamily="{TemplateBinding FontFamily}"
                                                     FontSize="{TemplateBinding FontSize}"
-                                                    MaxLength="3" />
+                                                    MaxLength="3"
+                                                    />
                                                 <TextBlock
                                                     Grid.Row="0"
                                                     Grid.Column="2"
                                                     Margin="0,12,0,0"
                                                     VerticalAlignment="Center"
                                                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                    Text="Hue" />
+                                                    Text="Hue"
+                                                    />
                                                 <controls:TextBox
                                                     x:Name="PART_SaturationTextBox"
                                                     Grid.Row="1"
@@ -399,14 +455,16 @@
                                                     AutomationProperties.Name="Saturation"
                                                     FontFamily="{TemplateBinding FontFamily}"
                                                     FontSize="{TemplateBinding FontSize}"
-                                                    MaxLength="3" />
+                                                    MaxLength="3"
+                                                    />
                                                 <TextBlock
                                                     Grid.Row="1"
                                                     Grid.Column="2"
                                                     Margin="0,12,0,0"
                                                     VerticalAlignment="Center"
                                                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                    Text="Saturation" />
+                                                    Text="Saturation"
+                                                    />
                                                 <controls:TextBox
                                                     x:Name="PART_ValueTextBox"
                                                     Grid.Row="2"
@@ -416,14 +474,16 @@
                                                     AutomationProperties.Name="Value"
                                                     FontFamily="{TemplateBinding FontFamily}"
                                                     FontSize="{TemplateBinding FontSize}"
-                                                    MaxLength="3" />
+                                                    MaxLength="3"
+                                                    />
                                                 <TextBlock
                                                     Grid.Row="2"
                                                     Grid.Column="2"
                                                     Margin="0,12,0,0"
                                                     VerticalAlignment="Center"
                                                     Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                    Text="Value" />
+                                                    Text="Value"
+                                                    />
                                             </Grid>
                                         </StackPanel>
                                         <Grid x:Name="AlphaInputPanel">
@@ -440,13 +500,15 @@
                                                 AutomationProperties.Name="Opacity"
                                                 FontFamily="{TemplateBinding FontFamily}"
                                                 FontSize="{TemplateBinding FontSize}"
-                                                MaxLength="4" />
+                                                MaxLength="4"
+                                                />
                                             <TextBlock
                                                 Grid.Column="2"
                                                 Margin="0,12,0,0"
                                                 VerticalAlignment="Center"
                                                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                                                Text="Opacity" />
+                                                Text="Opacity"
+                                                />
                                         </Grid>
                                     </StackPanel>
                                 </Grid>
@@ -460,7 +522,7 @@
                         <Trigger Property="IsColorSliderVisible" Value="False">
                             <Setter TargetName="HueSection" Property="Visibility" Value="Collapsed" />
                         </Trigger>
-                        <!--  Alpha visibility flags AND with IsAlphaEnabled (either trigger collapses).  -->
+                        <!-- Alpha visibility flags AND with IsAlphaEnabled (either trigger collapses). -->
                         <Trigger Property="IsAlphaEnabled" Value="False">
                             <Setter TargetName="AlphaSection" Property="Visibility" Value="Collapsed" />
                             <Setter TargetName="AlphaInputPanel" Property="Visibility" Value="Collapsed" />
@@ -478,7 +540,7 @@
                         <Trigger Property="IsHexInputVisible" Value="False">
                             <Setter TargetName="PART_HexTextBox" Property="Visibility" Value="Collapsed" />
                         </Trigger>
-                        <!--  Channel collapse leaves the hex and alpha inputs; hex shifts left into the freed column.  -->
+                        <!-- Channel collapse leaves the hex and alpha inputs; hex shifts left into the freed column. -->
                         <Trigger Property="IsColorChannelTextInputVisible" Value="False">
                             <Setter TargetName="ColorRepresentationComboBox" Property="Visibility" Value="Collapsed" />
                             <Setter TargetName="ColorChannelTextInputPanel" Property="Visibility" Value="Collapsed" />
@@ -488,7 +550,7 @@
                         <Trigger Property="IsMoreButtonVisible" Value="True">
                             <Setter TargetName="MoreButton" Property="Visibility" Value="Visible" />
                         </Trigger>
-                        <!--  More mode: the text-entry grid stays collapsed until the toggle is checked.  -->
+                        <!-- More mode: the text-entry grid stays collapsed until the toggle is checked. -->
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsMoreButtonVisible" Value="True" />

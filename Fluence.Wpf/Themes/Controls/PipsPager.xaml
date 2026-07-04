@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
+    xmlns:controls="clr-namespace:Fluence.Wpf.Controls"
+    >
 
     <!--
         Fluent Design PipsPager style.
@@ -39,7 +40,8 @@
                             Height="4"
                             HorizontalAlignment="Center"
                             VerticalAlignment="Center"
-                            Fill="{DynamicResource ControlStrongFillColorDefaultBrush}" />
+                            Fill="{DynamicResource ControlStrongFillColorDefaultBrush}"
+                            />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <!--
@@ -62,16 +64,10 @@
                                 <BeginStoryboard>
                                     <Storyboard>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Pip" Storyboard.TargetProperty="Width">
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
-                                                KeyTime="0:0:0.083"
-                                                Value="5" />
+                                            <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.083" Value="5" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Pip" Storyboard.TargetProperty="Height">
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
-                                                KeyTime="0:0:0.083"
-                                                Value="5" />
+                                            <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.083" Value="5" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </BeginStoryboard>
@@ -80,16 +76,10 @@
                                 <BeginStoryboard>
                                     <Storyboard>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Pip" Storyboard.TargetProperty="Width">
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
-                                                KeyTime="0:0:0.083"
-                                                Value="4" />
+                                            <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.083" Value="4" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Pip" Storyboard.TargetProperty="Height">
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
-                                                KeyTime="0:0:0.083"
-                                                Value="4" />
+                                            <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.083" Value="4" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </BeginStoryboard>
@@ -104,16 +94,10 @@
                                 <BeginStoryboard>
                                     <Storyboard>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Pip" Storyboard.TargetProperty="Width">
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
-                                                KeyTime="0:0:0.083"
-                                                Value="6" />
+                                            <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.083" Value="6" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Pip" Storyboard.TargetProperty="Height">
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
-                                                KeyTime="0:0:0.083"
-                                                Value="6" />
+                                            <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.083" Value="6" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </BeginStoryboard>
@@ -122,16 +106,10 @@
                                 <BeginStoryboard>
                                     <Storyboard>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Pip" Storyboard.TargetProperty="Width">
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
-                                                KeyTime="0:0:0.083"
-                                                Value="4" />
+                                            <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.083" Value="4" />
                                         </DoubleAnimationUsingKeyFrames>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Pip" Storyboard.TargetProperty="Height">
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
-                                                KeyTime="0:0:0.083"
-                                                Value="4" />
+                                            <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.083" Value="4" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </BeginStoryboard>
@@ -159,8 +137,12 @@
                     <Border
                         x:Name="ButtonPlate"
                         Background="{TemplateBinding Background}"
-                        CornerRadius="{DynamicResource ControlCornerRadius}">
-                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        CornerRadius="{DynamicResource ControlCornerRadius}"
+                        >
+                        <ContentPresenter
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            />
                     </Border>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -201,35 +183,43 @@
                         Padding="{TemplateBinding Padding}"
                         Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}">
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        >
                         <StackPanel Orientation="{TemplateBinding Orientation}">
                             <Button
                                 x:Name="PART_PreviousButton"
                                 AutomationProperties.Name="Previous page"
                                 Style="{StaticResource PipsPagerNavigationButtonStyle}"
                                 ToolTip="Previous page"
-                                Visibility="Collapsed">
+                                Visibility="Collapsed"
+                                >
                                 <controls:FontIcon
                                     x:Name="PreviousGlyph"
                                     Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
                                     Glyph="&#xE76B;"
                                     IconFontSize="8"
-                                    IsHitTestVisible="False" />
+                                    IsHitTestVisible="False"
+                                    />
                             </Button>
-                            <!--  Pip ToggleButtons are generated in code via UpdatePips() in OnApplyTemplate.  -->
-                            <StackPanel x:Name="PART_PipsHost" Orientation="{TemplateBinding Orientation}" />
+                            <!-- Pip ToggleButtons are generated in code via UpdatePips() in OnApplyTemplate. -->
+                            <StackPanel
+                                x:Name="PART_PipsHost"
+                                Orientation="{TemplateBinding Orientation}"
+                                />
                             <Button
                                 x:Name="PART_NextButton"
                                 AutomationProperties.Name="Next page"
                                 Style="{StaticResource PipsPagerNavigationButtonStyle}"
                                 ToolTip="Next page"
-                                Visibility="Collapsed">
+                                Visibility="Collapsed"
+                                >
                                 <controls:FontIcon
                                     x:Name="NextGlyph"
                                     Foreground="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type Button}}}"
                                     Glyph="&#xE76C;"
                                     IconFontSize="8"
-                                    IsHitTestVisible="False" />
+                                    IsHitTestVisible="False"
+                                    />
                             </Button>
                         </StackPanel>
                     </Border>

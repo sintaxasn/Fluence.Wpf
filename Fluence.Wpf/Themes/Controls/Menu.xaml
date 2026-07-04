@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
+    xmlns:controls="clr-namespace:Fluence.Wpf.Controls"
+    >
 
     <!--
         Fluent Design Menu (horizontal menu bar) style.
@@ -30,7 +31,8 @@
                         Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
-                        UseLayoutRounding="{TemplateBinding UseLayoutRounding}">
+                        UseLayoutRounding="{TemplateBinding UseLayoutRounding}"
+                        >
                         <ItemsPresenter />
                     </Border>
                 </ControlTemplate>

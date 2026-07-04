@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
+    xmlns:controls="clr-namespace:Fluence.Wpf.Controls"
+    >
 
     <!--
         Fluent Design ToolTip style.
@@ -30,13 +31,15 @@
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
                         CornerRadius="{DynamicResource OverlayCornerRadius}"
-                        UseLayoutRounding="True">
+                        UseLayoutRounding="True"
+                        >
                         <ContentPresenter
                             HorizontalAlignment="Left"
                             VerticalAlignment="Top"
                             TextElement.FontFamily="{TemplateBinding FontFamily}"
                             TextElement.FontSize="{TemplateBinding FontSize}"
-                            TextElement.Foreground="{TemplateBinding Foreground}" />
+                            TextElement.Foreground="{TemplateBinding Foreground}"
+                            />
                     </Border>
                 </ControlTemplate>
             </Setter.Value>

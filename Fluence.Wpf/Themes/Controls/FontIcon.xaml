@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
+    xmlns:controls="clr-namespace:Fluence.Wpf.Controls"
+    >
 
     <Style TargetType="{x:Type controls:FontIcon}">
         <Setter Property="Focusable" Value="False" />
@@ -23,7 +24,8 @@
                             FontFamily="{TemplateBinding IconFontFamily}"
                             FontSize="{TemplateBinding IconFontSize}"
                             Foreground="{TemplateBinding Foreground}"
-                            Text="{TemplateBinding Glyph}">
+                            Text="{TemplateBinding Glyph}"
+                            >
                             <TextBlock.Style>
                                 <Style TargetType="TextBlock">
                                     <Style.Triggers>

@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
+    xmlns:controls="clr-namespace:Fluence.Wpf.Controls"
+    >
 
     <!--
         Fluent Design BreadcrumbBar style.
@@ -47,7 +48,8 @@
                             Grid.Column="0"
                             Background="{TemplateBinding Background}"
                             CornerRadius="{DynamicResource ControlCornerRadius}"
-                            RenderTransformOrigin="0.5,0.5">
+                            RenderTransformOrigin="0.5,0.5"
+                            >
                             <Border.RenderTransform>
                                 <ScaleTransform x:Name="PressScale" ScaleX="1" ScaleY="1" />
                             </Border.RenderTransform>
@@ -60,7 +62,8 @@
                                 TextElement.FontFamily="{TemplateBinding FontFamily}"
                                 TextElement.FontSize="{TemplateBinding FontSize}"
                                 TextElement.FontWeight="{TemplateBinding FontWeight}"
-                                TextElement.Foreground="{TemplateBinding Foreground}" />
+                                TextElement.Foreground="{TemplateBinding Foreground}"
+                                />
                         </Border>
                         <controls:FontIcon
                             x:Name="ChevronIcon"
@@ -70,36 +73,25 @@
                             Foreground="{DynamicResource TextFillColorPrimaryBrush}"
                             Glyph="&#xE974;"
                             IconFontSize="12"
-                            IsHitTestVisible="False" />
+                            IsHitTestVisible="False"
+                            />
                     </Grid>
-                    <!--  Press scale storyboards mirror Button.xaml (0.98 over 100ms on the 0.8,0,0,1 ControlFastOutSlowIn spline).  -->
+                    <!-- Press scale storyboards mirror Button.xaml (0.98 over 100ms on the 0.8,0,0,1 ControlFastOutSlowIn spline). -->
                     <ControlTemplate.Resources>
                         <Storyboard x:Key="PressedScaleStoryboard">
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleX">
-                                <SplineDoubleKeyFrame
-                                    KeySpline="0.8,0,0,1"
-                                    KeyTime="0:0:0.1"
-                                    Value="0.98" />
+                                <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.1" Value="0.98" />
                             </DoubleAnimationUsingKeyFrames>
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleY">
-                                <SplineDoubleKeyFrame
-                                    KeySpline="0.8,0,0,1"
-                                    KeyTime="0:0:0.1"
-                                    Value="0.98" />
+                                <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.1" Value="0.98" />
                             </DoubleAnimationUsingKeyFrames>
                         </Storyboard>
                         <Storyboard x:Key="ReleasedScaleStoryboard">
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleX">
-                                <SplineDoubleKeyFrame
-                                    KeySpline="0.8,0,0,1"
-                                    KeyTime="0:0:0.1"
-                                    Value="1" />
+                                <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.1" Value="1" />
                             </DoubleAnimationUsingKeyFrames>
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleY">
-                                <SplineDoubleKeyFrame
-                                    KeySpline="0.8,0,0,1"
-                                    KeyTime="0:0:0.1"
-                                    Value="1" />
+                                <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.1" Value="1" />
                             </DoubleAnimationUsingKeyFrames>
                         </Storyboard>
                     </ControlTemplate.Resources>
@@ -162,7 +154,10 @@
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
-                    <StackPanel Focusable="False" Orientation="Horizontal" />
+                    <StackPanel
+                        Focusable="False"
+                        Orientation="Horizontal"
+                        />
                 </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>
@@ -173,7 +168,8 @@
                         Padding="{TemplateBinding Padding}"
                         Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
-                        BorderThickness="{TemplateBinding BorderThickness}">
+                        BorderThickness="{TemplateBinding BorderThickness}"
+                        >
                         <ItemsPresenter />
                     </Border>
                 </ControlTemplate>

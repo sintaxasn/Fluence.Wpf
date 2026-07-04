@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
+    xmlns:controls="clr-namespace:Fluence.Wpf.Controls"
+    >
 
     <!--
         Fluent Design ContextMenu + MenuItem + Separator styles.
@@ -12,9 +13,9 @@
         SharedSizeGroup "MenuIconCol" aligns icons across all items in a menu.
     -->
 
-    <!--  ═══════════════════════════════════════════════════════════  -->
-    <!--  ContextMenu container  -->
-    <!--  ═══════════════════════════════════════════════════════════  -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- ContextMenu container -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
     <Style TargetType="{x:Type controls:ContextMenu}">
         <Setter Property="Background" Value="{DynamicResource SolidBackgroundFillColorTertiaryBrush}" />
         <Setter Property="BorderBrush" Value="{DynamicResource SurfaceStrokeColorFlyoutBrush}" />
@@ -33,7 +34,8 @@
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
                         CornerRadius="{DynamicResource OverlayCornerRadius}"
-                        UseLayoutRounding="True">
+                        UseLayoutRounding="True"
+                        >
                         <Grid Grid.IsSharedSizeScope="True">
                             <ItemsPresenter />
                         </Grid>
@@ -44,12 +46,12 @@
         <Setter Property="UseLayoutRounding" Value="True" />
     </Style>
 
-    <!--  ═══════════════════════════════════════════════════════════  -->
-    <!--  MenuItem  -->
-    <!--  Handles SubmenuItem (leaf) and SubmenuHeader (has submenu).  -->
-    <!--  TopLevelItem / TopLevelHeader handled by same template with  -->
-    <!--  appropriate visibility triggers.  -->
-    <!--  ═══════════════════════════════════════════════════════════  -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- MenuItem -->
+    <!-- Handles SubmenuItem (leaf) and SubmenuHeader (has submenu). -->
+    <!-- TopLevelItem / TopLevelHeader handled by same template with -->
+    <!-- appropriate visibility triggers. -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
     <Style TargetType="{x:Type controls:MenuItem}">
         <Setter Property="Background" Value="{DynamicResource SubtleFillColorTransparentBrush}" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
@@ -63,22 +65,26 @@
                         x:Name="Bd"
                         Margin="2,1"
                         Background="{TemplateBinding Background}"
-                        CornerRadius="{DynamicResource ControlCornerRadius}">
-                        <Grid MinHeight="32" Margin="4,0">
+                        CornerRadius="{DynamicResource ControlCornerRadius}"
+                        >
+                        <Grid
+                            MinHeight="32"
+                            Margin="4,0"
+                            >
                             <Grid.ColumnDefinitions>
-                                <!--  Icon / checkmark - shared-size keeps all items aligned  -->
+                                <!-- Icon / checkmark - shared-size keeps all items aligned -->
                                 <ColumnDefinition Width="20" SharedSizeGroup="MenuIconCol" />
-                                <!--  Gap  -->
+                                <!-- Gap -->
                                 <ColumnDefinition Width="8" />
-                                <!--  Header text  -->
+                                <!-- Header text -->
                                 <ColumnDefinition Width="*" />
-                                <!--  Keyboard shortcut  -->
+                                <!-- Keyboard shortcut -->
                                 <ColumnDefinition Width="Auto" />
-                                <!--  Gap + submenu arrow  -->
+                                <!-- Gap + submenu arrow -->
                                 <ColumnDefinition Width="20" />
                             </Grid.ColumnDefinitions>
 
-                            <!--  Submenu popup  -->
+                            <!-- Submenu popup -->
                             <Popup
                                 x:Name="PART_Popup"
                                 AllowsTransparency="True"
@@ -86,8 +92,9 @@
                                 IsOpen="{Binding IsSubmenuOpen, RelativeSource={RelativeSource TemplatedParent}}"
                                 Placement="Right"
                                 PlacementTarget="{Binding RelativeSource={RelativeSource TemplatedParent}}"
-                                PopupAnimation="None">
-                                <!--  SubMenuBorder: slide-in from X=-8 on open (167ms ControlFastOutSlowIn).  -->
+                                PopupAnimation="None"
+                                >
+                                <!-- SubMenuBorder: slide-in from X=-8 on open (167ms ControlFastOutSlowIn). -->
                                 <Border
                                     x:Name="SubMenuBorder"
                                     MinWidth="180"
@@ -96,17 +103,21 @@
                                     BorderBrush="{DynamicResource SurfaceStrokeColorFlyoutBrush}"
                                     BorderThickness="1"
                                     CornerRadius="{DynamicResource OverlayCornerRadius}"
-                                    UseLayoutRounding="True">
+                                    UseLayoutRounding="True"
+                                    >
                                     <Border.RenderTransform>
                                         <TranslateTransform x:Name="SubMenuTranslate" X="-8" />
                                     </Border.RenderTransform>
                                     <Grid Grid.IsSharedSizeScope="True">
-                                        <ItemsPresenter x:Name="ItemsPresenter" KeyboardNavigation.DirectionalNavigation="Cycle" />
+                                        <ItemsPresenter
+                                            x:Name="ItemsPresenter"
+                                            KeyboardNavigation.DirectionalNavigation="Cycle"
+                                            />
                                     </Grid>
                                 </Border>
                             </Popup>
 
-                            <!--  Checkmark (visible when IsChecked=True and no custom Icon)  -->
+                            <!-- Checkmark (visible when IsChecked=True and no custom Icon) -->
                             <TextBlock
                                 x:Name="CheckMark"
                                 Grid.Column="0"
@@ -116,9 +127,10 @@
                                 FontSize="14"
                                 Foreground="{DynamicResource AccentFillColorDefaultBrush}"
                                 Text="&#xE73E;"
-                                Visibility="Collapsed" />
+                                Visibility="Collapsed"
+                                />
 
-                            <!--  Custom icon (MenuItem.Icon property)  -->
+                            <!-- Custom icon (MenuItem.Icon property) -->
                             <ContentPresenter
                                 x:Name="Icon"
                                 Grid.Column="0"
@@ -128,16 +140,17 @@
                                 VerticalAlignment="Center"
                                 Content="{TemplateBinding Icon}"
                                 TextElement.Foreground="{TemplateBinding Foreground}"
-                                Visibility="Collapsed">
+                                Visibility="Collapsed"
+                                >
                                 <ContentPresenter.Resources>
-                                    <!--  Icon follows the header text (SplitButton precedent): the scoped implicit style outranks the FontIcon theme-style Foreground; a consumer's local Foreground still wins.  -->
+                                    <!-- Icon follows the header text (SplitButton precedent): the scoped implicit style outranks the FontIcon theme-style Foreground; a consumer's local Foreground still wins. -->
                                     <Style TargetType="{x:Type controls:FontIcon}">
                                         <Setter Property="Foreground" Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type controls:MenuItem}}}" />
                                     </Style>
                                 </ContentPresenter.Resources>
                             </ContentPresenter>
 
-                            <!--  Header text / content  -->
+                            <!-- Header text / content -->
                             <ContentPresenter
                                 Grid.Column="2"
                                 VerticalAlignment="Center"
@@ -145,9 +158,10 @@
                                 RecognizesAccessKey="True"
                                 TextElement.FontFamily="{TemplateBinding FontFamily}"
                                 TextElement.FontSize="{TemplateBinding FontSize}"
-                                TextElement.Foreground="{TemplateBinding Foreground}" />
+                                TextElement.Foreground="{TemplateBinding Foreground}"
+                                />
 
-                            <!--  Keyboard shortcut text  -->
+                            <!-- Keyboard shortcut text -->
                             <TextBlock
                                 x:Name="InputGestureText"
                                 Grid.Column="3"
@@ -156,9 +170,10 @@
                                 FontFamily="{TemplateBinding FontFamily}"
                                 FontSize="12"
                                 Foreground="{DynamicResource TextFillColorSecondaryBrush}"
-                                Text="{TemplateBinding InputGestureText}" />
+                                Text="{TemplateBinding InputGestureText}"
+                                />
 
-                            <!--  Submenu chevron arrow (hidden by default; shown for SubmenuHeader)  -->
+                            <!-- Submenu chevron arrow (hidden by default; shown for SubmenuHeader) -->
                             <TextBlock
                                 x:Name="Arrow"
                                 Grid.Column="4"
@@ -168,7 +183,8 @@
                                 FontSize="12"
                                 Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                 Text="&#xE76C;"
-                                Visibility="Collapsed" />
+                                Visibility="Collapsed"
+                                />
                         </Grid>
                     </Border>
                     <ControlTemplate.Triggers>
@@ -181,28 +197,25 @@
                                 <BeginStoryboard>
                                     <Storyboard>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="SubMenuTranslate" Storyboard.TargetProperty="X">
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
-                                                KeyTime="0:0:0.167"
-                                                Value="0" />
+                                            <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.167" Value="0" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </BeginStoryboard>
                             </Trigger.EnterActions>
                         </Trigger>
-                        <!--  Hover  -->
+                        <!-- Hover -->
                         <Trigger Property="IsHighlighted" Value="True">
                             <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
                         </Trigger>
-                        <!--  Pressed  -->
+                        <!-- Pressed -->
                         <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="Bd" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
                         </Trigger>
-                        <!--  Disabled  -->
+                        <!-- Disabled -->
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                         </Trigger>
-                        <!--  Submenu-header: show the chevron arrow (popup already Placement=Right)  -->
+                        <!-- Submenu-header: show the chevron arrow (popup already Placement=Right) -->
                         <Trigger Property="Role" Value="SubmenuHeader">
                             <Setter TargetName="Arrow" Property="Visibility" Value="Visible" />
                         </Trigger>
@@ -214,7 +227,7 @@
                         <Trigger Property="Role" Value="TopLevelHeader">
                             <Setter TargetName="PART_Popup" Property="Placement" Value="Bottom" />
                         </Trigger>
-                        <!--  Show checkmark when checked and no custom icon  -->
+                        <!-- Show checkmark when checked and no custom icon -->
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsChecked" Value="True" />
@@ -222,7 +235,7 @@
                             </MultiTrigger.Conditions>
                             <Setter TargetName="CheckMark" Property="Visibility" Value="Visible" />
                         </MultiTrigger>
-                        <!--  Custom icon present: show ContentPresenter, hide checkmark slot  -->
+                        <!-- Custom icon present: show ContentPresenter, hide checkmark slot -->
                         <DataTrigger Binding="{Binding Icon, RelativeSource={RelativeSource Self}, Converter={x:Static controls:FluenceWindow.IsNotNullConverter}}" Value="True">
                             <Setter TargetName="Icon" Property="Visibility" Value="Visible" />
                         </DataTrigger>
@@ -233,9 +246,9 @@
         <Setter Property="UseLayoutRounding" Value="True" />
     </Style>
 
-    <!--  ═══════════════════════════════════════════════════════════  -->
-    <!--  Separator  -->
-    <!--  ═══════════════════════════════════════════════════════════  -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
+    <!-- Separator -->
+    <!-- ═══════════════════════════════════════════════════════════ -->
     <Style TargetType="{x:Type Separator}">
         <Setter Property="Background" Value="{DynamicResource DividerStrokeColorDefaultBrush}" />
         <Setter Property="Height" Value="1" />
@@ -246,7 +259,8 @@
                     <Border
                         Height="{TemplateBinding Height}"
                         Margin="{TemplateBinding Margin}"
-                        Background="{TemplateBinding Background}" />
+                        Background="{TemplateBinding Background}"
+                        />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

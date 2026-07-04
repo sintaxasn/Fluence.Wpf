@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
+    xmlns:controls="clr-namespace:Fluence.Wpf.Controls"
+    >
 
     <!--
         Fluent Design DatePicker style.
@@ -21,7 +22,10 @@
     -->
 
     <DataTemplate x:Key="DatePickerColumnItemTemplate">
-        <TextBlock HorizontalAlignment="Center" Text="{Binding}" />
+        <TextBlock
+            HorizontalAlignment="Center"
+            Text="{Binding}"
+            />
     </DataTemplate>
 
     <Style TargetType="{x:Type controls:DatePicker}">
@@ -50,7 +54,115 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
 
-                        <!--  Header  -->
+                        <!-- Selector flyout -->
+                        <Popup
+                            x:Name="PART_Popup"
+                            AllowsTransparency="True"
+                            Focusable="False"
+                            Placement="Bottom"
+                            PlacementTarget="{Binding ElementName=PART_FlyoutButton}"
+                            PopupAnimation="None"
+                            StaysOpen="False"
+                            >
+                            <Border
+                                x:Name="FlyoutSurface"
+                                MinWidth="{Binding ActualWidth, ElementName=PART_FlyoutButton}"
+                                Margin="0,4,0,0"
+                                Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"
+                                BorderBrush="{DynamicResource SurfaceStrokeColorFlyoutBrush}"
+                                BorderThickness="1"
+                                CornerRadius="{DynamicResource OverlayCornerRadius}"
+                                UseLayoutRounding="True"
+                                >
+                                <Border.RenderTransform>
+                                    <TranslateTransform x:Name="FlyoutSurfaceTranslate" />
+                                </Border.RenderTransform>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                        <RowDefinition Height="Auto" />
+                                    </Grid.RowDefinitions>
+                                    <Grid
+                                        x:Name="SelectorsGrid"
+                                        Grid.Row="0"
+                                        Height="272"
+                                        Margin="4"
+                                        >
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="132*" />
+                                            <ColumnDefinition Width="78*" />
+                                            <ColumnDefinition Width="78*" />
+                                        </Grid.ColumnDefinitions>
+                                        <controls:ListBox
+                                            x:Name="PART_MonthList"
+                                            Grid.Column="0"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            ItemTemplate="{StaticResource DatePickerColumnItemTemplate}"
+                                            />
+                                        <controls:ListBox
+                                            x:Name="PART_DayList"
+                                            Grid.Column="1"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            ItemTemplate="{StaticResource DatePickerColumnItemTemplate}"
+                                            />
+                                        <controls:ListBox
+                                            x:Name="PART_YearList"
+                                            Grid.Column="2"
+                                            Background="Transparent"
+                                            BorderThickness="0"
+                                            ItemTemplate="{StaticResource DatePickerColumnItemTemplate}"
+                                            />
+                                    </Grid>
+                                    <Border
+                                        Grid.Row="1"
+                                        Height="1"
+                                        Background="{DynamicResource DividerStrokeColorDefaultBrush}"
+                                        />
+                                    <Grid
+                                        Grid.Row="2"
+                                        Margin="4"
+                                        >
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <controls:Button
+                                            x:Name="PART_AcceptButton"
+                                            Grid.Column="0"
+                                            MinWidth="0"
+                                            Margin="0,0,2,0"
+                                            HorizontalAlignment="Stretch"
+                                            AutomationProperties.Name="Accept"
+                                            ToolTip="Accept"
+                                            >
+                                            <controls:FontIcon
+                                                Glyph="&#xE73E;"
+                                                IconFontSize="12"
+                                                />
+                                        </controls:Button>
+                                        <controls:Button
+                                            x:Name="PART_CancelButton"
+                                            Grid.Column="1"
+                                            MinWidth="0"
+                                            Margin="2,0,0,0"
+                                            HorizontalAlignment="Stretch"
+                                            AutomationProperties.Name="Cancel"
+                                            ToolTip="Cancel"
+                                            >
+                                            <controls:FontIcon
+                                                Glyph="&#xE711;"
+                                                IconFontSize="12"
+                                                />
+                                        </controls:Button>
+                                    </Grid>
+                                </Grid>
+                            </Border>
+                        </Popup>
+
+                        <!-- Header -->
                         <ContentPresenter
                             x:Name="HeaderPresenter"
                             Grid.Row="0"
@@ -58,9 +170,10 @@
                             Content="{TemplateBinding Header}"
                             TextBlock.FontFamily="{TemplateBinding FontFamily}"
                             TextBlock.FontSize="{TemplateBinding FontSize}"
-                            TextBlock.Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
+                            TextBlock.Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+                            />
 
-                        <!--  Field: a button-styled row of culture-ordered date segments  -->
+                        <!-- Field: a button-styled row of culture-ordered date segments -->
                         <controls:Button
                             x:Name="PART_FlyoutButton"
                             Grid.Row="1"
@@ -75,7 +188,8 @@
                             BorderThickness="{TemplateBinding BorderThickness}"
                             FontFamily="{TemplateBinding FontFamily}"
                             FontSize="{TemplateBinding FontSize}"
-                            Foreground="{TemplateBinding Foreground}">
+                            Foreground="{TemplateBinding Foreground}"
+                            >
                             <Grid>
                                 <Grid x:Name="SegmentsHost">
                                     <Grid.ColumnDefinitions>
@@ -90,29 +204,34 @@
                                         Grid.Column="0"
                                         Margin="12,5,12,6"
                                         HorizontalAlignment="Center"
-                                        VerticalAlignment="Center" />
+                                        VerticalAlignment="Center"
+                                        />
                                     <Border
                                         x:Name="FirstDivider"
                                         Grid.Column="1"
                                         Width="1"
-                                        Background="{DynamicResource ControlStrokeColorDefaultBrush}" />
+                                        Background="{DynamicResource ControlStrokeColorDefaultBrush}"
+                                        />
                                     <TextBlock
                                         x:Name="SecondSegmentText"
                                         Grid.Column="2"
                                         Margin="12,5,12,6"
                                         HorizontalAlignment="Center"
-                                        VerticalAlignment="Center" />
+                                        VerticalAlignment="Center"
+                                        />
                                     <Border
                                         x:Name="SecondDivider"
                                         Grid.Column="3"
                                         Width="1"
-                                        Background="{DynamicResource ControlStrokeColorDefaultBrush}" />
+                                        Background="{DynamicResource ControlStrokeColorDefaultBrush}"
+                                        />
                                     <TextBlock
                                         x:Name="ThirdSegmentText"
                                         Grid.Column="4"
                                         Margin="12,5,12,6"
                                         HorizontalAlignment="Center"
-                                        VerticalAlignment="Center" />
+                                        VerticalAlignment="Center"
+                                        />
                                 </Grid>
                                 <TextBlock
                                     x:Name="PlaceholderTextBlock"
@@ -121,99 +240,10 @@
                                     VerticalAlignment="Center"
                                     Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                                     Text="{TemplateBinding PlaceholderText}"
-                                    Visibility="Collapsed" />
+                                    Visibility="Collapsed"
+                                    />
                             </Grid>
                         </controls:Button>
-
-                        <!--  Selector flyout  -->
-                        <Popup
-                            x:Name="PART_Popup"
-                            AllowsTransparency="True"
-                            Focusable="False"
-                            Placement="Bottom"
-                            PlacementTarget="{Binding ElementName=PART_FlyoutButton}"
-                            PopupAnimation="None"
-                            StaysOpen="False">
-                            <Border
-                                x:Name="FlyoutSurface"
-                                MinWidth="{Binding ActualWidth, ElementName=PART_FlyoutButton}"
-                                Margin="0,4,0,0"
-                                Background="{DynamicResource SolidBackgroundFillColorTertiaryBrush}"
-                                BorderBrush="{DynamicResource SurfaceStrokeColorFlyoutBrush}"
-                                BorderThickness="1"
-                                CornerRadius="{DynamicResource OverlayCornerRadius}"
-                                UseLayoutRounding="True">
-                                <Border.RenderTransform>
-                                    <TranslateTransform x:Name="FlyoutSurfaceTranslate" />
-                                </Border.RenderTransform>
-                                <Grid>
-                                    <Grid.RowDefinitions>
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                        <RowDefinition Height="Auto" />
-                                    </Grid.RowDefinitions>
-                                    <Grid
-                                        x:Name="SelectorsGrid"
-                                        Grid.Row="0"
-                                        Height="272"
-                                        Margin="4">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="132*" />
-                                            <ColumnDefinition Width="78*" />
-                                            <ColumnDefinition Width="78*" />
-                                        </Grid.ColumnDefinitions>
-                                        <controls:ListBox
-                                            x:Name="PART_MonthList"
-                                            Grid.Column="0"
-                                            Background="Transparent"
-                                            BorderThickness="0"
-                                            ItemTemplate="{StaticResource DatePickerColumnItemTemplate}" />
-                                        <controls:ListBox
-                                            x:Name="PART_DayList"
-                                            Grid.Column="1"
-                                            Background="Transparent"
-                                            BorderThickness="0"
-                                            ItemTemplate="{StaticResource DatePickerColumnItemTemplate}" />
-                                        <controls:ListBox
-                                            x:Name="PART_YearList"
-                                            Grid.Column="2"
-                                            Background="Transparent"
-                                            BorderThickness="0"
-                                            ItemTemplate="{StaticResource DatePickerColumnItemTemplate}" />
-                                    </Grid>
-                                    <Border
-                                        Grid.Row="1"
-                                        Height="1"
-                                        Background="{DynamicResource DividerStrokeColorDefaultBrush}" />
-                                    <Grid Grid.Row="2" Margin="4">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="*" />
-                                            <ColumnDefinition Width="*" />
-                                        </Grid.ColumnDefinitions>
-                                        <controls:Button
-                                            x:Name="PART_AcceptButton"
-                                            Grid.Column="0"
-                                            MinWidth="0"
-                                            Margin="0,0,2,0"
-                                            HorizontalAlignment="Stretch"
-                                            AutomationProperties.Name="Accept"
-                                            ToolTip="Accept">
-                                            <controls:FontIcon Glyph="&#xE73E;" IconFontSize="12" />
-                                        </controls:Button>
-                                        <controls:Button
-                                            x:Name="PART_CancelButton"
-                                            Grid.Column="1"
-                                            MinWidth="0"
-                                            Margin="2,0,0,0"
-                                            HorizontalAlignment="Stretch"
-                                            AutomationProperties.Name="Cancel"
-                                            ToolTip="Cancel">
-                                            <controls:FontIcon Glyph="&#xE711;" IconFontSize="12" />
-                                        </controls:Button>
-                                    </Grid>
-                                </Grid>
-                            </Border>
-                        </Popup>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <!--
@@ -229,17 +259,11 @@
                                 <Storyboard>
                                     <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FlyoutSurfaceTranslate" Storyboard.TargetProperty="Y">
                                         <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="-8" />
-                                        <SplineDoubleKeyFrame
-                                            KeySpline="0.8,0,0,1"
-                                            KeyTime="0:0:0.167"
-                                            Value="0" />
+                                        <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.167" Value="0" />
                                     </DoubleAnimationUsingKeyFrames>
                                     <DoubleAnimationUsingKeyFrames Storyboard.TargetName="FlyoutSurface" Storyboard.TargetProperty="Opacity">
                                         <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="0" />
-                                        <SplineDoubleKeyFrame
-                                            KeySpline="0.8,0,0,1"
-                                            KeyTime="0:0:0.167"
-                                            Value="1" />
+                                        <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.167" Value="1" />
                                     </DoubleAnimationUsingKeyFrames>
                                 </Storyboard>
                             </BeginStoryboard>

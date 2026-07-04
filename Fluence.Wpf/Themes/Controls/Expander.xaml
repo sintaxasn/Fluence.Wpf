@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
+    xmlns:controls="clr-namespace:Fluence.Wpf.Controls"
+    >
 
     <Style x:Key="ExpanderHeaderToggleButton" TargetType="{x:Type ToggleButton}">
         <Setter Property="Background" Value="Transparent" />
@@ -15,7 +16,8 @@
                     <Border
                         x:Name="HeaderBorder"
                         Background="{TemplateBinding Background}"
-                        CornerRadius="{DynamicResource ControlCornerRadius}">
+                        CornerRadius="{DynamicResource ControlCornerRadius}"
+                        >
                         <Grid Margin="{TemplateBinding Padding}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -28,14 +30,16 @@
                                 RecognizesAccessKey="True"
                                 TextElement.FontFamily="{TemplateBinding FontFamily}"
                                 TextElement.FontSize="{TemplateBinding FontSize}"
-                                TextElement.Foreground="{TemplateBinding Foreground}" />
+                                TextElement.Foreground="{TemplateBinding Foreground}"
+                                />
                             <Border
                                 Grid.Column="1"
                                 Width="20"
                                 Height="20"
                                 Margin="8,0,0,0"
                                 VerticalAlignment="Center"
-                                RenderTransformOrigin="0.5,0.5">
+                                RenderTransformOrigin="0.5,0.5"
+                                >
                                 <Border.RenderTransform>
                                     <RotateTransform x:Name="ChevronRotation" Angle="0" />
                                 </Border.RenderTransform>
@@ -50,7 +54,8 @@
                                     StrokeEndLineCap="Round"
                                     StrokeLineJoin="Round"
                                     StrokeStartLineCap="Round"
-                                    StrokeThickness="1.5" />
+                                    StrokeThickness="1.5"
+                                    />
                             </Border>
                         </Grid>
                     </Border>
@@ -61,16 +66,13 @@
                         <Trigger Property="IsPressed" Value="True">
                             <Setter TargetName="HeaderBorder" Property="Background" Value="{DynamicResource SubtleFillColorTertiaryBrush}" />
                         </Trigger>
-                        <!--  WI-3 B13: WinUI canonical chevron easing - ControlFastOutSlowIn (0.8,0,0,1), 167ms  -->
+                        <!-- WI-3 B13: WinUI canonical chevron easing - ControlFastOutSlowIn (0.8,0,0,1), 167ms -->
                         <Trigger Property="IsChecked" Value="True">
                             <Trigger.EnterActions>
                                 <BeginStoryboard>
                                     <Storyboard>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ChevronRotation" Storyboard.TargetProperty="Angle">
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
-                                                KeyTime="0:0:0.167"
-                                                Value="180" />
+                                            <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.167" Value="180" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </BeginStoryboard>
@@ -79,10 +81,7 @@
                                 <BeginStoryboard>
                                     <Storyboard>
                                         <DoubleAnimationUsingKeyFrames Storyboard.TargetName="ChevronRotation" Storyboard.TargetProperty="Angle">
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
-                                                KeyTime="0:0:0.167"
-                                                Value="0" />
+                                            <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.167" Value="0" />
                                         </DoubleAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </BeginStoryboard>
@@ -117,7 +116,8 @@
                         Background="{TemplateBinding Background}"
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="{TemplateBinding CornerRadius}">
+                        CornerRadius="{TemplateBinding CornerRadius}"
+                        >
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition x:Name="Row0Def" Height="Auto" />
@@ -135,18 +135,21 @@
                                 Foreground="{TemplateBinding Foreground}"
                                 IsChecked="{Binding IsExpanded, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
                                 OverridesDefaultStyle="True"
-                                Style="{StaticResource ExpanderHeaderToggleButton}" />
+                                Style="{StaticResource ExpanderHeaderToggleButton}"
+                                />
 
                             <Border
                                 x:Name="ContentBorder"
                                 Grid.Row="1"
-                                ClipToBounds="True">
+                                ClipToBounds="True"
+                                >
                                 <ContentPresenter
                                     x:Name="ExpandSite"
                                     Margin="16,0,16,16"
                                     HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                     VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
-                                    Focusable="False" />
+                                    Focusable="False"
+                                    />
                             </Border>
                         </Grid>
                     </Border>

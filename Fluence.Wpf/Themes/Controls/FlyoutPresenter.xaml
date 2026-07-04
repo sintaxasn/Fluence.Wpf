@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
+    xmlns:controls="clr-namespace:Fluence.Wpf.Controls"
+    >
 
     <!--
         Fluent Design FlyoutPresenter style.
@@ -36,17 +37,22 @@
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
                         CornerRadius="{DynamicResource OverlayCornerRadius}"
-                        UseLayoutRounding="True">
+                        UseLayoutRounding="True"
+                        >
                         <Border.RenderTransform>
                             <TranslateTransform x:Name="PresenterTranslate" />
                         </Border.RenderTransform>
-                        <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                        <ScrollViewer
+                            HorizontalScrollBarVisibility="Auto"
+                            VerticalScrollBarVisibility="Auto"
+                            >
                             <ContentPresenter
                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
                                 VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
                                 TextElement.FontFamily="{TemplateBinding FontFamily}"
                                 TextElement.FontSize="{TemplateBinding FontSize}"
-                                TextElement.Foreground="{TemplateBinding Foreground}" />
+                                TextElement.Foreground="{TemplateBinding Foreground}"
+                                />
                         </ScrollViewer>
                     </Border>
                     <ControlTemplate.Triggers>
@@ -68,17 +74,11 @@
                                 <Storyboard>
                                     <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PresenterTranslate" Storyboard.TargetProperty="Y">
                                         <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="-8" />
-                                        <SplineDoubleKeyFrame
-                                            KeySpline="0.8,0,0,1"
-                                            KeyTime="0:0:0.167"
-                                            Value="0" />
+                                        <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.167" Value="0" />
                                     </DoubleAnimationUsingKeyFrames>
                                     <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PresenterSurface" Storyboard.TargetProperty="Opacity">
                                         <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="0" />
-                                        <SplineDoubleKeyFrame
-                                            KeySpline="0.8,0,0,1"
-                                            KeyTime="0:0:0.167"
-                                            Value="1" />
+                                        <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.167" Value="1" />
                                     </DoubleAnimationUsingKeyFrames>
                                 </Storyboard>
                             </BeginStoryboard>

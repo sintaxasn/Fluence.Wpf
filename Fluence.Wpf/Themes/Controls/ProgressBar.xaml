@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
+    xmlns:controls="clr-namespace:Fluence.Wpf.Controls"
+    >
 
     <Style TargetType="{x:Type controls:ProgressBar}">
         <Setter Property="Background" Value="Transparent" />
@@ -22,18 +23,21 @@
                             Height="{TemplateBinding TrackHeight}"
                             VerticalAlignment="Center"
                             Background="{DynamicResource ControlStrongStrokeColorDefaultBrush}"
-                            CornerRadius="1.5" />
+                            CornerRadius="1.5"
+                            />
                         <Grid
                             x:Name="ProgressBarIndicatorHost"
                             Height="{TemplateBinding MinHeight}"
-                            VerticalAlignment="Center">
+                            VerticalAlignment="Center"
+                            >
                             <Border
                                 x:Name="PART_Fill"
                                 Width="0"
                                 HorizontalAlignment="Left"
                                 VerticalAlignment="Stretch"
                                 Background="{DynamicResource AccentFillColorDefaultBrush}"
-                                CornerRadius="{TemplateBinding CornerRadius}" />
+                                CornerRadius="{TemplateBinding CornerRadius}"
+                                />
                             <Border
                                 x:Name="PART_IndeterminateBar"
                                 Width="0"
@@ -41,7 +45,8 @@
                                 VerticalAlignment="Stretch"
                                 Background="{DynamicResource AccentFillColorDefaultBrush}"
                                 CornerRadius="{TemplateBinding CornerRadius}"
-                                Visibility="Collapsed">
+                                Visibility="Collapsed"
+                                >
                                 <Border.RenderTransform>
                                     <TranslateTransform x:Name="PART_IndeterminateTranslate" X="0" />
                                 </Border.RenderTransform>
@@ -54,7 +59,8 @@
                                 Background="{DynamicResource AccentFillColorDefaultBrush}"
                                 CornerRadius="{TemplateBinding CornerRadius}"
                                 Opacity="0.9"
-                                Visibility="Collapsed">
+                                Visibility="Collapsed"
+                                >
                                 <Border.RenderTransform>
                                     <TranslateTransform x:Name="PART_IndeterminateTranslate2" X="0" />
                                 </Border.RenderTransform>

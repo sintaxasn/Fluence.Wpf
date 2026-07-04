@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
+    xmlns:controls="clr-namespace:Fluence.Wpf.Controls"
+    >
 
     <Style TargetType="{x:Type controls:ToggleButton}">
         <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
@@ -23,7 +24,8 @@
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
                         CornerRadius="{TemplateBinding CornerRadius}"
-                        RenderTransformOrigin="0.5,0.5">
+                        RenderTransformOrigin="0.5,0.5"
+                        >
                         <Border.RenderTransform>
                             <ScaleTransform x:Name="PressScale" ScaleX="1" ScaleY="1" />
                         </Border.RenderTransform>
@@ -38,11 +40,13 @@
                                 x:Name="AccentFillBackdrop"
                                 Background="{DynamicResource AccentFillBackdropBrush}"
                                 CornerRadius="{TemplateBinding CornerRadius}"
-                                Opacity="0" />
+                                Opacity="0"
+                                />
                             <Border
                                 x:Name="RestFill"
                                 Background="{TemplateBinding Background}"
-                                CornerRadius="{TemplateBinding CornerRadius}" />
+                                CornerRadius="{TemplateBinding CornerRadius}"
+                                />
                             <ContentPresenter
                                 Margin="{TemplateBinding Padding}"
                                 HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
@@ -50,36 +54,25 @@
                                 RecognizesAccessKey="True"
                                 TextElement.FontFamily="{TemplateBinding FontFamily}"
                                 TextElement.FontSize="{TemplateBinding FontSize}"
-                                TextElement.Foreground="{TemplateBinding Foreground}" />
+                                TextElement.Foreground="{TemplateBinding Foreground}"
+                                />
                         </Grid>
                     </Border>
                     <ControlTemplate.Resources>
                         <Storyboard x:Key="PressedScaleStoryboard">
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleX">
-                                <SplineDoubleKeyFrame
-                                    KeySpline="0.8,0,0,1"
-                                    KeyTime="0:0:0.12"
-                                    Value="0.98" />
+                                <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.12" Value="0.98" />
                             </DoubleAnimationUsingKeyFrames>
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleY">
-                                <SplineDoubleKeyFrame
-                                    KeySpline="0.8,0,0,1"
-                                    KeyTime="0:0:0.12"
-                                    Value="0.98" />
+                                <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.12" Value="0.98" />
                             </DoubleAnimationUsingKeyFrames>
                         </Storyboard>
                         <Storyboard x:Key="ReleasedScaleStoryboard">
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleX">
-                                <SplineDoubleKeyFrame
-                                    KeySpline="0.8,0,0,1"
-                                    KeyTime="0:0:0.12"
-                                    Value="1" />
+                                <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.12" Value="1" />
                             </DoubleAnimationUsingKeyFrames>
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PressScale" Storyboard.TargetProperty="ScaleY">
-                                <SplineDoubleKeyFrame
-                                    KeySpline="0.8,0,0,1"
-                                    KeyTime="0:0:0.12"
-                                    Value="1" />
+                                <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.12" Value="1" />
                             </DoubleAnimationUsingKeyFrames>
                         </Storyboard>
                     </ControlTemplate.Resources>
@@ -91,14 +84,14 @@
                         style's base setters already match the WinUI Indeterminate palette.
                     -->
                     <ControlTemplate.Triggers>
-                        <!--  Checked rest  -->
+                        <!-- Checked rest -->
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="AccentFillBackdrop" Property="Opacity" Value="1" />
                             <Setter TargetName="RestFill" Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}" />
                             <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource AccentControlElevationBorderBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
                         </Trigger>
-                        <!--  Checked + hover (not pressed)  -->
+                        <!-- Checked + hover (not pressed) -->
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsChecked" Value="True" />
@@ -109,7 +102,7 @@
                             <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource AccentControlElevationBorderBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource TextOnAccentFillColorPrimaryBrush}" />
                         </MultiTrigger>
-                        <!--  Checked + pressed  -->
+                        <!-- Checked + pressed -->
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsChecked" Value="True" />
@@ -126,7 +119,7 @@
                             </MultiTrigger.ExitActions>
                         </MultiTrigger>
 
-                        <!--  Unchecked + hover  -->
+                        <!-- Unchecked + hover -->
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsChecked" Value="False" />
@@ -136,7 +129,7 @@
                             <Setter TargetName="RestFill" Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}" />
                             <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource ControlElevationBorderBrush}" />
                         </MultiTrigger>
-                        <!--  Unchecked + pressed  -->
+                        <!-- Unchecked + pressed -->
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsChecked" Value="False" />
@@ -153,7 +146,7 @@
                             </MultiTrigger.ExitActions>
                         </MultiTrigger>
 
-                        <!--  Indeterminate + hover (WinUI IndeterminatePointerOver)  -->
+                        <!-- Indeterminate + hover (WinUI IndeterminatePointerOver) -->
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsChecked" Value="{x:Null}" />
@@ -163,7 +156,7 @@
                             <Setter TargetName="RestFill" Property="Background" Value="{DynamicResource ControlFillColorSecondaryBrush}" />
                             <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource ControlElevationBorderBrush}" />
                         </MultiTrigger>
-                        <!--  Indeterminate + pressed (WinUI IndeterminatePressed)  -->
+                        <!-- Indeterminate + pressed (WinUI IndeterminatePressed) -->
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsChecked" Value="{x:Null}" />
@@ -198,7 +191,7 @@
                             <Setter TargetName="OuterBorder" Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
                             <Setter Property="Foreground" Value="{DynamicResource TextFillColorDisabledBrush}" />
                         </MultiTrigger>
-                        <!--  Indeterminate + disabled (WinUI IndeterminateDisabled)  -->
+                        <!-- Indeterminate + disabled (WinUI IndeterminateDisabled) -->
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
                                 <Condition Property="IsChecked" Value="{x:Null}" />

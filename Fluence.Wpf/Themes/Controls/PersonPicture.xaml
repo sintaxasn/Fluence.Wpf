@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
+    xmlns:controls="clr-namespace:Fluence.Wpf.Controls"
+    >
 
     <!--
         Fluent PersonPicture style.
@@ -28,13 +29,14 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type controls:PersonPicture}">
                     <Grid x:Name="RootGrid">
-                        <!--  Background ellipse  -->
+                        <!-- Background ellipse -->
                         <Ellipse
                             Fill="{TemplateBinding Background}"
                             Stroke="{TemplateBinding BorderBrush}"
-                            StrokeThickness="{Binding BorderThickness.Left, RelativeSource={RelativeSource TemplatedParent}}" />
+                            StrokeThickness="{Binding BorderThickness.Left, RelativeSource={RelativeSource TemplatedParent}}"
+                            />
 
-                        <!--  Initials / placeholder glyph - code updates Text and FontFamily.  -->
+                        <!-- Initials / placeholder glyph - code updates Text and FontFamily. -->
                         <TextBlock
                             x:Name="PART_InitialsText"
                             HorizontalAlignment="Center"
@@ -43,12 +45,16 @@
                             FontSize="14"
                             FontWeight="{TemplateBinding FontWeight}"
                             Foreground="{TemplateBinding Foreground}"
-                            Text="&#xE77B;" />
+                            Text="&#xE77B;"
+                            />
 
-                        <!--  Photo ellipse - Fill set from code; Hidden by default.  -->
-                        <Ellipse x:Name="PART_ImageEllipse" Visibility="Hidden" />
+                        <!-- Photo ellipse - Fill set from code; Hidden by default. -->
+                        <Ellipse
+                            x:Name="PART_ImageEllipse"
+                            Visibility="Hidden"
+                            />
 
-                        <!--  Badge: bottom-right corner, AccentFillColorDefaultBrush background.  -->
+                        <!-- Badge: bottom-right corner, AccentFillColorDefaultBrush background. -->
                         <Grid
                             x:Name="PART_BadgeGrid"
                             Height="16"
@@ -56,7 +62,8 @@
                             Margin="0,0,-2,-2"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Bottom"
-                            Visibility="Collapsed">
+                            Visibility="Collapsed"
+                            >
                             <Border
                                 x:Name="PART_BadgeBackground"
                                 Height="16"
@@ -64,7 +71,8 @@
                                 Background="{DynamicResource AccentFillColorDefaultBrush}"
                                 BorderBrush="{TemplateBinding Background}"
                                 BorderThickness="2"
-                                CornerRadius="8" />
+                                CornerRadius="8"
+                                />
                             <TextBlock
                                 x:Name="PART_BadgeText"
                                 Margin="4,0"
@@ -74,11 +82,12 @@
                                 FontSize="10"
                                 FontWeight="SemiBold"
                                 Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
-                                Text="" />
+                                Text=""
+                                />
                         </Grid>
                         <VisualStateManager.VisualStateGroups>
                             <VisualStateGroup x:Name="CommonStates">
-                                <!--  Photo: image ellipse visible, initials hidden.  -->
+                                <!-- Photo: image ellipse visible, initials hidden. -->
                                 <VisualState x:Name="Photo">
                                     <Storyboard>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_InitialsText" Storyboard.TargetProperty="Visibility">
@@ -89,14 +98,14 @@
                                         </ObjectAnimationUsingKeyFrames>
                                     </Storyboard>
                                 </VisualState>
-                                <!--  Initials/NoPhotoOrInitials/Group: code updates PART_InitialsText.Text.  -->
+                                <!-- Initials/NoPhotoOrInitials/Group: code updates PART_InitialsText.Text. -->
                                 <VisualState x:Name="Initials" />
                                 <VisualState x:Name="NoPhotoOrInitials" />
                                 <VisualState x:Name="Group" />
                             </VisualStateGroup>
                             <VisualStateGroup x:Name="BadgeStates">
                                 <VisualState x:Name="NoBadge" />
-                                <!--  BadgeWithoutImageSource: make PART_BadgeGrid visible.  -->
+                                <!-- BadgeWithoutImageSource: make PART_BadgeGrid visible. -->
                                 <VisualState x:Name="BadgeWithoutImageSource">
                                     <Storyboard>
                                         <ObjectAnimationUsingKeyFrames Storyboard.TargetName="PART_BadgeGrid" Storyboard.TargetProperty="Visibility">

@@ -1,7 +1,8 @@
 ﻿<ResourceDictionary
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:controls="clr-namespace:Fluence.Wpf.Controls">
+    xmlns:controls="clr-namespace:Fluence.Wpf.Controls"
+    >
 
     <!--
         Fluent Separator style - standalone content-area horizontal divider.
@@ -25,7 +26,8 @@
                         Height="{TemplateBinding Height}"
                         Margin="{TemplateBinding Margin}"
                         Background="{TemplateBinding Background}"
-                        UseLayoutRounding="True" />
+                        UseLayoutRounding="True"
+                        />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

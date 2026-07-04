@@ -2,7 +2,8 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:controls="clr-namespace:Fluence.Wpf.Controls"
-    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+    xmlns:sys="clr-namespace:System;assembly=mscorlib"
+    >
 
     <sys:Double x:Key="ScrollBarSize">8</sys:Double>
     <sys:Double x:Key="ScrollBarCompactThumbSize">6</sys:Double>
@@ -42,7 +43,8 @@
                             FontSize="{StaticResource ScrollBarButtonArrowIconFontSize}"
                             Foreground="{DynamicResource TextFillColorSecondaryBrush}"
                             RenderTransformOrigin="0.5,0.5"
-                            Text="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}">
+                            Text="{Binding Content, RelativeSource={RelativeSource TemplatedParent}}"
+                            >
                             <TextBlock.RenderTransform>
                                 <ScaleTransform ScaleX="1" ScaleY="1" />
                             </TextBlock.RenderTransform>
@@ -84,7 +86,8 @@
                             Margin="2"
                             Background="{DynamicResource ControlStrongFillColorDefaultBrush}"
                             CornerRadius="4"
-                            Opacity="0.72" />
+                            Opacity="0.72"
+                            />
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -121,13 +124,15 @@
             x:Name="Root"
             Width="{StaticResource ScrollBarCompactThumbSize}"
             HorizontalAlignment="Right"
-            Background="Transparent">
+            Background="Transparent"
+            >
             <Border
                 x:Name="TrackBackground"
                 Margin="0"
                 Background="{DynamicResource ScrollBarTrackFillBrush}"
                 CornerRadius="3"
-                Opacity="0" />
+                Opacity="0"
+                />
             <Track
                 x:Name="PART_Track"
                 Focusable="False"
@@ -135,15 +140,22 @@
                 Maximum="{TemplateBinding Maximum}"
                 Minimum="{TemplateBinding Minimum}"
                 ViewportSize="{TemplateBinding ViewportSize}"
-                Value="{TemplateBinding Value}">
+                Value="{TemplateBinding Value}"
+                >
                 <Track.DecreaseRepeatButton>
-                    <RepeatButton Command="ScrollBar.PageUpCommand" Style="{StaticResource ScrollBarTrackButtonStyle}" />
+                    <RepeatButton
+                        Command="ScrollBar.PageUpCommand"
+                        Style="{StaticResource ScrollBarTrackButtonStyle}"
+                        />
                 </Track.DecreaseRepeatButton>
                 <Track.Thumb>
                     <Thumb Style="{StaticResource ScrollBarThumbStyle}" />
                 </Track.Thumb>
                 <Track.IncreaseRepeatButton>
-                    <RepeatButton Command="ScrollBar.PageDownCommand" Style="{StaticResource ScrollBarTrackButtonStyle}" />
+                    <RepeatButton
+                        Command="ScrollBar.PageDownCommand"
+                        Style="{StaticResource ScrollBarTrackButtonStyle}"
+                        />
                 </Track.IncreaseRepeatButton>
             </Track>
             <RepeatButton
@@ -154,7 +166,8 @@
                 Command="ScrollBar.LineUpCommand"
                 Content="&#xE70E;"
                 Opacity="0"
-                Style="{StaticResource ScrollBarLineButtonStyle}" />
+                Style="{StaticResource ScrollBarLineButtonStyle}"
+                />
             <RepeatButton
                 x:Name="IncreaseButton"
                 Height="{StaticResource ScrollBarSize}"
@@ -163,7 +176,8 @@
                 Command="ScrollBar.LineDownCommand"
                 Content="&#xE70D;"
                 Opacity="0"
-                Style="{StaticResource ScrollBarLineButtonStyle}" />
+                Style="{StaticResource ScrollBarLineButtonStyle}"
+                />
             <VisualStateManager.VisualStateGroups>
                 <VisualStateGroup x:Name="CommonStates">
                     <VisualState x:Name="Normal" />
@@ -181,52 +195,34 @@
                         <VisualTransition From="NoIndicator" To="MouseIndicator">
                             <Storyboard>
                                 <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Root" Storyboard.TargetProperty="Width">
-                                    <SplineDoubleKeyFrame
-                                        KeySpline="0.8,0,0,1"
-                                        KeyTime="0:0:0.12"
-                                        Value="{StaticResource ScrollBarSize}" />
+                                    <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.12" Value="{StaticResource ScrollBarSize}" />
                                 </DoubleAnimationUsingKeyFrames>
                                 <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TrackBackground" Storyboard.TargetProperty="Opacity">
-                                    <SplineDoubleKeyFrame
-                                        KeySpline="0.8,0,0,1"
-                                        KeyTime="0:0:0.12"
-                                        Value="1" />
+                                    <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.12" Value="1" />
                                 </DoubleAnimationUsingKeyFrames>
                             </Storyboard>
                         </VisualTransition>
                         <VisualTransition From="TouchIndicator" To="MouseIndicator">
                             <Storyboard>
                                 <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Root" Storyboard.TargetProperty="Width">
-                                    <SplineDoubleKeyFrame
-                                        KeySpline="0.8,0,0,1"
-                                        KeyTime="0:0:0.12"
-                                        Value="{StaticResource ScrollBarSize}" />
+                                    <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.12" Value="{StaticResource ScrollBarSize}" />
                                 </DoubleAnimationUsingKeyFrames>
                             </Storyboard>
                         </VisualTransition>
                         <VisualTransition From="MouseIndicator" To="NoIndicator">
                             <Storyboard>
                                 <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Root" Storyboard.TargetProperty="Width">
-                                    <SplineDoubleKeyFrame
-                                        KeySpline="0.8,0,0,1"
-                                        KeyTime="0:0:0.15"
-                                        Value="{StaticResource ScrollBarCompactThumbSize}" />
+                                    <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.15" Value="{StaticResource ScrollBarCompactThumbSize}" />
                                 </DoubleAnimationUsingKeyFrames>
                                 <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TrackBackground" Storyboard.TargetProperty="Opacity">
-                                    <SplineDoubleKeyFrame
-                                        KeySpline="0.8,0,0,1"
-                                        KeyTime="0:0:0.15"
-                                        Value="0" />
+                                    <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.15" Value="0" />
                                 </DoubleAnimationUsingKeyFrames>
                             </Storyboard>
                         </VisualTransition>
                         <VisualTransition From="TouchIndicator" To="NoIndicator">
                             <Storyboard>
                                 <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Root" Storyboard.TargetProperty="Width">
-                                    <SplineDoubleKeyFrame
-                                        KeySpline="0.8,0,0,1"
-                                        KeyTime="0:0:0.15"
-                                        Value="{StaticResource ScrollBarCompactThumbSize}" />
+                                    <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.15" Value="{StaticResource ScrollBarCompactThumbSize}" />
                                 </DoubleAnimationUsingKeyFrames>
                             </Storyboard>
                         </VisualTransition>
@@ -282,10 +278,7 @@
                     <BeginStoryboard>
                         <Storyboard>
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Root" Storyboard.TargetProperty="Width">
-                                <SplineDoubleKeyFrame
-                                    KeySpline="0.8,0,0,1"
-                                    KeyTime="0:0:0.12"
-                                    Value="{StaticResource ScrollBarSize}" />
+                                <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.12" Value="{StaticResource ScrollBarSize}" />
                             </DoubleAnimationUsingKeyFrames>
                         </Storyboard>
                     </BeginStoryboard>
@@ -294,10 +287,7 @@
                     <BeginStoryboard>
                         <Storyboard>
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Root" Storyboard.TargetProperty="Width">
-                                <SplineDoubleKeyFrame
-                                    KeySpline="0.8,0,0,1"
-                                    KeyTime="0:0:0.15"
-                                    Value="{StaticResource ScrollBarCompactThumbSize}" />
+                                <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.15" Value="{StaticResource ScrollBarCompactThumbSize}" />
                             </DoubleAnimationUsingKeyFrames>
                         </Storyboard>
                     </BeginStoryboard>
@@ -317,28 +307,37 @@
             x:Name="Root"
             Height="{StaticResource ScrollBarCompactThumbSize}"
             VerticalAlignment="Bottom"
-            Background="Transparent">
+            Background="Transparent"
+            >
             <Border
                 x:Name="TrackBackground"
                 Margin="0"
                 Background="{DynamicResource ScrollBarTrackFillBrush}"
                 CornerRadius="3"
-                Opacity="0" />
+                Opacity="0"
+                />
             <Track
                 x:Name="PART_Track"
                 Focusable="False"
                 Maximum="{TemplateBinding Maximum}"
                 Minimum="{TemplateBinding Minimum}"
                 ViewportSize="{TemplateBinding ViewportSize}"
-                Value="{TemplateBinding Value}">
+                Value="{TemplateBinding Value}"
+                >
                 <Track.DecreaseRepeatButton>
-                    <RepeatButton Command="ScrollBar.PageLeftCommand" Style="{StaticResource ScrollBarTrackButtonStyle}" />
+                    <RepeatButton
+                        Command="ScrollBar.PageLeftCommand"
+                        Style="{StaticResource ScrollBarTrackButtonStyle}"
+                        />
                 </Track.DecreaseRepeatButton>
                 <Track.Thumb>
                     <Thumb Style="{StaticResource ScrollBarThumbStyle}" />
                 </Track.Thumb>
                 <Track.IncreaseRepeatButton>
-                    <RepeatButton Command="ScrollBar.PageRightCommand" Style="{StaticResource ScrollBarTrackButtonStyle}" />
+                    <RepeatButton
+                        Command="ScrollBar.PageRightCommand"
+                        Style="{StaticResource ScrollBarTrackButtonStyle}"
+                        />
                 </Track.IncreaseRepeatButton>
             </Track>
             <RepeatButton
@@ -349,7 +348,8 @@
                 Command="ScrollBar.LineLeftCommand"
                 Content="&#xE76B;"
                 Opacity="0"
-                Style="{StaticResource ScrollBarLineButtonStyle}" />
+                Style="{StaticResource ScrollBarLineButtonStyle}"
+                />
             <RepeatButton
                 x:Name="IncreaseButton"
                 Width="{StaticResource ScrollBarSize}"
@@ -358,7 +358,8 @@
                 Command="ScrollBar.LineRightCommand"
                 Content="&#xE76C;"
                 Opacity="0"
-                Style="{StaticResource ScrollBarLineButtonStyle}" />
+                Style="{StaticResource ScrollBarLineButtonStyle}"
+                />
             <VisualStateManager.VisualStateGroups>
                 <VisualStateGroup x:Name="CommonStates">
                     <VisualState x:Name="Normal" />
@@ -376,52 +377,34 @@
                         <VisualTransition From="NoIndicator" To="MouseIndicator">
                             <Storyboard>
                                 <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Root" Storyboard.TargetProperty="Height">
-                                    <SplineDoubleKeyFrame
-                                        KeySpline="0.8,0,0,1"
-                                        KeyTime="0:0:0.12"
-                                        Value="{StaticResource ScrollBarSize}" />
+                                    <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.12" Value="{StaticResource ScrollBarSize}" />
                                 </DoubleAnimationUsingKeyFrames>
                                 <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TrackBackground" Storyboard.TargetProperty="Opacity">
-                                    <SplineDoubleKeyFrame
-                                        KeySpline="0.8,0,0,1"
-                                        KeyTime="0:0:0.12"
-                                        Value="1" />
+                                    <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.12" Value="1" />
                                 </DoubleAnimationUsingKeyFrames>
                             </Storyboard>
                         </VisualTransition>
                         <VisualTransition From="TouchIndicator" To="MouseIndicator">
                             <Storyboard>
                                 <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Root" Storyboard.TargetProperty="Height">
-                                    <SplineDoubleKeyFrame
-                                        KeySpline="0.8,0,0,1"
-                                        KeyTime="0:0:0.12"
-                                        Value="{StaticResource ScrollBarSize}" />
+                                    <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.12" Value="{StaticResource ScrollBarSize}" />
                                 </DoubleAnimationUsingKeyFrames>
                             </Storyboard>
                         </VisualTransition>
                         <VisualTransition From="MouseIndicator" To="NoIndicator">
                             <Storyboard>
                                 <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Root" Storyboard.TargetProperty="Height">
-                                    <SplineDoubleKeyFrame
-                                        KeySpline="0.8,0,0,1"
-                                        KeyTime="0:0:0.15"
-                                        Value="{StaticResource ScrollBarCompactThumbSize}" />
+                                    <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.15" Value="{StaticResource ScrollBarCompactThumbSize}" />
                                 </DoubleAnimationUsingKeyFrames>
                                 <DoubleAnimationUsingKeyFrames Storyboard.TargetName="TrackBackground" Storyboard.TargetProperty="Opacity">
-                                    <SplineDoubleKeyFrame
-                                        KeySpline="0.8,0,0,1"
-                                        KeyTime="0:0:0.15"
-                                        Value="0" />
+                                    <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.15" Value="0" />
                                 </DoubleAnimationUsingKeyFrames>
                             </Storyboard>
                         </VisualTransition>
                         <VisualTransition From="TouchIndicator" To="NoIndicator">
                             <Storyboard>
                                 <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Root" Storyboard.TargetProperty="Height">
-                                    <SplineDoubleKeyFrame
-                                        KeySpline="0.8,0,0,1"
-                                        KeyTime="0:0:0.15"
-                                        Value="{StaticResource ScrollBarCompactThumbSize}" />
+                                    <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.15" Value="{StaticResource ScrollBarCompactThumbSize}" />
                                 </DoubleAnimationUsingKeyFrames>
                             </Storyboard>
                         </VisualTransition>
@@ -477,10 +460,7 @@
                     <BeginStoryboard>
                         <Storyboard>
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Root" Storyboard.TargetProperty="Height">
-                                <SplineDoubleKeyFrame
-                                    KeySpline="0.8,0,0,1"
-                                    KeyTime="0:0:0.12"
-                                    Value="{StaticResource ScrollBarSize}" />
+                                <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.12" Value="{StaticResource ScrollBarSize}" />
                             </DoubleAnimationUsingKeyFrames>
                         </Storyboard>
                     </BeginStoryboard>
@@ -489,10 +469,7 @@
                     <BeginStoryboard>
                         <Storyboard>
                             <DoubleAnimationUsingKeyFrames Storyboard.TargetName="Root" Storyboard.TargetProperty="Height">
-                                <SplineDoubleKeyFrame
-                                    KeySpline="0.8,0,0,1"
-                                    KeyTime="0:0:0.15"
-                                    Value="{StaticResource ScrollBarCompactThumbSize}" />
+                                <SplineDoubleKeyFrame KeySpline="0.8,0,0,1" KeyTime="0:0:0.15" Value="{StaticResource ScrollBarCompactThumbSize}" />
                             </DoubleAnimationUsingKeyFrames>
                         </Storyboard>
                     </BeginStoryboard>
@@ -537,7 +514,8 @@
                     <Border
                         BorderBrush="{TemplateBinding BorderBrush}"
                         BorderThickness="{TemplateBinding BorderThickness}"
-                        CornerRadius="8,0,0,0">
+                        CornerRadius="8,0,0,0"
+                        >
                         <Grid>
                             <ScrollContentPresenter
                                 x:Name="PART_ScrollContentPresenter"
@@ -546,7 +524,8 @@
                                 CanHorizontallyScroll="False"
                                 CanVerticallyScroll="False"
                                 Content="{TemplateBinding Content}"
-                                ContentTemplate="{TemplateBinding ContentTemplate}" />
+                                ContentTemplate="{TemplateBinding ContentTemplate}"
+                                />
                             <ScrollBar
                                 x:Name="PART_VerticalScrollBar"
                                 Margin="{StaticResource ScrollViewerScrollBarMargin}"
@@ -558,7 +537,8 @@
                                 Style="{StaticResource VerticalScrollBarStyle}"
                                 ViewportSize="{TemplateBinding ViewportHeight}"
                                 Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
-                                Value="{TemplateBinding VerticalOffset}" />
+                                Value="{TemplateBinding VerticalOffset}"
+                                />
                             <ScrollBar
                                 x:Name="PART_HorizontalScrollBar"
                                 Margin="{StaticResource ScrollViewerScrollBarMargin}"
@@ -570,7 +550,8 @@
                                 Style="{StaticResource HorizontalScrollBarStyle}"
                                 ViewportSize="{TemplateBinding ViewportWidth}"
                                 Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"
-                                Value="{TemplateBinding HorizontalOffset}" />
+                                Value="{TemplateBinding HorizontalOffset}"
+                                />
                         </Grid>
                     </Border>
                 </ControlTemplate>
