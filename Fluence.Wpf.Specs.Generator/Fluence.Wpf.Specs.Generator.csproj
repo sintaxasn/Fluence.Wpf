@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>Fluence.Wpf.Specs.Generator</RootNamespace>
+    <AssemblyName>Fluence.Wpf.Specs.Generator</AssemblyName>
+    <Description>Roslyn incremental generators that emit the Fluence dialog-spec DTOs and the Fluence.Wpf materializer table from the curated SpecSurface.xml manifest</Description>
+    <Product>Fluence.Wpf.Specs.Generator</Product>
+    <Title>Fluence.Wpf.Specs.Generator</Title>
+    <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <IsRoslynComponent>true</IsRoslynComponent>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.12.0" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="AnalyzerReleases.Shipped.md" />
+    <AdditionalFiles Include="AnalyzerReleases.Unshipped.md" />
+  </ItemGroup>
+
+</Project>

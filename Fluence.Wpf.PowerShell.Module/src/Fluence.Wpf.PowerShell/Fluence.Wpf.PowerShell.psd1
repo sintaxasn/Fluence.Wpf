@@ -19,7 +19,11 @@
         'Set-FluenceAccent',
         'Set-FluenceBackdrop',
         'Close-FluenceWindow',
-        'Get-FluenceTheme'
+        'Get-FluenceTheme',
+        'New-FluenceSpec',
+        'New-FluenceRule',
+        'New-FluenceDialogSpec',
+        'Show-FluenceDialogSpec'
     )
     CmdletsToExport      = @()
     VariablesToExport    = @()

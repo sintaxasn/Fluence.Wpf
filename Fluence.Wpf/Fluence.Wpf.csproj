@@ -59,5 +59,14 @@
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Fluence.Wpf.Specs\Fluence.Wpf.Specs.csproj" />
+    <ProjectReference Include="..\Fluence.Wpf.Specs.Generator\Fluence.Wpf.Specs.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="..\Fluence.Wpf.Specs\SpecSurface.xml" Link="SpecSurface.xml" />
+  </ItemGroup>
+
 
 </Project>

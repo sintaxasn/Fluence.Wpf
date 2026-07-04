@@ -1,0 +1,167 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The curated spec-surface contract: the single source of truth for which Fluence controls and
+  members the dialog-spec API mirrors. Two generators consume this file:
+    - In Fluence.Wpf.Specs it emits the serializable spec DTO classes and mirrored enums.
+    - In Fluence.Wpf it emits the SpecMaterializer create/apply/harvest table and VALIDATES every
+      control, member, and enum value against the real compiled symbols; drift is a build error
+      (FLSPEC001-FLSPEC004).
+  Every doc attribute becomes the emitted XML documentation (CS1591 is enforced), so keep them real.
+  Member types: text, bool, boolOpt, int, intOpt, double, doubleOpt, dateOpt, timeOpt, stringList,
+  child, childList, thickness, uri, enum:<SpecEnumName>.
+-->
+<SpecSurface>
+
+  <Enum name="SpecOrientation" clr="System.Windows.Controls.Orientation" doc="Mirror of the WPF layout orientation.">
+    <Value name="Horizontal" doc="Children are stacked left to right." />
+    <Value name="Vertical" doc="Children are stacked top to bottom." />
+  </Enum>
+
+  <Enum name="SpecTextWrapping" clr="System.Windows.TextWrapping" doc="Mirror of the WPF text wrapping mode.">
+    <Value name="WrapWithOverflow" doc="Wraps text, letting an unbreakable run overflow the line." />
+    <Value name="NoWrap" doc="No wrapping; text is clipped or trimmed on one line." />
+    <Value name="Wrap" doc="Wraps text, breaking mid-word when necessary." />
+  </Enum>
+
+  <Enum name="SpecTypography" clr="Fluence.Wpf.FluentTypography" doc="Mirror of the Fluence type ramp applied to text blocks.">
+    <Value name="None" doc="No ramp style; inherit the ambient text style." />
+    <Value name="Caption" doc="Caption: the smallest ramp step." />
+    <Value name="Body" doc="Body: the default reading size." />
+    <Value name="BodyStrong" doc="Body with increased weight." />
+    <Value name="BodyLarge" doc="Body at the large size." />
+    <Value name="Subtitle" doc="Subtitle: a section heading." />
+    <Value name="Title" doc="Title: a page-level heading." />
+    <Value name="TitleLarge" doc="Title at the large size." />
+    <Value name="Display" doc="Display: the largest ramp step." />
+  </Enum>
+
+  <Enum name="SpecInfoBarSeverity" clr="Fluence.Wpf.InfoBarSeverity" doc="Mirror of the InfoBar severity, driving its glyph and color.">
+    <Value name="Informational" doc="Neutral information." />
+    <Value name="Success" doc="A successful outcome." />
+    <Value name="Warning" doc="A cautionary notice." />
+    <Value name="Error" doc="A failure or blocking problem." />
+  </Enum>
+
+  <Enum name="SpecSpinButtonPlacementMode" clr="Fluence.Wpf.SpinButtonPlacementMode" doc="Mirror of the NumberBox spin-button placement.">
+    <Value name="Hidden" doc="No spin buttons are shown." />
+    <Value name="Compact" doc="Spin buttons appear in a compact flyout while focused." />
+    <Value name="Inline" doc="Spin buttons are always visible inline." />
+  </Enum>
+
+  <Control name="TextBlock" clr="Fluence.Wpf.Controls.TextBlock" doc="A themed text block for labels, messages, and headings.">
+    <Member name="Text" type="text" doc="The text to display." />
+    <Member name="TextWrapping" type="enum:SpecTextWrapping" doc="How the text wraps; unset keeps the control default." />
+    <Member name="Typography" type="enum:SpecTypography" doc="The Fluence type-ramp style; unset keeps the control default." />
+  </Control>
+
+  <Control name="TextBox" clr="Fluence.Wpf.Controls.TextBox" doc="A themed single-line or multi-line text input." valueMember="Text" valueKind="String">
+    <Member name="Text" type="text" doc="The initial text; the live text is harvested into the result." />
+    <Member name="PlaceholderText" type="text" doc="Hint text shown while the box is empty." />
+    <Member name="HelperText" type="text" doc="Persistent helper text shown under the box." />
+    <Member name="ClearButtonEnabled" type="boolOpt" doc="Whether the inline clear button is shown; unset keeps the control default." />
+    <Member name="AcceptsReturn" type="boolOpt" doc="Whether Enter inserts a newline (multi-line editing); unset keeps the control default." />
+    <Member name="MinLines" type="intOpt" doc="The minimum visible line count for multi-line editing; unset keeps the control default." />
+    <Member name="TextWrapping" type="enum:SpecTextWrapping" doc="How typed text wraps; unset keeps the control default." />
+    <Member name="MaxLength" type="intOpt" doc="The maximum number of characters accepted; unset means unlimited." />
+  </Control>
+
+  <Control name="PasswordBox" clr="Fluence.Wpf.Controls.PasswordBox" doc="A themed masked password input; the value is read once when the dialog commits." valueMember="Password" valueKind="String">
+    <Member name="Password" type="text" doc="The initial password; the live value is harvested at commit time." />
+    <Member name="PlaceholderText" type="text" doc="Hint text shown while the box is empty." />
+    <Member name="MaxLength" type="intOpt" doc="The maximum number of characters accepted; unset means unlimited." />
+    <Member name="RevealButtonEnabled" type="boolOpt" doc="Whether the reveal (eye) button is shown; unset keeps the control default." />
+  </Control>
+
+  <Control name="NumberBox" clr="Fluence.Wpf.Controls.NumberBox" doc="A themed numeric input with optional spin buttons. Its default value is 0, not null." valueMember="Value" valueKind="Double">
+    <Member name="Value" type="doubleOpt" doc="The initial numeric value; the live value is harvested into the result." />
+    <Member name="Minimum" type="doubleOpt" doc="The inclusive minimum the control clamps to; unset keeps the control default." />
+    <Member name="Maximum" type="doubleOpt" doc="The inclusive maximum the control clamps to; unset keeps the control default." />
+    <Member name="SmallChange" type="doubleOpt" doc="The spin/arrow-key step; unset keeps the control default." />
+    <Member name="Header" type="text" doc="A label rendered above the input." />
+    <Member name="PlaceholderText" type="text" doc="Hint text shown while the box is empty." />
+    <Member name="Description" type="text" doc="Secondary descriptive text rendered with the input." />
+    <Member name="SpinButtonPlacementMode" type="enum:SpecSpinButtonPlacementMode" doc="Where the spin buttons appear; unset keeps the control default." />
+  </Control>
+
+  <Control name="CheckBox" clr="Fluence.Wpf.Controls.CheckBox" doc="A themed check box. An untouched box harvests false, not null." valueMember="IsChecked" valueKind="Boolean">
+    <Member name="Content" type="text" doc="The label text beside the box." />
+    <Member name="Description" type="text" doc="Secondary descriptive text under the label." />
+    <Member name="IsChecked" type="boolOpt" doc="The initial checked state; the live state is harvested into the result." />
+  </Control>
+
+  <Control name="ToggleSwitch" clr="Fluence.Wpf.Controls.ToggleSwitch" doc="A themed on/off switch. An untouched switch harvests false, not null." valueMember="IsChecked" valueKind="Boolean">
+    <Member name="IsChecked" type="boolOpt" doc="The initial on/off state; the live state is harvested into the result." />
+    <Member name="OnContent" type="text" doc="The label shown while the switch is on." />
+    <Member name="OffContent" type="text" doc="The label shown while the switch is off." />
+    <Member name="HeaderContent" type="text" doc="A label rendered above the switch." />
+  </Control>
+
+  <Control name="ComboBox" clr="Fluence.Wpf.Controls.ComboBox" doc="A themed drop-down list of string choices." valueMember="SelectedItem" valueKind="String">
+    <Member name="Items" type="stringList" doc="The selectable choices, in order." />
+    <Member name="SelectedItem" type="text" doc="The initially selected choice; the live selection is harvested into the result." />
+    <Member name="PlaceholderText" type="text" doc="Hint text shown while nothing is selected." />
+  </Control>
+
+  <Control name="RadioButton" clr="Fluence.Wpf.Controls.RadioButton" doc="A themed radio button. Radios sharing a GroupName form one choice; the checked radio's Content is harvested under the GroupName key." valueMember="IsChecked" valueKind="RadioGroup">
+    <Member name="Content" type="text" doc="The label text beside the radio; the harvested value when this radio is checked." />
+    <Member name="GroupName" type="text" doc="The mutual-exclusion group and the result key for the checked radio's Content." />
+    <Member name="IsChecked" type="boolOpt" doc="The initial checked state." />
+    <Member name="Description" type="text" doc="Secondary descriptive text under the label." />
+  </Control>
+
+  <Control name="DatePicker" clr="Fluence.Wpf.Controls.DatePicker" doc="A themed date picker." valueMember="SelectedDate" valueKind="Date">
+    <Member name="SelectedDate" type="dateOpt" doc="The initially selected date; the live selection is harvested into the result." />
+    <Member name="Header" type="text" doc="A label rendered above the picker." />
+    <Member name="PlaceholderText" type="text" doc="Hint text shown while no date is selected." />
+    <Member name="MinYear" type="intOpt" doc="The earliest selectable year; unset keeps the control default." />
+    <Member name="MaxYear" type="intOpt" doc="The latest selectable year; unset keeps the control default." />
+  </Control>
+
+  <Control name="TimePicker" clr="Fluence.Wpf.Controls.TimePicker" doc="A themed time picker." valueMember="SelectedTime" valueKind="Time">
+    <Member name="SelectedTime" type="timeOpt" doc="The initially selected time of day; the live selection is harvested into the result." />
+    <Member name="Header" type="text" doc="A label rendered above the picker." />
+    <Member name="PlaceholderText" type="text" doc="Hint text shown while no time is selected." />
+    <Member name="MinuteIncrement" type="intOpt" doc="The minute step of the minute column; unset keeps the control default." />
+    <Member name="ClockIdentifier" type="text" doc="The clock system, '12HourClock' or '24HourClock'; unset keeps the control default." />
+  </Control>
+
+  <Control name="HyperlinkButton" clr="Fluence.Wpf.Controls.HyperlinkButton" doc="A themed hyperlink that opens a URI; it harvests no value.">
+    <Member name="Content" type="text" doc="The link text." />
+    <Member name="NavigateUri" type="uri" doc="The absolute or relative URI the link opens." />
+  </Control>
+
+  <Control name="InfoBar" clr="Fluence.Wpf.Controls.InfoBar" doc="A themed inline notification bar for status messaging.">
+    <Member name="Title" type="text" doc="The bold title text." />
+    <Member name="Message" type="text" doc="The message body text." />
+    <Member name="Severity" type="enum:SpecInfoBarSeverity" doc="The severity driving glyph and color; unset keeps the control default." />
+    <Member name="IsOpen" type="boolOpt" doc="Whether the bar is visible; unset keeps the control default." />
+    <Member name="IsClosable" type="boolOpt" doc="Whether the user can dismiss the bar; unset keeps the control default." />
+  </Control>
+
+  <Control name="ProgressBar" clr="Fluence.Wpf.Controls.ProgressBar" doc="A themed determinate or indeterminate progress bar.">
+    <Member name="Value" type="doubleOpt" doc="The current progress value; unset keeps the control default." />
+    <Member name="Minimum" type="doubleOpt" doc="The value range minimum; unset keeps the control default." />
+    <Member name="Maximum" type="doubleOpt" doc="The value range maximum; unset keeps the control default." />
+    <Member name="IsIndeterminate" type="boolOpt" doc="Whether the bar animates indeterminately; unset keeps the control default." />
+  </Control>
+
+  <Control name="ProgressRing" clr="Fluence.Wpf.Controls.ProgressRing" doc="A themed circular progress indicator.">
+    <Member name="IsActive" type="boolOpt" doc="Whether the ring is active and visible; unset keeps the control default." />
+    <Member name="IsIndeterminate" type="boolOpt" doc="Whether the ring animates indeterminately; unset keeps the control default." />
+    <Member name="Value" type="doubleOpt" doc="The current progress value for determinate mode; unset keeps the control default." />
+    <Member name="Minimum" type="doubleOpt" doc="The value range minimum; unset keeps the control default." />
+    <Member name="Maximum" type="doubleOpt" doc="The value range maximum; unset keeps the control default." />
+  </Control>
+
+  <Control name="StackPanel" clr="Fluence.Wpf.Controls.StackPanel" doc="A themed stack layout container for composing child elements.">
+    <Member name="Orientation" type="enum:SpecOrientation" doc="The stacking direction; unset keeps the control default (vertical)." />
+    <Member name="Spacing" type="doubleOpt" doc="Uniform spacing between children in device-independent pixels; unset keeps the control default." />
+    <Member name="Children" type="childList" doc="The child elements, rendered in order." />
+  </Control>
+
+  <Control name="Border" clr="Fluence.Wpf.Controls.Border" doc="A themed border container wrapping a single child element.">
+    <Member name="Child" type="child" doc="The single child element the border wraps." />
+    <Member name="Padding" type="thickness" doc="Inner padding as a WPF thickness string ('8' or '8,4' or '8,4,8,4')." />
+  </Control>
+
+</SpecSurface>

@@ -96,6 +96,10 @@ and `Close-FluenceWindow -Result <value>` closes the window and sets its return 
 | `Set-FluenceBackdrop` | Set the system backdrop (Mica, Acrylic, Tabbed, None) for the process and optionally a window. On an MTA host, passing `-Window` for a window created on a different thread raises a clear error rather than an opaque cross-thread exception. |
 | `Close-FluenceWindow` | Close a hosted window on its UI thread, optionally stashing a result for the host to return. |
 | `Get-FluenceTheme` | Read the current theme state (current theme, resolved theme, backdrop, dark-mode flag). |
+| `New-FluenceSpec` | Build one typed, serializable dialog-spec element mirroring a Fluence control; curated members bind as dynamic parameters. |
+| `New-FluenceRule` | Build declarative validation rules (NotEmpty, Pattern, Length, Range) for spec input elements. |
+| `New-FluenceDialogSpec` | Compose a serializable DialogSpec from spec elements and buttons, validated fail-fast. |
+| `Show-FluenceDialogSpec` | Materialize and show a DialogSpec in-process (round-tripped through the versioned spec serializer); returns the clicked button and harvested values. |
 
 ---
 

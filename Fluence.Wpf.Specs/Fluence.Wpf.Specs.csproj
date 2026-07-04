@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>Fluence.Wpf.Specs</RootNamespace>
+    <AssemblyName>Fluence.Wpf.Specs</AssemblyName>
+    <Description>Serializable dialog-spec object model for Fluence.Wpf in-process and out-of-process dialog composition</Description>
+    <Product>Fluence.Wpf.Specs</Product>
+    <Title>Fluence.Wpf.Specs</Title>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Fluence.Wpf.Specs.Generator\Fluence.Wpf.Specs.Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AdditionalFiles Include="SpecSurface.xml" />
+  </ItemGroup>
+
+</Project>

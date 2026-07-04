@@ -9,7 +9,7 @@ Self-contained persistent memory for engineers (human and AI) working in this re
 ## 1. Project overview
 
 - **Fluence.Wpf** is a WPF control library that recreates the **Windows 11 Fluent / WinUI 3** visual language and interaction patterns on WPF.
-- **Target frameworks** (library + tests): `net472` (primary) and `net10.0-windows10.0.26100.0`. Gallery demo (`Fluence.Wpf.Demo`) targets `net472` and `net10.0-windows10.0.26100.0`; MVVM demo (`Fluence.Wpf.Demo.Mvvm`) targets `net10.0-windows10.0.26100.0`.
+- **Target frameworks**: the library targets `net472` (primary), `net8.0-windows10.0.26100.0` (the PowerShell 7 module lane), and `net10.0-windows10.0.26100.0`; the test suite targets `net472` and `net10.0-windows10.0.26100.0`. `Fluence.Wpf.Specs` is `netstandard2.0` (WPF-free, loadable by both PowerShell editions); `Fluence.Wpf.Specs.Generator` is `netstandard2.0` (Roslyn host requirement). Gallery demo (`Fluence.Wpf.Demo`) targets `net472` and `net10.0-windows10.0.26100.0`; MVVM demo (`Fluence.Wpf.Demo.Mvvm`) targets `net10.0-windows10.0.26100.0`.
 - **Language**: `LangVersion=latest` across all TFMs, set centrally in `Directory.Build.props` - no per-TFM language restriction. `net472` still constrains **runtime API** availability (see [Section 4.3](#43-feasibility-test-for-net472)); avoid APIs that don't ship in `net472`, but C# language features themselves are not restricted. Nullable reference types are **enabled** (`Nullable=enable` in `Directory.Build.props`); individual projects may override with `<Nullable>disable</Nullable>` (e.g. `Fluence.Wpf.Demo.Mvvm`).
 - **License**: BSD 3-Clause. Every `.cs` file begins with the same 27-line header; copy it verbatim from any existing library file when adding new sources. Do not edit the copyright year unless the user asks.
 - **OS**: Windows 10 1809+ baseline. Mica and rounded-corner extras light up on Windows 11.
@@ -19,10 +19,14 @@ Self-contained persistent memory for engineers (human and AI) working in this re
 
 ```text
 Fluence.Wpf.sln
-├── Fluence.Wpf/             Control library (multi-TFM: net472 + net10.0-windows10.0.26100.0)
-├── Fluence.Wpf.Demo/        Gallery app (net472 + net10.0-windows10.0.26100.0) - visual verification for all controls
-├── Fluence.Wpf.Demo.Mvvm/   MVVM Task Manager demo (net10.0-windows10.0.26100.0) - CommunityToolkit.Mvvm example
-└── Fluence.Wpf.Tests/       MSTest 4.2.2 suite (multi-TFM)
+├── Fluence.Wpf/                 Control library (multi-TFM: net472 + net8.0-windows10.0.26100.0 + net10.0-windows10.0.26100.0)
+├── Fluence.Wpf.Specs/           Serializable dialog-spec DTOs (netstandard2.0, WPF-free); SpecSurface.xml is the curated contract
+├── Fluence.Wpf.Specs.Generator/ Roslyn incremental generators emitting the spec DTOs (into Fluence.Wpf.Specs) and the
+│                                materializer table (into Fluence.Wpf) from SpecSurface.xml, with drift-as-build-error
+│                                diagnostics (FLSPEC001-FLSPEC005)
+├── Fluence.Wpf.Demo/            Gallery app (net472 + net10.0-windows10.0.26100.0) - visual verification for all controls
+├── Fluence.Wpf.Demo.Mvvm/       MVVM Task Manager demo (net10.0-windows10.0.26100.0) - CommunityToolkit.Mvvm example
+└── Fluence.Wpf.Tests/           MSTest 4.2.2 suite (multi-TFM)
 ```
 
 ### CLR namespaces
@@ -34,6 +38,7 @@ Fluence.Wpf.sln
 | `Fluence.Wpf.Automation` | UI Automation peers for controls such as `NavigationView`, `ToggleSwitch`, `DropDownButton`, `SplitButton`, `ToggleSplitButton`, `NumberBox`, `InfoBar`, and `ProgressRing`                                                     |
 | `Fluence.Wpf.Helpers`    | Internal helpers (`AcrylicNoiseHelper`, `BackdropPlan`, `FramePlan`, `GridLengthAnimation`, `HsvColorHelper`, `OsVersionHelper`, `RegistryHelper`, `WindowCapabilities`)                                  |
 | `Fluence.Wpf.Native`     | P/Invoke constants, structs, and methods                                                                                                                                                                  |
+| `Fluence.Wpf.Specs`      | Serializable dialog-spec DTOs, validation rules, and the versioned envelope (`Fluence.Wpf.Specs.dll`, WPF-free) plus their `SpecMaterializer` and `SpecDialogWindow` host (in `Fluence.Wpf.dll`); the curated surface contract is `Fluence.Wpf.Specs/SpecSurface.xml`, and drift from the real control members fails the build |
 
 XAML themes are under `Fluence.Wpf/Themes/` and are **not** a CLR namespace.
 
