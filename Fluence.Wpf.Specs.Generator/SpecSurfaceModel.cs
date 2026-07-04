@@ -110,6 +110,7 @@ namespace Fluence.Wpf.Specs.Generator
                         Name = RequireAttribute(memberElement, "name", errors),
                         Type = RequireAttribute(memberElement, "type", errors),
                         Doc = RequireAttribute(memberElement, "doc", errors),
+                        Target = (string?)memberElement.Attribute("target"),
                     });
                 }
                 model.Controls.Add(controlModel);

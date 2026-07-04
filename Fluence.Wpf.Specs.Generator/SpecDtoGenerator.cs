@@ -221,6 +221,10 @@ namespace Fluence.Wpf.Specs.Generator
                 : SpecEmit.GetScalarDtoType(member.Type) ?? "string?";
             SpecEmit.Line(builder, "        /// <summary>", SpecEmit.EscapeXml(member.Doc), "</summary>");
             SpecEmit.Line(builder, "        [global::System.Runtime.Serialization.DataMember(Order = ", order, ", EmitDefaultValue = false)]");
+            if (SpecEmit.Is(member.Type, "imageBytes"))
+            {
+                SpecEmit.Line(builder, "        [global::Fluence.Wpf.Specs.SpecBase64]");
+            }
             SpecEmit.Line(builder, "        public ", propertyType, " ", member.Name, " { get; set; }");
         }
 

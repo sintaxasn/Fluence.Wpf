@@ -47,6 +47,7 @@ using FluenceExpander = Fluence.Wpf.Controls.Expander;
 using FluenceListView = Fluence.Wpf.Controls.ListView;
 using WpfBorder = System.Windows.Controls.Border;
 using WpfButton = System.Windows.Controls.Button;
+using WpfImage = System.Windows.Controls.Image;
 using WpfTextBlock = System.Windows.Controls.TextBlock;
 
 namespace Fluence.Wpf.Tests
@@ -157,7 +158,7 @@ namespace Fluence.Wpf.Tests
                 Window window = CreateHostWindow(page);
                 try
                 {
-                    Image? image = FindByName<Image>(page, "BrandHeroImage");
+                    WpfImage? image = FindByName<WpfImage>(page, "BrandHeroImage");
                     Assert.IsNotNull(image, "Home page should expose the brand hero image.");
 
                     // The hero renders the resolution-independent brand vector, which carries no
@@ -581,7 +582,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(titleIcon, "Extended title bar icon presenter should exist.");
                     Assert.AreEqual(Visibility.Visible, titleIcon.Visibility,
                         "Extended title bar icon should be visible by default.");
-                    Image? titleIconImage = FindVisualChild<Image>(titleIcon);
+                    WpfImage? titleIconImage = FindVisualChild<WpfImage>(titleIcon);
                     Assert.IsNotNull(titleIconImage, "Extended title bar icon should render an Image.");
                     Assert.AreEqual(20.0, titleIconImage.ActualWidth, 0.5,
                         "Extended title bar icon should match the larger navigation glyph size.");

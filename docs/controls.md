@@ -55,6 +55,7 @@ xmlns:uicore="clr-namespace:Fluence.Wpf;assembly=Fluence.Wpf"
 | Trees & collections | `TreeView`, `TreeViewItem`                                                                                                         |
 | Layout / surfaces   | `Card`, `Expander`, `Border`, `StackPanel`, `DockPanel`, `SmoothScrollViewer`, `Separator`                                         |
 | Person / social     | `PersonPicture`                                                                                                                    |
+| Media               | `Image`                                                                                                                            |
 | Icons               | `FontIcon`                                                                                                                         |
 
 Tab strip and scroll bar styling are provided via merged themes (see `Themes/Generic.xaml`).
@@ -164,11 +165,12 @@ Key API:
   <a href="../../api/Fluence.Wpf.Controls.ListBoxItem.html">ListBoxItem</a>
   <a href="../../api/Fluence.Wpf.Controls.ListView.html">ListView</a>
   <a href="../../api/Fluence.Wpf.Controls.PersonPicture.html">PersonPicture</a>
+  <a href="../../api/Fluence.Wpf.Controls.Image.html">Image</a>
   <a href="../../api/Fluence.Wpf.CardVariant.html">CardVariant</a>
   <a href="../../api/Fluence.Wpf.ListViewState.html">ListViewState</a>
 </div>
 
-Collection controls keep WPF item-source and template behavior. `Card` adds header, footer, icon, clickable, and pressed-state APIs.
+Collection controls keep WPF item-source and template behavior. `Card` adds header, footer, icon, clickable, and pressed-state APIs. `Image` frames a picture with a theme-aware 1px stroke and a rounded-corner clip driven by `CornerRadius`, while `Source` and `Stretch` behave like the stock WPF image element.
 
 ### Data Binding
 
@@ -349,6 +351,7 @@ Key API:
   <a href="../../api/Fluence.Wpf.Automation.RatingControlAutomationPeer.html">RatingControlAutomationPeer</a>
   <a href="../../api/Fluence.Wpf.Automation.PasswordBoxAutomationPeer.html">PasswordBoxAutomationPeer</a>
   <a href="../../api/Fluence.Wpf.Automation.PersonPictureAutomationPeer.html">PersonPictureAutomationPeer</a>
+  <a href="../../api/Fluence.Wpf.Automation.ImageAutomationPeer.html">ImageAutomationPeer</a>
   <a href="../../api/Fluence.Wpf.Automation.HyperlinkButtonAutomationPeer.html">HyperlinkButtonAutomationPeer</a>
   <a href="../../api/Fluence.Wpf.Automation.CardAutomationPeer.html">CardAutomationPeer</a>
 </div>
@@ -384,6 +387,7 @@ Accessibility coverage includes focus visuals, high-contrast resources, automati
 | `ProgressRing` | ProgressBar | `AutomationProperties.Name` | RangeValue |
 | `Card` | Button (when clickable) / Group (non-clickable) | `AutomationProperties.Name` (or its content) | Invoke (when clickable) |
 | `PersonPicture` | Image | Display name or initials | none |
+| `Image` | Image | `AutomationProperties.Name` (unset = decorative) | none |
 | `ContentDialog` | Window | `Title` | none (focus trapped inside; assertive live region announces `Title` on open) |
 | `TeachingTip` | ToolTip | `Title` and `Subtitle` (live region) | none |
 | `AppBarButton` | Button | `Label` (surfaced as `AutomationProperties.Name`) or an explicit `AutomationProperties.Name` | Invoke |

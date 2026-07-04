@@ -65,7 +65,7 @@ namespace Fluence.Wpf.Controls
     /// text inputs commit live on every valid keystroke like WinUI; the hex input commits
     /// on Enter or focus loss, a deliberate deviation from WinUI's live hex commit.
     /// </remarks>
-    [TemplatePart(Name = PART_SpectrumImage, Type = typeof(Image))]
+    [TemplatePart(Name = PART_SpectrumImage, Type = typeof(System.Windows.Controls.Image))]
     [TemplatePart(Name = PART_SpectrumArea, Type = typeof(FrameworkElement))]
     [TemplatePart(Name = PART_SpectrumThumb, Type = typeof(FrameworkElement))]
     [TemplatePart(Name = PART_HueSlider, Type = typeof(RangeBase))]
@@ -129,7 +129,7 @@ namespace Fluence.Wpf.Controls
         private static readonly Brush CheckerboardBrush = CreateCheckerboardBrush();
         private static readonly Brush HueRainbowBrush = CreateHueRainbowBrush();
 
-        private Image? _spectrumImage;
+        private System.Windows.Controls.Image? _spectrumImage;
         private FrameworkElement? _spectrumArea;
         private FrameworkElement? _spectrumThumb;
         private RangeBase? _hueSlider;
@@ -527,7 +527,7 @@ namespace Fluence.Wpf.Controls
 
             base.OnApplyTemplate();
 
-            _spectrumImage = GetTemplateChild(PART_SpectrumImage) as Image;
+            _spectrumImage = GetTemplateChild(PART_SpectrumImage) as System.Windows.Controls.Image;
             _spectrumArea = GetTemplateChild(PART_SpectrumArea) as FrameworkElement;
             _spectrumThumb = GetTemplateChild(PART_SpectrumThumb) as FrameworkElement;
             _hueSlider = GetTemplateChild(PART_HueSlider) as RangeBase;
@@ -731,7 +731,7 @@ namespace Fluence.Wpf.Controls
 
             _spectrumBitmap.WritePixels(new Int32Rect(0, 0, SpectrumSize, SpectrumSize), pixels, SpectrumSize * 4, 0);
             _spectrumBitmapHue = _hue;
-            _spectrumImage.SetCurrentValue(Image.SourceProperty, _spectrumBitmap);
+            _spectrumImage.SetCurrentValue(System.Windows.Controls.Image.SourceProperty, _spectrumBitmap);
         }
 
         /// <summary>

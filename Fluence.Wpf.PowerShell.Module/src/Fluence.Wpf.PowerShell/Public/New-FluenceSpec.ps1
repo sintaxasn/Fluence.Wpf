@@ -13,7 +13,7 @@
     .PARAMETER Type
         The spec control name: TextBlock, TextBox, PasswordBox, NumberBox, CheckBox, ToggleSwitch,
         ComboBox, RadioButton, DatePicker, TimePicker, HyperlinkButton, InfoBar, ProgressBar,
-        ProgressRing, StackPanel, or Border.
+        ProgressRing, StackPanel, Border, or Image.
     .PARAMETER Name
         The result key for value-bearing elements; must be unique within the dialog.
     .PARAMETER Rules
@@ -90,6 +90,14 @@
             if ($property.CanWrite -and $null -ne $property.SetMethod -and $property.SetMethod.IsPublic)
             {
                 $parameterType = $property.PropertyType
+                $isBase64Member = @($property.GetCustomAttributes($true) |
+                        Where-Object { $_.GetType().Name -eq 'SpecBase64Attribute' }).Count -gt 0
+                if ($isBase64Member)
+                {
+                    # Base64-carrying members also accept a raw byte array; the spec constructor
+                    # auto-encodes it (SpecValueConverter.ToBase64Text), so bind loosely.
+                    $parameterType = [object]
+                }
             }
             elseif ($property.PropertyType.IsGenericType -and $property.PropertyType.GetGenericTypeDefinition() -eq [System.Collections.Generic.IList`1])
             {

@@ -132,10 +132,10 @@ namespace Fluence.Wpf.Specs.Generator
             bool valid = true;
             foreach (SpecMemberModel member in control.Members)
             {
-                IPropertySymbol? property = FindProperty(controlType, member.Name);
+                IPropertySymbol? property = FindProperty(controlType, member.Target ?? member.Name);
                 if (property is null)
                 {
-                    context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.MemberNotFound, Location.None, member.Name, control.Name, control.Clr));
+                    context.ReportDiagnostic(Diagnostic.Create(DiagnosticDescriptors.MemberNotFound, Location.None, member.Target ?? member.Name, control.Name, control.Clr));
                     valid = false;
                     continue;
                 }
@@ -193,6 +193,8 @@ namespace Fluence.Wpf.Specs.Generator
                 "doubleOpt" => SpecEmit.Is(display, "double") || SpecEmit.Is(display, "double?"),
                 "dateOpt" => SpecEmit.Is(display, "System.DateTime") || SpecEmit.Is(display, "System.DateTime?"),
                 "timeOpt" => SpecEmit.Is(display, "System.TimeSpan") || SpecEmit.Is(display, "System.TimeSpan?"),
+                "imagePath" or "imageBytes" => SpecEmit.Is(display, "System.Windows.Media.ImageSource") || SpecEmit.Is(display, "System.Windows.Media.ImageSource?"),
+                "cornerRadius" => SpecEmit.Is(display, "System.Windows.CornerRadius"),
                 "stringList" or "childList" or "child" => true,
                 _ => false,
             };
@@ -300,7 +302,7 @@ namespace Fluence.Wpf.Specs.Generator
         private static void EmitApply(StringBuilder builder, SpecMemberModel member)
         {
             string specAccess = "spec." + member.Name;
-            string controlAccess = "control." + member.Name;
+            string controlAccess = "control." + (member.Target ?? member.Name);
             if (member.EnumName is string enumName)
             {
                 SpecEmit.Line(builder, "            if (", specAccess, ".HasValue)");
@@ -327,6 +329,24 @@ namespace Fluence.Wpf.Specs.Generator
                     SpecEmit.Line(builder, "            if (", specAccess, " is not null)");
                     _ = builder.AppendLine("            {");
                     SpecEmit.Line(builder, "                ", controlAccess, " = ParseThickness(", specAccess, ");");
+                    _ = builder.AppendLine("            }");
+                    break;
+                case "imagePath":
+                    SpecEmit.Line(builder, "            if (", specAccess, " is not null)");
+                    _ = builder.AppendLine("            {");
+                    SpecEmit.Line(builder, "                ", controlAccess, " = LoadImageSourceFromPath(", specAccess, ");");
+                    _ = builder.AppendLine("            }");
+                    break;
+                case "imageBytes":
+                    SpecEmit.Line(builder, "            if (", specAccess, " is not null)");
+                    _ = builder.AppendLine("            {");
+                    SpecEmit.Line(builder, "                ", controlAccess, " = LoadImageSourceFromBase64(", specAccess, ");");
+                    _ = builder.AppendLine("            }");
+                    break;
+                case "cornerRadius":
+                    SpecEmit.Line(builder, "            if (", specAccess, " is not null)");
+                    _ = builder.AppendLine("            {");
+                    SpecEmit.Line(builder, "                ", controlAccess, " = ParseCornerRadius(", specAccess, ");");
                     _ = builder.AppendLine("            }");
                     break;
                 case "stringList":

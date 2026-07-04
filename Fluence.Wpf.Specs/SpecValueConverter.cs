@@ -81,6 +81,23 @@ namespace Fluence.Wpf.Specs
         }
 
         /// <summary>
+        /// Converts a value to Base64 text: a byte array is encoded, a string passes through
+        /// as already-encoded Base64, and null stays null.
+        /// </summary>
+        /// <param name="value">The raw value (byte array, Base64 string, or null).</param>
+        /// <returns>The Base64 text, or null when the value is null.</returns>
+        public static string? ToBase64Text(object? value)
+        {
+            value = Unwrap(value);
+            return value switch
+            {
+                null => null,
+                byte[] bytes => Convert.ToBase64String(bytes),
+                _ => Convert.ToString(value, CultureInfo.InvariantCulture),
+            };
+        }
+
+        /// <summary>
         /// Converts a value to a nullable boolean (accepting booleans and boolean-like strings).
         /// </summary>
         /// <param name="value">The raw value.</param>

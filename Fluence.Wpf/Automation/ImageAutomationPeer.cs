@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -26,31 +26,30 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System;
+using System.Windows.Automation.Peers;
 
-namespace Fluence.Wpf.Specs.Generator
+namespace Fluence.Wpf.Automation
 {
-    /// <summary>One curated member of a control.</summary>
-    internal sealed class SpecMemberModel
+    /// <summary>
+    /// Exposes <see cref="Controls.Image"/> to UI Automation as an image element.
+    /// The peer reports no name of its own, so a decorative image stays silent to
+    /// assistive technology unless the consumer sets an explicit
+    /// <see cref="System.Windows.Automation.AutomationProperties.NameProperty"/> value.
+    /// </summary>
+    /// <remarks>Initializes a new instance of the <see cref="ImageAutomationPeer"/> class.</remarks>
+    /// <param name="owner">The <see cref="Controls.Image"/> control represented by this automation peer.</param>
+    public class ImageAutomationPeer(Controls.Image owner) : FrameworkElementAutomationPeer(owner)
     {
-        /// <summary>Gets or sets the member name (mirrors the control property name).</summary>
-        public string Name { get; set; } = string.Empty;
+        /// <inheritdoc />
+        protected override string GetClassNameCore()
+        {
+            return nameof(Controls.Image);
+        }
 
-        /// <summary>Gets or sets the manifest member type token.</summary>
-        public string Type { get; set; } = string.Empty;
-
-        /// <summary>Gets or sets the XML documentation text.</summary>
-        public string Doc { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the control property the member applies to when it differs from
-        /// <see cref="Name"/> (the optional manifest target attribute). Lets two spec members
-        /// (for example a path form and a Base64 form) feed one control property; drift
-        /// validation and apply emission both resolve against this property.
-        /// </summary>
-        public string? Target { get; set; }
-
-        /// <summary>Gets the enum name when <see cref="Type"/> is an enum token, else null.</summary>
-        public string? EnumName => Type.StartsWith("enum:", StringComparison.Ordinal) ? Type.Substring(5) : null;
+        /// <inheritdoc />
+        protected override AutomationControlType GetAutomationControlTypeCore()
+        {
+            return AutomationControlType.Image;
+        }
     }
 }

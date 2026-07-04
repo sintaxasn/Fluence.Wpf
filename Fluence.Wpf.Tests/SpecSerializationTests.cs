@@ -96,6 +96,54 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void ImageSpec_RoundTrips_PathAndBase64Forms()
+        {
+            string base64 = Convert.ToBase64String([1, 2, 3, 4]);
+            DialogSpec dialog = new()
+            {
+                Title = "Brand",
+            };
+            dialog.Content.Add(new ImageSpec
+            {
+                Source = @"C:\brand\banner.png",
+                Stretch = SpecStretch.UniformToFill,
+                CornerRadius = "8",
+            });
+            dialog.Content.Add(new ImageSpec { SourceBase64 = base64 });
+            dialog.Buttons.Add(new ButtonSpec { Text = "OK" });
+
+            byte[] first = SpecSerialization.Serialize(dialog);
+            DialogSpec back = SpecSerialization.Deserialize(first);
+            byte[] second = SpecSerialization.Serialize(back);
+
+            CollectionAssert.AreEqual(first, second, "serialize(deserialize(bytes)) must be byte-identical");
+            ImageSpec pathForm = (ImageSpec)back.Content[0];
+            Assert.AreEqual(@"C:\brand\banner.png", pathForm.Source);
+            Assert.AreEqual(SpecStretch.UniformToFill, pathForm.Stretch);
+            Assert.AreEqual("8", pathForm.CornerRadius);
+            ImageSpec bytesForm = (ImageSpec)back.Content[1];
+            Assert.AreEqual(base64, bytesForm.SourceBase64);
+        }
+
+        [TestMethod]
+        public void ImageSpec_DictionaryConstructor_AutoEncodesByteArray()
+        {
+            byte[] bytes = [1, 2, 3, 4];
+            Hashtable properties = new()
+            {
+                ["SourceBase64"] = bytes,
+                ["Stretch"] = "Fill",
+                ["CornerRadius"] = "4",
+            };
+
+            ImageSpec spec = new(properties);
+
+            Assert.AreEqual(Convert.ToBase64String(bytes), spec.SourceBase64, "a byte array auto-encodes to Base64");
+            Assert.AreEqual(SpecStretch.Fill, spec.Stretch);
+            Assert.AreEqual("4", spec.CornerRadius);
+        }
+
+        [TestMethod]
         public void Deserialize_RejectsNewerSchemaVersion_WithActionableMessage()
         {
             // A contract-shaped stand-in lets the test author a future-versioned envelope without

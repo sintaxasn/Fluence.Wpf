@@ -29,7 +29,10 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 
 namespace Fluence.Wpf.Specs
 {
@@ -129,6 +132,95 @@ namespace Fluence.Wpf.Specs
                 4 => new Thickness(numbers[0], numbers[1], numbers[2], numbers[3]),
                 _ => throw new FormatException($"'{value}' is not a valid thickness; expected 1, 2, or 4 comma-separated numbers."),
             };
+        }
+
+        /// <summary>
+        /// Parses a WPF corner-radius string: one value ("8") or four values ("8,4,8,4" as
+        /// topLeft,topRight,bottomRight,bottomLeft), culture-invariant.
+        /// </summary>
+        /// <param name="value">The corner-radius string.</param>
+        /// <returns>The parsed corner radius.</returns>
+        /// <exception cref="FormatException">Thrown when the string is not a valid corner radius.</exception>
+        internal static CornerRadius ParseCornerRadius(string value)
+        {
+            string[] parts = value.Split(',');
+            double[] numbers = new double[parts.Length];
+            for (int index = 0; index < parts.Length; index++)
+            {
+                if (!double.TryParse(parts[index].Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out numbers[index]))
+                {
+                    throw new FormatException($"'{value}' is not a valid corner radius; expected 'all' or 'topLeft,topRight,bottomRight,bottomLeft' numbers.");
+                }
+            }
+            return numbers.Length switch
+            {
+                1 => new CornerRadius(numbers[0]),
+                4 => new CornerRadius(numbers[0], numbers[1], numbers[2], numbers[3]),
+                _ => throw new FormatException($"'{value}' is not a valid corner radius; expected 1 or 4 comma-separated numbers."),
+            };
+        }
+
+        /// <summary>
+        /// Loads a frozen bitmap from a file path or URI. An absolute non-file URI (a pack or
+        /// http(s) URI) passes through as-is; anything else resolves to a full local path, which
+        /// must exist. The bitmap is decoded eagerly (no stream retention) and frozen so the
+        /// materialized dialog can cross thread boundaries safely.
+        /// </summary>
+        /// <param name="path">The image file path, or an absolute URI.</param>
+        /// <returns>The frozen image source.</returns>
+        /// <exception cref="FileNotFoundException">Thrown when a local path does not exist.</exception>
+        internal static ImageSource LoadImageSourceFromPath(string path)
+        {
+            Uri uri;
+            if (Uri.TryCreate(path, UriKind.Absolute, out Uri? absolute) && !absolute.IsFile)
+            {
+                uri = absolute;
+            }
+            else
+            {
+                string fullPath = absolute?.IsFile == true ? absolute.LocalPath : Path.GetFullPath(path);
+                if (!File.Exists(fullPath))
+                {
+                    throw new FileNotFoundException($"Image file not found for spec Source '{fullPath}'.", fullPath);
+                }
+                uri = new Uri(fullPath);
+            }
+            BitmapImage bitmap = new();
+            bitmap.BeginInit();
+            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+            bitmap.UriSource = uri;
+            bitmap.EndInit();
+            bitmap.Freeze();
+            return bitmap;
+        }
+
+        /// <summary>
+        /// Loads a frozen bitmap from Base64-encoded image bytes. The bitmap is decoded eagerly
+        /// (no stream retention) and frozen so the materialized dialog can cross thread
+        /// boundaries safely.
+        /// </summary>
+        /// <param name="base64">The Base64-encoded image data.</param>
+        /// <returns>The frozen image source.</returns>
+        /// <exception cref="FormatException">Thrown when the text is not valid Base64.</exception>
+        internal static ImageSource LoadImageSourceFromBase64(string base64)
+        {
+            byte[] bytes;
+            try
+            {
+                bytes = Convert.FromBase64String(base64);
+            }
+            catch (FormatException exception)
+            {
+                throw new FormatException("SourceBase64 is not valid Base64 image data.", exception);
+            }
+            using MemoryStream stream = new(bytes);
+            BitmapImage bitmap = new();
+            bitmap.BeginInit();
+            bitmap.CacheOption = BitmapCacheOption.OnLoad;
+            bitmap.StreamSource = stream;
+            bitmap.EndInit();
+            bitmap.Freeze();
+            return bitmap;
         }
 
         private static void ApplyCommonProperties(FrameworkElement element, SpecNode node)

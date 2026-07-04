@@ -37,6 +37,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
+using WpfImage = System.Windows.Controls.Image;
 
 namespace Fluence.Wpf.Demo
 {
@@ -70,7 +71,7 @@ namespace Fluence.Wpf.Demo
         private bool _isNavigatingBack;
         private bool _isUpdatingExtendedTitleOverlap;
         private NavigationViewItem? _currentNavigationItem;
-        private Image? _titleBarIconView;
+        private WpfImage? _titleBarIconView;
         private DependencyPropertyDescriptor? _extendsDpd;
         private DependencyPropertyDescriptor? _paneModeDpd;
         private DependencyPropertyDescriptor? _paneOpenDpd;
@@ -645,11 +646,11 @@ namespace Fluence.Wpf.Demo
             ScheduleExtendedTitleOverlapCheck();
         }
 
-        private Image GetTitleBarIconView()
+        private WpfImage GetTitleBarIconView()
         {
             if (_titleBarIconView is null)
             {
-                _titleBarIconView = new Image
+                _titleBarIconView = new WpfImage
                 {
                     Width = 20,
                     Height = 20,

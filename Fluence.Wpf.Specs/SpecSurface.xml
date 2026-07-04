@@ -8,7 +8,11 @@
       (FLSPEC001-FLSPEC004).
   Every doc attribute becomes the emitted XML documentation (CS1591 is enforced), so keep them real.
   Member types: text, bool, boolOpt, int, intOpt, double, doubleOpt, dateOpt, timeOpt, stringList,
-  child, childList, thickness, uri, enum:<SpecEnumName>.
+  child, childList, thickness, uri, imagePath, imageBytes, cornerRadius, enum:<SpecEnumName>.
+  A Member may carry an optional target attribute naming the control property it applies to when
+  that differs from the member name (letting two members, such as a path form and a Base64 form,
+  feed one control property); drift validation and apply emission resolve against the target.
+  Members apply in document order, so when two members share a target the later one wins.
 -->
 <SpecSurface>
 
@@ -46,6 +50,13 @@
     <Value name="Hidden" doc="No spin buttons are shown." />
     <Value name="Compact" doc="Spin buttons appear in a compact flyout while focused." />
     <Value name="Inline" doc="Spin buttons are always visible inline." />
+  </Enum>
+
+  <Enum name="SpecStretch" clr="System.Windows.Media.Stretch" doc="Mirror of the WPF stretch mode controlling how an image fills its space.">
+    <Value name="None" doc="The image keeps its natural size." />
+    <Value name="Fill" doc="The image fills the space, ignoring aspect ratio." />
+    <Value name="Uniform" doc="The image scales to fit, preserving aspect ratio." />
+    <Value name="UniformToFill" doc="The image scales to fill, preserving aspect ratio and clipping overflow." />
   </Enum>
 
   <Control name="TextBlock" clr="Fluence.Wpf.Controls.TextBlock" doc="A themed text block for labels, messages, and headings.">
@@ -162,6 +173,13 @@
   <Control name="Border" clr="Fluence.Wpf.Controls.Border" doc="A themed border container wrapping a single child element.">
     <Member name="Child" type="child" doc="The single child element the border wraps." />
     <Member name="Padding" type="thickness" doc="Inner padding as a WPF thickness string ('8' or '8,4' or '8,4,8,4')." />
+  </Control>
+
+  <Control name="Image" clr="Fluence.Wpf.Controls.Image" doc="A themed image presenter with a theme-aware stroke and rounded-corner clipping, for branding banners and logos.">
+    <Member name="Source" type="imagePath" doc="The image file path or pack URI; the bitmap is loaded and frozen when the dialog materializes, and a missing file fails with the resolved path." />
+    <Member name="SourceBase64" type="imageBytes" target="Source" doc="The image as raw bytes (a byte array auto-encodes to Base64). Applies after Source, so when both are set the bytes win." />
+    <Member name="Stretch" type="enum:SpecStretch" doc="How the image fills its space; unset keeps the control default (Uniform)." />
+    <Member name="CornerRadius" type="cornerRadius" doc="The frame corner radius as '8' or 'topLeft,topRight,bottomRight,bottomLeft'; unset keeps the themed default." />
   </Control>
 
 </SpecSurface>

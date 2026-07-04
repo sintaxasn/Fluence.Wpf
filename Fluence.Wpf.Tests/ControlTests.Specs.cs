@@ -27,9 +27,13 @@
  */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using Fluence.Wpf.Specs;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -210,6 +214,142 @@ namespace Fluence.Wpf.Tests
 
                 _ = Assert.ThrowsExactly<FormatException>(static () => SpecMaterializer.ParseThickness("1,2,3"));
                 _ = Assert.ThrowsExactly<FormatException>(static () => SpecMaterializer.ParseThickness("abc"));
+            });
+        }
+
+        /// <summary>Encodes a small solid-color probe PNG, no file IO.</summary>
+        /// <param name="size">The square pixel size of the probe image.</param>
+        /// <returns>The encoded PNG bytes.</returns>
+        private static byte[] CreateProbePngBytes(int size)
+        {
+            DrawingVisual visual = new();
+            using (DrawingContext context = visual.RenderOpen())
+            {
+                context.DrawRectangle(Brushes.SteelBlue, pen: null, new Rect(0, 0, size, size));
+            }
+            RenderTargetBitmap bitmap = new(size, size, 96, 96, PixelFormats.Pbgra32);
+            bitmap.Render(visual);
+            PngBitmapEncoder encoder = new();
+            encoder.Frames.Add(BitmapFrame.Create(bitmap));
+            using MemoryStream stream = new();
+            encoder.Save(stream);
+            return stream.ToArray();
+        }
+
+        [TestMethod]
+        public void SpecMaterializer_ImageFromPath_MaterializesInDialog_AndSurvivesThemeCycle()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? application = EnsureApplication();
+                _ = MergeGenericDictionary(application);
+
+                string path = Path.Combine(Path.GetTempPath(), "FluenceSpecImage_" + Guid.NewGuid().ToString("N") + ".png");
+                File.WriteAllBytes(path, CreateProbePngBytes(16));
+                try
+                {
+                    DialogSpec dialog = new()
+                    {
+                        Title = "Brand",
+                    };
+                    dialog.Content.Add(new ImageSpec
+                    {
+                        Source = path,
+                        Stretch = SpecStretch.UniformToFill,
+                        CornerRadius = "8",
+                    });
+                    dialog.Buttons.Add(new ButtonSpec { Text = "OK" });
+
+                    SpecDialogWindow window = SpecMaterializer.Materialize(dialog);
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    try
+                    {
+                        Controls.Image image = WpfTestSta.FindVisualDescendants<Controls.Image>(window).Single();
+                        Assert.IsNotNull(image.Source, "the spec path must load into Source");
+                        Assert.IsTrue(image.Source.IsFrozen, "the loaded bitmap must be frozen");
+                        Assert.AreEqual(Stretch.UniformToFill, image.Stretch);
+                        Assert.AreEqual(new CornerRadius(8), image.CornerRadius);
+
+                        System.Windows.Controls.Image? inner = FindVisualChildByName<System.Windows.Controls.Image>(image, "PART_Image");
+                        Assert.IsNotNull(inner, "PART_Image must be present in the composed dialog");
+                        Assert.AreSame(image.Source, inner.Source);
+
+                        ThemeTestHelpers.ApplyStandardThemeCycle();
+                        DrainDispatcher(window.Dispatcher);
+                        Assert.IsTrue(window.IsVisible);
+                        Assert.IsNotNull(inner.Source, "the image must survive the theme cycle");
+                    }
+                    finally
+                    {
+                        window.Close();
+                        DrainDispatcher(window.Dispatcher);
+                    }
+                }
+                finally
+                {
+                    File.Delete(path);
+                }
+            });
+        }
+
+        [TestMethod]
+        public void SpecMaterializer_ImageFromBase64_LoadsFrozenBitmap_AndWinsOverPath()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? application = EnsureApplication();
+                _ = MergeGenericDictionary(application);
+
+                string path = Path.Combine(Path.GetTempPath(), "FluenceSpecImage_" + Guid.NewGuid().ToString("N") + ".png");
+                File.WriteAllBytes(path, CreateProbePngBytes(16));
+                try
+                {
+                    // Hashtable construction proves the byte[] auto-encode path end to end.
+                    Hashtable properties = new()
+                    {
+                        ["Source"] = path,
+                        ["SourceBase64"] = CreateProbePngBytes(8),
+                    };
+                    ImageSpec spec = new(properties);
+
+                    List<KeyValuePair<SpecNode, FrameworkElement>> pairs = [];
+                    Controls.Image image = (Controls.Image)SpecMaterializer.CreateElementTracked(spec, pairs);
+
+                    Assert.IsNotNull(image.Source, "the Base64 bytes must load into Source");
+                    Assert.IsTrue(image.Source.IsFrozen, "the loaded bitmap must be frozen");
+                    BitmapSource bitmap = (BitmapSource)image.Source;
+                    Assert.AreEqual(8, bitmap.PixelWidth, "SourceBase64 applies after Source, so the bytes form wins when both are set");
+                }
+                finally
+                {
+                    File.Delete(path);
+                }
+            });
+        }
+
+        [TestMethod]
+        public void SpecMaterializer_ImageBadInputs_FailWithActionableErrors()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? application = EnsureApplication();
+                _ = MergeGenericDictionary(application);
+
+                string missing = Path.Combine(Path.GetTempPath(), "FluenceSpecImage_missing_" + Guid.NewGuid().ToString("N") + ".png");
+                List<KeyValuePair<SpecNode, FrameworkElement>> pairs = [];
+
+                FileNotFoundException notFound = Assert.ThrowsExactly<FileNotFoundException>(
+                    () => _ = SpecMaterializer.CreateElementTracked(new ImageSpec { Source = missing }, pairs));
+                StringAssert.Contains(notFound.Message, missing, StringComparison.Ordinal,
+                    "the missing-file error must name the resolved path");
+
+                FormatException badBase64 = Assert.ThrowsExactly<FormatException>(
+                    () => _ = SpecMaterializer.CreateElementTracked(new ImageSpec { SourceBase64 = "not base64!!!" }, pairs));
+                StringAssert.Contains(badBase64.Message, "SourceBase64", StringComparison.Ordinal);
+
+                _ = Assert.ThrowsExactly<FormatException>(static () => SpecMaterializer.ParseCornerRadius("1,2,3"));
+                _ = Assert.ThrowsExactly<FormatException>(static () => SpecMaterializer.ParseCornerRadius("abc"));
             });
         }
 

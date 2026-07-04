@@ -36,6 +36,15 @@ Describe 'New-FluenceSpec' {
             $spec = New-FluenceSpec TextBox -Name Desk -Rules (New-FluenceRule -NotEmpty -MaxLength 12)
             $spec.Rules.Count | Should -Be 2
         }
+        It 'binds Image members including byte[] auto-encoding to Base64' {
+            $bytes = [byte[]](1, 2, 3, 4)
+            $spec = New-FluenceSpec Image -Source 'C:\brand\banner.png' -SourceBase64 $bytes -Stretch UniformToFill -CornerRadius '8'
+            $spec.GetType().FullName | Should -Be 'Fluence.Wpf.Specs.ImageSpec'
+            $spec.Source | Should -Be 'C:\brand\banner.png'
+            $spec.SourceBase64 | Should -Be ([Convert]::ToBase64String($bytes))
+            "$($spec.Stretch)" | Should -Be 'UniformToFill'
+            $spec.CornerRadius | Should -Be '8'
+        }
     }
     Context 'Input validation' {
         It 'rejects an unknown control type and lists the available ones' {
@@ -44,7 +53,7 @@ Describe 'New-FluenceSpec' {
         It 'constructs every curated control type' {
             $types = 'TextBlock', 'TextBox', 'PasswordBox', 'NumberBox', 'CheckBox', 'ToggleSwitch',
                 'ComboBox', 'RadioButton', 'DatePicker', 'TimePicker', 'HyperlinkButton', 'InfoBar',
-                'ProgressBar', 'ProgressRing', 'StackPanel', 'Border'
+                'ProgressBar', 'ProgressRing', 'StackPanel', 'Border', 'Image'
             foreach ($type in $types)
             {
                 (New-FluenceSpec -Type $type).GetType().Name | Should -Be "${type}Spec"

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Copyright 2026 Dan Cunningham
  *
  * Redistribution and use in source and binary forms, with or without
@@ -28,29 +28,15 @@
 
 using System;
 
-namespace Fluence.Wpf.Specs.Generator
+namespace Fluence.Wpf.Specs
 {
-    /// <summary>One curated member of a control.</summary>
-    internal sealed class SpecMemberModel
-    {
-        /// <summary>Gets or sets the member name (mirrors the control property name).</summary>
-        public string Name { get; set; } = string.Empty;
-
-        /// <summary>Gets or sets the manifest member type token.</summary>
-        public string Type { get; set; } = string.Empty;
-
-        /// <summary>Gets or sets the XML documentation text.</summary>
-        public string Doc { get; set; } = string.Empty;
-
-        /// <summary>
-        /// Gets or sets the control property the member applies to when it differs from
-        /// <see cref="Name"/> (the optional manifest target attribute). Lets two spec members
-        /// (for example a path form and a Base64 form) feed one control property; drift
-        /// validation and apply emission both resolve against this property.
-        /// </summary>
-        public string? Target { get; set; }
-
-        /// <summary>Gets the enum name when <see cref="Type"/> is an enum token, else null.</summary>
-        public string? EnumName => Type.StartsWith("enum:", StringComparison.Ordinal) ? Type.Substring(5) : null;
-    }
+    /// <summary>
+    /// Marks a generated spec property whose string value carries Base64-encoded binary data
+    /// (a manifest member of type imageBytes). Consumers that build specs from loosely typed
+    /// input, such as the PowerShell module's dynamic parameters, use this marker to accept a
+    /// raw byte array alongside already-encoded Base64 text; the spec constructors auto-encode
+    /// byte arrays via <see cref="SpecValueConverter.ToBase64Text"/>.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Property)]
+    public sealed class SpecBase64Attribute : Attribute;
 }
