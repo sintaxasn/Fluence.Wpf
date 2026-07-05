@@ -221,7 +221,6 @@ WindowBorderColorBrush|#00000000|#FFFFFFFF
 WindowCloseButtonBackgroundPointerOver|#FFC42B1C|#00000000
 WindowCloseButtonBackgroundPressed|#FFB4271C|#00000000
 WindowCloseButtonForegroundPointerOver|#FFFFFFFF|#00000000
-WindowCloseButtonForegroundPointerOverBrush|#00000000|#FFFFFFFF
 WindowCloseFillColorHover|#FF1AEBFF|#00000000
 WindowCloseFillColorPressed|#FF1AEBFF|#00000000
 WindowCloseForegroundHover|#FF000000|#00000000
