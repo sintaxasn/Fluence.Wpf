@@ -24,6 +24,10 @@ Fluence.Wpf.sln
 ├── Fluence.Wpf.Specs.Generator/ Roslyn incremental generators emitting the spec DTOs (into Fluence.Wpf.Specs) and the
 │                                materializer table (into Fluence.Wpf) from SpecSurface.xml, with drift-as-build-error
 │                                diagnostics (FLSPEC001-FLSPEC005)
+├── Fluence.Wpf.RemoteHost/      Standalone out-of-process UI host (WinExe, net8.0-windows10.0.26100.0); launched by
+│                                the PowerShell module's Show-FluenceRemoteDialog over anonymous pipes so a script can
+│                                show composed spec dialogs in a separate process. Requires the .NET 8 Desktop Runtime
+│                                on the machine that shows the dialog. Staged into the module's lib\host\ by Build-Module.ps1
 ├── Fluence.Wpf.Demo/            Gallery app (net472 + net10.0-windows10.0.26100.0) - visual verification for all controls
 ├── Fluence.Wpf.Demo.Mvvm/       MVVM Task Manager demo (net10.0-windows10.0.26100.0) - CommunityToolkit.Mvvm example
 └── Fluence.Wpf.Tests/           MSTest 4.2.2 suite (multi-TFM)
@@ -39,6 +43,7 @@ Fluence.Wpf.sln
 | `Fluence.Wpf.Helpers`    | Internal helpers (`AcrylicNoiseHelper`, `BackdropPlan`, `FramePlan`, `GridLengthAnimation`, `HsvColorHelper`, `OsVersionHelper`, `RegistryHelper`, `WindowCapabilities`)                                  |
 | `Fluence.Wpf.Native`     | P/Invoke constants, structs, and methods                                                                                                                                                                  |
 | `Fluence.Wpf.Specs`      | Serializable dialog-spec DTOs, validation rules, and the versioned envelope (`Fluence.Wpf.Specs.dll`, WPF-free) plus their `SpecMaterializer` and `SpecDialogWindow` host (in `Fluence.Wpf.dll`); the curated surface contract is `Fluence.Wpf.Specs/SpecSurface.xml`, and drift from the real control members fails the build |
+| `Fluence.Wpf.Specs.Remoting` | The out-of-process transport (in `Fluence.Wpf.Specs.dll`, under `Fluence.Wpf.Specs/Remoting/`): `FluenceRemoteHostController` (launches/talks to `Fluence.Wpf.RemoteHost.exe` over two anonymous pipes), `RemoteDialogRequest`, and the internal framing (`RemotePipeCommand`, `RemotePipeFrame`, `RemotePipeFraming`). Length-prefixed frames, no encryption (anonymous pipes are not attachable by an unrelated process); the launch/framing pattern is adapted from PSADT.ClientServer (see `THIRD-PARTY-NOTICES.md`) |
 
 XAML themes are under `Fluence.Wpf/Themes/` and are **not** a CLR namespace.
 
