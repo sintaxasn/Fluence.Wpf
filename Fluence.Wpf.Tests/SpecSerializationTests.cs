@@ -385,6 +385,57 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void Validator_RejectsExcessiveNestingDepth()
+        {
+            // Safely past the supported max (64) but nowhere near deep enough to overflow the
+            // stack itself; the cap must trip well before a crafted deep tree could crash the process.
+            const int NestingLevels = 200;
+            SpecNode current = new TextBlockSpec { Text = "leaf" };
+            for (int i = 0; i < NestingLevels; i++)
+            {
+                current = new BorderSpec { Child = current };
+            }
+            DialogSpec dialog = new();
+            dialog.Content.Add(current);
+            dialog.Buttons.Add(new ButtonSpec { Text = "OK" });
+
+            InvalidOperationException exception = Assert.ThrowsExactly<InvalidOperationException>(() => SpecTreeValidator.Validate(dialog));
+            StringAssert.Contains(exception.Message, "nested", StringComparison.OrdinalIgnoreCase);
+            StringAssert.Contains(exception.Message, "64", StringComparison.Ordinal);
+        }
+
+        [TestMethod]
+        public void Validator_AllowsModestNestingDepth()
+        {
+            const int NestingLevels = 20;
+            SpecNode current = new TextBlockSpec { Text = "leaf" };
+            for (int i = 0; i < NestingLevels; i++)
+            {
+                current = new BorderSpec { Child = current };
+            }
+            DialogSpec dialog = new();
+            dialog.Content.Add(current);
+            dialog.Buttons.Add(new ButtonSpec { Text = "OK" });
+
+            SpecTreeValidator.Validate(dialog);
+        }
+
+        [TestMethod]
+        public void Validator_RejectsExcessiveNodeCount()
+        {
+            const int NodeCount = 10_001;
+            DialogSpec dialog = new();
+            for (int i = 0; i < NodeCount; i++)
+            {
+                dialog.Content.Add(new TextBlockSpec { Text = "n" });
+            }
+            dialog.Buttons.Add(new ButtonSpec { Text = "OK" });
+
+            InvalidOperationException exception = Assert.ThrowsExactly<InvalidOperationException>(() => SpecTreeValidator.Validate(dialog));
+            StringAssert.Contains(exception.Message, "10", StringComparison.Ordinal);
+        }
+
+        [TestMethod]
         public void SpecKnownTypes_CoverEveryPublicConcreteSpecType()
         {
             Type[] expected =

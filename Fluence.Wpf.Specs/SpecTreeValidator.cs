@@ -40,11 +40,21 @@ namespace Fluence.Wpf.Specs
     /// </summary>
     public static class SpecTreeValidator
     {
+        // Generous headroom over any realistic dialog layout (a handful of nesting levels); sized
+        // to stop a crafted deep tree from overflowing the recursive Visit/materialization stack,
+        // not to constrain real specs.
+        private const int MaxDepth = 64;
+
+        // Generous headroom over any realistic dialog's element count; sized to bound unbounded
+        // validation and materialization work, not to constrain real specs.
+        private const int MaxNodes = 10_000;
+
         /// <summary>
         /// Validates a dialog spec's structure: at least one button with non-empty text, no shared
-        /// or cyclic node instances, unique names across value-bearing elements, no rules on
-        /// unnamed elements, and no rules on a RadioButton (a radio group harvests as a single value
-        /// under its GroupName, so per-radio rules are rejected rather than silently unreachable).
+        /// or cyclic node instances, no tree deeper or larger than the supported maximum, unique
+        /// names across value-bearing elements, no rules on unnamed elements, and no rules on a
+        /// RadioButton (a radio group harvests as a single value under its GroupName, so per-radio
+        /// rules are rejected rather than silently unreachable).
         /// </summary>
         /// <param name="spec">The dialog spec to validate.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="spec"/> is null.</exception>
@@ -71,19 +81,27 @@ namespace Fluence.Wpf.Specs
             HashSet<string> radioGroups = new(StringComparer.OrdinalIgnoreCase);
             foreach (SpecNode node in spec.Content)
             {
-                Visit(node, visited, names, radioGroups);
+                Visit(node, visited, names, radioGroups, depth: 1);
             }
         }
 
-        private static void Visit(SpecNode node, HashSet<SpecNode> visited, HashSet<string> names, HashSet<string> radioGroups)
+        private static void Visit(SpecNode node, HashSet<SpecNode> visited, HashSet<string> names, HashSet<string> radioGroups, int depth)
         {
             if (node is null)
             {
                 throw new InvalidOperationException("A dialog spec content entry is null.");
             }
+            if (depth > MaxDepth)
+            {
+                throw new InvalidOperationException($"The spec tree is nested deeper than the supported maximum ({MaxDepth}); flatten the layout or split it across multiple dialogs.");
+            }
             if (!visited.Add(node))
             {
                 throw new InvalidOperationException($"The spec node '{node.GetType().Name}'{DescribeName(node)} appears more than once in the tree. Specs serialize as a strict tree: shared instances and cycles are not supported; construct a separate instance per placement.");
+            }
+            if (visited.Count > MaxNodes)
+            {
+                throw new InvalidOperationException($"The spec tree contains more than the supported maximum ({MaxNodes}) nodes; split it across multiple dialogs.");
             }
             if (node.HasRules && string.IsNullOrWhiteSpace(node.Name))
             {
@@ -117,7 +135,7 @@ namespace Fluence.Wpf.Specs
             }
             foreach (SpecNode child in node.GetChildren())
             {
-                Visit(child, visited, names, radioGroups);
+                Visit(child, visited, names, radioGroups, depth + 1);
             }
         }
 

@@ -49,6 +49,27 @@ namespace Fluence.Wpf.Specs
         /// </summary>
         public const int CurrentSchemaVersion = 1;
 
+        // Comfortably above the deepest legitimate dialog's binary-XML nesting, well below
+        // stack-overflow territory; replaces the unbounded XmlDictionaryReaderQuotas.Max depth.
+        private const int MaxReaderDepth = 128;
+
+        // 64 MB, aligned with the transport frame limit. Must stay large enough for legitimate
+        // embedded image payloads (ImageSpec.SourceBase64 / the byte[] envelope Payload can be
+        // several MB); the goal is bounding "unbounded", not constraining real specs.
+        private const int MaxReaderPayloadBytes = 64 * 1024 * 1024;
+
+        // Generous headroom for interned XML names; removes "unbounded" without rejecting legit specs.
+        private const int MaxReaderNameTableChars = 16 * 1024 * 1024;
+
+        private static readonly XmlDictionaryReaderQuotas ReaderQuotas = new()
+        {
+            MaxDepth = MaxReaderDepth,
+            MaxStringContentLength = MaxReaderPayloadBytes,
+            MaxArrayLength = MaxReaderPayloadBytes,
+            MaxBytesPerRead = MaxReaderPayloadBytes,
+            MaxNameTableCharCount = MaxReaderNameTableChars,
+        };
+
         private static readonly DataContractSerializerSettings SpecSettings = new()
         {
             PreserveObjectReferences = false,
@@ -214,7 +235,7 @@ namespace Fluence.Wpf.Specs
 
         private static object DeserializeCore(byte[] data, Type rootType, DataContractSerializerSettings settings)
         {
-            using XmlDictionaryReader reader = XmlDictionaryReader.CreateBinaryReader(data, XmlDictionaryReaderQuotas.Max);
+            using XmlDictionaryReader reader = XmlDictionaryReader.CreateBinaryReader(data, ReaderQuotas);
             DataContractSerializer serializer = new(rootType, settings);
             return serializer.ReadObject(reader) ?? throw new SerializationException($"Deserialization of '{rootType.Name}' returned a null result.");
         }
