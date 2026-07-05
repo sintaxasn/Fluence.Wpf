@@ -11,6 +11,17 @@ Write a spec - prompts, buttons, an optional icon - and get a fully themed WPF d
 - Windows PowerShell 5.1 (`powershell.exe`) or PowerShell 7+ (`pwsh`)
 - Windows 10 1809 or later
 - The native libraries staged by `build\Build-Module.ps1` (see Import below)
+- For `Show-FluenceRemoteDialog` (the out-of-process host): the .NET Desktop Runtime matching
+  the staged `Fluence.Wpf.Specs.Host.exe` target framework must be present on the machine that
+  shows the dialog
+
+> **Scope note - `Show-FluenceRemoteDialog` is same-user, interactive only (v1).** The
+> out-of-process host renders in the caller's own user session. It is **not** designed to be
+> launched from a SYSTEM-account or session-0 context (for example a silent PSADT deployment
+> running as SYSTEM), and it will not surface a dialog to a logged-on user from there. SYSTEM
+> to user-session dialog delivery is owned by the PSADT integration path (a separate, later
+> phase), not by this cmdlet. Do not wire `Show-FluenceRemoteDialog` into a SYSTEM-context
+> deployment expecting an interactive prompt.
 
 ---
 
