@@ -188,6 +188,11 @@ namespace Fluence.Wpf.Specs.Remoting
         /// <returns>True when a running host answered the ping; otherwise false.</returns>
         public bool Ping(TimeSpan timeout)
         {
+            // Unlike ShowDialog, Ping holds _gate across its whole exchange (including the blocking
+            // read). This is deliberate: a health check is short and low-timeout, so the simpler
+            // fully-locked path is fine, and it keeps Ping from ever racing another writer. The
+            // tradeoff is that a long-timeout Ping to an alive-but-slow host can delay a concurrent
+            // Shutdown by up to that timeout; callers should keep the ping timeout short.
             lock (_gate)
             {
                 // When a dialog call is in flight its response read runs outside the gate and owns the

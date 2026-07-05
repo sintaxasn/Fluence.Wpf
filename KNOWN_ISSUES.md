@@ -70,7 +70,12 @@ maintainers.
   defensive liveness path covered by inspection + the passing suite, not a dedicated
   test: reproducing it needs a host stub that stays genuinely stuck across two full
   timeout windows, which the current `Fluence.Wpf.RemoteHost` test harness has no
-  hook for. Behaviour is bounded (at most one orphan is ever outstanding).
+  hook for. Behaviour is bounded (at most one orphan is ever outstanding). One
+  consequence: this drain fallback kills the host whenever a prior orphan cannot be
+  drained within the current call's timeout, regardless of that call's own
+  non-destructive intent, so two `Ping` calls with timeouts shorter than the host's
+  round-trip (a misuse) can terminate an alive host on the second call. Keep `Ping`
+  timeouts comfortably above the expected round-trip.
 - **Spec images: no decode-dimension cap (decompression-bomb residual)** -
   `SpecMaterializer.LoadImageSourceFromPath` and `LoadImageSourceFromBase64`
   restrict image sources to a scheme allow-list (`file` paths, UNC paths, and
