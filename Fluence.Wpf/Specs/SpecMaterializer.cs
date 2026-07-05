@@ -161,19 +161,30 @@ namespace Fluence.Wpf.Specs
         }
 
         /// <summary>
-        /// Loads a frozen bitmap from a file path or URI. An absolute non-file URI (a pack or
-        /// http(s) URI) passes through as-is; anything else resolves to a full local path, which
-        /// must exist. The bitmap is decoded eagerly (no stream retention) and frozen so the
-        /// materialized dialog can cross thread boundaries safely.
+        /// Loads a frozen bitmap from a file path or URI. An absolute non-file URI is only
+        /// accepted for the <c>pack</c> scheme (WPF application resources); remote schemes such
+        /// as <c>http</c>, <c>https</c>, and <c>ftp</c> are rejected before WPF issues any request.
+        /// Anything else, including UNC paths, resolves to a full local path, which must exist.
+        /// The bitmap is decoded eagerly (no stream retention) and frozen so the materialized
+        /// dialog can cross thread boundaries safely.
         /// </summary>
-        /// <param name="path">The image file path, or an absolute URI.</param>
+        /// <param name="path">The image file path, or an absolute <c>pack://</c> URI.</param>
         /// <returns>The frozen image source.</returns>
         /// <exception cref="FileNotFoundException">Thrown when a local path does not exist.</exception>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when an absolute URI uses a scheme other than <c>pack</c> (for example a remote
+        /// <c>http</c> or <c>https</c> source).
+        /// </exception>
         internal static ImageSource LoadImageSourceFromPath(string path)
         {
             Uri uri;
             if (Uri.TryCreate(path, UriKind.Absolute, out Uri? absolute) && !absolute.IsFile)
             {
+                if (!string.Equals(absolute.Scheme, "pack", StringComparison.OrdinalIgnoreCase))
+                {
+                    throw new InvalidOperationException(
+                        $"Image Source scheme '{absolute.Scheme}' is not allowed; use a local file path or a pack:// application resource.");
+                }
                 uri = absolute;
             }
             else
@@ -195,13 +206,24 @@ namespace Fluence.Wpf.Specs
         }
 
         /// <summary>
-        /// Loads a frozen bitmap from Base64-encoded image bytes. The bitmap is decoded eagerly
-        /// (no stream retention) and frozen so the materialized dialog can cross thread
-        /// boundaries safely.
+        /// The largest Base64-decoded image payload <see cref="LoadImageSourceFromBase64"/>
+        /// accepts, aligned with the PowerShell module's transport frame limit. Real dialog
+        /// images are far smaller; this only bounds a pathological or corrupted spec.
+        /// </summary>
+        internal const int MaxImageBytes = 64 * 1024 * 1024;
+
+        /// <summary>
+        /// Loads a frozen bitmap from Base64-encoded image bytes. The decoded byte count is
+        /// capped at <see cref="MaxImageBytes"/> before the bitmap decoder ever sees the bytes.
+        /// The bitmap is decoded eagerly (no stream retention) and frozen so the materialized
+        /// dialog can cross thread boundaries safely.
         /// </summary>
         /// <param name="base64">The Base64-encoded image data.</param>
         /// <returns>The frozen image source.</returns>
         /// <exception cref="FormatException">Thrown when the text is not valid Base64.</exception>
+        /// <exception cref="InvalidOperationException">
+        /// Thrown when the decoded byte count exceeds <see cref="MaxImageBytes"/>.
+        /// </exception>
         internal static ImageSource LoadImageSourceFromBase64(string base64)
         {
             byte[] bytes;
@@ -212,6 +234,11 @@ namespace Fluence.Wpf.Specs
             catch (FormatException exception)
             {
                 throw new FormatException("SourceBase64 is not valid Base64 image data.", exception);
+            }
+            if (bytes.Length > MaxImageBytes)
+            {
+                throw new InvalidOperationException(
+                    $"The Base64 image is {bytes.Length} bytes, above the {MaxImageBytes} byte limit.");
             }
             using MemoryStream stream = new(bytes);
             BitmapImage bitmap = new();

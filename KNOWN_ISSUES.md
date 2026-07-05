@@ -71,6 +71,20 @@ maintainers.
   test: reproducing it needs a host stub that stays genuinely stuck across two full
   timeout windows, which the current `Fluence.Wpf.RemoteHost` test harness has no
   hook for. Behaviour is bounded (at most one orphan is ever outstanding).
+- **Spec images: no decode-dimension cap (decompression-bomb residual)** -
+  `SpecMaterializer.LoadImageSourceFromPath` and `LoadImageSourceFromBase64`
+  restrict image sources to a scheme allow-list (`file` paths, UNC paths, and
+  `pack://` application resources; remote schemes such as `http`, `https`, and
+  `ftp` are rejected before WPF issues any request) and cap Base64 payloads at
+  `MaxImageBytes` (64 MB) before decode. Neither loader sets
+  `BitmapImage.DecodePixelWidth`, so a small, well-formed input that decodes to
+  enormous pixel dimensions (a classic decompression bomb) can still allocate a
+  large bitmap at decode time. This is accepted for the same-user v1 threat
+  model: the spec author is the script runner materializing their own dialog,
+  not an untrusted third party. If untrusted specs ever become a scenario (for
+  example specs sourced from a network call or another user), a future
+  hardening pass should set `DecodePixelWidth` (and/or inspect the encoded
+  header's declared dimensions before allocating) to bound decoded memory.
 - **Remote host: broad handle inheritance and post-exit-only stderr drain** - the
   controller launches `Fluence.Wpf.RemoteHost.exe` with the two anonymous-pipe
   handles marked inheritable via a plain `Process.Start` (no `STARTUPINFOEX`
