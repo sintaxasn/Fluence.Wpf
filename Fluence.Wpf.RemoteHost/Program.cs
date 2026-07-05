@@ -178,9 +178,10 @@ namespace Fluence.Wpf.RemoteHost
             DialogSpec spec = SpecSerialization.DeserializeFromBase64(specBase64);
             SpecDialogWindow window = SpecMaterializer.Materialize(spec);
             window.Topmost = request.Topmost;
+            DispatcherTimer? timer = null;
             if (request.TimeoutSeconds is int seconds && seconds > 0)
             {
-                DispatcherTimer timer = new()
+                timer = new DispatcherTimer
                 {
                     Interval = TimeSpan.FromSeconds(seconds),
                 };
@@ -196,7 +197,17 @@ namespace Fluence.Wpf.RemoteHost
                 };
                 timer.Start();
             }
-            return window.ShowAndCollect();
+            try
+            {
+                return window.ShowAndCollect();
+            }
+            finally
+            {
+                // Stop the timer when the dialog closes early (button click) so its Tick closure,
+                // which captures the now-closed window, is not left queued on the dispatcher for the
+                // rest of the timeout interval.
+                timer?.Stop();
+            }
         }
 
         private static string? GetArgumentValue(string[] args, string name)
