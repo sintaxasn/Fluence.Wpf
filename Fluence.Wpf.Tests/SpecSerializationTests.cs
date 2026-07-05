@@ -304,6 +304,51 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void Validator_RejectsRadioGroupNameCollidingWithInputName()
+        {
+            DialogSpec radioFirst = new();
+            radioFirst.Content.Add(new RadioButtonSpec { GroupName = "Color", Content = "Red" });
+            radioFirst.Content.Add(new TextBoxSpec { Name = "Color" });
+            radioFirst.Buttons.Add(new ButtonSpec { Text = "OK" });
+
+            InvalidOperationException radioFirstException = Assert.ThrowsExactly<InvalidOperationException>(() => SpecTreeValidator.Validate(radioFirst));
+            StringAssert.Contains(radioFirstException.Message, "Color", StringComparison.Ordinal);
+
+            DialogSpec textBoxFirst = new();
+            textBoxFirst.Content.Add(new TextBoxSpec { Name = "Color" });
+            textBoxFirst.Content.Add(new RadioButtonSpec { GroupName = "Color", Content = "Red" });
+            textBoxFirst.Buttons.Add(new ButtonSpec { Text = "OK" });
+
+            InvalidOperationException textBoxFirstException = Assert.ThrowsExactly<InvalidOperationException>(() => SpecTreeValidator.Validate(textBoxFirst));
+            StringAssert.Contains(textBoxFirstException.Message, "Color", StringComparison.Ordinal);
+        }
+
+        [TestMethod]
+        public void Validator_AllowsRadiosSharingOneGroupName()
+        {
+            DialogSpec dialog = new();
+            dialog.Content.Add(new RadioButtonSpec { GroupName = "Color", Content = "Red", IsChecked = true });
+            dialog.Content.Add(new RadioButtonSpec { GroupName = "Color", Content = "Green" });
+            dialog.Content.Add(new RadioButtonSpec { GroupName = "Color", Content = "Blue" });
+            dialog.Buttons.Add(new ButtonSpec { Text = "OK" });
+
+            SpecTreeValidator.Validate(dialog);
+        }
+
+        [TestMethod]
+        public void Validator_AllowsMultipleDistinctRadioGroups()
+        {
+            DialogSpec dialog = new();
+            dialog.Content.Add(new RadioButtonSpec { GroupName = "Color", Content = "Red", IsChecked = true });
+            dialog.Content.Add(new RadioButtonSpec { GroupName = "Color", Content = "Green" });
+            dialog.Content.Add(new RadioButtonSpec { GroupName = "Size", Content = "Small", IsChecked = true });
+            dialog.Content.Add(new RadioButtonSpec { GroupName = "Size", Content = "Large" });
+            dialog.Buttons.Add(new ButtonSpec { Text = "OK" });
+
+            SpecTreeValidator.Validate(dialog);
+        }
+
+        [TestMethod]
         public void SpecKnownTypes_CoverEveryPublicConcreteSpecType()
         {
             Type[] expected =

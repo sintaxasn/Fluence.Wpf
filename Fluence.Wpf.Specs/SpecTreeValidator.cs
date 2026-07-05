@@ -67,13 +67,14 @@ namespace Fluence.Wpf.Specs
             }
             HashSet<SpecNode> visited = new(ReferenceComparer.Instance);
             HashSet<string> names = new(StringComparer.OrdinalIgnoreCase);
+            HashSet<string> radioGroups = new(StringComparer.OrdinalIgnoreCase);
             foreach (SpecNode node in spec.Content)
             {
-                Visit(node, visited, names);
+                Visit(node, visited, names, radioGroups);
             }
         }
 
-        private static void Visit(SpecNode node, HashSet<SpecNode> visited, HashSet<string> names)
+        private static void Visit(SpecNode node, HashSet<SpecNode> visited, HashSet<string> names, HashSet<string> radioGroups)
         {
             if (node is null)
             {
@@ -87,13 +88,31 @@ namespace Fluence.Wpf.Specs
             {
                 throw new InvalidOperationException($"The spec node '{node.GetType().Name}' has validation rules but no Name; rules apply to named input elements only.");
             }
-            if (node.IsValueBearing && !string.IsNullOrWhiteSpace(node.Name) && !names.Add(node.Name!))
+            if (node is RadioButtonSpec radioButton)
             {
-                throw new InvalidOperationException($"Duplicate input name '{node.Name}'. Every value-bearing element needs a unique Name because names key the result values.");
+                if (!string.IsNullOrWhiteSpace(radioButton.GroupName))
+                {
+                    if (names.Contains(radioButton.GroupName!))
+                    {
+                        throw new InvalidOperationException($"The RadioButton GroupName '{radioButton.GroupName}' collides with an input Name; radio groups harvest under their GroupName, so it must not match another element's Name.");
+                    }
+                    _ = radioGroups.Add(radioButton.GroupName!);
+                }
+            }
+            else if (node.IsValueBearing && !string.IsNullOrWhiteSpace(node.Name))
+            {
+                if (radioGroups.Contains(node.Name!))
+                {
+                    throw new InvalidOperationException($"The input Name '{node.Name}' collides with a RadioButton GroupName; radio groups harvest under their GroupName, so it must not match another element's Name.");
+                }
+                if (!names.Add(node.Name!))
+                {
+                    throw new InvalidOperationException($"Duplicate input name '{node.Name}'. Every value-bearing element needs a unique Name because names key the result values.");
+                }
             }
             foreach (SpecNode child in node.GetChildren())
             {
-                Visit(child, visited, names);
+                Visit(child, visited, names, radioGroups);
             }
         }
 
