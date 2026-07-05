@@ -71,6 +71,18 @@ maintainers.
   test: reproducing it needs a host stub that stays genuinely stuck across two full
   timeout windows, which the current `Fluence.Wpf.RemoteHost` test harness has no
   hook for. Behaviour is bounded (at most one orphan is ever outstanding).
+- **Remote host: broad handle inheritance and post-exit-only stderr drain** - the
+  controller launches `Fluence.Wpf.RemoteHost.exe` with the two anonymous-pipe
+  handles marked inheritable via a plain `Process.Start` (no `STARTUPINFOEX`
+  `PROC_THREAD_ATTRIBUTE_HANDLE_LIST`), so on Windows the child inherits **every**
+  currently inheritable handle in the parent, not only the two pipes. This is a
+  deliberate v1 simplification: the host is a trusted, same-user, same-machine
+  child, so the broad inheritance is acceptable. Launching across a trust boundary
+  (for example a SYSTEM-to-user handoff) would require an explicit inherited-handle
+  list. Separately, the host's redirected stderr is only drained after the process
+  exits (in the failure-diagnostic path); it never writes enough during normal
+  operation to fill the buffer, but if per-frame host logging is added it must be
+  drained asynchronously (`BeginErrorReadLine`) to avoid a full-buffer stall.
 
 ## net472 accessibility API gaps
 

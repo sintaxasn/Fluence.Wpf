@@ -310,6 +310,15 @@ namespace Fluence.Wpf.Specs
 
         private void LaunchCore(string hostExecutablePath)
         {
+            // Deliberate v1 simplification (same-user, same-machine): the two pipe handles are marked
+            // inheritable and the child is launched with a plain Process.Start (no STARTUPINFOEX
+            // PROC_THREAD_ATTRIBUTE_HANDLE_LIST), so on Windows the child inherits every currently
+            // inheritable handle in this process, not only these two. That is acceptable here (the
+            // host is a trusted, same-user child); launching across a trust boundary would require an
+            // explicit inherited-handle list. Likewise stderr is redirected but only drained in
+            // CreateHostFailure after the host exits; if per-frame host logging is ever added it must
+            // be drained asynchronously (BeginErrorReadLine) or a full stderr buffer could block the
+            // host. See KNOWN_ISSUES.md.
             AnonymousPipeServerStream commandPipe = new(PipeDirection.Out, HandleInheritability.Inheritable);
             AnonymousPipeServerStream responsePipe = new(PipeDirection.In, HandleInheritability.Inheritable);
             try
