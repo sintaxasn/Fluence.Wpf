@@ -33,6 +33,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Controls;
@@ -1360,6 +1361,7 @@ defaultValue: null,
             }
             catch (Exception ex) when (ex.Message is not null)
             {
+                Debug.WriteLine($"NavigationView indicator transform failed: {ex}");
                 return new Point(0, 0);
             }
         }
@@ -1554,6 +1556,7 @@ defaultValue: null,
                     }
                     catch (Exception ex) when (ex.Message is not null)
                     {
+                        Debug.WriteLine($"NavigationView indicator transform failed: {ex}");
                         return new Point(x, fromPosition.Y);
                     }
                 }
@@ -1571,6 +1574,7 @@ defaultValue: null,
                 }
                 catch (Exception ex) when (ex.Message is not null)
                 {
+                    Debug.WriteLine($"NavigationView indicator transform failed: {ex}");
                     return new Point(fromPosition.X, y);
                 }
             }
@@ -1597,6 +1601,7 @@ defaultValue: null,
                     }
                     catch (Exception ex) when (ex.Message is not null)
                     {
+                        Debug.WriteLine($"NavigationView indicator transform failed: {ex}");
                         return new Point(x, toPosition.Y);
                     }
                 }
@@ -1615,6 +1620,7 @@ defaultValue: null,
                 }
                 catch (Exception ex) when (ex.Message is not null)
                 {
+                    Debug.WriteLine($"NavigationView indicator transform failed: {ex}");
                     return new Point(toPosition.X, y);
                 }
             }
