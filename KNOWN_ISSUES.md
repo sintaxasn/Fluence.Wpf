@@ -62,6 +62,15 @@ maintainers.
   The mitigation for scripts is to keep dialogs bounded with `-TimeoutSeconds` so
   an orphan self-dismisses. A future version could add a
   `Process.GetProcessById(parentPid)` exit watch on the host side if demanded.
+- **Remote host: `Ping`-timeout drain fallback is verified by reasoning, not a
+  dedicated test** - a non-destructive `Ping` timeout leaves the host's eventual
+  reply unread, so `FluenceRemoteHostController` joins that orphaned read before the
+  next read (`DrainOrphanedResponseRead`). The recovery branch that kills the host
+  when a prior orphan still has not drained after a second full timeout window is a
+  defensive liveness path covered by inspection + the passing suite, not a dedicated
+  test: reproducing it needs a host stub that stays genuinely stuck across two full
+  timeout windows, which the current `Fluence.Wpf.RemoteHost` test harness has no
+  hook for. Behaviour is bounded (at most one orphan is ever outstanding).
 
 ## net472 accessibility API gaps
 

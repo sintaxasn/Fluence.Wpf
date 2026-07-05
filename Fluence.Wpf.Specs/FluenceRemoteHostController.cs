@@ -391,8 +391,11 @@ namespace Fluence.Wpf.Specs
             if (!DrainOrphanedResponseRead(timeout))
             {
                 // The orphaned read still has not completed after a second full timeout window: the
-                // host is not merely slow, it is not making progress at all. Fall back to killing so
-                // this situation cannot repeat and grow an unbounded backlog of unread replies.
+                // host is not merely slow, it is not making progress at all. The backlog is already
+                // bounded to a single orphan (you can only stash one after draining the previous), so
+                // this is a liveness/recovery fallback, not backlog-bounding: we cannot safely start
+                // our own read while the prior one is unresolved, so kill the wedged host rather than
+                // leave a latent desync for the next call.
                 lock (_gate)
                 {
                     KillCore();
