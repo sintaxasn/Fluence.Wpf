@@ -128,6 +128,25 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void Ping_TimeoutDoesNotKillAliveHost()
+        {
+            using FluenceRemoteHostController controller = new();
+            controller.EnsureRunning(GetHostExecutablePath());
+            // TimeSpan.Zero maps to a non-blocking Task.Wait(0) poll (see ToWaitMilliseconds), so the
+            // read has no grace period at all to observe the host's reply; a real anonymous-pipe round
+            // trip through a separate process cannot complete synchronously within that poll, so this
+            // deterministically exercises the timeout branch instead of racing a small positive timeout
+            // (FromMilliseconds(1) proved to reliably beat the timeout on a warm host in this environment).
+            bool answered = controller.Ping(TimeSpan.Zero);
+            // Regardless of whether it answered, the host must NOT have been killed by the health check.
+            Assert.IsTrue(controller.IsRunning, "a ping timeout must not terminate an alive host");
+            _ = answered;
+            // And a normal ping still works afterward (proves the connection wasn't left broken).
+            Assert.IsTrue(controller.Ping(TimeSpan.FromSeconds(15)), "host should still answer a normal ping");
+            controller.Shutdown(TimeSpan.FromSeconds(5));
+        }
+
+        [TestMethod]
         public void Controller_RepeatedCycles_NeverHang()
         {
             using FluenceRemoteHostController controller = new();

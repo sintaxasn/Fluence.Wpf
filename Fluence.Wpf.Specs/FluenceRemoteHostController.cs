@@ -57,6 +57,7 @@ namespace Fluence.Wpf.Specs
         private Process? _process;
         private AnonymousPipeServerStream? _commandPipe;
         private AnonymousPipeServerStream? _responsePipe;
+        private Task<RemotePipeFrame>? _orphanedResponseRead;
         private bool _disposed;
         private bool _inFlight;
 
@@ -160,7 +161,7 @@ namespace Fluence.Wpf.Specs
                     byte[] payload = SpecSerialization.SerializeRemoteRequest(request);
                     WriteFrameCore(RemotePipeCommand.ShowDialog, payload);
                 }
-                RemotePipeFrame frame = ReadFrameCore(responsePipe, timeout);
+                RemotePipeFrame frame = ReadFrameCore(responsePipe, timeout, killOnTimeout: true);
                 return frame.Command == RemotePipeCommand.Error
                     ? throw new InvalidOperationException("The Fluence remote host failed to show the dialog: " + Encoding.UTF8.GetString(frame.Payload))
                     : frame.Command != RemotePipeCommand.ShowDialog
@@ -200,7 +201,10 @@ namespace Fluence.Wpf.Specs
                 try
                 {
                     WriteFrameCore(RemotePipeCommand.Ping, []);
-                    RemotePipeFrame frame = ReadFrameCore(responsePipe, timeout);
+                    // A missed ping deadline does not mean the host is unhealthy, only that it did not
+                    // answer within this caller's chosen window, so a ping timeout must not tear the
+                    // host down the way a stuck dialog or handshake read does.
+                    RemotePipeFrame frame = ReadFrameCore(responsePipe, timeout, killOnTimeout: false);
                     return frame.Command == RemotePipeCommand.Ping;
                 }
                 catch (InvalidOperationException)
@@ -330,7 +334,7 @@ namespace Fluence.Wpf.Specs
             AnonymousPipeServerStream responsePipe = _responsePipe ?? throw new InvalidOperationException("The Fluence remote host is not running. Call EnsureRunning first.");
             byte[] version = Encoding.UTF8.GetBytes(SpecSerialization.CurrentSchemaVersion.ToString(CultureInfo.InvariantCulture));
             WriteFrameCore(RemotePipeCommand.Handshake, version);
-            RemotePipeFrame frame = ReadFrameCore(responsePipe, HandshakeTimeout);
+            RemotePipeFrame frame = ReadFrameCore(responsePipe, HandshakeTimeout, killOnTimeout: true);
             if (frame.Command != RemotePipeCommand.Handshake)
             {
                 throw new InvalidOperationException("The Fluence remote host answered the handshake with an unexpected '" + frame.Command.ToString() + "' frame.");
@@ -375,22 +379,50 @@ namespace Fluence.Wpf.Specs
             }
         }
 
-        private RemotePipeFrame ReadFrameCore(AnonymousPipeServerStream responsePipe, TimeSpan timeout)
+        private RemotePipeFrame ReadFrameCore(AnonymousPipeServerStream responsePipe, TimeSpan timeout, bool killOnTimeout)
         {
-            Task<RemotePipeFrame> readTask = RemotePipeFraming.ReadFrameAsync(responsePipe, CancellationToken.None);
-            if (!WaitForCompletion(readTask, timeout))
+            // A prior non-destructive Ping timeout (killOnTimeout: false) may have left its own read
+            // still running against this same pipe: the host answers commands strictly one at a time
+            // (see Fluence.Wpf.RemoteHost's read-process-write loop), so that reply is not lost, only
+            // unread. Starting a second, independent read on the same stream before that one finishes
+            // would race an unsynchronized Stream and, even if it happened not to corrupt anything,
+            // would hand this call the stale reply instead of its own. Join it first so reads against
+            // one pipe are always strictly sequential.
+            if (!DrainOrphanedResponseRead(timeout))
             {
-                // Anonymous pipe reads cannot be cancelled portably; killing the host closes the
-                // pipe, which faults the pending read instead of leaking a forever-blocked thread.
-                // The gate is taken here because this read may be running outside it (ShowDialog),
-                // so tearing the host down must not race a concurrent Shutdown's teardown. The lock
-                // is reentrant, so callers that already hold it (Ping, HandshakeCore) are unaffected.
+                // The orphaned read still has not completed after a second full timeout window: the
+                // host is not merely slow, it is not making progress at all. Fall back to killing so
+                // this situation cannot repeat and grow an unbounded backlog of unread replies.
                 lock (_gate)
                 {
                     KillCore();
                     CleanupCore();
                 }
+                throw new TimeoutException("The Fluence remote host did not respond within " + timeout.ToString() + "; the host process was terminated.");
+            }
+
+            Task<RemotePipeFrame> readTask = RemotePipeFraming.ReadFrameAsync(responsePipe, CancellationToken.None);
+            if (!WaitForCompletion(readTask, timeout))
+            {
+                if (!killOnTimeout)
+                {
+                    // Leave the host and the pipe alone. The read keeps running in the background
+                    // against the live pipe; the next call on this pipe joins it above (via
+                    // DrainOrphanedResponseRead) before issuing its own read, keeping frames ordered.
+                    _orphanedResponseRead = readTask;
+                    throw new TimeoutException("The Fluence remote host did not respond within " + timeout.ToString() + ".");
+                }
+                // Anonymous pipe reads cannot be cancelled portably; killing the host closes the
+                // pipe, which faults the pending read instead of leaking a forever-blocked thread.
+                // The gate is taken here because this read may be running outside it (ShowDialog),
+                // so tearing the host down must not race a concurrent Shutdown's teardown. The lock
+                // is reentrant, so callers that already hold it (HandshakeCore) are unaffected.
                 ObserveFault(readTask);
+                lock (_gate)
+                {
+                    KillCore();
+                    CleanupCore();
+                }
                 throw new TimeoutException("The Fluence remote host did not respond within " + timeout.ToString() + "; the host process was terminated.");
             }
             try
@@ -421,6 +453,44 @@ namespace Fluence.Wpf.Specs
                 }
                 throw CreateHostFailure(exception);
             }
+        }
+
+        /// <summary>
+        /// Waits for a response read orphaned by an earlier non-destructive Ping timeout to finish, so
+        /// that no two reads ever run concurrently against the same response pipe and every read
+        /// consumes the frame that actually answers it, not a leftover one.
+        /// </summary>
+        /// <param name="timeout">The longest time to wait for the orphaned read to finish.</param>
+        /// <returns>True once there is nothing left to drain (either there was no orphan, or it
+        /// finished in time); false when an orphan is still outstanding after waiting the full
+        /// <paramref name="timeout"/>, which the caller treats as proof the host has stopped making
+        /// progress.</returns>
+        private bool DrainOrphanedResponseRead(TimeSpan timeout)
+        {
+            Task<RemotePipeFrame>? orphan;
+            lock (_gate)
+            {
+                orphan = _orphanedResponseRead;
+                _orphanedResponseRead = null;
+            }
+            if (orphan is null)
+            {
+                return true;
+            }
+            if (!WaitForCompletion(orphan, timeout))
+            {
+                // Still not done; put it back so a subsequent call keeps trying to join it, unless the
+                // caller instead kills the host, in which case CleanupCore discards it below.
+                lock (_gate)
+                {
+                    _orphanedResponseRead = orphan;
+                }
+                return false;
+            }
+            // Discard the frame or exception; it belongs to the timed-out call that abandoned it, not
+            // to this one.
+            ObserveFault(orphan);
+            return true;
         }
 
         private static bool WaitForCompletion(Task task, TimeSpan timeout)
@@ -520,6 +590,14 @@ namespace Fluence.Wpf.Specs
             _responsePipe = null;
             _process?.Dispose();
             _process = null;
+            if (_orphanedResponseRead is Task<RemotePipeFrame> orphan)
+            {
+                // The pipe it was reading from is gone (or about to be); disposing the stream while
+                // the read is pending faults it, so observe that fault instead of letting it surface
+                // as an unobserved task exception later.
+                _orphanedResponseRead = null;
+                ObserveFault(orphan);
+            }
         }
 
         private void ThrowIfDisposed()
