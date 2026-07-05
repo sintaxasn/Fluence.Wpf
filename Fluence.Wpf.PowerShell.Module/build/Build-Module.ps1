@@ -52,7 +52,7 @@ foreach ($dest in $map.Keys)
 # Stage the out-of-process dialog host. It is launched with Process.Start and never loaded
 # in-process, so it ships as a single modern TFM regardless of the caller's PowerShell edition.
 # The stale-cleanup loop above deletes every lib subfolder, so lib\host is recreated each run.
-$hostTfm  = 'net10.0-windows10.0.26100.0'
+$hostTfm  = 'net8.0-windows10.0.26100.0'
 $hostProj = Join-Path $repo 'Fluence.Wpf.RemoteHost\Fluence.Wpf.RemoteHost.csproj'
 & dotnet build $hostProj -c $Configuration -f $hostTfm
 if ($LASTEXITCODE -ne 0) { throw 'Build failed for Fluence.Wpf.RemoteHost' }

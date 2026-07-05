@@ -48,7 +48,7 @@ namespace Fluence.Wpf.Tests
     [TestClass]
     public class RemoteHostTests
     {
-        private const string HostTargetFramework = "net10.0-windows10.0.26100.0";
+        private const string HostTargetFramework = "net8.0-windows10.0.26100.0";
 
         [TestMethod]
         public void Framing_RoundTrips_PayloadLargerThanPipeBuffer()

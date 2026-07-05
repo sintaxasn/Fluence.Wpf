@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
+    <TargetFramework>net8.0-windows10.0.26100.0</TargetFramework>
     <UseWPF>true</UseWPF>
     <RootNamespace>Fluence.Wpf.RemoteHost</RootNamespace>
     <AssemblyName>Fluence.Wpf.RemoteHost</AssemblyName>
