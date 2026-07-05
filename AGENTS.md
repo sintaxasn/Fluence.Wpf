@@ -294,7 +294,7 @@ dotnet test    Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug -f net10.0-wi
 
 ### CI/CD pipeline
 
-CI is a single `build` job on `windows-latest` defined in [.github/workflows/build.yml](.github/workflows/build.yml), triggered by any push or pull request targeting `main`. It checks text policy (UTF-8 BOM, LF, banned APIs), restores, builds Release, runs both TFM test lanes (excluding the `Screenshots` category) with TRX output, then packs and uploads artifacts. NuGet publish and SBOM generation are present but commented out as deliberate manual release steps.
+CI is a single `build` job on `windows-latest` defined in [.github/workflows/build.yml](.github/workflows/build.yml), triggered by any push or pull request targeting `main`. It checks text policy (UTF-8 BOM, LF, banned APIs), restores, builds Release, runs both TFM test lanes (excluding the `Screenshots` category) with TRX output, then (only if both test lanes pass) generates an SBOM per TFM, packs, and uploads artifacts. NuGet publish remains commented out as a deliberate manual release step.
 
 ```mermaid
 flowchart TD
@@ -307,9 +307,10 @@ flowchart TD
     H --> I[Test net472<br/>filter TestCategory!=Screenshots, TRX]
     I --> J[Test net10.0-windows10.0.26100.0<br/>filter TestCategory!=Screenshots, TRX]
     J --> K[Upload test results<br/>always]
-    K --> L[Pack NuGet]
-    L --> M[Upload artifacts<br/>dotnet10 lib, dotnet472 lib, demo, nupkg]
-    M --> N[NuGet publish + SBOM<br/>commented out / manual]
+    K --> S[Generate SBOM per TFM<br/>gated on passing tests]
+    S --> L[Pack NuGet]
+    L --> M[Upload artifacts<br/>dotnet10 lib, dotnet472 lib, demo, nupkg, SBOM]
+    M --> N[NuGet publish<br/>commented out / manual]
 ```
 
 ---
