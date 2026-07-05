@@ -30,6 +30,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Pipes;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Fluence.Wpf.Specs;
@@ -244,6 +245,50 @@ namespace Fluence.Wpf.Tests
             {
                 controller.Shutdown(TimeSpan.FromSeconds(10));
                 _ = showTask.Wait(TimeSpan.FromSeconds(5));
+            }
+        }
+
+        [TestMethod]
+        public void ShowDialog_WriteFrameFails_ClearsInFlightAndDoesNotWedge()
+        {
+            using FluenceRemoteHostController controller = new();
+            AnonymousPipeServerStream? originalCommandPipe = null;
+            try
+            {
+                controller.EnsureRunning(GetHostExecutablePath());
+
+                // Swap the command pipe field for a fresh, already-disposed pipe while leaving the real
+                // one open: EnsureConnectedCore still passes (process not exited because the host never
+                // sees command-pipe EOF, both pipe fields non-null), but the request write throws
+                // ObjectDisposedException after the in-flight slot is taken. This deterministically
+                // reproduces the realistic transport fault (a TOCTOU window between EnsureConnectedCore's
+                // HasExited check and the write) that must not permanently wedge the controller. Disposing
+                // the real command pipe in place would instead race the host's own EOF-triggered exit, so
+                // EnsureConnectedCore could throw before _inFlight is ever set (never exercising the bug).
+                FieldInfo commandPipeField = typeof(FluenceRemoteHostController).GetField("_commandPipe", BindingFlags.Instance | BindingFlags.NonPublic)
+                    ?? throw new InvalidOperationException("The _commandPipe field was not found.");
+                originalCommandPipe = (AnonymousPipeServerStream)(commandPipeField.GetValue(controller)
+                    ?? throw new InvalidOperationException("The _commandPipe field was null after EnsureRunning."));
+                AnonymousPipeServerStream disposedCommandPipe = new(PipeDirection.Out, HandleInheritability.None);
+                disposedCommandPipe.Dispose();
+                commandPipeField.SetValue(controller, disposedCommandPipe);
+
+                InvalidOperationException exception = Assert.ThrowsExactly<InvalidOperationException>(
+                    () => controller.ShowDialog(BuildOpenRequest(), TimeSpan.FromSeconds(30)));
+                StringAssert.Contains(exception.Message, "pipe closed unexpectedly", StringComparison.Ordinal);
+
+                // The failed write must not leave the single in-flight slot stuck: against the pre-fix
+                // code _inFlight is set true before the write and never cleared, permanently wedging the
+                // controller (every later ShowDialog throws "already in progress").
+                FieldInfo inFlightField = typeof(FluenceRemoteHostController).GetField("_inFlight", BindingFlags.Instance | BindingFlags.NonPublic)
+                    ?? throw new InvalidOperationException("The _inFlight field was not found.");
+                bool inFlight = (bool)(inFlightField.GetValue(controller) ?? throw new InvalidOperationException("The _inFlight field was null."));
+                Assert.IsFalse(inFlight, "a failed request write must clear the in-flight flag so the controller is not wedged");
+            }
+            finally
+            {
+                originalCommandPipe?.Dispose();
+                controller.Shutdown(TimeSpan.FromSeconds(10));
             }
         }
 

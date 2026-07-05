@@ -138,23 +138,28 @@ namespace Fluence.Wpf.Specs
             // write the request frame; then release it so a dialog with a long or infinite timeout does
             // not block teardown (Shutdown/Dispose) or a health check on another thread. The blocking
             // response read runs outside the lock against the pipe reference captured here, so a
-            // concurrent Shutdown can kill the host and fault this read instead of waiting for it.
-            AnonymousPipeServerStream responsePipe;
-            lock (_gate)
-            {
-                ThrowIfDisposed();
-                EnsureConnectedCore();
-                if (_inFlight)
-                {
-                    throw new InvalidOperationException("A Fluence remote host dialog is already in progress.");
-                }
-                responsePipe = _responsePipe ?? throw new InvalidOperationException("The Fluence remote host is not running. Call EnsureRunning first.");
-                _inFlight = true;
-                byte[] payload = SpecSerialization.SerializeRemoteRequest(request);
-                WriteFrameCore(RemotePipeCommand.ShowDialog, payload);
-            }
+            // concurrent Shutdown can kill the host and fault this read instead of waiting for it. A
+            // single try/finally spans both the under-lock write and the unlocked read so that a fault
+            // in either one (serialize or write throwing, or the read failing) clears the in-flight slot
+            // via the finally; without this, a throwing write would leave _inFlight stuck true forever.
+            bool acquired = false;
             try
             {
+                AnonymousPipeServerStream responsePipe;
+                lock (_gate)
+                {
+                    ThrowIfDisposed();
+                    EnsureConnectedCore();
+                    if (_inFlight)
+                    {
+                        throw new InvalidOperationException("A Fluence remote host dialog is already in progress.");
+                    }
+                    responsePipe = _responsePipe ?? throw new InvalidOperationException("The Fluence remote host is not running. Call EnsureRunning first.");
+                    _inFlight = true;
+                    acquired = true;
+                    byte[] payload = SpecSerialization.SerializeRemoteRequest(request);
+                    WriteFrameCore(RemotePipeCommand.ShowDialog, payload);
+                }
                 RemotePipeFrame frame = ReadFrameCore(responsePipe, timeout);
                 return frame.Command == RemotePipeCommand.Error
                     ? throw new InvalidOperationException("The Fluence remote host failed to show the dialog: " + Encoding.UTF8.GetString(frame.Payload))
@@ -164,9 +169,12 @@ namespace Fluence.Wpf.Specs
             }
             finally
             {
-                lock (_gate)
+                if (acquired)
                 {
-                    _inFlight = false;
+                    lock (_gate)
+                    {
+                        _inFlight = false;
+                    }
                 }
             }
         }
