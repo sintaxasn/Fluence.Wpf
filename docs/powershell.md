@@ -55,7 +55,7 @@ for setup, the full command reference, and runnable examples.
 `Show-FluenceDialogSpec` renders a composed dialog spec in the calling PowerShell process. That
 is fine for a single dialog, but a second `ShowDialog()` in the same process is a well-known
 hang risk in PowerShell. `Show-FluenceRemoteDialog` sidesteps it entirely: it shows the
-identical dialog in a separate, same-user host process (`Fluence.Wpf.Specs.Host.exe`), so a
+identical dialog in a separate, same-user host process (`Fluence.Wpf.RemoteHost.exe`), so a
 script can open dialog after dialog in one session without ever blocking its own thread.
 
 ```powershell
@@ -88,7 +88,7 @@ hosts.
 
 ### Troubleshooting
 
-- **`Fluence.Wpf.Specs.Host.exe not found ...`** - the module was imported before the remote
+- **`Fluence.Wpf.RemoteHost.exe not found ...`** - the module was imported before the remote
   host was staged into `lib\host\`. Run `build\Build-Module.ps1` (which builds and stages the
   host alongside the per-edition `Fluence.Wpf.dll`), then re-import the module.
 - **`The Fluence remote host pipe closed unexpectedly ...`** - the host process exited before it

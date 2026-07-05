@@ -12,7 +12,7 @@ Write a spec - prompts, buttons, an optional icon - and get a fully themed WPF d
 - Windows 10 1809 or later
 - The native libraries staged by `build\Build-Module.ps1` (see Import below)
 - For `Show-FluenceRemoteDialog` (the out-of-process host): the .NET Desktop Runtime matching
-  the staged `Fluence.Wpf.Specs.Host.exe` target framework must be present on the machine that
+  the staged `Fluence.Wpf.RemoteHost.exe` target framework must be present on the machine that
   shows the dialog
 
 > **Scope note - `Show-FluenceRemoteDialog` is same-user, interactive only (v1).** The

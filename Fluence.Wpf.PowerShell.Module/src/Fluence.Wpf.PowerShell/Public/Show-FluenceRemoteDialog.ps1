@@ -6,7 +6,7 @@
         button plus harvested values.
     .DESCRIPTION
         Serializes a Fluence.Wpf.Specs.DialogSpec through the versioned binary spec serializer and
-        sends it over anonymous pipes to a standalone Fluence UI host (Fluence.Wpf.Specs.Host.exe),
+        sends it over anonymous pipes to a standalone Fluence UI host (Fluence.Wpf.RemoteHost.exe),
         which materializes and shows the identical dialog the in-process Show-FluenceDialogSpec
         renders. The host starts lazily on the first call and is reused for the rest of the
         session, so repeated dialog cycles never risk the classic in-process second-ShowDialog

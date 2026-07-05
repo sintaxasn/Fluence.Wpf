@@ -39,7 +39,7 @@ namespace Fluence.Wpf.Tests
 {
     /// <summary>
     /// Covers the remote-host pipe framing (in-process, over a real anonymous pipe pair) and the
-    /// end-to-end controller lifecycle against the actually built Fluence.Wpf.Specs.Host.exe.
+    /// end-to-end controller lifecycle against the actually built Fluence.Wpf.RemoteHost.exe.
     /// The end-to-end tests require the solution to have been built first (the standard
     /// build-then-test flow); they fail with an actionable message otherwise.
     /// </summary>
@@ -193,10 +193,10 @@ namespace Fluence.Wpf.Tests
             {
                 throw new InvalidOperationException($"Could not derive the repository root from '{AppContext.BaseDirectory}'.");
             }
-            string hostPath = Path.Combine(repoRootDirectory.FullName, "Fluence.Wpf.Specs.Host", "bin", configurationDirectory.Name, HostTargetFramework, "Fluence.Wpf.Specs.Host.exe");
+            string hostPath = Path.Combine(repoRootDirectory.FullName, "Fluence.Wpf.RemoteHost", "bin", configurationDirectory.Name, HostTargetFramework, "Fluence.Wpf.RemoteHost.exe");
             return File.Exists(hostPath)
                 ? hostPath
-                : throw new FileNotFoundException("Fluence.Wpf.Specs.Host.exe is not built; build Fluence.Wpf.sln before running the remote host tests.", hostPath);
+                : throw new FileNotFoundException("Fluence.Wpf.RemoteHost.exe is not built; build Fluence.Wpf.sln before running the remote host tests.", hostPath);
         }
     }
 }

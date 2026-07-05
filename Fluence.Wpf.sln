@@ -15,7 +15,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluence.Wpf.Specs", "Fluenc
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluence.Wpf.Specs.Generator", "Fluence.Wpf.Specs.Generator\Fluence.Wpf.Specs.Generator.csproj", "{8B3AE4F2-5C1D-4F6B-8D2E-3A7C9B0E1F22}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluence.Wpf.Specs.Host", "Fluence.Wpf.Specs.Host\Fluence.Wpf.Specs.Host.csproj", "{9C4BF5A3-6D2E-4A7C-9E3F-4B8D0C1F2A33}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fluence.Wpf.RemoteHost", "Fluence.Wpf.RemoteHost\Fluence.Wpf.RemoteHost.csproj", "{9C4BF5A3-6D2E-4A7C-9E3F-4B8D0C1F2A33}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

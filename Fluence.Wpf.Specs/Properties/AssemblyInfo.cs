@@ -30,5 +30,5 @@ using System.Runtime.CompilerServices;
 
 // The standalone UI host shares the internal pipe framing and command set; the test assembly
 // exercises them directly.
-[assembly: InternalsVisibleTo("Fluence.Wpf.Specs.Host")]
+[assembly: InternalsVisibleTo("Fluence.Wpf.RemoteHost")]
 [assembly: InternalsVisibleTo("Fluence.Wpf.Tests")]

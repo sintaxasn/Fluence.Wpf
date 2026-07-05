@@ -4,8 +4,8 @@
     <OutputType>WinExe</OutputType>
     <TargetFramework>net10.0-windows10.0.26100.0</TargetFramework>
     <UseWPF>true</UseWPF>
-    <RootNamespace>Fluence.Wpf.Specs.Host</RootNamespace>
-    <AssemblyName>Fluence.Wpf.Specs.Host</AssemblyName>
+    <RootNamespace>Fluence.Wpf.RemoteHost</RootNamespace>
+    <AssemblyName>Fluence.Wpf.RemoteHost</AssemblyName>
     <Description>Standalone same-user Fluence UI host showing composed spec dialogs out of process</Description>
     <ApplicationIcon>..\assets\Fluence_Icon_Light.ico</ApplicationIcon>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>

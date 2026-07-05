@@ -43,7 +43,7 @@ using System.Threading.Tasks;
 namespace Fluence.Wpf.Specs
 {
     /// <summary>
-    /// Launches and talks to the standalone Fluence UI host process (Fluence.Wpf.Specs.Host.exe)
+    /// Launches and talks to the standalone Fluence UI host process (Fluence.Wpf.RemoteHost.exe)
     /// over two anonymous pipes, so a caller can show composed spec dialogs out of process. The
     /// host is started lazily, reused across calls, and torn down by <see cref="Shutdown"/> or
     /// <see cref="Dispose"/>. The protocol carries one request at a time; calls on one controller
@@ -78,7 +78,7 @@ namespace Fluence.Wpf.Specs
         /// two anonymous pipe handles on the command line, then performs the schema-version
         /// handshake. A healthy running host makes this a no-op.
         /// </summary>
-        /// <param name="hostExecutablePath">The full path to Fluence.Wpf.Specs.Host.exe.</param>
+        /// <param name="hostExecutablePath">The full path to Fluence.Wpf.RemoteHost.exe.</param>
         /// <exception cref="ArgumentException">Thrown when the path is null or whitespace.</exception>
         /// <exception cref="FileNotFoundException">Thrown when the host executable does not exist.</exception>
         /// <exception cref="InvalidOperationException">Thrown when the host fails to start or the schema versions mismatch.</exception>

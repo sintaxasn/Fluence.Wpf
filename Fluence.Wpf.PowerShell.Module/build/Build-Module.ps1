@@ -53,11 +53,11 @@ foreach ($dest in $map.Keys)
 # in-process, so it ships as a single modern TFM regardless of the caller's PowerShell edition.
 # The stale-cleanup loop above deletes every lib subfolder, so lib\host is recreated each run.
 $hostTfm  = 'net10.0-windows10.0.26100.0'
-$hostProj = Join-Path $repo 'Fluence.Wpf.Specs.Host\Fluence.Wpf.Specs.Host.csproj'
+$hostProj = Join-Path $repo 'Fluence.Wpf.RemoteHost\Fluence.Wpf.RemoteHost.csproj'
 & dotnet build $hostProj -c $Configuration -f $hostTfm
-if ($LASTEXITCODE -ne 0) { throw 'Build failed for Fluence.Wpf.Specs.Host' }
+if ($LASTEXITCODE -ne 0) { throw 'Build failed for Fluence.Wpf.RemoteHost' }
 
-$hostSrc = Join-Path $repo "Fluence.Wpf.Specs.Host\bin\$Configuration\$hostTfm"
+$hostSrc = Join-Path $repo "Fluence.Wpf.RemoteHost\bin\$Configuration\$hostTfm"
 $hostOut = Join-Path $lib 'host'
 New-Item -ItemType Directory -Path $hostOut -Force | Out-Null
 Get-ChildItem -Path $hostSrc -File |

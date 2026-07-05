@@ -19,10 +19,10 @@
         [string]$ModuleRoot
     )
 
-    $exe = [System.IO.Path]::Combine($ModuleRoot, 'lib', 'host', 'Fluence.Wpf.Specs.Host.exe')
+    $exe = [System.IO.Path]::Combine($ModuleRoot, 'lib', 'host', 'Fluence.Wpf.RemoteHost.exe')
     if (-not (Test-Path -LiteralPath $exe))
     {
-        throw "Fluence.Wpf.Specs.Host.exe not found at: $exe. Run build\Build-Module.ps1 to stage the remote host."
+        throw "Fluence.Wpf.RemoteHost.exe not found at: $exe. Run build\Build-Module.ps1 to stage the remote host."
     }
 
     return $exe

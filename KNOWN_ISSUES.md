@@ -53,7 +53,7 @@ maintainers.
   stationary edge-scrolling viewport, and the navigation buttons do **not** use
   WinUI's pressed `0.875` scale.
 - **Out-of-process dialog host: no parent-death detection** - the standalone UI
-  host (`Fluence.Wpf.Specs.Host.exe`, launched by `Show-FluenceRemoteDialog`) is
+  host (`Fluence.Wpf.RemoteHost.exe`, launched by `Show-FluenceRemoteDialog`) is
   torn down cleanly on `Close-FluenceRemoteHost` and on module removal (the
   `.psm1` registers an `OnRemove` handler). It has **no** parent-process watch in
   v1: if the owning PowerShell process is killed hard (for example `Stop-Process

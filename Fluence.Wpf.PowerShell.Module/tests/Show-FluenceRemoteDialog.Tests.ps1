@@ -77,7 +77,7 @@ Describe 'Module unload cleanup' {
         ) -Buttons (New-FluenceButton -Text 'OK' -IsDefault)
         $null = Show-FluenceRemoteDialog -Spec $dialog -Theme Light -Backdrop None -TimeoutSeconds 1
 
-        $hostProcesses = @(Get-Process -Name 'Fluence.Wpf.Specs.Host' -ErrorAction SilentlyContinue)
+        $hostProcesses = @(Get-Process -Name 'Fluence.Wpf.RemoteHost' -ErrorAction SilentlyContinue)
         $hostProcesses.Count | Should -BeGreaterThan 0 -Because 'the host must be running after a Show-FluenceRemoteDialog call'
         $hostIds = $hostProcesses.Id
 

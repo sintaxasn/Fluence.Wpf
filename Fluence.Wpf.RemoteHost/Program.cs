@@ -40,8 +40,9 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
+using Fluence.Wpf.Specs;
 
-namespace Fluence.Wpf.Specs.Host
+namespace Fluence.Wpf.RemoteHost
 {
     /// <summary>
     /// The standalone same-user Fluence UI host. The controlling process launches this executable
@@ -60,7 +61,7 @@ namespace Fluence.Wpf.Specs.Host
             string? responseHandle = GetArgumentValue(args, "--response-pipe");
             if (commandHandle is null || responseHandle is null)
             {
-                Console.Error.WriteLine("Usage: Fluence.Wpf.Specs.Host --command-pipe <handle> --response-pipe <handle>");
+                Console.Error.WriteLine("Usage: Fluence.Wpf.RemoteHost --command-pipe <handle> --response-pipe <handle>");
                 Console.Error.WriteLine("This executable is launched by FluenceRemoteHostController; it is not meant to run standalone.");
                 return 2;
             }

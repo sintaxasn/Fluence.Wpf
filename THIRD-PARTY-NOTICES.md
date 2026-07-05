@@ -20,7 +20,7 @@ The following files carry adapted portions and each reproduces the attribution p
 - `Fluence.Wpf.Specs/RemotePipeFrame.cs`
 - `Fluence.Wpf.Specs/RemotePipeFraming.cs`
 - `Fluence.Wpf.Specs/FluenceRemoteHostController.cs`
-- `Fluence.Wpf.Specs.Host/Program.cs`
+- `Fluence.Wpf.RemoteHost/Program.cs`
 
 ### Permission (relicensing grant)
 
