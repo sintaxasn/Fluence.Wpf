@@ -30,40 +30,23 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace Fluence.Wpf.Specs
+namespace Fluence.Wpf.Specs.Remoting
 {
     /// <summary>
-    /// The command byte carried in every remote-host pipe frame. The set is deliberately tiny: one
-    /// dialog verb plus the lifecycle verbs the controller needs, not a general RPC surface.
+    /// One decoded remote-host pipe frame: the command byte and its payload.
     /// </summary>
-    internal enum RemotePipeCommand
+    /// <param name="command">The command byte.</param>
+    /// <param name="payload">The payload bytes; empty for command-only frames.</param>
+    internal sealed class RemotePipeFrame(RemotePipeCommand command, byte[] payload)
     {
         /// <summary>
-        /// Version parity check. The payload is the UTF-8 spec schema version; both sides fail fast
-        /// on mismatch instead of surfacing a confusing deserialization error later.
+        /// Gets the command byte of the frame.
         /// </summary>
-        Handshake = 0,
+        internal RemotePipeCommand Command { get; } = command;
 
         /// <summary>
-        /// Show one dialog. The request payload is a serialized <see cref="RemoteDialogRequest"/>
-        /// envelope; the response payload is a serialized <see cref="SpecDialogResult"/> envelope.
+        /// Gets the payload bytes of the frame; empty for command-only frames.
         /// </summary>
-        ShowDialog = 1,
-
-        /// <summary>
-        /// Health check. Empty payload both ways.
-        /// </summary>
-        Ping = 2,
-
-        /// <summary>
-        /// Request graceful host exit. No response frame; the controller waits on process exit.
-        /// </summary>
-        Shutdown = 3,
-
-        /// <summary>
-        /// Failure response. The payload is a UTF-8 error message describing why the host could not
-        /// satisfy the request, so a host-side fault surfaces to the caller instead of hanging it.
-        /// </summary>
-        Error = 4,
+        internal byte[] Payload { get; } = payload;
     }
 }

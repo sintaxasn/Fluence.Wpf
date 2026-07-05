@@ -28,7 +28,7 @@
 
 using System.Runtime.Serialization;
 
-namespace Fluence.Wpf.Specs
+namespace Fluence.Wpf.Specs.Remoting
 {
     /// <summary>
     /// The wire request a remote-host controller sends to the standalone Fluence UI host to show one

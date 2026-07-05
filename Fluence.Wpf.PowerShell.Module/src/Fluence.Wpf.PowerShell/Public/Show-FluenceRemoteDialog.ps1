@@ -69,7 +69,7 @@
 
     # Serialize on the caller side: validates the tree and produces the exact envelope the host
     # deserializes, mirroring the in-process path's round-trip discipline.
-    $request = [Fluence.Wpf.Specs.RemoteDialogRequest]::new()
+    $request = [Fluence.Wpf.Specs.Remoting.RemoteDialogRequest]::new()
     $request.SpecBase64 = [Fluence.Wpf.Specs.SpecSerialization]::SerializeToBase64($Spec)
     $request.Theme = $Theme
     $request.Backdrop = $Backdrop
@@ -90,7 +90,7 @@
 
     if ($null -eq $script:FluenceRemoteHost)
     {
-        $script:FluenceRemoteHost = [Fluence.Wpf.Specs.FluenceRemoteHostController]::new()
+        $script:FluenceRemoteHost = [Fluence.Wpf.Specs.Remoting.FluenceRemoteHostController]::new()
     }
     $script:FluenceRemoteHost.EnsureRunning((Get-FluenceRemoteHostPath -ModuleRoot $script:ModuleRoot))
 

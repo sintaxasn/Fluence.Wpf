@@ -37,7 +37,7 @@ using System.IO.Pipes;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Fluence.Wpf.Specs
+namespace Fluence.Wpf.Specs.Remoting
 {
     /// <summary>
     /// Length-prefixed frame read/write helpers for the remote-host pipes. Every frame is a 5-byte

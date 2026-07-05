@@ -30,6 +30,7 @@ using System;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Xml;
+using Fluence.Wpf.Specs.Remoting;
 
 namespace Fluence.Wpf.Specs
 {

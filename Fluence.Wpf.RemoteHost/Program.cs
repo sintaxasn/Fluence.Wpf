@@ -41,6 +41,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Fluence.Wpf.Specs;
+using Fluence.Wpf.Specs.Remoting;
 
 namespace Fluence.Wpf.RemoteHost
 {

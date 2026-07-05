@@ -34,6 +34,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Fluence.Wpf.Specs;
+using Fluence.Wpf.Specs.Remoting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Fluence.Wpf.Tests

@@ -40,7 +40,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Fluence.Wpf.Specs
+namespace Fluence.Wpf.Specs.Remoting
 {
     /// <summary>
     /// Launches and talks to the standalone Fluence UI host process (Fluence.Wpf.RemoteHost.exe)

@@ -33,6 +33,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Xml;
 using Fluence.Wpf.Specs;
+using Fluence.Wpf.Specs.Remoting;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Fluence.Wpf.Tests

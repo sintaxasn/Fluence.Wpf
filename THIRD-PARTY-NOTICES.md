@@ -16,10 +16,10 @@ The out-of-process Fluence UI host reuses the *process-launch and pipe-framing p
 
 The following files carry adapted portions and each reproduces the attribution paragraph in its header:
 
-- `Fluence.Wpf.Specs/RemotePipeCommand.cs`
-- `Fluence.Wpf.Specs/RemotePipeFrame.cs`
-- `Fluence.Wpf.Specs/RemotePipeFraming.cs`
-- `Fluence.Wpf.Specs/FluenceRemoteHostController.cs`
+- `Fluence.Wpf.Specs/Remoting/RemotePipeCommand.cs`
+- `Fluence.Wpf.Specs/Remoting/RemotePipeFrame.cs`
+- `Fluence.Wpf.Specs/Remoting/RemotePipeFraming.cs`
+- `Fluence.Wpf.Specs/Remoting/FluenceRemoteHostController.cs`
 - `Fluence.Wpf.RemoteHost/Program.cs`
 
 ### Permission (relicensing grant)
