@@ -59,3 +59,38 @@ Describe 'Close-FluenceRemoteHost' {
         { Close-FluenceRemoteHost; Close-FluenceRemoteHost } | Should -Not -Throw
     }
 }
+
+Describe 'Module unload cleanup' {
+
+    # Removing the module runs the .psm1 OnRemove handler, which must terminate the out-of-process
+    # host so a stray child never outlives the session. This starts a real host (hence UI-gated),
+    # captures its process id, removes the module, and asserts that specific process is gone. The
+    # module is re-imported afterward so the shared BeforeAll state is restored for any later run.
+    AfterEach {
+        Import-Module $script:ModulePath -Force
+    }
+
+    It 'terminates the host process on Remove-Module (OnRemove)' -Tag UI -Skip:($env:FLUENCE_PS_UI -ne '1') {
+        Import-Module $script:ModulePath -Force
+        $dialog = New-FluenceDialogSpec -Content @(
+            New-FluenceSpec TextBlock -Text 'unload'
+        ) -Buttons (New-FluenceButton -Text 'OK' -IsDefault)
+        $null = Show-FluenceRemoteDialog -Spec $dialog -Theme Light -Backdrop None -TimeoutSeconds 1
+
+        $hostProcesses = @(Get-Process -Name 'Fluence.Wpf.Specs.Host' -ErrorAction SilentlyContinue)
+        $hostProcesses.Count | Should -BeGreaterThan 0 -Because 'the host must be running after a Show-FluenceRemoteDialog call'
+        $hostIds = $hostProcesses.Id
+
+        Remove-Module Fluence.Wpf.PowerShell -Force
+
+        # OnRemove -> Close-FluenceRemoteHost -> Dispose blocks on Shutdown, so the process should be
+        # gone by the time Remove-Module returns; poll briefly to absorb any teardown latency.
+        $deadline = (Get-Date).AddSeconds(15)
+        do {
+            Start-Sleep -Milliseconds 200
+            $stillAlive = @(Get-Process -Id $hostIds -ErrorAction SilentlyContinue)
+        } while ($stillAlive.Count -gt 0 -and (Get-Date) -lt $deadline)
+
+        $stillAlive.Count | Should -Be 0 -Because 'module removal must terminate the host process'
+    }
+}

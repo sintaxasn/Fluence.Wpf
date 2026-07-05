@@ -52,6 +52,16 @@ maintainers.
   65-70). It does **not** implement WinUI's edge-pip scale-down or the
   stationary edge-scrolling viewport, and the navigation buttons do **not** use
   WinUI's pressed `0.875` scale.
+- **Out-of-process dialog host: no parent-death detection** - the standalone UI
+  host (`Fluence.Wpf.Specs.Host.exe`, launched by `Show-FluenceRemoteDialog`) is
+  torn down cleanly on `Close-FluenceRemoteHost` and on module removal (the
+  `.psm1` registers an `OnRemove` handler). It has **no** parent-process watch in
+  v1: if the owning PowerShell process is killed hard (for example `Stop-Process
+  -Force` or a crash) rather than exited cleanly, the child host can be orphaned
+  until it is dismissed or the session's anonymous pipes are garbage-collected.
+  The mitigation for scripts is to keep dialogs bounded with `-TimeoutSeconds` so
+  an orphan self-dismisses. A future version could add a
+  `Process.GetProcessById(parentPid)` exit watch on the host side if demanded.
 
 ## net472 accessibility API gaps
 
