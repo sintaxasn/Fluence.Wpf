@@ -371,10 +371,21 @@ namespace Fluence.Wpf.Specs
             }
             catch (IOException exception)
             {
+                // A failed write leaves the connection in an unknown state (the frame may be half
+                // written), and the process can still be alive on the other end of a half-broken
+                // pipe, so IsRunning would otherwise keep reporting healthy. Tear the host down here
+                // so the next EnsureRunning sees no process and relaunches instead of reusing a
+                // connection that will fail the same way forever. WriteFrameCore is always called
+                // with _gate held (ShowDialog, Ping, Shutdown, and HandshakeCore under EnsureRunning),
+                // matching KillCore/CleanupCore's caller-holds-the-gate convention.
+                KillCore();
+                CleanupCore();
                 throw CreateHostFailure(exception);
             }
             catch (ObjectDisposedException exception)
             {
+                KillCore();
+                CleanupCore();
                 throw CreateHostFailure(exception);
             }
         }

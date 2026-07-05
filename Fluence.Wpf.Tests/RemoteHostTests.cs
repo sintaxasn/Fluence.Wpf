@@ -311,6 +311,43 @@ namespace Fluence.Wpf.Tests
             }
         }
 
+        [TestMethod]
+        public void WriteFailure_CleansUpSoNextEnsureRunningRelaunches()
+        {
+            using FluenceRemoteHostController controller = new();
+            string hostExe = GetHostExecutablePath();
+            controller.EnsureRunning(hostExe);
+
+            // Same technique as ShowDialog_WriteFrameFails_ClearsInFlightAndDoesNotWedge: swap the
+            // command pipe field for a fresh, already-disposed pipe while leaving the real one open
+            // and the host process alive, so the request write throws ObjectDisposedException after
+            // EnsureConnectedCore's HasExited check has already passed.
+            FieldInfo commandPipeField = typeof(FluenceRemoteHostController).GetField("_commandPipe", BindingFlags.Instance | BindingFlags.NonPublic)
+                ?? throw new InvalidOperationException("The _commandPipe field was not found.");
+            AnonymousPipeServerStream originalCommandPipe = (AnonymousPipeServerStream)(commandPipeField.GetValue(controller)
+                ?? throw new InvalidOperationException("The _commandPipe field was null after EnsureRunning."));
+            AnonymousPipeServerStream disposedCommandPipe = new(PipeDirection.Out, HandleInheritability.None);
+            disposedCommandPipe.Dispose();
+            commandPipeField.SetValue(controller, disposedCommandPipe);
+
+            _ = Assert.ThrowsExactly<InvalidOperationException>(
+                () => controller.ShowDialog(BuildOpenRequest(), TimeSpan.FromSeconds(10)));
+
+            // Pre-fix: the host process is still alive (the failed write never tore it down), so
+            // IsRunning stays true and a later EnsureRunning would no-op onto the same broken pipe.
+            // Post-fix: the write failure kills and cleans up the host, so IsRunning reports false.
+            Assert.IsFalse(controller.IsRunning, "a write failure must tear the broken host down");
+
+            originalCommandPipe.Dispose();
+
+            // Self-heal: EnsureRunning sees no running process and relaunches a fresh host.
+            controller.EnsureRunning(hostExe);
+            SpecDialogResult result = controller.ShowDialog(BuildTimeoutRequest(), TimeSpan.FromSeconds(30));
+            Assert.AreEqual("Cancelled", result.Button);
+
+            controller.Shutdown(TimeSpan.FromSeconds(5));
+        }
+
         private static RemoteDialogRequest BuildTimeoutRequest()
         {
             return BuildRequest(timeoutSeconds: 1);
