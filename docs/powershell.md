@@ -1,73 +1,10 @@
-﻿## Fluence.Wpf.PowerShell module
+﻿## Fluence.Wpf from PowerShell
 
-For most scripting use cases the `Fluence.Wpf.PowerShell` module is the recommended
-starting point. It wraps the Fluence.Wpf theme engine behind a set of declarative cmdlets -
-dialogs plus an interactive window host and runtime theming helpers - and requires no WPF
-knowledge:
-
-```powershell
-# One-liner message
-Show-FluenceMessage -Message 'Install complete.' -Icon Success
-
-# Quick single input
-$name = Get-FluenceInput -Message 'Your name?'
-
-# Full form
-$r = Show-FluenceDialog -Title 'Sign in' -Prompts @(
-    New-FluencePrompt -Name User -Message 'Account'  -InputType Text     -ValidateNotEmpty
-    New-FluencePrompt -Name Pass -Message 'Password' -InputType Password -ValidateNotEmpty
-) -Buttons (New-FluenceButton -Text 'Login' -IsDefault), 'Cancel'
-if ($r.Login) { Write-Output "Signed in as: $($r.User)" }
-```
-
-### Level 4 - interactive window
-
-Beyond one-shot dialogs, `Show-FluenceWindow` hosts a full, persistent themed window from a
-XAML string, a content scriptblock, or a `.xaml` file, and wires its named controls in
-`-Initialize`:
-
-```powershell
-Show-FluenceWindow -Xaml $xaml -WatchSystemTheme -Data @{ Tick = 0 } -Initialize {
-    param($Window, $Data)
-    $Window.FindName('CycleButton').add_Click({
-            $Data.Tick++
-            Set-FluenceBackdrop -Backdrop 'Acrylic' -Window $Window
-        }.GetNewClosure())
-}
-```
-
-`Set-FluenceTheme`, `Set-FluenceAccent`, and `Set-FluenceBackdrop` switch the theme, accent,
-and backdrop at runtime; `-WatchSystemTheme` follows the OS light/dark setting while the
-window is open; and `Close-FluenceWindow` closes the window and sets its return value.
-
-> **Note - multi-threaded-apartment hosts.** On `pwsh -mta`, the content and handler
-> scriptblocks run on a separate module-owned UI runspace and cannot reference caller-defined
-> functions, variables, or closures. Pass values in through the `-Data` hashtable and keep each
-> block self-contained.
-
-See [Fluence.Wpf.PowerShell.Module/README.md](../Fluence.Wpf.PowerShell.Module/README.md)
-for setup, the full command reference, and runnable examples.
-
----
-
-## Raw WPF from PowerShell
-
-The sections below cover the lower-level path: loading the Fluence.Wpf assembly directly
-with `Add-Type` and constructing windows from XAML strings. Use this approach when you
-need full WPF composition control beyond what the module cmdlets expose.
-
-For the common case, the module's `Show-FluenceWindow` cmdlet (see Level 4 above) already
-wraps the entire bootstrap below - STA relaunch, assembly loading, the `Application`,
-theming, the message loop, and `SystemThemeWatcher` - into a single call, so reach for the
-raw path only when you need composition control it does not provide.
-
-Fluence.Wpf ships as a standard .NET Framework 4.7.2 assembly. Windows PowerShell 5.1
-(built into every Windows installation) can load that assembly at runtime and create a
-fully themed Fluent window from a single script file, with no project of your own to
-compile.
-
-The four scripts in `Fluence.Wpf.Demo.PowerShell/` are the canonical, runnable examples
-this guide is based on. Every snippet below comes directly from those scripts.
+Fluence.Wpf ships as a standard .NET assembly, so Windows PowerShell 5.1 (built into every
+Windows installation) can load it with `Add-Type` and build a fully themed Fluent window from
+a single script file, with no C# project of your own to compile. This guide covers that direct
+path; the four runnable scripts in `Fluence.Wpf.Demo.PowerShell/` are the canonical examples,
+and every snippet below comes directly from them.
 
 ---
 

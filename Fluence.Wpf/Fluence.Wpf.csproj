@@ -12,7 +12,7 @@
     <Product>Fluence.Wpf</Product>
     <Title>Fluence.Wpf</Title>
     <PackageId>Fluence.Wpf</PackageId>
-    <VersionPrefix>0.8.6</VersionPrefix>
+    <VersionPrefix>0.8.8</VersionPrefix>
     <VersionSuffix>preview</VersionSuffix>
     <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/sintaxasn/Fluence.Wpf</PackageProjectUrl>
@@ -35,6 +35,10 @@
   <ItemGroup Label="NuGet package content">
     <None Include="..\README.md" Pack="true" PackagePath="\" />
     <None Include="..\assets\Fluence_Icon_Light_128.png" Pack="true" PackagePath="\" />
+  </ItemGroup>
+
+  <ItemGroup Label="Embedded window icon">
+    <Resource Include="Themes\Icons\Fluence_Icon_NoBackground_256.png" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework)' == 'net472'">

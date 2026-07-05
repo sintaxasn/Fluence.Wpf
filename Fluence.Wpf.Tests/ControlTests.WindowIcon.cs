@@ -35,12 +35,11 @@ using System.Windows.Media.Imaging;
 namespace Fluence.Wpf.Tests
 {
     // FluenceWindow defaults Window.Icon to the Fluence brand icon embedded in Fluence.Wpf.dll.
-    // FluenceWindow.CreateDefaultIcon loads the brand vector DrawingImage
-    // (FluenceIconBrandDrawingImage from Themes/Icons/FluenceIcons.xaml) once and rasterizes it to a
-    // frozen RenderTargetBitmap, because Window.Icon drives the Win32 taskbar HICON, which does not
-    // render a vector. These tests pin both halves of the contract: the default resolves to a real
-    // BitmapSource (the rasterized vector), and a consumer-assigned Icon overrides that default
-    // instead of being clobbered by it.
+    // FluenceWindow.CreateDefaultIcon loads the square, no-background Fluence mark (an embedded
+    // 256x256 PNG) once as a frozen BitmapImage, because Window.Icon drives the Win32 taskbar HICON,
+    // which does not render a vector and would distort a non-square source. These tests pin both
+    // halves of the contract: the default resolves to a real square BitmapSource, and a
+    // consumer-assigned Icon overrides that default instead of being clobbered by it.
     public partial class ControlTests
     {
         [TestMethod]
@@ -57,8 +56,8 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(window.Icon,
                         "FluenceWindow should default Icon to the embedded Fluence brand icon.");
                     Assert.IsInstanceOfType(window.Icon, typeof(BitmapSource),
-                        "The default Icon must be the rasterized brand vector (a BitmapSource), which proves " +
-                        "FluenceIcons.xaml resolves and CreateDefaultIcon rasterizes it for the Win32 HICON.");
+                        "The default Icon must be a BitmapSource (the embedded square PNG), which proves " +
+                        "the icon resource resolves and CreateDefaultIcon loads it for the Win32 HICON.");
                 }
                 finally
                 {
@@ -97,7 +96,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public void FluenceWindow_DefaultIcon_IsRasterizedBitmapSource()
+        public void FluenceWindow_DefaultIcon_IsSquareBitmapSource()
         {
             RunOnStaThread(static delegate
             {
@@ -107,8 +106,12 @@ namespace Fluence.Wpf.Tests
                 Assert.IsNotNull(FluenceWindow.DefaultIcon,
                     "FluenceWindow.DefaultIcon should expose the embedded Fluence brand icon.");
                 Assert.IsInstanceOfType(FluenceWindow.DefaultIcon, typeof(BitmapSource),
-                    "DefaultIcon must be the rasterized brand vector (a BitmapSource) so a consumer can apply " +
-                    "it as a Win32 HICON, which the vector DrawingImage resource cannot reliably drive.");
+                    "DefaultIcon must be a BitmapSource so a consumer can apply it as a Win32 HICON, " +
+                    "which the vector DrawingImage resource cannot reliably drive.");
+
+                BitmapSource icon = (BitmapSource)FluenceWindow.DefaultIcon;
+                Assert.AreEqual(icon.PixelWidth, icon.PixelHeight,
+                    "The default icon must be square (no aspect distortion); the no-background source is an exact square.");
             });
         }
     }

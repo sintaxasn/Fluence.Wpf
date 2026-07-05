@@ -438,63 +438,40 @@ namespace Fluence.Wpf.Controls
         /// The Fluence brand icon embedded in this assembly, loaded once and shared (frozen) as the
         /// default <see cref="Window.Icon"/> for every <see cref="FluenceWindow"/>. <see langword="null"/>
         /// only if the embedded resource cannot be loaded. Exposed so a consumer can apply the same
-        /// rasterized brand mark - which renders correctly as a Win32 HICON, unlike the vector
-        /// <c>FluenceIconBrandDrawingImage</c> resource - to its own windows.
+        /// square, no-background brand mark to its own windows.
         /// </summary>
         public static ImageSource? DefaultIcon { get; } = CreateDefaultIcon();
-
-        /// <summary>
-        /// Edge length, in pixels, of the rasterized default window icon. 256 is the largest standard
-        /// Windows icon size, so the single rendered bitmap stays crisp at every taskbar / alt-tab /
-        /// title-bar size the shell scales it down to.
-        /// </summary>
-        private const int DefaultIconSizePixels = 256;
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Minor Code Smell", "S1075:URIs should not be hardcoded", Justification = "This is an internal resource URI.")]
         private static ImageSource? CreateDefaultIcon()
         {
             try
             {
-                // The brand icon ships as a resolution-independent vector DrawingImage. Window.Icon
-                // drives the Win32 taskbar / alt-tab HICON, which does not reliably render a vector
-                // DrawingImage, so rasterize the vector once into a frozen BitmapSource. That single
-                // bitmap backs both the title-bar Image (TemplateBinding Icon) and the shell HICON.
-                ResourceDictionary dictionary = new()
+                // The window icon (the title-bar Image via TemplateBinding Icon, and the Win32 taskbar /
+                // alt-tab HICON that Window.Icon drives) is the square, no-background Fluence mark,
+                // embedded as a 256x256 PNG. 256 is the largest standard Windows icon size, so the shell
+                // scales the single frame down crisply. A pre-squared source avoids the aspect distortion
+                // that rasterizing the non-square brand vector into a square icon rect used to introduce.
+                BitmapImage icon = new();
+                icon.BeginInit();
+                icon.UriSource = new Uri("pack://application:,,,/Fluence.Wpf;component/Themes/Icons/Fluence_Icon_NoBackground_256.png", UriKind.Absolute);
+                icon.CacheOption = BitmapCacheOption.OnLoad;
+                icon.EndInit();
+                if (icon.CanFreeze)
                 {
-                    Source = new Uri("pack://application:,,,/Fluence.Wpf;component/Themes/Icons/FluenceIcons.xaml", UriKind.Absolute),
-                };
-                if (dictionary["FluenceIconBrandDrawingImage"] is not DrawingImage drawingImage)
-                {
-                    return null;
+                    icon.Freeze();
                 }
 
-                DrawingVisual visual = new();
-                using (DrawingContext context = visual.RenderOpen())
-                {
-                    context.DrawImage(drawingImage, new Rect(0, 0, DefaultIconSizePixels, DefaultIconSizePixels));
-                }
-
-                RenderTargetBitmap bitmap = new(
-                    DefaultIconSizePixels,
-                    DefaultIconSizePixels,
-                    96,
-                    96,
-                    PixelFormats.Pbgra32);
-                bitmap.Render(visual);
-                if (bitmap.CanFreeze)
-                {
-                    bitmap.Freeze();
-                }
-                return bitmap;
+                return icon;
             }
-            // The default icon is a best-effort enhancement. Any failure to load the brand resource
-            // or rasterize it (a missing or renamed resource key, or a COM / GPU / memory failure in
-            // RenderTargetBitmap under a headless or session-0 host such as PSADT running as SYSTEM)
-            // must degrade to a null icon, never escape this static field initializer and fault the
-            // FluenceWindow type with a TypeInitializationException - that would break every window
-            // construction in the process. The when-filter is always true (Exception.Message is never
-            // null); it catches broadly while satisfying the no-general-catch analyzers, matching the
-            // filtered-catch idiom used elsewhere in this assembly.
+            // The default icon is a best-effort enhancement. Any failure to load the embedded icon
+            // resource (a missing or renamed resource, or a COM / GPU / memory failure under a headless
+            // or session-0 host such as PSADT running as SYSTEM) must degrade to a null icon, never
+            // escape this static field initializer and fault the FluenceWindow type with a
+            // TypeInitializationException - that would break every window construction in the process.
+            // The when-filter is always true (Exception.Message is never null); it catches broadly while
+            // satisfying the no-general-catch analyzers, matching the filtered-catch idiom used elsewhere
+            // in this assembly.
             catch (Exception ex) when (ex.Message is not null)
             {
                 return null;

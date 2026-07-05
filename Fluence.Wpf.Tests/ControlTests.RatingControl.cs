@@ -105,7 +105,7 @@ namespace Fluence.Wpf.Tests
                 WpfStackPanel? panel = FindVisualChildByName<WpfStackPanel>(rc, "PART_StarsPanel");
                 Assert.IsNotNull(panel);
 
-                // Stars 1–3 must be filled (U+E735), stars 4–5 must be empty (U+E734).
+                // Stars 1-3 must be filled (U+E735), stars 4-5 must be empty (U+E734).
                 int filledCount = 0;
                 foreach (WpfTextBlock star in panel.Children)
                 {

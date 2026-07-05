@@ -109,15 +109,13 @@ Prefer `EventArgs.Empty`, `nameof(...)`, explicit `readonly`, and immutable help
 - Animation timings: **~100-167 ms** typical transitions (WinUI `ControlFastAnimationDuration`, `ControlNormalAnimationDuration`). Easing curves consistent with existing templates (`{StaticResource ControlFastOutSlowInKeySpline}` where present).
 - Focus visual: default WPF focus rectangles off; use FluentControl focus brush tokens instead, as in the existing Button / Card templates.
 
-#### XAML formatting (XAML Styler)
+#### XAML formatting and text policy
 
-Authored XAML is formatted by **XAML Styler** against the committed reference style `Settings.XamlStyler` at the repo root. The tool is pinned in `.config/dotnet-tools.json` (`dotnet tool restore`), so formatting is reproducible and does not depend on any editor plugin.
+XAML style is governed by `.editorconfig`: 4-space indentation, UTF-8 with BOM, LF line endings, a final newline, and trimmed trailing whitespace, applied to `.xaml` like every other source file. There is no separate XAML formatter tool.
 
-- **Format** all authored XAML: `pwsh .claude/hooks/Format-Xaml.ps1`. Format one file: `pwsh .claude/hooks/Format-Xaml.ps1 -Path <file>`.
-- **Check** (CI gate, non-destructive): `pwsh .claude/hooks/Format-Xaml.ps1 -Check` - fails if any authored XAML is not conformant. Wired into `.github/workflows/build.yml` and run on every edit by `.claude/hooks/post-tool-format-xaml.ps1`.
-- The reference style is attribute-per-line beyond two attributes (`AttributesTolerance: 2`), first attribute on a new line, 4-space indent. `.claude/hooks/Format-Xaml.ps1` also enforces LF + a single UTF-8 BOM.
-- **Generated XAML is excluded** from formatting and the check: `Fluence.Wpf/Properties/DesignTime.*.xaml` (emitted byte-for-byte by `DesignTimeResourceWriter`; reformatting would break the `DesignTimeResources_AreCurrent` drift guard). Do not run the formatter on these; update the exclusion list in `.claude/hooks/Format-Xaml.ps1` if new generated XAML is added.
-- Do not hand-fight the formatter: run it and commit its output. XAML Styler's own `-p` passive mode is unreliable (false positives), which is why the check formats a temp copy and compares.
+- Encoding and text policy are enforced by `.claude/hooks/post-tool-util.ps1`: on every edit (PostToolUse hook) and repo-wide in CI via `pwsh .claude/hooks/post-tool-util.ps1 -CheckAll`.
+- The check blocks missing UTF-8 BOM, CRLF/CR line endings, `string.IsNullOrEmpty`, `TextOptions.*`, hard-coded hex in `Themes/Controls/**`, em/en dashes in `.cs` / `.md`, and `git diff --check` whitespace errors.
+- **Generated XAML is excluded** from the repo-wide check: `Fluence.Wpf/Properties/DesignTime.*.xaml` (emitted byte-for-byte by `DesignTimeResourceWriter`; the `DesignTimeResources_AreCurrent` drift guard covers it).
 
 ---
 
@@ -296,17 +294,16 @@ dotnet test    Fluence.Wpf.Tests/Fluence.Wpf.Tests.csproj -c Debug -f net10.0-wi
 
 ### CI/CD pipeline
 
-CI is a single `build` job on `windows-latest` defined in [.github/workflows/build.yml](.github/workflows/build.yml), triggered by any push or pull request targeting `main`. It restores, gates XAML formatting, builds Release, runs both TFM test lanes (excluding the `Screenshots` category) with TRX output, then packs and uploads artifacts. NuGet publish and SBOM generation are present but commented out as deliberate manual release steps.
+CI is a single `build` job on `windows-latest` defined in [.github/workflows/build.yml](.github/workflows/build.yml), triggered by any push or pull request targeting `main`. It checks text policy (UTF-8 BOM, LF, banned APIs), restores, builds Release, runs both TFM test lanes (excluding the `Screenshots` category) with TRX output, then packs and uploads artifacts. NuGet publish and SBOM generation are present but commented out as deliberate manual release steps.
 
 ```mermaid
 flowchart TD
     A[Push or PR to main] --> B[Checkout]
     B --> C[Setup .NET 10]
-    C --> D[Cache NuGet packages]
+    C --> G[Text policy check<br/>pwsh .claude/hooks/post-tool-util.ps1 -CheckAll]
+    G --> D[Cache NuGet packages]
     D --> E[dotnet restore]
-    E --> F[dotnet tool restore]
-    F --> G[XAML format check<br/>pwsh .claude/hooks/Format-Xaml.ps1 -Check]
-    G --> H[Build solution Release]
+    E --> H[Build solution Release]
     H --> I[Test net472<br/>filter TestCategory!=Screenshots, TRX]
     I --> J[Test net10.0-windows10.0.26100.0<br/>filter TestCategory!=Screenshots, TRX]
     J --> K[Upload test results<br/>always]
@@ -450,8 +447,7 @@ Hooks run automatically on tool events; you do not invoke them:
 | Hook | Behavior |
 | --- | --- |
 | `pre-tool-theme-slot.ps1` | PreToolUse advisory on theme-slot-critical edits (`ApplicationThemeManager.cs`, `Themes/Generic.xaml`). Injects a non-blocking `<system-reminder>` restating the three-slot invariant and the `BrushFactory` auto-twin rule. |
-| `post-tool-format-xaml.ps1` | PostToolUse formatter that runs the pinned XAML Styler (`.claude/hooks/Format-Xaml.ps1`) over each edited authored `.xaml`, enforcing the committed reference style plus LF + single UTF-8 BOM. Non-blocking; the CI `-Check` gate is the hard fail. |
-| `post-tool-util.ps1` | PostToolUse linter that blocks the write on text-policy violations: missing UTF-8 BOM, CRLF/CR line endings, `string.IsNullOrEmpty`, `TextOptions.*`, hard-coded hex in `Themes/Controls/**`, em/en dashes in `.cs` / `.md`, and `git diff --check` whitespace errors. |
+| `post-tool-util.ps1` | PostToolUse linter (and CI gate via `-CheckAll`) that blocks on text-policy violations: missing UTF-8 BOM, CRLF/CR line endings, `string.IsNullOrEmpty`, `TextOptions.*`, hard-coded hex in `Themes/Controls/**`, em/en dashes in `.cs` / `.md`, and `git diff --check` whitespace errors. |
 
 ### 13.4 Gating principle
 
@@ -459,5 +455,5 @@ Hooks run automatically on tool events; you do not invoke them:
 - Visual or control-template changes -> review with `winui-parity-reviewer`.
 - `net472` runtime-API questions -> check with `net472-feasibility-checker`.
 - New controls -> follow the `new-control` skill; new demo pages -> follow the `demo-sample-page` skill.
-- All authored XAML is auto-formatted by the post-tool hook and re-checked in CI; all touched text files are linted for encoding and text policy on write.
+- XAML style is governed by `.editorconfig`; all touched text files are linted for encoding and text policy on write (`post-tool-util.ps1`) and repo-wide in CI (`-CheckAll`).
 - Keep authoring and review in separate passes: the scaffolding skills create or revise content, and the read-only auditor/reviewer agents evaluate it as a later, independent pass.
