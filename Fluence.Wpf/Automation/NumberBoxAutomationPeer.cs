@@ -27,6 +27,7 @@
  */
 
 using Fluence.Wpf.Controls;
+using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 
@@ -87,8 +88,14 @@ namespace Fluence.Wpf.Automation
         public virtual bool IsReadOnly => !NumberBox.IsEnabled;
 
         /// <inheritdoc />
+        /// <exception cref="ElementNotEnabledException">The control is disabled.</exception>
         public virtual void SetValue(double value)
         {
+            if (!IsEnabled())
+            {
+                throw new ElementNotEnabledException();
+            }
+
             NumberBox.Value = value;
         }
 
