@@ -58,6 +58,7 @@ namespace Fluence.Wpf.Specs
         private AnonymousPipeServerStream? _commandPipe;
         private AnonymousPipeServerStream? _responsePipe;
         private bool _disposed;
+        private bool _inFlight;
 
         /// <summary>
         /// Gets a value indicating whether a host process is currently running.
@@ -132,18 +133,41 @@ namespace Fluence.Wpf.Specs
             {
                 throw new ArgumentNullException(nameof(request));
             }
+
+            // Acquire the gate only long enough to validate state, take the single in-flight slot, and
+            // write the request frame; then release it so a dialog with a long or infinite timeout does
+            // not block teardown (Shutdown/Dispose) or a health check on another thread. The blocking
+            // response read runs outside the lock against the pipe reference captured here, so a
+            // concurrent Shutdown can kill the host and fault this read instead of waiting for it.
+            AnonymousPipeServerStream responsePipe;
             lock (_gate)
             {
                 ThrowIfDisposed();
                 EnsureConnectedCore();
+                if (_inFlight)
+                {
+                    throw new InvalidOperationException("A Fluence remote host dialog is already in progress.");
+                }
+                responsePipe = _responsePipe ?? throw new InvalidOperationException("The Fluence remote host is not running. Call EnsureRunning first.");
+                _inFlight = true;
                 byte[] payload = SpecSerialization.SerializeRemoteRequest(request);
                 WriteFrameCore(RemotePipeCommand.ShowDialog, payload);
-                RemotePipeFrame frame = ReadFrameCore(timeout);
+            }
+            try
+            {
+                RemotePipeFrame frame = ReadFrameCore(responsePipe, timeout);
                 return frame.Command == RemotePipeCommand.Error
                     ? throw new InvalidOperationException("The Fluence remote host failed to show the dialog: " + Encoding.UTF8.GetString(frame.Payload))
                     : frame.Command != RemotePipeCommand.ShowDialog
                     ? throw new InvalidOperationException("The Fluence remote host answered a ShowDialog call with an unexpected '" + frame.Command.ToString() + "' frame.")
                     : SpecSerialization.DeserializeResult(frame.Payload);
+            }
+            finally
+            {
+                lock (_gate)
+                {
+                    _inFlight = false;
+                }
             }
         }
 
@@ -157,14 +181,18 @@ namespace Fluence.Wpf.Specs
         {
             lock (_gate)
             {
-                if (_disposed || _process?.HasExited != false || _commandPipe is null || _responsePipe is null)
+                // When a dialog call is in flight its response read runs outside the gate and owns the
+                // pipe. Writing a Ping frame now would interleave a second frame on that same pipe, so
+                // report false without touching the pipe rather than corrupting the pending exchange.
+                if (_disposed || _inFlight || _process?.HasExited != false || _commandPipe is null || _responsePipe is null)
                 {
                     return false;
                 }
+                AnonymousPipeServerStream responsePipe = _responsePipe;
                 try
                 {
                     WriteFrameCore(RemotePipeCommand.Ping, []);
-                    RemotePipeFrame frame = ReadFrameCore(timeout);
+                    RemotePipeFrame frame = ReadFrameCore(responsePipe, timeout);
                     return frame.Command == RemotePipeCommand.Ping;
                 }
                 catch (InvalidOperationException)
@@ -199,21 +227,33 @@ namespace Fluence.Wpf.Specs
                 }
                 if (!process.HasExited)
                 {
-                    try
+                    if (_inFlight)
                     {
-                        WriteFrameCore(RemotePipeCommand.Shutdown, []);
-                    }
-                    catch (InvalidOperationException)
-                    {
-                        // The pipe is already gone; fall through to the kill fallback.
-                    }
-                    catch (IOException)
-                    {
-                        // Same: an unreachable pipe means the wait-then-kill path below decides.
-                    }
-                    if (!process.WaitForExit(ToWaitMilliseconds(gracePeriod)))
-                    {
+                        // A dialog request is in flight: its response read is blocked outside the gate,
+                        // so a graceful Shutdown frame would interleave with the pending response, and
+                        // waiting for the grace period would defeat the point of a non-blocking teardown.
+                        // Kill out of band; closing the pipe faults the in-flight read (surfacing a
+                        // host-failure to that caller, the correct "torn down mid-call" outcome).
                         KillCore();
+                    }
+                    else
+                    {
+                        try
+                        {
+                            WriteFrameCore(RemotePipeCommand.Shutdown, []);
+                        }
+                        catch (InvalidOperationException)
+                        {
+                            // The pipe is already gone; fall through to the kill fallback.
+                        }
+                        catch (IOException)
+                        {
+                            // Same: an unreachable pipe means the wait-then-kill path below decides.
+                        }
+                        if (!process.WaitForExit(ToWaitMilliseconds(gracePeriod)))
+                        {
+                            KillCore();
+                        }
                     }
                 }
                 CleanupCore();
@@ -279,9 +319,10 @@ namespace Fluence.Wpf.Specs
 
         private void HandshakeCore()
         {
+            AnonymousPipeServerStream responsePipe = _responsePipe ?? throw new InvalidOperationException("The Fluence remote host is not running. Call EnsureRunning first.");
             byte[] version = Encoding.UTF8.GetBytes(SpecSerialization.CurrentSchemaVersion.ToString(CultureInfo.InvariantCulture));
             WriteFrameCore(RemotePipeCommand.Handshake, version);
-            RemotePipeFrame frame = ReadFrameCore(HandshakeTimeout);
+            RemotePipeFrame frame = ReadFrameCore(responsePipe, HandshakeTimeout);
             if (frame.Command != RemotePipeCommand.Handshake)
             {
                 throw new InvalidOperationException("The Fluence remote host answered the handshake with an unexpected '" + frame.Command.ToString() + "' frame.");
@@ -326,16 +367,21 @@ namespace Fluence.Wpf.Specs
             }
         }
 
-        private RemotePipeFrame ReadFrameCore(TimeSpan timeout)
+        private RemotePipeFrame ReadFrameCore(AnonymousPipeServerStream responsePipe, TimeSpan timeout)
         {
-            AnonymousPipeServerStream responsePipe = _responsePipe ?? throw new InvalidOperationException("The Fluence remote host is not running. Call EnsureRunning first.");
             Task<RemotePipeFrame> readTask = RemotePipeFraming.ReadFrameAsync(responsePipe, CancellationToken.None);
             if (!WaitForCompletion(readTask, timeout))
             {
                 // Anonymous pipe reads cannot be cancelled portably; killing the host closes the
                 // pipe, which faults the pending read instead of leaking a forever-blocked thread.
-                KillCore();
-                CleanupCore();
+                // The gate is taken here because this read may be running outside it (ShowDialog),
+                // so tearing the host down must not race a concurrent Shutdown's teardown. The lock
+                // is reentrant, so callers that already hold it (Ping, HandshakeCore) are unaffected.
+                lock (_gate)
+                {
+                    KillCore();
+                    CleanupCore();
+                }
                 ObserveFault(readTask);
                 throw new TimeoutException("The Fluence remote host did not respond within " + timeout.ToString() + "; the host process was terminated.");
             }
@@ -358,9 +404,13 @@ namespace Fluence.Wpf.Specs
             catch (InvalidDataException exception)
             {
                 // A corrupt frame header means the pipe is desynchronized; the host cannot be
-                // trusted to resume framing correctly, so kill it instead of reusing the pipe.
-                KillCore();
-                CleanupCore();
+                // trusted to resume framing correctly, so kill it instead of reusing the pipe. Take
+                // the gate for the same reason as the timeout branch (this may run outside it).
+                lock (_gate)
+                {
+                    KillCore();
+                    CleanupCore();
+                }
                 throw CreateHostFailure(exception);
             }
         }
@@ -390,15 +440,25 @@ namespace Fluence.Wpf.Specs
         private InvalidOperationException CreateHostFailure(Exception? inner)
         {
             string details = string.Empty;
-            Process? process = _process;
-            if (process?.HasExited == true)
+            try
             {
-                details = " The host process exited with code " + process.ExitCode.ToString(CultureInfo.InvariantCulture) + ".";
-                string standardError = ReadStandardError(process);
-                if (!string.IsNullOrWhiteSpace(standardError))
+                // Called from the response-read catch blocks, which for ShowDialog run outside the
+                // gate; a concurrent Shutdown may dispose _process while diagnostics are gathered.
+                // Treat that race as "no extra detail" rather than letting it throw over the real fault.
+                Process? process = _process;
+                if (process?.HasExited == true)
                 {
-                    details += " Host stderr: " + standardError.Trim();
+                    details = " The host process exited with code " + process.ExitCode.ToString(CultureInfo.InvariantCulture) + ".";
+                    string standardError = ReadStandardError(process);
+                    if (!string.IsNullOrWhiteSpace(standardError))
+                    {
+                        details += " Host stderr: " + standardError.Trim();
+                    }
                 }
+            }
+            catch (InvalidOperationException)
+            {
+                details = string.Empty;
             }
             return new InvalidOperationException("The Fluence remote host pipe closed unexpectedly." + details, inner);
         }

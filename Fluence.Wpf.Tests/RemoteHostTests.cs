@@ -177,7 +177,87 @@ namespace Fluence.Wpf.Tests
             Assert.IsFalse(controller.Ping(TimeSpan.FromSeconds(1)), "pinging a never-started host reports false");
         }
 
+        [TestMethod]
+        public void Shutdown_WhileDialogShowing_ReturnsPromptlyAndKillsHost()
+        {
+            using FluenceRemoteHostController controller = new();
+            controller.EnsureRunning(GetHostExecutablePath());
+
+            // A spec with no TimeoutSeconds stays open until the host is torn down.
+            RemoteDialogRequest request = BuildOpenRequest();
+            Task showTask = Task.Run(() =>
+            {
+                try
+                {
+                    _ = controller.ShowDialog(request, Timeout.InfiniteTimeSpan);
+                }
+                catch (InvalidOperationException)
+                {
+                    // Expected: the host is killed mid-call, faulting the pending response read.
+                }
+            });
+
+            // Give the host time to bring the window up and start blocking on the response read.
+            Thread.Sleep(1500);
+
+            Stopwatch stopwatch = Stopwatch.StartNew();
+            controller.Shutdown(TimeSpan.FromSeconds(10));
+            stopwatch.Stop();
+
+            Assert.IsTrue(
+                stopwatch.Elapsed < TimeSpan.FromSeconds(8),
+                $"Shutdown blocked behind the shown dialog: {stopwatch.Elapsed}");
+            Assert.IsFalse(controller.IsRunning, "Shutdown must end the host process even mid-dialog");
+            Assert.IsTrue(showTask.Wait(TimeSpan.FromSeconds(5)), "the in-flight ShowDialog must unblock once the host is killed");
+        }
+
+        [TestMethod]
+        public void ShowDialog_WhileRequestInFlight_ThrowsSingleInFlight()
+        {
+            using FluenceRemoteHostController controller = new();
+            controller.EnsureRunning(GetHostExecutablePath());
+
+            RemoteDialogRequest openRequest = BuildOpenRequest();
+            Task showTask = Task.Run(() =>
+            {
+                try
+                {
+                    _ = controller.ShowDialog(openRequest, Timeout.InfiniteTimeSpan);
+                }
+                catch (InvalidOperationException)
+                {
+                    // Expected: the host is killed mid-call during teardown below.
+                }
+            });
+
+            // Let the first request take the single in-flight slot.
+            Thread.Sleep(1500);
+
+            try
+            {
+                InvalidOperationException exception = Assert.ThrowsExactly<InvalidOperationException>(
+                    () => controller.ShowDialog(BuildOpenRequest(), TimeSpan.FromSeconds(5)));
+                StringAssert.Contains(exception.Message, "already in progress", StringComparison.Ordinal);
+                Assert.IsFalse(controller.Ping(TimeSpan.FromSeconds(1)), "Ping must not interleave a frame while a request is in flight");
+            }
+            finally
+            {
+                controller.Shutdown(TimeSpan.FromSeconds(10));
+                _ = showTask.Wait(TimeSpan.FromSeconds(5));
+            }
+        }
+
         private static RemoteDialogRequest BuildTimeoutRequest()
+        {
+            return BuildRequest(timeoutSeconds: 1);
+        }
+
+        private static RemoteDialogRequest BuildOpenRequest()
+        {
+            return BuildRequest(timeoutSeconds: null);
+        }
+
+        private static RemoteDialogRequest BuildRequest(int? timeoutSeconds)
         {
             DialogSpec dialog = new()
             {
@@ -191,7 +271,7 @@ namespace Fluence.Wpf.Tests
                 SpecBase64 = SpecSerialization.SerializeToBase64(dialog),
                 Theme = "Light",
                 Backdrop = "None",
-                TimeoutSeconds = 1,
+                TimeoutSeconds = timeoutSeconds,
             };
         }
 
