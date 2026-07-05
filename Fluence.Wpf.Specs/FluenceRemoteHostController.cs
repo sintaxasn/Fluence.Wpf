@@ -355,6 +355,14 @@ namespace Fluence.Wpf.Specs
             {
                 throw CreateHostFailure(exception);
             }
+            catch (InvalidDataException exception)
+            {
+                // A corrupt frame header means the pipe is desynchronized; the host cannot be
+                // trusted to resume framing correctly, so kill it instead of reusing the pipe.
+                KillCore();
+                CleanupCore();
+                throw CreateHostFailure(exception);
+            }
         }
 
         private static bool WaitForCompletion(Task task, TimeSpan timeout)

@@ -95,6 +95,19 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void Framing_DeclaredLengthOutOfRange_ThrowsInvalidData()
+        {
+            using AnonymousPipeServerStream server = new(PipeDirection.Out, HandleInheritability.None);
+            using AnonymousPipeClientStream client = new(PipeDirection.In, server.GetClientHandleAsString());
+            byte[] header = [1, 0xFF, 0xFF, 0xFF, 0xFF]; // command=1, length = 0xFFFFFFFF (huge / negative)
+            server.Write(header, 0, header.Length);
+            server.Flush();
+
+            _ = Assert.ThrowsExactly<InvalidDataException>(
+                () => RemotePipeFraming.ReadFrameAsync(client, CancellationToken.None).GetAwaiter().GetResult());
+        }
+
+        [TestMethod]
         public void Controller_LaunchPingShowShutdown_EndToEnd()
         {
             using FluenceRemoteHostController controller = new();
