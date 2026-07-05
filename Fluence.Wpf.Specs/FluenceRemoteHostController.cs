@@ -250,19 +250,29 @@ namespace Fluence.Wpf.Specs
                     }
                     else
                     {
+                        // Track whether the graceful frame actually went out. On a failed write
+                        // WriteFrameCore has already killed and cleaned up the host (disposing and
+                        // nulling _process), so the captured process handle is dead: touching it via
+                        // WaitForExit would throw InvalidOperationException straight out of Shutdown
+                        // (and Dispose), both of which are documented never to throw. Only run the
+                        // wait-then-kill fallback when the write succeeded and the host is still
+                        // connected; otherwise the teardown is already done and the final CleanupCore
+                        // below is an idempotent no-op.
+                        bool gracefulWriteSucceeded = false;
                         try
                         {
                             WriteFrameCore(RemotePipeCommand.Shutdown, []);
+                            gracefulWriteSucceeded = true;
                         }
                         catch (InvalidOperationException)
                         {
-                            // The pipe is already gone; fall through to the kill fallback.
+                            // The pipe is already gone; the failed write already tore the host down.
                         }
                         catch (IOException)
                         {
-                            // Same: an unreachable pipe means the wait-then-kill path below decides.
+                            // Same: an unreachable pipe means the failed write already tore it down.
                         }
-                        if (!process.WaitForExit(ToWaitMilliseconds(gracePeriod)))
+                        if (gracefulWriteSucceeded && !process.WaitForExit(ToWaitMilliseconds(gracePeriod)))
                         {
                             KillCore();
                         }
@@ -378,15 +388,23 @@ namespace Fluence.Wpf.Specs
                 // connection that will fail the same way forever. WriteFrameCore is always called
                 // with _gate held (ShowDialog, Ping, Shutdown, and HandshakeCore under EnsureRunning),
                 // matching KillCore/CleanupCore's caller-holds-the-gate convention.
+                //
+                // Build the failure first, while _process is still alive: CreateHostFailure reads the
+                // exit code and stderr off _process, and CleanupCore is about to dispose and null it.
+                // When the write failed because the host died, _process.HasExited is already true here,
+                // so those diagnostics are captured; when the host is still alive (a disposed local
+                // pipe), CreateHostFailure reads nothing and does not block on stderr.
+                InvalidOperationException failure = CreateHostFailure(exception);
                 KillCore();
                 CleanupCore();
-                throw CreateHostFailure(exception);
+                throw failure;
             }
             catch (ObjectDisposedException exception)
             {
+                InvalidOperationException failure = CreateHostFailure(exception);
                 KillCore();
                 CleanupCore();
-                throw CreateHostFailure(exception);
+                throw failure;
             }
         }
 

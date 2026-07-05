@@ -348,6 +348,46 @@ namespace Fluence.Wpf.Tests
             controller.Shutdown(TimeSpan.FromSeconds(5));
         }
 
+        [TestMethod]
+        public void Shutdown_GracefulWriteFails_DoesNotThrowAndTearsDownHost()
+        {
+            using FluenceRemoteHostController controller = new();
+            AnonymousPipeServerStream? originalCommandPipe = null;
+            try
+            {
+                controller.EnsureRunning(GetHostExecutablePath());
+
+                // Reach Shutdown's graceful (non-in-flight) branch with a broken command pipe: swap
+                // the command pipe field for a fresh, already-disposed pipe while leaving the real one
+                // open so the host stays alive (it never sees command-pipe EOF, so process.HasExited
+                // stays false and Shutdown takes the graceful WriteFrameCore path rather than the
+                // already-exited early return). The graceful Shutdown-frame write then throws
+                // ObjectDisposedException; WriteFrameCore kills and cleans up the host (disposing and
+                // nulling _process) before rethrowing, so the process handle Shutdown captured is dead.
+                FieldInfo commandPipeField = typeof(FluenceRemoteHostController).GetField("_commandPipe", BindingFlags.Instance | BindingFlags.NonPublic)
+                    ?? throw new InvalidOperationException("The _commandPipe field was not found.");
+                originalCommandPipe = (AnonymousPipeServerStream)(commandPipeField.GetValue(controller)
+                    ?? throw new InvalidOperationException("The _commandPipe field was null after EnsureRunning."));
+                AnonymousPipeServerStream disposedCommandPipe = new(PipeDirection.Out, HandleInheritability.None);
+                disposedCommandPipe.Dispose();
+                commandPipeField.SetValue(controller, disposedCommandPipe);
+
+                // Pre-fix: after the failed write nulls _process, Shutdown still runs
+                // process.WaitForExit(...) on the captured (now-disposed) handle, which throws
+                // InvalidOperationException straight out of Shutdown even though Shutdown/Dispose are
+                // documented never to throw. Post-fix: Shutdown skips the post-write wait when the
+                // graceful write failed and returns cleanly.
+                controller.Shutdown(TimeSpan.FromSeconds(5));
+
+                Assert.IsFalse(controller.IsRunning, "a failed graceful Shutdown write must still leave the host torn down");
+            }
+            finally
+            {
+                originalCommandPipe?.Dispose();
+                controller.Shutdown(TimeSpan.FromSeconds(1));
+            }
+        }
+
         private static RemoteDialogRequest BuildTimeoutRequest()
         {
             return BuildRequest(timeoutSeconds: 1);
