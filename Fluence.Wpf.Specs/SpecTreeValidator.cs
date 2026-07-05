@@ -42,8 +42,9 @@ namespace Fluence.Wpf.Specs
     {
         /// <summary>
         /// Validates a dialog spec's structure: at least one button with non-empty text, no shared
-        /// or cyclic node instances, unique names across value-bearing elements, and no rules on
-        /// unnamed elements.
+        /// or cyclic node instances, unique names across value-bearing elements, no rules on
+        /// unnamed elements, and no rules on a RadioButton (a radio group harvests as a single value
+        /// under its GroupName, so per-radio rules are rejected rather than silently unreachable).
         /// </summary>
         /// <param name="spec">The dialog spec to validate.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="spec"/> is null.</exception>
@@ -87,6 +88,10 @@ namespace Fluence.Wpf.Specs
             if (node.HasRules && string.IsNullOrWhiteSpace(node.Name))
             {
                 throw new InvalidOperationException($"The spec node '{node.GetType().Name}' has validation rules but no Name; rules apply to named input elements only.");
+            }
+            if (node is RadioButtonSpec radioWithRules && radioWithRules.HasRules)
+            {
+                throw new InvalidOperationException($"Validation rules are not supported on a RadioButton ('{radioWithRules.Name}'). A radio group harvests as a single value under its GroupName; enforce selection by setting a default IsChecked rather than a rule.");
             }
             if (node is RadioButtonSpec radioButton)
             {

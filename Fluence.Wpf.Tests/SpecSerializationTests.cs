@@ -349,6 +349,42 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void Validator_RejectsRulesOnRadioButton()
+        {
+            RadioButtonSpec radio = new() { Name = "Choice", GroupName = "Choice", Content = "Yes" };
+            radio.Rules.Add(new NotEmptyRule());
+            DialogSpec dialog = new();
+            dialog.Content.Add(radio);
+            dialog.Buttons.Add(new ButtonSpec { Text = "OK" });
+
+            InvalidOperationException exception = Assert.ThrowsExactly<InvalidOperationException>(() => SpecTreeValidator.Validate(dialog));
+            StringAssert.Contains(exception.Message, "RadioButton", StringComparison.Ordinal);
+            StringAssert.Contains(exception.Message, "rules", StringComparison.OrdinalIgnoreCase);
+        }
+
+        [TestMethod]
+        public void Validator_AllowsRadioButtonWithoutRules()
+        {
+            DialogSpec dialog = new();
+            dialog.Content.Add(new RadioButtonSpec { Name = "Choice", GroupName = "Choice", Content = "Yes", IsChecked = true });
+            dialog.Buttons.Add(new ButtonSpec { Text = "OK" });
+
+            SpecTreeValidator.Validate(dialog);
+        }
+
+        [TestMethod]
+        public void Validator_AllowsRulesOnNonRadioElement()
+        {
+            TextBoxSpec desk = new() { Name = "Desk" };
+            desk.Rules.Add(new NotEmptyRule());
+            DialogSpec dialog = new();
+            dialog.Content.Add(desk);
+            dialog.Buttons.Add(new ButtonSpec { Text = "OK" });
+
+            SpecTreeValidator.Validate(dialog);
+        }
+
+        [TestMethod]
         public void SpecKnownTypes_CoverEveryPublicConcreteSpecType()
         {
             Type[] expected =
