@@ -87,6 +87,49 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void NumberBox_Disabled_RangeValueProvider_IsReadOnly_ReturnsFalse()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+
+                try
+                {
+                    NumberBox numberBox = new()
+                    {
+                        IsEnabled = false,
+                        Width = 200,
+                        Height = 32,
+                    };
+                    window.Content = numberBox;
+                    window.Width = 300;
+                    window.Height = 100;
+                    window.Show();
+                    _ = numberBox.ApplyTemplate();
+                    DrainDispatcher(window.Dispatcher);
+
+                    AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(numberBox);
+                    IRangeValueProvider? rangeValueProvider = peer.GetPattern(PatternInterface.RangeValue) as IRangeValueProvider;
+                    Assert.IsNotNull(rangeValueProvider,
+                        "A NumberBox peer must expose IRangeValueProvider.");
+
+                    Assert.IsFalse(rangeValueProvider.IsReadOnly,
+                        "A disabled NumberBox has no read-only mode; disabled state is conveyed by IsEnabled, not IsReadOnly.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary is not null)
+                    {
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
         public void AutoSuggestBox_Disabled_ValueProvider_SetValue_ThrowsElementNotEnabledException()
         {
             RunOnStaThread(static () =>
@@ -117,6 +160,49 @@ namespace Fluence.Wpf.Tests
 
                     _ = Assert.ThrowsExactly<ElementNotEnabledException>(() => valueProvider.SetValue("hello"),
                         "SetValue on a disabled AutoSuggestBox must throw ElementNotEnabledException.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary is not null)
+                    {
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void AutoSuggestBox_Disabled_ValueProvider_IsReadOnly_ReturnsFalse()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+
+                try
+                {
+                    AutoSuggestBox autoSuggestBox = new()
+                    {
+                        IsEnabled = false,
+                        Width = 200,
+                        Height = 32,
+                    };
+                    window.Content = autoSuggestBox;
+                    window.Width = 300;
+                    window.Height = 100;
+                    window.Show();
+                    _ = autoSuggestBox.ApplyTemplate();
+                    DrainDispatcher(window.Dispatcher);
+
+                    AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(autoSuggestBox);
+                    IValueProvider? valueProvider = peer.GetPattern(PatternInterface.Value) as IValueProvider;
+                    Assert.IsNotNull(valueProvider,
+                        "An AutoSuggestBox peer must expose IValueProvider.");
+
+                    Assert.IsFalse(valueProvider.IsReadOnly,
+                        "A disabled AutoSuggestBox has no read-only mode; disabled state is conveyed by IsEnabled, not IsReadOnly.");
                 }
                 finally
                 {

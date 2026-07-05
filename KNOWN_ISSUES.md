@@ -52,6 +52,14 @@ maintainers.
   65-70). It does **not** implement WinUI's edge-pip scale-down or the
   stationary edge-scrolling viewport, and the navigation buttons do **not** use
   WinUI's pressed `0.875` scale.
+- **`NavigationView` Top-overflow synchronous `UpdateLayout()`** - `NavigationView.cs`
+  (`UpdateTopOverflow`, around line 1796) calls `UpdateLayout()` synchronously to
+  force a fresh measure/arrange pass before measuring `_topItemsHost.ActualWidth`.
+  In `PaneDisplayMode="Top"` with a large item set this forces a full layout pass
+  on every resize. This is a jank-only cost, not a correctness defect, and is
+  deferred because reworking the layout path to avoid the forced pass risks
+  regressions in overflow placement for a gain that only shows up under heavy
+  resize with many top-level items.
 
 ## net472 accessibility API gaps
 

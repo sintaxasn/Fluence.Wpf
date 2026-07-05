@@ -73,8 +73,12 @@ namespace Fluence.Wpf.Automation
         /// <inheritdoc />
         public virtual string Value => AutoSuggestBox.Text;
 
-        /// <inheritdoc />
-        public virtual bool IsReadOnly => !AutoSuggestBox.IsEnabled;
+        /// <summary>
+        /// Always <see langword="false"/>. <see cref="AutoSuggestBox"/> has no read-only mode;
+        /// disabled state is conveyed via <see cref="System.Windows.UIElement.IsEnabled"/>,
+        /// not <see cref="IValueProvider.IsReadOnly"/>.
+        /// </summary>
+        public virtual bool IsReadOnly => false;
 
         /// <inheritdoc />
         /// <exception cref="ElementNotEnabledException">The control is disabled.</exception>

@@ -115,7 +115,10 @@ namespace Fluence.Wpf.Helpers
         /// <summary>
         /// Reads DWM AccentColor (ABGR DWORD) used for the active titlebar when ColorPrevalence is on.
         /// </summary>
-        /// <param name="color">The accent color as a <see cref="Color"/> struct. Returns transparent black if the registry value is missing or invalid.</param>
+        /// <param name="color">The decoded accent color, with a zero alpha byte coerced to fully
+        /// opaque (255) so a colorized value never reads back as invisible. Set to
+        /// <see langword="default"/> (transparent black) when the registry value is missing or invalid,
+        /// matching the <see langword="false"/> return.</param>
         internal static bool TryGetDwmAccentColor(out Color color)
         {
             using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath);
@@ -136,7 +139,10 @@ namespace Fluence.Wpf.Helpers
         /// <summary>
         /// Reads DWM AccentColorInactive (ABGR DWORD) for the inactive titlebar.
         /// </summary>
-        /// <param name="color">The accent color as a <see cref="Color"/> struct. Returns transparent black if the registry value is missing or invalid.</param>
+        /// <param name="color">The decoded accent color, with a zero alpha byte coerced to fully
+        /// opaque (255) so a colorized value never reads back as invisible. Set to
+        /// <see langword="default"/> (transparent black) when the registry value is missing or invalid,
+        /// matching the <see langword="false"/> return.</param>
         internal static bool TryGetDwmAccentColorInactive(out Color color)
         {
             using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath);
@@ -157,8 +163,12 @@ namespace Fluence.Wpf.Helpers
         /// <summary>
         /// Reads DWM ColorizationColor (ARGB) and ColorizationColorBalance for Win10 border blending.
         /// </summary>
-        /// <param name="colorizationColor">The colorization color as a <see cref="Color"/> struct. Returns transparent black if the registry value is missing or invalid.</param>
-        /// <param name="balance">The colorization balance as an <see cref="int"/>. Returns 0 if the registry value is missing or invalid.</param>
+        /// <param name="colorizationColor">The decoded colorization color, with a zero alpha byte
+        /// coerced to fully opaque (255) so a colorized value never reads back as invisible. Set to
+        /// <see langword="default"/> (transparent black) when the registry value is missing or invalid,
+        /// matching the <see langword="false"/> return.</param>
+        /// <param name="balance">The colorization balance as an <see cref="int"/>. Set to 0 when the
+        /// registry value is missing or invalid, matching the <see langword="false"/> return.</param>
         internal static bool TryGetColorizationBalance(out Color colorizationColor, out int balance)
         {
             using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath);
