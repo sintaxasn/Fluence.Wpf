@@ -17,4 +17,8 @@ foreach ($file in @($private + $public))
 # Load the Fluence.Wpf assembly for this edition (idempotent across runspaces).
 Import-FluenceLibrary -ModuleRoot $script:ModuleRoot
 
+# Tear down the STA UI runspace when the module is removed so a stray STA thread + WPF Application
+# never outlives the session.
+$MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = { Close-FluenceUiRunspace }
+
 Export-ModuleMember -Function @($public | ForEach-Object { $_.BaseName })
