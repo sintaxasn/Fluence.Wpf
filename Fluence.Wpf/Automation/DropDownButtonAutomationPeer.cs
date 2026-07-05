@@ -49,7 +49,7 @@ namespace Fluence.Wpf.Automation
         /// <inheritdoc />
         protected override AutomationControlType GetAutomationControlTypeCore()
         {
-            return AutomationControlType.SplitButton;
+            return AutomationControlType.Button;
         }
 
         /// <inheritdoc />

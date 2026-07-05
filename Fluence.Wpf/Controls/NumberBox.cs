@@ -321,6 +321,10 @@ namespace Fluence.Wpf.Controls
         protected virtual void OnValueChanged(double oldValue, double newValue)
         {
             ValueChanged?.Invoke(this, new NumberBoxValueChangedEventArgs(oldValue, newValue));
+            if (UIElementAutomationPeer.FromElement(this) is NumberBoxAutomationPeer peer)
+            {
+                peer.RaiseValueChanged(oldValue, newValue);
+            }
         }
 
         /// <summary>

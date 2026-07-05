@@ -100,6 +100,17 @@ namespace Fluence.Wpf.Automation
         }
 
         /// <summary>
+        /// Raises the <see cref="RangeValuePatternIdentifiers.ValueProperty"/> property-changed event
+        /// so UI Automation clients (Narrator) observe the current value instead of a stale one.
+        /// </summary>
+        /// <param name="oldValue">The previous value.</param>
+        /// <param name="newValue">The new value.</param>
+        internal virtual void RaiseValueChanged(double oldValue, double newValue)
+        {
+            RaisePropertyChangedEvent(RangeValuePatternIdentifiers.ValueProperty, oldValue, newValue);
+        }
+
+        /// <summary>
         /// Gets the associated NumberBox control that owns this instance.
         /// </summary>
         private NumberBox NumberBox => (NumberBox)Owner;
