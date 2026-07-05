@@ -97,6 +97,31 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void Apply_HighContrast_CloseButtonUsesSystemHighlight_NotBrandRed()
+        {
+            WpfTestSta.Invoke(static () =>
+            {
+                Application app = Application.Current;
+                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None, updateAccent: false);
+
+                SolidColorBrush? pointerOver = app.Resources["WindowCloseButtonBackgroundPointerOverBrush"] as SolidColorBrush;
+                SolidColorBrush? pressed = app.Resources["WindowCloseButtonBackgroundPressedBrush"] as SolidColorBrush;
+                SolidColorBrush? foreground = app.Resources["WindowCloseButtonForegroundPointerOverBrush"] as SolidColorBrush;
+
+                Assert.IsNotNull(pointerOver, "WindowCloseButtonBackgroundPointerOverBrush should be defined");
+                Assert.IsNotNull(pressed, "WindowCloseButtonBackgroundPressedBrush should be defined");
+                Assert.IsNotNull(foreground, "WindowCloseButtonForegroundPointerOverBrush should be defined");
+
+                Assert.AreEqual(SystemColors.HighlightColor, pointerOver.Color,
+                    "Close button hover must use SystemColors.HighlightColor in High Contrast, not brand red.");
+                Assert.AreEqual(SystemColors.HighlightColor, pressed.Color,
+                    "Close button pressed must use SystemColors.HighlightColor in High Contrast, not brand red.");
+                Assert.AreEqual(SystemColors.HighlightTextColor, foreground.Color,
+                    "Close button foreground must use SystemColors.HighlightTextColor in High Contrast.");
+            });
+        }
+
+        [TestMethod]
         public void Apply_FiresChangedExactlyOnce()
         {
             WpfTestSta.Invoke(() =>

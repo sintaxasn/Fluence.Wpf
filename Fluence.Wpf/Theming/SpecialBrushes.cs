@@ -380,7 +380,15 @@ namespace Fluence.Wpf.Theming
             dict["SystemFillColorSolidAttentionBackgroundBrush"] = Solid(highlight);
             dict["SystemFillColorSolidNeutralBackgroundBrush"] = Solid(control);
 
-            // Window chrome close button (hover/pressed track HC accent in HC)
+            // Window chrome close button (hover/pressed track HC accent in HC). FluenceWindow.xaml
+            // binds the WindowCloseButton* keys via DynamicResource, so those are the ones that must
+            // be overridden here; the theme-independent brand red seeded by
+            // BaseColorTables.AddSharedColors would otherwise fail contrast in High Contrast.
+            // WindowCloseFillColor*/WindowCloseForeground* (below) are legacy keys nothing currently
+            // consumes; kept for parity with existing golden snapshots and tests.
+            dict["WindowCloseButtonBackgroundPointerOverBrush"] = Solid(highlight);
+            dict["WindowCloseButtonBackgroundPressedBrush"] = Solid(highlight);
+            dict["WindowCloseButtonForegroundPointerOverBrush"] = Solid(highlightText);
             dict["WindowCloseFillColorHoverBrush"] = Solid(highlight);
             dict["WindowCloseFillColorPressedBrush"] = Solid(highlight);
             dict["WindowCloseForegroundHoverBrush"] = Solid(highlightText);

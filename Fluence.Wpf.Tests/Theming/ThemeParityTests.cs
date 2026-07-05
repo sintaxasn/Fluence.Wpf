@@ -64,6 +64,8 @@ namespace Fluence.Wpf.Tests.Theming
             "SystemFillColorAttentionBackgroundBrush",
             "SystemFillColorAttentionBrush",
             "SystemFillColorSolidAttentionBackgroundBrush",
+            "WindowCloseButtonBackgroundPointerOverBrush",
+            "WindowCloseButtonBackgroundPressedBrush",
             "WindowCloseFillColorHoverBrush",
             "WindowCloseFillColorPressedBrush",
         };
