@@ -54,20 +54,6 @@ jobs:
           path: TestResults/
           retention-days: 14
 
-      # SBOM + artifact publishing run only after both test lanes pass: a failed test fails the
-      # job, so these success-gated steps are skipped.
-      - name: Generate SBOM (.NET 10)
-        uses: anchore/sbom-action@v0
-        with:
-          path: Fluence.Wpf/bin/Release/net10.0-windows10.0.26100.0/
-          artifact-name: fluence-wpf-sbom-dotnet10.spdx.json
-
-      - name: Generate SBOM (.NET Framework 4.7.2)
-        uses: anchore/sbom-action@v0
-        with:
-          path: Fluence.Wpf/bin/Release/net472/
-          artifact-name: fluence-wpf-sbom-dotnet472.spdx.json
-
       - name: Upload library artifacts (.NET 10.x)
         uses: actions/upload-artifact@v7
         with:
