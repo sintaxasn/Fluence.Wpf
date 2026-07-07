@@ -226,7 +226,7 @@ namespace Fluence.Wpf.Tests
                 thread.SetApartmentState(ApartmentState.STA);
                 thread.IsBackground = true;
                 thread.Start();
-                ready.Wait();
+                ready.Wait(default(CancellationToken));
                 _dispatcher = created;
                 return _dispatcher;
             }

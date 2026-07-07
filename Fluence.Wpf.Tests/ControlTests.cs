@@ -2792,8 +2792,8 @@ namespace Fluence.Wpf.Tests
 
             window.NavigateTo(itemContent);
             DrainDispatcher(dispatcher);
-            dispatcher.Invoke(new Action(static delegate { }), DispatcherPriority.Loaded);
-            dispatcher.Invoke(new Action(static delegate { }), DispatcherPriority.ContextIdle);
+            dispatcher.Invoke(new Action(static delegate { }), DispatcherPriority.Loaded, default);
+            dispatcher.Invoke(new Action(static delegate { }), DispatcherPriority.ContextIdle, default);
             window.UpdateLayout();
             DrainDispatcher(dispatcher);
 
