@@ -408,7 +408,7 @@ defaultValue: null,
         /// </summary>
         private bool IsWithinLightDismissReopenLockout()
         {
-            return _lastLightDismissTick.HasValue
+            return _lastLightDismissTick is not null
                 && unchecked(Environment.TickCount - _lastLightDismissTick.Value) < LightDismissReopenLockoutMilliseconds;
         }
 
@@ -664,22 +664,22 @@ defaultValue: null,
             CultureInfo culture = CultureInfo.CurrentCulture;
             TimeSpan? selectedTime = SelectedTime;
             bool twentyFourHour = IsTwentyFourHourClock;
-            int hour = selectedTime.HasValue ? ((selectedTime.Value.Hours % 24) + 24) % 24 : 0;
-            int minute = selectedTime.HasValue ? ((selectedTime.Value.Minutes % 60) + 60) % 60 : 0;
+            int hour = selectedTime is not null ? ((selectedTime.Value.Hours % 24) + 24) % 24 : 0;
+            int minute = selectedTime is not null ? ((selectedTime.Value.Minutes % 60) + 60) % 60 : 0;
 
-            string hourText = !selectedTime.HasValue
+            string hourText = selectedTime is null
                 ? string.Empty
                 : twentyFourHour
                     ? hour.ToString(culture)
                     : GetTwelveHourDisplayHour(hour).ToString(culture);
             _hourSegmentText?.SetCurrentValue(System.Windows.Controls.TextBlock.TextProperty, hourText);
 
-            string minuteText = selectedTime.HasValue
+            string minuteText = selectedTime is not null
                 ? minute.ToString("00", culture)
                 : string.Empty;
             _minuteSegmentText?.SetCurrentValue(System.Windows.Controls.TextBlock.TextProperty, minuteText);
 
-            string periodText = selectedTime.HasValue && !twentyFourHour
+            string periodText = selectedTime is not null && !twentyFourHour
                 ? GetPeriodDesignator(hour, culture)
                 : string.Empty;
             _periodSegmentText?.SetCurrentValue(System.Windows.Controls.TextBlock.TextProperty, periodText);

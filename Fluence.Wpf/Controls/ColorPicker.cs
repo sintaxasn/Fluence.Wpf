@@ -859,7 +859,7 @@ namespace Fluence.Wpf.Controls
         private void UpdatePreviousSwatch()
         {
             Color? previous = PreviousColor;
-            if (_previousSwatchBorder is null || !previous.HasValue)
+            if (_previousSwatchBorder is null || previous is null)
             {
                 return;
             }

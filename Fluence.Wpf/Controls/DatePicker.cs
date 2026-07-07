@@ -491,7 +491,7 @@ defaultValue: null,
         /// </summary>
         private bool IsWithinLightDismissReopenLockout()
         {
-            return _lastLightDismissTick.HasValue
+            return _lastLightDismissTick is not null
                 && unchecked(Environment.TickCount - _lastLightDismissTick.Value) < LightDismissReopenLockoutMilliseconds;
         }
 
@@ -816,7 +816,7 @@ defaultValue: null,
 
                 if (position < fields.Count)
                 {
-                    segment.Text = selectedDate.HasValue
+                    segment.Text = selectedDate is not null
                         ? FormatSegment(fields[position], selectedDate.Value, culture)
                         : string.Empty;
                     segment.HorizontalAlignment = fields[position] is DateField.Month
