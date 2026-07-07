@@ -30,7 +30,6 @@ using Fluence.Wpf.Controls;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
-using ToggleButton = System.Windows.Controls.Primitives.ToggleButton;
 
 namespace Fluence.Wpf.Automation
 {
@@ -88,7 +87,7 @@ namespace Fluence.Wpf.Automation
             // part of the template; flipping the part opens the popup via the control's
             // Checked/Unchecked wiring. Without an applied template this is a no-op.
             ToggleSplitButton thisButton = ToggleSplitButton;
-            ToggleButton? toggle = thisButton.Template?.FindName("PART_SecondaryButton", thisButton) as ToggleButton;
+            System.Windows.Controls.Primitives.ToggleButton? toggle = thisButton.Template?.FindName("PART_SecondaryButton", thisButton) as System.Windows.Controls.Primitives.ToggleButton;
             _ = toggle?.IsChecked = true;
         }
 
@@ -96,7 +95,7 @@ namespace Fluence.Wpf.Automation
         public virtual void Collapse()
         {
             ToggleSplitButton thisButton = ToggleSplitButton;
-            ToggleButton? toggle = thisButton.Template?.FindName("PART_SecondaryButton", thisButton) as ToggleButton;
+            System.Windows.Controls.Primitives.ToggleButton? toggle = thisButton.Template?.FindName("PART_SecondaryButton", thisButton) as System.Windows.Controls.Primitives.ToggleButton;
             _ = toggle?.IsChecked = false;
         }
 

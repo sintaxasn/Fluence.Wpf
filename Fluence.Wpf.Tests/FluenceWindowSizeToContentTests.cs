@@ -32,12 +32,11 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
-using FluenceWindow = Fluence.Wpf.Controls.FluenceWindow;
 
 namespace Fluence.Wpf.Tests
 {
     /// <summary>
-    /// Regression tests for the SizeToContent double-border fix in <see cref="FluenceWindow"/>.
+    /// Regression tests for the SizeToContent double-border fix in <see cref="Controls.FluenceWindow"/>.
     /// A <see cref="Window"/> with an active <see cref="Window.SizeToContent"/> sizes its HWND to the
     /// latest content-desired size, but the template root <c>Border</c> (the accent-bordered window
     /// chrome) was left arranged one layout pass behind the realised client area, so it floated
@@ -87,7 +86,7 @@ namespace Fluence.Wpf.Tests
             ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
         }
 
-        private static Border FindWindowBorder(FluenceWindow window)
+        private static Border FindWindowBorder(Controls.FluenceWindow window)
         {
             Border? border = WpfTestSta
                 .FindVisualDescendants<Border>(window)
@@ -121,7 +120,7 @@ namespace Fluence.Wpf.Tests
                 Application? app = WpfTestSta.EnsureApplication();
                 ResetAndApply(app);
 
-                FluenceWindow window = new()
+                Controls.FluenceWindow window = new()
                 {
                     Title = "SizeToContent fill",
                     SystemBackdropType = BackdropType.None,
@@ -173,7 +172,7 @@ namespace Fluence.Wpf.Tests
                 ResetAndApply(app);
 
                 StackPanel panel = BuildContent();
-                FluenceWindow window = new()
+                Controls.FluenceWindow window = new()
                 {
                     Title = "SizeToContent grow",
                     SystemBackdropType = BackdropType.None,
@@ -228,7 +227,7 @@ namespace Fluence.Wpf.Tests
                 Application? app = WpfTestSta.EnsureApplication();
                 ResetAndApply(app);
 
-                FluenceWindow window = new()
+                Controls.FluenceWindow window = new()
                 {
                     Title = "Fixed size",
                     SystemBackdropType = BackdropType.None,

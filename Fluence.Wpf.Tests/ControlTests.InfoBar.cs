@@ -31,8 +31,6 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Media;
-using WpfBorder = System.Windows.Controls.Border;
-using WpfTextBlock = System.Windows.Controls.TextBlock;
 
 namespace Fluence.Wpf.Tests
 {
@@ -58,7 +56,7 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                WpfBorder? root = FindVisualChildByName<WpfBorder>(bar, "RootBorder");
+                System.Windows.Controls.Border? root = FindVisualChildByName<System.Windows.Controls.Border>(bar, "RootBorder");
                 Assert.IsNotNull(root, "RootBorder must exist in InfoBar template (Fluence style applied).");
                 w.Close();
             });
@@ -104,7 +102,7 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                WpfBorder? indicator = FindVisualChildByName<WpfBorder>(bar, "IndicatorBar");
+                System.Windows.Controls.Border? indicator = FindVisualChildByName<System.Windows.Controls.Border>(bar, "IndicatorBar");
                 Assert.IsNotNull(indicator, "IndicatorBar must exist in InfoBar template.");
                 Assert.IsNotNull(indicator.Background, "IndicatorBar background must be set for Informational severity.");
                 w.Close();
@@ -124,9 +122,9 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                WpfBorder? indicator = FindVisualChildByName<WpfBorder>(bar, "IndicatorBar");
+                System.Windows.Controls.Border? indicator = FindVisualChildByName<System.Windows.Controls.Border>(bar, "IndicatorBar");
                 Assert.IsNotNull(indicator, "IndicatorBar must exist.");
-                WpfTextBlock? defaultIcon = FindVisualChildByName<WpfTextBlock>(bar, "DefaultIcon");
+                System.Windows.Controls.TextBlock? defaultIcon = FindVisualChildByName<System.Windows.Controls.TextBlock>(bar, "DefaultIcon");
                 Assert.IsNotNull(defaultIcon, "DefaultIcon must exist.");
                 SolidColorBrush? initial = indicator.Background as SolidColorBrush;
                 Assert.IsNotNull(initial, "Informational IndicatorBar background should be a SolidColorBrush.");
@@ -165,7 +163,7 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                WpfBorder? indicator = FindVisualChildByName<WpfBorder>(bar, "IndicatorBar");
+                System.Windows.Controls.Border? indicator = FindVisualChildByName<System.Windows.Controls.Border>(bar, "IndicatorBar");
                 Assert.IsNotNull(indicator, "IndicatorBar must exist.");
                 Brush brushBefore = indicator.Background;
 
@@ -219,7 +217,7 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                WpfBorder? root = FindVisualChildByName<WpfBorder>(bar, "RootBorder");
+                System.Windows.Controls.Border? root = FindVisualChildByName<System.Windows.Controls.Border>(bar, "RootBorder");
                 Assert.IsNotNull(root, "RootBorder must exist in InfoBar template.");
                 Assert.IsFalse(root.ClipToBounds,
                     "RootBorder should not clip action-button focus visuals or shadow rendering.");

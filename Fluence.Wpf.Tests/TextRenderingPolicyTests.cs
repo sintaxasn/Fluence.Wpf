@@ -35,8 +35,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
-using WpfBorder = System.Windows.Controls.Border;
-using WpfTextBlock = System.Windows.Controls.TextBlock;
 
 namespace Fluence.Wpf.Tests
 {
@@ -84,7 +82,7 @@ namespace Fluence.Wpf.Tests
                 Application? application = WpfTestSta.EnsureApplication();
                 ResetApplication(application);
 
-                WpfBorder child = new();
+                System.Windows.Controls.Border child = new();
                 FluenceWindow window = new()
                 {
                     Width = 320,
@@ -199,7 +197,7 @@ namespace Fluence.Wpf.Tests
                 Application? application = WpfTestSta.EnsureApplication();
                 ResetApplication(application);
 
-                WpfTextBlock textBlock = new();
+                System.Windows.Controls.TextBlock textBlock = new();
                 textBlock.SetTypography(FluentTypography.Title);
 
                 Assert.AreSame(
@@ -218,7 +216,7 @@ namespace Fluence.Wpf.Tests
         {
             WpfTestSta.Invoke(static () =>
             {
-                WpfTextBlock textBlock = new();
+                System.Windows.Controls.TextBlock textBlock = new();
                 textBlock.SetTypography(FluentTypography.Body);
 
                 FontFamily fontFamily = new("Arial");
@@ -256,7 +254,7 @@ namespace Fluence.Wpf.Tests
             Style? style = application?.TryFindResource(styleKey) as Style;
             Assert.IsNotNull(style, styleKey + " should resolve.");
 
-            WpfTextBlock textBlock = new()
+            System.Windows.Controls.TextBlock textBlock = new()
             {
                 Style = style,
             };

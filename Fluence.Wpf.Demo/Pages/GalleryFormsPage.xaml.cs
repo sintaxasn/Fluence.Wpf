@@ -29,7 +29,6 @@
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using FluencePasswordBox = Fluence.Wpf.Controls.PasswordBox;
 
 namespace Fluence.Wpf.Demo.Pages
 {
@@ -326,7 +325,7 @@ namespace Fluence.Wpf.Demo.Pages
         {
             Loaded -= GalleryFormsPage_Loaded;
             DependencyPropertyDescriptor
-                .FromProperty(FluencePasswordBox.PasswordProperty, typeof(FluencePasswordBox))
+                .FromProperty(Controls.PasswordBox.PasswordProperty, typeof(Controls.PasswordBox))
                 .AddValueChanged(SignInPasswordBox, SignInPassword_Changed);
         }
 

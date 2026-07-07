@@ -33,7 +33,6 @@ using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Input;
-using Fluent = Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Tests
 {
@@ -50,7 +49,7 @@ namespace Fluence.Wpf.Tests
 
                 try
                 {
-                    Fluent.PasswordBox box = new()
+                    Controls.PasswordBox box = new()
                     {
                         Password = "secret",
                         Width = 200,
@@ -93,7 +92,7 @@ namespace Fluence.Wpf.Tests
 
                 try
                 {
-                    Fluent.PasswordBox box = new()
+                    Controls.PasswordBox box = new()
                     {
                         Password = "secret",
                         RevealButtonEnabled = true,
@@ -159,7 +158,7 @@ namespace Fluence.Wpf.Tests
 
                 try
                 {
-                    Fluent.PasswordBox box = new()
+                    Controls.PasswordBox box = new()
                     {
                         Password = "secret",
                         RevealButtonEnabled = true,

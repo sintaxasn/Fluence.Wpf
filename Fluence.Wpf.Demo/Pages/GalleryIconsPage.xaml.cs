@@ -38,7 +38,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Resources;
-using Fluent = Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Demo.Pages
 {
@@ -114,7 +113,7 @@ namespace Fluence.Wpf.Demo.Pages
 
         private static void CopyIconValueButton_Click(object sender, RoutedEventArgs e)
         {
-            string? value = sender is Fluent.Button button ? button.Tag as string : null;
+            string? value = sender is Controls.Button button ? button.Tag as string : null;
             if (string.IsNullOrWhiteSpace(value))
             {
                 return;

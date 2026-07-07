@@ -32,9 +32,6 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using WpfBorder = System.Windows.Controls.Border;
-using WpfButton = System.Windows.Controls.Button;
-using WpfToggleButton = System.Windows.Controls.Primitives.ToggleButton;
 
 namespace Fluence.Wpf.Tests
 {
@@ -131,8 +128,8 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     _ = button.ApplyTemplate();
-                    WpfButton? primaryButton = button.Template.FindName("PART_PrimaryButton", button) as WpfButton;
-                    WpfToggleButton? secondaryButton = button.Template.FindName("PART_SecondaryButton", button) as WpfToggleButton;
+                    System.Windows.Controls.Button? primaryButton = button.Template.FindName("PART_PrimaryButton", button) as System.Windows.Controls.Button;
+                    System.Windows.Controls.Primitives.ToggleButton? secondaryButton = button.Template.FindName("PART_SecondaryButton", button) as System.Windows.Controls.Primitives.ToggleButton;
                     Style? focusVisualStyle = app?.TryFindResource("DefaultControlFocusVisualStyle") as Style;
 
                     Assert.IsNotNull(primaryButton, "SplitButton template should expose PART_PrimaryButton.");
@@ -142,9 +139,9 @@ namespace Fluence.Wpf.Tests
                         "The primary half must use the FocusVisualStyle adorner so the focus ring shows only for keyboard navigation, never on click.");
                     Assert.AreSame(focusVisualStyle, secondaryButton.FocusVisualStyle,
                         "The secondary half must use the FocusVisualStyle adorner so the focus ring shows only for keyboard navigation, never on click.");
-                    Assert.IsNull(FindVisualChildByName<WpfBorder>(button, "PrimaryFocusOuter"),
+                    Assert.IsNull(FindVisualChildByName<System.Windows.Controls.Border>(button, "PrimaryFocusOuter"),
                         "The always-on in-template primary focus borders must be gone; they rendered on mouse click.");
-                    Assert.IsNull(FindVisualChildByName<WpfBorder>(button, "SecondaryFocusOuter"),
+                    Assert.IsNull(FindVisualChildByName<System.Windows.Controls.Border>(button, "SecondaryFocusOuter"),
                         "The always-on in-template secondary focus borders must be gone; they rendered on mouse click.");
                 }
                 finally
