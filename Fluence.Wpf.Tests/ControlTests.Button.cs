@@ -239,7 +239,7 @@ namespace Fluence.Wpf.Tests
             foreach (string resource in requiredStateResources)
             {
                 Assert.IsTrue(
-                    xaml.IndexOf(resource, StringComparison.Ordinal) >= 0,
+                    xaml.Contains(resource, StringComparison.Ordinal),
                     "Button template should include the WinUI state resource: " + resource);
             }
 
@@ -248,10 +248,10 @@ namespace Fluence.Wpf.Tests
                 "<Condition Property=\"IsPressed\" Value=\"True\" />",
                 "<Condition Property=\"Appearance\" Value=\"Accent\" />");
             Assert.IsFalse(
-                accentPressedBlock.IndexOf("AccentFillColorDisabledBrush", StringComparison.Ordinal) >= 0,
+                accentPressedBlock.Contains("AccentFillColorDisabledBrush", StringComparison.Ordinal),
                 "Accent pressed state must not reuse the disabled accent fill as the button Background.");
             Assert.IsFalse(
-                xaml.IndexOf("Value=\"Transparent\"", StringComparison.Ordinal) >= 0,
+                xaml.Contains("Value=\"Transparent\"", StringComparison.Ordinal),
                 "Button template should use theme resources rather than literal transparent brush values.");
         }
 

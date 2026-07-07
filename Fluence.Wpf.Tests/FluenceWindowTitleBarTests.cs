@@ -576,13 +576,13 @@ namespace Fluence.Wpf.Tests
 
             string xaml = System.IO.File.ReadAllText(xamlPath);
             Assert.IsTrue(
-                xaml.IndexOf("MinimizeWindowCommand", StringComparison.Ordinal) >= 0,
+                xaml.Contains("MinimizeWindowCommand", StringComparison.Ordinal),
                 "Minimize button should bind MinimizeWindowCommand.");
             Assert.IsTrue(
-                xaml.IndexOf("MaximizeWindowCommand", StringComparison.Ordinal) >= 0,
+                xaml.Contains("MaximizeWindowCommand", StringComparison.Ordinal),
                 "Maximize button should bind MaximizeWindowCommand.");
             Assert.IsTrue(
-                xaml.IndexOf("CloseWindowCommand", StringComparison.Ordinal) >= 0,
+                xaml.Contains("CloseWindowCommand", StringComparison.Ordinal),
                 "Close button should bind CloseWindowCommand.");
         }
 

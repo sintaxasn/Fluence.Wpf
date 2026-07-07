@@ -162,7 +162,7 @@ namespace Fluence.Wpf.Tests
             string[] offenders =
             [
                 .. EnumerateProductionSources(productionRoots)
-                    .Where(path => !string.Equals(GetRepoRelativePath(path), allowedPath, StringComparison.OrdinalIgnoreCase) && File.ReadAllText(path).IndexOf("SnapsToDevicePixels", StringComparison.Ordinal) >= 0)
+                    .Where(path => !string.Equals(GetRepoRelativePath(path), allowedPath, StringComparison.OrdinalIgnoreCase) && File.ReadAllText(path).Contains("SnapsToDevicePixels", StringComparison.Ordinal))
                     .Select(GetRepoRelativePath),
             ];
 
@@ -294,8 +294,8 @@ namespace Fluence.Wpf.Tests
         {
             string normalized = path.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
             string separator = Path.DirectorySeparatorChar.ToString();
-            return normalized.IndexOf(separator + "bin" + separator, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                normalized.IndexOf(separator + "obj" + separator, StringComparison.OrdinalIgnoreCase) >= 0;
+            return normalized.Contains(separator + "bin" + separator, StringComparison.OrdinalIgnoreCase) ||
+                normalized.Contains(separator + "obj" + separator, StringComparison.OrdinalIgnoreCase);
         }
 
         private static IEnumerable<string> FindBannedFragments(string path, IEnumerable<string> bannedFragments)
@@ -303,7 +303,7 @@ namespace Fluence.Wpf.Tests
             string source = File.ReadAllText(path);
             foreach (string bannedFragment in bannedFragments)
             {
-                if (source.IndexOf(bannedFragment, StringComparison.Ordinal) >= 0)
+                if (source.Contains(bannedFragment, StringComparison.Ordinal))
                 {
                     yield return GetRepoRelativePath(path) + ": " + bannedFragment;
                 }

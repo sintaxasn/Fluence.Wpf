@@ -425,7 +425,7 @@ namespace Fluence.Wpf.Tests
                         Content = "Enable feature",
                         Description = "Some description.",
                     };
-                    checkBox.Description = null!;
+                    checkBox.Description = null;
 
                     string helpText = AutomationProperties.GetHelpText(checkBox);
                     Assert.IsTrue(
@@ -524,7 +524,7 @@ namespace Fluence.Wpf.Tests
                         Content = "Option A",
                         Description = "Some description.",
                     };
-                    radioButton.Description = null!;
+                    radioButton.Description = null;
 
                     string helpText = AutomationProperties.GetHelpText(radioButton);
                     Assert.IsTrue(

@@ -50,7 +50,7 @@ namespace Fluence.Wpf.Demo.Pages
         private const double TileGapWidth = 12.0;
         private const int DefaultColumns = 4;
 
-        private static readonly System.Threading.Lock IconCatalogLock = new();
+        private static readonly Lock IconCatalogLock = new();
         private static readonly char[] SearchTermSeparators = [' '];
         private static readonly CompareInfo OrdinalIgnoreCaseCompareInfo = CultureInfo.InvariantCulture.CompareInfo;
         private static List<IconCatalogItem>? cachedIcons;

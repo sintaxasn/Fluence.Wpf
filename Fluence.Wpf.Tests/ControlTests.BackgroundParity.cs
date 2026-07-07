@@ -575,7 +575,7 @@ namespace Fluence.Wpf.Tests
 
         private static bool ContainsOrdinal(string source, string value)
         {
-            return source.IndexOf(value, StringComparison.Ordinal) >= 0;
+            return source.Contains(value, StringComparison.Ordinal);
         }
 
         private static bool IsWholeXamlAttribute(string source, int attributeIndex)

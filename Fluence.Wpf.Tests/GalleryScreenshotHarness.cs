@@ -251,7 +251,7 @@ namespace Fluence.Wpf.Tests
         }
 
         /// <summary>
-        /// Captures the gallery shell (<see cref="DemoMainWindow"/>) at <paramref name="route"/>
+        /// Captures the gallery shell (<see cref="Demo.MainWindow"/>) at <paramref name="route"/>
         /// with the navigation pane forced to <paramref name="paneMode"/>, writing
         /// <c>{outputName}-{themeSlug}.png</c>.
         /// </summary>

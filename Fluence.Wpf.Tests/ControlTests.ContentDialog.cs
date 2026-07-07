@@ -880,7 +880,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(dialog);
-                    _ = Assert.IsInstanceOfType<Fluence.Wpf.Automation.ContentDialogAutomationPeer>(peer,
+                    _ = Assert.IsInstanceOfType<Automation.ContentDialogAutomationPeer>(peer,
                         "ContentDialog.OnCreateAutomationPeer must return a ContentDialogAutomationPeer.");
                     Assert.AreEqual(AutomationControlType.Window, peer.GetAutomationControlType(),
                         "ContentDialog must report the Window control type so assistive technologies treat it as a modal dialog surface.");

@@ -8,7 +8,7 @@
     <AssemblyName>Fluence.Wpf.Demo</AssemblyName>
     <ApplicationIcon>..\assets\Fluence_Icon_Light.ico</ApplicationIcon>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-    <NoWarn>$(NoWarn);CS1591;IDE0330;VSTHRD001</NoWarn>
+    <NoWarn>$(NoWarn);CS1591;VSTHRD001;MA0045</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
