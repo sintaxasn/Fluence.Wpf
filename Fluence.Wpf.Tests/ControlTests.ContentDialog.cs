@@ -297,7 +297,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public async Task ContentDialog_OwnerWindowClose_CompletesPendingTaskWithNone()
+        public async Task ContentDialog_OwnerWindowClose_CompletesPendingTaskWithNoneAsync()
         {
             Task<ContentDialogResult>? dialogTask = null;
             RunOnStaThread(() =>
@@ -390,7 +390,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public async Task ContentDialog_PrimaryButtonClick_CompletesTaskWithPrimaryAndRemovesOverlay()
+        public async Task ContentDialog_PrimaryButtonClick_CompletesTaskWithPrimaryAndRemovesOverlayAsync()
         {
             Task<ContentDialogResult>? dialogTask = null;
             RunOnStaThread(() =>
@@ -445,7 +445,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public async Task ContentDialog_CloseButtonClick_CompletesTaskWithNone()
+        public async Task ContentDialog_CloseButtonClick_CompletesTaskWithNoneAsync()
         {
             Task<ContentDialogResult>? dialogTask = null;
             RunOnStaThread(() =>
@@ -493,7 +493,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public async Task ContentDialog_EscapeKey_CompletesTaskWithNone()
+        public async Task ContentDialog_EscapeKey_CompletesTaskWithNoneAsync()
         {
             Task<ContentDialogResult>? dialogTask = null;
             RunOnStaThread(() =>
