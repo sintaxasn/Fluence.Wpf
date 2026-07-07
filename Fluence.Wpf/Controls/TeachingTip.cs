@@ -375,7 +375,7 @@ namespace Fluence.Wpf.Controls
         protected override void OnPreviewKeyDown(KeyEventArgs e)
         {
             base.OnPreviewKeyDown(e);
-            if (!e.Handled && e.Key == Key.Escape && IsOpen)
+            if (!e.Handled && e.Key is Key.Escape && IsOpen)
             {
                 SetCurrentValue(IsOpenProperty, value: false);
                 e.Handled = true;
@@ -422,7 +422,7 @@ namespace Fluence.Wpf.Controls
         private static void OnPlacementInputChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             TeachingTip tip = (TeachingTip)d;
-            if (tip.HostPopup?.IsOpen == true)
+            if ((tip.HostPopup?.IsOpen) is true)
             {
                 tip.ApplyPlacement(tip.HostPopup);
             }
@@ -463,7 +463,7 @@ namespace Fluence.Wpf.Controls
         /// <returns>The resolved placement mode.</returns>
         private static TeachingTipPlacementMode ResolvePlacement(TeachingTipPlacementMode preferred)
         {
-            return preferred == TeachingTipPlacementMode.Auto
+            return preferred is TeachingTipPlacementMode.Auto
                 ? TeachingTipPlacementMode.Bottom
                 : preferred;
         }
@@ -513,7 +513,7 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         private void ClosePopup()
         {
-            if (HostPopup?.IsOpen == true)
+            if ((HostPopup?.IsOpen) is true)
             {
                 HostPopup.IsOpen = false;
             }
@@ -536,7 +536,7 @@ namespace Fluence.Wpf.Controls
             {
                 popup.PlacementTarget = target;
                 TeachingTipPlacementMode resolved = ResolvePlacement(PreferredPlacement);
-                if (resolved == TeachingTipPlacementMode.Center)
+                if (resolved is TeachingTipPlacementMode.Center)
                 {
                     popup.CustomPopupPlacementCallback = null;
                     popup.Placement = PlacementMode.Center;
@@ -552,7 +552,7 @@ namespace Fluence.Wpf.Controls
             else
             {
                 popup.PlacementTarget = ResolveFallbackPlacementTarget();
-                if (PreferredPlacement == TeachingTipPlacementMode.Auto)
+                if (PreferredPlacement is TeachingTipPlacementMode.Auto)
                 {
                     popup.CustomPopupPlacementCallback = GetBottomRightPlacements;
                     popup.Placement = PlacementMode.Custom;
@@ -694,7 +694,7 @@ namespace Fluence.Wpf.Controls
         {
             ActionButtonClick?.Invoke(this, EventArgs.Empty);
             ICommand? command = ActionButtonCommand;
-            if (command?.CanExecute(ActionButtonCommandParameter) == true)
+            if ((command?.CanExecute(ActionButtonCommandParameter)) is true)
             {
                 command.Execute(ActionButtonCommandParameter);
             }

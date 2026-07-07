@@ -43,11 +43,6 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
-using FluenceExpander = Fluence.Wpf.Controls.Expander;
-using FluenceListView = Fluence.Wpf.Controls.ListView;
-using WpfBorder = System.Windows.Controls.Border;
-using WpfButton = System.Windows.Controls.Button;
-using WpfTextBlock = System.Windows.Controls.TextBlock;
 
 namespace Fluence.Wpf.Tests
 {
@@ -549,25 +544,25 @@ namespace Fluence.Wpf.Tests
                     TitleBar? shellTitleBar = FindByName<TitleBar>(window, "ShellTitleBar");
                     Assert.IsNotNull(shellTitleBar, "Extended title bar should use the shared TitleBar control.");
 
-                    WpfButton? titleBarToggle = FindByName<WpfButton>(shellTitleBar, "PART_PaneToggleButton");
+                    System.Windows.Controls.Button? titleBarToggle = FindByName<System.Windows.Controls.Button>(shellTitleBar, "PART_PaneToggleButton");
                     Assert.IsNotNull(titleBarToggle, "Extended title bar should expose a pane toggle button.");
                     Assert.AreEqual(Visibility.Visible, titleBarToggle.Visibility,
                         "Pane toggle should move into the title bar when content extends into the title bar.");
                     Assert.AreEqual(40.0, titleBarToggle.ActualWidth, 0.5,
                         "Title-bar pane toggle should match the WinUI-canonical 40 px glyph button width.");
 
-                    WpfTextBlock? titleBarGlyph = FindVisualChild<WpfTextBlock>(titleBarToggle);
+                    System.Windows.Controls.TextBlock? titleBarGlyph = FindVisualChild<System.Windows.Controls.TextBlock>(titleBarToggle);
                     Assert.IsNotNull(titleBarGlyph, "Title-bar pane toggle should render a Segoe Fluent Icons glyph.");
                     Assert.AreEqual(16.0, titleBarGlyph.FontSize, 0.01,
                         "Title-bar pane toggle glyph should match the compact title-bar glyph style.");
 
-                    WpfButton? titleBarBack = FindByName<WpfButton>(shellTitleBar, "PART_BackButton");
+                    System.Windows.Controls.Button? titleBarBack = FindByName<System.Windows.Controls.Button>(shellTitleBar, "PART_BackButton");
                     Assert.IsNotNull(titleBarBack, "Extended title bar should expose a back button slot.");
                     Assert.AreEqual(Visibility.Visible, titleBarBack.Visibility,
                         "Visited-page history should make the title-bar back slot visible in Left mode.");
                     Assert.IsLessThan(GetVisualX(titleBarToggle, window) ?? double.MaxValue, GetVisualX(titleBarBack, window) ?? double.MaxValue,
                         "Back should occupy the first title-bar navigation slot.");
-                    WpfTextBlock? titleBarBackGlyph = FindVisualChild<WpfTextBlock>(titleBarBack);
+                    System.Windows.Controls.TextBlock? titleBarBackGlyph = FindVisualChild<System.Windows.Controls.TextBlock>(titleBarBack);
                     Assert.IsNotNull(titleBarBackGlyph, "Title-bar back button should render a Segoe Fluent Icons glyph.");
 
                     NavigationViewItem? firstItem = nav.Items.Count > 0 ? nav.Items[0] as NavigationViewItem : null;
@@ -591,7 +586,7 @@ namespace Fluence.Wpf.Tests
                         "Title identity should start after the title-bar navigation slot.");
 
                     _ = nav.ApplyTemplate();
-                    WpfButton? internalToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as WpfButton;
+                    System.Windows.Controls.Button? internalToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as System.Windows.Controls.Button;
                     Assert.IsNotNull(internalToggle, "Internal NavigationView pane toggle should still exist in the template.");
                     Assert.AreEqual(Visibility.Collapsed, internalToggle.Visibility,
                         "Internal NavigationView pane toggle should be hidden while title-bar chrome owns it.");
@@ -626,8 +621,8 @@ namespace Fluence.Wpf.Tests
 
                     TitleBar? shellTitleBar = FindByName<TitleBar>(window, "ShellTitleBar");
                     Assert.IsNotNull(shellTitleBar, "Extended title bar should use the shared TitleBar control.");
-                    WpfButton? titleBarBack = FindByName<WpfButton>(shellTitleBar, "PART_BackButton");
-                    WpfButton? titleBarToggle = FindByName<WpfButton>(shellTitleBar, "PART_PaneToggleButton");
+                    System.Windows.Controls.Button? titleBarBack = FindByName<System.Windows.Controls.Button>(shellTitleBar, "PART_BackButton");
+                    System.Windows.Controls.Button? titleBarToggle = FindByName<System.Windows.Controls.Button>(shellTitleBar, "PART_PaneToggleButton");
                     Assert.IsNotNull(titleBarBack, "Extended title bar should expose a back button.");
                     Assert.IsNotNull(titleBarToggle, "Extended title bar should expose a pane toggle button.");
                     Assert.AreEqual(Visibility.Visible, titleBarBack.Visibility,
@@ -732,15 +727,15 @@ namespace Fluence.Wpf.Tests
 
                     TitleBar? shellTitleBar = FindByName<TitleBar>(window, "ShellTitleBar");
                     Assert.IsNotNull(shellTitleBar, "Demo shell should expose a TitleBar.");
-                    WpfButton? titleBarToggle = FindByName<WpfButton>(shellTitleBar, "PART_PaneToggleButton");
+                    System.Windows.Controls.Button? titleBarToggle = FindByName<System.Windows.Controls.Button>(shellTitleBar, "PART_PaneToggleButton");
                     Assert.IsNotNull(titleBarToggle, "TitleBar should expose a pane toggle slot.");
                     Assert.AreEqual(Visibility.Collapsed, titleBarToggle.Visibility,
                         "Top mode should not show a pane toggle in the title bar.");
-                    WpfButton? titleBarBack = FindByName<WpfButton>(shellTitleBar, "PART_BackButton");
+                    System.Windows.Controls.Button? titleBarBack = FindByName<System.Windows.Controls.Button>(shellTitleBar, "PART_BackButton");
                     Assert.IsNotNull(titleBarBack, "TitleBar should expose a back button slot.");
                     Assert.AreEqual(Visibility.Visible, titleBarBack.Visibility,
                         "Top mode should move the requested back button into the title bar.");
-                    WpfTextBlock? titleBarBackGlyph = FindVisualChild<WpfTextBlock>(titleBarBack);
+                    System.Windows.Controls.TextBlock? titleBarBackGlyph = FindVisualChild<System.Windows.Controls.TextBlock>(titleBarBack);
                     Assert.IsNotNull(titleBarBackGlyph, "Title-bar back button should render a Segoe Fluent Icons glyph.");
                     Assert.AreEqual(16.0, titleBarBackGlyph.FontSize, 0.01,
                         "Title-bar back glyph should match the compact title-bar glyph style.");
@@ -756,8 +751,8 @@ namespace Fluence.Wpf.Tests
                         "Top mode back should appear before centered title-bar content.");
 
                     _ = nav.ApplyTemplate();
-                    WpfButton? internalBack = nav.Template.FindName(NavigationView.PartBackButton, nav) as WpfButton;
-                    WpfButton? internalToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as WpfButton;
+                    System.Windows.Controls.Button? internalBack = nav.Template.FindName(NavigationView.PartBackButton, nav) as System.Windows.Controls.Button;
+                    System.Windows.Controls.Button? internalToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as System.Windows.Controls.Button;
                     Assert.IsNotNull(internalBack, "Internal NavigationView back button should exist.");
                     Assert.AreEqual(Visibility.Collapsed, internalBack.Visibility,
                         "Demo shell should suppress the internal Top pane back button while the title bar owns back navigation.");
@@ -978,7 +973,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(overflowButton, "Top pane should expose the overflow button.");
                     Assert.AreEqual(Visibility.Visible, overflowButton.Visibility,
                         "The overflow button should be visible at the minimum demo width.");
-                    int visibleNavigationItems = nav.Items.OfType<NavigationViewItem>().Count(static item => item.Visibility == Visibility.Visible);
+                    int visibleNavigationItems = nav.Items.OfType<NavigationViewItem>().Count(static item => item.Visibility is Visibility.Visible);
                     Assert.IsTrue(visibleNavigationItems > 1,
                         "Top pane should show every navigation item that fits before the overflow button would overlap the Top toggle status.");
                     NavigationViewItem? settings = FindByName<NavigationViewItem>(window, "SettingsNavigationItem");
@@ -1000,7 +995,7 @@ namespace Fluence.Wpf.Tests
                     }
 
                     Assert.IsNotNull(trees, "DemoNav should include the Trees item.");
-                    if (trees.Visibility == Visibility.Visible)
+                    if (trees.Visibility is Visibility.Visible)
                     {
                         double treesRight = (GetVisualX(trees, nav) ?? double.MinValue) + trees.ActualWidth;
                         double overflowLeft = GetVisualX(overflowButton, nav) ?? double.MaxValue;
@@ -1110,7 +1105,7 @@ namespace Fluence.Wpf.Tests
 
                     TitleBar? shellTitleBar = FindByName<TitleBar>(window, "ShellTitleBar");
                     Assert.IsNotNull(shellTitleBar, "Extended title bar should expose the shell pane toggle.");
-                    WpfButton? titleBarToggle = FindByName<WpfButton>(shellTitleBar, "PART_PaneToggleButton");
+                    System.Windows.Controls.Button? titleBarToggle = FindByName<System.Windows.Controls.Button>(shellTitleBar, "PART_PaneToggleButton");
                     Assert.IsNotNull(titleBarToggle, "Shell title bar should expose a pane toggle button in Left navigation.");
                     Assert.AreEqual(Visibility.Visible, titleBarToggle.Visibility,
                         "The shell pane toggle should be visible in Left navigation.");
@@ -1168,7 +1163,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(nav, "Navigation page should expose the compact sample NavigationView.");
                     Assert.IsFalse(nav.IsPaneOpen, "Compact sample should start collapsed.");
 
-                    WpfButton? paneToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as WpfButton;
+                    System.Windows.Controls.Button? paneToggle = nav.Template.FindName(NavigationView.PartPaneToggleButton, nav) as System.Windows.Controls.Button;
                     Assert.IsNotNull(paneToggle, "Compact sample should expose the pane toggle button.");
 
                     Controls.Button? sampleToggle = FindByName<Controls.Button>(page, "CompactPaneToggleButton");
@@ -1223,7 +1218,7 @@ namespace Fluence.Wpf.Tests
 
                     TitleBar? shellTitleBar = FindByName<TitleBar>(window, "ShellTitleBar");
                     Assert.IsNotNull(shellTitleBar, "Extended title bar should use the shared TitleBar control.");
-                    WpfTextBlock? titleText = FindByName<WpfTextBlock>(shellTitleBar, "PART_TitleText");
+                    System.Windows.Controls.TextBlock? titleText = FindByName<System.Windows.Controls.TextBlock>(shellTitleBar, "PART_TitleText");
                     Controls.TextBox? search = FindByName<Controls.TextBox>(window, "NavSearchBox");
                     Assert.IsNotNull(titleText, "Extended title bar title should exist.");
                     Assert.IsNotNull(search, "Demo search box must be present.");
@@ -1273,12 +1268,12 @@ namespace Fluence.Wpf.Tests
                     TitleBar? shellTitleBar = FindByName<TitleBar>(window, "ShellTitleBar");
                     Assert.IsNotNull(shellTitleBar, "Extended title bar should use the shared TitleBar control.");
                     ContentPresenter? titleIcon = FindByName<ContentPresenter>(shellTitleBar, "PART_IconPresenter");
-                    WpfTextBlock? titleText = FindByName<WpfTextBlock>(shellTitleBar, "PART_TitleText");
+                    System.Windows.Controls.TextBlock? titleText = FindByName<System.Windows.Controls.TextBlock>(shellTitleBar, "PART_TitleText");
                     Assert.IsNotNull(titleIcon, "Extended title bar icon should exist.");
                     Assert.IsNotNull(titleText, "Extended title bar title should exist.");
                     Assert.AreEqual(Visibility.Visible, titleIcon.Visibility,
                         "Title icon should remain visible when title text is hidden for search clearance.");
-                    if (titleText.Visibility == Visibility.Visible)
+                    if (titleText.Visibility is Visibility.Visible)
                     {
                         Controls.TextBox? search = FindByName<Controls.TextBox>(window, "NavSearchBox");
                         Assert.IsNotNull(search, "Demo search box must be present.");
@@ -1328,9 +1323,9 @@ namespace Fluence.Wpf.Tests
                     Assert.AreEqual(window.ActualWidth / 2.0, GetVisualCenterX(search, window) ?? double.MaxValue, 1.0,
                         "Search should stay horizontally centered in the window even when title text is constrained.");
 
-                    WpfTextBlock? titleText = FindByName<WpfTextBlock>(shellTitleBar, "PART_TitleText");
+                    System.Windows.Controls.TextBlock? titleText = FindByName<System.Windows.Controls.TextBlock>(shellTitleBar, "PART_TitleText");
                     Assert.IsNotNull(titleText, "Extended title bar title should exist.");
-                    if (titleText.Visibility == Visibility.Visible)
+                    if (titleText.Visibility is Visibility.Visible)
                     {
                         double titleRight = (GetVisualX(titleText, window) ?? double.MinValue) + titleText.ActualWidth;
                         double searchLeft = GetVisualX(search, window) ?? double.MaxValue;
@@ -1373,9 +1368,9 @@ namespace Fluence.Wpf.Tests
 
                     TitleBar? shellTitleBar = FindByName<TitleBar>(window, "ShellTitleBar");
                     Assert.IsNotNull(shellTitleBar, "Extended title bar should use the shared TitleBar control.");
-                    WpfTextBlock? titleText = FindByName<WpfTextBlock>(shellTitleBar, "PART_TitleText");
+                    System.Windows.Controls.TextBlock? titleText = FindByName<System.Windows.Controls.TextBlock>(shellTitleBar, "PART_TitleText");
                     Assert.IsNotNull(titleText, "Extended title bar title should exist.");
-                    if (titleText.Visibility == Visibility.Visible)
+                    if (titleText.Visibility is Visibility.Visible)
                     {
                         Controls.TextBox? setupSearch = FindByName<Controls.TextBox>(window, "NavSearchBox");
                         Assert.IsNotNull(setupSearch, "Demo search box must be present.");
@@ -1391,7 +1386,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
                     Drain(window.Dispatcher);
 
-                    titleText = FindByName<WpfTextBlock>(shellTitleBar, "PART_TitleText");
+                    titleText = FindByName<System.Windows.Controls.TextBlock>(shellTitleBar, "PART_TitleText");
                     Controls.TextBox? search = FindByName<Controls.TextBox>(window, "NavSearchBox");
                     Assert.IsNotNull(search, "Demo search box must be present.");
                     Assert.AreEqual(Visibility.Visible, titleText?.Visibility,
@@ -1460,13 +1455,13 @@ namespace Fluence.Wpf.Tests
                     SampleDescription = "Snippet",
                     XamlSource = "<ui:Button Content=\"Save\" />",
                     CSharpSource = "private void Save_Click(object sender, RoutedEventArgs e) { }",
-                    DemoContent = new WpfTextBlock { Text = "Visible sample" },
+                    DemoContent = new System.Windows.Controls.TextBlock { Text = "Visible sample" },
                 };
 
                 Window window = CreateHostWindow(sample);
                 try
                 {
-                    FluenceExpander? expander = FindByName<FluenceExpander>(sample, "SourceExpander");
+                    Controls.Expander? expander = FindByName<Controls.Expander>(sample, "SourceExpander");
                     Assert.IsNotNull(expander, "Inline source expander must exist.");
                     Assert.IsFalse(expander.IsExpanded, "Source starts collapsed.");
 
@@ -1480,7 +1475,7 @@ namespace Fluence.Wpf.Tests
                     AssertSourceTab(tabs, "XAML", sample.XamlSource);
                     AssertSourceTab(tabs, "C#", sample.CSharpSource);
 
-                    WpfBorder? sampleCard = FindByName<WpfBorder>(sample, "SampleCard");
+                    System.Windows.Controls.Border? sampleCard = FindByName<System.Windows.Controls.Border>(sample, "SampleCard");
                     Assert.IsNotNull(sampleCard, "Sample host should expose the sample surface.");
                     Assert.AreEqual(new CornerRadius(8, 8, 0, 0), sampleCard.CornerRadius,
                         "Sample surface should square off its bottom corners so source attaches.");
@@ -1509,13 +1504,13 @@ namespace Fluence.Wpf.Tests
                     SampleDescription = "Snippet",
                     XamlSource = "<Grid>\n    <TextBlock Text=\"Indented\" />\n</Grid>",
                     CSharpSource = "private void Save()\n{\n    string value = \"Indented\";\n}",
-                    DemoContent = new WpfTextBlock { Text = "Visible sample" },
+                    DemoContent = new System.Windows.Controls.TextBlock { Text = "Visible sample" },
                 };
 
                 Window window = CreateHostWindow(sample);
                 try
                 {
-                    FluenceExpander? expander = FindByName<FluenceExpander>(sample, "SourceExpander");
+                    Controls.Expander? expander = FindByName<Controls.Expander>(sample, "SourceExpander");
                     Assert.IsNotNull(expander, "Inline source expander must exist.");
                     expander.IsExpanded = true;
                     Drain(window.Dispatcher);
@@ -1552,7 +1547,7 @@ StringComparison.Ordinal, "Rendered C# source should preserve leading indentatio
                 Window window = CreateHostWindow(sample);
                 try
                 {
-                    FluenceExpander? expander = FindByName<FluenceExpander>(sample, "SourceExpander");
+                    Controls.Expander? expander = FindByName<Controls.Expander>(sample, "SourceExpander");
                     _ = expander?.IsExpanded = true;
                     Drain(window.Dispatcher);
                     window.UpdateLayout();
@@ -1747,8 +1742,8 @@ StringComparison.Ordinal, "Rendered C# source should preserve leading indentatio
                     Controls.ProgressBar? progressBar = FindByName<Controls.ProgressBar>(page, "StepProgressBar");
                     Assert.IsNotNull(progressBar, "Status page should expose the step ProgressBar.");
 
-                    WpfBorder? track = FindByName<WpfBorder>(progressBar, "PART_Track");
-                    WpfBorder? fill = FindByName<WpfBorder>(progressBar, "PART_Fill");
+                    System.Windows.Controls.Border? track = FindByName<System.Windows.Controls.Border>(progressBar, "PART_Track");
+                    System.Windows.Controls.Border? fill = FindByName<System.Windows.Controls.Border>(progressBar, "PART_Fill");
                     Assert.IsNotNull(track, "Step ProgressBar should expose PART_Track.");
                     Assert.IsNotNull(fill, "Step ProgressBar should expose PART_Fill.");
 
@@ -1868,16 +1863,16 @@ StringComparison.Ordinal, "Rendered C# source should preserve leading indentatio
                     Grid? table = FindByName<Grid>(page, "TypographyTable");
                     Assert.IsNotNull(table, "Typography page should expose TypographyTable.");
 
-                    WpfTextBlock? firstBodyCell = table.Children
-                        .OfType<WpfTextBlock>()
-                        .FirstOrDefault(static textBlock => Grid.GetRow(textBlock) == 1 && Grid.GetColumn(textBlock) == 0);
+                    System.Windows.Controls.TextBlock? firstBodyCell = table.Children
+                        .OfType<System.Windows.Controls.TextBlock>()
+                        .FirstOrDefault(static textBlock => Grid.GetRow(textBlock) is 1 && Grid.GetColumn(textBlock) is 0);
                     Assert.IsNotNull(firstBodyCell, "Typography table should include a first body row cell.");
                     Assert.AreEqual(new Thickness(24, 8, 16, 8), firstBodyCell.Margin,
                         "Typography body cells should use reduced vertical row spacing.");
 
-                    WpfBorder? firstShadedRow = table.Children
-                        .OfType<WpfBorder>()
-                        .FirstOrDefault(static border => Grid.GetRow(border) == 1);
+                    System.Windows.Controls.Border? firstShadedRow = table.Children
+                        .OfType<System.Windows.Controls.Border>()
+                        .FirstOrDefault(static border => Grid.GetRow(border) is 1);
                     Assert.IsNotNull(firstShadedRow, "Typography table should include shaded row backgrounds.");
                     Assert.AreEqual(new Thickness(0, 2, 0, 2), firstShadedRow.Margin,
                         "Typography shaded row background should match the compact vertical spacing.");
@@ -1927,9 +1922,9 @@ StringComparison.Ordinal, "Rendered C# source should preserve leading indentatio
                 Window window = CreateHostWindow(page);
                 try
                 {
-                    WpfBorder? appThemeCard = FindByName<WpfBorder>(page, "AppThemeSettingsCard");
-                    WpfBorder? backdropCard = FindByName<WpfBorder>(page, "BackdropSettingsCard");
-                    WpfBorder? colorsCard = FindByName<WpfBorder>(page, "ColorsSettingsCard");
+                    System.Windows.Controls.Border? appThemeCard = FindByName<System.Windows.Controls.Border>(page, "AppThemeSettingsCard");
+                    System.Windows.Controls.Border? backdropCard = FindByName<System.Windows.Controls.Border>(page, "BackdropSettingsCard");
+                    System.Windows.Controls.Border? colorsCard = FindByName<System.Windows.Controls.Border>(page, "ColorsSettingsCard");
                     System.Windows.Controls.ComboBox? backdrop = FindByName<System.Windows.Controls.ComboBox>(page, "BackdropComboBox");
                     UniformGrid? accentRow = FindByName<UniformGrid>(page, "AccentSwatchRow");
                     System.Windows.Controls.ComboBox? minimize = FindByName<System.Windows.Controls.ComboBox>(page, "MinimizeVisibilityCombo");
@@ -2196,11 +2191,11 @@ StringComparison.Ordinal, "Rendered C# source should preserve leading indentatio
                 Window window = CreateHostWindow(page);
                 try
                 {
-                    FluenceListView? list = FindByName<FluenceListView>(page, "IconCatalogList");
+                    Controls.ListView? list = FindByName<Controls.ListView>(page, "IconCatalogList");
                     Assert.IsNotNull(list, "Icon catalog list must exist.");
                     Assert.IsTrue(list.Items.Count > 100, "Icon catalog must load enough rows to exercise virtualization.");
 
-                    WpfBorder? catalogCard = FindByName<WpfBorder>(page, "IconCatalogCard");
+                    System.Windows.Controls.Border? catalogCard = FindByName<System.Windows.Controls.Border>(page, "IconCatalogCard");
                     Assert.IsNotNull(catalogCard, "Icon catalog should be hosted in the bordered gallery panel.");
                     Assert.AreEqual(new Thickness(0), catalogCard.Padding,
                         "Icon catalog panel should stay flush so the sidebar divider spans its full height.");
@@ -2215,7 +2210,7 @@ StringComparison.Ordinal, "Rendered C# source should preserve leading indentatio
                     Assert.AreEqual(new Thickness(0), list.BorderThickness,
                         "Icon catalog ListView should let the surrounding panel own the stroke.");
 
-                    WpfBorder? detailsPanel = FindByName<WpfBorder>(page, "IconDetailsPanel");
+                    System.Windows.Controls.Border? detailsPanel = FindByName<System.Windows.Controls.Border>(page, "IconDetailsPanel");
                     Assert.IsNotNull(detailsPanel, "Icon details sidebar should exist.");
                     Assert.AreEqual(new Thickness(1, 0, 0, 0), detailsPanel.BorderThickness,
                         "Icon details sidebar should be separated from the grid by a 1px vertical divider.");
@@ -2251,7 +2246,7 @@ StringComparison.Ordinal, "Rendered C# source should preserve leading indentatio
 
         private static void AssertTabViewItemContentSurface(TabViewItem item)
         {
-            WpfBorder? surface = item.Content as WpfBorder;
+            System.Windows.Controls.Border? surface = item.Content as System.Windows.Controls.Border;
             Assert.IsNotNull(surface, "TabView document content should use a layer-fill surface.");
             AssertIconBrush(surface.Background, "LayerFillColorDefaultBrush",
                 "TabView document content should use LayerFillColorDefaultBrush.");
@@ -2277,7 +2272,7 @@ StringComparison.Ordinal, "Rendered C# source should preserve leading indentatio
             {
                 if (item is TabItem tab && string.Equals(tab.Header as string, expectedHeader, StringComparison.Ordinal))
                 {
-                    WpfButton? copy = FindByName<WpfButton>(tab.Content as DependencyObject, "CopySourceButton");
+                    System.Windows.Controls.Button? copy = FindByName<System.Windows.Controls.Button>(tab.Content as DependencyObject, "CopySourceButton");
                     Assert.IsNotNull(copy, "Source tab should expose a copy button: " + expectedHeader);
                     Assert.AreEqual(expectedSource, copy.Tag as string, "Copy button should keep the in-memory source text.");
                     return;
@@ -2384,7 +2379,7 @@ StringComparison.Ordinal, "Rendered C# source should preserve leading indentatio
 
         private static void InvokeTitleBarBack(TitleBar titleBar)
         {
-            WpfButton? backButton = FindByName<WpfButton>(titleBar, "PART_BackButton");
+            System.Windows.Controls.Button? backButton = FindByName<System.Windows.Controls.Button>(titleBar, "PART_BackButton");
             Assert.IsNotNull(backButton, "TitleBar should expose a back button.");
             backButton.RaiseEvent(new RoutedEventArgs(ButtonBase.ClickEvent, backButton));
             Drain(titleBar.Dispatcher);

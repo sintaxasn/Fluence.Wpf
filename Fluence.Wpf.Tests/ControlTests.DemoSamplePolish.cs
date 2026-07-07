@@ -195,7 +195,7 @@ namespace Fluence.Wpf.Tests
                 Assert.IsTrue(filtered.Count < totalIcons, "Searching for zoom should remove non-matching icons.");
                 foreach (GalleryIconsPage.IconCatalogItem item in filtered)
                 {
-                    Assert.IsTrue(item.Name.IndexOf("zoom", StringComparison.OrdinalIgnoreCase) >= 0,
+                    Assert.IsTrue(item.Name.Contains("zoom", StringComparison.OrdinalIgnoreCase),
                         "Filtered icons should match the search term: " + item.Name);
                 }
 
@@ -662,11 +662,11 @@ namespace Fluence.Wpf.Tests
             {
                 List<string> descriptions = [.. FindVisualChildren<DemoSampleControl>(window).Select(static sample => sample.SampleDescription)];
 
-                Assert.IsTrue(descriptions.Exists(static description => description.IndexOf("Separator", StringComparison.OrdinalIgnoreCase) >= 0),
+                Assert.IsTrue(descriptions.Exists(static description => description.Contains("Separator", StringComparison.OrdinalIgnoreCase)),
                     "Layout page should have a dedicated Separator DemoSampleControl.");
-                Assert.IsTrue(descriptions.Exists(static description => description.IndexOf("DockPanel", StringComparison.OrdinalIgnoreCase) >= 0),
+                Assert.IsTrue(descriptions.Exists(static description => description.Contains("DockPanel", StringComparison.OrdinalIgnoreCase)),
                     "Layout page should have a dedicated DockPanel DemoSampleControl.");
-                Assert.IsTrue(descriptions.Exists(static description => description.IndexOf("Expander", StringComparison.OrdinalIgnoreCase) >= 0),
+                Assert.IsTrue(descriptions.Exists(static description => description.Contains("Expander", StringComparison.OrdinalIgnoreCase)),
                     "Layout page should have a dedicated Expander DemoSampleControl.");
 
                 Controls.Expander? dockPanelExpander = FindVisualChildByName<Controls.Expander>(window, "DockPanelOptionsExpander");

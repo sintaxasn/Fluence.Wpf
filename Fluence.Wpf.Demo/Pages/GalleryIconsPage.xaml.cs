@@ -38,7 +38,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Resources;
-using Fluent = Fluence.Wpf.Controls;
 
 namespace Fluence.Wpf.Demo.Pages
 {
@@ -50,7 +49,7 @@ namespace Fluence.Wpf.Demo.Pages
         private const double TileGapWidth = 12.0;
         private const int DefaultColumns = 4;
 
-        private static readonly System.Threading.Lock IconCatalogLock = new();
+        private static readonly Lock IconCatalogLock = new();
         private static readonly char[] SearchTermSeparators = [' '];
         private static readonly CompareInfo OrdinalIgnoreCaseCompareInfo = CultureInfo.InvariantCulture.CompareInfo;
         private static List<IconCatalogItem>? cachedIcons;
@@ -114,7 +113,7 @@ namespace Fluence.Wpf.Demo.Pages
 
         private static void CopyIconValueButton_Click(object sender, RoutedEventArgs e)
         {
-            string? value = sender is Fluent.Button button ? button.Tag as string : null;
+            string? value = sender is Controls.Button button ? button.Tag as string : null;
             if (string.IsNullOrWhiteSpace(value))
             {
                 return;
@@ -384,7 +383,7 @@ namespace Fluence.Wpf.Demo.Pages
 
         private static void FlushTag(List<string> tags, StringBuilder word)
         {
-            if (word.Length == 0)
+            if (word.Length is 0)
             {
                 return;
             }
@@ -408,7 +407,7 @@ namespace Fluence.Wpf.Demo.Pages
                 string? line;
                 while ((line = reader.ReadLine()) is not null)
                 {
-                    if (line.Length == 0)
+                    if (line.Length is 0)
                     {
                         continue;
                     }
@@ -421,7 +420,7 @@ namespace Fluence.Wpf.Demo.Pages
 
                     string name = parts[0].Trim();
                     string code = parts[1].Trim().ToUpperInvariant();
-                    if (name.Length == 0 || code.Length == 0 || names.ContainsKey(code))
+                    if (name.Length is 0 || code.Length is 0 || names.ContainsKey(code))
                     {
                         continue;
                     }

@@ -297,7 +297,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public async Task ContentDialog_OwnerWindowClose_CompletesPendingTaskWithNone()
+        public async Task ContentDialog_OwnerWindowClose_CompletesPendingTaskWithNoneAsync()
         {
             Task<ContentDialogResult>? dialogTask = null;
             RunOnStaThread(() =>
@@ -390,7 +390,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public async Task ContentDialog_PrimaryButtonClick_CompletesTaskWithPrimaryAndRemovesOverlay()
+        public async Task ContentDialog_PrimaryButtonClick_CompletesTaskWithPrimaryAndRemovesOverlayAsync()
         {
             Task<ContentDialogResult>? dialogTask = null;
             RunOnStaThread(() =>
@@ -445,7 +445,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public async Task ContentDialog_CloseButtonClick_CompletesTaskWithNone()
+        public async Task ContentDialog_CloseButtonClick_CompletesTaskWithNoneAsync()
         {
             Task<ContentDialogResult>? dialogTask = null;
             RunOnStaThread(() =>
@@ -493,7 +493,7 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
-        public async Task ContentDialog_EscapeKey_CompletesTaskWithNone()
+        public async Task ContentDialog_EscapeKey_CompletesTaskWithNoneAsync()
         {
             Task<ContentDialogResult>? dialogTask = null;
             RunOnStaThread(() =>
@@ -834,7 +834,7 @@ namespace Fluence.Wpf.Tests
                         "Over a FluenceWindow the dialog overlay must be hosted in PART_DialogOverlayHost so the smoke covers the title bar.");
 
                     dialog.Hide();
-                    bool removed = WaitUntil(window.Dispatcher, 2000, () => host.Children.Count == 0);
+                    bool removed = WaitUntil(window.Dispatcher, 2000, () => host.Children.Count is 0);
                     Assert.IsTrue(removed, "Closing the dialog must remove the overlay from PART_DialogOverlayHost.");
                 }
                 finally
@@ -880,7 +880,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
 
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(dialog);
-                    _ = Assert.IsInstanceOfType<Fluence.Wpf.Automation.ContentDialogAutomationPeer>(peer,
+                    _ = Assert.IsInstanceOfType<Automation.ContentDialogAutomationPeer>(peer,
                         "ContentDialog.OnCreateAutomationPeer must return a ContentDialogAutomationPeer.");
                     Assert.AreEqual(AutomationControlType.Window, peer.GetAutomationControlType(),
                         "ContentDialog must report the Window control type so assistive technologies treat it as a modal dialog surface.");

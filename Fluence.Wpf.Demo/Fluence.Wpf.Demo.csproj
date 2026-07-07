@@ -8,7 +8,7 @@
     <AssemblyName>Fluence.Wpf.Demo</AssemblyName>
     <ApplicationIcon>..\assets\Fluence_Icon_Light.ico</ApplicationIcon>
     <GenerateAssemblyInfo>true</GenerateAssemblyInfo>
-    <NoWarn>$(NoWarn);CS1591;IDE0330;VSTHRD001</NoWarn>
+    <NoWarn>$(NoWarn);CS1591;VSTHRD001;MA0045</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>
@@ -38,6 +38,10 @@
       T:System.Threading.Lock|
     </MeziantouPolyfill_IncludedPolyfills>
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0-windows10.0.26100.0'">
+    <NoWarn>$(NoWarn);RCS1255</NoWarn>
   </PropertyGroup>
 
 </Project>

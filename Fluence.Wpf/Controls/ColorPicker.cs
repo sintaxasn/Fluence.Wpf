@@ -604,7 +604,7 @@ namespace Fluence.Wpf.Controls
         private static void OnIsAlphaEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ColorPicker picker = (ColorPicker)d;
-            if (e.NewValue is false && picker._alpha != 255)
+            if (e.NewValue is false && picker._alpha is not 255)
             {
                 // Disabling alpha pins the picker back to fully opaque, like WinUI.
                 picker.SetColorFromHsv(picker._hue, picker._saturation, picker._value, 255);
@@ -767,7 +767,7 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         private void UpdateChannelTextBoxes()
         {
-            if (_activeTextInputGroup != TextInputGroup.Rgb)
+            if (_activeTextInputGroup is not TextInputGroup.Rgb)
             {
                 Color color = Color;
                 _redTextBox?.SetCurrentValue(System.Windows.Controls.TextBox.TextProperty, color.R.ToString(CultureInfo.InvariantCulture));
@@ -775,14 +775,14 @@ namespace Fluence.Wpf.Controls
                 _blueTextBox?.SetCurrentValue(System.Windows.Controls.TextBox.TextProperty, color.B.ToString(CultureInfo.InvariantCulture));
             }
 
-            if (_activeTextInputGroup != TextInputGroup.Hsv)
+            if (_activeTextInputGroup is not TextInputGroup.Hsv)
             {
                 _hueTextBox?.SetCurrentValue(System.Windows.Controls.TextBox.TextProperty, ((int)Math.Round(_hue, MidpointRounding.ToEven)).ToString(CultureInfo.InvariantCulture));
                 _saturationTextBox?.SetCurrentValue(System.Windows.Controls.TextBox.TextProperty, ((int)Math.Round(_saturation * 100, MidpointRounding.ToEven)).ToString(CultureInfo.InvariantCulture));
                 _valueTextBox?.SetCurrentValue(System.Windows.Controls.TextBox.TextProperty, ((int)Math.Round(_value * 100, MidpointRounding.ToEven)).ToString(CultureInfo.InvariantCulture));
             }
 
-            if (_activeTextInputGroup != TextInputGroup.Alpha)
+            if (_activeTextInputGroup is not TextInputGroup.Alpha)
             {
                 int percent = (int)Math.Round(_alpha / 255.0 * 100, MidpointRounding.ToEven);
                 _alphaTextBox?.SetCurrentValue(
@@ -859,7 +859,7 @@ namespace Fluence.Wpf.Controls
         private void UpdatePreviousSwatch()
         {
             Color? previous = PreviousColor;
-            if (_previousSwatchBorder is null || !previous.HasValue)
+            if (_previousSwatchBorder is null || previous is null)
             {
                 return;
             }
@@ -1321,7 +1321,7 @@ namespace Fluence.Wpf.Controls
                 return false;
             }
 
-            if (hex.Length == 6)
+            if (hex.Length is 6)
             {
                 argb |= 0xFF000000;
             }

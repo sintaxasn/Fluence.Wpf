@@ -425,10 +425,10 @@ namespace Fluence.Wpf.Controls
             _syncingMode = true;
             try
             {
-                IsIndeterminate = mode == ProgressBarMode.Indeterminate;
-                ShowError = mode == ProgressBarMode.Error;
-                ShowPaused = mode == ProgressBarMode.Paused;
-                _stepMode = mode == ProgressBarMode.StepProgress;
+                IsIndeterminate = mode is ProgressBarMode.Indeterminate;
+                ShowError = mode is ProgressBarMode.Error;
+                ShowPaused = mode is ProgressBarMode.Paused;
+                _stepMode = mode is ProgressBarMode.StepProgress;
             }
             finally
             {

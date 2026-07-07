@@ -144,7 +144,7 @@ namespace Fluence.Wpf.Controls
             base.OnClick();
             if (NavigateUri is Uri uri)
             {
-                _ = Process.Start(uri.AbsoluteUri);
+                _ = Process.Start(new ProcessStartInfo(uri.AbsoluteUri) { UseShellExecute = true });
             }
         }
 

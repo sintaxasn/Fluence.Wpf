@@ -74,9 +74,9 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Gets or sets the description text displayed below the radio button content.
         /// </summary>
-        public string Description
+        public string? Description
         {
-            get => (string)GetValue(DescriptionProperty);
+            get => (string?)GetValue(DescriptionProperty);
             set => SetValue(DescriptionProperty, value);
         }
 

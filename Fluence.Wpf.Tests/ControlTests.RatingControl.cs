@@ -33,8 +33,6 @@ using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Input;
 using System.Windows.Media;
-using WpfStackPanel = System.Windows.Controls.StackPanel;
-using WpfTextBlock = System.Windows.Controls.TextBlock;
 
 namespace Fluence.Wpf.Tests
 {
@@ -62,7 +60,7 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 // PART_StarsPanel must be present after template is applied.
-                WpfStackPanel? panel = FindVisualChildByName<WpfStackPanel>(rc, "PART_StarsPanel");
+                System.Windows.Controls.StackPanel? panel = FindVisualChildByName<System.Windows.Controls.StackPanel>(rc, "PART_StarsPanel");
                 Assert.IsNotNull(panel, "PART_StarsPanel must be present in RatingControl template.");
                 w.Close();
             });
@@ -81,7 +79,7 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                WpfStackPanel? panel = FindVisualChildByName<WpfStackPanel>(rc, "PART_StarsPanel");
+                System.Windows.Controls.StackPanel? panel = FindVisualChildByName<System.Windows.Controls.StackPanel>(rc, "PART_StarsPanel");
                 Assert.IsNotNull(panel);
                 Assert.AreEqual(5, panel.Children.Count,
                     "Default MaxRating=5 must generate 5 star TextBlocks.");
@@ -102,12 +100,12 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                WpfStackPanel? panel = FindVisualChildByName<WpfStackPanel>(rc, "PART_StarsPanel");
+                System.Windows.Controls.StackPanel? panel = FindVisualChildByName<System.Windows.Controls.StackPanel>(rc, "PART_StarsPanel");
                 Assert.IsNotNull(panel);
 
                 // Stars 1-3 must be filled (U+E735), stars 4-5 must be empty (U+E734).
                 int filledCount = 0;
-                foreach (WpfTextBlock star in panel.Children)
+                foreach (System.Windows.Controls.TextBlock star in panel.Children)
                 {
                     if (string.Equals(star.Text, "\uE735", System.StringComparison.Ordinal))
                     {
@@ -134,14 +132,14 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                WpfStackPanel? panel = FindVisualChildByName<WpfStackPanel>(rc, "PART_StarsPanel");
+                System.Windows.Controls.StackPanel? panel = FindVisualChildByName<System.Windows.Controls.StackPanel>(rc, "PART_StarsPanel");
                 Assert.IsNotNull(panel);
 
                 SolidColorBrush? accentBrush = app?.TryFindResource("AccentFillColorDefaultBrush") as SolidColorBrush;
                 Assert.IsNotNull(accentBrush, "AccentFillColorDefaultBrush must resolve.");
 
                 // First two stars (filled) must use AccentFillColorDefaultBrush.
-                WpfTextBlock? star1 = panel.Children[0] as WpfTextBlock;
+                System.Windows.Controls.TextBlock? star1 = panel.Children[0] as System.Windows.Controls.TextBlock;
                 SolidColorBrush? star1Fg = star1?.Foreground as SolidColorBrush;
                 Assert.IsNotNull(star1Fg, "First filled star Foreground must be a SolidColorBrush.");
                 Assert.AreEqual(accentBrush.Color, star1Fg.Color,
@@ -163,13 +161,13 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                WpfStackPanel? panel = FindVisualChildByName<WpfStackPanel>(rc, "PART_StarsPanel");
+                System.Windows.Controls.StackPanel? panel = FindVisualChildByName<System.Windows.Controls.StackPanel>(rc, "PART_StarsPanel");
                 Assert.IsNotNull(panel);
 
                 SolidColorBrush? secondaryBrush = app?.TryFindResource("TextFillColorSecondaryBrush") as SolidColorBrush;
                 Assert.IsNotNull(secondaryBrush, "TextFillColorSecondaryBrush must resolve.");
 
-                WpfTextBlock? star = panel.Children[0] as WpfTextBlock;
+                System.Windows.Controls.TextBlock? star = panel.Children[0] as System.Windows.Controls.TextBlock;
                 SolidColorBrush? starFg = star?.Foreground as SolidColorBrush;
                 Assert.IsNotNull(starFg, "Empty star Foreground must be a SolidColorBrush.");
                 Assert.AreEqual(secondaryBrush.Color, starFg.Color,
@@ -191,7 +189,7 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                WpfTextBlock? caption = FindVisualChildByName<WpfTextBlock>(rc, "PART_Caption");
+                System.Windows.Controls.TextBlock? caption = FindVisualChildByName<System.Windows.Controls.TextBlock>(rc, "PART_Caption");
                 Assert.IsNotNull(caption, "PART_Caption must be present.");
                 Assert.AreEqual(Visibility.Visible, caption.Visibility,
                     "PART_Caption must be Visible when Caption is set.");
@@ -214,7 +212,7 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                WpfTextBlock? caption = FindVisualChildByName<WpfTextBlock>(rc, "PART_Caption");
+                System.Windows.Controls.TextBlock? caption = FindVisualChildByName<System.Windows.Controls.TextBlock>(rc, "PART_Caption");
                 Assert.IsNotNull(caption, "PART_Caption must be present.");
                 Assert.AreEqual(Visibility.Collapsed, caption.Visibility,
                     "PART_Caption must be Collapsed when Caption is empty.");
@@ -261,7 +259,7 @@ namespace Fluence.Wpf.Tests
                 ThemeTestHelpers.ApplyStandardThemeCycle();
                 DrainDispatcher(w.Dispatcher);
 
-                WpfStackPanel? panel = FindVisualChildByName<WpfStackPanel>(rc, "PART_StarsPanel");
+                System.Windows.Controls.StackPanel? panel = FindVisualChildByName<System.Windows.Controls.StackPanel>(rc, "PART_StarsPanel");
                 Assert.IsNotNull(panel,
                     "PART_StarsPanel must still be present after theme cycle.");
                 w.Close();

@@ -780,7 +780,7 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         private void UpdateShellMetrics()
         {
-            MarginMaximized = WindowState == WindowState.Maximized ? new Thickness(6) : new Thickness(0);
+            MarginMaximized = WindowState is WindowState.Maximized ? new Thickness(6) : new Thickness(0);
             _windowChrome.ResizeBorderThickness = WindowPolicy.GetResizeBorderThickness(WindowState, ResizeMode);
         }
 
@@ -887,9 +887,9 @@ namespace Fluence.Wpf.Controls
         private static Color GetFallbackBackgroundColor()
         {
             ApplicationTheme resolvedTheme = ApplicationThemeManager.GetResolvedTheme();
-            return resolvedTheme == ApplicationTheme.Dark
+            return resolvedTheme is ApplicationTheme.Dark
                 ? Color.FromRgb(0x20, 0x20, 0x20)
-                : resolvedTheme == ApplicationTheme.HighContrast
+                : resolvedTheme is ApplicationTheme.HighContrast
                 ? SystemColors.WindowColor
                 : Color.FromRgb(0xFA, 0xFA, 0xFA);
         }
@@ -937,12 +937,12 @@ namespace Fluence.Wpf.Controls
         /// </remarks>
         private void FillClientAreaForSizeToContent()
         {
-            if (SizeToContent == SizeToContent.Manual || _isFillingClientArea)
+            if (SizeToContent is SizeToContent.Manual || _isFillingClientArea)
             {
                 return;
             }
 
-            if (VisualChildrenCount == 0 || GetVisualChild(0) is not UIElement child)
+            if (VisualChildrenCount is 0 || GetVisualChild(0) is not UIElement child)
             {
                 return;
             }
@@ -1003,7 +1003,7 @@ namespace Fluence.Wpf.Controls
             if (IsCaptionChromeOverrideExplicit(IsMinimizeButtonVisibleProperty))
             {
                 minimizeVisibility = IsMinimizeButtonVisible;
-                minimizeEnabled = minimizeVisibility == Visibility.Visible;
+                minimizeEnabled = minimizeVisibility is Visibility.Visible;
             }
             if (!IsMinimizable)
             {
@@ -1023,9 +1023,9 @@ namespace Fluence.Wpf.Controls
             if (IsCaptionChromeOverrideExplicit(IsMaximizeButtonVisibleProperty))
             {
                 ApplyMaximizeRestoreVisibilityOverride(IsMaximizeButtonVisible, out maxVis, out restVis);
-                bool explicitlyVisible = IsMaximizeButtonVisible == Visibility.Visible;
-                maxEn = explicitlyVisible && WindowState != WindowState.Maximized;
-                restEn = explicitlyVisible && WindowState == WindowState.Maximized;
+                bool explicitlyVisible = IsMaximizeButtonVisible is Visibility.Visible;
+                maxEn = explicitlyVisible && WindowState is not WindowState.Maximized;
+                restEn = explicitlyVisible && WindowState is WindowState.Maximized;
             }
             if (!IsMaximizable)
             {
@@ -1043,7 +1043,7 @@ namespace Fluence.Wpf.Controls
             if (IsCaptionChromeOverrideExplicit(IsCloseButtonVisibleProperty))
             {
                 closeVisibility = IsCloseButtonVisible;
-                closeEnabled = closeVisibility == Visibility.Visible;
+                closeEnabled = closeVisibility is Visibility.Visible;
             }
             if (!IsClosable)
             {
@@ -1070,9 +1070,9 @@ namespace Fluence.Wpf.Controls
             Visibility restoreVisibility,
             Visibility closeVisibility)
         {
-            bool maximizeOccupiesSlot = maximizeVisibility != Visibility.Collapsed || restoreVisibility != Visibility.Collapsed;
-            bool minimizeOccupiesSlot = minimizeVisibility != Visibility.Collapsed;
-            bool closeOccupiesSlot = closeVisibility != Visibility.Collapsed;
+            bool maximizeOccupiesSlot = maximizeVisibility is not Visibility.Collapsed || restoreVisibility is not Visibility.Collapsed;
+            bool minimizeOccupiesSlot = minimizeVisibility is not Visibility.Collapsed;
+            bool closeOccupiesSlot = closeVisibility is not Visibility.Collapsed;
 
             Grid.SetColumn(_closeButton, 2);
             int nextSlot = 2;
@@ -1109,16 +1109,16 @@ namespace Fluence.Wpf.Controls
         /// <param name="restoreVisibility">The resulting visibility of the restore button.</param>
         private void ApplyMaximizeRestoreVisibilityOverride(Visibility visibility, out Visibility maximizeVisibility, out Visibility restoreVisibility)
         {
-            if (visibility == Visibility.Visible)
+            if (visibility is Visibility.Visible)
             {
-                maximizeVisibility = WindowState == WindowState.Maximized ? Visibility.Collapsed : Visibility.Visible;
-                restoreVisibility = WindowState == WindowState.Maximized ? Visibility.Visible : Visibility.Collapsed;
+                maximizeVisibility = WindowState is WindowState.Maximized ? Visibility.Collapsed : Visibility.Visible;
+                restoreVisibility = WindowState is WindowState.Maximized ? Visibility.Visible : Visibility.Collapsed;
                 return;
             }
-            if (visibility == Visibility.Hidden)
+            if (visibility is Visibility.Hidden)
             {
-                maximizeVisibility = WindowState == WindowState.Maximized ? Visibility.Collapsed : Visibility.Hidden;
-                restoreVisibility = WindowState == WindowState.Maximized ? Visibility.Hidden : Visibility.Collapsed;
+                maximizeVisibility = WindowState is WindowState.Maximized ? Visibility.Collapsed : Visibility.Hidden;
+                restoreVisibility = WindowState is WindowState.Maximized ? Visibility.Hidden : Visibility.Collapsed;
                 return;
             }
             maximizeVisibility = Visibility.Collapsed;
@@ -1162,13 +1162,13 @@ namespace Fluence.Wpf.Controls
                 int result = HitTestTitleBar(lParam);
                 if (result == NativeConstants.HTMAXBUTTON)
                 {
-                    SetSnapHover(WindowState == WindowState.Maximized ? _restoreButton : _maximizeButton);
+                    SetSnapHover(WindowState is WindowState.Maximized ? _restoreButton : _maximizeButton);
                 }
                 else
                 {
                     ClearSnapHover();
                 }
-                if (result != 0)
+                if (result is not 0)
                 {
                     handled = true;
                     return new IntPtr(result);
@@ -1297,15 +1297,15 @@ namespace Fluence.Wpf.Controls
         private void HandleMaxButtonClick(ref bool handled)
         {
             ClearSnapHover();
-            if (WindowState == WindowState.Maximized)
+            if (WindowState is WindowState.Maximized)
             {
-                if (_restoreButton is not null && _restoreButton.Visibility == Visibility.Visible && _restoreButton.IsEnabled)
+                if (_restoreButton?.Visibility is Visibility.Visible && _restoreButton.IsEnabled)
                 {
                     handled = true;
                     RestoreWindowDirect();
                 }
             }
-            else if (_maximizeButton is not null && _maximizeButton.Visibility == Visibility.Visible && _maximizeButton.IsEnabled)
+            else if (_maximizeButton?.Visibility is Visibility.Visible && _maximizeButton.IsEnabled)
             {
                 handled = true;
                 MaximizeWindowDirect();
@@ -1346,13 +1346,13 @@ namespace Fluence.Wpf.Controls
             bool shouldExposeSnapFlyout = SnapLayoutHelper.IsSnapLayoutEnabled()
                 && IsMaximizable
                 && OsVersionHelper.IsWindows11;
-            if (_maximizeButton is not null && _maximizeButton.Visibility == Visibility.Visible &&
+            if (_maximizeButton?.Visibility is Visibility.Visible &&
                 _maximizeButton.IsEnabled &&
                 IsOverElement(_maximizeButton, point))
             {
                 return shouldExposeSnapFlyout ? NativeConstants.HTMAXBUTTON : 0;
             }
-            if (_restoreButton is not null && _restoreButton.Visibility == Visibility.Visible &&
+            if (_restoreButton?.Visibility is Visibility.Visible &&
                 _restoreButton.IsEnabled &&
                 IsOverElement(_restoreButton, point))
             {
@@ -1360,10 +1360,10 @@ namespace Fluence.Wpf.Controls
             }
 
             // Minimize and close: return 0 so hit falls through to client area; WPF Button + Command fire.
-            if ((_minimizeButton is not null && _minimizeButton.Visibility == Visibility.Visible &&
-                 IsOverElement(_minimizeButton, point)) ||
-                (_closeButton is not null && _closeButton.Visibility == Visibility.Visible &&
-                 IsOverElement(_closeButton, point)))
+            if ((_minimizeButton?.Visibility is Visibility.Visible &&
+                IsOverElement(_minimizeButton, point)) ||
+                (_closeButton?.Visibility is Visibility.Visible &&
+                IsOverElement(_closeButton, point)))
             {
                 return 0;
             }
@@ -1391,7 +1391,7 @@ namespace Fluence.Wpf.Controls
         private bool TryGetTopResizeHit(Point point, out int hit)
         {
             hit = 0;
-            if (WindowState == WindowState.Maximized ||
+            if (WindowState is WindowState.Maximized ||
                 ResizeMode is ResizeMode.NoResize or ResizeMode.CanMinimize)
             {
                 return false;
@@ -1428,7 +1428,7 @@ namespace Fluence.Wpf.Controls
             }
 
             ClearSnapHover();
-            if (button?.IsEnabled == true)
+            if ((button?.IsEnabled) is true)
             {
                 // Use resource references (not a TryFindResource snapshot) so the snap-hover colors
                 // track theme/accent/high-contrast changes and mirror the WindowButtonStyle
@@ -1463,7 +1463,7 @@ namespace Fluence.Wpf.Controls
         /// <returns><see langword="true"/> if the point falls within the element's bounds; otherwise, <see langword="false"/>.</returns>
         private bool IsOverElement(UIElement element, Point windowPoint)
         {
-            if (element is null || element.Visibility != Visibility.Visible)
+            if (element is null || element.Visibility is not Visibility.Visible)
             {
                 return false;
             }
@@ -1516,16 +1516,16 @@ namespace Fluence.Wpf.Controls
                 ResizeMode.CanResizeWithGrip;
             bool allowedByExplicitDp =
                 IsCaptionChromeOverrideExplicit(IsMaximizeButtonVisibleProperty) &&
-                IsMaximizeButtonVisible == Visibility.Visible;
+                IsMaximizeButtonVisible is Visibility.Visible;
             e.CanExecute = (allowedByResizeMode || allowedByExplicitDp) && IsMaximizable;
         }
 
         private void OnCanMinimizeWindow(object sender, CanExecuteRoutedEventArgs e)
         {
-            bool allowedByResizeMode = ResizeMode != ResizeMode.NoResize;
+            bool allowedByResizeMode = ResizeMode is not ResizeMode.NoResize;
             bool allowedByExplicitDp =
                 IsCaptionChromeOverrideExplicit(IsMinimizeButtonVisibleProperty) &&
-                IsMinimizeButtonVisible == Visibility.Visible;
+                IsMinimizeButtonVisible is Visibility.Visible;
             e.CanExecute = (allowedByResizeMode || allowedByExplicitDp) && IsMinimizable;
         }
 

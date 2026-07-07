@@ -429,7 +429,7 @@ namespace Fluence.Wpf.Controls
 
         private void OnInnerPreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.CapsLock)
+            if (e.Key is Key.CapsLock)
             {
                 _ = Dispatcher.BeginInvoke(new Action(UpdateCapsLockIndicator), DispatcherPriority.Input);
             }
@@ -485,7 +485,7 @@ namespace Fluence.Wpf.Controls
 
         private static int ComputePasswordStrength(string password)
         {
-            if (password.Length == 0)
+            if (password.Length is 0)
             {
                 return 0;
             }
@@ -549,7 +549,7 @@ namespace Fluence.Wpf.Controls
         {
             string brushKey = PasswordStrength <= 1
                 ? "SystemFillColorCriticalBrush"
-                : PasswordStrength == 2
+                : PasswordStrength is 2
                 ? "SystemFillColorCautionBrush"
                 : "SystemFillColorSuccessBrush";
 

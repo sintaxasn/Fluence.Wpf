@@ -31,10 +31,6 @@ using System;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Media;
-using FluenceProgressBar = Fluence.Wpf.Controls.ProgressBar;
-using WpfBorder = System.Windows.Controls.Border;
-using WpfContentControl = System.Windows.Controls.ContentControl;
-using WpfGrid = System.Windows.Controls.Grid;
 
 namespace Fluence.Wpf.Tests
 {
@@ -55,7 +51,7 @@ namespace Fluence.Wpf.Tests
                 _ = MergeGenericDictionary(app);
                 ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
 
-                FluenceProgressBar progressBar = new()
+                Controls.ProgressBar progressBar = new()
                 {
                     Width = 240,
                     Height = 24,
@@ -66,7 +62,7 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                WpfBorder? fill = FindVisualChildByName<WpfBorder>(progressBar, "PART_Fill");
+                System.Windows.Controls.Border? fill = FindVisualChildByName<System.Windows.Controls.Border>(progressBar, "PART_Fill");
                 Assert.IsNotNull(fill, "ProgressBar template must expose PART_Fill.");
                 SolidColorBrush? initial = fill.Background as SolidColorBrush;
                 Assert.IsNotNull(initial, "PART_Fill.Background should be a SolidColorBrush.");
@@ -104,7 +100,7 @@ namespace Fluence.Wpf.Tests
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                FluenceProgressBar progressBar = new()
+                Controls.ProgressBar progressBar = new()
                 {
                     Width = 240,
                     Height = 24,
@@ -114,7 +110,7 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                WpfBorder? track = FindVisualChildByName<WpfBorder>(progressBar, "PART_Track");
+                System.Windows.Controls.Border? track = FindVisualChildByName<System.Windows.Controls.Border>(progressBar, "PART_Track");
                 Assert.IsNotNull(track, "ProgressBar template must expose PART_Track.");
 
                 Assert.AreEqual(1.0, progressBar.TrackHeight, 0.1,
@@ -138,7 +134,7 @@ namespace Fluence.Wpf.Tests
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                FluenceProgressBar progressBar = new()
+                Controls.ProgressBar progressBar = new()
                 {
                     Width = 240,
                     Height = 24,
@@ -149,7 +145,7 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                WpfBorder? fill = FindVisualChildByName<WpfBorder>(progressBar, "PART_Fill");
+                System.Windows.Controls.Border? fill = FindVisualChildByName<System.Windows.Controls.Border>(progressBar, "PART_Fill");
                 Assert.IsNotNull(fill, "ProgressBar template must expose PART_Fill.");
 
                 progressBar.ProgressMode = ProgressBarMode.Standard;
@@ -174,7 +170,7 @@ namespace Fluence.Wpf.Tests
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                FluenceProgressBar progressBar = new()
+                Controls.ProgressBar progressBar = new()
                 {
                     Width = 240,
                     Height = 24,
@@ -184,7 +180,7 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                WpfGrid? host = FindVisualChildByName<WpfGrid>(progressBar, "ProgressBarIndicatorHost");
+                System.Windows.Controls.Grid? host = FindVisualChildByName<System.Windows.Controls.Grid>(progressBar, "ProgressBarIndicatorHost");
                 Assert.IsNotNull(host, "ProgressBar template must expose the ProgressBarIndicatorHost panel.");
 
                 // ClipToBounds only clips rectangularly, so the translating indeterminate bars would
@@ -211,7 +207,7 @@ namespace Fluence.Wpf.Tests
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                FluenceProgressBar progressBar = new()
+                Controls.ProgressBar progressBar = new()
                 {
                     Width = 240,
                     Height = 24,
@@ -221,9 +217,9 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                WpfBorder? track = FindVisualChildByName<WpfBorder>(progressBar, "PART_Track");
-                WpfBorder? bar1 = FindVisualChildByName<WpfBorder>(progressBar, "PART_IndeterminateBar");
-                WpfBorder? bar2 = FindVisualChildByName<WpfBorder>(progressBar, "PART_IndeterminateBar2");
+                System.Windows.Controls.Border? track = FindVisualChildByName<System.Windows.Controls.Border>(progressBar, "PART_Track");
+                System.Windows.Controls.Border? bar1 = FindVisualChildByName<System.Windows.Controls.Border>(progressBar, "PART_IndeterminateBar");
+                System.Windows.Controls.Border? bar2 = FindVisualChildByName<System.Windows.Controls.Border>(progressBar, "PART_IndeterminateBar2");
                 Assert.IsNotNull(track, "ProgressBar template must expose PART_Track.");
                 Assert.IsNotNull(bar1, "ProgressBar template must expose PART_IndeterminateBar.");
                 Assert.IsNotNull(bar2, "ProgressBar template must expose PART_IndeterminateBar2.");
@@ -247,7 +243,7 @@ namespace Fluence.Wpf.Tests
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                FluenceProgressBar progressBar = new()
+                Controls.ProgressBar progressBar = new()
                 {
                     Width = 240,
                     Height = 24,
@@ -257,10 +253,10 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                WpfBorder? track = FindVisualChildByName<WpfBorder>(progressBar, "PART_Track");
-                WpfBorder? fill = FindVisualChildByName<WpfBorder>(progressBar, "PART_Fill");
-                WpfBorder? bar1 = FindVisualChildByName<WpfBorder>(progressBar, "PART_IndeterminateBar");
-                WpfBorder? bar2 = FindVisualChildByName<WpfBorder>(progressBar, "PART_IndeterminateBar2");
+                System.Windows.Controls.Border? track = FindVisualChildByName<System.Windows.Controls.Border>(progressBar, "PART_Track");
+                System.Windows.Controls.Border? fill = FindVisualChildByName<System.Windows.Controls.Border>(progressBar, "PART_Fill");
+                System.Windows.Controls.Border? bar1 = FindVisualChildByName<System.Windows.Controls.Border>(progressBar, "PART_IndeterminateBar");
+                System.Windows.Controls.Border? bar2 = FindVisualChildByName<System.Windows.Controls.Border>(progressBar, "PART_IndeterminateBar2");
                 Assert.IsNotNull(track, "ProgressBar template must expose PART_Track.");
                 Assert.IsNotNull(fill, "ProgressBar template must expose PART_Fill.");
                 Assert.IsNotNull(bar1, "ProgressBar template must expose PART_IndeterminateBar.");
@@ -312,13 +308,13 @@ namespace Fluence.Wpf.Tests
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                FluenceProgressBar progressBar = new()
+                Controls.ProgressBar progressBar = new()
                 {
                     Width = 240,
                     Height = 24,
                     IsIndeterminate = true,
                 };
-                WpfContentControl host = new() { Content = progressBar };
+                System.Windows.Controls.ContentControl host = new() { Content = progressBar };
                 Window w = new() { Content = host, Width = 300, Height = 120 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
@@ -364,7 +360,7 @@ namespace Fluence.Wpf.Tests
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                FluenceProgressBar progressBar = new()
+                Controls.ProgressBar progressBar = new()
                 {
                     ProgressMode = ProgressBarMode.Indeterminate,
                 };
@@ -377,14 +373,14 @@ namespace Fluence.Wpf.Tests
             });
         }
 
-        private static void AssertProgressBarStatePrimitiveBrush(Action<FluenceProgressBar> applyState, string brushKey)
+        private static void AssertProgressBarStatePrimitiveBrush(Action<Controls.ProgressBar> applyState, string brushKey)
         {
             WpfTestSta.Invoke(() =>
             {
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                FluenceProgressBar progressBar = new()
+                Controls.ProgressBar progressBar = new()
                 {
                     Width = 240,
                     Height = 24,
@@ -397,7 +393,7 @@ namespace Fluence.Wpf.Tests
                 applyState(progressBar);
                 DrainDispatcher(w.Dispatcher);
 
-                WpfBorder? fill = FindVisualChildByName<WpfBorder>(progressBar, "PART_Fill");
+                System.Windows.Controls.Border? fill = FindVisualChildByName<System.Windows.Controls.Border>(progressBar, "PART_Fill");
                 Assert.IsNotNull(fill, "ProgressBar template must expose PART_Fill.");
 
                 SolidColorBrush? expected = app?.TryFindResource(brushKey) as SolidColorBrush;
@@ -419,7 +415,7 @@ namespace Fluence.Wpf.Tests
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                FluenceProgressBar progressBar = new() { Value = 50, Width = 240, Height = 24 };
+                Controls.ProgressBar progressBar = new() { Value = 50, Width = 240, Height = 24 };
                 Window window = new() { Content = progressBar };
                 window.Show();
                 _ = progressBar.ApplyTemplate();
@@ -438,7 +434,7 @@ namespace Fluence.Wpf.Tests
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                FluenceProgressBar progressBar = new()
+                Controls.ProgressBar progressBar = new()
                 {
                     Width = 240,
                     Height = 24,
@@ -449,7 +445,7 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                WpfBorder? fill = FindVisualChildByName<WpfBorder>(progressBar, "PART_Fill");
+                System.Windows.Controls.Border? fill = FindVisualChildByName<System.Windows.Controls.Border>(progressBar, "PART_Fill");
                 Assert.IsNotNull(fill, "ProgressBar template must expose PART_Fill.");
 
                 SolidColorBrush? expected = app?.TryFindResource(brushKey) as SolidColorBrush;

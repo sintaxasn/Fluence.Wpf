@@ -389,7 +389,7 @@ namespace Fluence.Wpf.Tests
         private static bool IsToggleHoverTrigger(TriggerBase triggerBase, object? isCheckedValue)
         {
             return triggerBase is MultiTrigger multiTrigger
-                && multiTrigger.Conditions.Count == 3
+                && multiTrigger.Conditions.Count is 3
                 && HasTriggerCondition(multiTrigger, System.Windows.Controls.Primitives.ToggleButton.IsCheckedProperty, isCheckedValue)
                 && HasTriggerCondition(multiTrigger, UIElement.IsMouseOverProperty, value: true)
                 && HasTriggerCondition(multiTrigger, System.Windows.Controls.Primitives.ButtonBase.IsPressedProperty, value: false);
@@ -398,7 +398,7 @@ namespace Fluence.Wpf.Tests
         private static bool IsTogglePressedTrigger(TriggerBase triggerBase, object? isCheckedValue)
         {
             return triggerBase is MultiTrigger multiTrigger
-                && multiTrigger.Conditions.Count == 2
+                && multiTrigger.Conditions.Count is 2
                 && HasTriggerCondition(multiTrigger, System.Windows.Controls.Primitives.ToggleButton.IsCheckedProperty, isCheckedValue)
                 && HasTriggerCondition(multiTrigger, System.Windows.Controls.Primitives.ButtonBase.IsPressedProperty, value: true);
         }

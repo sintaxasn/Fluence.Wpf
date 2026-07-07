@@ -332,7 +332,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            if (ValidationState != ValidationState.None)
+            if (ValidationState is not ValidationState.None)
             {
                 string message = !string.IsNullOrWhiteSpace(ValidationMessage) ? ValidationMessage : HelperText;
                 helper.Text = message;

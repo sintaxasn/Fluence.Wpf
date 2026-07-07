@@ -485,8 +485,8 @@ namespace Fluence.Wpf.Controls
             try
             {
                 ProgressRingState state = (ProgressRingState)e.NewValue;
-                ring.SetCurrentValue(ShowPausedProperty, state == ProgressRingState.Paused);
-                ring.SetCurrentValue(ShowErrorProperty, state == ProgressRingState.Error);
+                ring.SetCurrentValue(ShowPausedProperty, state is ProgressRingState.Paused);
+                ring.SetCurrentValue(ShowErrorProperty, state is ProgressRingState.Error);
             }
             finally
             {

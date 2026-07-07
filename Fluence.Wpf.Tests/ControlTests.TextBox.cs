@@ -33,10 +33,6 @@ using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using FluencePasswordBox = Fluence.Wpf.Controls.PasswordBox;
-using FluenceTextBox = Fluence.Wpf.Controls.TextBox;
-using WpfBorder = System.Windows.Controls.Border;
-using WpfTextBlock = System.Windows.Controls.TextBlock;
 
 namespace Fluence.Wpf.Tests
 {
@@ -59,12 +55,12 @@ namespace Fluence.Wpf.Tests
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                FluenceTextBox tb = new() { PlaceholderText = "Search…", PlaceholderEnabled = true };
+                Controls.TextBox tb = new() { PlaceholderText = "Search…", PlaceholderEnabled = true };
                 Window w = new() { Content = tb, Width = 300, Height = 60 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                WpfTextBlock? placeholder = FindVisualChildByName<WpfTextBlock>(tb, "PlaceholderTextBlock");
+                TextBlock? placeholder = FindVisualChildByName<TextBlock>(tb, "PlaceholderTextBlock");
                 Assert.IsNotNull(placeholder, "PlaceholderTextBlock must be present in TextBox template.");
 
                 SolidColorBrush? expected = app?.TryFindResource("TextFillColorTertiaryBrush") as SolidColorBrush;
@@ -88,12 +84,12 @@ namespace Fluence.Wpf.Tests
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                FluencePasswordBox pb = new() { PlaceholderText = "Password" };
+                Controls.PasswordBox pb = new() { PlaceholderText = "Password" };
                 Window w = new() { Content = pb, Width = 300, Height = 60 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                WpfTextBlock? placeholder = FindVisualChildByName<WpfTextBlock>(pb, "PlaceholderTextBlock");
+                TextBlock? placeholder = FindVisualChildByName<TextBlock>(pb, "PlaceholderTextBlock");
                 Assert.IsNotNull(placeholder, "PlaceholderTextBlock must be present in PasswordBox template.");
 
                 SolidColorBrush? expected = app?.TryFindResource("TextFillColorTertiaryBrush") as SolidColorBrush;
@@ -117,15 +113,15 @@ namespace Fluence.Wpf.Tests
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                FluencePasswordBox pb = new() { PlaceholderText = "Password" };
+                Controls.PasswordBox pb = new() { PlaceholderText = "Password" };
                 Window w = new() { Content = pb, Width = 300, Height = 60 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                MethodInfo? startCapsPoll = typeof(FluencePasswordBox).GetMethod(
+                MethodInfo? startCapsPoll = typeof(Controls.PasswordBox).GetMethod(
                     "StartCapsPoll",
                     BindingFlags.Instance | BindingFlags.NonPublic);
-                FieldInfo? capsPollTimer = typeof(FluencePasswordBox).GetField(
+                FieldInfo? capsPollTimer = typeof(Controls.PasswordBox).GetField(
                     "_capsPollTimer",
                     BindingFlags.Instance | BindingFlags.NonPublic);
                 Assert.IsNotNull(startCapsPoll, "PasswordBox must expose the expected internal caps-poll start method.");
@@ -150,7 +146,7 @@ namespace Fluence.Wpf.Tests
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                FluenceTextBox tb = new() { PlaceholderText = "Hint", PlaceholderEnabled = true };
+                Controls.TextBox tb = new() { PlaceholderText = "Hint", PlaceholderEnabled = true };
                 Window w = new() { Content = tb, Width = 300, Height = 60 };
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
@@ -158,7 +154,7 @@ namespace Fluence.Wpf.Tests
                 ThemeTestHelpers.ApplyStandardThemeCycle();
                 DrainDispatcher(w.Dispatcher);
 
-                WpfTextBlock? placeholder = FindVisualChildByName<WpfTextBlock>(tb, "PlaceholderTextBlock");
+                TextBlock? placeholder = FindVisualChildByName<TextBlock>(tb, "PlaceholderTextBlock");
                 Assert.IsNotNull(placeholder, "PlaceholderTextBlock must remain present after theme cycle.");
 
                 SolidColorBrush? expected = app?.TryFindResource("TextFillColorTertiaryBrush") as SolidColorBrush;
@@ -182,7 +178,7 @@ namespace Fluence.Wpf.Tests
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                FluenceTextBox tb = new()
+                Controls.TextBox tb = new()
                 {
                     Width = 240,
                     ValidationState = ValidationState.Error,
@@ -192,7 +188,7 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                WpfBorder? validationLine = FindVisualChildByName<WpfBorder>(tb, "PART_ValidationLine");
+                Border? validationLine = FindVisualChildByName<Border>(tb, "PART_ValidationLine");
                 Assert.IsNotNull(validationLine, "TextBox template must expose PART_ValidationLine.");
                 Assert.AreEqual(0.0, validationLine.Opacity, 0.001, "Validation underline should be hidden before focus.");
 
@@ -219,7 +215,7 @@ namespace Fluence.Wpf.Tests
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                FluenceTextBox tb = new()
+                Controls.TextBox tb = new()
                 {
                     Width = 240,
                     HelperText = "Helper text",
@@ -229,9 +225,9 @@ namespace Fluence.Wpf.Tests
                 w.Show();
                 DrainDispatcher(w.Dispatcher);
 
-                WpfTextBlock? helper = FindVisualChildByName<WpfTextBlock>(tb, "PART_HelperText");
+                TextBlock? helper = FindVisualChildByName<TextBlock>(tb, "PART_HelperText");
                 Assert.IsNotNull(helper, "TextBox template must expose PART_HelperText.");
-                WpfTextBlock? icon = FindVisualChildByName<WpfTextBlock>(tb, "PART_ValidationIcon");
+                TextBlock? icon = FindVisualChildByName<TextBlock>(tb, "PART_ValidationIcon");
                 Assert.IsNotNull(icon, "TextBox template must expose PART_ValidationIcon.");
 
                 StackPanel? helperRow = VisualTreeHelper.GetParent(helper) as StackPanel;
@@ -259,7 +255,7 @@ namespace Fluence.Wpf.Tests
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                FluenceTextBox tb = new()
+                Controls.TextBox tb = new()
                 {
                     Width = 240,
                     ValidationMessage = "Value is required",
@@ -287,7 +283,7 @@ namespace Fluence.Wpf.Tests
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                FluenceTextBox tb = new()
+                Controls.TextBox tb = new()
                 {
                     Width = 240,
                     ValidationMessage = "Temp error",
@@ -319,7 +315,7 @@ namespace Fluence.Wpf.Tests
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                FluenceTextBox tb = new()
+                Controls.TextBox tb = new()
                 {
                     Width = 240,
                     ValidationMessage = "Check the value",
@@ -347,7 +343,7 @@ namespace Fluence.Wpf.Tests
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                FluenceTextBox tb = new()
+                Controls.TextBox tb = new()
                 {
                     Width = 240,
                     ValidationMessage = "Value is required",
@@ -399,7 +395,7 @@ namespace Fluence.Wpf.Tests
                 Application? app = EnsureApplication();
                 _ = MergeGenericDictionary(app);
 
-                FluenceTextBox tb = new()
+                Controls.TextBox tb = new()
                 {
                     Width = 240,
                     ValidationMessage = "Value is required",
