@@ -55,7 +55,7 @@ namespace Fluence.Wpf.Automation
         /// <inheritdoc />
         public override object GetPattern(PatternInterface patternInterface)
         {
-            return patternInterface != PatternInterface.RangeValue || ProgressRing.IsIndeterminate
+            return patternInterface is not PatternInterface.RangeValue || ProgressRing.IsIndeterminate
                 ? base.GetPattern(patternInterface)
                 : this;
         }

@@ -181,7 +181,7 @@ namespace Fluence.Wpf.Demo.Pages
         private SettingsNavigationOption GetCurrentNavigationOption()
         {
             NavigationViewPaneDisplayMode? mode = _owner?.GetDemoNavigationPaneDisplayMode();
-            bool isPaneOpen = _owner?.IsDemoNavigationPaneOpen() == true;
+            bool isPaneOpen = (_owner?.IsDemoNavigationPaneOpen()) is true;
 
             return mode switch
             {
@@ -257,7 +257,7 @@ namespace Fluence.Wpf.Demo.Pages
                 return;
             }
 
-            if (ThemeWatcherToggle.IsChecked == true)
+            if (ThemeWatcherToggle.IsChecked is true)
             {
                 SystemThemeWatcher.Watch(host);
                 SystemThemeLabel.Text = "Watching: Yes";
@@ -303,11 +303,11 @@ namespace Fluence.Wpf.Demo.Pages
                 return;
             }
 
-            bool showTitle = ShowWindowTitleToggle.IsChecked == true;
+            bool showTitle = ShowWindowTitleToggle.IsChecked is true;
             string title = showTitle ? MainWindow.GalleryWindowTitle : string.Empty;
             _owner.SetUserShowTitle(showTitle, title);
 
-            bool showIcon = ShowWindowIconToggle.IsChecked == true;
+            bool showIcon = ShowWindowIconToggle.IsChecked is true;
             // Use FluenceWindow's rasterized brand icon (the same BitmapSource it applies by default),
             // not the raw vector DrawingImage resource: Window.Icon drives the Win32 HICON, which does
             // not reliably render a DrawingImage, so a re-toggle would otherwise blank the taskbar icon.

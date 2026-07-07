@@ -138,7 +138,7 @@ namespace Fluence.Wpf.Helpers
                 throw new ArgumentNullException(nameof(animationClock));
             }
             GridLength fromLength = From; double fromValue;
-            if (fromLength.GridUnitType == GridUnitType.Auto)
+            if (fromLength.GridUnitType is GridUnitType.Auto)
             {
                 GridLength originLength = defaultOriginValue is not GridLength origin
                     ? new GridLength(0d, GridUnitType.Pixel)

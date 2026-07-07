@@ -250,7 +250,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            mirror.ScaleX = (MirroredWhenRightToLeft && FlowDirection == FlowDirection.RightToLeft) ? -1 : 1;
+            mirror.ScaleX = (MirroredWhenRightToLeft && FlowDirection is FlowDirection.RightToLeft) ? -1 : 1;
         }
 
         private void ApplySpinState()

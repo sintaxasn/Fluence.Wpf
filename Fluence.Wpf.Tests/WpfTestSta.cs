@@ -209,7 +209,7 @@ namespace Fluence.Wpf.Tests
         {
             lock (LockObj)
             {
-                if (_dispatcher?.Thread.IsAlive == true)
+                if ((_dispatcher?.Thread.IsAlive) is true)
                 {
                     return _dispatcher;
                 }

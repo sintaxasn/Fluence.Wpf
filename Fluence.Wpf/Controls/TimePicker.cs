@@ -330,7 +330,7 @@ defaultValue: null,
         private static int GetTwelveHourDisplayHour(int hour)
         {
             int displayHour = hour % 12;
-            return displayHour == 0 ? 12 : displayHour;
+            return displayHour is 0 ? 12 : displayHour;
         }
 
         /// <summary>
@@ -452,19 +452,19 @@ defaultValue: null,
         /// <param name="e">The event data.</param>
         private void OnPopupPreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Handled || _popup?.IsOpen != true)
+            if (e.Handled || (_popup?.IsOpen) is not true)
             {
                 return;
             }
 
-            if (e.Key == Key.Escape)
+            if (e.Key is Key.Escape)
             {
                 ClosePopup();
                 e.Handled = true;
                 return;
             }
 
-            if (e.Key == Key.Enter)
+            if (e.Key is Key.Enter)
             {
                 IInputElement? focused = Keyboard.FocusedElement;
                 if (ReferenceEquals(focused, _acceptButton) || ReferenceEquals(focused, _cancelButton))
@@ -484,7 +484,7 @@ defaultValue: null,
         /// </summary>
         private void MoveFocusIntoPopup()
         {
-            if (_popup?.IsOpen != true)
+            if ((_popup?.IsOpen) is not true)
             {
                 return;
             }
@@ -514,7 +514,7 @@ defaultValue: null,
         {
             foreach (Selector? column in (Selector?[])[_hourList, _minuteList, _periodList])
             {
-                if (column is not null && column.Visibility == Visibility.Visible)
+                if (column?.Visibility is Visibility.Visible)
                 {
                     return column;
                 }
@@ -603,7 +603,7 @@ defaultValue: null,
 
         private void ClosePopup()
         {
-            if (_popup?.IsOpen == true)
+            if ((_popup?.IsOpen) is true)
             {
                 // Closing through the control's own pipeline must not arm the light-dismiss
                 // reopen lockout; Popup.Closed is raised synchronously from the set below.
@@ -646,7 +646,7 @@ defaultValue: null,
         private bool GetPendingIsPm()
         {
             return _periodList?.SelectedIndex >= 0
-                ? _periodList.SelectedIndex == 1
+                ? _periodList.SelectedIndex is 1
                 : _flyoutBaseTime.Hours >= 12;
         }
 

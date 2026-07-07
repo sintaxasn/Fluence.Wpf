@@ -580,7 +580,7 @@ namespace Fluence.Wpf.Tests
 
         private static bool IsWholeXamlAttribute(string source, int attributeIndex)
         {
-            if (attributeIndex == 0)
+            if (attributeIndex is 0)
             {
                 return true;
             }
@@ -591,7 +591,7 @@ namespace Fluence.Wpf.Tests
 
         private static bool IsLiteralBackgroundValue(string value)
         {
-            if (value.Length == 0)
+            if (value.Length is 0)
             {
                 return false;
             }

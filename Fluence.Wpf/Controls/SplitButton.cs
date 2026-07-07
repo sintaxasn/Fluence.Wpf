@@ -311,7 +311,7 @@ namespace Fluence.Wpf.Controls
                 _popup.StaysOpen = false;
                 _popup.PlacementTarget = this;
                 _popup.Closed += OnPopupClosed;
-                _popup.IsOpen = _secondaryButton is not null && _secondaryButton.IsChecked == true;
+                _popup.IsOpen = _secondaryButton?.IsChecked is true;
             }
         }
 
@@ -362,7 +362,7 @@ namespace Fluence.Wpf.Controls
         private void OnPopupClosed(object? sender, EventArgs e)
         {
             // External click (StaysOpen=false) closed the popup; sync the secondary toggle.
-            if (_secondaryButton is not null && _secondaryButton.IsChecked == true)
+            if (_secondaryButton?.IsChecked is true)
             {
                 _secondaryButton.IsChecked = false;
             }

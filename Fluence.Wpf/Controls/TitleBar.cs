@@ -539,7 +539,7 @@ namespace Fluence.Wpf.Controls
 
         private static bool CanExecuteCommand(ICommand command, object parameter)
         {
-            return command?.CanExecute(parameter) != false;
+            return (command?.CanExecute(parameter)) is not false;
         }
 
         private static void SubscribeCommand(ICommand? command, EventHandler handler)

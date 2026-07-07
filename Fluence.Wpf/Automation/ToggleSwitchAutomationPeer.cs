@@ -76,7 +76,7 @@ namespace Fluence.Wpf.Automation
         /// <inheritdoc />
         public override object GetPattern(PatternInterface patternInterface)
         {
-            return patternInterface != PatternInterface.Toggle
+            return patternInterface is not PatternInterface.Toggle
                 ? base.GetPattern(patternInterface)
                 : this;
         }
@@ -90,7 +90,7 @@ namespace Fluence.Wpf.Automation
         public virtual void Toggle()
         {
             bool? current = ToggleSwitch.IsChecked;
-            ToggleSwitch.IsChecked = current != true;
+            ToggleSwitch.IsChecked = current is not true;
         }
 
         /// <summary>

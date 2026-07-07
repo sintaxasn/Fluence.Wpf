@@ -338,7 +338,7 @@ namespace Fluence.Wpf.Controls
             string[] parts = (DisplayName ?? string.Empty).Trim().Split(InitialsSeparators, StringSplitOptions.RemoveEmptyEntries);
             return parts.Length > 1
                 ? (parts[0][0].ToString() + parts[^1][0].ToString()).ToUpperInvariant()
-                : parts.Length == 1
+                : parts.Length is 1
                 ? parts[0][0].ToString().ToUpperInvariant()
                 : null;
         }

@@ -978,7 +978,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(overflowButton, "Top pane should expose the overflow button.");
                     Assert.AreEqual(Visibility.Visible, overflowButton.Visibility,
                         "The overflow button should be visible at the minimum demo width.");
-                    int visibleNavigationItems = nav.Items.OfType<NavigationViewItem>().Count(static item => item.Visibility == Visibility.Visible);
+                    int visibleNavigationItems = nav.Items.OfType<NavigationViewItem>().Count(static item => item.Visibility is Visibility.Visible);
                     Assert.IsTrue(visibleNavigationItems > 1,
                         "Top pane should show every navigation item that fits before the overflow button would overlap the Top toggle status.");
                     NavigationViewItem? settings = FindByName<NavigationViewItem>(window, "SettingsNavigationItem");
@@ -1000,7 +1000,7 @@ namespace Fluence.Wpf.Tests
                     }
 
                     Assert.IsNotNull(trees, "DemoNav should include the Trees item.");
-                    if (trees.Visibility == Visibility.Visible)
+                    if (trees.Visibility is Visibility.Visible)
                     {
                         double treesRight = (GetVisualX(trees, nav) ?? double.MinValue) + trees.ActualWidth;
                         double overflowLeft = GetVisualX(overflowButton, nav) ?? double.MaxValue;
@@ -1278,7 +1278,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(titleText, "Extended title bar title should exist.");
                     Assert.AreEqual(Visibility.Visible, titleIcon.Visibility,
                         "Title icon should remain visible when title text is hidden for search clearance.");
-                    if (titleText.Visibility == Visibility.Visible)
+                    if (titleText.Visibility is Visibility.Visible)
                     {
                         Controls.TextBox? search = FindByName<Controls.TextBox>(window, "NavSearchBox");
                         Assert.IsNotNull(search, "Demo search box must be present.");
@@ -1330,7 +1330,7 @@ namespace Fluence.Wpf.Tests
 
                     WpfTextBlock? titleText = FindByName<WpfTextBlock>(shellTitleBar, "PART_TitleText");
                     Assert.IsNotNull(titleText, "Extended title bar title should exist.");
-                    if (titleText.Visibility == Visibility.Visible)
+                    if (titleText.Visibility is Visibility.Visible)
                     {
                         double titleRight = (GetVisualX(titleText, window) ?? double.MinValue) + titleText.ActualWidth;
                         double searchLeft = GetVisualX(search, window) ?? double.MaxValue;
@@ -1375,7 +1375,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(shellTitleBar, "Extended title bar should use the shared TitleBar control.");
                     WpfTextBlock? titleText = FindByName<WpfTextBlock>(shellTitleBar, "PART_TitleText");
                     Assert.IsNotNull(titleText, "Extended title bar title should exist.");
-                    if (titleText.Visibility == Visibility.Visible)
+                    if (titleText.Visibility is Visibility.Visible)
                     {
                         Controls.TextBox? setupSearch = FindByName<Controls.TextBox>(window, "NavSearchBox");
                         Assert.IsNotNull(setupSearch, "Demo search box must be present.");
@@ -1870,14 +1870,14 @@ StringComparison.Ordinal, "Rendered C# source should preserve leading indentatio
 
                     WpfTextBlock? firstBodyCell = table.Children
                         .OfType<WpfTextBlock>()
-                        .FirstOrDefault(static textBlock => Grid.GetRow(textBlock) == 1 && Grid.GetColumn(textBlock) == 0);
+                        .FirstOrDefault(static textBlock => Grid.GetRow(textBlock) is 1 && Grid.GetColumn(textBlock) is 0);
                     Assert.IsNotNull(firstBodyCell, "Typography table should include a first body row cell.");
                     Assert.AreEqual(new Thickness(24, 8, 16, 8), firstBodyCell.Margin,
                         "Typography body cells should use reduced vertical row spacing.");
 
                     WpfBorder? firstShadedRow = table.Children
                         .OfType<WpfBorder>()
-                        .FirstOrDefault(static border => Grid.GetRow(border) == 1);
+                        .FirstOrDefault(static border => Grid.GetRow(border) is 1);
                     Assert.IsNotNull(firstShadedRow, "Typography table should include shaded row backgrounds.");
                     Assert.AreEqual(new Thickness(0, 2, 0, 2), firstShadedRow.Margin,
                         "Typography shaded row background should match the compact vertical spacing.");

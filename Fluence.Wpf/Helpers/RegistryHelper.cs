@@ -38,19 +38,19 @@ namespace Fluence.Wpf.Helpers
         internal static bool GetAppsUseLightTheme()
         {
             using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.PersonalizeRegistryPath);
-            return key?.GetValue(NativeConstants.AppsUseLightTheme) is not int intValue || intValue != 0;
+            return key?.GetValue(NativeConstants.AppsUseLightTheme) is not int intValue || intValue is not 0;
         }
 
         internal static bool GetSystemUsesLightTheme()
         {
             using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.PersonalizeRegistryPath);
-            return key?.GetValue(NativeConstants.SystemUsesLightTheme) is not int intValue || intValue != 0;
+            return key?.GetValue(NativeConstants.SystemUsesLightTheme) is not int intValue || intValue is not 0;
         }
 
         internal static bool GetColorPrevalence()
         {
             using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.DwmRegistryPath);
-            return key?.GetValue(NativeConstants.ColorPrevalence) is not int intValue || intValue != 0;
+            return key?.GetValue(NativeConstants.ColorPrevalence) is not int intValue || intValue is not 0;
         }
 
         internal static bool TryGetAccentPalette(out Color[]? palette)
@@ -66,7 +66,7 @@ namespace Fluence.Wpf.Helpers
                     byte g = bytes[offset + 1];
                     byte b = bytes[offset + 2];
                     byte a = bytes[offset + 3];
-                    palette[i] = Color.FromArgb(a == 0 ? (byte)255 : a, r, g, b);
+                    palette[i] = Color.FromArgb(a is 0 ? (byte)255 : a, r, g, b);
                 }
                 return true;
             }
@@ -84,7 +84,7 @@ namespace Fluence.Wpf.Helpers
                 byte b = (byte)((color >> 16) & 0xFF);
                 byte g = (byte)((color >> 8) & 0xFF);
                 byte r = (byte)(color & 0xFF);
-                return Color.FromArgb(a == 0 ? (byte)255 : a, r, g, b);
+                return Color.FromArgb(a is 0 ? (byte)255 : a, r, g, b);
             }
             return Color.FromRgb(0x00, 0x78, 0xD4);
         }
@@ -129,7 +129,7 @@ namespace Fluence.Wpf.Helpers
                 byte b = (byte)((raw >> 16) & 0xFF);
                 byte g = (byte)((raw >> 8) & 0xFF);
                 byte r = (byte)(raw & 0xFF);
-                color = Color.FromArgb(a == 0 ? (byte)255 : a, r, g, b);
+                color = Color.FromArgb(a is 0 ? (byte)255 : a, r, g, b);
                 return true;
             }
             color = default;
@@ -153,7 +153,7 @@ namespace Fluence.Wpf.Helpers
                 byte b = (byte)((raw >> 16) & 0xFF);
                 byte g = (byte)((raw >> 8) & 0xFF);
                 byte r = (byte)(raw & 0xFF);
-                color = Color.FromArgb(a == 0 ? (byte)255 : a, r, g, b);
+                color = Color.FromArgb(a is 0 ? (byte)255 : a, r, g, b);
                 return true;
             }
             color = default;
@@ -179,7 +179,7 @@ namespace Fluence.Wpf.Helpers
                 byte r = (byte)((raw >> 16) & 0xFF);
                 byte g = (byte)((raw >> 8) & 0xFF);
                 byte b = (byte)(raw & 0xFF);
-                colorizationColor = Color.FromArgb(a == 0 ? (byte)255 : a, r, g, b);
+                colorizationColor = Color.FromArgb(a is 0 ? (byte)255 : a, r, g, b);
                 balance = balanceInt;
                 return true;
             }

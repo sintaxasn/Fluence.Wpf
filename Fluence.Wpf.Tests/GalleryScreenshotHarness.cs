@@ -282,7 +282,7 @@ namespace Fluence.Wpf.Tests
                 if (window.DemoNav is not null)
                 {
                     window.DemoNav.PaneDisplayMode = paneMode;
-                    window.DemoNav.IsPaneOpen = paneMode == NavigationViewPaneDisplayMode.Left;
+                    window.DemoNav.IsPaneOpen = paneMode is NavigationViewPaneDisplayMode.Left;
                 }
 
                 window.NavigateTo(route);

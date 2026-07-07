@@ -275,7 +275,7 @@ namespace Fluence.Wpf.Tests
                     double visibleItemsRight = double.MinValue;
                     foreach (object item in nav.Items)
                     {
-                        if (item is NavigationViewItem navItem && navItem.Visibility == Visibility.Visible)
+                        if (item is NavigationViewItem navItem && navItem.Visibility is Visibility.Visible)
                         {
                             double itemRight = GetNavigationElementRight(navItem, nav);
                             if (itemRight > visibleItemsRight)
@@ -435,7 +435,7 @@ namespace Fluence.Wpf.Tests
                     double overflowLeft = GetNavigationElementX(overflowButton, nav);
                     foreach (object item in nav.Items)
                     {
-                        if (item is NavigationViewItem navItem && navItem.Visibility == Visibility.Visible)
+                        if (item is NavigationViewItem navItem && navItem.Visibility is Visibility.Visible)
                         {
                             Assert.IsTrue(GetNavigationElementRight(navItem, nav) <= overflowLeft - 4.0 + 1.5,
                                 "Visible top items must clear the overflow button. item=" + navItem.Content);

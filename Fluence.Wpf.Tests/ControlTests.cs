@@ -1503,7 +1503,7 @@ namespace Fluence.Wpf.Tests
 
                     Assert.IsNotNull(toggle);
                     Assert.IsNotNull(label);
-                    Assert.IsTrue(toggle.IsChecked == true, "ThemeWatcherToggle should default to checked.");
+                    Assert.IsTrue(toggle.IsChecked is true, "ThemeWatcherToggle should default to checked.");
                     Assert.AreEqual("Watching: Yes", label.Text);
 
                     toggle.IsChecked = false;
@@ -2570,7 +2570,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Assert.IsTrue(radio1.IsChecked == true);
+                    Assert.IsTrue(radio1.IsChecked is true);
 
                     radio2.IsChecked = true;
                     DrainDispatcher(window.Dispatcher);

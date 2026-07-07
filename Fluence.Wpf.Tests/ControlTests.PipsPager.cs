@@ -126,7 +126,7 @@ namespace Fluence.Wpf.Tests
                         WpfToggleButton? pip = GetPipAt(host, offset);
                         Assert.IsNotNull(pip,
                             string.Format(CultureInfo.InvariantCulture, "The pip at offset {0} must be a ToggleButton.", offset));
-                        Assert.AreEqual(offset == 0, pip.IsChecked,
+                        Assert.AreEqual(offset is 0, pip.IsChecked,
                             string.Format(CultureInfo.InvariantCulture, "Only the selected (first) pip must be checked; offset {0}.", offset));
                         Assert.AreEqual(
                             string.Format(CultureInfo.InvariantCulture, "Page {0}", offset + 1),

@@ -834,7 +834,7 @@ namespace Fluence.Wpf.Tests
                         "Over a FluenceWindow the dialog overlay must be hosted in PART_DialogOverlayHost so the smoke covers the title bar.");
 
                     dialog.Hide();
-                    bool removed = WaitUntil(window.Dispatcher, 2000, () => host.Children.Count == 0);
+                    bool removed = WaitUntil(window.Dispatcher, 2000, () => host.Children.Count is 0);
                     Assert.IsTrue(removed, "Closing the dialog must remove the overlay from PART_DialogOverlayHost.");
                 }
                 finally

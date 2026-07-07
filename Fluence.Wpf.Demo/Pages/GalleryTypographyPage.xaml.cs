@@ -72,7 +72,7 @@ namespace Fluence.Wpf.Demo.Pages
             {
                 int rowIndex = i + 1;
                 TypographyTable.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-                AddTypographyRow(rowIndex, Rows[i], i % 2 == 0);
+                AddTypographyRow(rowIndex, Rows[i], i % 2 is 0);
             }
         }
 

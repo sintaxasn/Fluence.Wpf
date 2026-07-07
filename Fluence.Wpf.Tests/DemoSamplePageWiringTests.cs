@@ -225,7 +225,7 @@ namespace Fluence.Wpf.Tests
                     {
                         List<DemoSampleControl> samples = [.. DemoTestHost.FindVisualChildren<DemoSampleControl>(page)];
                         Assert.IsTrue(samples.Count > 0, "Page should expose DemoSampleControl samples: " + page.GetType().Name);
-                        foreach (DemoSampleControl sample in samples.Where(static sample => sample.Visibility == Visibility.Visible))
+                        foreach (DemoSampleControl sample in samples.Where(static sample => sample.Visibility is Visibility.Visible))
                         {
                             Assert.IsFalse(string.IsNullOrWhiteSpace(sample.XamlSource),
                                 "Visible DemoSampleControl should expose XAML source: " + page.GetType().Name);
@@ -329,7 +329,7 @@ namespace Fluence.Wpf.Tests
                 try
                 {
                     samples.AddRange(DemoTestHost.FindVisualChildren<DemoSampleControl>(page)
-                        .Where(static sample => sample.Visibility == Visibility.Visible));
+                        .Where(static sample => sample.Visibility is Visibility.Visible));
                 }
                 finally
                 {
@@ -437,7 +437,7 @@ namespace Fluence.Wpf.Tests
             int index = text.IndexOf(word, StringComparison.Ordinal);
             while (index >= 0)
             {
-                bool startsOnBoundary = index == 0 || !IsWordCharacter(text[index - 1]);
+                bool startsOnBoundary = index is 0 || !IsWordCharacter(text[index - 1]);
                 int end = index + word.Length;
                 bool endsOnBoundary = end == text.Length || !IsWordCharacter(text[end]);
                 if (startsOnBoundary && endsOnBoundary)

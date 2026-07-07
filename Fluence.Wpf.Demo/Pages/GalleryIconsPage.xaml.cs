@@ -384,7 +384,7 @@ namespace Fluence.Wpf.Demo.Pages
 
         private static void FlushTag(List<string> tags, StringBuilder word)
         {
-            if (word.Length == 0)
+            if (word.Length is 0)
             {
                 return;
             }
@@ -408,7 +408,7 @@ namespace Fluence.Wpf.Demo.Pages
                 string? line;
                 while ((line = reader.ReadLine()) is not null)
                 {
-                    if (line.Length == 0)
+                    if (line.Length is 0)
                     {
                         continue;
                     }
@@ -421,7 +421,7 @@ namespace Fluence.Wpf.Demo.Pages
 
                     string name = parts[0].Trim();
                     string code = parts[1].Trim().ToUpperInvariant();
-                    if (name.Length == 0 || code.Length == 0 || names.ContainsKey(code))
+                    if (name.Length is 0 || code.Length is 0 || names.ContainsKey(code))
                     {
                         continue;
                     }

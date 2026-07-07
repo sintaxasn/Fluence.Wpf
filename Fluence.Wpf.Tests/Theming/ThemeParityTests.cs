@@ -134,8 +134,8 @@ namespace Fluence.Wpf.Tests.Theming
                     // reason as the SystemColor* aliases above. Their highlight binding is covered
                     // hermetically by HighContrast_HighlightDerivedBrushes_BindToLiveSystemHighlight
                     // and HighContrast_HighlightTextDerivedBrushes_BindToLiveSystemHighlightText.
-                    if (theme == ApplicationTheme.HighContrast
-                        && (HighContrastHighlightDerivedBrushKeys.Contains(ks)
+                    if (theme is ApplicationTheme.HighContrast
+                            && (HighContrastHighlightDerivedBrushKeys.Contains(ks)
                             || HighContrastHighlightTextDerivedBrushKeys.Contains(ks)))
                     {
                         continue;

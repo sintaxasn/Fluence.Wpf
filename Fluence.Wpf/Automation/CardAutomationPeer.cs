@@ -58,7 +58,7 @@ namespace Fluence.Wpf.Automation
         /// <inheritdoc />
         public override object GetPattern(PatternInterface patternInterface)
         {
-            return patternInterface == PatternInterface.Invoke && CardOwner.IsClickable
+            return patternInterface is PatternInterface.Invoke && CardOwner.IsClickable
                 ? this
                 : base.GetPattern(patternInterface);
         }

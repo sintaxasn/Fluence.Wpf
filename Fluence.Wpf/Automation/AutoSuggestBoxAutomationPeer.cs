@@ -65,7 +65,7 @@ namespace Fluence.Wpf.Automation
         /// <inheritdoc />
         public override object GetPattern(PatternInterface patternInterface)
         {
-            return patternInterface != PatternInterface.Value
+            return patternInterface is not PatternInterface.Value
                 ? base.GetPattern(patternInterface)
                 : this;
         }

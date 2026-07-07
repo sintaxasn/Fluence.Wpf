@@ -668,7 +668,7 @@ namespace Fluence.Wpf.Demo.Pages
                 return;
             }
 
-            RtlDemoCard.FlowDirection = RtlToggle.IsChecked == true
+            RtlDemoCard.FlowDirection = RtlToggle.IsChecked is true
                 ? FlowDirection.RightToLeft
                 : FlowDirection.LeftToRight;
         }

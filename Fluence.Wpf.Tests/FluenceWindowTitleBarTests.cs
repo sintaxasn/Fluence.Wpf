@@ -540,7 +540,7 @@ namespace Fluence.Wpf.Tests
 
                     for (int i = 0; i < 5; i++)
                     {
-                        ApplicationTheme theme = i % 2 == 0 ? ApplicationTheme.Dark : ApplicationTheme.Light;
+                        ApplicationTheme theme = i % 2 is 0 ? ApplicationTheme.Dark : ApplicationTheme.Light;
                         ApplicationThemeManager.Apply(theme, BackdropType.None, updateAccent: true);
                     }
 
@@ -1006,7 +1006,7 @@ namespace Fluence.Wpf.Tests
                     Assert.AreEqual(value, maximize.Visibility);
                     Assert.AreEqual(Visibility.Collapsed, restore.Visibility);
 
-                    bool enabled = value == Visibility.Visible;
+                    bool enabled = value is Visibility.Visible;
                     Assert.AreEqual(enabled, minimize.IsEnabled);
                     Assert.AreEqual(enabled, maximize.IsEnabled);
                     Assert.AreEqual(enabled, close.IsEnabled);
@@ -1367,7 +1367,7 @@ modifiers: null);
                 }
                 finally
                 {
-                    if (window?.IsVisible == true)
+                    if ((window?.IsVisible) is true)
                     {
                         window.Close();
                     }

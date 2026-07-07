@@ -296,7 +296,7 @@ namespace Fluence.Wpf.Controls
         private bool IsSelectedIndexExplicitlySet()
         {
             ValueSource source = DependencyPropertyHelper.GetValueSource(this, SelectedIndexProperty);
-            return source.BaseValueSource != BaseValueSource.Default;
+            return source.BaseValueSource is not BaseValueSource.Default;
         }
 
         private void TryAutoSelectFirstItem()

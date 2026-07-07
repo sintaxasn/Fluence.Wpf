@@ -532,7 +532,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            if (e.Key == Key.Escape)
+            if (e.Key is Key.Escape)
             {
                 HandleButtonInvoked(CloseButtonClick, CloseButtonCommand, CloseButtonCommandParameter, ContentDialogResult.None);
                 e.Handled = true;
@@ -553,7 +553,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            if (e.Key == Key.Enter)
+            if (e.Key is Key.Enter)
             {
                 IInputElement? focused = Keyboard.FocusedElement;
                 if (ReferenceEquals(focused, _primaryButton)
@@ -777,7 +777,7 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            if (command?.CanExecute(commandParameter) == true)
+            if ((command?.CanExecute(commandParameter)) is true)
             {
                 command.Execute(commandParameter);
             }
@@ -792,19 +792,19 @@ namespace Fluence.Wpf.Controls
         /// <returns><see langword="true"/> when a default button was invoked.</returns>
         private bool TryInvokeDefaultButton()
         {
-            if (DefaultButton == ContentDialogButton.Primary && IsPrimaryButtonEnabled && !string.IsNullOrWhiteSpace(PrimaryButtonText))
+            if (DefaultButton is ContentDialogButton.Primary && IsPrimaryButtonEnabled && !string.IsNullOrWhiteSpace(PrimaryButtonText))
             {
                 HandleButtonInvoked(PrimaryButtonClick, PrimaryButtonCommand, PrimaryButtonCommandParameter, ContentDialogResult.Primary);
                 return true;
             }
 
-            if (DefaultButton == ContentDialogButton.Secondary && IsSecondaryButtonEnabled && !string.IsNullOrWhiteSpace(SecondaryButtonText))
+            if (DefaultButton is ContentDialogButton.Secondary && IsSecondaryButtonEnabled && !string.IsNullOrWhiteSpace(SecondaryButtonText))
             {
                 HandleButtonInvoked(SecondaryButtonClick, SecondaryButtonCommand, SecondaryButtonCommandParameter, ContentDialogResult.Secondary);
                 return true;
             }
 
-            if (DefaultButton == ContentDialogButton.Close && !string.IsNullOrWhiteSpace(CloseButtonText))
+            if (DefaultButton is ContentDialogButton.Close && !string.IsNullOrWhiteSpace(CloseButtonText))
             {
                 HandleButtonInvoked(CloseButtonClick, CloseButtonCommand, CloseButtonCommandParameter, ContentDialogResult.None);
                 return true;
@@ -837,7 +837,7 @@ namespace Fluence.Wpf.Controls
                 ContentDialogButton.None or _ => null,
             };
 
-            if (defaultButton?.IsEnabled == true && defaultButton.Visibility == Visibility.Visible)
+            if ((defaultButton?.IsEnabled) is true && defaultButton.Visibility is Visibility.Visible)
             {
                 _ = defaultButton.Focus();
                 return;
