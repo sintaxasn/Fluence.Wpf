@@ -40,4 +40,8 @@
     <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0-windows10.0.26100.0'">
+    <NoWarn>$(NoWarn);RCS1255</NoWarn>
+  </PropertyGroup>
+
 </Project>
