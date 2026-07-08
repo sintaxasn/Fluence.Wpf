@@ -4,6 +4,15 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.8.9-Preview] - 2026-07-07
+
+### Changed
+
+- Raised static analysis to its strictest settings and resolved every resulting warning across the library, tests, and demos. Roslynator.Analyzers and Meziantou.Analyzer now run at their maximum rule sets (RCS1046, RCS1056, MA0032, MA0148, MA0162, MA0171, MA1049, and related rules addressed), with analyzer configuration consolidated in the project files.
+- Updated analyzer and polyfill dependencies: Microsoft.CodeAnalysis.BannedApiAnalyzers 3.3.4 to 5.6.0, Meziantou.Analyzer 3.0.117 to 3.0.121, and Meziantou.Polyfill 1.0.152 to 1.0.157.
+
+There are no public API or behavioural changes in this release; it is internal code-quality hardening only.
+
 ## [0.8.8-Preview] - 2026-07-06
 
 ### Added

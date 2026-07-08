@@ -4,7 +4,7 @@
 
 Windows 11 Fluent Design controls and theming for WPF applications targeting **.NET Framework 4.7.2** and **Windows 10** (1809+), with enhanced visuals on **Windows 11**.
 
-**Current build:** `0.8.8-preview` (2026-07-06).
+**Current build:** `0.8.9-preview` (2026-07-07).
 
 **Docs:** see the Markdown guides under [`docs/`](docs/) (start with [Getting started](docs/getting-started.md)).
 
@@ -12,9 +12,9 @@ Windows 11 Fluent Design controls and theming for WPF applications targeting **.
 
 - **Theming with auto Light / Dark mode** - Auto (follow Windows), Light, Dark, or High Contrast.
 - **Accent colors** - System accent palette, app-defined accent, and custom accent ramps mapped to WinUI-style resource keys.
-- **40+ Fluent-styled controls** - accessible and themed, aligned with their WinUI 3 counterparts.
+- **50+ Fluent-styled controls** - accessible and themed, aligned with their WinUI 3 counterparts.
 - **PowerShell and .NET Framework 4.7.2 support** - build modern UIs for scripts and legacy apps without migrating to .NET 5+ or the Windows App SDK.
-- **Small footprint** - ~480 KB per assembly.
+- **Small footprint** - ~680 KB for the single library assembly.
 
 ## Key controls
 
