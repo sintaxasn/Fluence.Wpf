@@ -2006,6 +2006,88 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void Stage3_FontIcon_Spin_PausesWhenCollapsed_ResumesWhenVisible()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                Window window = new();
+                Controls.FontIcon icon = new()
+                {
+                    Glyph = "\uE72C",
+                    IsSpinning = true,
+                };
+
+                try
+                {
+                    window.Content = icon;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    RotateTransform? rotate = icon.Template.FindName("PART_Rotate", icon) as RotateTransform;
+                    Assert.IsNotNull(rotate);
+                    Assert.IsTrue(rotate.HasAnimatedProperties, "Spin animation must run while the icon is loaded and visible.");
+
+                    icon.Visibility = Visibility.Collapsed;
+                    DrainDispatcher(window.Dispatcher);
+                    Assert.IsFalse(rotate.HasAnimatedProperties, "Spin animation must stop while the icon is collapsed.");
+                    Assert.AreEqual(icon.Rotation, rotate.Angle, "Angle must rest at Rotation while the spin is paused.");
+
+                    icon.Visibility = Visibility.Visible;
+                    DrainDispatcher(window.Dispatcher);
+                    Assert.IsTrue(rotate.HasAnimatedProperties, "Spin animation must resume when the icon becomes visible again.");
+                }
+                finally
+                {
+                    window.Close();
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                }
+            });
+        }
+
+        [TestMethod]
+        public void Stage3_FontIcon_Spin_StopsWhenUnloaded()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+                Window window = new();
+                Controls.FontIcon icon = new()
+                {
+                    Glyph = "\uE72C",
+                    IsSpinning = true,
+                };
+
+                try
+                {
+                    window.Content = icon;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    RotateTransform? rotate = icon.Template.FindName("PART_Rotate", icon) as RotateTransform;
+                    Assert.IsNotNull(rotate);
+                    Assert.IsTrue(rotate.HasAnimatedProperties, "Spin animation must run while the icon is loaded and visible.");
+
+                    window.Content = null;
+                    DrainDispatcher(window.Dispatcher);
+                    Assert.IsFalse(rotate.HasAnimatedProperties, "Spin animation must stop when the icon is unloaded.");
+                    Assert.AreEqual(icon.Rotation, rotate.Angle, "Angle must rest at Rotation after the icon unloads.");
+                }
+                finally
+                {
+                    window.Close();
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                }
+            });
+        }
+
+        [TestMethod]
         public void Stage3_FontIcon_EnableTransitions_DefaultTrue()
         {
             RunOnStaThread(static () =>

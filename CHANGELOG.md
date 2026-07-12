@@ -4,6 +4,16 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- ScrollBar hover expand/contract and track fade timings now match WinUI's named durations (`ScrollBarExpandDuration` / `ScrollBarContractDuration` 167 ms, `ScrollBarOpacityChangeDuration` 83 ms) instead of the previous non-token 120 ms / 150 ms values; the `0.8,0,0,1` spline is unchanged.
+
+### Fixed
+
+- `FontIcon`: the `IsSpinning` rotation animation now stops while the icon is unloaded or not visible and resumes when it is shown again, instead of ticking forever on hidden or unloaded icons (needless dispatcher wakeups and battery drain).
+
 ## [0.8.9-Preview] - 2026-07-07
 
 ### Changed
