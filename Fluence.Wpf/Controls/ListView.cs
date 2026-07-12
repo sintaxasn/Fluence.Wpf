@@ -40,9 +40,10 @@ namespace Fluence.Wpf.Controls
     /// </summary>
     public class ListView : System.Windows.Controls.ListView
     {
-        // Animation durations for item insertions and removals.
+        // Animation durations for item insertions and removals:
+        // ControlNormalAnimationDuration (250 ms) and ControlFastAnimationDuration (167 ms).
         private static readonly Duration InsertDuration = new(TimeSpan.FromMilliseconds(250));
-        private static readonly Duration RemoveDuration = new(TimeSpan.FromMilliseconds(200));
+        private static readonly Duration RemoveDuration = new(TimeSpan.FromMilliseconds(167));
 
         /// <summary>
         /// Initializes static members of the ListView class and overrides the default style metadata.

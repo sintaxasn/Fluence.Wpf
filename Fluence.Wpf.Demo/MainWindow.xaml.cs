@@ -495,7 +495,9 @@ namespace Fluence.Wpf.Demo
             element.Opacity = 0.0;
 
             CubicEase easing = new() { EasingMode = EasingMode.EaseOut };
-            DoubleAnimation opacityAnimation = new(0.0, 1.0, new Duration(TimeSpan.FromMilliseconds(160)))
+
+            // ControlFastAnimationDuration (167 ms) fade, matching the slide below.
+            DoubleAnimation opacityAnimation = new(0.0, 1.0, new Duration(TimeSpan.FromMilliseconds(167)))
             {
                 EasingFunction = easing,
             };
