@@ -106,6 +106,7 @@ namespace Fluence.Wpf.Controls
         {
             Loaded += OnLoaded;
             Unloaded += OnUnloaded;
+            IsVisibleChanged += OnIsVisibleChanged;
         }
 
         /// <summary>
@@ -444,6 +445,11 @@ namespace Fluence.Wpf.Controls
             StopIndeterminateAnimation();
         }
 
+        private void OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            UpdateIndeterminateAnimationState();
+        }
+
         private static void OnIsActiveChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ((ProgressRing)d).UpdateIndeterminateAnimationState();
@@ -629,9 +635,11 @@ namespace Fluence.Wpf.Controls
         private void UpdateIndeterminateAnimationState()
         {
             bool isPausedVisual = IsPausedVisualState;
-            if (!IsLoaded || !IsActive || !IsIndeterminate || isPausedVisual)
+            if (!IsLoaded || !IsVisible || !IsActive || !IsIndeterminate || isPausedVisual)
             {
-                bool shouldRenderPausedFrame = IsLoaded && IsActive && IsIndeterminate && isPausedVisual;
+                // A paused-but-visible ring still renders its static frame; an invisible
+                // ring needs no frame because nothing paints while it is collapsed or hidden.
+                bool shouldRenderPausedFrame = IsLoaded && IsVisible && IsActive && IsIndeterminate && isPausedVisual;
                 StopIndeterminateAnimation();
                 if (shouldRenderPausedFrame)
                 {

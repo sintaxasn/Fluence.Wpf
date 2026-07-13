@@ -353,6 +353,52 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void ProgressBar_Indeterminate_StopsAnimationWhenCollapsedAndRestartsWhenVisible()
+        {
+            WpfTestSta.Invoke(static () =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Controls.ProgressBar progressBar = new()
+                {
+                    Width = 240,
+                    Height = 24,
+                    IsIndeterminate = true,
+                };
+                Window w = new() { Content = progressBar, Width = 300, Height = 120 };
+                w.Show();
+                DrainDispatcher(w.Dispatcher);
+
+                TranslateTransform? translate =
+                    progressBar.Template.FindName("PART_IndeterminateTranslate", progressBar) as TranslateTransform;
+                TranslateTransform? translate2 =
+                    progressBar.Template.FindName("PART_IndeterminateTranslate2", progressBar) as TranslateTransform;
+                Assert.IsNotNull(translate, "ProgressBar template must expose PART_IndeterminateTranslate.");
+                Assert.IsNotNull(translate2, "ProgressBar template must expose PART_IndeterminateTranslate2.");
+                Assert.IsTrue(WaitUntil(w.Dispatcher, 2000, () => translate.HasAnimatedProperties),
+                    "The indeterminate animation must run while the bar is loaded and visible.");
+
+                progressBar.Visibility = Visibility.Collapsed;
+                DrainDispatcher(w.Dispatcher);
+
+                Assert.IsFalse(translate.HasAnimatedProperties,
+                    "Collapsing the bar must stop the repeat-forever animation on the primary translate transform.");
+                Assert.IsFalse(translate2.HasAnimatedProperties,
+                    "Collapsing the bar must stop the repeat-forever animation on the secondary translate transform.");
+
+                progressBar.Visibility = Visibility.Visible;
+                DrainDispatcher(w.Dispatcher);
+
+                Assert.IsTrue(WaitUntil(w.Dispatcher, 2000, () => translate.HasAnimatedProperties),
+                    "Restoring visibility must restart the indeterminate animation.");
+
+                w.Close();
+                DrainDispatcher(w.Dispatcher);
+            });
+        }
+
+        [TestMethod]
         public void ProgressBar_IndeterminateMode_SetsIsIndeterminate()
         {
             WpfTestSta.Invoke(static () =>

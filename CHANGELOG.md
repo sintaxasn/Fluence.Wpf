@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Fixed
 
+- `ProgressRing` / `ProgressBar`: the repeat-forever indeterminate animations now park while the control is not visible (`Visibility="Collapsed"` or `"Hidden"`) and restart when it is shown again, instead of ticking at full rate while nothing paints.
 - `FontIcon`: the `IsSpinning` rotation animation now stops while the icon is unloaded or not visible and resumes when it is shown again, instead of ticking forever on hidden or unloaded icons (needless dispatcher wakeups and battery drain).
 - `NavigationView`: selecting items faster than the indicator's depart/arrive sequence no longer snaps the selection indicator back to the previous slot and replays the whole animation from zero; a mid-flight retarget now continues from the indicator's current animated position, scale, and opacity (the footer indicator gets the same hand-off), with the 90 ms / 140 ms timings and easings unchanged.
 

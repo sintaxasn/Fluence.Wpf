@@ -248,6 +248,7 @@ namespace Fluence.Wpf.Controls
             SizeChanged += OnSizeChanged;
             Loaded += OnLoaded;
             Unloaded += OnUnloaded;
+            IsVisibleChanged += OnIsVisibleChanged;
         }
 
         /// <inheritdoc />
@@ -384,6 +385,26 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
+        /// Parks the repeat-forever indeterminate animation while the control is not visible
+        /// (Collapsed or Hidden) and restarts it when the control is shown again. WPF does not
+        /// auto-pause animation clocks for invisible elements, so without this the clocks would
+        /// keep ticking at full rate while nothing paints.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The event data.</param>
+        private void OnIsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (IsVisible && IsIndeterminate)
+            {
+                RefreshIndeterminateLayout();
+            }
+            else
+            {
+                StopIndeterminate();
+            }
+        }
+
+        /// <summary>
         /// Clips the indicator host (and therefore the determinate fill and both indeterminate bars) to its
         /// rounded-rectangle geometry. WPF's <see cref="UIElement.ClipToBounds"/> clips only to the
         /// rectangular bounds, so the translating indeterminate bars (which overshoot both edges of the
@@ -508,9 +529,10 @@ namespace Fluence.Wpf.Controls
         {
             StopIndeterminate();
 
-            // Only animate while loaded: the repeat-forever clocks would otherwise stay rooted
-            // after the hosting window closes. OnLoaded restarts the animation on re-entry.
-            if (!IsLoaded || _indeterminateTranslate is null || _indeterminateBar is null)
+            // Only animate while loaded and visible: the repeat-forever clocks would otherwise
+            // stay rooted after the hosting window closes, or keep ticking while the control is
+            // Collapsed or Hidden. OnLoaded and OnIsVisibleChanged restart the animation on re-entry.
+            if (!IsLoaded || !IsVisible || _indeterminateTranslate is null || _indeterminateBar is null)
             {
                 return;
             }
