@@ -2515,7 +2515,13 @@ StringComparison.Ordinal, "Rendered C# source should preserve leading indentatio
 
             Assert.AreEqual(expectedStep, progressBar.CurrentStep, "Step button should update the current step.");
             double targetWidth = track.ActualWidth * expectedStep / progressBar.Steps;
-            double animatedWidth = fill.Width;
+
+            // The determinate fill is laid out at the full track width and animates
+            // PART_FillScale.ScaleX in [0,1], so the visually rendered progress width is
+            // the track width multiplied by the current (possibly animating) scale.
+            ScaleTransform? fillScale = fill.RenderTransform as ScaleTransform;
+            Assert.IsNotNull(fillScale, "The determinate fill must carry the PART_FillScale render transform.");
+            double animatedWidth = track.ActualWidth * fillScale.ScaleX;
             if (forward)
             {
                 Assert.IsLessThan(
