@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Changed
 
 - ScrollBar hover expand/contract and track fade timings now match WinUI's named durations (`ScrollBarExpandDuration` / `ScrollBarContractDuration` 167 ms, `ScrollBarOpacityChangeDuration` 83 ms) instead of the previous non-token 120 ms / 150 ms values; the `0.8,0,0,1` spline is unchanged.
+- `ListView`: the item-removal animation now eases out (matching the insert path) instead of easing in, so a deleted item no longer lingers at full opacity before snapping away. Duration and slide distance are unchanged.
 - Motion consistency: retimed stray animation literals onto the canonical motion scale - 120 ms press/exit values to 100 ms (ToggleButton, RepeatButton press scale; ListBox, ListView selection-pill exit), 150/180 ms transitions to the 167 ms Fast token (RadioButton inner dot, Slider thumb reveal, TabControl/TabView indicator scale, InfoBar open/close fade), 50 ms indicator fades to the 83 ms Faster token (TabControl, TabView), and code-behind ListView remove (200 ms) and demo page fade (160 ms) to 167 ms. The shared 100 ms press value is now documented as a `ControlPressAnimationDuration` token in `Typography.xaml`.
 
 ### Fixed

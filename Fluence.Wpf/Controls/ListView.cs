@@ -238,11 +238,11 @@ namespace Fluence.Wpf.Controls
             }
             DoubleAnimation opacityAnim = new(container.Opacity, 0, RemoveDuration)
             {
-                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn },
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut },
             };
             DoubleAnimation slideAnim = new(0, -12, RemoveDuration)
             {
-                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn },
+                EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut },
             };
             opacityAnim.Completed += (s, e) =>
             {
