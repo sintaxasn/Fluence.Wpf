@@ -187,6 +187,7 @@ namespace Fluence.Wpf.Controls
             _switchThumb = GetTemplateChild(PartSwitchThumb) as FrameworkElement;
             _thumbInput = GetTemplateChild(PartSwitchThumbInput) as Thumb;
             _knobTranslate = ResolveKnobTranslate();
+            _switchThumbScale = ResolveThumbScale();
 
             if (_thumbInput is not null)
             {
@@ -243,6 +244,26 @@ namespace Fluence.Wpf.Controls
 
             TranslateTransform mutableTransform = new();
             _switchKnob.RenderTransform = mutableTransform;
+            return mutableTransform;
+        }
+
+        private ScaleTransform? ResolveThumbScale()
+        {
+            if (_switchThumb is null)
+            {
+                return null;
+            }
+
+            if (_switchThumb.RenderTransform is ScaleTransform transform && !transform.IsFrozen)
+            {
+                transform.BeginAnimation(ScaleTransform.ScaleXProperty, animation: null);
+                transform.BeginAnimation(ScaleTransform.ScaleYProperty, animation: null);
+                return transform;
+            }
+
+            ScaleTransform mutableTransform = new();
+            _switchThumb.RenderTransformOrigin = new Point(0.5, 0.5);
+            _switchThumb.RenderTransform = mutableTransform;
             return mutableTransform;
         }
 
@@ -409,18 +430,18 @@ namespace Fluence.Wpf.Controls
 
         private void AnimateThumbSize(double width, double height, bool clearWhenCompleted)
         {
-            if (_switchThumb is null)
+            if (_switchThumbScale is null)
             {
                 return;
             }
 
             int animationGeneration = ++_thumbSizeAnimationGeneration;
-            DoubleAnimation widthAnimation = new(_switchThumb.Width, width, TimeSpan.FromMilliseconds(ThumbSizeAnimationMilliseconds))
+            DoubleAnimation scaleXAnimation = new(_switchThumbScale.ScaleX, width / ThumbRestSize, TimeSpan.FromMilliseconds(ThumbSizeAnimationMilliseconds))
             {
                 EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut },
                 FillBehavior = clearWhenCompleted ? FillBehavior.Stop : FillBehavior.HoldEnd,
             };
-            DoubleAnimation heightAnimation = new(_switchThumb.Height, height, TimeSpan.FromMilliseconds(ThumbSizeAnimationMilliseconds))
+            DoubleAnimation scaleYAnimation = new(_switchThumbScale.ScaleY, height / ThumbRestSize, TimeSpan.FromMilliseconds(ThumbSizeAnimationMilliseconds))
             {
                 EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut },
                 FillBehavior = clearWhenCompleted ? FillBehavior.Stop : FillBehavior.HoldEnd,
@@ -428,20 +449,20 @@ namespace Fluence.Wpf.Controls
 
             if (clearWhenCompleted)
             {
-                heightAnimation.Completed += delegate
+                scaleYAnimation.Completed += delegate
                 {
-                    if (animationGeneration != _thumbSizeAnimationGeneration || _switchThumb is null)
+                    if (animationGeneration != _thumbSizeAnimationGeneration || _switchThumbScale is null)
                     {
                         return;
                     }
 
-                    _switchThumb.BeginAnimation(WidthProperty, animation: null);
-                    _switchThumb.BeginAnimation(HeightProperty, animation: null);
+                    _switchThumbScale.BeginAnimation(ScaleTransform.ScaleXProperty, animation: null);
+                    _switchThumbScale.BeginAnimation(ScaleTransform.ScaleYProperty, animation: null);
                 };
             }
 
-            _switchThumb.BeginAnimation(WidthProperty, widthAnimation, HandoffBehavior.SnapshotAndReplace);
-            _switchThumb.BeginAnimation(HeightProperty, heightAnimation, HandoffBehavior.SnapshotAndReplace);
+            _switchThumbScale.BeginAnimation(ScaleTransform.ScaleXProperty, scaleXAnimation, HandoffBehavior.SnapshotAndReplace);
+            _switchThumbScale.BeginAnimation(ScaleTransform.ScaleYProperty, scaleYAnimation, HandoffBehavior.SnapshotAndReplace);
         }
 
         private double GetReleasedThumbSize()
@@ -458,6 +479,7 @@ namespace Fluence.Wpf.Controls
         private FrameworkElement? _switchThumb;
         private Thumb? _thumbInput;
         private TranslateTransform? _knobTranslate;
+        private ScaleTransform? _switchThumbScale;
         private bool _pendingClick;
         private bool _dragStarted;
         private double _dragDistance;
