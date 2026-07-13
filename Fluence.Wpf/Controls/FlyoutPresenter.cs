@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Helpers;
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -132,6 +133,19 @@ namespace Fluence.Wpf.Controls
             if (GetTemplateChild(PresenterTranslatePart) is not TranslateTransform translate ||
                 GetTemplateChild(PresenterSurfacePart) is not Border surface)
             {
+                return;
+            }
+
+            // Motion disabled (OS "Show animations" off): skip the reveal and show the surface
+            // at rest immediately - translate (0,0), full opacity, no clocks.
+            if (!MotionHelper.IsMotionEnabled)
+            {
+                translate.BeginAnimation(TranslateTransform.XProperty, animation: null);
+                translate.BeginAnimation(TranslateTransform.YProperty, animation: null);
+                translate.SetCurrentValue(TranslateTransform.XProperty, 0.0);
+                translate.SetCurrentValue(TranslateTransform.YProperty, 0.0);
+                surface.BeginAnimation(UIElement.OpacityProperty, animation: null);
+                surface.SetCurrentValue(UIElement.OpacityProperty, 1.0);
                 return;
             }
 

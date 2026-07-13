@@ -27,6 +27,7 @@
  */
 
 using Fluence.Wpf.Automation;
+using Fluence.Wpf.Helpers;
 using System;
 using System.Windows;
 using System.Windows.Automation.Peers;
@@ -382,7 +383,7 @@ namespace Fluence.Wpf.Controls
             }
 
             double targetOffset = IsChecked is true ? KnobOnOffset : KnobOffOffset;
-            if (!useAnimation)
+            if (!useAnimation || !MotionHelper.IsMotionEnabled)
             {
                 SetKnobOffset(targetOffset);
                 return;
@@ -432,6 +433,19 @@ namespace Fluence.Wpf.Controls
         {
             if (_switchThumbScale is null)
             {
+                return;
+            }
+
+            // Motion disabled (OS "Show animations" off): release the clocks and snap the thumb
+            // scale to its final size. The generation increment keeps any in-flight completion
+            // callbacks stale so they cannot overwrite the snapped values.
+            if (!MotionHelper.IsMotionEnabled)
+            {
+                _thumbSizeAnimationGeneration++;
+                _switchThumbScale.BeginAnimation(ScaleTransform.ScaleXProperty, animation: null);
+                _switchThumbScale.BeginAnimation(ScaleTransform.ScaleYProperty, animation: null);
+                _switchThumbScale.ScaleX = width / ThumbRestSize;
+                _switchThumbScale.ScaleY = height / ThumbRestSize;
                 return;
             }
 

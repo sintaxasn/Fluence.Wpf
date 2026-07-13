@@ -1065,7 +1065,7 @@ defaultValue: null,
             }
 
             double targetWidth = IsPaneOpen ? PaneOpenWidth : GetClosedPaneWidth();
-            if (!useAnimation)
+            if (!useAnimation || !MotionHelper.IsMotionEnabled)
             {
                 StopPaneColumnAnimation();
                 _paneColumn.Width = new GridLength(targetWidth);
@@ -1238,7 +1238,7 @@ defaultValue: null,
             DependencyProperty scaleProperty = topMode ? ScaleTransform.ScaleXProperty : ScaleTransform.ScaleYProperty;
 
             double toOpacity = appearing ? 1.0 : 0.0;
-            if (!animate)
+            if (!animate || !MotionHelper.IsMotionEnabled)
             {
                 scale.ScaleX = 1.0;
                 scale.ScaleY = 1.0;
@@ -1349,7 +1349,7 @@ defaultValue: null,
 
             bool topMode = PaneDisplayMode is NavigationViewPaneDisplayMode.Top;
             Point targetPosition = CalculateIndicatorPosition(nvi, _selectionIndicator, _indicatorHost, topMode);
-            if (!animate || !_indicatorPositioned)
+            if (!animate || !_indicatorPositioned || !MotionHelper.IsMotionEnabled)
             {
                 SnapIndicator(targetPosition);
                 return;

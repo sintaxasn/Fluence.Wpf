@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Helpers;
 using System;
 using System.Windows;
 using System.Windows.Automation;
@@ -535,7 +536,9 @@ namespace Fluence.Wpf.Controls
             // Only animate while loaded and visible: the repeat-forever clocks would otherwise
             // stay rooted after the hosting window closes, or keep ticking while the control is
             // Collapsed or Hidden. OnLoaded and OnIsVisibleChanged restart the animation on re-entry.
-            if (!IsLoaded || !IsVisible || _indeterminateTranslate is null || _indeterminateBar is null)
+            // With motion disabled (OS "Show animations" off) the StopIndeterminate call above has
+            // already parked both bars at their resting translate of 0, which is the static frame.
+            if (!IsLoaded || !IsVisible || !MotionHelper.IsMotionEnabled || _indeterminateTranslate is null || _indeterminateBar is null)
             {
                 return;
             }
@@ -588,6 +591,8 @@ namespace Fluence.Wpf.Controls
 
         private void UpdateFillWidth(bool animate = true)
         {
+            // Motion disabled (OS "Show animations" off): always take the non-animated path.
+            animate = animate && MotionHelper.IsMotionEnabled;
             if (_track is null || _fill is null || _fillScale is null || IsIndeterminate)
             {
                 return;

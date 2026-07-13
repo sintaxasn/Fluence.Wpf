@@ -27,6 +27,7 @@
  */
 
 using Fluence.Wpf.Automation;
+using Fluence.Wpf.Helpers;
 using System;
 using System.Threading.Tasks;
 using System.Windows;
@@ -642,6 +643,16 @@ namespace Fluence.Wpf.Controls
             ScaleTransform scale = new();
             SetCurrentValue(RenderTransformOriginProperty, new Point(0.5, 0.5));
             SetCurrentValue(RenderTransformProperty, scale);
+
+            // Motion disabled (OS "Show animations" off): present the dialog at its final
+            // resting values immediately instead of playing the entrance.
+            if (!MotionHelper.IsMotionEnabled)
+            {
+                SetCurrentValue(OpacityProperty, 1.0);
+                scale.ScaleX = 1.0;
+                scale.ScaleY = 1.0;
+                return;
+            }
 
             // WinUI ContentDialog_themeresources.xaml "To=DialogShowing" keyframes. The timing
             // values mirror the Themes/Typography/Typography.xaml motion tokens, which XAML

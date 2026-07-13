@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Helpers;
 using System;
 using System.Collections;
 using System.Windows;
@@ -219,7 +220,7 @@ namespace Fluence.Wpf.Controls
         /// <param name="onCompleted">An optional callback invoked after removal completes.</param>
         public void AnimateRemove(object item, Action? onCompleted)
         {
-            if (!ItemAnimationsEnabled)
+            if (!ItemAnimationsEnabled || !MotionHelper.IsMotionEnabled)
             {
                 RemoveItem(item);
                 onCompleted?.Invoke();
@@ -293,8 +294,9 @@ namespace Fluence.Wpf.Controls
             {
                 ui.Focusable = IsItemSelectable;
             }
-            if (!ItemAnimationsEnabled || !IsLoaded)
+            if (!ItemAnimationsEnabled || !IsLoaded || !MotionHelper.IsMotionEnabled)
             {
+                // No insert tween: the container stays at its rest position and full opacity.
                 return;
             }
             if (element is not UIElement container)

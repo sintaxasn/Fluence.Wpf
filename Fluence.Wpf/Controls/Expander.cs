@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Helpers;
 using System;
 using System.Windows;
 using System.Windows.Controls;
@@ -221,7 +222,9 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
-            if (_contentBorder is null || _contentTranslate is null)
+            // Motion disabled (OS "Show animations" off): open the content row directly at
+            // its steady state instead of playing the slide-in.
+            if (_contentBorder is null || _contentTranslate is null || !MotionHelper.IsMotionEnabled)
             {
                 ApplySteadyState();
                 return;
@@ -339,9 +342,10 @@ namespace Fluence.Wpf.Controls
             }
 
             double contentHeight = _contentBorder?.ActualHeight ?? 0;
-            if (_contentBorder is null || _contentTranslate is null || contentHeight <= 0)
+            if (_contentBorder is null || _contentTranslate is null || contentHeight <= 0 || !MotionHelper.IsMotionEnabled)
             {
-                // Nothing measurable to slide (never laid out): close the row directly.
+                // Nothing measurable to slide (never laid out) or motion disabled by the OS
+                // "Show animations" setting: close the row directly.
                 ApplySteadyState();
                 return;
             }

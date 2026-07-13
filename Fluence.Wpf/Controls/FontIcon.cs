@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Helpers;
 using System;
 using System.Windows;
 using System.Windows.Automation.Peers;
@@ -287,7 +288,7 @@ namespace Fluence.Wpf.Controls
 
             rotate.BeginAnimation(RotateTransform.AngleProperty, animation: null);
 
-            if (!IsSpinning || !IsLoaded || !IsVisible)
+            if (!IsSpinning || !IsLoaded || !IsVisible || !MotionHelper.IsMotionEnabled)
             {
                 rotate.Angle = Rotation;
                 return;

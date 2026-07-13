@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- Controls now respect the Windows "Show animations in Windows" accessibility setting (read via `SystemParameters.ClientAreaAnimation`): when the OS setting is off, code-driven animations no longer play and controls jump straight to their final visual state - the indeterminate `ProgressRing` and `ProgressBar` show a static resting frame, `FontIcon.IsSpinning` holds its static rotation, and the `ContentDialog` entrance, `NavigationView` pane/indicator motion, `Flyout` reveal, `Expander` content slide, `ToggleSwitch` knob and thumb motion, `ListView` insert/remove tweens, and `SmoothScrollViewer` wheel tween all apply their end states immediately. Known limitations: XAML template storyboards (hover/press micro-feedback, dropdown reveals, indicator fades, chevron rotations) are not yet gated, and flipping the OS setting mid-session takes effect at each animation's next natural start rather than immediately.
+
 ### Changed
 
 - ScrollBar hover expand/contract and track fade timings now match WinUI's named durations (`ScrollBarExpandDuration` / `ScrollBarContractDuration` 167 ms, `ScrollBarOpacityChangeDuration` 83 ms) instead of the previous non-token 120 ms / 150 ms values; the `0.8,0,0,1` spline is unchanged.

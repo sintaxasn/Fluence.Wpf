@@ -27,6 +27,7 @@
  */
 
 using Fluence.Wpf.Automation;
+using Fluence.Wpf.Helpers;
 using System;
 using System.Windows;
 using System.Windows.Automation;
@@ -578,6 +579,15 @@ namespace Fluence.Wpf.Controls
                 return;
             }
 
+            // Motion disabled (OS "Show animations" off): release any in-flight tween and
+            // snap the arc straight to the target fraction.
+            if (!MotionHelper.IsMotionEnabled)
+            {
+                ring.BeginAnimation(AnimatedFractionProperty, animation: null);
+                ring.AnimatedFraction = targetFraction;
+                return;
+            }
+
             // FillBehavior.Stop keeps the private DP from being held by the animation
             // clock after completion; the completion handler commits the final value so
             // the next tween starts from the rendered arc position.  The single spline
@@ -635,15 +645,18 @@ namespace Fluence.Wpf.Controls
         private void UpdateIndeterminateAnimationState()
         {
             bool isPausedVisual = IsPausedVisualState;
-            if (!IsLoaded || !IsVisible || !IsActive || !IsIndeterminate || isPausedVisual)
+            bool isMotionEnabled = MotionHelper.IsMotionEnabled;
+            if (!IsLoaded || !IsVisible || !IsActive || !IsIndeterminate || isPausedVisual || !isMotionEnabled)
             {
-                // A paused-but-visible ring still renders its static frame; an invisible
-                // ring needs no frame because nothing paints while it is collapsed or hidden.
-                bool shouldRenderPausedFrame = IsLoaded && IsVisible && IsActive && IsIndeterminate && isPausedVisual;
+                // A paused-but-visible ring still renders its static frame, and a ring whose
+                // motion is disabled by the OS "Show animations" setting renders the same
+                // static frame; an invisible ring needs no frame because nothing paints while
+                // it is collapsed or hidden.
+                bool shouldRenderStaticFrame = IsLoaded && IsVisible && IsActive && IsIndeterminate && (isPausedVisual || !isMotionEnabled);
                 StopIndeterminateAnimation();
-                if (shouldRenderPausedFrame)
+                if (shouldRenderStaticFrame)
                 {
-                    // Render the static paused half-arc at peak sweep with no rotation. The
+                    // Render the static half-arc at peak sweep with no rotation. The
                     // animation has already been stopped, parking the rotate transform at its
                     // start angle of 90 degrees.
                     IndeterminateSweepFraction = IndeterminatePeakSweepFraction;
