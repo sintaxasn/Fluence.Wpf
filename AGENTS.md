@@ -22,7 +22,7 @@ Fluence.Wpf.sln
 ├── Fluence.Wpf/             Control library (multi-TFM: net472 + net8.0-windows10.0.26100.0 + net10.0-windows10.0.26100.0)
 ├── Fluence.Wpf.Demo/        Gallery app (net472 + net10.0-windows10.0.26100.0) - visual verification for all controls
 ├── Fluence.Wpf.Demo.Mvvm/   MVVM Task Manager demo (net10.0-windows10.0.26100.0) - CommunityToolkit.Mvvm example
-└── Fluence.Wpf.Tests/       MSTest 4.2.2 suite (multi-TFM)
+└── Fluence.Wpf.Tests/       MSTest 4.3.0 suite (multi-TFM)
 ```
 
 ### CLR namespaces
@@ -257,7 +257,7 @@ When adding a new control or materially changing an existing one:
 
 ## 6. Testing
 
-- **Framework**: MSTest 4.2.2 (`MSTest.TestFramework` / `MSTest.TestAdapter`) via `Microsoft.NET.Test.Sdk` 17.9.0.
+- **Framework**: MSTest 4.3.0 (`MSTest.TestFramework` / `MSTest.TestAdapter`) via `Microsoft.NET.Test.Sdk` 18.6.0.
 - **TFMs**: `net472` **and** `net10.0-windows10.0.26100.0`; both must pass.
 - **Parallelization**: `[assembly: DoNotParallelize]` lives in `Fluence.Wpf.Tests/Properties/AssemblyInfo.cs`, and the test project sets `<TestTfmsInParallel>false</TestTfmsInParallel>`. WPF's shared `ResourceDictionary` / storyboard sealing is not thread-safe across parallel fixtures or target-framework lanes.
 - **STA**: `WpfTestSta` in the test project owns a single STA thread + `Dispatcher`. All UI-touching work goes through `WpfTestSta.Invoke(...)` / `RunOnStaThread(...)`.
