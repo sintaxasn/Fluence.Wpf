@@ -142,7 +142,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $ghArgs = @('release', 'create', '${{ github.ref_name }}')
+          # --repo makes gh operate without a local checkout (this job never checks
+          # out the tree; it only downloads the build artifacts).
+          $ghArgs = @('release', 'create', '${{ github.ref_name }}', '--repo', '${{ github.repository }}')
           $ghArgs += (Get-ChildItem dist/* | ForEach-Object FullName)
           $ghArgs += @('--title', 'Fluence.Wpf ${{ github.ref_name }}', '--generate-notes')
           if ('${{ github.ref_name }}'.Contains('-pre')) { $ghArgs += '--prerelease' }
