@@ -30,9 +30,9 @@
         brushes to the AppBarButton set: transparent rest plate, SubtleFillColorSecondary
         hover / SubtleFillColorTertiary press, primary-to-secondary text foreground, no
         border, ControlCornerRadius rounding (see TeachingTip.xaml / PipsPager.xaml for
-        the same plate pattern). Without this template the stock Button falls back to the
-        OS default chrome: square corners and legacy hover colors that ignore the subtle
-        fills the host template used to set from SourceName triggers.
+        the same plate pattern). The template is required: a stock Button without one
+        falls back to the OS default chrome, whose internal triggers paint square
+        corners and legacy hover colors regardless of the Background property.
     -->
     <Style x:Key="InfoBarCloseButtonStyle" TargetType="{x:Type Button}">
         <Setter Property="Background" Value="Transparent" />
