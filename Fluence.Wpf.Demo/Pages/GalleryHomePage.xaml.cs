@@ -45,10 +45,18 @@ namespace Fluence.Wpf.Demo.Pages
             // constructor, keeping abandoned page instances collectable.
             Loaded += OnLoaded;
             Unloaded += OnUnloaded;
+
+            // Resolve the hero for the active theme immediately: the XAML default is
+            // the light lockup, and correcting it only on Loaded would let a dark
+            // theme's first layout pass measure the wrong image.
+            UpdateHeroImage();
         }
 
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
+            // Remove-before-add keeps the subscription idempotent if Loaded fires
+            // again without an intervening Unloaded (re-hosting scenarios).
+            ApplicationThemeManager.Changed -= OnThemeChanged;
             ApplicationThemeManager.Changed += OnThemeChanged;
             UpdateHeroImage();
         }
