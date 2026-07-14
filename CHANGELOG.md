@@ -12,6 +12,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- Demo: the home page hero now shows the Fluence header lockup drawn for the active theme (`FluenceHeaderLightDrawingImage` on light themes, `FluenceHeaderDarkDrawingImage` on dark, chosen by system window luminance under high contrast), replacing the square brand mark and separate title text. The unused lockup PNGs are removed from the demo resources.
 - ScrollBar: hover expand/contract now runs 167 ms and the track fade 83 ms, matching WinUI's `ScrollBarExpandDuration`, `ScrollBarContractDuration`, and `ScrollBarOpacityChangeDuration`; previously 120 ms and 150 ms.
 - `ListView`: item removal eases out like the insert path, so a deleted item no longer lingers at full opacity before snapping away.
 - `ComboBox`: the dropdown opens with the standard reveal, an 8 px slide from the control edge (upward-opening dropdowns slide up) plus fade over 167 ms on the `0.8,0,0,1` spline, instead of unfolding from zero height. The reveal runs from code and honors the reduced-motion setting.
