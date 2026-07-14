@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- CI: pushing a `v*` tag now creates the GitHub release automatically, attaching the `net472`, `net8.0-windows`, and `net10.0-windows` library binaries, the demo app, and the NuGet package (tags containing `-pre` are marked prerelease). The .NET 8 binaries are also uploaded as workflow artifacts on every build.
 - Controls respect the Windows "Show animations in Windows" accessibility setting, read via `SystemParameters.ClientAreaAnimation`. With the setting off, code-driven animations are skipped and controls jump to their final state. Covered: `ProgressRing` and `ProgressBar` indeterminate motion, `FontIcon` spin, `ContentDialog` open and close, `NavigationView` pane and indicator motion, the `Flyout`, `TeachingTip`, and `ComboBox` reveals, the `Expander` slide, `ToggleSwitch` knob and thumb motion, `ListView` insert/remove, and `SmoothScrollViewer` wheel scrolling. Hover/press micro-feedback and other XAML template storyboards are not gated; toggling the OS setting mid-session applies at each animation's next start.
 
 ### Changed
