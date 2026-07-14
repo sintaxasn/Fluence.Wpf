@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Windows 11 Fluent Design controls and theming for WPF applications targeting **.NET Framework 4.7.2** and **Windows 10** (1809+), with enhanced visuals on **Windows 11**.
+Windows 11 Fluent Design controls and theming for WPF applications targeting **.NET Framework 4.7.2**, **.NET 8**, and **.NET 10** on **Windows 10** (1809+), with enhanced visuals on **Windows 11**.
 
 **Current build:** `0.8.10-preview` (2026-07-14).
 
@@ -92,7 +92,7 @@ Or clone or submodule this repository and add a **project reference** to `Fluenc
 
 ## Requirements
 
-- .NET Framework 4.7.2 and/or .NET 10 (Windows) - see the solution TFMs
+- .NET Framework 4.7.2, .NET 8, or .NET 10 (Windows) - the library ships `net472`, `net8.0-windows10.0.26100.0`, and `net10.0-windows10.0.26100.0`
 - Windows 10 version 1809 or later
 - Windows 11 recommended for full Mica / Acrylic / Tabbed backdrop support
 

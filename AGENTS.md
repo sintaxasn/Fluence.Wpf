@@ -9,7 +9,7 @@ Self-contained persistent memory for engineers (human and AI) working in this re
 ## 1. Project overview
 
 - **Fluence.Wpf** is a WPF control library that recreates the **Windows 11 Fluent / WinUI 3** visual language and interaction patterns on WPF.
-- **Target frameworks** (library + tests): `net472` (primary) and `net10.0-windows10.0.26100.0`. Gallery demo (`Fluence.Wpf.Demo`) targets `net472` and `net10.0-windows10.0.26100.0`; MVVM demo (`Fluence.Wpf.Demo.Mvvm`) targets `net10.0-windows10.0.26100.0`.
+- **Target frameworks** - library: `net472` (primary), `net8.0-windows10.0.26100.0` (PowerShell 7 in-process consumption), and `net10.0-windows10.0.26100.0`. Tests: `net472` and `net10.0-windows10.0.26100.0`. Gallery demo (`Fluence.Wpf.Demo`) targets `net472` and `net10.0-windows10.0.26100.0`; MVVM demo (`Fluence.Wpf.Demo.Mvvm`) targets `net10.0-windows10.0.26100.0`.
 - **Language**: `LangVersion=latest` across all TFMs, set centrally in `Directory.Build.props` - no per-TFM language restriction. `net472` still constrains **runtime API** availability (see [Section 4.3](#43-feasibility-test-for-net472)); avoid APIs that don't ship in `net472`, but C# language features themselves are not restricted. Nullable reference types are **enabled** (`Nullable=enable` in `Directory.Build.props`); individual projects may override with `<Nullable>disable</Nullable>` (e.g. `Fluence.Wpf.Demo.Mvvm`).
 - **License**: BSD 3-Clause. Every `.cs` file begins with the same 27-line header; copy it verbatim from any existing library file when adding new sources. Do not edit the copyright year unless the user asks.
 - **OS**: Windows 10 1809+ baseline. Mica and rounded-corner extras light up on Windows 11.
@@ -19,7 +19,7 @@ Self-contained persistent memory for engineers (human and AI) working in this re
 
 ```text
 Fluence.Wpf.sln
-├── Fluence.Wpf/             Control library (multi-TFM: net472 + net10.0-windows10.0.26100.0)
+├── Fluence.Wpf/             Control library (multi-TFM: net472 + net8.0-windows10.0.26100.0 + net10.0-windows10.0.26100.0)
 ├── Fluence.Wpf.Demo/        Gallery app (net472 + net10.0-windows10.0.26100.0) - visual verification for all controls
 ├── Fluence.Wpf.Demo.Mvvm/   MVVM Task Manager demo (net10.0-windows10.0.26100.0) - CommunityToolkit.Mvvm example
 └── Fluence.Wpf.Tests/       MSTest 4.2.2 suite (multi-TFM)
@@ -402,7 +402,7 @@ When you are editing this repository, you are acting as a **senior C#/.NET WPF e
 
 ### Consumer build compatibility
 
-`Fluence.Wpf` has adopted the stricter consumer build requirements used by PSADT for release gating: warnings as errors, `latest-all` analyzers, code style enforcement, banned APIs, XML documentation generation, and the `net472` plus `net10.0-windows10.0.26100.0` build matrix. Treat the stricter consumer policy as authoritative for release conformance. If this repo drifts from it, correct the drift unless an exception is explicit, documented in this handbook or the affected project file, and approved by the user.
+`Fluence.Wpf` has adopted the stricter consumer build requirements used by PSADT for release gating: warnings as errors, `latest-all` analyzers, code style enforcement, banned APIs, XML documentation generation, and the `net472` / `net8.0-windows10.0.26100.0` / `net10.0-windows10.0.26100.0` build matrix. Treat the stricter consumer policy as authoritative for release conformance. If this repo drifts from it, correct the drift unless an exception is explicit, documented in this handbook or the affected project file, and approved by the user.
 
 Consumer build compatibility is a release gate. For build-policy, public API, project metadata, resource-copy, or packaging changes that can affect downstream consumption, verify the standalone Fluence build and the current release-gate consumer build. PSADT-specific paths or build artifacts may be cited only as release-gate evidence; do not make this handbook depend on consumer-local layout.
 
