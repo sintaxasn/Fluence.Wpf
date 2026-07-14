@@ -370,6 +370,53 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void ReducedMotion_ComboBox_DropdownOpen_PresentsDropdownAtRestWithoutClocks()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+                MotionHelper.OverrideIsMotionEnabled = false;
+
+                Window window = new() { Width = 400, Height = 300 };
+                Controls.ComboBox combo = new() { Width = 240 };
+                _ = combo.Items.Add(new System.Windows.Controls.ComboBoxItem { Content = "Alpha" });
+                try
+                {
+                    window.Content = combo;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    combo.IsDropDownOpen = true;
+                    DrainDispatcher(window.Dispatcher);
+
+                    System.Windows.Controls.Border? border =
+                        combo.Template.FindName("PART_DropdownBorder", combo) as System.Windows.Controls.Border;
+                    Assert.IsNotNull(border, "PART_DropdownBorder must exist in the template.");
+                    TranslateTransform? translate = border.RenderTransform as TranslateTransform;
+                    Assert.IsNotNull(translate, "PART_DropdownBorder must carry the DropdownTranslate transform.");
+
+                    Assert.AreEqual(0.0, translate.Y, 0.001,
+                        "With motion disabled the dropdown must rest at Y=0 with no reveal slide.");
+                    Assert.AreEqual(1.0, border.Opacity, 0.001,
+                        "With motion disabled the dropdown must show at full opacity immediately.");
+                    Assert.IsFalse(translate.HasAnimatedProperties,
+                        "With motion disabled the reveal slide must not leave an animation clock.");
+                    Assert.IsFalse(border.HasAnimatedProperties,
+                        "With motion disabled the reveal fade must not leave an animation clock.");
+
+                    combo.IsDropDownOpen = false;
+                }
+                finally
+                {
+                    MotionHelper.OverrideIsMotionEnabled = null;
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
         public void ReducedMotion_OverrideTrue_ToggleSwitch_StillAnimatesKnob()
         {
             WpfTestSta.Invoke(static () =>

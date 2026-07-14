@@ -280,59 +280,15 @@
                         </VisualStateManager.VisualStateGroups>
                     </Grid>
                     <ControlTemplate.Triggers>
-                        <!--  ControlFastAnimationDuration (167 ms) on ControlFastOutSlowInKeySpline; FlyoutPresenter.xaml reveal precedent  -->
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsDropDownOpen" Value="True" />
-                                <Condition Property="IsDropDownOpenedUpward" Value="False" />
-                            </MultiTrigger.Conditions>
-                            <MultiTrigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="DropdownTranslate" Storyboard.TargetProperty="Y">
-                                            <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="-8" />
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
-                                                KeyTime="0:0:0.167"
-                                                Value="0" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PART_DropdownBorder" Storyboard.TargetProperty="Opacity">
-                                            <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="0" />
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
-                                                KeyTime="0:0:0.167"
-                                                Value="1" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </MultiTrigger.EnterActions>
-                        </MultiTrigger>
-                        <MultiTrigger>
-                            <MultiTrigger.Conditions>
-                                <Condition Property="IsDropDownOpen" Value="True" />
-                                <Condition Property="IsDropDownOpenedUpward" Value="True" />
-                            </MultiTrigger.Conditions>
-                            <MultiTrigger.EnterActions>
-                                <BeginStoryboard>
-                                    <Storyboard>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="DropdownTranslate" Storyboard.TargetProperty="Y">
-                                            <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="8" />
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
-                                                KeyTime="0:0:0.167"
-                                                Value="0" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                        <DoubleAnimationUsingKeyFrames Storyboard.TargetName="PART_DropdownBorder" Storyboard.TargetProperty="Opacity">
-                                            <DiscreteDoubleKeyFrame KeyTime="0:0:0" Value="0" />
-                                            <SplineDoubleKeyFrame
-                                                KeySpline="0.8,0,0,1"
-                                                KeyTime="0:0:0.167"
-                                                Value="1" />
-                                        </DoubleAnimationUsingKeyFrames>
-                                    </Storyboard>
-                                </BeginStoryboard>
-                            </MultiTrigger.EnterActions>
-                        </MultiTrigger>
+                        <!--
+                            The dropdown open reveal (8px slide from the control edge + fade,
+                            167ms ControlFastAnimationDuration on ControlFastOutSlowInKeySpline)
+                            lives in ComboBox.BeginDropdownReveal, following the FlyoutPresenter
+                            code-reveal precedent: a XAML trigger cannot consult the
+                            reduced-motion helper, but code can, so the reveal is skipped when
+                            the OS "Show animations" setting is off. The code targets
+                            PART_DropdownBorder and its DropdownTranslate render transform.
+                        -->
                         <Trigger Property="Icon" Value="{x:Null}">
                             <Setter TargetName="LeftIcon" Property="Margin" Value="0" />
                             <Setter TargetName="LeftIcon" Property="Visibility" Value="Collapsed" />

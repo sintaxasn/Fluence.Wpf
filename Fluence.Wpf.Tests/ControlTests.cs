@@ -1718,6 +1718,56 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void ComboBox_DropdownReveal_SettlesAtRestAndSurvivesReopen()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new() { Width = 400, Height = 300 };
+                Controls.ComboBox combo = new() { Width = 240 };
+                _ = combo.Items.Add(new ComboBoxItem { Content = "Alpha" });
+                _ = combo.Items.Add(new ComboBoxItem { Content = "Beta" });
+
+                try
+                {
+                    window.Content = combo;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Border? border = combo.Template.FindName("PART_DropdownBorder", combo) as Border;
+                    Assert.IsNotNull(border, "PART_DropdownBorder should exist in the template.");
+                    System.Windows.Media.TranslateTransform? translate =
+                        border.RenderTransform as System.Windows.Media.TranslateTransform;
+                    Assert.IsNotNull(translate, "PART_DropdownBorder should carry the DropdownTranslate render transform.");
+
+                    // The code-driven reveal (moved out of the template MultiTriggers) must
+                    // settle at the rest position with its Stop-fill clocks released.
+                    for (int open = 0; open < 2; open++)
+                    {
+                        combo.IsDropDownOpen = true;
+                        Assert.IsTrue(WaitUntil(window.Dispatcher, 2000,
+                                () => Math.Abs(translate.Y) < 0.001 && border.Opacity >= 1.0 &&
+                                    !translate.HasAnimatedProperties && !border.HasAnimatedProperties),
+                            string.Format(
+                                System.Globalization.CultureInfo.InvariantCulture,
+                                "Open {0}: the dropdown reveal must settle at Y=0, full opacity, and release its clocks.",
+                                open));
+
+                        combo.IsDropDownOpen = false;
+                        DrainDispatcher(window.Dispatcher);
+                    }
+                }
+                finally
+                {
+                    window.Close();
+                    _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                }
+            });
+        }
+
+        [TestMethod]
         public void ComboBox_NoSelection_ShowsPlaceholder()
         {
             RunOnStaThread(static () =>
