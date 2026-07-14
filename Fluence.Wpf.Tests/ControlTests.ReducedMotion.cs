@@ -322,6 +322,54 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void ReducedMotion_ContentDialog_Hide_TearsDownSynchronouslyWithoutClocks()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+                MotionHelper.OverrideIsMotionEnabled = false;
+
+                Window window = CreateShownContentDialogOwner();
+                Controls.ContentDialog dialog = new()
+                {
+                    Title = "Reduced motion",
+                    Content = "Body",
+                    CloseButtonText = "Close",
+                };
+
+                try
+                {
+                    System.Threading.Tasks.Task<ContentDialogResult> task = dialog.ShowAsync();
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000,
+                            () => FindVisualChildByName<System.Windows.Controls.Primitives.ButtonBase>(dialog, "PART_CloseButton") is not null),
+                        "The dialog template must apply before Hide is called.");
+
+                    dialog.Hide();
+
+                    Assert.IsTrue(task.IsCompleted,
+                        "With motion disabled Hide must tear the dialog down synchronously.");
+                    Assert.IsFalse(dialog.HasAnimatedProperties,
+                        "With motion disabled the close must not leave an opacity animation clock.");
+                    if (dialog.RenderTransform is ScaleTransform scale)
+                    {
+                        Assert.IsFalse(scale.HasAnimatedProperties,
+                            "With motion disabled the close must not leave scale animation clocks.");
+                    }
+
+                    Assert.IsTrue(dialog.IsHitTestVisible,
+                        "The synchronous teardown must restore hit testing for the next show.");
+                }
+                finally
+                {
+                    MotionHelper.OverrideIsMotionEnabled = null;
+                    dialog.Hide();
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
         public void ReducedMotion_OverrideTrue_ToggleSwitch_StillAnimatesKnob()
         {
             WpfTestSta.Invoke(static () =>
