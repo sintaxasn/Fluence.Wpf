@@ -267,6 +267,61 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void ReducedMotion_TeachingTip_Open_PresentsTipAtRestWithoutClocks()
+        {
+            RunOnStaThread(() =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+                MotionHelper.OverrideIsMotionEnabled = false;
+
+                Window window = new() { Width = 400, Height = 300 };
+                Button target = new() { Content = "Anchor" };
+                Controls.TeachingTip tip = new()
+                {
+                    Title = "Reduced motion",
+                    Target = target,
+                };
+                try
+                {
+                    window.Content = target;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    tip.IsOpen = true;
+                    Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: true } && tip.IsLoaded),
+                        "IsOpen=true should open the host popup and load the tip.");
+
+                    TranslateTransform? translate =
+                        tip.Template.FindName("TipTranslate", tip) as TranslateTransform;
+                    Assert.IsNotNull(translate, "The tip template must expose the TipTranslate transform.");
+                    Grid? tipRoot = tip.Template.FindName("TipRoot", tip) as Grid;
+                    Assert.IsNotNull(tipRoot, "The tip template must expose the TipRoot layout root.");
+
+                    Assert.AreEqual(0.0, translate.X, 0.001,
+                        "With motion disabled the tip must rest at X=0 with no reveal slide.");
+                    Assert.AreEqual(0.0, translate.Y, 0.001,
+                        "With motion disabled the tip must rest at Y=0 with no reveal slide.");
+                    Assert.AreEqual(1.0, tipRoot.Opacity, 0.001,
+                        "With motion disabled the tip must show at full opacity immediately.");
+                    Assert.IsFalse(translate.HasAnimatedProperties,
+                        "With motion disabled the reveal slide must not leave an animation clock.");
+                    Assert.IsFalse(tipRoot.HasAnimatedProperties,
+                        "With motion disabled the reveal fade must not leave an animation clock.");
+
+                    tip.IsOpen = false;
+                    _ = WaitUntil(window.Dispatcher, 2000, () => tip.HostPopup is { IsOpen: false });
+                }
+                finally
+                {
+                    MotionHelper.OverrideIsMotionEnabled = null;
+                    window.Close();
+                }
+            });
+        }
+
+        [TestMethod]
         public void ReducedMotion_OverrideTrue_ToggleSwitch_StillAnimatesKnob()
         {
             WpfTestSta.Invoke(static () =>
