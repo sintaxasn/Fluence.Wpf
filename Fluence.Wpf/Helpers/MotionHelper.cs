@@ -45,7 +45,9 @@ namespace Fluence.Wpf.Helpers
         /// </summary>
         internal static bool? OverrideIsMotionEnabled { get; set; }
 
-        /// <summary>Gets a value indicating whether animations should play.</summary>
+        /// <summary>
+        /// Gets a value indicating whether animations should play.
+        /// </summary>
         internal static bool IsMotionEnabled => OverrideIsMotionEnabled ?? SystemParameters.ClientAreaAnimation;
     }
 }
