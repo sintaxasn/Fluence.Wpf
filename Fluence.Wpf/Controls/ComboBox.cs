@@ -26,7 +26,6 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Fluence.Wpf.Helpers;
 using System;
 using System.Collections.Specialized;
 using System.Windows;
@@ -35,6 +34,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
+using Fluence.Wpf.Helpers;
 
 namespace Fluence.Wpf.Controls
 {
@@ -42,7 +42,7 @@ namespace Fluence.Wpf.Controls
     /// Fluent-styled combo box with placeholder, icon, and rounded dropdown.
     /// Authority: WinUI 3 ComboBox_themeresources.xaml (FocusedStates / EditableFocusedStates VSM groups - WI-3 C18).
     /// Diverging from stock WPF, this control auto-selects index 0 when its items populate while
-    /// <see cref="System.Windows.Controls.Primitives.Selector.SelectedIndex"/> is still -1 and has never been explicitly set.
+    /// <see cref="Selector.SelectedIndex"/> is still -1 and has never been explicitly set.
     /// </summary>
     [TemplatePart(Name = PART_Popup, Type = typeof(Popup))]
     [TemplatePart(Name = PART_DropdownBorder, Type = typeof(System.Windows.Controls.Border))]
@@ -339,8 +339,8 @@ namespace Fluence.Wpf.Controls
             {
                 translate.BeginAnimation(TranslateTransform.YProperty, animation: null);
                 translate.SetCurrentValue(TranslateTransform.YProperty, 0.0);
-                border.BeginAnimation(UIElement.OpacityProperty, animation: null);
-                border.SetCurrentValue(UIElement.OpacityProperty, 1.0);
+                border.BeginAnimation(OpacityProperty, animation: null);
+                border.SetCurrentValue(OpacityProperty, 1.0);
                 return;
             }
 
@@ -349,7 +349,7 @@ namespace Fluence.Wpf.Controls
             // Seed the discrete start so the first rendered frame never flashes the rest
             // position: the offset toward the control edge, fully transparent.
             translate.SetCurrentValue(TranslateTransform.YProperty, startOffset);
-            border.SetCurrentValue(UIElement.OpacityProperty, 0.0);
+            border.SetCurrentValue(OpacityProperty, 0.0);
 
             DoubleAnimationUsingKeyFrames slideAnimation = CreateRevealAnimation(startOffset, 0.0);
             slideAnimation.Completed += (_, _) =>
@@ -361,12 +361,12 @@ namespace Fluence.Wpf.Controls
             DoubleAnimationUsingKeyFrames fadeAnimation = CreateRevealAnimation(0.0, 1.0);
             fadeAnimation.Completed += (_, _) =>
             {
-                border.SetCurrentValue(UIElement.OpacityProperty, 1.0);
-                border.BeginAnimation(UIElement.OpacityProperty, animation: null);
+                border.SetCurrentValue(OpacityProperty, 1.0);
+                border.BeginAnimation(OpacityProperty, animation: null);
             };
 
             translate.BeginAnimation(TranslateTransform.YProperty, slideAnimation);
-            border.BeginAnimation(UIElement.OpacityProperty, fadeAnimation);
+            border.BeginAnimation(OpacityProperty, fadeAnimation);
         }
 
         /// <summary>

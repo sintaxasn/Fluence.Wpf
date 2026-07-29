@@ -325,7 +325,7 @@ namespace Fluence.Wpf.Tests
                 TextBlock? chevron = FindVisualChildByName<TextBlock>(expander, "ChevronGlyph");
                 Assert.IsNotNull(chevron,
                     "ChevronGlyph TextBlock must be present inside Expander per WI-5B.2.");
-                Assert.AreEqual("\uE76C", chevron.Text,
+                Assert.AreEqual("\uE76C", chevron.Text, StringComparer.Ordinal,
                     "ChevronGlyph must display Segoe Fluent Icons ChevronRight (U+E76C).");
 
                 w.Close();

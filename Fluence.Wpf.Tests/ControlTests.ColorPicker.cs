@@ -165,7 +165,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(template, "ColorPicker must receive its themed template.");
                     TextBox? hexTextBox = template.FindName("PART_HexTextBox", picker) as TextBox;
                     Assert.IsNotNull(hexTextBox, "PART_HexTextBox must be present in the template.");
-                    Assert.AreEqual("#FF0000", hexTextBox.Text,
+                    Assert.AreEqual("#FF0000", hexTextBox.Text, StringComparer.Ordinal,
                         "The hex box must show the six-digit default color while alpha is disabled.");
 
                     ColorPickerColorChangedEventArgs? changed = null;
@@ -185,7 +185,7 @@ namespace Fluence.Wpf.Tests
                     Assert.AreEqual(Color.FromArgb(255, 255, 0, 0), changed.OldColor,
                         "ColorChanged must report the previous color as OldColor.");
                     Assert.AreEqual(target, changed.NewColor, "ColorChanged must report the assigned color as NewColor.");
-                    Assert.AreEqual("#0078D4", hexTextBox.Text,
+                    Assert.AreEqual("#0078D4", hexTextBox.Text, StringComparer.Ordinal,
                         "A programmatic Color assignment must refresh the hex box text.");
                 }
                 finally
@@ -230,7 +230,7 @@ namespace Fluence.Wpf.Tests
 
                     Assert.AreEqual(Color.FromArgb(255, 0, 120, 212), picker.Color,
                         "An eight-digit hex entry must commit on Enter; with alpha disabled it stays opaque.");
-                    Assert.AreEqual("#0078D4", hexTextBox.Text,
+                    Assert.AreEqual("#0078D4", hexTextBox.Text, StringComparer.Ordinal,
                         "Committed input must normalize to the six-digit display while alpha is disabled.");
 
                     hexTextBox.Text = "00b294";
@@ -242,7 +242,7 @@ namespace Fluence.Wpf.Tests
 
                     Assert.AreEqual(Color.FromArgb(255, 0, 178, 148), picker.Color,
                         "Six-digit lowercase input without a leading # must still commit.");
-                    Assert.AreEqual("#00B294", hexTextBox.Text, "Committed input must normalize to uppercase with a #.");
+                    Assert.AreEqual("#00B294", hexTextBox.Text, StringComparer.Ordinal, "Committed input must normalize to uppercase with a #.");
 
                     hexTextBox.Text = "not-a-color";
                     hexTextBox.RaiseEvent(new KeyEventArgs(Keyboard.PrimaryDevice, source, 0, Key.Enter)
@@ -253,7 +253,7 @@ namespace Fluence.Wpf.Tests
 
                     Assert.AreEqual(Color.FromArgb(255, 0, 178, 148), picker.Color,
                         "Invalid hex input must not change the color.");
-                    Assert.AreEqual("#00B294", hexTextBox.Text,
+                    Assert.AreEqual("#00B294", hexTextBox.Text, StringComparer.Ordinal,
                         "Invalid hex input must revert the text to the current color.");
                 }
                 finally
@@ -303,7 +303,7 @@ namespace Fluence.Wpf.Tests
                         "ColorChanged must report the pre-drag color as OldColor.");
                     Assert.AreEqual(Color.FromArgb(255, 0, 255, 0), changed.NewColor,
                         "ColorChanged must report the post-drag color as NewColor.");
-                    Assert.AreEqual("#00FF00", hexTextBox.Text, "The hex box must follow hue slider edits.");
+                    Assert.AreEqual("#00FF00", hexTextBox.Text, StringComparer.Ordinal, "The hex box must follow hue slider edits.");
                 }
                 finally
                 {
@@ -347,7 +347,7 @@ namespace Fluence.Wpf.Tests
 
                     Assert.AreEqual(Visibility.Visible, alphaSection.Visibility,
                         "The alpha row must show once IsAlphaEnabled is true.");
-                    Assert.AreEqual("#FFFF0000", hexTextBox.Text,
+                    Assert.AreEqual("#FFFF0000", hexTextBox.Text, StringComparer.Ordinal,
                         "Enabling alpha must switch the hex box to the eight-digit format.");
 
                     alphaSlider.Value = 128;
@@ -355,7 +355,7 @@ namespace Fluence.Wpf.Tests
 
                     Assert.AreEqual(Color.FromArgb(128, 255, 0, 0), picker.Color,
                         "An alpha slider edit must flow into Color.A while RGB is preserved.");
-                    Assert.AreEqual("#80FF0000", hexTextBox.Text,
+                    Assert.AreEqual("#80FF0000", hexTextBox.Text, StringComparer.Ordinal,
                         "The hex box must show the edited alpha in the eight-digit format.");
 
                     picker.IsAlphaEnabled = false;
@@ -365,7 +365,7 @@ namespace Fluence.Wpf.Tests
                         "The alpha row must collapse again when IsAlphaEnabled returns to false.");
                     Assert.AreEqual(Color.FromArgb(255, 255, 0, 0), picker.Color,
                         "Disabling alpha must pin the picker back to a fully opaque color.");
-                    Assert.AreEqual("#FF0000", hexTextBox.Text,
+                    Assert.AreEqual("#FF0000", hexTextBox.Text, StringComparer.Ordinal,
                         "Disabling alpha must switch the hex box back to the six-digit format.");
                 }
                 finally
@@ -515,19 +515,19 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(peer, "ColorPicker must create an automation peer.");
                     _ = Assert.IsInstanceOfType<Automation.ColorPickerAutomationPeer>(peer,
                         "ColorPicker must expose the ColorPickerAutomationPeer.");
-                    Assert.AreEqual("ColorPicker", peer.GetClassName(), "The peer must report the ColorPicker class name.");
+                    Assert.AreEqual("ColorPicker", peer.GetClassName(), StringComparer.Ordinal, "The peer must report the ColorPicker class name.");
                     Assert.AreEqual(AutomationControlType.Group, peer.GetAutomationControlType(),
                         "The peer must report the Group control type.");
-                    Assert.AreEqual("#FF0000", peer.GetName(),
+                    Assert.AreEqual("#FF0000", peer.GetName(), StringComparer.Ordinal,
                         "The peer name must fall back to the hex string of the current color.");
 
                     picker.Color = Color.FromArgb(255, 0, 120, 212);
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual("#0078D4", peer.GetName(), "The peer name must track the current color.");
+                    Assert.AreEqual("#0078D4", peer.GetName(), StringComparer.Ordinal, "The peer name must track the current color.");
 
                     AutomationProperties.SetName(picker, "Accent color");
-                    Assert.AreEqual("Accent color", peer.GetName(),
+                    Assert.AreEqual("Accent color", peer.GetName(), StringComparer.Ordinal,
                         "An explicit AutomationProperties.Name must win over the hex fallback.");
                 }
                 finally
@@ -757,21 +757,21 @@ namespace Fluence.Wpf.Tests
                     Assert.AreEqual(Visibility.Visible, moreButton.Visibility, "IsMoreButtonVisible must show the toggle.");
                     Assert.AreEqual(Visibility.Collapsed, textEntryGrid.Visibility,
                         "In More mode the text-entry grid stays collapsed until the toggle is checked.");
-                    Assert.AreEqual("More", moreButtonLabel.Text);
+                    Assert.AreEqual("More", moreButtonLabel.Text, StringComparer.Ordinal);
 
                     moreButton.IsChecked = true;
                     DrainDispatcher(window.Dispatcher);
 
                     Assert.AreEqual(Visibility.Visible, textEntryGrid.Visibility,
                         "Checking the More toggle must reveal the text-entry grid.");
-                    Assert.AreEqual("Less", moreButtonLabel.Text, "The checked toggle must read Less.");
+                    Assert.AreEqual("Less", moreButtonLabel.Text, StringComparer.Ordinal, "The checked toggle must read Less.");
 
                     moreButton.IsChecked = false;
                     DrainDispatcher(window.Dispatcher);
 
                     Assert.AreEqual(Visibility.Collapsed, textEntryGrid.Visibility,
                         "Unchecking the More toggle must collapse the text-entry grid again.");
-                    Assert.AreEqual("More", moreButtonLabel.Text);
+                    Assert.AreEqual("More", moreButtonLabel.Text, StringComparer.Ordinal);
                 });
         }
 
@@ -811,17 +811,17 @@ namespace Fluence.Wpf.Tests
                     TextBox greenTextBox = GetTemplateElement<TextBox>(template, picker, "PART_GreenTextBox");
                     TextBox hexTextBox = GetTemplateElement<TextBox>(template, picker, "PART_HexTextBox");
 
-                    Assert.AreEqual("255", redTextBox.Text, "The red box must show the default color's channel.");
-                    Assert.AreEqual("0", greenTextBox.Text, "The green box must show the default color's channel.");
+                    Assert.AreEqual("255", redTextBox.Text, StringComparer.Ordinal, "The red box must show the default color's channel.");
+                    Assert.AreEqual("0", greenTextBox.Text, StringComparer.Ordinal, "The green box must show the default color's channel.");
 
                     redTextBox.Text = "10";
                     DrainDispatcher(window.Dispatcher);
 
                     Assert.AreEqual(Color.FromArgb(255, 10, 0, 0), picker.Color,
                         "A red channel edit must commit live with the typed value preserved exactly, no Enter needed.");
-                    Assert.AreEqual("10", redTextBox.Text,
+                    Assert.AreEqual("10", redTextBox.Text, StringComparer.Ordinal,
                         "The live commit must not rewrite the box the user is typing in.");
-                    Assert.AreEqual("#0A0000", hexTextBox.Text, "The hex box must follow the live channel commit.");
+                    Assert.AreEqual("#0A0000", hexTextBox.Text, StringComparer.Ordinal, "The hex box must follow the live channel commit.");
                 });
         }
 
@@ -876,7 +876,7 @@ namespace Fluence.Wpf.Tests
                     RaiseEnterKey(redTextBox);
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual("255", redTextBox.Text,
+                    Assert.AreEqual("255", redTextBox.Text, StringComparer.Ordinal,
                         "Enter must restore invalid channel text from the current color.");
                 });
         }
@@ -890,7 +890,7 @@ namespace Fluence.Wpf.Tests
                 {
                     TextBox alphaTextBox = GetTemplateElement<TextBox>(template, picker, "PART_AlphaTextBox");
 
-                    Assert.AreEqual("100%", alphaTextBox.Text, "The alpha box must display a percentage with a percent sign.");
+                    Assert.AreEqual("100%", alphaTextBox.Text, StringComparer.Ordinal, "The alpha box must display a percentage with a percent sign.");
 
                     alphaTextBox.Text = "50";
                     DrainDispatcher(window.Dispatcher);
@@ -900,7 +900,7 @@ namespace Fluence.Wpf.Tests
                     RaiseEnterKey(alphaTextBox);
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual("50%", alphaTextBox.Text, "Enter must normalize the alpha text with the percent sign.");
+                    Assert.AreEqual("50%", alphaTextBox.Text, StringComparer.Ordinal, "Enter must normalize the alpha text with the percent sign.");
 
                     alphaTextBox.Text = "200";
                     DrainDispatcher(window.Dispatcher);
@@ -910,7 +910,7 @@ namespace Fluence.Wpf.Tests
                     RaiseEnterKey(alphaTextBox);
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual("50%", alphaTextBox.Text, "Enter must restore invalid alpha text from the model.");
+                    Assert.AreEqual("50%", alphaTextBox.Text, StringComparer.Ordinal, "Enter must restore invalid alpha text from the model.");
                 });
         }
 
@@ -935,7 +935,7 @@ namespace Fluence.Wpf.Tests
                         "Hiding the channel input must collapse the channel panel.");
                     Assert.AreEqual(Visibility.Visible, hexTextBox.Visibility,
                         "Hiding the channel input must leave the hex input visible (governed by IsHexInputVisible).");
-                    Assert.AreEqual(0, System.Windows.Controls.Grid.GetColumn(hexTextBox),
+                    Assert.AreEqual(0, Grid.GetColumn(hexTextBox),
                         "With the channel input hidden the hex box shifts into the freed left column, matching WinUI.");
                     Assert.AreEqual(Visibility.Visible, alphaInputPanel.Visibility,
                         "Hiding the channel input must leave the alpha input visible, matching WinUI.");
@@ -979,7 +979,7 @@ namespace Fluence.Wpf.Tests
                     string automationName = AutomationProperties.GetName(spectrumArea);
                     Assert.IsFalse(string.IsNullOrWhiteSpace(automationName),
                         "PART_SpectrumArea must have a non-empty AutomationProperties.Name.");
-                    Assert.AreEqual("Color spectrum", automationName,
+                    Assert.AreEqual("Color spectrum", automationName, StringComparer.Ordinal,
                         "The AutomationProperties.Name on PART_SpectrumArea must be \"Color spectrum\".");
                 });
         }

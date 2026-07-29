@@ -26,13 +26,14 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using System;
+using System.Windows;
+using System.Windows.Media;
+using System.Windows.Shell;
 using Fluence.Wpf.Controls;
 using Fluence.Wpf.Helpers;
 using Fluence.Wpf.Native;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Shell;
 
 namespace Fluence.Wpf.Tests
 {
@@ -485,7 +486,7 @@ namespace Fluence.Wpf.Tests
                 accentColor: Color.FromRgb(0x00, 0x78, 0xD4));
 
             Assert.AreEqual(new Thickness(2), plan.TemplateBorderThickness);
-            Assert.AreEqual("SystemAccentColorBrush", plan.TemplateBorderBrushResourceKey,
+            Assert.AreEqual("SystemAccentColorBrush", plan.TemplateBorderBrushResourceKey, StringComparer.Ordinal,
                 "Active window with accent border enabled must bind to SystemAccentColorBrush via the template.");
             Assert.AreNotEqual(NativeConstants.DWMWA_COLOR_DEFAULT, plan.DwmBorderColor,
                 "When the OS supports DWMWA_BORDER_COLOR and the window is active, we should emit an ABGR value, not the default sentinel.");
@@ -501,7 +502,7 @@ namespace Fluence.Wpf.Tests
                 capabilities: Caps(borderColor: true),
                 accentColor: Colors.Red);
 
-            Assert.AreEqual("CardStrokeColorDefaultSolidBrush", plan.TemplateBorderBrushResourceKey,
+            Assert.AreEqual("CardStrokeColorDefaultSolidBrush", plan.TemplateBorderBrushResourceKey, StringComparer.Ordinal,
                 "Inactive windows must revert to CardStrokeColorDefaultSolidBrush - the accent border is an activation cue.");
         }
 

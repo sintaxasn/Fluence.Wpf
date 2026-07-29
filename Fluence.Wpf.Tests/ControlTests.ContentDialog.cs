@@ -26,7 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Automation;
@@ -36,6 +36,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Fluence.Wpf.Tests
 {
@@ -85,9 +86,9 @@ namespace Fluence.Wpf.Tests
                 _ = MergeGenericDictionary(app);
 
                 Controls.ContentDialog defaults = new();
-                Assert.AreEqual(string.Empty, defaults.PrimaryButtonText, "PrimaryButtonText must default to an empty string.");
-                Assert.AreEqual(string.Empty, defaults.SecondaryButtonText, "SecondaryButtonText must default to an empty string.");
-                Assert.AreEqual(string.Empty, defaults.CloseButtonText, "CloseButtonText must default to an empty string.");
+                Assert.AreEqual(string.Empty, defaults.PrimaryButtonText, StringComparer.Ordinal, "PrimaryButtonText must default to an empty string.");
+                Assert.AreEqual(string.Empty, defaults.SecondaryButtonText, StringComparer.Ordinal, "SecondaryButtonText must default to an empty string.");
+                Assert.AreEqual(string.Empty, defaults.CloseButtonText, StringComparer.Ordinal, "CloseButtonText must default to an empty string.");
                 Assert.AreEqual(ContentDialogButton.None, defaults.DefaultButton, "DefaultButton must default to None.");
                 Assert.IsTrue(defaults.IsPrimaryButtonEnabled, "IsPrimaryButtonEnabled must default to true.");
                 Assert.IsTrue(defaults.IsSecondaryButtonEnabled, "IsSecondaryButtonEnabled must default to true.");
@@ -991,7 +992,7 @@ namespace Fluence.Wpf.Tests
                         "ContentDialog.OnCreateAutomationPeer must return a ContentDialogAutomationPeer.");
                     Assert.AreEqual(AutomationControlType.Window, peer.GetAutomationControlType(),
                         "ContentDialog must report the Window control type so assistive technologies treat it as a modal dialog surface.");
-                    Assert.AreEqual("Delete file?", peer.GetName(),
+                    Assert.AreEqual("Delete file?", peer.GetName(), StringComparer.Ordinal,
                         "ContentDialog automation name must come from Title so the live-region announcement reads it when the dialog opens.");
                 }
                 finally

@@ -137,7 +137,7 @@ namespace Fluence.Wpf.Tests
                         "The placeholder must be visible while SelectedDate is null.");
                     Assert.AreEqual(Visibility.Collapsed, segmentsHost.Visibility,
                         "The segment row must be collapsed while SelectedDate is null.");
-                    Assert.AreEqual("Pick a date", placeholder.Text, "PlaceholderText must flow into the placeholder text block.");
+                    Assert.AreEqual("Pick a date", placeholder.Text, StringComparer.Ordinal, "PlaceholderText must flow into the placeholder text block.");
 
                     DateTime date = new(2024, 5, 17, 0, 0, 0, DateTimeKind.Unspecified);
                     picker.SelectedDate = date;
@@ -439,17 +439,17 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(peer, "DatePicker must create an automation peer.");
                     _ = Assert.IsInstanceOfType<Automation.DatePickerAutomationPeer>(peer,
                         "DatePicker must expose the DatePickerAutomationPeer.");
-                    Assert.AreEqual("DatePicker", peer.GetClassName(), "The peer must report the DatePicker class name.");
+                    Assert.AreEqual("DatePicker", peer.GetClassName(), StringComparer.Ordinal, "The peer must report the DatePicker class name.");
                     Assert.AreEqual(AutomationControlType.Group, peer.GetAutomationControlType(),
                         "The peer must report the Group control type.");
-                    Assert.AreEqual("Pick a date", peer.GetName(),
+                    Assert.AreEqual("Pick a date", peer.GetName(), StringComparer.Ordinal,
                         "The peer name must fall back to PlaceholderText while no date is selected.");
 
                     DateTime date = new(2024, 5, 17, 0, 0, 0, DateTimeKind.Unspecified);
                     picker.SelectedDate = date;
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(date.ToString("d", CultureInfo.CurrentCulture), peer.GetName(),
+                    Assert.AreEqual(date.ToString("d", CultureInfo.CurrentCulture), peer.GetName(), StringComparer.Ordinal,
                         "The peer name must report the selected date in the culture short date format.");
                 }
                 finally

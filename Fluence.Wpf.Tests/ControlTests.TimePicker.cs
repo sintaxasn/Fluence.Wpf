@@ -163,7 +163,7 @@ namespace Fluence.Wpf.Tests
                         "The placeholder must be visible while SelectedTime is null.");
                     Assert.AreEqual(Visibility.Collapsed, segmentsHost.Visibility,
                         "The segment row must be collapsed while SelectedTime is null.");
-                    Assert.AreEqual("Pick a time", placeholder.Text, "PlaceholderText must flow into the placeholder text block.");
+                    Assert.AreEqual("Pick a time", placeholder.Text, StringComparer.Ordinal, "PlaceholderText must flow into the placeholder text block.");
 
                     CultureInfo culture = CultureInfo.CurrentCulture;
                     picker.SelectedTime = new TimeSpan(9, 5, 0);
@@ -173,24 +173,24 @@ namespace Fluence.Wpf.Tests
                         "The placeholder must collapse once a time is selected.");
                     Assert.AreEqual(Visibility.Visible, segmentsHost.Visibility,
                         "The segment row must show once a time is selected.");
-                    Assert.AreEqual(9.ToString(culture), hourText.Text, "The hour segment must show the unpadded 12-hour value.");
-                    Assert.AreEqual(5.ToString("00", culture), minuteText.Text, "The minute segment must always be two-digit.");
-                    Assert.AreEqual(ExpectedAmDesignator(culture), periodText.Text,
+                    Assert.AreEqual(9.ToString(culture), hourText.Text, StringComparer.Ordinal, "The hour segment must show the unpadded 12-hour value.");
+                    Assert.AreEqual(5.ToString("00", culture), minuteText.Text, StringComparer.Ordinal, "The minute segment must always be two-digit.");
+                    Assert.AreEqual(ExpectedAmDesignator(culture), periodText.Text, StringComparer.Ordinal,
                         "A morning time must show the culture AM designator (with the invariant fallback).");
 
                     picker.SelectedTime = TimeSpan.Zero;
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(12.ToString(culture), hourText.Text, "Midnight must display as hour 12 on the 12-hour clock.");
-                    Assert.AreEqual(0.ToString("00", culture), minuteText.Text, "Midnight must display a two-digit zero minute.");
-                    Assert.AreEqual(ExpectedAmDesignator(culture), periodText.Text, "Midnight must show the AM designator.");
+                    Assert.AreEqual(12.ToString(culture), hourText.Text, StringComparer.Ordinal, "Midnight must display as hour 12 on the 12-hour clock.");
+                    Assert.AreEqual(0.ToString("00", culture), minuteText.Text, StringComparer.Ordinal, "Midnight must display a two-digit zero minute.");
+                    Assert.AreEqual(ExpectedAmDesignator(culture), periodText.Text, StringComparer.Ordinal, "Midnight must show the AM designator.");
 
                     picker.SelectedTime = new TimeSpan(12, 30, 0);
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(12.ToString(culture), hourText.Text, "Noon must display as hour 12 on the 12-hour clock.");
-                    Assert.AreEqual(30.ToString("00", culture), minuteText.Text, "The minute segment must show the selected minute.");
-                    Assert.AreEqual(ExpectedPmDesignator(culture), periodText.Text, "Noon must show the PM designator.");
+                    Assert.AreEqual(12.ToString(culture), hourText.Text, StringComparer.Ordinal, "Noon must display as hour 12 on the 12-hour clock.");
+                    Assert.AreEqual(30.ToString("00", culture), minuteText.Text, StringComparer.Ordinal, "The minute segment must show the selected minute.");
+                    Assert.AreEqual(ExpectedPmDesignator(culture), periodText.Text, StringComparer.Ordinal, "Noon must show the PM designator.");
                 }
                 finally
                 {
@@ -315,9 +315,9 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(secondDivider, "SecondDivider must be present in the default template.");
 
                     CultureInfo culture = CultureInfo.CurrentCulture;
-                    Assert.AreEqual(14.ToString(culture), hourText.Text,
+                    Assert.AreEqual(14.ToString(culture), hourText.Text, StringComparer.Ordinal,
                         "The 24-hour clock must show the hour of day without AM/PM conversion.");
-                    Assert.AreEqual(string.Empty, periodText.Text, "The 24-hour clock must not render a designator.");
+                    Assert.AreEqual(string.Empty, periodText.Text, StringComparer.Ordinal, "The 24-hour clock must not render a designator.");
                     Assert.AreEqual(Visibility.Collapsed, periodText.Visibility,
                         "The designator segment must collapse on the 24-hour clock.");
                     Assert.AreEqual(Visibility.Collapsed, secondDivider.Visibility,
@@ -360,15 +360,15 @@ namespace Fluence.Wpf.Tests
                 string expectedDefaultClock = CultureInfo.CurrentCulture.DateTimeFormat.ShortTimePattern.Contains("H", StringComparison.Ordinal)
                     ? "24HourClock"
                     : "12HourClock";
-                Assert.AreEqual(expectedDefaultClock, picker.ClockIdentifier,
+                Assert.AreEqual(expectedDefaultClock, picker.ClockIdentifier, StringComparer.Ordinal,
                     "The clock identifier must default to the regional clock system derived from the culture short time pattern.");
                 Assert.AreEqual(1, picker.MinuteIncrement, "The minute increment must default to 1.");
 
                 picker.ClockIdentifier = "24HourClock";
-                Assert.AreEqual("24HourClock", picker.ClockIdentifier, "The 24-hour clock identifier must be accepted as-is.");
+                Assert.AreEqual("24HourClock", picker.ClockIdentifier, StringComparer.Ordinal, "The 24-hour clock identifier must be accepted as-is.");
 
                 picker.ClockIdentifier = "13HourClock";
-                Assert.AreEqual("12HourClock", picker.ClockIdentifier,
+                Assert.AreEqual("12HourClock", picker.ClockIdentifier, StringComparer.Ordinal,
                     "Unknown clock identifiers must coerce back to the 12-hour clock.");
 
                 picker.MinuteIncrement = 0;
@@ -551,17 +551,17 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(peer, "TimePicker must create an automation peer.");
                     _ = Assert.IsInstanceOfType<Automation.TimePickerAutomationPeer>(peer,
                         "TimePicker must expose the TimePickerAutomationPeer.");
-                    Assert.AreEqual("TimePicker", peer.GetClassName(), "The peer must report the TimePicker class name.");
+                    Assert.AreEqual("TimePicker", peer.GetClassName(), StringComparer.Ordinal, "The peer must report the TimePicker class name.");
                     Assert.AreEqual(AutomationControlType.Group, peer.GetAutomationControlType(),
                         "The peer must report the Group control type.");
-                    Assert.AreEqual("Pick a time", peer.GetName(),
+                    Assert.AreEqual("Pick a time", peer.GetName(), StringComparer.Ordinal,
                         "The peer name must fall back to PlaceholderText while no time is selected.");
 
                     TimeSpan time = new(14, 30, 0);
                     picker.SelectedTime = time;
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual(DateTime.Today.Add(time).ToString("t", CultureInfo.CurrentCulture), peer.GetName(),
+                    Assert.AreEqual(DateTime.Today.Add(time).ToString("t", CultureInfo.CurrentCulture), peer.GetName(), StringComparer.Ordinal,
                         "The peer name must report the selected time in the culture short time format.");
                 }
                 finally
@@ -612,13 +612,13 @@ namespace Fluence.Wpf.Tests
                     picker.SelectedTime = new TimeSpan(14, 30, 0);
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual("PM", periodText.Text,
+                    Assert.AreEqual("PM", periodText.Text, StringComparer.Ordinal,
                         "An afternoon time must fall back to the invariant PM designator when the culture designator is blank.");
 
                     picker.SelectedTime = new TimeSpan(9, 5, 0);
                     DrainDispatcher(window.Dispatcher);
 
-                    Assert.AreEqual("AM", periodText.Text,
+                    Assert.AreEqual("AM", periodText.Text, StringComparer.Ordinal,
                         "A morning time must fall back to the invariant AM designator when the culture designator is blank.");
 
                     RaiseButtonClick(flyoutButton);
@@ -838,19 +838,19 @@ namespace Fluence.Wpf.Tests
                     // A negative span wraps to the previous-day hour like the flyout columns.
                     picker.SelectedTime = TimeSpan.FromHours(-1);
                     DrainDispatcher(window.Dispatcher);
-                    Assert.AreEqual(23.ToString(culture), hourText.Text,
+                    Assert.AreEqual(23.ToString(culture), hourText.Text, StringComparer.Ordinal,
                         "A -1 hour span must display as hour 23, never as \"-1\".");
 
                     // A span past a day wraps into the day like the flyout columns.
                     picker.SelectedTime = TimeSpan.FromHours(25);
                     DrainDispatcher(window.Dispatcher);
-                    Assert.AreEqual(1.ToString(culture), hourText.Text,
+                    Assert.AreEqual(1.ToString(culture), hourText.Text, StringComparer.Ordinal,
                         "A 25 hour span must display as hour 1.");
 
                     // Negative minutes normalize into 0..59.
                     picker.SelectedTime = new TimeSpan(0, -30, 0);
                     DrainDispatcher(window.Dispatcher);
-                    Assert.AreEqual(30.ToString("00", culture), minuteText.Text,
+                    Assert.AreEqual(30.ToString("00", culture), minuteText.Text, StringComparer.Ordinal,
                         "A -30 minute span must display minute 30, never a negative minute.");
                 }
                 finally

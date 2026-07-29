@@ -54,8 +54,8 @@ namespace Fluence.Wpf.Tests
                 _ = MergeGenericDictionary(app);
 
                 Controls.TeachingTip defaults = new();
-                Assert.AreEqual(string.Empty, defaults.Title, "Title must default to an empty string.");
-                Assert.AreEqual(string.Empty, defaults.Subtitle, "Subtitle must default to an empty string.");
+                Assert.AreEqual(string.Empty, defaults.Title, StringComparer.Ordinal, "Title must default to an empty string.");
+                Assert.AreEqual(string.Empty, defaults.Subtitle, StringComparer.Ordinal, "Subtitle must default to an empty string.");
                 Assert.IsFalse(defaults.IsOpen, "IsOpen must default to false.");
                 Assert.IsFalse(defaults.IsLightDismissEnabled, "IsLightDismissEnabled must default to false.");
                 Assert.IsNull(defaults.Target, "Target must default to null.");
@@ -113,7 +113,7 @@ namespace Fluence.Wpf.Tests
                         "The alternate top-right X must show while CloseButtonContent is null and light dismiss is off.");
                     Controls.FontIcon? alternateGlyph = alternateClose.Content as Controls.FontIcon;
                     Assert.IsNotNull(alternateGlyph, "The alternate close button must host a FontIcon.");
-                    Assert.AreEqual("", alternateGlyph.Glyph,
+                    Assert.AreEqual("", alternateGlyph.Glyph, StringComparer.Ordinal,
                         "The alternate close button must show the Fluent close glyph (E711).");
                 }
                 finally

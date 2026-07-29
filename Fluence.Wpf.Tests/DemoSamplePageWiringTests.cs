@@ -91,8 +91,8 @@ namespace Fluence.Wpf.Tests
                 Assert.IsNull(demoSlot.Content, "Demo slot content should be cleared after transfer.");
                 Assert.IsNull(outputSlot.Content, "Output slot content should be cleared after transfer.");
                 Assert.IsNull(rightRailSlot.Content, "Right rail slot content should be cleared after transfer.");
-                Assert.AreEqual("<Grid />", sample.XamlSource);
-                Assert.AreEqual("public void Demo() { }", sample.CSharpSource);
+                Assert.AreEqual("<Grid />", sample.XamlSource, StringComparer.Ordinal);
+                Assert.AreEqual("public void Demo() { }", sample.CSharpSource, StringComparer.Ordinal);
             });
         }
 
@@ -256,7 +256,7 @@ namespace Fluence.Wpf.Tests
                     XDocument document = ParseXamlSource(xamlSource, sample.SampleDescription);
                     Assert.AreEqual(
                         "UserControl",
-                        document.Root?.Name.LocalName,
+                        document.Root?.Name.LocalName, StringComparer.Ordinal,
                         "Self-contained displayed XAML should use a UserControl root: " + sample.SampleDescription);
 
                     string xamlClass = document.Root?.Attribute(XamlNamespace + "Class")?.Value
@@ -269,7 +269,7 @@ namespace Fluence.Wpf.Tests
                         "Displayed C# source should use the UserControl InitializeComponent pattern: " + sample.SampleDescription);
                     Assert.AreEqual(
                         xamlClass,
-                        GetDeclaredPartialClassName(csharpSource),
+                        GetDeclaredPartialClassName(csharpSource), StringComparer.Ordinal,
                         "Displayed XAML x:Class must match the C# namespace and partial class: " + sample.SampleDescription);
                 }
             });
@@ -312,7 +312,7 @@ namespace Fluence.Wpf.Tests
             TabItem tab = (TabItem)tabs.Items[0];
             Button? copy = DemoTestHost.FindByName<Button>(tab.Content as DependencyObject, "CopySourceButton");
             Assert.IsNotNull(copy, "Source tab should expose the copy button.");
-            Assert.AreEqual(expectedSource, copy.Tag as string);
+            Assert.AreEqual(expectedSource, copy.Tag as string, StringComparer.Ordinal);
         }
 
         private static List<DemoSampleControl> CreateVisibleSamples()

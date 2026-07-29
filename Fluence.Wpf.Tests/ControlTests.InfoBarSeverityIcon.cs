@@ -26,10 +26,11 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Fluence.Wpf.Controls;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Windows;
 using System.Windows.Media;
+using Fluence.Wpf.Controls;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Fluence.Wpf.Tests
 {
@@ -38,10 +39,10 @@ namespace Fluence.Wpf.Tests
         [TestMethod]
         public void InfoBar_GetSeverityGlyph_MatchesTemplateGlyphs()
         {
-            Assert.AreEqual("", InfoBar.GetSeverityGlyph(InfoBarSeverity.Informational));
-            Assert.AreEqual("", InfoBar.GetSeverityGlyph(InfoBarSeverity.Success));
-            Assert.AreEqual("", InfoBar.GetSeverityGlyph(InfoBarSeverity.Warning));
-            Assert.AreEqual("", InfoBar.GetSeverityGlyph(InfoBarSeverity.Error));
+            Assert.AreEqual("", InfoBar.GetSeverityGlyph(InfoBarSeverity.Informational), StringComparer.Ordinal);
+            Assert.AreEqual("", InfoBar.GetSeverityGlyph(InfoBarSeverity.Success), StringComparer.Ordinal);
+            Assert.AreEqual("", InfoBar.GetSeverityGlyph(InfoBarSeverity.Warning), StringComparer.Ordinal);
+            Assert.AreEqual("", InfoBar.GetSeverityGlyph(InfoBarSeverity.Error), StringComparer.Ordinal);
         }
 
         [TestMethod]

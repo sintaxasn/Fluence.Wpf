@@ -28,6 +28,7 @@
 
 using Fluence.Wpf.Controls;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Windows;
@@ -67,7 +68,7 @@ namespace Fluence.Wpf.Tests
                 {
                     foreach (object? g in groups)
                     {
-                        if (g is VisualStateGroup vsg && string.Equals(vsg.Name, "DisplayKindStates", System.StringComparison.Ordinal))
+                        if (g is VisualStateGroup vsg && string.Equals(vsg.Name, "DisplayKindStates", StringComparison.Ordinal))
                         { found = true; break; }
                     }
                 }
@@ -187,12 +188,12 @@ namespace Fluence.Wpf.Tests
                 {
                     foreach (object? g in groups)
                     {
-                        if (g is VisualStateGroup vsg && string.Equals(vsg.Name, "DisplayKindStates", System.StringComparison.Ordinal)) { dkg = vsg; break; }
+                        if (g is VisualStateGroup vsg && string.Equals(vsg.Name, "DisplayKindStates", StringComparison.Ordinal)) { dkg = vsg; break; }
                     }
                 }
                 Assert.IsNotNull(dkg, "DisplayKindStates group must exist.");
 
-                HashSet<string> stateNames = [];
+                HashSet<string> stateNames = new(StringComparer.OrdinalIgnoreCase);
                 foreach (object? s in dkg.States)
                 {
                     if (s is VisualState vs)

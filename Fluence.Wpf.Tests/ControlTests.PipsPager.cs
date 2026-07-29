@@ -125,7 +125,7 @@ namespace Fluence.Wpf.Tests
                             string.Format(CultureInfo.InvariantCulture, "Only the selected (first) pip must be checked; offset {0}.", offset));
                         Assert.AreEqual(
                             string.Format(CultureInfo.InvariantCulture, "Page {0}", offset + 1),
-                            AutomationProperties.GetName(pip),
+                            AutomationProperties.GetName(pip), StringComparer.Ordinal,
                             string.Format(CultureInfo.InvariantCulture, "The pip at offset {0} must carry its accessible page name.", offset));
                     }
                 }
@@ -281,7 +281,7 @@ namespace Fluence.Wpf.Tests
 
                     // Selection at the leading edge: the window clamps to the first pages.
                     Assert.AreEqual(3, host.Children.Count, "MaxVisiblePips=3 must realize three pips.");
-                    Assert.AreEqual("Page 1", AutomationProperties.GetName(GetPipAt(host, 0)!),
+                    Assert.AreEqual("Page 1", AutomationProperties.GetName(GetPipAt(host, 0)!), StringComparer.Ordinal,
                         "At the first page the window must start at page 1.");
                     Assert.IsTrue(GetPipAt(host, 0)?.IsChecked, "The first pip must be checked at page 1.");
 
@@ -289,9 +289,9 @@ namespace Fluence.Wpf.Tests
                     pager.SelectedPageIndex = 5;
                     DrainDispatcher(window.Dispatcher);
                     Assert.AreEqual(3, host.Children.Count, "The window must stay at three pips mid-range.");
-                    Assert.AreEqual("Page 5", AutomationProperties.GetName(GetPipAt(host, 0)!),
+                    Assert.AreEqual("Page 5", AutomationProperties.GetName(GetPipAt(host, 0)!), StringComparer.Ordinal,
                         "A mid-range selection must center the window (pages 5..7 around page 6).");
-                    Assert.AreEqual("Page 7", AutomationProperties.GetName(GetPipAt(host, 2)!),
+                    Assert.AreEqual("Page 7", AutomationProperties.GetName(GetPipAt(host, 2)!), StringComparer.Ordinal,
                         "A mid-range selection must center the window (pages 5..7 around page 6).");
                     Assert.IsTrue(GetPipAt(host, 1)?.IsChecked,
                         "The centered window must check its middle pip.");
@@ -300,9 +300,9 @@ namespace Fluence.Wpf.Tests
                     pager.SelectedPageIndex = 9;
                     DrainDispatcher(window.Dispatcher);
                     Assert.AreEqual(3, host.Children.Count, "The window must stay at three pips at the end.");
-                    Assert.AreEqual("Page 8", AutomationProperties.GetName(GetPipAt(host, 0)!),
+                    Assert.AreEqual("Page 8", AutomationProperties.GetName(GetPipAt(host, 0)!), StringComparer.Ordinal,
                         "At the last page the window must clamp to the final pages.");
-                    Assert.AreEqual("Page 10", AutomationProperties.GetName(GetPipAt(host, 2)!),
+                    Assert.AreEqual("Page 10", AutomationProperties.GetName(GetPipAt(host, 2)!), StringComparer.Ordinal,
                         "At the last page the window must end at the final page.");
                     Assert.IsTrue(GetPipAt(host, 2)?.IsChecked,
                         "The clamped window must check its last pip for the last page.");
@@ -390,9 +390,9 @@ namespace Fluence.Wpf.Tests
 
                     Assert.AreEqual(System.Windows.Controls.Orientation.Horizontal, host.Orientation,
                         "The default pager must stack its pips horizontally.");
-                    Assert.AreEqual("\uE76B", previousGlyph.Glyph,
+                    Assert.AreEqual("\uE76B", previousGlyph.Glyph, StringComparer.Ordinal,
                         "The horizontal previous chevron must be ChevronLeft (E76B).");
-                    Assert.AreEqual("\uE76C", nextGlyph.Glyph,
+                    Assert.AreEqual("\uE76C", nextGlyph.Glyph, StringComparer.Ordinal,
                         "The horizontal next chevron must be ChevronRight (E76C).");
 
                     pager.Orientation = System.Windows.Controls.Orientation.Vertical;
@@ -401,9 +401,9 @@ namespace Fluence.Wpf.Tests
 
                     Assert.AreEqual(System.Windows.Controls.Orientation.Vertical, host.Orientation,
                         "A vertical pager must stack its pips vertically.");
-                    Assert.AreEqual("\uE70E", previousGlyph.Glyph,
+                    Assert.AreEqual("\uE70E", previousGlyph.Glyph, StringComparer.Ordinal,
                         "The vertical previous chevron must be ChevronUp (E70E).");
-                    Assert.AreEqual("\uE70D", nextGlyph.Glyph,
+                    Assert.AreEqual("\uE70D", nextGlyph.Glyph, StringComparer.Ordinal,
                         "The vertical next chevron must be ChevronDown (E70D).");
                 }
                 finally
@@ -705,7 +705,7 @@ namespace Fluence.Wpf.Tests
                     // already true when the recreated template applies.
                     pager.SelectedPageIndex = 5;
                     DrainDispatcher(window.Dispatcher);
-                    Assert.AreEqual("Page 5", AutomationProperties.GetName(GetPipAt(host, 0)!),
+                    Assert.AreEqual("Page 5", AutomationProperties.GetName(GetPipAt(host, 0)!), StringComparer.Ordinal,
                         "A mid-range selection must rebuild the pip window.");
                     Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => IsDotSize(DotAt(host, 1), 6.0)),
                         "A recreated selected pip must animate to the 6px selected size.");
@@ -742,11 +742,11 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(peer, "PipsPager must create an automation peer.");
                     _ = Assert.IsInstanceOfType<Automation.PipsPagerAutomationPeer>(peer,
                         "PipsPager must expose the PipsPagerAutomationPeer.");
-                    Assert.AreEqual("PipsPager", peer.GetClassName(),
+                    Assert.AreEqual("PipsPager", peer.GetClassName(), StringComparer.Ordinal,
                         "The peer must report the PipsPager class name.");
                     Assert.AreEqual(AutomationControlType.Group, peer.GetAutomationControlType(),
                         "The peer must report the Group control type.");
-                    Assert.AreEqual("Gallery pager", peer.GetName(),
+                    Assert.AreEqual("Gallery pager", peer.GetName(), StringComparer.Ordinal,
                         "The peer name must come from AutomationProperties.Name.");
                 }
                 finally

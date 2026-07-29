@@ -138,7 +138,9 @@ namespace Fluence.Wpf.Demo.Pages
             "while",
         };
 
-        /// <summary>Identifies the <see cref="SampleDescription"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="SampleDescription"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty SampleDescriptionProperty =
             DependencyProperty.Register(
                 "SampleDescription",
@@ -146,7 +148,9 @@ namespace Fluence.Wpf.Demo.Pages
                 typeof(DemoSampleControl),
                 new FrameworkPropertyMetadata(string.Empty, OnSampleDescriptionChanged));
 
-        /// <summary>Identifies the <see cref="XamlSource"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="XamlSource"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty XamlSourceProperty =
             DependencyProperty.Register(
                 "XamlSource",
@@ -154,7 +158,9 @@ namespace Fluence.Wpf.Demo.Pages
                 typeof(DemoSampleControl),
                 new FrameworkPropertyMetadata(string.Empty, OnSourceChanged));
 
-        /// <summary>Identifies the <see cref="CSharpSource"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="CSharpSource"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty CSharpSourceProperty =
             DependencyProperty.Register(
                 "CSharpSource",
@@ -162,7 +168,9 @@ namespace Fluence.Wpf.Demo.Pages
                 typeof(DemoSampleControl),
                 new FrameworkPropertyMetadata(string.Empty, OnSourceChanged));
 
-        /// <summary>Identifies the <see cref="DemoContent"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="DemoContent"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty DemoContentProperty =
             DependencyProperty.Register(
                 "DemoContent",
@@ -170,7 +178,9 @@ namespace Fluence.Wpf.Demo.Pages
                 typeof(DemoSampleControl),
                 new FrameworkPropertyMetadata(defaultValue: null, OnDemoContentChanged));
 
-        /// <summary>Identifies the <see cref="OutputContent"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="OutputContent"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty OutputContentProperty =
             DependencyProperty.Register(
                 "OutputContent",
@@ -178,7 +188,9 @@ namespace Fluence.Wpf.Demo.Pages
                 typeof(DemoSampleControl),
                 new FrameworkPropertyMetadata(defaultValue: null, OnOutputContentChanged));
 
-        /// <summary>Identifies the <see cref="RightRailContent"/> dependency property.</summary>
+        /// <summary>
+        /// Identifies the <see cref="RightRailContent"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty RightRailContentProperty =
             DependencyProperty.Register(
                 "RightRailContent",

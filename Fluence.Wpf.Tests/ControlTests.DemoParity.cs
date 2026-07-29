@@ -65,13 +65,13 @@ namespace Fluence.Wpf.Tests
                 Assert.IsNotNull(button, "Buttons page should include a repeat button wired to a count label.");
                 Assert.IsNotNull(count, "Buttons page should include a nearby repeat count text block.");
                 Assert.IsNull(accentRepeat, "Buttons page should not include the extra Accent repeat sample.");
-                Assert.AreEqual("Clicks: 0", count.Text);
+                Assert.AreEqual("Clicks: 0", count.Text, StringComparer.Ordinal);
 
                 button.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
                 button.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
                 DrainDispatcher(window.Dispatcher);
 
-                Assert.AreEqual("Clicks: 2", count.Text);
+                Assert.AreEqual("Clicks: 2", count.Text, StringComparer.Ordinal);
             });
         }
 
@@ -88,15 +88,15 @@ namespace Fluence.Wpf.Tests
                 Assert.IsNotNull(threeStateToggle, "Buttons page should include a three-state ToggleButton sample.");
                 Assert.IsNotNull(stateText, "Buttons page should include the ToggleButton state label.");
                 Assert.IsTrue(threeStateToggle.IsThreeState, "The three-state sample should opt into IsThreeState.");
-                Assert.AreEqual("Wrap text: Off", stateText.Text);
+                Assert.AreEqual("Wrap text: Off", stateText.Text, StringComparer.Ordinal);
 
                 wrapToggle.IsChecked = true;
                 DrainDispatcher(window.Dispatcher);
-                Assert.AreEqual("Wrap text: On", stateText.Text);
+                Assert.AreEqual("Wrap text: On", stateText.Text, StringComparer.Ordinal);
 
                 wrapToggle.IsChecked = false;
                 DrainDispatcher(window.Dispatcher);
-                Assert.AreEqual("Wrap text: Off", stateText.Text);
+                Assert.AreEqual("Wrap text: Off", stateText.Text, StringComparer.Ordinal);
             });
         }
 
@@ -110,22 +110,22 @@ namespace Fluence.Wpf.Tests
 
                 Assert.IsNotNull(listToggle, "Buttons page should include the named ToggleSplitButton sample.");
                 Assert.IsNotNull(stateText, "Buttons page should include the ToggleSplitButton state label.");
-                Assert.AreEqual("List formatting: Off", stateText.Text);
+                Assert.AreEqual("List formatting: Off", stateText.Text, StringComparer.Ordinal);
 
-                System.Windows.Controls.Button? primary = listToggle.Template?.FindName("PART_PrimaryButton", listToggle) as System.Windows.Controls.Button;
+                Button? primary = listToggle.Template?.FindName("PART_PrimaryButton", listToggle) as Button;
                 Assert.IsNotNull(primary, "The ToggleSplitButton sample should expose its primary template part.");
 
                 primary.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
                 DrainDispatcher(window.Dispatcher);
 
                 Assert.IsTrue(listToggle.IsChecked, "Clicking the primary half should check the sample.");
-                Assert.AreEqual("List formatting: Bulleted list", stateText.Text);
+                Assert.AreEqual("List formatting: Bulleted list", stateText.Text, StringComparer.Ordinal);
 
                 primary.RaiseEvent(new RoutedEventArgs(System.Windows.Controls.Primitives.ButtonBase.ClickEvent));
                 DrainDispatcher(window.Dispatcher);
 
                 Assert.IsFalse(listToggle.IsChecked, "A second primary click should uncheck the sample.");
-                Assert.AreEqual("List formatting: Off", stateText.Text);
+                Assert.AreEqual("List formatting: Off", stateText.Text, StringComparer.Ordinal);
             });
         }
 
@@ -186,11 +186,11 @@ namespace Fluence.Wpf.Tests
                 Assert.IsNull(FindVisualChildByName<TextBlock>(window, "SimpleToggleStateText"),
                     "Selection page should remove the first simple ToggleSwitch state label.");
                 Assert.IsNotNull(workHeader, "Selection page should include the Toggle work header text.");
-                Assert.AreEqual("Toggle work", workHeader.Text);
+                Assert.AreEqual("Toggle work", workHeader.Text, StringComparer.Ordinal);
                 Assert.IsNotNull(workToggle, "Selection page should include the Toggle work ToggleSwitch.");
                 Assert.IsNotNull(workLabel, "Selection page should include the Toggle work state label.");
                 Assert.IsTrue(workToggle.IsChecked.GetValueOrDefault());
-                Assert.AreEqual("On", workLabel.Text);
+                Assert.AreEqual("On", workLabel.Text, StringComparer.Ordinal);
                 Assert.IsNotNull(ring, "Selection page should include a ProgressRing bound to the Toggle work ToggleSwitch.");
                 Assert.IsTrue(ring.IsIndeterminate);
                 Assert.AreEqual(new Thickness(24, 0, 0, 0), ring.Margin);

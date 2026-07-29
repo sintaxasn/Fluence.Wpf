@@ -26,11 +26,12 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Fluence.Wpf.Tests
 {
@@ -68,8 +69,8 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     Assert.AreSame(icon, labeled.Icon, "AppBarButton.Icon must round-trip.");
-                    Assert.AreEqual("Copy", labeled.Label, "AppBarButton.Label must round-trip.");
-                    Assert.AreEqual(string.Empty, iconOnly.Label, "AppBarButton.Label must default to an empty string.");
+                    Assert.AreEqual("Copy", labeled.Label, StringComparer.Ordinal, "AppBarButton.Label must round-trip.");
+                    Assert.AreEqual(string.Empty, iconOnly.Label, StringComparer.Ordinal, "AppBarButton.Label must default to an empty string.");
                     Assert.AreEqual(40.0, labeled.MinWidth, 0.01, "Compact AppBarButton must keep the 40px hit-target width.");
                     Assert.AreEqual(40.0, labeled.MinHeight, 0.01, "Compact AppBarButton must keep the 40px hit-target height.");
                     Assert.AreEqual("Copy", labeled.ToolTip, "Compact AppBarButton must surface its Label as a tooltip.");
@@ -374,7 +375,7 @@ namespace Fluence.Wpf.Tests
                         "Secondary commands must pick up CommandBarFlyoutSecondaryAppBarButtonStyle via the implicit style.");
 
                     TextBlock? labelText = FindVisualChildren<TextBlock>(deleteButton)
-                        .FirstOrDefault(textBlock => string.Equals(textBlock.Text, "Delete", System.StringComparison.Ordinal));
+                        .FirstOrDefault(textBlock => string.Equals(textBlock.Text, "Delete", StringComparison.Ordinal));
                     Assert.IsNotNull(labelText, "Overflow AppBarButtons must render their Label next to the icon.");
                 }
                 finally

@@ -79,7 +79,7 @@ namespace Fluence.Wpf.Tests
 
                     Assert.AreEqual(6.0, numberBox.Value,
                         "PART_UpButton.Click must increment NumberBox.Value by SmallChange.");
-                    Assert.AreEqual("6", numberBox.Text,
+                    Assert.AreEqual("6", numberBox.Text, StringComparer.Ordinal,
                         "NumberBox.Text must mirror Value after an increment.");
                 }
                 finally
@@ -129,7 +129,7 @@ namespace Fluence.Wpf.Tests
 
                     Assert.AreEqual(4.0, numberBox.Value,
                         "PART_DownButton.Click must decrement NumberBox.Value by SmallChange.");
-                    Assert.AreEqual("4", numberBox.Text,
+                    Assert.AreEqual("4", numberBox.Text, StringComparer.Ordinal,
                         "NumberBox.Text must mirror Value after a decrement.");
                 }
                 finally
