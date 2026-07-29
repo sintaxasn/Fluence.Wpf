@@ -54,10 +54,14 @@ namespace Fluence.Wpf.Controls
     [TemplatePart(Name = "PART_RightHeaderPresenter", Type = typeof(ContentPresenter))]
     public class TitleBar : ContentControl
     {
-        /// <summary>Template part name for the back navigation button.</summary>
+        /// <summary>
+        /// Template part name for the back navigation button.
+        /// </summary>
         private const string PART_BackButton = "PART_BackButton";
 
-        /// <summary>Template part name for the pane toggle (hamburger) button.</summary>
+        /// <summary>
+        /// Template part name for the pane toggle (hamburger) button.
+        /// </summary>
         private const string PART_PaneToggleButton = "PART_PaneToggleButton";
 
         #region Dependency properties

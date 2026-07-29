@@ -26,12 +26,13 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Fluence.Wpf.Controls;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Linq;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Media;
+using Fluence.Wpf.Controls;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Fluence.Wpf.Tests
 {
@@ -135,7 +136,7 @@ namespace Fluence.Wpf.Tests
 
                     FontIcon? glyph = FindVisualChildren<FontIcon>(close).FirstOrDefault();
                     Assert.IsNotNull(glyph, "The close button must host a FontIcon.");
-                    Assert.AreEqual("", glyph.Glyph, "The close button must show the Fluent close glyph (E711).");
+                    Assert.AreEqual("", glyph.Glyph, StringComparer.Ordinal, "The close button must show the Fluent close glyph (E711).");
                     SolidColorBrush? glyphForeground = glyph.Foreground as SolidColorBrush;
                     Assert.IsNotNull(glyphForeground, "The glyph foreground must be a solid brush.");
                     Assert.AreEqual(primary.Color, glyphForeground.Color,

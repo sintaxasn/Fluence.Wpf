@@ -26,13 +26,14 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Reflection;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Fluence.Wpf.Tests
 {
@@ -268,7 +269,7 @@ namespace Fluence.Wpf.Tests
                 string helpText = AutomationProperties.GetHelpText(tb);
                 Assert.AreEqual(
                     "Value is required",
-                    helpText,
+                    helpText, StringComparer.Ordinal,
                     "AutomationProperties.HelpText must equal ValidationMessage when ValidationState is Error.");
 
                 w.Close();
@@ -300,7 +301,7 @@ namespace Fluence.Wpf.Tests
                 string helpText = AutomationProperties.GetHelpText(tb);
                 Assert.AreEqual(
                     string.Empty,
-                    helpText,
+                    helpText, StringComparer.Ordinal,
                     "AutomationProperties.HelpText must be cleared when ValidationState returns to None.");
 
                 w.Close();
@@ -328,7 +329,7 @@ namespace Fluence.Wpf.Tests
                 string helpText = AutomationProperties.GetHelpText(tb);
                 Assert.AreEqual(
                     "Check the value",
-                    helpText,
+                    helpText, StringComparer.Ordinal,
                     "AutomationProperties.HelpText must equal ValidationMessage when ValidationState is Warning.");
 
                 w.Close();
@@ -356,7 +357,7 @@ namespace Fluence.Wpf.Tests
                 // Error state must have set HelpText first (precondition).
                 Assert.AreEqual(
                     "Value is required",
-                    AutomationProperties.GetHelpText(tb),
+                    AutomationProperties.GetHelpText(tb), StringComparer.Ordinal,
                     "Precondition: Error state must set HelpText.");
 
                 // Transition to Success -- HelpText must be cleared.
@@ -365,7 +366,7 @@ namespace Fluence.Wpf.Tests
 
                 Assert.AreEqual(
                     string.Empty,
-                    AutomationProperties.GetHelpText(tb),
+                    AutomationProperties.GetHelpText(tb), StringComparer.Ordinal,
                     "AutomationProperties.HelpText must be cleared when ValidationState transitions to Success.");
 
                 w.Close();
@@ -408,7 +409,7 @@ namespace Fluence.Wpf.Tests
                 // Precondition: HelpText is set after the initial Error transition.
                 Assert.AreEqual(
                     "Value is required",
-                    AutomationProperties.GetHelpText(tb),
+                    AutomationProperties.GetHelpText(tb), StringComparer.Ordinal,
                     "Precondition: HelpText must be set after entering Error state.");
 
                 // Simulate repeated keystrokes while staying in Error with the same message.
@@ -424,7 +425,7 @@ namespace Fluence.Wpf.Tests
                 // HelpText must remain stable -- UpdateHelperText is idempotent for SetHelpText.
                 Assert.AreEqual(
                     "Value is required",
-                    AutomationProperties.GetHelpText(tb),
+                    AutomationProperties.GetHelpText(tb), StringComparer.Ordinal,
                     "HelpText must remain stable while ValidationState and ValidationMessage are unchanged.");
 
                 // Transition to None resets tracked state, then re-entering Error fires fresh.
@@ -433,7 +434,7 @@ namespace Fluence.Wpf.Tests
 
                 Assert.AreEqual(
                     string.Empty,
-                    AutomationProperties.GetHelpText(tb),
+                    AutomationProperties.GetHelpText(tb), StringComparer.Ordinal,
                     "HelpText must be cleared after transitioning to None.");
 
                 tb.ValidationState = ValidationState.Error;
@@ -441,7 +442,7 @@ namespace Fluence.Wpf.Tests
 
                 Assert.AreEqual(
                     "Value is required",
-                    AutomationProperties.GetHelpText(tb),
+                    AutomationProperties.GetHelpText(tb), StringComparer.Ordinal,
                     "HelpText must be set again after re-entering Error state following a None reset.");
 
                 w.Close();

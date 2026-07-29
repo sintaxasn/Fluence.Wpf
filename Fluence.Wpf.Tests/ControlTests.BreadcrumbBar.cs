@@ -26,7 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Windows;
@@ -34,6 +34,7 @@ using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Input;
 using System.Windows.Media;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Fluence.Wpf.Tests
 {
@@ -149,7 +150,7 @@ namespace Fluence.Wpf.Tests
 
                         // WinUI BreadcrumbBarChevronLeftToRight is E974 painted in
                         // BreadcrumbBarNormalForegroundBrush (TextFillColorPrimaryBrush).
-                        Assert.AreEqual("", chevron.Glyph,
+                        Assert.AreEqual("", chevron.Glyph, StringComparer.Ordinal,
                             string.Format(CultureInfo.InvariantCulture, "The chevron of the ancestor crumb at index {0} must use the WinUI E974 glyph.", index));
                         SolidColorBrush? chevronForeground = chevron.Foreground as SolidColorBrush;
                         Assert.IsNotNull(chevronForeground,
@@ -421,11 +422,11 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(peer, "BreadcrumbBar must create an automation peer.");
                     _ = Assert.IsInstanceOfType<Automation.BreadcrumbBarAutomationPeer>(peer,
                         "BreadcrumbBar must expose the BreadcrumbBarAutomationPeer.");
-                    Assert.AreEqual("BreadcrumbBar", peer.GetClassName(),
+                    Assert.AreEqual("BreadcrumbBar", peer.GetClassName(), StringComparer.Ordinal,
                         "The peer must report the BreadcrumbBar class name.");
                     Assert.AreEqual(AutomationControlType.Group, peer.GetAutomationControlType(),
                         "The peer must report the Group control type.");
-                    Assert.AreEqual("Navigation breadcrumb", peer.GetName(),
+                    Assert.AreEqual("Navigation breadcrumb", peer.GetName(), StringComparer.Ordinal,
                         "The peer name must come from AutomationProperties.Name.");
                 }
                 finally

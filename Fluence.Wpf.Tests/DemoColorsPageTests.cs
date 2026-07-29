@@ -104,7 +104,7 @@ namespace Fluence.Wpf.Tests
                     for (int i = 0; i < SectionNames.Length; i++)
                     {
                         TabItem tabItem = (TabItem)colorTabs.Items[i];
-                        Assert.AreEqual(SectionNames[i], tabItem.Header as string,
+                        Assert.AreEqual(SectionNames[i], tabItem.Header as string, StringComparer.Ordinal,
                             "Unexpected Colors page section at index " + i.ToString(CultureInfo.InvariantCulture) + ".");
                     }
 
@@ -242,7 +242,7 @@ namespace Fluence.Wpf.Tests
 
         private static SortedSet<string> CollectColorTokenResourceKeys(GalleryColorsPage page, Dispatcher dispatcher)
         {
-            SortedSet<string> resourceKeys = [];
+            SortedSet<string> resourceKeys = new(StringComparer.OrdinalIgnoreCase);
             TabControl? colorTabs = FindByName<TabControl>(page, "ColorSectionTabs");
             Assert.IsNotNull(colorTabs, "Colors page should expose color section tabs.");
 

@@ -26,13 +26,14 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Fluence.Wpf.Automation;
-using Fluence.Wpf.Controls;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Shapes;
+using Fluence.Wpf.Automation;
+using Fluence.Wpf.Controls;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Fluence.Wpf.Tests
 {
@@ -109,10 +110,10 @@ namespace Fluence.Wpf.Tests
                 System.Windows.Controls.TextBlock? initialsText = FindVisualChildByName<System.Windows.Controls.TextBlock>(pp, "PART_InitialsText");
                 Assert.IsNotNull(initialsText);
                 // Contact glyph U+E77B
-                Assert.AreEqual("\uE77B", initialsText.Text,
+                Assert.AreEqual("\uE77B", initialsText.Text, StringComparer.Ordinal,
                     "PersonPicture with no data must show contact glyph U+E77B.");
                 StringAssert.Contains(initialsText.FontFamily.Source, "Segoe Fluent Icons",
-                System.StringComparison.Ordinal, "The contact glyph must use the icon font, not the text font.");
+                StringComparison.Ordinal, "The contact glyph must use the icon font, not the text font.");
                 w.Close();
             });
         }
@@ -132,7 +133,7 @@ namespace Fluence.Wpf.Tests
 
                 System.Windows.Controls.TextBlock? initialsText = FindVisualChildByName<System.Windows.Controls.TextBlock>(pp, "PART_InitialsText");
                 Assert.IsNotNull(initialsText);
-                Assert.AreEqual("JD", initialsText.Text,
+                Assert.AreEqual("JD", initialsText.Text, StringComparer.Ordinal,
                     "DisplayName='John Doe' must generate initials 'JD'.");
                 w.Close();
             });
@@ -153,7 +154,7 @@ namespace Fluence.Wpf.Tests
 
                 System.Windows.Controls.TextBlock? initialsText = FindVisualChildByName<System.Windows.Controls.TextBlock>(pp, "PART_InitialsText");
                 Assert.IsNotNull(initialsText);
-                Assert.AreEqual("XY", initialsText.Text,
+                Assert.AreEqual("XY", initialsText.Text, StringComparer.Ordinal,
                     "Explicit Initials='XY' must override DisplayName-derived initials.");
                 w.Close();
             });
@@ -174,7 +175,7 @@ namespace Fluence.Wpf.Tests
 
                 System.Windows.Controls.TextBlock? initialsText = FindVisualChildByName<System.Windows.Controls.TextBlock>(pp, "PART_InitialsText");
                 Assert.IsNotNull(initialsText);
-                Assert.AreEqual("\uE716", initialsText.Text,
+                Assert.AreEqual("\uE716", initialsText.Text, StringComparer.Ordinal,
                     "IsGroup=true must show people glyph U+E716 per WinUI 3 PersonPicture.");
                 w.Close();
             });
@@ -200,7 +201,7 @@ namespace Fluence.Wpf.Tests
 
                 System.Windows.Controls.TextBlock? badgeText = FindVisualChildByName<System.Windows.Controls.TextBlock>(pp, "PART_BadgeText");
                 Assert.IsNotNull(badgeText);
-                Assert.AreEqual("3", badgeText.Text,
+                Assert.AreEqual("3", badgeText.Text, StringComparer.Ordinal,
                     "PART_BadgeText must display the BadgeNumber.");
                 w.Close();
             });
@@ -227,7 +228,7 @@ namespace Fluence.Wpf.Tests
                 Assert.IsNotNull(badgeGrid);
                 Assert.IsNotNull(badgeBackground);
                 Assert.IsNotNull(badgeText);
-                Assert.AreEqual("99+", badgeText.Text);
+                Assert.AreEqual("99+", badgeText.Text, StringComparer.Ordinal);
                 Assert.IsTrue(badgeGrid.ActualWidth >= badgeText.ActualWidth + 8.0,
                     "Numeric badges must use a pill surface wide enough to cover their rendered text.");
                 Assert.IsTrue(badgeBackground.ActualWidth >= badgeGrid.ActualWidth,
@@ -239,7 +240,7 @@ namespace Fluence.Wpf.Tests
                 w.UpdateLayout();
                 DrainDispatcher(w.Dispatcher);
 
-                Assert.AreEqual("\uE73E", badgeText.Text);
+                Assert.AreEqual("\uE73E", badgeText.Text, StringComparer.Ordinal);
                 Assert.IsTrue(badgeGrid.ActualWidth >= badgeText.ActualWidth + 8.0,
                     "Glyph badges must keep enough background around the rendered glyph.");
                 Assert.IsTrue(badgeBackground.ActualWidth >= badgeGrid.ActualWidth,
@@ -370,7 +371,7 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(pp);
-                Assert.AreEqual("Ada Lovelace", peer.GetName(),
+                Assert.AreEqual("Ada Lovelace", peer.GetName(), StringComparer.Ordinal,
                     "GetName() must return the DisplayName when no AutomationProperties.Name is set.");
                 w.Close();
             });
@@ -392,7 +393,7 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(pp);
-                Assert.AreEqual("AL", peer.GetName(),
+                Assert.AreEqual("AL", peer.GetName(), StringComparer.Ordinal,
                     "GetName() must fall back to Initials when DisplayName is empty.");
                 w.Close();
             });
@@ -414,7 +415,7 @@ namespace Fluence.Wpf.Tests
                 DrainDispatcher(w.Dispatcher);
 
                 AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(pp);
-                Assert.AreEqual("Profile picture for Ada", peer.GetName(),
+                Assert.AreEqual("Profile picture for Ada", peer.GetName(), StringComparer.Ordinal,
                     "Explicit AutomationProperties.Name must take precedence over DisplayName.");
                 w.Close();
             });

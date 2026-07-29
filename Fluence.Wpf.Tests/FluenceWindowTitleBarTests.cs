@@ -1400,7 +1400,7 @@ modifiers: null);
                     };
                     passwordBox.SelectAll();
 
-                    Assert.AreEqual("hidden", passwordBox.Password,
+                    Assert.AreEqual("hidden", passwordBox.Password, StringComparer.Ordinal,
                         "SelectAll without a template should not alter the password value.");
                 }
                 finally

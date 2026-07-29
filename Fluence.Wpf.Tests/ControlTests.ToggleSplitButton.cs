@@ -409,7 +409,7 @@ namespace Fluence.Wpf.Tests
                 {
                     AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(button);
 
-                    Assert.AreEqual("ToggleSplitButton", peer.GetClassName());
+                    Assert.AreEqual("ToggleSplitButton", peer.GetClassName(), StringComparer.Ordinal);
                     Assert.AreEqual(AutomationControlType.SplitButton, peer.GetAutomationControlType());
                     Assert.IsNotNull(peer.GetPattern(PatternInterface.Toggle), "The peer must expose the Toggle pattern.");
                     Assert.IsNotNull(peer.GetPattern(PatternInterface.ExpandCollapse), "The peer must expose the ExpandCollapse pattern.");

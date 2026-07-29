@@ -78,7 +78,7 @@ namespace Fluence.Wpf.Tests
                         "The default template should present suggestions through the Fluence ListBox.");
                     Assert.IsFalse(popup.StaysOpen, "The suggestion popup must be light-dismiss (StaysOpen=false).");
                     Assert.IsTrue(popup.AllowsTransparency, "The suggestion popup must allow transparency for the rounded surface.");
-                    Assert.AreEqual("Search", textBox.PlaceholderText, "PlaceholderText must flow into the inner Fluence TextBox.");
+                    Assert.AreEqual("Search", textBox.PlaceholderText, StringComparer.Ordinal, "PlaceholderText must flow into the inner Fluence TextBox.");
                 }
                 finally
                 {
@@ -119,7 +119,7 @@ namespace Fluence.Wpf.Tests
 
                     Controls.TextBox? textBox = box.Template?.FindName("PART_TextBox", box) as Controls.TextBox;
                     Assert.IsNotNull(textBox, "PART_TextBox must be present in the template.");
-                    Assert.AreEqual("fluent", textBox.Text, "A programmatic Text change must flow into the inner text box.");
+                    Assert.AreEqual("fluent", textBox.Text, StringComparer.Ordinal, "A programmatic Text change must flow into the inner text box.");
                 }
                 finally
                 {
@@ -160,7 +160,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(captured, "Editing the inner text box must raise TextChanged.");
                     Assert.AreEqual(AutoSuggestionBoxTextChangeReason.UserInput, captured.Reason,
                         "An edit that originates in the text box must report Reason=UserInput.");
-                    Assert.AreEqual("ap", box.Text, "The edit must be mirrored into AutoSuggestBox.Text.");
+                    Assert.AreEqual("ap", box.Text, StringComparer.Ordinal, "The edit must be mirrored into AutoSuggestBox.Text.");
                 }
                 finally
                 {
@@ -252,9 +252,9 @@ namespace Fluence.Wpf.Tests
 
                     Assert.AreEqual("Apple", chosen, "Enter on a highlighted suggestion must raise SuggestionChosen with it.");
                     Assert.IsNotNull(submitted, "Enter on a highlighted suggestion must raise QuerySubmitted.");
-                    Assert.AreEqual("Apple", submitted.QueryText, "QueryText must carry the updated text.");
+                    Assert.AreEqual("Apple", submitted.QueryText, StringComparer.Ordinal, "QueryText must carry the updated text.");
                     Assert.AreEqual("Apple", submitted.ChosenSuggestion, "ChosenSuggestion must carry the chosen item.");
-                    Assert.AreEqual("Apple", box.Text, "UpdateTextOnSelect must write the suggestion into Text.");
+                    Assert.AreEqual("Apple", box.Text, StringComparer.Ordinal, "UpdateTextOnSelect must write the suggestion into Text.");
                     Assert.IsTrue(reasons.Contains(AutoSuggestionBoxTextChangeReason.SuggestionChosen),
                         "Choosing a suggestion must raise TextChanged with Reason=SuggestionChosen.");
                     Assert.IsTrue(WaitUntil(window.Dispatcher, 2000, () => !popup.IsOpen),
@@ -296,7 +296,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
 
                     Assert.IsNotNull(submitted, "Enter must raise QuerySubmitted even without a highlighted suggestion.");
-                    Assert.AreEqual("search term", submitted.QueryText, "QueryText must carry the current text.");
+                    Assert.AreEqual("search term", submitted.QueryText, StringComparer.Ordinal, "QueryText must carry the current text.");
                     Assert.IsNull(submitted.ChosenSuggestion, "ChosenSuggestion must be null when no suggestion is highlighted.");
                 }
                 finally
@@ -389,22 +389,22 @@ namespace Fluence.Wpf.Tests
                     RaisePreviewKeyDown(textBox, window, Key.Down);
                     DrainDispatcher(window.Dispatcher);
                     Assert.AreEqual(0, list.SelectedIndex, "Down must move the highlight onto the first suggestion.");
-                    Assert.AreEqual("Apple", box.Text, "The highlighted suggestion must be previewed into Text.");
-                    Assert.AreEqual("Apple", textBox.Text, "The preview must reach the inner text box.");
+                    Assert.AreEqual("Apple", box.Text, StringComparer.Ordinal, "The highlighted suggestion must be previewed into Text.");
+                    Assert.AreEqual("Apple", textBox.Text, StringComparer.Ordinal, "The preview must reach the inner text box.");
 
                     RaisePreviewKeyDown(textBox, window, Key.Down);
                     DrainDispatcher(window.Dispatcher);
-                    Assert.AreEqual("Banana", box.Text, "Each highlight move must preview the new suggestion.");
+                    Assert.AreEqual("Banana", box.Text, StringComparer.Ordinal, "Each highlight move must preview the new suggestion.");
 
                     RaisePreviewKeyDown(textBox, window, Key.Down);
                     DrainDispatcher(window.Dispatcher);
-                    Assert.AreEqual("Cherry", box.Text, "The last suggestion must preview like the others.");
+                    Assert.AreEqual("Cherry", box.Text, StringComparer.Ordinal, "The last suggestion must preview like the others.");
 
                     // Cycling past the end returns to no selection and restores the typed text.
                     RaisePreviewKeyDown(textBox, window, Key.Down);
                     DrainDispatcher(window.Dispatcher);
                     Assert.AreEqual(-1, list.SelectedIndex, "Cycling past the end must clear the highlight.");
-                    Assert.AreEqual("ap", box.Text, "Clearing the highlight must restore the original typed text.");
+                    Assert.AreEqual("ap", box.Text, StringComparer.Ordinal, "Clearing the highlight must restore the original typed text.");
 
                     Assert.IsTrue(reasons.Count > 0, "The preview navigation must raise TextChanged.");
                     foreach (AutoSuggestionBoxTextChangeReason reason in reasons)
@@ -461,7 +461,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
 
                     Assert.IsNotNull(submitted, "Clicking the query icon button must raise QuerySubmitted.");
-                    Assert.AreEqual("search term", submitted.QueryText, "QueryText must carry the current text.");
+                    Assert.AreEqual("search term", submitted.QueryText, StringComparer.Ordinal, "QueryText must carry the current text.");
                     Assert.IsNull(submitted.ChosenSuggestion,
                         "A query icon click submits without a chosen suggestion, like Enter.");
 

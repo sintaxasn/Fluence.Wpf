@@ -165,7 +165,7 @@ namespace Fluence.Wpf.Tests
 
                 Assert.AreEqual(1, titles.Count, "Icons page should show the Iconography title once.");
                 Assert.IsNotNull(search, "Icons page should expose the icon search box.");
-                Assert.AreEqual("Search icons by name, code, or tags", search.PlaceholderText,
+                Assert.AreEqual("Search icons by name, code, or tags", search.PlaceholderText, StringComparer.Ordinal,
                     "Search box should use the WinUI Gallery placeholder text.");
                 Assert.AreEqual(420.0, search.Width, 0.1,
                     "Search box should keep the WinUI Gallery width.");
@@ -201,7 +201,7 @@ namespace Fluence.Wpf.Tests
 
                 TextBlock? nameValue = FindVisualChildByName<TextBlock>(window, "IconNameValueText");
                 Assert.IsNotNull(nameValue, "Sidebar icon name field should exist.");
-                Assert.AreEqual(filtered[0].Name, nameValue.Text, "Filtering should select the first matching icon.");
+                Assert.AreEqual(filtered[0].Name, nameValue.Text, StringComparer.Ordinal, "Filtering should select the first matching icon.");
             });
         }
 
@@ -232,8 +232,8 @@ namespace Fluence.Wpf.Tests
                 Controls.FontIcon? preview = FindVisualChildByName<Controls.FontIcon>(window, "IconPreviewGlyph");
                 Assert.IsNotNull(nameValue, "Sidebar icon name field should exist.");
                 Assert.IsNotNull(preview, "Sidebar preview glyph should exist.");
-                Assert.AreEqual(second.Name, nameValue.Text, "Sidebar should show the clicked icon's name.");
-                Assert.AreEqual(second.Glyph, preview.Glyph, "Sidebar preview should show the clicked icon's glyph.");
+                Assert.AreEqual(second.Name, nameValue.Text, StringComparer.Ordinal, "Sidebar should show the clicked icon's name.");
+                Assert.AreEqual(second.Glyph, preview.Glyph, StringComparer.Ordinal, "Sidebar preview should show the clicked icon's glyph.");
             });
         }
 
@@ -277,8 +277,8 @@ namespace Fluence.Wpf.Tests
             Controls.Button? copy = FindVisualChildByName<Controls.Button>(window, buttonName);
             Assert.IsNotNull(value, valueName + " should exist.");
             Assert.IsNotNull(copy, buttonName + " should exist.");
-            Assert.AreEqual(expected, value.Text, valueName + " should show the WinUI Gallery value format.");
-            Assert.AreEqual(expected, copy.Tag as string, buttonName + " should copy the displayed value.");
+            Assert.AreEqual(expected, value.Text, StringComparer.Ordinal, valueName + " should show the WinUI Gallery value format.");
+            Assert.AreEqual(expected, copy.Tag as string, StringComparer.Ordinal, buttonName + " should copy the displayed value.");
         }
 
         [TestMethod]
@@ -457,9 +457,9 @@ namespace Fluence.Wpf.Tests
                     "Indeterminate toggle should be vertically centered in the right rail.");
                 Assert.AreEqual(HorizontalAlignment.Center, progressRingValueBox.HorizontalAlignment,
                     "ProgressRing value NumberBox should remain centered.");
-                Assert.AreEqual("On / Off", indeterminateToggle.OnContent as string,
+                Assert.AreEqual("On / Off", indeterminateToggle.OnContent as string, StringComparer.Ordinal,
                     "Indeterminate toggle text should not switch to a state-specific label.");
-                Assert.AreEqual("On / Off", indeterminateToggle.OffContent as string,
+                Assert.AreEqual("On / Off", indeterminateToggle.OffContent as string, StringComparer.Ordinal,
                     "Indeterminate toggle text should not switch to a state-specific label.");
                 Assert.AreEqual(0d, numberBox.Minimum, "Progress value NumberBox should allow the ProgressBar's empty state.");
                 Assert.AreEqual(100d, numberBox.Maximum, "Progress value NumberBox should cap at 100.");
@@ -484,7 +484,7 @@ namespace Fluence.Wpf.Tests
 
                 indeterminateToggle.IsChecked = false;
                 DrainDispatcher(window.Dispatcher);
-                Assert.AreEqual("On / Off", indeterminateToggle.OffContent as string,
+                Assert.AreEqual("On / Off", indeterminateToggle.OffContent as string, StringComparer.Ordinal,
                     "Indeterminate toggle text should remain fixed after toggling off.");
             });
         }

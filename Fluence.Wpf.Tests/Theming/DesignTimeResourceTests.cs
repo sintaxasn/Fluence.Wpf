@@ -68,7 +68,7 @@ namespace Fluence.Wpf.Tests.Theming
             string expected = Normalize(DesignTimeResourceWriter.Generate(theme));
             string actual = Normalize(File.ReadAllText(path));
 
-            Assert.AreEqual(expected, actual, string.Format(
+            Assert.AreEqual(expected, actual, StringComparer.Ordinal, string.Format(
                 CultureInfo.InvariantCulture,
                 "{0} is out of date with the theme engine. Run the RegenerateDesignTimeResources test and re-commit.",
                 Path.GetFileName(path)));

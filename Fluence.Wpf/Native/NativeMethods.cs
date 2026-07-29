@@ -61,10 +61,14 @@ namespace Fluence.Wpf.Native
         private const int SW_MINIMIZE = 6;
         private const int SW_RESTORE = 9;
 
-        /// <summary>The <c>HWND_BROADCAST</c> pseudo-handle for broadcasting a settings change.</summary>
+        /// <summary>
+        /// The <c>HWND_BROADCAST</c> pseudo-handle for broadcasting a settings change.
+        /// </summary>
         public const int HWND_BROADCAST = 0xFFFF;
 
-        /// <summary>The <c>SMTO_ABORTIFHUNG</c> flag for <see cref="SendMessageTimeout"/>.</summary>
+        /// <summary>
+        /// The <c>SMTO_ABORTIFHUNG</c> flag for <see cref="SendMessageTimeout"/>.
+        /// </summary>
         public const uint SMTO_ABORTIFHUNG = 0x0002;
 
         #region P/Invoke declarations - User32 window styles and presentation

@@ -26,13 +26,14 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Windows;
 using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Fluence.Wpf.Tests
 {
@@ -189,7 +190,7 @@ namespace Fluence.Wpf.Tests
 
                     Assert.IsTrue(box.IsPasswordRevealed,
                         "Password must be revealed while the mouse button is held down (press-and-hold).");
-                    Assert.AreEqual("Hide password", AutomationProperties.GetName(revealButton),
+                    Assert.AreEqual("Hide password", AutomationProperties.GetName(revealButton), StringComparer.Ordinal,
                         "The reveal button's accessible name must reflect the revealed state during a mouse press-and-hold.");
 
                     // Simulate PreviewMouseLeftButtonUp - password should hide on release.
@@ -206,7 +207,7 @@ namespace Fluence.Wpf.Tests
 
                     Assert.IsFalse(box.IsPasswordRevealed,
                         "Password must be hidden immediately after mouse button is released.");
-                    Assert.AreEqual("Show password", AutomationProperties.GetName(revealButton),
+                    Assert.AreEqual("Show password", AutomationProperties.GetName(revealButton), StringComparer.Ordinal,
                         "The reveal button's accessible name must reset once the mouse press-and-hold ends.");
 
                     // WPF fires Click after MouseLeftButtonUp completes. Explicitly raise it

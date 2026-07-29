@@ -62,16 +62,24 @@ namespace Fluence.Wpf.Controls
     {
         #region Constants
 
-        /// <summary>Template part name for the minimize caption button.</summary>
+        /// <summary>
+        /// Template part name for the minimize caption button.
+        /// </summary>
         private const string PART_MinimizeButton = "PART_MinimizeButton";
 
-        /// <summary>Template part name for the maximize caption button.</summary>
+        /// <summary>
+        /// Template part name for the maximize caption button.
+        /// </summary>
         private const string PART_MaximizeButton = "PART_MaximizeButton";
 
-        /// <summary>Template part name for the restore caption button.</summary>
+        /// <summary>
+        /// Template part name for the restore caption button.
+        /// </summary>
         private const string PART_RestoreButton = "PART_RestoreButton";
 
-        /// <summary>Template part name for the close caption button.</summary>
+        /// <summary>
+        /// Template part name for the close caption button.
+        /// </summary>
         private const string PART_CloseButton = "PART_CloseButton";
 
         /// <summary>
@@ -1618,16 +1626,24 @@ namespace Fluence.Wpf.Controls
         /// </summary>
         private IntPtr _handle;
 
-        /// <summary>The minimize caption button template part, or <see langword="null"/> if absent.</summary>
+        /// <summary>
+        /// The minimize caption button template part, or <see langword="null"/> if absent.
+        /// </summary>
         private System.Windows.Controls.Button? _minimizeButton;
 
-        /// <summary>The maximize caption button template part, or <see langword="null"/> if absent.</summary>
+        /// <summary>
+        /// The maximize caption button template part, or <see langword="null"/> if absent.
+        /// </summary>
         private System.Windows.Controls.Button? _maximizeButton;
 
-        /// <summary>The restore caption button template part, or <see langword="null"/> if absent.</summary>
+        /// <summary>
+        /// The restore caption button template part, or <see langword="null"/> if absent.
+        /// </summary>
         private System.Windows.Controls.Button? _restoreButton;
 
-        /// <summary>The close caption button template part, or <see langword="null"/> if absent.</summary>
+        /// <summary>
+        /// The close caption button template part, or <see langword="null"/> if absent.
+        /// </summary>
         private System.Windows.Controls.Button? _closeButton;
 
         /// <summary>

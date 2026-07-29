@@ -26,13 +26,14 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using Fluence.Wpf.Controls;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 using System.Windows;
 using System.Windows.Automation.Peers;
 using System.Windows.Automation.Provider;
 using System.Windows.Input;
 using System.Windows.Media;
+using Fluence.Wpf.Controls;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Fluence.Wpf.Tests
 {
@@ -107,7 +108,7 @@ namespace Fluence.Wpf.Tests
                 int filledCount = 0;
                 foreach (System.Windows.Controls.TextBlock star in panel.Children)
                 {
-                    if (string.Equals(star.Text, "\uE735", System.StringComparison.Ordinal))
+                    if (string.Equals(star.Text, "\uE735", StringComparison.Ordinal))
                     {
                         filledCount++;
                     }
@@ -193,7 +194,7 @@ namespace Fluence.Wpf.Tests
                 Assert.IsNotNull(caption, "PART_Caption must be present.");
                 Assert.AreEqual(Visibility.Visible, caption.Visibility,
                     "PART_Caption must be Visible when Caption is set.");
-                Assert.AreEqual("4.0", caption.Text,
+                Assert.AreEqual("4.0", caption.Text, StringComparer.Ordinal,
                     "PART_Caption.Text must match the Caption property.");
                 w.Close();
             });
@@ -325,7 +326,7 @@ namespace Fluence.Wpf.Tests
                 rating.IsReadOnly = true;
                 DrainDispatcher(window.Dispatcher);
                 Assert.IsTrue(range.IsReadOnly, "Peer must report read-only when the control is read-only.");
-                _ = Assert.ThrowsExactly<System.InvalidOperationException>(() => range.SetValue(4.0));
+                _ = Assert.ThrowsExactly<InvalidOperationException>(() => range.SetValue(4.0));
                 Assert.AreEqual(2.0, rating.Value, 0.001, "A read-only control's value must not change via UIA.");
 
                 // Disabled: SetValue must throw ElementNotEnabledException.

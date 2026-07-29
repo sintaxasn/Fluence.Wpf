@@ -220,7 +220,7 @@ namespace Fluence.Wpf.Tests
             {
                 Controls.FontIcon fontIcon = new();
 
-                Assert.AreEqual("Segoe Fluent Icons", fontIcon.IconFontFamily.Source);
+                Assert.AreEqual("Segoe Fluent Icons", fontIcon.IconFontFamily.Source, StringComparer.Ordinal);
             });
         }
 
@@ -234,7 +234,7 @@ namespace Fluence.Wpf.Tests
 
                 fontIcon.Glyph = testGlyph;
 
-                Assert.AreEqual(testGlyph, fontIcon.Glyph);
+                Assert.AreEqual(testGlyph, fontIcon.Glyph, StringComparer.Ordinal);
             });
         }
 
@@ -273,7 +273,7 @@ namespace Fluence.Wpf.Tests
 
                 textBox.PlaceholderText = placeholder;
 
-                Assert.AreEqual(placeholder, textBox.PlaceholderText);
+                Assert.AreEqual(placeholder, textBox.PlaceholderText, StringComparer.Ordinal);
             });
         }
 
@@ -918,10 +918,10 @@ namespace Fluence.Wpf.Tests
                     Assert.AreEqual(accentDefaultBrush.Color, ((SolidColorBrush)restFill.Background).Color);
                     Assert.AreEqual(accentBorderBrush.GradientStops.Count, ((LinearGradientBrush)outerBorder.BorderBrush).GradientStops.Count);
                     Assert.IsNull(outerBorder.Effect, "Accent buttons should use the WinUI elevation border, not a drop shadow.");
-                    Assert.AreEqual(fluentFontFamily.Source, button.FontFamily.Source,
+                    Assert.AreEqual(fluentFontFamily.Source, button.FontFamily.Source, StringComparer.Ordinal,
                         "Accent buttons should inherit the canonical Fluent font.");
                     Assert.IsNotNull(contentText, "String button content should materialize as visible text.");
-                    Assert.AreEqual(fluentFontFamily.Source, contentText.FontFamily.Source,
+                    Assert.AreEqual(fluentFontFamily.Source, contentText.FontFamily.Source, StringComparer.Ordinal,
                         "Button content should render with the same Fluent font as the control.");
                     Assert.AreNotEqual(accentDefaultBrush.Color, accentSecondaryBrush.Color, "Accent pointer-over brush should differ from the default accent brush.");
                     Assert.AreNotEqual(accentDefaultBrush.Color, accentTertiaryBrush.Color, "Accent pressed brush should differ from the default accent brush.");
@@ -1050,7 +1050,7 @@ namespace Fluence.Wpf.Tests
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Assert.AreEqual("Current: Dark", themeStateLabel.Text, "App theme combo box should update the state label when changed.");
+                    Assert.AreEqual("Current: Dark", themeStateLabel.Text, StringComparer.Ordinal, "App theme combo box should update the state label when changed.");
                 }
                 finally
                 {
@@ -1508,13 +1508,13 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(toggle);
                     Assert.IsNotNull(label);
                     Assert.IsTrue(toggle.IsChecked is true, "ThemeWatcherToggle should default to checked.");
-                    Assert.AreEqual("Watching: Yes", label.Text);
+                    Assert.AreEqual("Watching: Yes", label.Text, StringComparer.Ordinal);
 
                     toggle.IsChecked = false;
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Assert.AreEqual("Watching: No", label.Text, "Unchecking the toggle should update the label.");
+                    Assert.AreEqual("Watching: No", label.Text, StringComparer.Ordinal, "Unchecking the toggle should update the label.");
                 }
                 finally
                 {
@@ -1626,7 +1626,7 @@ namespace Fluence.Wpf.Tests
             RunOnStaThread(static () =>
             {
                 Controls.CheckBox cb = new() { Content = "Test" };
-                Assert.AreEqual("Test", cb.Content as string);
+                Assert.AreEqual("Test", cb.Content as string, StringComparer.Ordinal);
             });
         }
 
@@ -1636,7 +1636,7 @@ namespace Fluence.Wpf.Tests
             RunOnStaThread(static () =>
             {
                 Controls.ComboBox combo = new() { PlaceholderText = "Pick one" };
-                Assert.AreEqual("Pick one", combo.PlaceholderText);
+                Assert.AreEqual("Pick one", combo.PlaceholderText, StringComparer.Ordinal);
             });
         }
 
@@ -1662,13 +1662,13 @@ namespace Fluence.Wpf.Tests
 
                     ContentPresenter? presenter = combo.Template.FindName("contentPresenter", combo) as ContentPresenter;
                     Assert.IsNotNull(presenter, "contentPresenter should exist in the template.");
-                    Assert.AreEqual("Alpha", presenter.Content as string, "Initial displayed content should match first selection.");
+                    Assert.AreEqual("Alpha", presenter.Content as string, StringComparer.Ordinal, "Initial displayed content should match first selection.");
 
                     combo.SelectedIndex = 1;
                     DrainDispatcher(window.Dispatcher);
                     window.UpdateLayout();
 
-                    Assert.AreEqual("Beta", presenter.Content as string, "Displayed content should update after selection change.");
+                    Assert.AreEqual("Beta", presenter.Content as string, StringComparer.Ordinal, "Displayed content should update after selection change.");
                 }
                 finally
                 {
@@ -1742,8 +1742,8 @@ namespace Fluence.Wpf.Tests
 
                     Border? border = combo.Template.FindName("PART_DropdownBorder", combo) as Border;
                     Assert.IsNotNull(border, "PART_DropdownBorder should exist in the template.");
-                    System.Windows.Media.TranslateTransform? translate =
-                        border.RenderTransform as System.Windows.Media.TranslateTransform;
+                    TranslateTransform? translate =
+                        border.RenderTransform as TranslateTransform;
                     Assert.IsNotNull(translate, "PART_DropdownBorder should carry the DropdownTranslate render transform.");
 
                     // The code-driven reveal (moved out of the template MultiTriggers) must
@@ -1933,7 +1933,7 @@ namespace Fluence.Wpf.Tests
                     window.UpdateLayout();
 
                     Assert.AreEqual(1, combo.SelectedIndex, "Selecting a drop-down item should update the selected index.");
-                    Assert.AreEqual("Beta", combo.SelectedText, "Selecting a drop-down item should update the displayed selected text.");
+                    Assert.AreEqual("Beta", combo.SelectedText, StringComparer.Ordinal, "Selecting a drop-down item should update the displayed selected text.");
                 }
                 finally
                 {
@@ -1999,7 +1999,7 @@ namespace Fluence.Wpf.Tests
             RunOnStaThread(static () =>
             {
                 Controls.TextBox tb = new() { HelperText = "Hint" };
-                Assert.AreEqual("Hint", tb.HelperText);
+                Assert.AreEqual("Hint", tb.HelperText, StringComparer.Ordinal);
             });
         }
 
@@ -2176,7 +2176,7 @@ namespace Fluence.Wpf.Tests
 
                     TextBlock? counter = textBox.Template.FindName("PART_CharacterCounter", textBox) as TextBlock;
                     Assert.IsNotNull(counter);
-                    Assert.AreEqual("2/40", counter.Text);
+                    Assert.AreEqual("2/40", counter.Text, StringComparer.Ordinal);
                 }
                 finally
                 {

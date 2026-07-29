@@ -107,8 +107,8 @@ namespace Fluence.Wpf.Tests
                         object content = GetSelectedPageContent(window);
                         Assert.IsNotNull(content, "Navigation must create page content for tag: " + expectation.Tag);
                         Assert.AreEqual(expectation.PageType, content.GetType(), "Tag should load the concrete page directly: " + expectation.Tag);
-                        Assert.AreNotEqual("GalleryControlPage", content.GetType().Name, "Generated page shell must not be used.");
-                        Assert.AreNotEqual("GalleryCategoryPage", content.GetType().Name, "Category overview shell must not be used.");
+                        Assert.AreNotEqual("GalleryControlPage", content.GetType().Name, StringComparer.Ordinal, "Generated page shell must not be used.");
+                        Assert.AreNotEqual("GalleryCategoryPage", content.GetType().Name, StringComparer.Ordinal, "Category overview shell must not be used.");
                     }
                 }
                 finally
@@ -349,7 +349,7 @@ namespace Fluence.Wpf.Tests
         {
             List<DemoNavigationItem> items = [.. DemoNavigationCatalog.Items];
             Assert.IsGreaterThanOrEqualTo(1, items.Count, "Navigation catalog should contain at least one entry.");
-            Assert.AreEqual("Accessibility", items[^1].Title,
+            Assert.AreEqual("Accessibility", items[^1].Title, StringComparer.Ordinal,
                 "Accessibility should be the final regular NavigationView item after Windowing moves into Settings.");
             Assert.IsFalse(items.Exists(static item => string.Equals(item.Title, "Windowing", StringComparison.Ordinal)),
                 "Windowing should not remain as a regular NavigationView item.");
@@ -835,7 +835,7 @@ namespace Fluence.Wpf.Tests
                     // As a FooterMenuItems entry, Settings uses the standard NavigationViewItem template:
                     // the label is collapsed/shown by the template (it is not emptied), exactly like the
                     // main menu items. Content stays "Settings" throughout.
-                    Assert.AreEqual("Settings", settings.Content as string,
+                    Assert.AreEqual("Settings", settings.Content as string, StringComparer.Ordinal,
                         "The Settings footer item keeps its label content; the template toggles the label visual.");
                     ContentPresenter? label = FindByName<ContentPresenter>(settings, "ContentPresenter");
                     Assert.IsNotNull(label, "Footer item must expose the label ContentPresenter.");
@@ -1397,7 +1397,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(search, "Demo search box must be present.");
                     Assert.AreEqual(Visibility.Visible, titleText?.Visibility,
                         "Title text should return when it can fit without touching the search box.");
-                    Assert.AreEqual("Fluence.Wpf", titleText?.Text,
+                    Assert.AreEqual("Fluence.Wpf", titleText?.Text, StringComparer.Ordinal,
                         "The visible title should use the current user title.");
                     Assert.IsTrue(GetVisualX(titleText, window) + titleText?.ActualWidth + 12.0 <= GetVisualX(search, window),
                         "Visible title text should keep the search clearance gap.");
@@ -2059,7 +2059,7 @@ StringComparison.Ordinal, "Rendered C# source should preserve leading indentatio
                     {
                         FrameworkElement? swatch = accentRow.Children[i] as FrameworkElement;
                         Assert.IsNotNull(swatch, "Each accent swatch should be a FrameworkElement.");
-                        Assert.AreEqual(expected[i], swatch.Tag as string,
+                        Assert.AreEqual(expected[i], swatch.Tag as string, StringComparer.Ordinal,
                             "The Settings page swatches should stay in rainbow order.");
 
                         object converted = ColorConverter.ConvertFromString(expected[i]);
@@ -2280,7 +2280,7 @@ StringComparison.Ordinal, "Rendered C# source should preserve leading indentatio
                 {
                     System.Windows.Controls.Button? copy = FindByName<System.Windows.Controls.Button>(tab.Content as DependencyObject, "CopySourceButton");
                     Assert.IsNotNull(copy, "Source tab should expose a copy button: " + expectedHeader);
-                    Assert.AreEqual(expectedSource, copy.Tag as string, "Copy button should keep the in-memory source text.");
+                    Assert.AreEqual(expectedSource, copy.Tag as string, StringComparer.Ordinal, "Copy button should keep the in-memory source text.");
                     return;
                 }
             }
@@ -2464,7 +2464,7 @@ StringComparison.Ordinal, "Rendered C# source should preserve leading indentatio
                 return;
             }
 
-            Assert.AreEqual(expectedContent, button.Content as string, "Explicit tab-order button content should match.");
+            Assert.AreEqual(expectedContent, button.Content as string, StringComparer.Ordinal, "Explicit tab-order button content should match.");
             Assert.AreEqual(expectedTabIndex, button.TabIndex, "Explicit tab-order button should keep its documented TabIndex.");
             Assert.IsTrue(button.Focusable, "Explicit tab-order button should accept keyboard focus.");
             Assert.IsTrue(button.IsTabStop, "Explicit tab-order button should participate in keyboard tab navigation.");
