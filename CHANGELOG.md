@@ -8,7 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
-- `Fluence.Wpf.Controls.Image` - a Fluent image presenter framing a picture with a theme-aware 1px `CardStrokeColorDefaultBrush` stroke and a rounded-corner clip driven by `CornerRadius` (default `ControlCornerRadius`), while a real inner WPF image element keeps natural sizing, `Stretch` semantics, and DPI handling. Ships with an `ImageAutomationPeer` (UIA role Image; silent unless `AutomationProperties.Name` is set) and a gallery Data page sample.
+- `Fluence.Wpf.Controls.Image` - a Fluent image presenter framing a picture with a theme-aware 1px `CardStrokeColorDefaultBrush` stroke and a rounded-corner clip driven by `CornerRadius` (default `ControlCornerRadius`), while a real inner WPF image element keeps natural sizing, `Stretch` semantics, and DPI handling. Ships with an `ImageAutomationPeer` (UIA role Image) and a gallery Data page sample. A decorative image stays out of the UI Automation tree entirely: the peer reports itself in neither the control nor the content view until the consumer gives it an accessible name via `AutomationProperties.Name` or `AutomationProperties.LabeledBy`, matching WinUI's `AccessibilityView="Raw"` default for `Image` and the existing `FontIcon` treatment.
 
 ### Changed
 

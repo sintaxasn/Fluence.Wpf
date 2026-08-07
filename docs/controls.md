@@ -401,7 +401,7 @@ flipping the OS setting mid-session takes effect at each animation's next natura
 | `ProgressRing` | ProgressBar | `AutomationProperties.Name` | RangeValue |
 | `Card` | Button (when clickable) / Group (non-clickable) | `AutomationProperties.Name` (or its content) | Invoke (when clickable) |
 | `PersonPicture` | Image | Display name or initials | none |
-| `Image` | Image | `AutomationProperties.Name` (unset = decorative) | none |
+| `Image` | Image | `AutomationProperties.Name` or `AutomationProperties.LabeledBy` (neither set = decorative, excluded from the control and content views) | none |
 | `ContentDialog` | Window | `Title` | none (focus trapped inside; assertive live region announces `Title` on open) |
 | `TeachingTip` | ToolTip | `Title` and `Subtitle` (live region) | none |
 | `AppBarButton` | Button | `Label` (surfaced as `AutomationProperties.Name`) or an explicit `AutomationProperties.Name` | Invoke |

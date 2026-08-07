@@ -29,6 +29,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Windows;
+using System.Windows.Automation;
 using System.Windows.Automation.Peers;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -182,6 +183,97 @@ namespace Fluence.Wpf.Tests
                     "Image automation peer must report control type Image.");
                 Assert.AreEqual("Image", peer.GetClassName(), StringComparer.Ordinal,
                     "Image automation peer must report class name 'Image'.");
+                w.Close();
+            });
+        }
+
+        /// <summary>
+        /// An image with no accessible name is decorative and must leave the UI Automation tree
+        /// entirely, matching WinUI's AccessibilityView=Raw default and FontIcon's treatment. If it
+        /// stayed in the content view a screen reader would announce an empty image element.
+        /// </summary>
+        [TestMethod]
+        public void Image_AutomationPeer_UnnamedImageIsExcludedFromBothViews()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Controls.Image image = new();
+                Window w = new() { Content = image, Width = 200, Height = 200 };
+                w.Show();
+                _ = image.ApplyTemplate();
+                DrainDispatcher(w.Dispatcher);
+
+                AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(image);
+                Assert.IsFalse(peer.IsControlElement(),
+                    "An unnamed Image is decorative and must be excluded from the UI Automation control view.");
+                Assert.IsFalse(peer.IsContentElement(),
+                    "An unnamed Image must be excluded from the UI Automation content view so nothing announces an empty image.");
+                w.Close();
+            });
+        }
+
+        /// <summary>
+        /// Setting <c>AutomationProperties.Name</c> makes the image meaningful, so it must appear in
+        /// both automation views and report that name.
+        /// </summary>
+        [TestMethod]
+        public void Image_AutomationPeer_NamedImageIsIncludedInBothViews()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                Controls.Image image = new();
+                AutomationProperties.SetName(image, "Company logo");
+                Window w = new() { Content = image, Width = 200, Height = 200 };
+                w.Show();
+                _ = image.ApplyTemplate();
+                DrainDispatcher(w.Dispatcher);
+
+                AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(image);
+                Assert.IsTrue(peer.IsControlElement(),
+                    "A named Image conveys meaning and must appear in the UI Automation control view.");
+                Assert.IsTrue(peer.IsContentElement(),
+                    "A named Image must appear in the UI Automation content view so a screen reader reads it.");
+                Assert.AreEqual("Company logo", peer.GetName(), StringComparer.Ordinal,
+                    "The peer must surface the accessible name the consumer set.");
+                w.Close();
+            });
+        }
+
+        /// <summary>
+        /// Labelling by another element is a legitimate way to name an image, and the base peer
+        /// already resolves its name through it, so a LabeledBy image must not be dropped from the
+        /// tree. This is why the peer checks LabeledBy as well as Name.
+        /// </summary>
+        [TestMethod]
+        public void Image_AutomationPeer_LabeledByImageIsIncludedInBothViews()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+
+                System.Windows.Controls.TextBlock label = new() { Text = "Product photo" };
+                Controls.Image image = new();
+                AutomationProperties.SetLabeledBy(image, label);
+                System.Windows.Controls.StackPanel host = new();
+                _ = host.Children.Add(label);
+                _ = host.Children.Add(image);
+                Window w = new() { Content = host, Width = 200, Height = 200 };
+                w.Show();
+                _ = image.ApplyTemplate();
+                DrainDispatcher(w.Dispatcher);
+
+                AutomationPeer peer = UIElementAutomationPeer.CreatePeerForElement(image);
+                Assert.IsTrue(peer.IsControlElement(),
+                    "An Image named through AutomationProperties.LabeledBy must appear in the control view.");
+                Assert.IsTrue(peer.IsContentElement(),
+                    "An Image named through AutomationProperties.LabeledBy must appear in the content view.");
                 w.Close();
             });
         }
