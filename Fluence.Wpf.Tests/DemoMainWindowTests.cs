@@ -152,7 +152,7 @@ namespace Fluence.Wpf.Tests
                 Window window = CreateHostWindow(page);
                 try
                 {
-                    Image? image = FindByName<Image>(page, "BrandHeroImage");
+                    System.Windows.Controls.Image? image = FindByName<System.Windows.Controls.Image>(page, "BrandHeroImage");
                     Assert.IsNotNull(image, "Home page should expose the brand hero image.");
 
                     DrawingImage? light = Application.Current.TryFindResource("FluenceHeaderLightDrawingImage") as DrawingImage;
@@ -582,7 +582,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(titleIcon, "Extended title bar icon presenter should exist.");
                     Assert.AreEqual(Visibility.Visible, titleIcon.Visibility,
                         "Extended title bar icon should be visible by default.");
-                    Image? titleIconImage = FindVisualChild<Image>(titleIcon);
+                    System.Windows.Controls.Image? titleIconImage = FindVisualChild<System.Windows.Controls.Image>(titleIcon);
                     Assert.IsNotNull(titleIconImage, "Extended title bar icon should render an Image.");
                     Assert.AreEqual(20.0, titleIconImage.ActualWidth, 0.5,
                         "Extended title bar icon should match the larger navigation glyph size.");

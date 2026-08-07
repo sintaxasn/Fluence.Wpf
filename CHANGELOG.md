@@ -6,6 +6,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Added
+
+- `Fluence.Wpf.Controls.Image` - a Fluent image presenter framing a picture with a theme-aware 1px `CardStrokeColorDefaultBrush` stroke and a rounded-corner clip driven by `CornerRadius` (default `ControlCornerRadius`), while a real inner WPF image element keeps natural sizing, `Stretch` semantics, and DPI handling. Ships with an `ImageAutomationPeer` (UIA role Image; silent unless `AutomationProperties.Name` is set) and a gallery Data page sample.
+
+### Changed
+
+- `ColorPicker`, the demo shell, and the demo tests now fully qualify their `System.Windows.Controls.Image` references. `Fluence.Wpf.Controls.Image` newly occupies that simple name, so an unqualified `Image` inside the `Fluence.Wpf.Controls` namespace resolved to the Fluence control, and files importing that namespace saw an ambiguous reference. Behavior is unchanged; `ColorPicker.cs` already carried a comment anticipating this.
+
 ### Fixed
 
 - `ProgressBar`: an indeterminate bar now keeps animating when the Windows "Show animations in Windows" accessibility setting is off. It was gated with every other code-driven animation in 0.8.10-Preview, which parked both indeterminate bars at translate 0 and left a motionless block pinned to the left of the track. That reads as a stalled determinate bar, so a healthy operation looked hung. Indeterminate progress carries no value, so its movement is the only status signal it has, and it is therefore treated as essential feedback rather than decoration. A determinate bar still honours the setting, because its fill width conveys the information when frozen. `ProgressRing` is unaffected: it already renders a meaningful static resting arc with the setting off, which a bar has no equivalent of. Regression seen downstream in PSAppDeployToolkit, where `Show-ADTInstallationProgress` returned normally but its dialog sat motionless on any machine with animation effects off - notably affecting screen-reader users, who commonly disable animation effects.

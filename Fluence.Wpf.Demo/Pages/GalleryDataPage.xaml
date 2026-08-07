@@ -263,6 +263,32 @@
                 </UniformGrid>
             </ContentControl>
             <local:DemoSampleControl SampleDescription="Use Card variants to group related data with different levels of visual emphasis." />
+            <ContentControl x:Name="DemoSampleSlot06DemoContentHost" Visibility="Collapsed">
+                <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <ui:Image
+                        Width="96"
+                        Height="96"
+                        Margin="{DynamicResource DemoControlGroupItemMargin}"
+                        CornerRadius="0"
+                        Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureAnaBowman.png"
+                        Stretch="UniformToFill" />
+                    <ui:Image
+                        Width="96"
+                        Height="96"
+                        Margin="{DynamicResource DemoControlGroupItemMargin}"
+                        CornerRadius="8"
+                        Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureShawnHughes.png"
+                        Stretch="UniformToFill" />
+                    <ui:Image
+                        Width="96"
+                        Height="96"
+                        Margin="{DynamicResource DemoControlGroupItemMargin}"
+                        CornerRadius="48"
+                        Source="pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPicturePriyaKapoor.png"
+                        Stretch="UniformToFill" />
+                </WrapPanel>
+            </ContentControl>
+            <local:DemoSampleControl SampleDescription="Use Image to present pictures with a theme-aware stroke; CornerRadius drives the rounded clip from square to circular." />
         </StackPanel>
     </ui:SmoothScrollViewer>
 </UserControl>

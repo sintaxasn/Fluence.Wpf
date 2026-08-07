@@ -331,6 +331,49 @@ namespace Fluence.Wpf.Demo.Pages
                                                         "        }\n" +
                                                         "    }\n" +
                                                         "}\n";
+        private const string ImageXamlSource = "<UserControl\n" +
+                                               "    x:Class=\"Fluence.Wpf.Demo.Pages.Data.ImageSample\"\n" +
+                                               "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
+                                               "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
+                                               "    xmlns:ui=\"clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf\">\n" +
+                                               "    <WrapPanel\n" +
+                                               "        HorizontalAlignment=\"Center\"\n" +
+                                               "        VerticalAlignment=\"Center\">\n" +
+                                               "        <ui:Image\n" +
+                                               "            Width=\"96\"\n" +
+                                               "            Height=\"96\"\n" +
+                                               "            Margin=\"0,0,12,12\"\n" +
+                                               "            CornerRadius=\"0\"\n" +
+                                               "            Source=\"pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureAnaBowman.png\"\n" +
+                                               "            Stretch=\"UniformToFill\" />\n" +
+                                               "        <ui:Image\n" +
+                                               "            Width=\"96\"\n" +
+                                               "            Height=\"96\"\n" +
+                                               "            Margin=\"0,0,12,12\"\n" +
+                                               "            CornerRadius=\"8\"\n" +
+                                               "            Source=\"pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureShawnHughes.png\"\n" +
+                                               "            Stretch=\"UniformToFill\" />\n" +
+                                               "        <ui:Image\n" +
+                                               "            Width=\"96\"\n" +
+                                               "            Height=\"96\"\n" +
+                                               "            Margin=\"0,0,12,12\"\n" +
+                                               "            CornerRadius=\"48\"\n" +
+                                               "            Source=\"pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPicturePriyaKapoor.png\"\n" +
+                                               "            Stretch=\"UniformToFill\" />\n" +
+                                               "    </WrapPanel>\n" +
+                                               "</UserControl>\n";
+        private const string ImageCSharpSource = "using System.Windows.Controls;\n" +
+                                                 "\n" +
+                                                 "namespace Fluence.Wpf.Demo.Pages.Data\n" +
+                                                 "{\n" +
+                                                 "    public partial class ImageSample : UserControl\n" +
+                                                 "    {\n" +
+                                                 "        public ImageSample()\n" +
+                                                 "        {\n" +
+                                                 "            InitializeComponent();\n" +
+                                                 "        }\n" +
+                                                 "    }\n" +
+                                                 "}\n";
         private const string PersonPictureXamlSource = "<UserControl\n" +
                                                        "    x:Class=\"Fluence.Wpf.Demo.Pages.Data.PersonPictureSample\"\n" +
                                                        "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
@@ -407,7 +450,8 @@ namespace Fluence.Wpf.Demo.Pages
                 new DemoSampleSource(2, ListViewEmptyStateXamlSource, ListViewEmptyStateCSharpSource),
                 new DemoSampleSource(3, ListBoxSelectionXamlSource, ListBoxSelectionCSharpSource),
                 new DemoSampleSource(4, PersonPictureXamlSource, PersonPictureCSharpSource),
-                new DemoSampleSource(5, CardVariantsXamlSource, CardVariantsCSharpSource));
+                new DemoSampleSource(5, CardVariantsXamlSource, CardVariantsCSharpSource),
+                new DemoSampleSource(6, ImageXamlSource, ImageCSharpSource));
         }
 
         private void AddListItem_Click(object sender, RoutedEventArgs e)
