@@ -356,6 +356,45 @@ namespace Fluence.Wpf.Controls
             UpdatePasswordStrengthFromPassword();
             UpdateCapsLockIndicator();
             UpdateStrengthMeter();
+            ForwardAccessibleNameToInnerFields();
+        }
+
+        /// <summary>
+        /// Forwards this control's accessible label or name to the inner password and reveal fields. Those inner
+        /// elements receive keyboard focus, so a screen reader reads their accessible name rather than this
+        /// control's. Without forwarding, a caller that sets <see cref="AutomationProperties.LabeledByProperty"/>
+        /// or a name on the <see cref="PasswordBox"/> would still hear only a bare protected edit field when focus
+        /// lands inside; forwarding makes the caller's prompt the field's spoken label.
+        /// </summary>
+        private void ForwardAccessibleNameToInnerFields()
+        {
+            UIElement labeledBy = AutomationProperties.GetLabeledBy(this);
+            string name = AutomationProperties.GetName(this);
+            ForwardAccessibleNameTo(_passwordBox, labeledBy, name);
+            ForwardAccessibleNameTo(_revealTextBox, labeledBy, name);
+        }
+
+        /// <summary>
+        /// Applies the given accessible label or name to a single inner field. Prefers
+        /// <see cref="AutomationProperties.LabeledByProperty"/> when present; otherwise applies the name when set.
+        /// </summary>
+        /// <param name="inner">The inner field to label, or null if the template part is absent.</param>
+        /// <param name="labeledBy">The label element to forward, or null when none is set.</param>
+        /// <param name="name">The accessible name to forward when no label element is set.</param>
+        private static void ForwardAccessibleNameTo(Control? inner, UIElement labeledBy, string name)
+        {
+            if (inner is null)
+            {
+                return;
+            }
+            if (labeledBy is not null)
+            {
+                AutomationProperties.SetLabeledBy(inner, labeledBy);
+            }
+            else if (!string.IsNullOrWhiteSpace(name))
+            {
+                AutomationProperties.SetName(inner, name);
+            }
         }
 
         private void OnCapsPollTick(object? sender, EventArgs e)

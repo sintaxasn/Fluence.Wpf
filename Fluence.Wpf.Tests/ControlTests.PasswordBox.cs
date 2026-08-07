@@ -83,6 +83,46 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void PasswordBox_ForwardsAccessibleNameToInnerField()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+
+                try
+                {
+                    Controls.PasswordBox box = new()
+                    {
+                        Width = 200,
+                    };
+                    AutomationProperties.SetName(box, "Enter your password");
+                    window.Content = box;
+                    window.Width = 280;
+                    window.Height = 80;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    _ = box.ApplyTemplate();
+                    DrainDispatcher(window.Dispatcher);
+
+                    System.Windows.Controls.PasswordBox inner = box.Template.FindName("PART_PasswordBox", box) as System.Windows.Controls.PasswordBox
+                        ?? throw new AssertFailedException("The inner PART_PasswordBox must be present in the template.");
+                    Assert.AreEqual("Enter your password", AutomationProperties.GetName(inner), StringComparer.Ordinal,
+                        "The control's accessible name must be forwarded to the inner focusable field so a screen reader announces the prompt rather than a bare protected field.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary is not null)
+                    {
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
         public void PasswordBox_RevealButton_IsKeyboardOperableAndNamed()
         {
             RunOnStaThread(static () =>
