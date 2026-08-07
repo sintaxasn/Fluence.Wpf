@@ -31,18 +31,45 @@
         $dll = Get-FluenceLibraryPath -ModuleRoot $ModuleRoot
         $libDir = [System.IO.Path]::GetDirectoryName($dll)
 
-        # Probe sibling dependencies (the net8 WinRT projections) from the lib folder.
-        $resolver = [System.ResolveEventHandler] {
-            param($sender, $eventArgs)
-            $name = [System.Reflection.AssemblyName]::new($eventArgs.Name).Name
-            $candidate = [System.IO.Path]::Combine($libDir, ($name + '.dll'))
-            if (Test-Path -LiteralPath $candidate)
+        # Load the sibling dependencies (the net8 WinRT projections) eagerly from the lib folder.
+        #
+        # This deliberately does NOT register an AppDomain.AssemblyResolve handler. A PowerShell
+        # scriptblock can never be used safely as a ResolveEventHandler: the CLR raises
+        # AssemblyResolve on whatever thread triggered the load, and when that thread has no
+        # PowerShell execution context, ScriptBlock.GetContextFromTLS builds an ErrorRecord before
+        # the scriptblock body runs. Formatting that record reads a resource string, which probes a
+        # satellite assembly, which raises AssemblyResolve again - unbounded recursion ending in
+        # STATUS_STACK_OVERFLOW (0xC00000FD), a hard process kill with no catchable exception.
+        # Because the recursion happens *before* the body executes, no guard inside the body can
+        # prevent it.
+        #
+        # Reproduction of the old behaviour: import the module, then open any runspace
+        # ([runspacefactory]::CreateRunspace().Open()). Provider initialisation reads a resource
+        # string and the process dies. This matters more here than in the in-process module,
+        # because Show-FluenceRemoteDialog launches the out-of-process host and the remoting path
+        # opens runspaces.
+        #
+        # Eager loading is also strictly more predictable: LoadFrom on Fluence.Wpf.dll already
+        # probes its own directory for dependencies, so the handler only ever mattered for
+        # assemblies the LoadFrom context missed. Loading them up front costs one directory
+        # enumeration and removes a process-wide, never-unregistered hook.
+        foreach ($sibling in [System.IO.Directory]::GetFiles($libDir, '*.dll'))
+        {
+            if ([System.IO.Path]::GetFileName($sibling) -eq 'Fluence.Wpf.dll')
             {
-                return [System.Reflection.Assembly]::LoadFrom($candidate)
+                continue
             }
-            return $null
+            try
+            {
+                $null = [System.Reflection.Assembly]::LoadFrom($sibling)
+            }
+            catch
+            {
+                # A sibling that will not load is not fatal: Fluence.Wpf may not need it on this
+                # edition, and if it does the LoadFrom below fails with a far clearer error.
+                Write-Verbose "Skipped sibling assembly '$sibling': $($_.Exception.Message)"
+            }
         }
-        [System.AppDomain]::CurrentDomain.add_AssemblyResolve($resolver)
 
         $null = [System.Reflection.Assembly]::LoadFrom($dll)
     }
