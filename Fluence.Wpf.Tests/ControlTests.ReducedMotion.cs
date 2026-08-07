@@ -43,9 +43,74 @@ namespace Fluence.Wpf.Tests
     /// animations must not start and controls must jump straight to their final visual state.
     /// Every test forces the gate through <see cref="MotionHelper.OverrideIsMotionEnabled"/>
     /// and resets it to null in a finally block.
+    /// <para>
+    /// The one deliberate exception is the indeterminate <see cref="Controls.ProgressBar"/>: its
+    /// motion is the only thing that communicates "work is still happening", so it is treated as
+    /// essential status feedback rather than decoration and keeps animating with the gate off.
+    /// See <see cref="ReducedMotion_ProgressBar_Indeterminate_KeepsAnimating"/>.
+    /// </para>
     /// </summary>
     public partial class ControlTests
     {
+        /// <summary>
+        /// An indeterminate ProgressBar must keep animating even with motion disabled.
+        /// <para>
+        /// A determinate bar still reads correctly when frozen, because its fill width carries the
+        /// information. An indeterminate bar carries no value at all - the movement *is* the
+        /// message - so parking it produces a control that looks like a stalled determinate bar
+        /// and tells the user the operation has hung. That is what happened in PSAppDeployToolkit:
+        /// <c>Show-ADTInstallationProgress</c> returned normally but its dialog sat motionless on
+        /// any machine with animation effects off, and the install looked frozen. Screen-reader
+        /// users, the exact audience the reduced-motion work was for, very often have animation
+        /// effects off.
+        /// </para>
+        /// <para>
+        /// So indeterminate progress is classed as essential status feedback, not decoration, and
+        /// is exempt from the gate. Everything else in this file stays gated. Do not "fix" this
+        /// test by re-adding a <see cref="MotionHelper.IsMotionEnabled"/> check to
+        /// <c>ProgressBar.StartIndeterminate</c>.
+        /// </para>
+        /// </summary>
+        [TestMethod]
+        public void ReducedMotion_ProgressBar_Indeterminate_KeepsAnimating()
+        {
+            WpfTestSta.Invoke(static () =>
+            {
+                Application? app = EnsureApplication();
+                _ = MergeGenericDictionary(app);
+                MotionHelper.OverrideIsMotionEnabled = false;
+
+                Controls.ProgressBar bar = new()
+                {
+                    IsIndeterminate = true,
+                    Width = 240,
+                    Height = 6,
+                };
+                Window w = new() { Content = bar, Width = 300, Height = 120 };
+                try
+                {
+                    w.Show();
+                    DrainDispatcher(w.Dispatcher);
+
+                    TranslateTransform? translate =
+                        bar.Template.FindName("PART_IndeterminateTranslate", bar) as TranslateTransform;
+                    Assert.IsNotNull(translate, "ProgressBar template must expose PART_IndeterminateTranslate.");
+
+                    Assert.IsTrue(translate.HasAnimatedProperties,
+                        "An indeterminate ProgressBar must animate with motion disabled: the movement is the only status signal it has.");
+
+                    double first = translate.X;
+                    Assert.IsTrue(WaitUntil(w.Dispatcher, 2000, () => Math.Abs(translate.X - first) > 0.5),
+                        "The indeterminate bar must actually travel, not merely hold an animation clock.");
+                }
+                finally
+                {
+                    MotionHelper.OverrideIsMotionEnabled = null;
+                    w.Close();
+                }
+            });
+        }
+
         [TestMethod]
         public void ReducedMotion_ProgressRing_Indeterminate_RendersStaticFrameWithoutClocks()
         {

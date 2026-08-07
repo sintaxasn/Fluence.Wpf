@@ -536,9 +536,23 @@ namespace Fluence.Wpf.Controls
             // Only animate while loaded and visible: the repeat-forever clocks would otherwise
             // stay rooted after the hosting window closes, or keep ticking while the control is
             // Collapsed or Hidden. OnLoaded and OnIsVisibleChanged restart the animation on re-entry.
-            // With motion disabled (OS "Show animations" off) the StopIndeterminate call above has
-            // already parked both bars at their resting translate of 0, which is the static frame.
-            if (!IsLoaded || !IsVisible || !MotionHelper.IsMotionEnabled || _indeterminateTranslate is null || _indeterminateBar is null)
+            //
+            // Deliberately NOT gated on MotionHelper.IsMotionEnabled. Indeterminate progress is
+            // essential status feedback, not decoration: the bar carries no value, so its movement
+            // is the only thing telling the user work is still happening. Parking it leaves a
+            // motionless block pinned to the left of the track, which reads as a stalled
+            // determinate bar and makes a healthy operation look hung. A determinate bar is
+            // different - its fill width still carries the information when frozen - so
+            // UpdateFillWidth does honour the gate.
+            //
+            // This regressed PSAppDeployToolkit: Show-ADTInstallationProgress returned normally but
+            // its dialog sat motionless on any machine with animation effects off, and the install
+            // looked frozen. ProgressRing solves the same problem the other way, by rendering a
+            // meaningful static resting arc; a bar has no equivalent resting frame that reads as
+            // "busy" rather than "stopped part-way".
+            //
+            // Covered by ReducedMotion_ProgressBar_Indeterminate_KeepsAnimating.
+            if (!IsLoaded || !IsVisible || _indeterminateTranslate is null || _indeterminateBar is null)
             {
                 return;
             }

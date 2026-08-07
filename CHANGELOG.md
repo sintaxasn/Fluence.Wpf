@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- `ProgressBar`: an indeterminate bar now keeps animating when the Windows "Show animations in Windows" accessibility setting is off. It was gated with every other code-driven animation in 0.8.10-Preview, which parked both indeterminate bars at translate 0 and left a motionless block pinned to the left of the track. That reads as a stalled determinate bar, so a healthy operation looked hung. Indeterminate progress carries no value, so its movement is the only status signal it has, and it is therefore treated as essential feedback rather than decoration. A determinate bar still honours the setting, because its fill width conveys the information when frozen. `ProgressRing` is unaffected: it already renders a meaningful static resting arc with the setting off, which a bar has no equivalent of. Regression seen downstream in PSAppDeployToolkit, where `Show-ADTInstallationProgress` returned normally but its dialog sat motionless on any machine with animation effects off - notably affecting screen-reader users, who commonly disable animation effects.
+
 ## [0.8.11-Preview] - 2026-07-14
 
 ### Fixed
