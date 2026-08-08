@@ -19,7 +19,7 @@
     -->
     <ui:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
         <StackPanel Style="{StaticResource GalleryPageContentStackStyle}">
-            <TextBlock Style="{StaticResource PageTitleStyle}" Text="Buttons" />
+            <local:GalleryPageHeader DocsAnchor="basic-actions" Title="Buttons" />
             <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Buttons initiate actions, open menus, navigate as links, or hold a checked state." />
 
 

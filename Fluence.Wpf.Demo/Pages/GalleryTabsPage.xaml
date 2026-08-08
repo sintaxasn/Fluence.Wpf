@@ -11,7 +11,7 @@
     mc:Ignorable="d">
     <ui:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
         <StackPanel Style="{StaticResource GalleryPageContentStackStyle}">
-            <TextBlock Style="{StaticResource PageTitleStyle}" Text="Tabs" />
+            <local:GalleryPageHeader DocsAnchor="tabs" Title="Tabs" />
             <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Tabs organize related panels while keeping one view active at a time." />
 
 

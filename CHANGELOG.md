@@ -9,6 +9,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Added
 
 - `Fluence.Wpf.Controls.Image` - a Fluent image presenter framing a picture with a theme-aware 1px `CardStrokeColorDefaultBrush` stroke and a rounded-corner clip driven by `CornerRadius` (default `ControlCornerRadius`), while a real inner WPF image element keeps natural sizing, `Stretch` semantics, and DPI handling. Ships with an `ImageAutomationPeer` (UIA role Image) and a gallery Data page sample. A decorative image stays out of the UI Automation tree entirely: the peer reports itself in neither the control nor the content view until the consumer gives it an accessible name via `AutomationProperties.Name` or `AutomationProperties.LabeledBy`, matching WinUI's `AccessibilityView="Raw"` default for `Image` and the existing `FontIcon` treatment.
+- Demo: all 17 gallery catalog pages now share a `GalleryPageHeader` (title plus docs link, theme toggle, and favorite actions) instead of a bare title, mirroring the WinUI Gallery item page header. The docs button opens the matching `docs/controls.md` section on GitHub and hides itself on pages with no matching section (Home, Colors); the theme button flips Light/Dark while preserving the shell's current backdrop; the favorite star toggle keeps in-page state only, with no persistence.
 
 ### Changed
 

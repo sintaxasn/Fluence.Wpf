@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Fluence.Wpf.Demo.Pages"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:ui="clr-namespace:Fluence.Wpf.Controls;assembly=Fluence.Wpf"
     d:DesignHeight="800"
@@ -10,10 +11,7 @@
     mc:Ignorable="d">
     <ui:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
         <StackPanel Style="{StaticResource GalleryPageContentStackStyle}">
-            <TextBlock
-                Margin="0,0,0,4"
-                Style="{StaticResource SectionHeaderStyle}"
-                Text="Typography" />
+            <local:GalleryPageHeader DocsAnchor="typography" Title="Typography" />
             <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Fluent type styles use Segoe UI Variable when available and fall back to Segoe UI." />
 
             <Grid

@@ -11,7 +11,7 @@
     mc:Ignorable="d">
     <ui:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
         <StackPanel Style="{StaticResource GalleryPageContentStackStyle}">
-            <TextBlock Style="{StaticResource PageTitleStyle}" Text="Layout" />
+            <local:GalleryPageHeader DocsAnchor="layout-and-surfaces" Title="Layout" />
             <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Layout primitives arrange content, group related surfaces, and separate regions without adding page-specific infrastructure." />
 
 

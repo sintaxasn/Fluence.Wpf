@@ -12,7 +12,7 @@
     mc:Ignorable="d">
     <ui:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
         <StackPanel Style="{StaticResource GalleryPageContentStackStyle}">
-            <TextBlock Style="{StaticResource PageTitleStyle}" Text="Forms" />
+            <local:GalleryPageHeader DocsAnchor="forms" Title="Forms" />
             <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Forms group related inputs, labels, validation feedback, and actions into a single task flow." />
 
 

@@ -11,7 +11,7 @@
     mc:Ignorable="d">
     <ui:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
         <StackPanel Style="{StaticResource GalleryPageContentStackStyle}">
-            <TextBlock Style="{StaticResource PageTitleStyle}" Text="Selection" />
+            <local:GalleryPageHeader DocsAnchor="selection" Title="Selection" />
             <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Selection controls let people choose one or more options, switch settings on or off, or pick a value from a compact list." />
 
 

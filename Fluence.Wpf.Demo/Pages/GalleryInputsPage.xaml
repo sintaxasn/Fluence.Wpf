@@ -12,7 +12,7 @@
     mc:Ignorable="d">
     <ui:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
         <StackPanel Style="{StaticResource GalleryPageContentStackStyle}">
-            <TextBlock Style="{StaticResource PageTitleStyle}" Text="Inputs" />
+            <local:GalleryPageHeader DocsAnchor="inputs" Title="Inputs" />
             <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="Input controls collect freeform text, protected text, numbers, and ranged values." />
 
 

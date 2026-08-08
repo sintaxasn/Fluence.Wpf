@@ -12,7 +12,7 @@
     mc:Ignorable="d">
     <ui:SmoothScrollViewer Style="{StaticResource GalleryPageScrollViewerStyle}">
         <StackPanel Style="{StaticResource GalleryPageContentStackStyle}">
-            <TextBlock Style="{StaticResource PageTitleStyle}" Text="Trees" />
+            <local:GalleryPageHeader DocsAnchor="trees" Title="Trees" />
             <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="TreeView presents nested items that users can expand, collapse, and select." />
 
 
