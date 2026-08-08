@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Changed
 
 - `ColorPicker`, the demo shell, and the demo tests now fully qualify their `System.Windows.Controls.Image` references. `Fluence.Wpf.Controls.Image` newly occupies that simple name, so an unqualified `Image` inside the `Fluence.Wpf.Controls` namespace resolved to the Fluence control, and files importing that namespace saw an ambiguous reference. Behavior is unchanged; `ColorPicker.cs` already carried a comment anticipating this.
+- CheckBox now defaults to `HorizontalAlignment=Left` (WinUI parity); focus visuals no longer stretch across full-width containers.
 
 ### Fixed
 

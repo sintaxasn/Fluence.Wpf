@@ -316,6 +316,41 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void CheckBox_DefaultStyle_DoesNotStretchHorizontally()
+        {
+            RunOnStaThread(static () =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+
+                try
+                {
+                    Controls.CheckBox checkBox = new() { Content = "Option" };
+                    window.Content = new StackPanel { Children = { checkBox } };
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    Assert.AreEqual(HorizontalAlignment.Left, checkBox.HorizontalAlignment,
+                        "WinUI CheckBox defaults to HorizontalAlignment=Left so focus visuals hug the content instead of stretching across full-width containers.");
+                    Assert.AreEqual(120.0, checkBox.MinWidth,
+                        "WinUI DefaultCheckBoxStyle sets MinWidth to the CheckBoxMinWidth resource (120), preserving a comfortable hit target for short labels.");
+                }
+                finally
+                {
+                    window.Content = null;
+                    window.UpdateLayout();
+                    window.Close();
+                    if (genericDictionary is not null)
+                    {
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
         public void Card_Click_FiresOnMouseDownThenUp_WhenIsClickable()
         {
             RunOnStaThread(() =>
