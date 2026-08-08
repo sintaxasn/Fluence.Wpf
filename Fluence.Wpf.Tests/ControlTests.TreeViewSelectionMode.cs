@@ -120,6 +120,47 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void TreeView_MultipleSelectionCheckboxStaysCompactInAutoColumn()
+        {
+            WpfTestSta.Invoke(static () =>
+            {
+                Application? application = EnsureApplication();
+                ResourceDictionary? genericDictionary = MergeGenericDictionary(application);
+                Window window = new();
+
+                try
+                {
+                    Controls.TreeViewItem item = new() { Header = "Contracts" };
+                    Controls.TreeView treeView = new()
+                    {
+                        SelectionMode = TreeViewSelectionMode.Multiple,
+                    };
+                    _ = treeView.Items.Add(item);
+                    window.Content = treeView;
+                    window.Width = 300;
+                    window.Height = 200;
+                    window.Show();
+                    DrainDispatcher(window.Dispatcher);
+                    window.UpdateLayout();
+
+                    System.Windows.Controls.CheckBox? checkBox = FindVisualChildByName<System.Windows.Controls.CheckBox>(item, "SelectionCheckBox");
+                    Assert.IsNotNull(checkBox, "Multiple-selection TreeViewItem template should expose a checkbox.");
+
+                    Assert.IsTrue(checkBox.ActualWidth < 40,
+                        $"SelectionCheckBox is a content-less checkbox in an Auto-width Grid column. It must stay compact (an 18px glyph plus margin) and must not inherit the default CheckBox style's MinWidth=120, which would force the Auto column wider and push PART_Header far to the right. Actual width: {checkBox.ActualWidth}.");
+                }
+                finally
+                {
+                    CloseWindowAndDrain(window);
+                    if (genericDictionary is not null)
+                    {
+                        _ = application?.Resources.MergedDictionaries.Remove(genericDictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
         public void TreeView_MultipleSelectionSpaceTogglesItemCheckState()
         {
             WpfTestSta.Invoke(static () =>

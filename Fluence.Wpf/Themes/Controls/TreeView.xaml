@@ -107,6 +107,7 @@
                                     x:Name="SelectionCheckBox"
                                     Grid.Column="1"
                                     Margin="0,0,8,0"
+                                    MinWidth="0"
                                     VerticalAlignment="Center"
                                     Focusable="False"
                                     IsChecked="{Binding IsSelectionChecked, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
