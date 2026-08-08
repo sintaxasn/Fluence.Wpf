@@ -377,7 +377,7 @@
         x:Key="SectionDescriptionStyle"
         BasedOn="{StaticResource {x:Type TextBlock}}"
         TargetType="{x:Type TextBlock}">
-        <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="Margin" Value="{DynamicResource DemoPageDescriptionMargin}" />
         <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
