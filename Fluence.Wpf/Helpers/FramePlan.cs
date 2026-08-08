@@ -46,27 +46,25 @@ namespace Fluence.Wpf.Helpers
         int dwmBorderColor)
     {
         /// <summary>
-        /// Gets the thickness of the WPF-template border element. <c>Thickness(2)</c> when the
-        /// window is active and in normal state; <c>Thickness(0)</c> when maximized (a border at
-        /// the monitor edge would clip against the taskbar or other monitors).
+        /// Gets the thickness of the WPF-template border element. <c>Thickness(2)</c> in normal
+        /// state; <c>Thickness(0)</c> when maximized (a border at the monitor edge would clip
+        /// against the taskbar or other monitors).
         /// </summary>
         internal Thickness TemplateBorderThickness { get; private set; } = templateBorderThickness;
 
         /// <summary>
         /// Gets the <c>DynamicResource</c> key for the border brush to apply to the template
-        /// border element. <c>"SystemAccentColorBrush"</c> when the window is active and accent
-        /// borders are enabled; <c>"CardStrokeColorDefaultSolidBrush"</c> when the window is
-        /// inactive or accent borders are off.
+        /// border element. Always <c>"CardStrokeColorDefaultSolidBrush"</c>: the window frame
+        /// uses the subtle system stroke in every state, never an accent color.
         /// </summary>
         internal string TemplateBorderBrushResourceKey { get; } = templateBorderBrushResourceKey;
 
         /// <summary>
-        /// Gets the COLORREF (BGR, 24-bit) value to write to <c>DWMWA_BORDER_COLOR</c>, or
-        /// <see cref="Native.NativeConstants.DWMWA_COLOR_DEFAULT"/> when the OS
-        /// does not expose that attribute (Windows 10) or the window is inactive. A caller
-        /// must check <see cref="WindowCapabilities.SupportsBorderColor"/> before writing this
-        /// value to the DWM attribute; the plan records the sentinel regardless so the caller
-        /// does not need a separate null check.
+        /// Gets the COLORREF (BGR, 24-bit) value to write to <c>DWMWA_BORDER_COLOR</c>. Always
+        /// <see cref="Native.NativeConstants.DWMWA_COLOR_DEFAULT"/>, which tells DWM to restore
+        /// its own border. A caller must check <see cref="WindowCapabilities.SupportsBorderColor"/>
+        /// before writing this value to the DWM attribute; the plan records the sentinel
+        /// regardless so the caller does not need a separate null check.
         /// </summary>
         internal int DwmBorderColor { get; } = dwmBorderColor;
     }

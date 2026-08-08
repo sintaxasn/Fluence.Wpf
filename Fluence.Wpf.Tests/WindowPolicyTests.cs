@@ -473,68 +473,38 @@ namespace Fluence.Wpf.Tests
 
         #endregion GetResizeBorderThickness - maximised / non-resize matrix
 
-        #region BuildFramePlan - accent border selection
+        #region BuildFramePlan - subtle border
 
         [TestMethod]
-        public void BuildFramePlan_Normal_ActiveWithAccentBorder_UsesAccentKey()
+        public void BuildFramePlan_Normal_UsesCardStrokeKey()
         {
-            FramePlan plan = WindowPolicy.BuildFramePlan(
-                WindowState.Normal,
-                isActive: true,
-                isAccentBorderEnabled: true,
-                capabilities: Caps(borderColor: true),
-                accentColor: Color.FromRgb(0x00, 0x78, 0xD4));
-
+            FramePlan plan = WindowPolicy.BuildFramePlan(WindowState.Normal);
             Assert.AreEqual(new Thickness(2), plan.TemplateBorderThickness);
-            Assert.AreEqual("SystemAccentColorBrush", plan.TemplateBorderBrushResourceKey, StringComparer.Ordinal,
-                "Active window with accent border enabled must bind to SystemAccentColorBrush via the template.");
-            Assert.AreNotEqual(NativeConstants.DWMWA_COLOR_DEFAULT, plan.DwmBorderColor,
-                "When the OS supports DWMWA_BORDER_COLOR and the window is active, we should emit an ABGR value, not the default sentinel.");
+            Assert.AreEqual("CardStrokeColorDefaultSolidBrush", plan.TemplateBorderBrushResourceKey, StringComparer.Ordinal);
         }
 
         [TestMethod]
-        public void BuildFramePlan_Normal_Inactive_UsesCardStrokeKey()
+        public void BuildFramePlan_Normal_DwmBorderStaysDefault()
         {
-            FramePlan plan = WindowPolicy.BuildFramePlan(
-                WindowState.Normal,
-                isActive: false,
-                isAccentBorderEnabled: true,
-                capabilities: Caps(borderColor: true),
-                accentColor: Colors.Red);
-
-            Assert.AreEqual("CardStrokeColorDefaultSolidBrush", plan.TemplateBorderBrushResourceKey, StringComparer.Ordinal,
-                "Inactive windows must revert to CardStrokeColorDefaultSolidBrush - the accent border is an activation cue.");
+            FramePlan plan = WindowPolicy.BuildFramePlan(WindowState.Normal);
+            Assert.AreEqual(NativeConstants.DWMWA_COLOR_DEFAULT, plan.DwmBorderColor);
         }
 
         [TestMethod]
         public void BuildFramePlan_Maximized_TemplateBorderIsZero()
         {
-            FramePlan plan = WindowPolicy.BuildFramePlan(
-                WindowState.Maximized,
-                isActive: true,
-                isAccentBorderEnabled: true,
-                capabilities: Caps(borderColor: true),
-                accentColor: Colors.Red);
-
-            Assert.AreEqual(new Thickness(0), plan.TemplateBorderThickness,
-                "A maximised window must not paint a 2dp template border - it would clip against the taskbar / monitor edge.");
+            FramePlan plan = WindowPolicy.BuildFramePlan(WindowState.Maximized);
+            Assert.AreEqual(new Thickness(0), plan.TemplateBorderThickness);
         }
 
         [TestMethod]
-        public void BuildFramePlan_NoBorderColorCapability_KeepsDwmDefault()
+        public void BuildFramePlan_Maximized_DwmBorderStaysDefault()
         {
-            FramePlan plan = WindowPolicy.BuildFramePlan(
-                WindowState.Normal,
-                isActive: true,
-                isAccentBorderEnabled: true,
-                capabilities: Caps(),
-                accentColor: Colors.Red);
-
-            Assert.AreEqual(NativeConstants.DWMWA_COLOR_DEFAULT, plan.DwmBorderColor,
-                "Windows 10 does not expose DWMWA_BORDER_COLOR - the plan must keep the default sentinel rather than push an unsupported value.");
+            FramePlan plan = WindowPolicy.BuildFramePlan(WindowState.Maximized);
+            Assert.AreEqual(NativeConstants.DWMWA_COLOR_DEFAULT, plan.DwmBorderColor);
         }
 
-        #endregion BuildFramePlan - accent border selection
+        #endregion BuildFramePlan - subtle border
 
         #region WindowCapabilities.Current - sanity
 

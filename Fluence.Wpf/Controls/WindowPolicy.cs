@@ -147,65 +147,22 @@ namespace Fluence.Wpf.Controls
         }
 
         /// <summary>
-        /// Computes the <see cref="FramePlan"/> that governs the window border appearance.
+        /// Builds the window frame plan. The template border and the DWM border always use
+        /// the subtle system stroke: the WinUI 3 Gallery window never paints an accent
+        /// border, so accent-colored frames read as foreign next to real Fluent apps.
         /// </summary>
-        /// <remarks>
-        /// The plan has two independent halves:
-        /// <list type="bullet">
-        ///   <item>
-        ///     <term>WPF-template border</term>
-        ///     <description>
-        ///       Active window with accent borders enabled gets a 2 dp border keyed to
-        ///       <c>SystemAccentColorBrush</c>. Inactive windows revert to
-        ///       <c>CardStrokeColorDefaultSolidBrush</c>. Maximized windows get a 0-thick border
-        ///       in every state.
-        ///     </description>
-        ///   </item>
-        ///   <item>
-        ///     <term>DWM border color</term>
-        ///     <description>
-        ///       When the OS supports <c>DWMWA_BORDER_COLOR</c> and the window is active with
-        ///       accent borders, the COLORREF derived from <paramref name="accentColor"/> is
-        ///       emitted. Otherwise
-        ///       <see cref="NativeConstants.DWMWA_COLOR_DEFAULT"/> is used, which tells DWM to
-        ///       restore its own border.
-        ///     </description>
-        ///   </item>
-        /// </list>
-        /// </remarks>
-        /// <param name="windowState">The current <see cref="WindowState"/>.</param>
-        /// <param name="isActive">
-        ///   <see langword="true"/> when <see cref="FluenceWindow"/> is the foreground window.
-        /// </param>
-        /// <param name="isAccentBorderEnabled">
-        ///   <see langword="true"/> when <c>ApplicationAccentColorManager.IsAccentColorOnTitleBarsEnabled</c>
-        ///   is set.
-        /// </param>
-        /// <param name="capabilities">The OS capability snapshot.</param>
-        /// <param name="accentColor">The current system accent color.</param>
-        /// <returns>A <see cref="FramePlan"/> describing the border to apply.</returns>
-        internal static FramePlan BuildFramePlan(
-            WindowState windowState,
-            bool isActive,
-            bool isAccentBorderEnabled,
-            WindowCapabilities capabilities,
-            Color accentColor)
+        /// <param name="windowState">The current window state.</param>
+        /// <returns>The resolved frame plan.</returns>
+        internal static FramePlan BuildFramePlan(WindowState windowState)
         {
             Thickness templateBorderThickness = windowState is WindowState.Maximized
                 ? new Thickness(0)
                 : new Thickness(2);
 
-            string templateBorderBrushResourceKey = !isActive || !isAccentBorderEnabled
-                ? "CardStrokeColorDefaultSolidBrush"
-                : "SystemAccentColorBrush";
-
-            int dwmBorderColor = NativeConstants.DWMWA_COLOR_DEFAULT;
-            if (capabilities.SupportsBorderColor && isActive && isAccentBorderEnabled)
-            {
-                dwmBorderColor = NativeMethods.ColorToColorRef(accentColor);
-            }
-
-            return new FramePlan(templateBorderThickness, templateBorderBrushResourceKey, dwmBorderColor);
+            return new FramePlan(
+                templateBorderThickness,
+                "CardStrokeColorDefaultSolidBrush",
+                NativeConstants.DWMWA_COLOR_DEFAULT);
         }
 
         /// <summary>
