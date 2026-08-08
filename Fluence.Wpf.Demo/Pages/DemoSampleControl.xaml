@@ -107,7 +107,7 @@
 
         <Style x:Key="DemoSampleSourceExpanderStyle" TargetType="{x:Type fluence:Expander}">
             <Setter Property="UseLayoutRounding" Value="True" />
-            <Setter Property="Background" Value="{DynamicResource CardBackgroundFillColorSecondaryBrush}" />
+            <Setter Property="Background" Value="{DynamicResource ControlFillColorTransparentBrush}" />
             <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
             <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
             <Setter Property="BorderBrush" Value="{DynamicResource CardStrokeColorDefaultBrush}" />
