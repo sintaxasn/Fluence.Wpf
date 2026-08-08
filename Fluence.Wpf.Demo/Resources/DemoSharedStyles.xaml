@@ -147,13 +147,16 @@
     <!--  **** Demo Styles *** Navigation \ Title-Bear Search  -->
 
     <!--
-        Title-bar search box: transparent box, bottom-only underline.
-        Grey (ControlStrokeColorDefaultBrush) at rest; accent on focus.
+        Title-bar search box: WinUI text-control chrome. A 1px
+        ControlStrokeColorDefaultBrush stroke at rest, with an accent hairline
+        (FocusAccentLine, same element/brush/thickness as the library TextBox
+        template) overlaying the bottom edge on focus.
         Matches WinUI 3 AutoSuggestBox title-bar treatment.
     -->
     <Style x:Key="TitleBarSearchBoxStyle" TargetType="{x:Type ui:TextBox}">
         <Setter Property="Background" Value="{DynamicResource ControlFillColorDefaultBrush}" />
-        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ControlStrokeColorDefaultBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
         <Setter Property="CaretBrush" Value="{DynamicResource TextFillColorPrimaryBrush}" />
         <Setter Property="FocusVisualStyle" Value="{x:Null}" />
         <Setter Property="FontFamily" Value="{DynamicResource FluentFontFamily}" />
@@ -165,17 +168,14 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ui:TextBox}">
-                    <Border
-                        x:Name="MainBorder"
-                        Background="{TemplateBinding Background}"
-                        CornerRadius="{TemplateBinding CornerRadius}">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*" />
-                                <RowDefinition Height="2" />
-                            </Grid.RowDefinitions>
-
-                            <Grid Grid.Row="0">
+                    <Grid>
+                        <Border
+                            x:Name="MainBorder"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{TemplateBinding CornerRadius}">
+                            <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
                                     <ColumnDefinition Width="Auto" />
@@ -207,23 +207,22 @@
                                     Glyph="&#xE721;"
                                     IconFontSize="16" />
                             </Grid>
+                        </Border>
 
-                            <!--  Rest underline: grey stroke  -->
-                            <Border
-                                x:Name="RestLine"
-                                Grid.Row="1"
-                                HorizontalAlignment="Stretch"
-                                Background="{DynamicResource ControlStrokeColorDefaultBrush}" />
-
-                            <!--  Underline overlay: kept visible in every state but with no colour, so focus no longer paints an accent line over the neutral rest stroke.  -->
-                            <Border
-                                x:Name="FocusLine"
-                                Grid.Row="1"
-                                HorizontalAlignment="Stretch"
-                                Background="Transparent"
-                                Opacity="1" />
-                        </Grid>
-                    </Border>
+                        <!--
+                            Focus accent hairline: verbatim precedent from
+                            Fluence.Wpf/Themes/Controls/TextBox.xaml's FocusAccentLine (element
+                            name, brush key, thickness). Overlays MainBorder's own bottom stroke
+                            edge and appears only while focused.
+                        -->
+                        <Border
+                            x:Name="FocusAccentLine"
+                            Height="2"
+                            VerticalAlignment="Bottom"
+                            Background="{DynamicResource AccentFillColorDefaultBrush}"
+                            CornerRadius="0,0,4,4"
+                            Opacity="0" />
+                    </Grid>
                     <ControlTemplate.Triggers>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
@@ -239,8 +238,7 @@
                         </Trigger>
                         <Trigger Property="IsKeyboardFocused" Value="True">
                             <Setter TargetName="MainBorder" Property="Background" Value="{DynamicResource ControlFillColorInputActiveBrush}" />
-                            <Setter TargetName="FocusLine" Property="Background" Value="{DynamicResource AccentFillColorDefaultBrush}" />
-
+                            <Setter TargetName="FocusAccentLine" Property="Opacity" Value="1" />
                         </Trigger>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
