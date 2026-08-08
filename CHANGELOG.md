@@ -15,6 +15,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - `ColorPicker`, the demo shell, and the demo tests now fully qualify their `System.Windows.Controls.Image` references. `Fluence.Wpf.Controls.Image` newly occupies that simple name, so an unqualified `Image` inside the `Fluence.Wpf.Controls` namespace resolved to the Fluence control, and files importing that namespace saw an ambiguous reference. Behavior is unchanged; `ColorPicker.cs` already carried a comment anticipating this.
 - CheckBox now defaults to `HorizontalAlignment=Left` (WinUI parity); focus visuals no longer stretch across full-width containers.
+- Demo: gallery page description text now uses `TextFillColorPrimaryBrush` instead of `TextFillColorSecondaryBrush`, matching WinUI Gallery's ItemPage description weight.
+- Demo: the title-bar search box gains a real `ControlStrokeColorDefaultBrush` border and the standard `FocusAccentLine` focus hairline, matching WinUI's text-control chrome; it was previously borderless.
+- Demo `DemoSampleSourceExpanderStyle` background switched to `ControlFillColorTransparentBrush` so the collapsed "Source code" strip paints a single fill instead of double-blending with the card background beneath it.
 
 ### Fixed
 
