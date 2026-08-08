@@ -153,15 +153,13 @@
     <Color x:Key="TextOnAccentFillColorDisabled">#87FFFFFF</Color>
 
     <!--
-        WinUI 3 canonical: NavigationViewContentBackground = LayerFillColorDefault
-        (#4C3A3A3A in dark = 30%-opaque grey #3A3A3A). This is a translucent "layer"
-        brush, NOT fully transparent. Layered over the Mica/Acrylic backdrop it gives
-        the content area a calm, slightly tinted surface while still letting some Mica
-        through so card lifts and brand colors stay visible. Fully transparent
-        (the previous overcorrection) lets raw Mica noise dominate the content area
-        and washes out card differentiation.
+        WinUI 3 canonical is NavigationViewContentBackground = LayerFillColorDefault
+        (#4C3A3A3A in dark). Pre-blended opaque for WPF: LayerFillColorDefault over
+        SolidBackgroundFillColorBase #202020 = #272727, matching the WinUI 3 Gallery's
+        measured dark content layer. Kept opaque for the same DWM glass-blend reason
+        documented in Theme.Light.xaml and KNOWN_ISSUES.md.
     -->
-    <Color x:Key="NavigationViewContentBackground">#4C3A3A3A</Color>
+    <Color x:Key="NavigationViewContentBackground">#FF272727</Color>
 
     <!--
         AccentFillBackdrop: opaque sub-layer behind the accent track inside the ToggleSwitch

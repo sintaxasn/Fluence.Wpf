@@ -2456,7 +2456,7 @@ topMode: false,
         }
 
         // NavigationView.ContentBackground must default to NavigationViewContentBackgroundBrush
-        // (semi-transparent tint that allows Mica/Acrylic backdrop to show through the content area).
+        // (opaque pre-blended content layer (see Theme.Light.xaml rationale)).
         [TestMethod]
         public void NavigationView_ContentBackground_DefaultStyle_ResolvesToSolidBackgroundFillColorBase()
         {
@@ -2485,7 +2485,7 @@ topMode: false,
                     Assert.IsNotNull(expected, "NavigationViewContentBackgroundBrush must be present in merged resources.");
                     Assert.IsNotNull(actual, "NavigationView.ContentBackground must be a SolidColorBrush.");
                     Assert.AreEqual(expected.Color, actual.Color,
-                        "Default ContentBackground must equal NavigationViewContentBackgroundBrush (semi-transparent Mica tint).");
+                        "Default ContentBackground must equal NavigationViewContentBackgroundBrush (opaque pre-blended content layer (see Theme.Light.xaml rationale)).");
                 }
                 finally
                 {

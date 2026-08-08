@@ -112,8 +112,8 @@ LayerOnMicaBaseAltFillColorTertiary|#FF2C2C2C|#00000000
 LayerOnMicaBaseAltFillColorTertiaryBrush|#00000000|#FF2C2C2C
 LayerOnMicaBaseAltFillColorTransparent|#00FFFFFF|#00000000
 LayerOnMicaBaseAltFillColorTransparentBrush|#00000000|#00FFFFFF
-NavigationViewContentBackground|#4C3A3A3A|#00000000
-NavigationViewContentBackgroundBrush|#00000000|#4C3A3A3A
+NavigationViewContentBackground|#FF272727|#00000000
+NavigationViewContentBackgroundBrush|#00000000|#FF272727
 NavigationViewSelectionIndicatorBrush|#00000000|#FF0078D4
 ScrollBarTrackFillBrush|#00000000|#F02C2C2C
 SmokeFillColorDefault|#4D000000|#00000000

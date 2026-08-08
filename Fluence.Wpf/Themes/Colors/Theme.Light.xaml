@@ -157,13 +157,17 @@
     <Color x:Key="TextOnAccentFillColorDisabled">#FFFFFFFF</Color>
 
     <!--
-        WinUI 3 canonical: NavigationViewContentBackground = LayerFillColorDefault
-        (#80FFFFFF in light = 50%-opaque white). This is a translucent "layer" brush,
-        NOT fully transparent. Layered over the Mica/Acrylic backdrop it gives the
-        content area a calm, slightly tinted surface while still letting some Mica
-        through so card lifts and brand colors stay visible.
+        WinUI 3 canonical is NavigationViewContentBackground = LayerFillColorDefault
+        (#80FFFFFF in light). WPF cannot honor that translucency: Mica reaches the
+        client area via DwmExtendFrameIntoClientArea, and DWM composites translucent
+        WPF pixels over that extended frame with legacy glass-blend math that inflates
+        alpha (#80FFFFFF measures as ~premultiplied RGB 128 at alpha 0.67 on screen),
+        so the light layer renders darker than the pane instead of lighter. The value
+        here is therefore pre-blended opaque: 50% white over SolidBackgroundFillColorBase
+        #F3F3F3 = #F9F9F9, which matches the WinUI 3 Gallery's measured on-screen
+        content layer on a neutral desktop. See KNOWN_ISSUES.md (DWM glass-blend).
     -->
-    <Color x:Key="NavigationViewContentBackground">#80FFFFFF</Color>
+    <Color x:Key="NavigationViewContentBackground">#FFF9F9F9</Color>
 
     <!--
         AccentFillBackdrop: opaque sub-layer sitting BEHIND the accent track inside the

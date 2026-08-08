@@ -60,6 +60,24 @@ maintainers.
   deferred because reworking the layout path to avoid the forced pass risks
   regressions in overflow placement for a gain that only shows up under heavy
   resize with many top-level items.
+- **DWM glass-blend distorts translucent overlays above Mica** - symptom:
+  a translucent WPF surface drawn above a `DwmExtendFrameIntoClientArea`
+  Mica/Acrylic frame renders measurably darker than the backdrop in light
+  theme instead of lighter, and ClearType text drawn over such a transparent
+  surface renders washed out. Root cause: DWM composites WPF's translucent
+  pixels over the extended frame through its legacy glass-blend path rather
+  than the modern compositor blend WinUI 3 uses, which inflates the effective
+  on-screen alpha (measured roughly 0.5 nominal to ~0.67 actual). Decision:
+  `NavigationViewContentBackground` is pre-blended opaque per theme
+  (`#F9F9F9` light / `#272727` dark, computed once from the canonical WinUI
+  translucent value over `SolidBackgroundFillColorBase`) instead of shipping
+  the translucent WinUI value and accepting the glass-blend darkening; the
+  content area therefore intentionally does not pick up live wallpaper tint
+  the way WinUI's compositor-based layer does, while the pane itself keeps
+  true Mica because it must stay transparent for `DwmExtendFrameIntoClientArea`
+  to reach it. Affected follow-up (accepted): nav pane item text renders
+  slightly lighter than WinUI because the pane must stay transparent for Mica,
+  so it cannot use the same pre-blended-opaque trick as the content layer.
 
 ## net472 accessibility API gaps
 
