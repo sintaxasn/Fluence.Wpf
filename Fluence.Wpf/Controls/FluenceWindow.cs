@@ -856,7 +856,7 @@ namespace Fluence.Wpf.Controls
         private void ApplyFrame()
         {
             WindowCapabilities capabilities = WindowCapabilities.Current;
-            FramePlan plan = WindowPolicy.BuildFramePlan(WindowState);
+            FramePlan plan = WindowPolicy.BuildFramePlan();
 
             BorderBrush = TryFindResource(plan.TemplateBorderBrushResourceKey) as Brush ?? Brushes.Transparent;
             if (_handle != IntPtr.Zero && capabilities.SupportsBorderColor)

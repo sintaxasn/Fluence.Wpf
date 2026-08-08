@@ -2456,7 +2456,7 @@ topMode: false,
         }
 
         // NavigationView.ContentBackground must default to NavigationViewContentBackgroundBrush
-        // (opaque pre-blended content layer (see Theme.Light.xaml rationale)).
+        // (opaque pre-blended content layer, see Theme.Light.xaml rationale).
         [TestMethod]
         public void NavigationView_ContentBackground_DefaultStyle_ResolvesToSolidBackgroundFillColorBase()
         {
@@ -2485,7 +2485,7 @@ topMode: false,
                     Assert.IsNotNull(expected, "NavigationViewContentBackgroundBrush must be present in merged resources.");
                     Assert.IsNotNull(actual, "NavigationView.ContentBackground must be a SolidColorBrush.");
                     Assert.AreEqual(expected.Color, actual.Color,
-                        "Default ContentBackground must equal NavigationViewContentBackgroundBrush (opaque pre-blended content layer (see Theme.Light.xaml rationale)).");
+                        "Default ContentBackground must equal NavigationViewContentBackgroundBrush (opaque pre-blended content layer, see Theme.Light.xaml rationale).");
                 }
                 finally
                 {

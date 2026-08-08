@@ -27,6 +27,7 @@
  */
 
 using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shell;
@@ -476,35 +477,111 @@ namespace Fluence.Wpf.Tests
         #region BuildFramePlan - subtle border
 
         [TestMethod]
-        public void BuildFramePlan_Normal_UsesCardStrokeKey()
+        public void BuildFramePlan_UsesCardStrokeKey()
         {
-            FramePlan plan = WindowPolicy.BuildFramePlan(WindowState.Normal);
-            Assert.AreEqual(new Thickness(2), plan.TemplateBorderThickness);
+            FramePlan plan = WindowPolicy.BuildFramePlan();
             Assert.AreEqual("CardStrokeColorDefaultSolidBrush", plan.TemplateBorderBrushResourceKey, StringComparer.Ordinal);
         }
 
         [TestMethod]
-        public void BuildFramePlan_Normal_DwmBorderStaysDefault()
+        public void BuildFramePlan_DwmBorderStaysDefault()
         {
-            FramePlan plan = WindowPolicy.BuildFramePlan(WindowState.Normal);
-            Assert.AreEqual(NativeConstants.DWMWA_COLOR_DEFAULT, plan.DwmBorderColor);
-        }
-
-        [TestMethod]
-        public void BuildFramePlan_Maximized_TemplateBorderIsZero()
-        {
-            FramePlan plan = WindowPolicy.BuildFramePlan(WindowState.Maximized);
-            Assert.AreEqual(new Thickness(0), plan.TemplateBorderThickness);
-        }
-
-        [TestMethod]
-        public void BuildFramePlan_Maximized_DwmBorderStaysDefault()
-        {
-            FramePlan plan = WindowPolicy.BuildFramePlan(WindowState.Maximized);
-            Assert.AreEqual(NativeConstants.DWMWA_COLOR_DEFAULT, plan.DwmBorderColor);
+            FramePlan plan = WindowPolicy.BuildFramePlan();
+            Assert.AreEqual(NativeConstants.DWMWA_COLOR_DEFAULT, plan.DwmBorderColor,
+                "DwmBorderColor must stay the DWM default sentinel - FluenceWindow never paints an accent window border.");
         }
 
         #endregion BuildFramePlan - subtle border
+
+        #region FluenceWindow template border thickness - real behavior
+
+        // BuildFramePlan no longer computes a template border thickness (see FramePlan.cs); the
+        // FluenceWindow control template (Themes/Controls/FluenceWindow.xaml) is the sole source
+        // of truth. These tests pin the template's actual Normal/Maximized values so that contract
+        // stays covered even though WindowPolicy itself has nothing left to assert about it.
+
+        private static ResourceDictionary? ResetAndApplyLightTheme(Application? application)
+        {
+            ApplicationThemeManager.ResetForTesting();
+            ApplicationAccentColorManager.ResetForTesting();
+            application?.Resources.MergedDictionaries.Clear();
+            ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: true);
+
+            return application is null || application.Resources.MergedDictionaries.Count is 0
+                ? null
+                : application.Resources.MergedDictionaries[^1];
+        }
+
+        private static System.Windows.Controls.Border? FindWindowBorder(FluenceWindow window)
+        {
+            return WpfTestSta.FindVisualDescendants<System.Windows.Controls.Border>(window)
+                .FirstOrDefault(static border => string.Equals(border.Name, "WindowBorder", StringComparison.Ordinal));
+        }
+
+        private static void RunWithShownFluenceWindow(Action<FluenceWindow> testBody)
+        {
+            WpfTestSta.RunOnSta(() =>
+            {
+                Application? application = WpfTestSta.EnsureApplication();
+                ResourceDictionary? dictionary = ResetAndApplyLightTheme(application);
+                FluenceWindow? window = null;
+
+                try
+                {
+                    window = new FluenceWindow
+                    {
+                        Width = 400,
+                        Height = 300,
+                        Left = -20000,
+                        Top = -20000,
+                        WindowStartupLocation = WindowStartupLocation.Manual,
+                        ShowInTaskbar = false,
+                    };
+                    window.Show();
+                    _ = window.ApplyTemplate();
+                    WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                    testBody(window);
+                }
+                finally
+                {
+                    window?.Close();
+                    if (dictionary is not null)
+                    {
+                        _ = application?.Resources.MergedDictionaries.Remove(dictionary);
+                    }
+                }
+            });
+        }
+
+        [TestMethod]
+        public void FluenceWindowTemplate_Normal_BorderThicknessIsOne()
+        {
+            RunWithShownFluenceWindow(static window =>
+            {
+                System.Windows.Controls.Border? windowBorder = FindWindowBorder(window);
+                Assert.IsNotNull(windowBorder, "FluenceWindow's template must expose a Border named WindowBorder.");
+                Assert.AreEqual(new Thickness(1), windowBorder.BorderThickness,
+                    "Normal-state template border thickness comes from the default style setter in FluenceWindow.xaml - BuildFramePlan no longer computes it, so the template is the only source of truth.");
+            });
+        }
+
+        [TestMethod]
+        public void FluenceWindowTemplate_Maximized_BorderThicknessIsZero()
+        {
+            RunWithShownFluenceWindow(static window =>
+            {
+                window.WindowState = WindowState.Maximized;
+                WpfTestSta.DrainDispatcher(window.Dispatcher);
+
+                System.Windows.Controls.Border? windowBorder = FindWindowBorder(window);
+                Assert.IsNotNull(windowBorder, "FluenceWindow's template must expose a Border named WindowBorder.");
+                Assert.AreEqual(new Thickness(0), windowBorder.BorderThickness,
+                    "Maximized state must zero the template border via the WindowState trigger in FluenceWindow.xaml - a visible border at the monitor edge would clip against the taskbar or an adjacent monitor.");
+            });
+        }
+
+        #endregion FluenceWindow template border thickness - real behavior
 
         #region WindowCapabilities.Current - sanity
 

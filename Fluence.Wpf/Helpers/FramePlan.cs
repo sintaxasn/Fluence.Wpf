@@ -26,32 +26,23 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-using System.Windows;
-
 namespace Fluence.Wpf.Helpers
 {
     /// <summary>
     /// Carries the resolved window-border frame instructions computed by
-    /// <see cref="Controls.WindowPolicy.BuildFramePlan"/>. The plan separates the
-    /// WPF-template border (driven by <see cref="TemplateBorderThickness"/> and
-    /// <see cref="TemplateBorderBrushResourceKey"/>) from the DWM border color
-    /// (<see cref="DwmBorderColor"/>), because only some OS builds support the DWM side.
+    /// <see cref="Controls.WindowPolicy.BuildFramePlan"/>: the <c>DynamicResource</c> key for the
+    /// WPF-template border brush (<see cref="TemplateBorderBrushResourceKey"/>) and the DWM border
+    /// color (<see cref="DwmBorderColor"/>). The WPF-template border's thickness is not part of
+    /// this plan; it is driven entirely by the FluenceWindow control template
+    /// (<c>Themes/Controls/FluenceWindow.xaml</c>), which sets it to 1 by default and 0 while
+    /// maximized via a <c>WindowState</c> trigger.
     /// </summary>
-    /// <param name="templateBorderThickness">The thickness of the WPF-template border element.</param>
     /// <param name="templateBorderBrushResourceKey">The <c>DynamicResource</c> key for the border brush.</param>
     /// <param name="dwmBorderColor">The COLORREF (BGR, 24-bit) value for the DWM border color.</param>
     internal sealed class FramePlan(
-        Thickness templateBorderThickness,
         string templateBorderBrushResourceKey,
         int dwmBorderColor)
     {
-        /// <summary>
-        /// Gets the thickness of the WPF-template border element. <c>Thickness(2)</c> in normal
-        /// state; <c>Thickness(0)</c> when maximized (a border at the monitor edge would clip
-        /// against the taskbar or other monitors).
-        /// </summary>
-        internal Thickness TemplateBorderThickness { get; private set; } = templateBorderThickness;
-
         /// <summary>
         /// Gets the <c>DynamicResource</c> key for the border brush to apply to the template
         /// border element. Always <c>"CardStrokeColorDefaultSolidBrush"</c>: the window frame

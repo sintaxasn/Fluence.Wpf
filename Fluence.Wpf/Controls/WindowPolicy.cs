@@ -149,18 +149,14 @@ namespace Fluence.Wpf.Controls
         /// <summary>
         /// Builds the window frame plan. The template border and the DWM border always use
         /// the subtle system stroke: the WinUI 3 Gallery window never paints an accent
-        /// border, so accent-colored frames read as foreign next to real Fluent apps.
+        /// border, so accent-colored frames read as foreign next to real Fluent apps. The
+        /// WPF-template border's thickness is not part of this plan; it is driven entirely by
+        /// the FluenceWindow control template (see Themes/Controls/FluenceWindow.xaml).
         /// </summary>
-        /// <param name="windowState">The current window state.</param>
         /// <returns>The resolved frame plan.</returns>
-        internal static FramePlan BuildFramePlan(WindowState windowState)
+        internal static FramePlan BuildFramePlan()
         {
-            Thickness templateBorderThickness = windowState is WindowState.Maximized
-                ? new Thickness(0)
-                : new Thickness(2);
-
             return new FramePlan(
-                templateBorderThickness,
                 "CardStrokeColorDefaultSolidBrush",
                 NativeConstants.DWMWA_COLOR_DEFAULT);
         }
