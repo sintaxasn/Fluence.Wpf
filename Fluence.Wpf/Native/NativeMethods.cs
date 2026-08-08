@@ -28,6 +28,7 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Text;
 using Fluence.Wpf.Helpers;
 
 namespace Fluence.Wpf.Native
@@ -120,6 +121,17 @@ namespace Fluence.Wpf.Native
             uint fuFlags,
             uint uTimeout,
             out IntPtr lpdwResult);
+
+        /// <summary>
+        /// Retrieves or sets a system-wide parameter. Used here only to read the desktop
+        /// wallpaper path via <see cref="NativeConstants.SPI_GETDESKWALLPAPER"/>.
+        /// </summary>
+        /// <param name="uiAction">The <c>SPI_*</c> action to perform.</param>
+        /// <param name="uiParam">An action-specific parameter (the buffer capacity, in characters, for a path query).</param>
+        /// <param name="pvParam">The buffer that receives the queried string value.</param>
+        /// <param name="fWinIni">Action-specific update/broadcast flags; unused for a read.</param>
+        [DllImport(User32, CharSet = CharSet.Unicode, SetLastError = true)]
+        private static extern bool SystemParametersInfo(uint uiAction, uint uiParam, StringBuilder pvParam, uint fWinIni);
 
         #endregion P/Invoke declarations - User32 window styles and presentation
 
@@ -550,6 +562,19 @@ namespace Fluence.Wpf.Native
         public static bool RestoreWindowNative(IntPtr hwnd)
         {
             return hwnd != IntPtr.Zero && ShowWindow(hwnd, SW_RESTORE);
+        }
+
+        /// <summary>
+        /// Reads the full path of the current desktop wallpaper bitmap file via
+        /// <see cref="NativeConstants.SPI_GETDESKWALLPAPER"/>.
+        /// </summary>
+        /// <returns>The wallpaper file path, an empty string when the desktop uses a solid
+        /// color (no wallpaper file), or <see langword="null"/> if the query fails.</returns>
+        public static string? GetDesktopWallpaperPath()
+        {
+            StringBuilder buffer = new(NativeConstants.MaxPath);
+            bool ok = SystemParametersInfo(NativeConstants.SPI_GETDESKWALLPAPER, (uint)buffer.Capacity, buffer, 0);
+            return ok ? buffer.ToString() : null;
         }
 
         #endregion Window style and presentation helpers

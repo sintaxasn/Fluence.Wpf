@@ -26,6 +26,7 @@
  * THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+using Fluence.Wpf.Helpers;
 using Fluence.Wpf.Native;
 using System;
 using System.Collections.Generic;
@@ -178,14 +179,16 @@ namespace Fluence.Wpf
 
         private static IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
+            bool isWallpaperChange = msg == NativeConstants.WM_SETTINGCHANGE && IsWallpaperSettingChange(wParam, lParam);
             bool isThemeRelevant = msg switch
             {
                 // WM_SETTINGCHANGE fires for every settings-class change (region, sound, region,
                 // policy, file types, etc.). Only the "ImmersiveColorSet" broadcast carries a
-                // theme/accent change. Without this filter the watcher debounces against any
-                // unrelated settings broadcast, swallowing a follow-up real theme change inside
-                // the 100 ms debounce window.
-                NativeConstants.WM_SETTINGCHANGE => IsImmersiveColorSetBroadcast(lParam),
+                // theme/accent change, and a wallpaper-change broadcast carries a
+                // NavigationViewContentBackground-relevant change. Without this filter the watcher
+                // debounces against any unrelated settings broadcast, swallowing a follow-up real
+                // theme change inside the 100 ms debounce window.
+                NativeConstants.WM_SETTINGCHANGE => IsImmersiveColorSetBroadcast(lParam) || isWallpaperChange,
                 NativeConstants.WM_DWMCOLORIZATIONCOLORCHANGED => true,
                 NativeConstants.WM_THEMECHANGED => true,
                 NativeConstants.WM_SYSCOLORCHANGE => true,
@@ -197,6 +200,15 @@ namespace Fluence.Wpf
                 return IntPtr.Zero;
             }
 
+            if (isWallpaperChange)
+            {
+                // The wallpaper itself does not affect theme resolution, so this alone would not
+                // otherwise trigger a re-Apply; invalidate the cached average color and fall
+                // through to the same debounced re-Apply path a theme change uses so
+                // NavigationViewContentBackground picks up the new desktop.
+                WallpaperTintHelper.InvalidateCache();
+            }
+
             long currentTick = DateTime.UtcNow.Ticks;
             if (currentTick - _lastUpdateTick > DebounceIntervalTicks)
             {
@@ -204,6 +216,33 @@ namespace Fluence.Wpf
                 OnSystemThemeChanged();
             }
             return IntPtr.Zero;
+        }
+
+        /// <summary>
+        /// Returns <see langword="true"/> when a <c>WM_SETTINGCHANGE</c> broadcast signals a
+        /// desktop wallpaper change: either <paramref name="wParam"/> carries the
+        /// <c>SPI_SETDESKWALLPAPER</c> action code, or <paramref name="lParam"/> points to one of
+        /// the Unicode section-name strings Windows sends alongside a wallpaper update.
+        /// </summary>
+        /// <param name="wParam">The <c>WPARAM</c> of the <c>WM_SETTINGCHANGE</c> message.</param>
+        /// <param name="lParam">The <c>LPARAM</c> of the <c>WM_SETTINGCHANGE</c> message.</param>
+        internal static bool IsWallpaperSettingChange(IntPtr wParam, IntPtr lParam)
+        {
+            if (wParam == new IntPtr((int)NativeConstants.SPI_SETDESKWALLPAPER))
+            {
+                return true;
+            }
+
+            if (lParam == IntPtr.Zero)
+            {
+                return false;
+            }
+
+            string? text = Marshal.PtrToStringUni(lParam);
+            return !string.IsNullOrWhiteSpace(text)
+                && (text.Equals("Wallpaper", StringComparison.OrdinalIgnoreCase)
+                    || text.Equals("WallpaperStyle", StringComparison.OrdinalIgnoreCase)
+                    || text.Equals("TranscodedImageCache", StringComparison.OrdinalIgnoreCase));
         }
 
         /// <summary>

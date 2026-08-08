@@ -63,6 +63,16 @@ namespace Fluence.Wpf.Tests
                 // restores this deterministic default.
                 MotionHelper.OverrideIsMotionEnabled = true;
 
+                // The golden snapshot and DesignTime.{Light,Dark}.xaml files were captured
+                // assuming NavigationViewContentBackground resolves to its neutral-wallpaper
+                // fallback (#F9F9F9 / #272727). Without this, ColorMap.Build would read the
+                // host machine's real desktop wallpaper and drift those values on every run.
+                // Force a neutral (achromatic) override here, in the setup call every test
+                // makes first, so the suite is deterministic regardless of the host's desktop.
+                // Wallpaper-tint tests override this locally and restore it in their finally
+                // blocks.
+                WallpaperTintHelper.OverrideAverageColor = Color.FromRgb(0xFF, 0xFF, 0xFF);
+
                 if (Application.Current is null)
                 {
                     Application app = new()

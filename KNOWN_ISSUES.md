@@ -67,17 +67,29 @@ maintainers.
   surface renders washed out. Root cause: DWM composites WPF's translucent
   pixels over the extended frame through its legacy glass-blend path rather
   than the modern compositor blend WinUI 3 uses, which inflates the effective
-  on-screen alpha (measured roughly 0.5 nominal to ~0.67 actual). Decision:
-  `NavigationViewContentBackground` is pre-blended opaque per theme
-  (`#F9F9F9` light / `#272727` dark, computed once from the canonical WinUI
-  translucent value over `SolidBackgroundFillColorBase`) instead of shipping
-  the translucent WinUI value and accepting the glass-blend darkening; the
-  content area therefore intentionally does not pick up live wallpaper tint
-  the way WinUI's compositor-based layer does, while the pane itself keeps
-  true Mica because it must stay transparent for `DwmExtendFrameIntoClientArea`
-  to reach it. Affected follow-up (accepted): nav pane item text renders
-  slightly lighter than WinUI because the pane must stay transparent for Mica,
-  so it cannot use the same pre-blended-opaque trick as the content layer.
+  on-screen alpha. A follow-up probe swept nominal alpha from 0 to 1 and found
+  the inflation is not linear: it saturates to fully opaque at nominal alpha
+  roughly >= 0.85 (any translucent layer that dark or darker reads back as
+  solid) and undershoots below that threshold, so no fixed alpha value can be
+  calibrated to reproduce a stable translucent look - the WPF-side
+  translucency route is a dead end regardless of the chosen alpha. Mica
+  itself composites from the desktop wallpaper unconditionally, including
+  when other windows occlude the desktop; it is not screen-captured live, it
+  reads the wallpaper source directly. Decision: `NavigationViewContentBackground`
+  is pre-blended opaque per theme instead of shipping the translucent WinUI
+  value and accepting the glass-blend darkening, but the opaque pre-blend is
+  now wallpaper-aware - `FluenceThemeEngine`'s `ColorMap.Build` recomputes it
+  at Apply time from the desktop wallpaper's average color
+  (`Helpers/WallpaperTintHelper.cs`) so the content layer shifts with the
+  desktop like WinUI's Mica-backed layer does, instead of being pinned to a
+  single fixed value. `#F9F9F9` light / `#272727` dark remain the values for a
+  neutral (achromatic) wallpaper or when the wallpaper cannot be read (the
+  `Theme.Light.xaml` / `Theme.Dark.xaml` color tables now document these as
+  fallbacks, not fixed values). The pane itself keeps true Mica because it
+  must stay transparent for `DwmExtendFrameIntoClientArea` to reach it.
+  Affected follow-up (accepted): nav pane item text renders slightly lighter
+  than WinUI because the pane must stay transparent for Mica, so it cannot
+  use the same pre-blended-opaque trick as the content layer.
 
 ## net472 accessibility API gaps
 

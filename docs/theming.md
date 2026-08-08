@@ -50,7 +50,18 @@ Which backdrops work depends on OS support. Mica and Tabbed require Windows 11; 
 
 ## System theme watcher
 
-`SystemThemeWatcher.Watch(window)` registers debounced Win32 settings hooks and notifies `ApplicationThemeManager` when the OS theme changes. One watched window per process is the normal setup; `ApplicationThemeManager.Changed` is the event to subscribe to.
+`SystemThemeWatcher.Watch(window)` registers debounced Win32 settings hooks and notifies `ApplicationThemeManager` when the OS theme changes. One watched window per process is the normal setup; `ApplicationThemeManager.Changed` is the event to subscribe to. The same watcher also reacts to a desktop wallpaper change (invalidating the cached wallpaper average and re-running the pipeline) so `NavigationViewContentBackground` (below) stays current without a separate watcher.
+
+## NavigationView content layer (wallpaper-aware)
+
+`NavigationViewContentBackground` is an **opaque** pre-blend, not the translucent WinUI 3 canonical value - WPF cannot honor that translucency because DWM composites it incorrectly above a Mica/Acrylic frame (see `KNOWN_ISSUES.md`, "DWM glass-blend distorts translucent overlays above Mica"). To still track the desktop the way WinUI's Mica-backed content layer does, `ColorMap.Build` recomputes this key at every `Apply` from the desktop wallpaper's average color (`Fluence.Wpf.Helpers.WallpaperTintHelper`):
+
+- `WallpaperTintHelper.GetWallpaperAverageColor()` reads the wallpaper file path (or, for a solid-color desktop, the `HKCU\Control Panel\Colors\Background` value), decodes and averages a small downsample of it, and caches the result until the file changes or the cache is explicitly invalidated.
+- `WallpaperTintHelper.EstimateMicaColor` and `PreBlendContent` model how a Mica pane would tint toward that average and pre-blend the theme's translucent content-layer color over it, fitted against measured WinUI 3 Gallery pixel values (see the constants comment in `WallpaperTintHelper.cs`).
+- A neutral (achromatic) wallpaper, or a failed read, resolves to exactly the values in `Theme.Light.xaml` / `Theme.Dark.xaml` (`#F9F9F9` / `#272727`) - those XAML values are the fallback, not the runtime value.
+- High Contrast is never tinted; `SpecialBrushes.AddHighContrastBrushes` continues to bind this key to the live `SystemColors.Window`.
+
+`WallpaperTintHelper.OverrideAverageColor` is the internal test seam that keeps this deterministic in this repo's own suite (mirrors `MotionHelper.OverrideIsMotionEnabled`): `WpfTestSta.EnsureApplication()` pins it to a neutral color so every existing fixture sees the fallback `#F9F9F9` / `#272727` regardless of the host machine's desktop, and the wallpaper-tint tests override it locally to specific colors and restore it afterward. It is `internal` (visible to `Fluence.Wpf.Tests` only), not a public API a downstream consumer's own test project can set.
 
 ## Design-time
 

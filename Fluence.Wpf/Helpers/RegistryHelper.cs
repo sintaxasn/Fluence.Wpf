@@ -28,6 +28,8 @@
 
 using Fluence.Wpf.Native;
 using Microsoft.Win32;
+using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Media;
 
@@ -155,6 +157,34 @@ namespace Fluence.Wpf.Helpers
                 byte r = (byte)(raw & 0xFF);
                 color = Color.FromArgb(a is 0 ? (byte)255 : a, r, g, b);
                 return true;
+            }
+            color = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Reads the solid desktop background color from <c>HKCU\Control Panel\Colors</c>
+        /// "Background", a whitespace-separated "R G B" decimal string. Used as the
+        /// wallpaper-tint input when the desktop has no wallpaper file (a solid color
+        /// background, or <c>SPI_GETDESKWALLPAPER</c> reports an empty path).
+        /// </summary>
+        /// <param name="color">The decoded background color, or <see langword="default"/> when
+        /// the registry value is missing or malformed.</param>
+        /// <returns><see langword="true"/> if the value was present and parsed successfully.</returns>
+        internal static bool TryGetDesktopBackgroundColor(out Color color)
+        {
+            using RegistryKey? key = Registry.CurrentUser.OpenSubKey(NativeConstants.ControlPanelColorsRegistryPath);
+            if (key?.GetValue(NativeConstants.BackgroundColorValue) is string raw && !string.IsNullOrWhiteSpace(raw))
+            {
+                string[] parts = raw.Split([' '], StringSplitOptions.RemoveEmptyEntries);
+                if (parts.Length is 3
+                    && byte.TryParse(parts[0], NumberStyles.Integer, CultureInfo.InvariantCulture, out byte r)
+                    && byte.TryParse(parts[1], NumberStyles.Integer, CultureInfo.InvariantCulture, out byte g)
+                    && byte.TryParse(parts[2], NumberStyles.Integer, CultureInfo.InvariantCulture, out byte b))
+                {
+                    color = Color.FromRgb(r, g, b);
+                    return true;
+                }
             }
             color = default;
             return false;

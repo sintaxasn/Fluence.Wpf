@@ -280,6 +280,29 @@ namespace Fluence.Wpf.Native
         public const int WM_DWMCOMPOSITIONCHANGED = 0x031E;
 
         // ---------------------------------------------------------------------
+        // SystemParametersInfo actions (winuser.h) - SPI_* ordinals.
+        // ---------------------------------------------------------------------
+
+        /// <summary>
+        /// <c>SPI_SETDESKWALLPAPER</c>: sets the desktop wallpaper. Also the value Windows
+        /// carries in the <c>wParam</c> of the <c>WM_SETTINGCHANGE</c> broadcast it sends after
+        /// a wallpaper change.
+        /// </summary>
+        public const uint SPI_SETDESKWALLPAPER = 0x0014;
+
+        /// <summary>
+        /// <c>SPI_GETDESKWALLPAPER</c>: retrieves the full path of the bitmap file used as the
+        /// desktop wallpaper.
+        /// </summary>
+        public const uint SPI_GETDESKWALLPAPER = 0x0073;
+
+        /// <summary>
+        /// <c>MAX_PATH</c>: the traditional Win32 maximum path length, used to size the buffer
+        /// passed to <c>SPI_GETDESKWALLPAPER</c>.
+        /// </summary>
+        public const int MaxPath = 260;
+
+        // ---------------------------------------------------------------------
         // System commands (the wParam of WM_SYSCOMMAND, masked with 0xFFF0).
         // ---------------------------------------------------------------------
 
@@ -452,6 +475,12 @@ namespace Fluence.Wpf.Native
         /// </summary>
         public const string ExplorerAdvancedRegistryPath = @"Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced";
 
+        /// <summary>
+        /// The Control Panel colors key holding the solid desktop background color used when
+        /// the desktop has no wallpaper file.
+        /// </summary>
+        public const string ControlPanelColorsRegistryPath = @"Control Panel\Colors";
+
         // ---------------------------------------------------------------------
         // Registry value names.
         // ---------------------------------------------------------------------
@@ -505,5 +534,10 @@ namespace Fluence.Wpf.Native
         /// <c>EnableSnapAssistFlyout</c>.
         /// </summary>
         public const string EnableSnapAssistFlyout = "EnableSnapAssistFlyout";
+
+        /// <summary>
+        /// <c>Background</c>: the "R G B" decimal-triplet solid desktop background color value.
+        /// </summary>
+        public const string BackgroundColorValue = "Background";
     }
 }

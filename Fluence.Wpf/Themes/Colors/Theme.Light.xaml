@@ -166,6 +166,12 @@
         here is therefore pre-blended opaque: 50% white over SolidBackgroundFillColorBase
         #F3F3F3 = #F9F9F9, which matches the WinUI 3 Gallery's measured on-screen
         content layer on a neutral desktop. See KNOWN_ISSUES.md (DWM glass-blend).
+
+        This is the NEUTRAL-WALLPAPER FALLBACK only. FluenceThemeEngine.ColorMap.Build
+        recomputes this key at Apply time from the live desktop wallpaper average via
+        WallpaperTintHelper, so the content layer shifts with the desktop the way
+        WinUI's Mica-backed layer does; this XAML value is what a neutral (achromatic)
+        wallpaper resolves to, and what is used when the wallpaper cannot be read.
     -->
     <Color x:Key="NavigationViewContentBackground">#FFF9F9F9</Color>
 

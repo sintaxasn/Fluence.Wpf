@@ -60,6 +60,18 @@ namespace Fluence.Wpf.Theming
             Dictionary<string, Color> m = BaseColorTables.Load(theme);
             bool dark = theme is ApplicationTheme.Dark;
 
+            // NavigationViewContentBackground: wallpaper-aware opaque pre-blend. The XAML table
+            // value (read above by BaseColorTables) is the neutral-wallpaper fallback; when the
+            // live desktop wallpaper average is available, recompute it so the content layer
+            // tracks the desktop the way WinUI's Mica-backed layer does. High Contrast never
+            // tints - SpecialBrushes.AddHighContrastBrushes already overrides this key from
+            // SystemColors.
+            if (theme is not ApplicationTheme.HighContrast
+                && WallpaperTintHelper.GetWallpaperAverageColor() is Color wallpaperAverage)
+            {
+                m["NavigationViewContentBackground"] = WallpaperTintHelper.ComputeContentBackground(wallpaperAverage, dark);
+            }
+
             // Raw ramp (theme-independent keys)
             m["SystemAccentColor"] = p.Accent;
             m["SystemAccentColorLight1"] = p.Light1;

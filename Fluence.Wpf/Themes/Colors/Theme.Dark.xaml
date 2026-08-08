@@ -158,6 +158,12 @@
         SolidBackgroundFillColorBase #202020 = #272727, matching the WinUI 3 Gallery's
         measured dark content layer. Kept opaque for the same DWM glass-blend reason
         documented in Theme.Light.xaml and KNOWN_ISSUES.md.
+
+        This is the NEUTRAL-WALLPAPER FALLBACK only. FluenceThemeEngine.ColorMap.Build
+        recomputes this key at Apply time from the live desktop wallpaper average via
+        WallpaperTintHelper, so the content layer shifts with the desktop the way
+        WinUI's Mica-backed layer does; this XAML value is what a neutral (achromatic)
+        wallpaper resolves to, and what is used when the wallpaper cannot be read.
     -->
     <Color x:Key="NavigationViewContentBackground">#FF272727</Color>
 
