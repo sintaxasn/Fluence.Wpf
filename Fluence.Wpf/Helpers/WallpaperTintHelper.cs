@@ -65,20 +65,26 @@ namespace Fluence.Wpf.Helpers
         // model passes through to the exact base color regardless of the wallpaper's brightness -
         // this is what keeps a neutral desktop pinned to the existing #F9F9F9 / #272727 values.
         //
-        // Measured pane (raw Mica) rows and achieved fit (paneEstimate - measured, per channel):
+        // Measured pane (raw Mica) rows and the achieved fit, verified by direct execution of
+        // EstimateMicaColor/ComputeContentBackground against these inputs (paneEstimate/
+        // contentEstimate - measured, per channel; see WallpaperTintHelperTests for the assertions):
         //   Light base #F3F3F3 (243,243,243):
-        //     White  (255,255,255) -> (243,243,243)              fit (0,0,0)      exact
-        //     Red    (232,17,35)   -> (249,240,241)               fit (0,0,0)      (<1 unit)
-        //     Orange (255,140,0)   -> (249,242,233)               fit (+3,-1,-5)
-        //     Yellow (255,255,0)   -> (249,249,194)                fit (0,0,-2)
+        //     White  (255,255,255) -> pane (243,243,243) err (0,0,0)     content (249,249,249) err (0,0,0)
+        //     Red    (232,17,35)   -> pane (249,240,240) err (0,0,-1)    content (252,247,247) err (0,-1,-1)
+        //     Orange (255,140,0)   -> pane (252,241,227) err (+3,-1,-6)  content (253,248,241) err (+1,-1,-3)
+        //     Yellow (255,255,0)   -> pane (249,249,196) err (0,0,+2)    content (252,252,225) err (0,0,0)
         //   Dark base #202020 (32,32,32):
-        //     White  (255,255,255) -> (32,32,32)                  fit (0,0,0)      exact
-        //     Red    (232,17,35)   -> (46,26,27)                  fit (0,0,0)      exact
-        //     Orange (255,140,0)   -> (36,31,26)                  fit (+1,0,-2)
-        //     Yellow (255,255,0)   -> (33,33,26)                  fit (0,0,-1)
-        // Content-layer error (after PreBlend halves/scales the pane error) is well inside the
-        // +/-6 per-channel tolerance on every row; see WallpaperTintHelperTests for the exact
-        // asserted values against the measured content table.
+        //     White  (255,255,255) -> pane (32,32,32) err (0,0,0)       content (39,39,39) err (0,0,0)
+        //     Red    (232,17,35)   -> pane (46,25,27) err (0,-1,0)      content (49,34,36) err (0,-1,0)
+        //     Orange (255,140,0)   -> pane (37,31,23) err (+1,0,-3)     content (43,39,33) err (+1,0,-2)
+        //     Yellow (255,255,0)   -> pane (32,32,24) err (-1,-1,-2)    content (39,39,34) err (-1,-1,-1)
+        // The pane-row errors run up to +/-6 (Light Orange, blue channel); PreBlend's alpha
+        // weighting (0.5 light / 0.298 dark) roughly halves that on the way to the content layer,
+        // so every content-layer row stays within +/-3 of measured - well inside the +/-6
+        // per-channel tolerance the fit spec requires on CONTENT rows. The pane-row checks in
+        // WallpaperTintHelperTests use a looser bound (they are a diagnostic cross-check of this
+        // intermediate step, not the spec's actual contract) so a sub-ULP difference in Math.Exp
+        // between runtimes cannot flip a near-boundary pane assertion.
         private const double LightTintStrength = 0.25;
         private const double LightTintFalloff = 90.0;
         private const double DarkTintStrength = 0.14;
@@ -236,11 +242,15 @@ namespace Fluence.Wpf.Helpers
                 return _cachedColor;
             }
 
+            // Cache the attempt, not just a success: a missing/malformed registry value is cached
+            // as null too, so a failing lookup does not re-hit the registry on every single Apply
+            // call. InvalidateCache() (driven by SystemThemeWatcher) clears this like any other
+            // cached result.
             Color? color = RegistryHelper.TryGetDesktopBackgroundColor(out Color background) ? background : null;
             _cachedColor = color;
             _cachedPath = null;
             _cacheIsSolidColor = true;
-            _hasCache = color is not null;
+            _hasCache = true;
             return color;
         }
 

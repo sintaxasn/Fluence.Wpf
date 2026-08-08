@@ -65,8 +65,12 @@ namespace Fluence.Wpf.Theming
             // live desktop wallpaper average is available, recompute it so the content layer
             // tracks the desktop the way WinUI's Mica-backed layer does. High Contrast never
             // tints - SpecialBrushes.AddHighContrastBrushes already overrides this key from
-            // SystemColors.
-            if (theme is not ApplicationTheme.HighContrast
+            // SystemColors. Gated on !deterministicChrome for the same reason as the title-bar
+            // block below: FluenceThemeEngine.BuildStandalone (the DesignTime.*.xaml snapshot
+            // generator) must perform no registry, DWM, or OS probe so the snapshot stays byte
+            // stable across machines; reading the live wallpaper would violate that contract.
+            if (!deterministicChrome
+                && theme is not ApplicationTheme.HighContrast
                 && WallpaperTintHelper.GetWallpaperAverageColor() is Color wallpaperAverage)
             {
                 m["NavigationViewContentBackground"] = WallpaperTintHelper.ComputeContentBackground(wallpaperAverage, dark);
