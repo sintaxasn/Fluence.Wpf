@@ -59,6 +59,8 @@ namespace Fluence.Wpf.Demo.Pages
         public GalleryPageHeader()
         {
             InitializeComponent();
+            Loaded += GalleryPageHeader_Loaded;
+            Unloaded += GalleryPageHeader_Unloaded;
         }
 
         /// <summary>
@@ -96,6 +98,15 @@ namespace Fluence.Wpf.Demo.Pages
 
         private void ThemeToggleButton_Click(object sender, RoutedEventArgs e)
         {
+            // High contrast is a distinct accessibility theme, not a point on the Light/Dark
+            // axis: flipping it to plain Dark on a click would silently discard the user's (or
+            // the OS's) high-contrast choice. No-op instead; UpdateThemeToggleEnabled also keeps
+            // the button disabled while high contrast is active, so this is a defensive fallback.
+            if (ApplicationThemeManager.ResolvedTheme is ApplicationTheme.HighContrast)
+            {
+                return;
+            }
+
             ApplicationTheme next = ApplicationThemeManager.ResolvedTheme is ApplicationTheme.Dark
                 ? ApplicationTheme.Light
                 : ApplicationTheme.Dark;
@@ -115,6 +126,30 @@ namespace Fluence.Wpf.Demo.Pages
         private void FavoriteToggleButton_CheckedChanged(object sender, RoutedEventArgs e)
         {
             FavoriteIcon.Glyph = FavoriteToggleButton.IsChecked is true ? "\uE735" : "\uE734";
+        }
+
+        private void GalleryPageHeader_Loaded(object sender, RoutedEventArgs e)
+        {
+            // Subscribe on Loaded / unsubscribe on Unloaded (not the constructor) so this
+            // control's lifetime matches its registration on the static ApplicationThemeManager
+            // event; FluenceWindow.OnSourceInitialized/OnClosed is the analogous precedent.
+            ApplicationThemeManager.Changed += ApplicationThemeManager_Changed;
+            UpdateThemeToggleEnabled();
+        }
+
+        private void GalleryPageHeader_Unloaded(object sender, RoutedEventArgs e)
+        {
+            ApplicationThemeManager.Changed -= ApplicationThemeManager_Changed;
+        }
+
+        private void ApplicationThemeManager_Changed(object? sender, ThemeChangedEventArgs e)
+        {
+            UpdateThemeToggleEnabled();
+        }
+
+        private void UpdateThemeToggleEnabled()
+        {
+            ThemeToggleButton.IsEnabled = ApplicationThemeManager.ResolvedTheme is not ApplicationTheme.HighContrast;
         }
     }
 }
