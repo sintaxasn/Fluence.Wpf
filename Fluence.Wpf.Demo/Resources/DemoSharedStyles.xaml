@@ -56,6 +56,10 @@
     <Thickness x:Key="DemoSourceCopyButtonHostMargin">0,8,8,0</Thickness>
     <Thickness x:Key="DemoSourceCopyButtonPadding">8,4</Thickness>
     <Thickness x:Key="DemoSourceChevronMargin">8,0,0,0</Thickness>
+    <Thickness x:Key="DemoCodeCardBottomGapMargin">0,0,0,20</Thickness>
+    <Thickness x:Key="DemoCodeCopyButtonGapMargin">12,0,0,0</Thickness>
+    <sys:Double x:Key="DemoCopyButtonMinWidth">32</sys:Double>
+    <FontFamily x:Key="DemoMonospaceFontFamily">Cascadia Mono, Consolas</FontFamily>
     <sys:Double x:Key="DemoSampleOutputMinWidth">220</sys:Double>
     <sys:Double x:Key="DemoSampleRightRailMinWidth">220</sys:Double>
 
@@ -380,6 +384,17 @@
         <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
         <Setter Property="Margin" Value="{DynamicResource DemoPageDescriptionMargin}" />
         <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+
+    <Style
+        x:Key="DemoCodeSampleTextStyle"
+        BasedOn="{StaticResource {x:Type TextBlock}}"
+        TargetType="{x:Type TextBlock}">
+        <Setter Property="FontFamily" Value="{StaticResource DemoMonospaceFontFamily}" />
+        <Setter Property="FontSize" Value="13" />
+        <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
+        <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="VerticalAlignment" Value="Center" />
     </Style>
 
     <Style

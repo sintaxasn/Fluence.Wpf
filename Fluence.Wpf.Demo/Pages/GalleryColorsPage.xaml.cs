@@ -30,7 +30,6 @@ using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Media;
 
 namespace Fluence.Wpf.Demo.Pages
 {
@@ -570,7 +569,7 @@ namespace Fluence.Wpf.Demo.Pages
         private UIElement CreateResourceKeyRow(string resourceKey)
         {
             TextBlock resourceText = CreateText(resourceKey, styleKey: null, "TextFillColorTertiaryBrush", 12);
-            resourceText.FontFamily = new FontFamily("Cascadia Mono, Consolas");
+            resourceText.SetResourceReference(TextBlock.FontFamilyProperty, "DemoMonospaceFontFamily");
             resourceText.TextWrapping = TextWrapping.Wrap;
             return resourceText;
         }

@@ -31,7 +31,6 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
-using System.Windows.Media;
 
 namespace Fluence.Wpf.Demo.Pages
 {
@@ -489,7 +488,6 @@ namespace Fluence.Wpf.Demo.Pages
             RichTextBox viewer = new()
             {
                 BorderThickness = new Thickness(0),
-                FontFamily = new FontFamily("Consolas"),
                 FontSize = 12,
                 HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
                 IsReadOnly = true,
@@ -500,6 +498,7 @@ namespace Fluence.Wpf.Demo.Pages
             };
             viewer.SetResourceReference(BackgroundProperty, "SystemFillColorSolidAttentionBackgroundBrush");
             viewer.SetResourceReference(ForegroundProperty, "TextFillColorPrimaryBrush");
+            viewer.SetResourceReference(FontFamilyProperty, "DemoMonospaceFontFamily");
             viewer.Document = CreateSourceDocument(source, language);
             return viewer;
         }
@@ -508,11 +507,11 @@ namespace Fluence.Wpf.Demo.Pages
         {
             FlowDocument document = new()
             {
-                FontFamily = new FontFamily("Consolas"),
                 FontSize = 12,
                 PagePadding = GetThicknessResource("DemoSourceCodeDocumentPadding", new Thickness(12)),
             };
             document.SetResourceReference(TextElement.ForegroundProperty, "TextFillColorPrimaryBrush");
+            document.SetResourceReference(TextElement.FontFamilyProperty, "DemoMonospaceFontFamily");
 
             Paragraph paragraph = new()
             {

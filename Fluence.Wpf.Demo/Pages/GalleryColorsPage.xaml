@@ -16,8 +16,8 @@
 
             <fluence:Border
                 x:Name="CodeSampleCard"
-                Margin="0,0,0,20"
-                Padding="16"
+                Margin="{DynamicResource DemoCodeCardBottomGapMargin}"
+                Padding="{DynamicResource DemoSampleCardPadding}"
                 Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
@@ -29,18 +29,14 @@
                     </Grid.ColumnDefinitions>
                     <TextBlock
                         x:Name="CodeSampleText"
-                        VerticalAlignment="Center"
-                        FontFamily="Cascadia Mono, Consolas"
-                        FontSize="13"
-                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                        Text="&lt;TextBlock Foreground=&quot;{DynamicResource TextFillColorPrimaryBrush}&quot; /&gt;"
-                        TextWrapping="Wrap" />
+                        Style="{StaticResource DemoCodeSampleTextStyle}"
+                        Text="&lt;TextBlock Foreground=&quot;{DynamicResource TextFillColorPrimaryBrush}&quot; /&gt;" />
                     <fluence:Button
                         x:Name="CopyCodeSampleButton"
                         Grid.Column="1"
-                        MinWidth="32"
-                        Margin="12,0,0,0"
-                        Padding="8,4"
+                        MinWidth="{DynamicResource DemoCopyButtonMinWidth}"
+                        Margin="{DynamicResource DemoCodeCopyButtonGapMargin}"
+                        Padding="{DynamicResource DemoSourceCopyButtonPadding}"
                         Appearance="Subtle"
                         Click="CopyCodeSampleButton_Click"
                         ToolTip="Copy sample">
@@ -51,7 +47,7 @@
                 </Grid>
             </fluence:Border>
 
-            <TabControl x:Name="ColorSectionTabs" Margin="0,12,0,0" />
+            <TabControl x:Name="ColorSectionTabs" Margin="{DynamicResource DemoMediumTopGapMargin}" />
 
             <TextBlock
                 Margin="{DynamicResource DemoLargeTopGapMargin}"
@@ -60,8 +56,8 @@
             <TextBlock Style="{StaticResource SectionDescriptionStyle}" Text="ThemeDictionary supplies per-theme values that swap automatically on theme changes, and ThemeResource references theme-reactive tokens, matching WinUI 3 markup. Themes without an entry (here HighContrast) fall back to the Default table." />
 
             <fluence:Border
-                Margin="0,0,0,20"
-                Padding="16"
+                Margin="{DynamicResource DemoCodeCardBottomGapMargin}"
+                Padding="{DynamicResource DemoSampleCardPadding}"
                 Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
@@ -98,7 +94,7 @@
             </fluence:Border>
 
             <fluence:Border
-                Padding="16"
+                Padding="{DynamicResource DemoSampleCardPadding}"
                 Background="{DynamicResource CardBackgroundFillColorDefaultBrush}"
                 BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
                 BorderThickness="1"
@@ -108,19 +104,13 @@
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock
-                        x:Name="ThemeDictionarySampleText"
-                        VerticalAlignment="Center"
-                        FontFamily="Cascadia Mono, Consolas"
-                        FontSize="13"
-                        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-                        TextWrapping="Wrap" />
+                    <TextBlock x:Name="ThemeDictionarySampleText" Style="{StaticResource DemoCodeSampleTextStyle}" />
                     <fluence:Button
                         x:Name="CopyThemeDictionarySampleButton"
                         Grid.Column="1"
-                        MinWidth="32"
-                        Margin="12,0,0,0"
-                        Padding="8,4"
+                        MinWidth="{DynamicResource DemoCopyButtonMinWidth}"
+                        Margin="{DynamicResource DemoCodeCopyButtonGapMargin}"
+                        Padding="{DynamicResource DemoSourceCopyButtonPadding}"
                         VerticalAlignment="Top"
                         Appearance="Subtle"
                         Click="CopyThemeDictionarySampleButton_Click"

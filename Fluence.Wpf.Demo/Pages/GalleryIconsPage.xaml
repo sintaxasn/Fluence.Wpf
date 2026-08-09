@@ -86,7 +86,7 @@
             x:Key="IconDetailValueStyle"
             BasedOn="{StaticResource {x:Type TextBlock}}"
             TargetType="{x:Type TextBlock}">
-            <Setter Property="FontFamily" Value="Consolas" />
+            <Setter Property="FontFamily" Value="{StaticResource DemoMonospaceFontFamily}" />
             <Setter Property="Foreground" Value="{DynamicResource TextFillColorPrimaryBrush}" />
             <Setter Property="TextWrapping" Value="Wrap" />
             <Setter Property="VerticalAlignment" Value="Center" />
