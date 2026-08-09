@@ -39,6 +39,7 @@ Each color token has a matching `*Brush` frozen `SolidColorBrush` - for example 
 
 - `ApplicationAccentColorManager.ApplySystemAccent()` - sets the accent intent to System and re-runs the full pipeline, resolving the OS registry palette.
 - `ApplicationAccentColorManager.ApplyCustomAccent(Color)` - sets the accent intent to a fixed color; the ramp is generated to WinUI-style keys (`SystemAccentColorPrimary` / `Secondary` / `Tertiary` plus the `AccentFillColor*` role tokens).
+- `ApplicationAccentColorManager.ApplyCustomAccent(Color light, Color dark)` - per-theme accent seeds: the light seed drives the ramp on the light theme, the dark seed on dark and high-contrast themes. The intent is sticky - every later theme change regenerates the ramp from the matching seed with no re-apply call and no `Changed` subscription needed.
 - `ApplicationThemeManager.Apply(theme)` alone uses the OS palette by default - no separate `ApplySystemAccent()` call is needed on startup.
 - Accent changes re-run the full pipeline and replace slot [0]; `DynamicResource` consumers refresh automatically.
 

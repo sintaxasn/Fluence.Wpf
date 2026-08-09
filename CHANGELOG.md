@@ -4,6 +4,12 @@ All notable changes to this project are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project follows [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- `ApplicationAccentColorManager.ApplyCustomAccent(Color light, Color dark)` - sticky per-theme accent seeds resolved inside the engine on every apply; high contrast follows the dark seed. Consumers that previously re-applied a custom accent from a `Changed` handler can delete the subscription and the duplicate palette rebuild it caused.
+
 ## [0.8.12-Preview] - 2026-08-09
 
 ### Added

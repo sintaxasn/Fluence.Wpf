@@ -49,7 +49,7 @@ namespace Fluence.Wpf.Tests.Theming
 
         private static AccentPalette MakeTestPalette()
         {
-            return AccentResolver.Resolve(AccentIntent.FromCustom(TestBlue));
+            return AccentResolver.Resolve(AccentIntent.FromCustom(TestBlue), ApplicationTheme.Light);
         }
 
         // ------------------------------------------------------------------ ColorMap --

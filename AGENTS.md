@@ -128,7 +128,8 @@ The theme system is a single linear pipeline implemented in `Fluence.Wpf/Theming
 ```
 Apply(themeRequest):
   1. theme   = ThemeResolver.Resolve(request)         // Light / Dark / HC from request + OS registry
-  2. palette = AccentResolver.Resolve(accentIntent)   // OS palette first, generate fallback, default blue
+  2. palette = AccentResolver.Resolve(accentIntent, theme)  // OS palette first, generate fallback, default blue;
+                                                      // a two-seed custom intent picks its seed by resolved theme
   3. colors  = ColorMap.Build(theme, palette)         // one Dictionary<string,Color>:
                   per-theme Color tokens from Theme.*.xaml (Color-only XAML tables)
                   + the few theme-independent tokens (the Windows close-button brand
@@ -144,7 +145,7 @@ Apply(themeRequest):
 
 There is no key promotion, no swap-vs-mutate split, and no per-key copy-up into top-level `Application.Resources`. Every color and brush is built fresh and published as one dictionary replacement.
 
-**Accent intent** is sticky and resolved on every Apply call. `AccentIntent.System` (the default) reads the full OS palette from the registry first; if that fails it falls back to the DWM colorization color and then to default blue. `Apply(theme)` alone uses the OS palette - there is no "must also call `ApplySystemAccent`" footgun. `ApplyCustomAccent(Color)` pins the ramp to the given color using the HSV generator; `ApplySystemAccent()` resets the intent to System.
+**Accent intent** is sticky and resolved on every Apply call. `AccentIntent.System` (the default) reads the full OS palette from the registry first; if that fails it falls back to the DWM colorization color and then to default blue. `Apply(theme)` alone uses the OS palette - there is no "must also call `ApplySystemAccent`" footgun. `ApplyCustomAccent(Color)` pins the ramp to the given color using the HSV generator; `ApplyCustomAccent(Color light, Color dark)` carries per-theme seeds resolved inside the engine on every apply (high contrast follows the dark seed); `ApplySystemAccent()` resets the intent to System.
 
 **High contrast** is just another color table. Its tokens are resolved from live `SystemColors` in `SpecialBrushes.AddHighContrastBrushes`; there is no `_promotedHighContrastBrushKeys` list. A `WM_SETTINGCHANGE` via `SystemThemeWatcher` triggers a re-Apply, which rebuilds and republishes the HC brushes from the current `SystemColors` snapshot.
 

@@ -158,6 +158,62 @@ namespace Fluence.Wpf.Tests
         }
 
         [TestMethod]
+        public void ApplyCustomAccent_PerThemeSeeds_FollowResolvedTheme()
+        {
+            WpfTestSta.Invoke(static () =>
+            {
+                Color lightSeed = Color.FromRgb(0x0F, 0x6C, 0xBD);
+                Color darkSeed = Color.FromRgb(0x47, 0x9E, 0xF5);
+
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None);
+                ApplicationAccentColorManager.ApplyCustomAccent(lightSeed, darkSeed);
+                Assert.AreEqual(lightSeed, ApplicationAccentColorManager.SystemAccentColor,
+                    "The light seed should drive the ramp while the light theme is active.");
+
+                ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None);
+                Assert.AreEqual(darkSeed, ApplicationAccentColorManager.SystemAccentColor,
+                    "The dark seed should drive the ramp after switching to the dark theme, with no re-apply call.");
+
+                ApplicationThemeManager.Apply(ApplicationTheme.HighContrast, BackdropType.None);
+                Assert.AreEqual(darkSeed, ApplicationAccentColorManager.SystemAccentColor,
+                    "High contrast should follow the dark seed.");
+
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None);
+                Assert.AreEqual(lightSeed, ApplicationAccentColorManager.SystemAccentColor,
+                    "Returning to the light theme should re-select the light seed.");
+            });
+        }
+
+        [TestMethod]
+        public void ApplyCustomAccent_PerThemeSeeds_RaisesAccentColorChangedOnce()
+        {
+            WpfTestSta.Invoke(() =>
+            {
+                ApplicationThemeManager.Apply(ApplicationTheme.Light, BackdropType.None, updateAccent: false);
+
+                int eventCount = 0;
+                void OnAccentColorChanged(object? sender, EventArgs e)
+                {
+                    eventCount++;
+                }
+
+                ApplicationAccentColorManager.AccentColorChanged += OnAccentColorChanged;
+                try
+                {
+                    ApplicationAccentColorManager.ApplyCustomAccent(
+                        Color.FromRgb(0x0F, 0x6C, 0xBD), Color.FromRgb(0x47, 0x9E, 0xF5));
+                }
+                finally
+                {
+                    ApplicationAccentColorManager.AccentColorChanged -= OnAccentColorChanged;
+                }
+
+                Assert.AreEqual(1, eventCount,
+                    "Applying per-theme accent seeds should publish exactly one AccentColorChanged notification.");
+            });
+        }
+
+        [TestMethod]
         public void ThemeChange_UpdatesAdaptiveAccents()
         {
             WpfTestSta.Invoke(static () =>

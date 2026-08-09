@@ -92,7 +92,7 @@ namespace Fluence.Wpf.Theming
         internal static void Apply(ApplicationTheme request)
         {
             ApplicationTheme theme = ThemeResolver.Resolve(request);
-            AccentPalette palette = AccentResolver.Resolve(_intent);
+            AccentPalette palette = AccentResolver.Resolve(_intent, theme);
             ResolvedTheme = theme;
             CurrentPalette = palette;
 
@@ -131,7 +131,7 @@ namespace Fluence.Wpf.Theming
         /// <b>without</b> publishing into application resources and <b>without</b> reading
         /// <see cref="Application.Current"/>, the registry, or DWM. The default accent is forced
         /// through <see cref="AccentResolver.Resolve"/> with an
-        /// <see cref="AccentIntent.FromCustom"/> intent (the custom path runs the HSV ramp
+        /// <see cref="AccentIntent.FromCustom(Color)"/> intent (the custom path runs the HSV ramp
         /// generator directly and never touches the registry or <c>DwmGetColorizationParameters</c>),
         /// and the title-bar/window-border tokens use their machine-independent theme defaults
         /// (<c>deterministicChrome</c>). The result is therefore deterministic and headless-safe,
@@ -149,7 +149,7 @@ namespace Fluence.Wpf.Theming
         /// <param name="theme">The application theme to use.</param>
         internal static ResourceDictionary BuildStandalone(ApplicationTheme theme)
         {
-            AccentPalette palette = AccentResolver.Resolve(AccentIntent.FromCustom(Color.FromRgb(0x00, 0x78, 0xD4)));
+            AccentPalette palette = AccentResolver.Resolve(AccentIntent.FromCustom(Color.FromRgb(0x00, 0x78, 0xD4)), theme);
             Dictionary<string, Color> colors = ColorMap.Build(theme, palette, deterministicChrome: true);
             ResourceDictionary computed = BrushFactory.Build(colors);
             SpecialBrushes.Add(computed, colors, theme);
@@ -230,7 +230,7 @@ namespace Fluence.Wpf.Theming
             // (and FluenceWindow's DWM border, which reads it on activate/deactivate) may be
             // observed between a reset and the next Apply; a default(AccentPalette) would surface
             // as #00000000, painting a transparent/black border. FromCustom avoids any registry read.
-            CurrentPalette = AccentResolver.Resolve(AccentIntent.FromCustom(Color.FromRgb(0x00, 0x78, 0xD4)));
+            CurrentPalette = AccentResolver.Resolve(AccentIntent.FromCustom(Color.FromRgb(0x00, 0x78, 0xD4)), ApplicationTheme.Light);
             CurrentTitleBarColors = default;
         }
     }

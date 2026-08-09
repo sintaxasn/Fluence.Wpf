@@ -189,12 +189,12 @@ namespace Fluence.Wpf.Tests.Theming
         public void AccentResolver_System_PrefersOsPaletteThenGenerates()
         {
             // System intent must resolve to 7 opaque colors regardless of path taken.
-            AccentPalette sys = AccentResolver.Resolve(AccentIntent.System);
+            AccentPalette sys = AccentResolver.Resolve(AccentIntent.System, ApplicationTheme.Light);
             Assert.AreEqual((byte)0xFF, sys.Accent.A, "Accent rung must be opaque.");
 
             // Custom(#0078D4) must use the generated ramp: Light2 must equal what the generator produces.
             Color customBase = Color.FromRgb(0x00, 0x78, 0xD4);
-            AccentPalette custom = AccentResolver.Resolve(AccentIntent.FromCustom(customBase));
+            AccentPalette custom = AccentResolver.Resolve(AccentIntent.FromCustom(customBase), ApplicationTheme.Light);
             Helpers.HsvColorHelper.GenerateAccentRampWinaccent(customBase,
                 out _, out Color l2, out _, out _, out _, out _);
             Assert.AreEqual(l2, custom.Light2, "Custom accent must use the generated ramp, unchanged.");
