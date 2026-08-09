@@ -35,10 +35,8 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryTabsPage : UserControl
     {
-        private const string TabControlBasicsXamlSource = "<UserControl\n" +
-                                                          "    x:Class=\"Fluence.Wpf.Demo.Pages.Tabs.TabControlBasics\"\n" +
-                                                          "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                          "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\">\n" +
+        private static readonly string TabControlBasicsXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Tabs.TabControlBasics",
                                                           "    <TabControl Height=\"210\">\n" +
                                                           "        <TabItem Header=\"Overview\">\n" +
                                                           "            <StackPanel Margin=\"20\">\n" +
@@ -82,8 +80,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                           "                    TextWrapping=\"Wrap\" />\n" +
                                                           "            </StackPanel>\n" +
                                                           "        </TabItem>\n" +
-                                                          "    </TabControl>\n" +
-                                                          "</UserControl>\n";
+                                                          "    </TabControl>\n");
 
         private const string TabControlBasicsCSharpSource = "using System.Windows.Controls;\n" +
                                                             "\n" +
@@ -97,10 +94,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                             "        }\n" +
                                                             "    }\n" +
                                                             "}\n";
-        private const string TabControlPlacementXamlSource = "<UserControl\n" +
-                                                             "    x:Class=\"Fluence.Wpf.Demo.Pages.Tabs.TabControlPlacement\"\n" +
-                                                             "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                             "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\">\n" +
+        private static readonly string TabControlPlacementXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Tabs.TabControlPlacement",
                                                              "    <TabControl\n" +
                                                              "        x:Name=\"LeftPlacementTabs\"\n" +
                                                              "        Height=\"220\"\n" +
@@ -119,8 +114,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                              "                Text=\"Archived conversations and completed items.\"\n" +
                                                              "                TextWrapping=\"Wrap\" />\n" +
                                                              "        </TabItem>\n" +
-                                                             "    </TabControl>\n" +
-                                                             "</UserControl>\n";
+                                                             "    </TabControl>\n");
 
         private const string TabControlPlacementCSharpSource = "using System.Windows.Controls;\n" +
                                                                "\n" +
@@ -134,11 +128,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                                "        }\n" +
                                                                "    }\n" +
                                                                "}\n";
-        private const string TabViewDocumentsXamlSource = "<UserControl\n" +
-                                                          "    x:Class=\"Fluence.Wpf.Demo.Pages.Tabs.TabViewDocuments\"\n" +
-                                                          "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                          "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                          "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string TabViewDocumentsXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Tabs.TabViewDocuments",
                                                           "    <StackPanel>\n" +
                                                           "        <fluence:TabView\n" +
                                                           "            x:Name=\"DemoTabView\"\n" +
@@ -213,8 +204,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                           "            Margin=\"0,12,0,0\"\n" +
                                                           "            Foreground=\"{DynamicResource TextFillColorSecondaryBrush}\"\n" +
                                                           "            Text=\"Tabs: 3\" />\n" +
-                                                          "    </StackPanel>\n" +
-                                                          "</UserControl>\n";
+                                                          "    </StackPanel>\n");
 
         private const string TabViewDocumentsCSharpSource = "using System.Windows;\n" +
                                                             "using System.Windows.Controls;\n" +

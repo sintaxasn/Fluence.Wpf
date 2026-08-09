@@ -33,11 +33,8 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryDataPage : UserControl
     {
-        private const string ListViewItemsXamlSource = "<UserControl\n" +
-                                                       "    x:Class=\"Fluence.Wpf.Demo.Pages.Data.ListViewItems\"\n" +
-                                                       "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                       "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                       "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string ListViewItemsXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Data.ListViewItems",
                                                        "    <Grid>\n" +
                                                        "        <Grid.ColumnDefinitions>\n" +
                                                        "            <ColumnDefinition Width=\"*\" />\n" +
@@ -130,8 +127,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "                </ListViewItem>\n" +
                                                        "            </fluence:ListView>\n" +
                                                        "        </Border>\n" +
-                                                       "    </Grid>\n" +
-                                                       "</UserControl>\n";
+                                                       "    </Grid>\n");
 
         private const string ListViewItemsCSharpSource = "using System.Windows.Controls;\n" +
                                                          "\n" +
@@ -145,11 +141,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                          "        }\n" +
                                                          "    }\n" +
                                                          "}\n";
-        private const string ListViewEmptyStateXamlSource = "<UserControl\n" +
-                                                            "    x:Class=\"Fluence.Wpf.Demo.Pages.Data.ListViewEmptyState\"\n" +
-                                                            "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                            "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                            "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string ListViewEmptyStateXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Data.ListViewEmptyState",
                                                             "    <StackPanel>\n" +
                                                             "        <fluence:ListView\n" +
                                                             "            x:Name=\"EmptyStateListView\"\n" +
@@ -182,8 +175,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                             "                Content=\"Remove item\"\n" +
                                                             "                MinWidth=\"140\" />\n" +
                                                             "        </StackPanel>\n" +
-                                                            "    </StackPanel>\n" +
-                                                            "</UserControl>\n";
+                                                            "    </StackPanel>\n");
 
         private const string ListViewEmptyStateCSharpSource = "using System.Windows;\n" +
                                                               "using System.Windows.Controls;\n" +
@@ -228,11 +220,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                               "        }\n" +
                                                               "    }\n" +
                                                               "}\n";
-        private const string ListBoxSelectionXamlSource = "<UserControl\n" +
-                                                          "    x:Class=\"Fluence.Wpf.Demo.Pages.Data.ListBoxSelection\"\n" +
-                                                          "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                          "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                          "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string ListBoxSelectionXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Data.ListBoxSelection",
                                                           "    <Grid>\n" +
                                                           "        <Grid.ColumnDefinitions>\n" +
                                                           "            <ColumnDefinition Width=\"*\" />\n" +
@@ -263,8 +252,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                           "            <fluence:ListBoxItem Content=\"Information\" />\n" +
                                                           "            <fluence:ListBoxItem Content=\"Verbose\" />\n" +
                                                           "        </fluence:ListBox>\n" +
-                                                          "    </Grid>\n" +
-                                                          "</UserControl>\n";
+                                                          "    </Grid>\n");
 
         private const string ListBoxSelectionCSharpSource = "using System.Windows.Controls;\n" +
                                                             "\n" +
@@ -278,11 +266,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                             "        }\n" +
                                                             "    }\n" +
                                                             "}\n";
-        private const string CardVariantsXamlSource = "<UserControl\n" +
-                                                      "    x:Class=\"Fluence.Wpf.Demo.Pages.Data.CardVariants\"\n" +
-                                                      "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                      "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                      "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string CardVariantsXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Data.CardVariants",
                                                       "    <UniformGrid Columns=\"2\">\n" +
                                                       "        <fluence:Card\n" +
                                                       "            MinHeight=\"110\"\n" +
@@ -315,8 +300,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                       "            Variant=\"{x:Static fluence:CardVariant.Subtle}\">\n" +
                                                       "            <TextBlock Text=\"Keeps low-emphasis supporting content grouped.\" TextWrapping=\"Wrap\" />\n" +
                                                       "        </fluence:Card>\n" +
-                                                      "    </UniformGrid>\n" +
-                                                      "</UserControl>\n";
+                                                      "    </UniformGrid>\n");
 
         private const string CardVariantsCSharpSource = "using System.Windows.Controls;\n" +
                                                         "\n" +
@@ -330,11 +314,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                         "        }\n" +
                                                         "    }\n" +
                                                         "}\n";
-        private const string ImageXamlSource = "<UserControl\n" +
-                                               "    x:Class=\"Fluence.Wpf.Demo.Pages.Data.ImageSample\"\n" +
-                                               "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                               "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                               "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string ImageXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Data.ImageSample",
                                                "    <WrapPanel\n" +
                                                "        HorizontalAlignment=\"Center\"\n" +
                                                "        VerticalAlignment=\"Center\">\n" +
@@ -359,8 +340,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                "            CornerRadius=\"48\"\n" +
                                                "            Source=\"pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPicturePriyaKapoor.png\"\n" +
                                                "            Stretch=\"UniformToFill\" />\n" +
-                                               "    </WrapPanel>\n" +
-                                               "</UserControl>\n";
+                                               "    </WrapPanel>\n");
         private const string ImageCSharpSource = "using System.Windows.Controls;\n" +
                                                  "\n" +
                                                  "namespace Fluence.Wpf.Demo.Pages.Data\n" +
@@ -373,11 +353,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                  "        }\n" +
                                                  "    }\n" +
                                                  "}\n";
-        private const string PersonPictureXamlSource = "<UserControl\n" +
-                                                       "    x:Class=\"Fluence.Wpf.Demo.Pages.Data.PersonPictureSample\"\n" +
-                                                       "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                       "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                       "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string PersonPictureXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Data.PersonPictureSample",
                                                        "    <WrapPanel\n" +
                                                        "        HorizontalAlignment=\"Center\"\n" +
                                                        "        VerticalAlignment=\"Center\">\n" +
@@ -412,8 +389,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "            Margin=\"0,0,12,12\"\n" +
                                                        "            DisplayName=\"Madison Butler\"\n" +
                                                        "            ProfilePicture=\"pack://application:,,,/Fluence.Wpf.Demo;component/Resources/ControlImages/PersonPictureMadisonButler.png\" />\n" +
-                                                       "    </WrapPanel>\n" +
-                                                       "</UserControl>\n";
+                                                       "    </WrapPanel>\n");
 
         private const string PersonPictureCSharpSource = "using System.Windows.Controls;\n" +
                                                          "\n" +

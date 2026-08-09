@@ -36,11 +36,8 @@ namespace Fluence.Wpf.Demo.Pages
     {
         private bool _updatingSelectAll;
 
-        private const string CheckBoxStatesXamlSource = "<UserControl\n" +
-                                                        "    x:Class=\"Fluence.Wpf.Demo.Pages.Selection.CheckBoxStates\"\n" +
-                                                        "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                        "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                        "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string CheckBoxStatesXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Selection.CheckBoxStates",
                                                         "    <StackPanel>\n" +
                                                         "        <WrapPanel Margin=\"0,0,0,16\">\n" +
                                                         "            <fluence:CheckBox\n" +
@@ -88,8 +85,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                         "                Content=\"Option 3\"\n" +
                                                         "                Unchecked=\"OptionCheckBox_Changed\" />\n" +
                                                         "        </StackPanel>\n" +
-                                                        "    </StackPanel>\n" +
-                                                        "</UserControl>\n";
+                                                        "    </StackPanel>\n");
 
         private const string CheckBoxStatesCSharpSource = "using System.Windows;\n" +
                                                           "using System.Windows.Controls;\n" +
@@ -135,11 +131,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                           "        }\n" +
                                                           "    }\n" +
                                                           "}\n";
-        private const string RadioButtonGroupsXamlSource = "<UserControl\n" +
-                                                           "    x:Class=\"Fluence.Wpf.Demo.Pages.Selection.RadioButtonGroups\"\n" +
-                                                           "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                           "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                           "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string RadioButtonGroupsXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Selection.RadioButtonGroups",
                                                            "    <StackPanel>\n" +
                                                            "        <TextBlock\n" +
                                                            "            Margin=\"0,0,0,8\"\n" +
@@ -176,8 +169,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                            "            Content=\"Advanced\"\n" +
                                                            "            Description=\"Expert-level options\"\n" +
                                                            "            GroupName=\"DescGroup\" />\n" +
-                                                           "    </StackPanel>\n" +
-                                                           "</UserControl>\n";
+                                                           "    </StackPanel>\n");
 
         private const string RadioButtonGroupsCSharpSource = "using System.Windows.Controls;\n" +
                                                              "\n" +
@@ -191,11 +183,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                              "        }\n" +
                                                              "    }\n" +
                                                              "}\n";
-        private const string ToggleSwitchStatesXamlSource = "<UserControl\n" +
-                                                            "    x:Class=\"Fluence.Wpf.Demo.Pages.Selection.ToggleSwitchStates\"\n" +
-                                                            "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                            "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                            "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string ToggleSwitchStatesXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Selection.ToggleSwitchStates",
                                                             "    <fluence:StackPanel Spacing=\"8\">\n" +
                                                             "        <TextBlock\n" +
                                                             "            x:Name=\"WorkToggleHeaderText\"\n" +
@@ -219,8 +208,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                             "                IsActive=\"{Binding IsChecked, ElementName=WorkToggleSwitch}\"\n" +
                                                             "                IsIndeterminate=\"True\" />\n" +
                                                             "        </fluence:StackPanel>\n" +
-                                                            "    </fluence:StackPanel>\n" +
-                                                            "</UserControl>\n";
+                                                            "    </fluence:StackPanel>\n");
 
         private const string ToggleSwitchStatesCSharpSource = "using System.Windows.Controls;\n" +
                                                               "\n" +
@@ -234,11 +222,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                               "        }\n" +
                                                               "    }\n" +
                                                               "}\n";
-        private const string RatingControlXamlSource = "<UserControl\n" +
-                                                       "    x:Class=\"Fluence.Wpf.Demo.Pages.Selection.RatingControlSample\"\n" +
-                                                       "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                       "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                       "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string RatingControlXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Selection.RatingControlSample",
                                                        "    <fluence:StackPanel Spacing=\"14\">\n" +
                                                        "        <fluence:RatingControl\n" +
                                                        "            Caption=\"Rate the experience\"\n" +
@@ -249,8 +234,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "            IsReadOnly=\"True\"\n" +
                                                        "            MaxRating=\"5\"\n" +
                                                        "            Value=\"4\" />\n" +
-                                                       "    </fluence:StackPanel>\n" +
-                                                       "</UserControl>\n";
+                                                       "    </fluence:StackPanel>\n");
 
         private const string RatingControlCSharpSource = "using System.Windows.Controls;\n" +
                                                          "\n" +
@@ -264,11 +248,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                          "        }\n" +
                                                          "    }\n" +
                                                          "}\n";
-        private const string ComboBoxSelectionXamlSource = "<UserControl\n" +
-                                                           "    x:Class=\"Fluence.Wpf.Demo.Pages.Selection.ComboBoxSelection\"\n" +
-                                                           "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                           "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                           "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string ComboBoxSelectionXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Selection.ComboBoxSelection",
                                                            "    <fluence:StackPanel Spacing=\"20\">\n" +
                                                            "        <fluence:ComboBox\n" +
                                                            "            Width=\"480\"\n" +
@@ -296,8 +277,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                            "            HorizontalAlignment=\"Left\"\n" +
                                                            "            IsEnabled=\"False\"\n" +
                                                            "            PlaceholderText=\"Disabled\" />\n" +
-                                                           "    </fluence:StackPanel>\n" +
-                                                           "</UserControl>\n";
+                                                           "    </fluence:StackPanel>\n");
 
         private const string ComboBoxSelectionCSharpSource = "using System.Windows.Controls;\n" +
                                                              "\n" +

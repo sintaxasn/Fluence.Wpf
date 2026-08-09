@@ -35,11 +35,8 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryStatusPage : UserControl
     {
-        private const string ProgressBarValueXamlSource = "<UserControl\n" +
-                                                          "    x:Class=\"Fluence.Wpf.Demo.Pages.Status.ProgressBarValue\"\n" +
-                                                          "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                          "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                          "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string ProgressBarValueXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Status.ProgressBarValue",
                                                           "    <StackPanel>\n" +
                                                           "        <fluence:ProgressBar\n" +
                                                           "            x:Name=\"StandardProgressBar\"\n" +
@@ -92,8 +89,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                           "                    Value=\"78\" />\n" +
                                                           "            </StackPanel>\n" +
                                                           "        </Grid>\n" +
-                                                          "    </StackPanel>\n" +
-                                                          "</UserControl>\n";
+                                                          "    </StackPanel>\n");
 
         private const string ProgressBarValueCSharpSource = "using System.Windows.Controls;\n" +
                                                             "\n" +
@@ -108,11 +104,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                             "\n" +
                                                             "    }\n" +
                                                             "}\n";
-        private const string ProgressBarIndeterminateXamlSource = "<UserControl\n" +
-                                                                  "    x:Class=\"Fluence.Wpf.Demo.Pages.Status.ProgressBarIndeterminate\"\n" +
-                                                                  "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                                  "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                                  "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string ProgressBarIndeterminateXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Status.ProgressBarIndeterminate",
                                                                   "    <StackPanel>\n" +
                                                                   "        <fluence:ProgressBar\n" +
                                                                   "            x:Name=\"IndeterminateProgressBar\"\n" +
@@ -132,8 +125,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                                   "                OnContent=\"On / Off\"\n" +
                                                                   "                Unchecked=\"IndeterminateToggle_Toggled\" />\n" +
                                                                   "        </StackPanel>\n" +
-                                                                  "    </StackPanel>\n" +
-                                                                  "</UserControl>\n";
+                                                                  "    </StackPanel>\n");
 
         private const string ProgressBarIndeterminateCSharpSource = "using System.Windows;\n" +
                                                                     "using System.Windows.Controls;\n" +
@@ -161,11 +153,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                                     "        }\n" +
                                                                     "    }\n" +
                                                                     "}\n";
-        private const string ProgressBarStepsXamlSource = "<UserControl\n" +
-                                                          "    x:Class=\"Fluence.Wpf.Demo.Pages.Status.ProgressBarSteps\"\n" +
-                                                          "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                          "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                          "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string ProgressBarStepsXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Status.ProgressBarSteps",
                                                           "    <StackPanel>\n" +
                                                           "        <fluence:ProgressBar\n" +
                                                           "            x:Name=\"StepProgressBar\"\n" +
@@ -193,8 +182,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                           "                Foreground=\"{DynamicResource TextFillColorPrimaryBrush}\"\n" +
                                                           "                Text=\"Step 1 of 10\" />\n" +
                                                           "        </StackPanel>\n" +
-                                                          "    </StackPanel>\n" +
-                                                          "</UserControl>\n";
+                                                          "    </StackPanel>\n");
 
         private const string ProgressBarStepsCSharpSource = "using System;\n" +
                                                             "using System.Windows;\n" +
@@ -229,11 +217,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                             "        }\n" +
                                                             "    }\n" +
                                                             "}\n";
-        private const string ProgressRingsXamlSource = "<UserControl\n" +
-                                                       "    x:Class=\"Fluence.Wpf.Demo.Pages.Status.ProgressRings\"\n" +
-                                                       "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                       "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                       "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string ProgressRingsXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Status.ProgressRings",
                                                        "    <Grid HorizontalAlignment=\"Stretch\">\n" +
                                                        "        <Grid.ColumnDefinitions>\n" +
                                                        "            <ColumnDefinition Width=\"*\" />\n" +
@@ -349,8 +334,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "            HorizontalAlignment=\"Center\"\n" +
                                                        "            Foreground=\"{DynamicResource TextFillColorSecondaryBrush}\"\n" +
                                                        "            Text=\"Error\" />\n" +
-                                                       "    </Grid>\n" +
-                                                       "</UserControl>\n";
+                                                       "    </Grid>\n");
 
         private const string ProgressRingsCSharpSource = "using System.Windows.Controls;\n" +
                                                          "\n" +
@@ -365,11 +349,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                          "\n" +
                                                          "    }\n" +
                                                          "}\n";
-        private const string InfoBarsXamlSource = "<UserControl\n" +
-                                                  "    x:Class=\"Fluence.Wpf.Demo.Pages.Status.InfoBars\"\n" +
-                                                  "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                  "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                  "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string InfoBarsXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Status.InfoBars",
                                                   "    <StackPanel>\n" +
                                                   "        <fluence:InfoBar\n" +
                                                   "            x:Name=\"InfoBarInformational\"\n" +
@@ -412,8 +393,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                   "            HorizontalAlignment=\"Left\"\n" +
                                                   "            Click=\"ResetInfoBars_Click\"\n" +
                                                   "            Content=\"Reset All InfoBars\" />\n" +
-                                                  "    </StackPanel>\n" +
-                                                  "</UserControl>\n";
+                                                  "    </StackPanel>\n");
 
         private const string InfoBarsCSharpSource = "using System.Windows;\n" +
                                                     "using System.Windows.Controls;\n" +

@@ -40,11 +40,8 @@ namespace Fluence.Wpf.Demo.Pages
     /// </summary>
     public partial class GalleryDataBindingPage : UserControl
     {
-        private const string ObservableCollectionListViewXamlSource = "<UserControl\n" +
-                                                                      "    x:Class=\"Fluence.Wpf.Demo.Pages.DataBinding.ObservableCollectionListView\"\n" +
-                                                                      "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                                      "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                                      "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string ObservableCollectionListViewXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.DataBinding.ObservableCollectionListView",
                                                                       "    <Grid>\n" +
                                                                       "        <Grid.RowDefinitions>\n" +
                                                                       "            <RowDefinition Height=\"Auto\" />\n" +
@@ -113,8 +110,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                                       "                </DataTemplate>\n" +
                                                                       "            </fluence:ListView.ItemTemplate>\n" +
                                                                       "        </fluence:ListView>\n" +
-                                                                      "    </Grid>\n" +
-                                                                      "</UserControl>\n";
+                                                                      "    </Grid>\n");
 
         private const string ObservableCollectionListViewCSharpSource = "using System;\n" +
                                                                         "using System.Collections.ObjectModel;\n" +
@@ -192,11 +188,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                                         "        public string AddedAt { get; set; } = string.Empty;\n" +
                                                                         "    }\n" +
                                                                         "}\n";
-        private const string ListViewSelectionModeXamlSource = "<UserControl\n" +
-                                                               "    x:Class=\"Fluence.Wpf.Demo.Pages.DataBinding.ListViewSelectionMode\"\n" +
-                                                               "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                               "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                               "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string ListViewSelectionModeXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.DataBinding.ListViewSelectionMode",
                                                                "    <StackPanel>\n" +
                                                                "        <StackPanel Margin=\"0,0,0,12\" Orientation=\"Horizontal\">\n" +
                                                                "            <fluence:RadioButton\n" +
@@ -239,8 +232,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                                "            Margin=\"0,8,0,0\"\n" +
                                                                "            Foreground=\"{DynamicResource TextFillColorSecondaryBrush}\"\n" +
                                                                "            Text=\"Selected: none\" />\n" +
-                                                               "    </StackPanel>\n" +
-                                                               "</UserControl>\n";
+                                                               "    </StackPanel>\n");
 
         private const string ListViewSelectionModeCSharpSource = "using System;\n" +
                                                                  "using System.Windows;\n" +
@@ -304,11 +296,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                                  "        }\n" +
                                                                  "    }\n" +
                                                                  "}\n";
-        private const string DataTemplateRowXamlSource = "<UserControl\n" +
-                                                         "    x:Class=\"Fluence.Wpf.Demo.Pages.DataBinding.DataTemplateRow\"\n" +
-                                                         "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                         "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                         "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string DataTemplateRowXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.DataBinding.DataTemplateRow",
                                                          "    <StackPanel>\n" +
                                                          "        <fluence:ListView\n" +
                                                          "            x:Name=\"DataTemplateListView\"\n" +
@@ -352,8 +341,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                          "            Margin=\"0,8,0,0\"\n" +
                                                          "            Foreground=\"{DynamicResource TextFillColorSecondaryBrush}\"\n" +
                                                          "            Text=\"Name and AddedAt are simple properties on each bound item.\" />\n" +
-                                                         "    </StackPanel>\n" +
-                                                         "</UserControl>\n";
+                                                         "    </StackPanel>\n");
 
         private const string DataTemplateRowCSharpSource = "using System;\n" +
                                                            "using System.Collections.ObjectModel;\n" +

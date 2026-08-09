@@ -34,11 +34,8 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryButtonsPage : UserControl
     {
-        private const string ButtonAppearancesXamlSource = "<UserControl\n" +
-                                                           "    x:Class=\"Fluence.Wpf.Demo.Pages.Buttons.ButtonAppearances\"\n" +
-                                                           "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                           "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                           "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string ButtonAppearancesXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Buttons.ButtonAppearances",
                                                            "    <StackPanel>\n" +
                                                            "        <WrapPanel VerticalAlignment=\"Center\">\n" +
                                                            "            <fluence:Button\n" +
@@ -60,8 +57,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                            "            x:Name=\"ButtonEnableCheckBox\"\n" +
                                                            "            Content=\"Enable buttons\"\n" +
                                                            "            IsChecked=\"True\" />\n" +
-                                                           "    </StackPanel>\n" +
-                                                           "</UserControl>\n";
+                                                           "    </StackPanel>\n");
 
         private const string ButtonAppearancesCSharpSource = "using System.Windows.Controls;\n" +
                                                              "\n" +
@@ -75,11 +71,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                              "        }\n" +
                                                              "    }\n" +
                                                              "}\n";
-        private const string ButtonIconsXamlSource = "<UserControl\n" +
-                                                     "    x:Class=\"Fluence.Wpf.Demo.Pages.Buttons.ButtonIcons\"\n" +
-                                                     "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                     "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                     "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string ButtonIconsXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Buttons.ButtonIcons",
                                                      "    <WrapPanel VerticalAlignment=\"Center\">\n" +
                                                      "        <fluence:Button Margin=\"0,0,8,8\" Content=\"Icon Left\">\n" +
                                                      "            <fluence:Button.Icon>\n" +
@@ -102,8 +95,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                      "                <fluence:FontIcon Glyph=\"&#xE72C;\" IconFontSize=\"14\" />\n" +
                                                      "            </fluence:Button.Icon>\n" +
                                                      "        </fluence:Button>\n" +
-                                                     "    </WrapPanel>\n" +
-                                                     "</UserControl>\n";
+                                                     "    </WrapPanel>\n");
 
         private const string ButtonIconsCSharpSource = "using System.Windows.Controls;\n" +
                                                        "\n" +
@@ -117,11 +109,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "        }\n" +
                                                        "    }\n" +
                                                        "}\n";
-        private const string HyperlinkButtonsXamlSource = "<UserControl\n" +
-                                                          "    x:Class=\"Fluence.Wpf.Demo.Pages.Buttons.HyperlinkButtons\"\n" +
-                                                          "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                          "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                          "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string HyperlinkButtonsXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Buttons.HyperlinkButtons",
                                                           "    <WrapPanel VerticalAlignment=\"Center\">\n" +
                                                           "        <fluence:HyperlinkButton\n" +
                                                           "            Margin=\"0,0,16,8\"\n" +
@@ -143,8 +132,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                           "            Margin=\"0,0,16,8\"\n" +
                                                           "            Content=\"Disabled\"\n" +
                                                           "            IsEnabled=\"False\" />\n" +
-                                                          "    </WrapPanel>\n" +
-                                                          "</UserControl>\n";
+                                                          "    </WrapPanel>\n");
 
         private const string HyperlinkButtonsCSharpSource = "using System.Windows.Controls;\n" +
                                                             "\n" +
@@ -158,11 +146,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                             "        }\n" +
                                                             "    }\n" +
                                                             "}\n";
-        private const string DropDownButtonsXamlSource = "<UserControl\n" +
-                                                         "    x:Class=\"Fluence.Wpf.Demo.Pages.Buttons.DropDownButtons\"\n" +
-                                                         "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                         "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                         "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string DropDownButtonsXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Buttons.DropDownButtons",
                                                          "    <WrapPanel VerticalAlignment=\"Center\">\n" +
                                                          "        <fluence:DropDownButton Margin=\"0,0,8,8\" Content=\"New\">\n" +
                                                          "            <fluence:DropDownButton.Flyout>\n" +
@@ -207,8 +192,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                          "                <TextBlock Margin=\"12\" Text=\"Unavailable\" />\n" +
                                                          "            </fluence:DropDownButton.Flyout>\n" +
                                                          "        </fluence:DropDownButton>\n" +
-                                                         "    </WrapPanel>\n" +
-                                                         "</UserControl>\n";
+                                                         "    </WrapPanel>\n");
 
         private const string DropDownButtonsCSharpSource = "using System.Windows.Controls;\n" +
                                                            "\n" +
@@ -222,11 +206,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                            "        }\n" +
                                                            "    }\n" +
                                                            "}\n";
-        private const string SplitButtonsXamlSource = "<UserControl\n" +
-                                                      "    x:Class=\"Fluence.Wpf.Demo.Pages.Buttons.SplitButtons\"\n" +
-                                                      "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                      "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                      "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string SplitButtonsXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Buttons.SplitButtons",
                                                       "    <WrapPanel VerticalAlignment=\"Center\">\n" +
                                                       "        <fluence:SplitButton Margin=\"0,0,8,8\" Content=\"Save\">\n" +
                                                       "            <fluence:SplitButton.Flyout>\n" +
@@ -276,8 +257,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                       "                <TextBlock Margin=\"12\" Text=\"Unavailable\" />\n" +
                                                       "            </fluence:SplitButton.Flyout>\n" +
                                                       "        </fluence:SplitButton>\n" +
-                                                      "    </WrapPanel>\n" +
-                                                      "</UserControl>\n";
+                                                      "    </WrapPanel>\n");
 
         private const string SplitButtonsCSharpSource = "using System.Windows.Controls;\n" +
                                                         "\n" +
@@ -291,11 +271,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                         "        }\n" +
                                                         "    }\n" +
                                                         "}\n";
-        private const string RepeatButtonsXamlSource = "<UserControl\n" +
-                                                       "    x:Class=\"Fluence.Wpf.Demo.Pages.Buttons.RepeatButtons\"\n" +
-                                                       "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                       "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                       "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string RepeatButtonsXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Buttons.RepeatButtons",
                                                        "    <WrapPanel VerticalAlignment=\"Center\">\n" +
                                                        "        <fluence:RepeatButton\n" +
                                                        "            x:Name=\"RepeatCounterButton\"\n" +
@@ -308,8 +285,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "            VerticalAlignment=\"Center\"\n" +
                                                        "            Foreground=\"{DynamicResource TextFillColorSecondaryBrush}\"\n" +
                                                        "            Text=\"Clicks: 0\" />\n" +
-                                                       "    </WrapPanel>\n" +
-                                                       "</UserControl>\n";
+                                                       "    </WrapPanel>\n");
 
         private const string RepeatButtonsCSharpSource = "using System.Globalization;\n" +
                                                          "using System.Windows;\n" +
@@ -336,11 +312,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                          "        }\n" +
                                                          "    }\n" +
                                                          "}\n";
-        private const string ToggleButtonsXamlSource = "<UserControl\n" +
-                                                       "    x:Class=\"Fluence.Wpf.Demo.Pages.Buttons.ToggleButtons\"\n" +
-                                                       "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                       "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                       "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string ToggleButtonsXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Buttons.ToggleButtons",
                                                        "    <StackPanel>\n" +
                                                        "        <WrapPanel VerticalAlignment=\"Center\">\n" +
                                                        "            <fluence:ToggleButton\n" +
@@ -363,8 +336,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "            x:Name=\"ToggleButtonStateText\"\n" +
                                                        "            Foreground=\"{DynamicResource TextFillColorSecondaryBrush}\"\n" +
                                                        "            Text=\"Wrap text: Off\" />\n" +
-                                                       "    </StackPanel>\n" +
-                                                       "</UserControl>\n";
+                                                       "    </StackPanel>\n");
 
         private const string ToggleButtonsCSharpSource = "using System.Windows;\n" +
                                                          "using System.Windows.Controls;\n" +
@@ -386,11 +358,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                          "        }\n" +
                                                          "    }\n" +
                                                          "}\n";
-        private const string ToggleSplitButtonsXamlSource = "<UserControl\n" +
-                                                            "    x:Class=\"Fluence.Wpf.Demo.Pages.Buttons.ToggleSplitButtons\"\n" +
-                                                            "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                            "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                            "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string ToggleSplitButtonsXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Buttons.ToggleSplitButtons",
                                                             "    <StackPanel>\n" +
                                                             "        <WrapPanel VerticalAlignment=\"Center\">\n" +
                                                             "            <fluence:ToggleSplitButton\n" +
@@ -435,8 +404,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                             "            x:Name=\"ToggleSplitButtonStateText\"\n" +
                                                             "            Foreground=\"{DynamicResource TextFillColorSecondaryBrush}\"\n" +
                                                             "            Text=\"List formatting: Off\" />\n" +
-                                                            "    </StackPanel>\n" +
-                                                            "</UserControl>\n";
+                                                            "    </StackPanel>\n");
 
         private const string ToggleSplitButtonsCSharpSource = "using System.Globalization;\n" +
                                                               "using System.Windows;\n" +

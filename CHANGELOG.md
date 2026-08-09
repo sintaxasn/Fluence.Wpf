@@ -18,6 +18,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Demo: `Card` samples set `Variant` with plain enum names (`Variant="Outlined"`) instead of `x:Static` references.
 - Light theme: `NavigationViewContentBackground` raised from 50% to 65% white so the content area reads slightly more solid over Mica.
 - Demo: both demo apps consume Fluence through the single `xmlns:fluence="http://schemas.fluencewpf.com"` declaration instead of separate `ui` / `uicore` clr-namespace prefixes, and the displayed sample snippets teach the same form. Demo-local namespaces (converters, view models, pages) keep `clr-namespace` - WPF cannot resolve a URI namespace for types in the assembly being compiled.
+- Demo: sample pages build their displayed XAML source through `DemoSampleXaml.UserControl`, so the canonical root element and xmlns preamble live in one place instead of sixty-five hand-written copies.
 
 ## [0.8.12-Preview] - 2026-08-09
 

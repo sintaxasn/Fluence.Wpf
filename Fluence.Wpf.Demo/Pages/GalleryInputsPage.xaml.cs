@@ -32,11 +32,8 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryInputsPage : UserControl
     {
-        private const string TextBoxInputXamlSource = "<UserControl\n" +
-                                                      "    x:Class=\"Fluence.Wpf.Demo.Pages.Inputs.TextBoxInput\"\n" +
-                                                      "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                      "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                      "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string TextBoxInputXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Inputs.TextBoxInput",
                                                       "    <fluence:StackPanel Spacing=\"20\">\n" +
                                                       "        <fluence:TextBox\n" +
                                                       "            Width=\"480\"\n" +
@@ -55,8 +52,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                       "            HorizontalAlignment=\"Left\"\n" +
                                                       "            MaxLength=\"40\"\n" +
                                                       "            PlaceholderText=\"Limited to 40 characters...\" />\n" +
-                                                      "    </fluence:StackPanel>\n" +
-                                                      "</UserControl>\n";
+                                                      "    </fluence:StackPanel>\n");
 
         private const string TextBoxInputCSharpSource = "using System.Windows.Controls;\n" +
                                                         "\n" +
@@ -70,11 +66,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                         "        }\n" +
                                                         "    }\n" +
                                                         "}\n";
-        private const string TextBoxValidationXamlSource = "<UserControl\n" +
-                                                           "    x:Class=\"Fluence.Wpf.Demo.Pages.Inputs.TextBoxValidation\"\n" +
-                                                           "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                           "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                           "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string TextBoxValidationXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Inputs.TextBoxValidation",
                                                            "    <fluence:StackPanel Spacing=\"20\">\n" +
                                                            "        <fluence:TextBox\n" +
                                                            "            Width=\"480\"\n" +
@@ -99,8 +92,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                            "            Text=\"Bad value\"\n" +
                                                            "            ValidationMessage=\"Please fix this field.\"\n" +
                                                            "            ValidationState=\"{x:Static fluence:ValidationState.Error}\" />\n" +
-                                                           "    </fluence:StackPanel>\n" +
-                                                           "</UserControl>\n";
+                                                           "    </fluence:StackPanel>\n");
 
         private const string TextBoxValidationCSharpSource = "using System.Windows.Controls;\n" +
                                                              "\n" +
@@ -114,11 +106,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                              "        }\n" +
                                                              "    }\n" +
                                                              "}\n";
-        private const string PasswordBoxInputXamlSource = "<UserControl\n" +
-                                                          "    x:Class=\"Fluence.Wpf.Demo.Pages.Inputs.PasswordBoxInput\"\n" +
-                                                          "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                          "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                          "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string PasswordBoxInputXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Inputs.PasswordBoxInput",
                                                           "    <fluence:StackPanel Spacing=\"20\">\n" +
                                                           "        <fluence:PasswordBox\n" +
                                                           "            Width=\"480\"\n" +
@@ -139,8 +128,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                           "            HorizontalAlignment=\"Left\"\n" +
                                                           "            IsEnabled=\"False\"\n" +
                                                           "            PlaceholderText=\"Disabled\" />\n" +
-                                                          "    </fluence:StackPanel>\n" +
-                                                          "</UserControl>\n";
+                                                          "    </fluence:StackPanel>\n");
 
         private const string PasswordBoxInputCSharpSource = "using System.Windows.Controls;\n" +
                                                             "\n" +
@@ -154,11 +142,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                             "        }\n" +
                                                             "    }\n" +
                                                             "}\n";
-        private const string NumberBoxInputXamlSource = "<UserControl\n" +
-                                                        "    x:Class=\"Fluence.Wpf.Demo.Pages.Inputs.NumberBoxInput\"\n" +
-                                                        "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                        "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                        "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string NumberBoxInputXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Inputs.NumberBoxInput",
                                                         "    <fluence:StackPanel Spacing=\"20\">\n" +
                                                         "        <fluence:NumberBox\n" +
                                                         "            Width=\"260\"\n" +
@@ -186,8 +171,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                         "            Header=\"Disabled\"\n" +
                                                         "            IsEnabled=\"False\"\n" +
                                                         "            Value=\"42\" />\n" +
-                                                        "    </fluence:StackPanel>\n" +
-                                                        "</UserControl>\n";
+                                                        "    </fluence:StackPanel>\n");
 
         private const string NumberBoxInputCSharpSource = "using System.Windows.Controls;\n" +
                                                           "\n" +
@@ -201,11 +185,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                           "        }\n" +
                                                           "    }\n" +
                                                           "}\n";
-        private const string SliderInputXamlSource = "<UserControl\n" +
-                                                     "    x:Class=\"Fluence.Wpf.Demo.Pages.Inputs.SliderInput\"\n" +
-                                                     "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                     "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                     "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string SliderInputXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Inputs.SliderInput",
                                                      "    <fluence:StackPanel Spacing=\"20\">\n" +
                                                      "        <fluence:StackPanel Spacing=\"8\">\n" +
                                                      "            <TextBlock Text=\"Default\" />\n" +
@@ -254,8 +235,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                      "                    Value=\"25\" />\n" +
                                                      "            </fluence:StackPanel>\n" +
                                                      "        </Grid>\n" +
-                                                     "    </fluence:StackPanel>\n" +
-                                                     "</UserControl>\n";
+                                                     "    </fluence:StackPanel>\n");
 
         private const string SliderInputCSharpSource = "using System.Windows.Controls;\n" +
                                                        "\n" +
@@ -270,18 +250,14 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "    }\n" +
                                                        "}\n";
 
-        private const string AutoSuggestBoxXamlSource = "<UserControl\n" +
-                                                        "    x:Class=\"Fluence.Wpf.Demo.Pages.Inputs.AutoSuggestSample\"\n" +
-                                                        "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                        "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                        "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string AutoSuggestBoxXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Inputs.AutoSuggestSample",
                                                         "    <fluence:AutoSuggestBox\n" +
                                                         "        x:Name=\"SearchBox\"\n" +
                                                         "        Width=\"280\"\n" +
                                                         "        PlaceholderText=\"Search fruit\"\n" +
                                                         "        QuerySubmitted=\"SearchBox_QuerySubmitted\"\n" +
-                                                        "        TextChanged=\"SearchBox_TextChanged\" />\n" +
-                                                        "</UserControl>\n";
+                                                        "        TextChanged=\"SearchBox_TextChanged\" />\n");
 
         private const string AutoSuggestBoxCSharpSource = "using System;\n" +
                                                           "using System.Collections.Generic;\n" +

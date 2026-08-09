@@ -34,11 +34,8 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryFormsPage : UserControl
     {
-        private const string SignInFormXamlSource = "<UserControl\n" +
-                                                    "    x:Class=\"Fluence.Wpf.Demo.Pages.Forms.SignInForm\"\n" +
-                                                    "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                    "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                    "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string SignInFormXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Forms.SignInForm",
                                                     "    <StackPanel MaxWidth=\"480\" HorizontalAlignment=\"Left\">\n" +
                                                     "        <TextBlock Margin=\"0,0,0,4\" Text=\"Email\" />\n" +
                                                     "        <fluence:TextBox\n" +
@@ -61,8 +58,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                     "                Content=\"Sign in\" />\n" +
                                                     "            <fluence:Button Content=\"Create account\" />\n" +
                                                     "        </StackPanel>\n" +
-                                                    "    </StackPanel>\n" +
-                                                    "</UserControl>\n";
+                                                    "    </StackPanel>\n");
 
         private const string SignInFormCSharpSource = "using System.Windows.Controls;\n" +
                                                       "\n" +
@@ -76,11 +72,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                       "        }\n" +
                                                       "    }\n" +
                                                       "}\n";
-        private const string CheckoutFormXamlSource = "<UserControl\n" +
-                                                      "    x:Class=\"Fluence.Wpf.Demo.Pages.Forms.CheckoutForm\"\n" +
-                                                      "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                      "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                      "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string CheckoutFormXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Forms.CheckoutForm",
                                                       "    <StackPanel MaxWidth=\"560\" HorizontalAlignment=\"Left\">\n" +
                                                       "        <TextBlock Margin=\"0,0,0,4\" Text=\"Contact email\" />\n" +
                                                       "        <fluence:TextBox\n" +
@@ -128,8 +121,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                       "                Content=\"Place order\" />\n" +
                                                       "            <fluence:Button Content=\"Save for later\" />\n" +
                                                       "        </StackPanel>\n" +
-                                                      "    </StackPanel>\n" +
-                                                      "</UserControl>\n";
+                                                      "    </StackPanel>\n");
 
         private const string CheckoutFormCSharpSource = "using System.Windows.Controls;\n" +
                                                         "\n" +
@@ -143,11 +135,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                         "        }\n" +
                                                         "    }\n" +
                                                         "}\n";
-        private const string SettingsFormXamlSource = "<UserControl\n" +
-                                                      "    x:Class=\"Fluence.Wpf.Demo.Pages.Forms.SettingsForm\"\n" +
-                                                      "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                      "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                      "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string SettingsFormXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Forms.SettingsForm",
                                                       "    <StackPanel MaxWidth=\"560\" HorizontalAlignment=\"Left\">\n" +
                                                       "        <TextBlock Margin=\"0,0,0,4\" Text=\"Display name\" />\n" +
                                                       "        <fluence:TextBox\n" +
@@ -171,8 +160,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                       "            HorizontalAlignment=\"Left\"\n" +
                                                       "            Appearance=\"Accent\"\n" +
                                                       "            Content=\"Save settings\" />\n" +
-                                                      "    </StackPanel>\n" +
-                                                      "</UserControl>\n";
+                                                      "    </StackPanel>\n");
 
         private const string SettingsFormCSharpSource = "using System.Windows.Controls;\n" +
                                                         "\n" +
@@ -187,17 +175,13 @@ namespace Fluence.Wpf.Demo.Pages
                                                         "    }\n" +
                                                         "}\n";
 
-        private const string DatePickerXamlSource = "<UserControl\n" +
-                                                    "    x:Class=\"Fluence.Wpf.Demo.Pages.Forms.DueDateForm\"\n" +
-                                                    "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                    "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                    "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string DatePickerXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Forms.DueDateForm",
                                                     "    <fluence:DatePicker\n" +
                                                     "        x:Name=\"DueDatePicker\"\n" +
                                                     "        Header=\"Due date\"\n" +
                                                     "        PlaceholderText=\"Pick a date\"\n" +
-                                                    "        SelectedDateChanged=\"DueDatePicker_SelectedDateChanged\" />\n" +
-                                                    "</UserControl>\n";
+                                                    "        SelectedDateChanged=\"DueDatePicker_SelectedDateChanged\" />\n");
 
         private const string DatePickerCSharpSource = "using System.Windows.Controls;\n" +
                                                       "using Fluence.Wpf;\n" +
@@ -234,18 +218,14 @@ namespace Fluence.Wpf.Demo.Pages
             Loaded += GalleryFormsPage_Loaded;
         }
 
-        private const string TimePickerXamlSource = "<UserControl\n" +
-                                                    "    x:Class=\"Fluence.Wpf.Demo.Pages.Forms.ReminderTimeForm\"\n" +
-                                                    "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                    "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                    "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string TimePickerXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Forms.ReminderTimeForm",
                                                     "    <fluence:TimePicker\n" +
                                                     "        x:Name=\"ReminderTimePicker\"\n" +
                                                     "        Header=\"Reminder time\"\n" +
                                                     "        MinuteIncrement=\"5\"\n" +
                                                     "        PlaceholderText=\"Pick a time\"\n" +
-                                                    "        SelectedTimeChanged=\"ReminderTimePicker_SelectedTimeChanged\" />\n" +
-                                                    "</UserControl>\n";
+                                                    "        SelectedTimeChanged=\"ReminderTimePicker_SelectedTimeChanged\" />\n");
 
         private const string TimePickerCSharpSource = "using System.Windows.Controls;\n" +
                                                       "using Fluence.Wpf;\n" +
@@ -266,11 +246,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                       "    }\n" +
                                                       "}\n";
 
-        private const string ColorPickerXamlSource = "<UserControl\n" +
-                                                     "    x:Class=\"Fluence.Wpf.Demo.Pages.Forms.AccentColorForm\"\n" +
-                                                     "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                     "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                     "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string ColorPickerXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Forms.AccentColorForm",
                                                      "    <!--\n" +
                                                      "        The text-entry area shows an RGB/HSV selector, per-channel inputs, an alpha\n" +
                                                      "        percentage input, and a hex input. Set IsMoreButtonVisible=\"True\" to collapse\n" +
@@ -280,8 +257,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                      "        x:Name=\"AccentColorPicker\"\n" +
                                                      "        ColorChanged=\"AccentColorPicker_ColorChanged\"\n" +
                                                      "        IsAlphaEnabled=\"True\"\n" +
-                                                     "        IsMoreButtonVisible=\"False\" />\n" +
-                                                     "</UserControl>\n";
+                                                     "        IsMoreButtonVisible=\"False\" />\n");
 
         private const string ColorPickerCSharpSource = "using System.Windows.Controls;\n" +
                                                        "using Fluence.Wpf;\n" +

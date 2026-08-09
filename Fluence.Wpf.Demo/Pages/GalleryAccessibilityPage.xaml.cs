@@ -42,11 +42,8 @@ namespace Fluence.Wpf.Demo.Pages
     /// </summary>
     public partial class GalleryAccessibilityPage : UserControl
     {
-        private const string FocusAndTabOrderXamlSource = "<UserControl\n" +
-                                                          "    x:Class=\"Fluence.Wpf.Demo.Pages.Accessibility.FocusAndTabOrder\"\n" +
-                                                          "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                          "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                          "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string FocusAndTabOrderXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Accessibility.FocusAndTabOrder",
                                                           "    <StackPanel>\n" +
                                                           "        <Grid x:Name=\"KeyboardSupportPrimaryControls\" Margin=\"0,0,0,8\">\n" +
                                                           "            <Grid.ColumnDefinitions>\n" +
@@ -165,8 +162,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                           "                Content=\"Tab order: 1 (first)\"\n" +
                                                           "                TabIndex=\"1\" />\n" +
                                                           "        </Grid>\n" +
-                                                          "    </StackPanel>\n" +
-                                                          "</UserControl>\n";
+                                                          "    </StackPanel>\n");
 
         private const string FocusAndTabOrderCSharpSource = "using System.Windows.Controls;\n" +
                                                             "\n" +
@@ -180,11 +176,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                             "        }\n" +
                                                             "    }\n" +
                                                             "}\n";
-        private const string HighContrastMappingXamlSource = "<UserControl\n" +
-                                                             "    x:Class=\"Fluence.Wpf.Demo.Pages.Accessibility.HighContrastMapping\"\n" +
-                                                             "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                             "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                             "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string HighContrastMappingXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Accessibility.HighContrastMapping",
                                                              "    <Grid>\n" +
                                                              "        <Grid.RowDefinitions>\n" +
                                                              "            <RowDefinition Height=\"Auto\" />\n" +
@@ -251,8 +244,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                              "                </DataTemplate>\n" +
                                                              "            </ItemsControl.ItemTemplate>\n" +
                                                              "        </ItemsControl>\n" +
-                                                             "    </Grid>\n" +
-                                                             "</UserControl>\n";
+                                                             "    </Grid>\n");
 
         private const string HighContrastMappingCSharpSource = "using System.Collections.Generic;\n" +
                                                                "using System.Windows.Controls;\n" +
@@ -311,11 +303,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                                "        public Brush Brush { get; set; } = Brushes.Transparent;\n" +
                                                                "    }\n" +
                                                                "}\n";
-        private const string AutomationPropertiesXamlSource = "<UserControl\n" +
-                                                              "    x:Class=\"Fluence.Wpf.Demo.Pages.Accessibility.AutomationProperties\"\n" +
-                                                              "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                              "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                              "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string AutomationPropertiesXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Accessibility.AutomationProperties",
                                                               "    <StackPanel>\n" +
                                                               "        <TextBlock\n" +
                                                               "            Margin=\"0,0,0,8\"\n" +
@@ -373,8 +362,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                               "                <fluence:FontIcon Glyph=\"&#xE72D;\" IconFontSize=\"18\" />\n" +
                                                               "            </fluence:Button>\n" +
                                                               "        </StackPanel>\n" +
-                                                              "    </StackPanel>\n" +
-                                                              "</UserControl>\n";
+                                                              "    </StackPanel>\n");
 
         private const string AutomationPropertiesCSharpSource = "using System.Windows.Controls;\n" +
                                                                 "\n" +
@@ -388,11 +376,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                                 "        }\n" +
                                                                 "    }\n" +
                                                                 "}\n";
-        private const string RtlLayoutXamlSource = "<UserControl\n" +
-                                                   "    x:Class=\"Fluence.Wpf.Demo.Pages.Accessibility.RtlLayout\"\n" +
-                                                   "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                   "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                   "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string RtlLayoutXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Accessibility.RtlLayout",
                                                    "    <StackPanel>\n" +
                                                    "        <fluence:ToggleSwitch\n" +
                                                    "            x:Name=\"RtlToggle\"\n" +
@@ -421,14 +406,10 @@ namespace Fluence.Wpf.Demo.Pages
                                                    "                </StackPanel>\n" +
                                                    "            </StackPanel>\n" +
                                                    "        </fluence:Card>\n" +
-                                                   "    </StackPanel>\n" +
-                                                   "</UserControl>\n";
+                                                   "    </StackPanel>\n");
 
-        private const string LiveRegionXamlSource = "<UserControl\n" +
-                                                   "    x:Class=\"Fluence.Wpf.Demo.Pages.Accessibility.LiveRegion\"\n" +
-                                                   "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                   "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                   "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string LiveRegionXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Accessibility.LiveRegion",
                                                    "    <StackPanel>\n" +
                                                    "        <StackPanel Margin=\"0,0,0,12\" Orientation=\"Horizontal\">\n" +
                                                    "            <fluence:Button\n" +
@@ -462,8 +443,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                    "            x:Name=\"LiveRegionValidationStatus\"\n" +
                                                    "            Foreground=\"{DynamicResource SystemFillColorCriticalBrush}\"\n" +
                                                    "            Text=\"\" />\n" +
-                                                   "    </StackPanel>\n" +
-                                                   "</UserControl>\n";
+                                                   "    </StackPanel>\n");
 
         private const string LiveRegionCSharpSource = "using System.Windows;\n" +
                                                       "using System.Windows.Controls;\n" +
@@ -495,11 +475,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                       "    }\n" +
                                                       "}\n";
 
-        private const string RatingKeyboardXamlSource = "<UserControl\n" +
-                                                        "    x:Class=\"Fluence.Wpf.Demo.Pages.Accessibility.RatingKeyboard\"\n" +
-                                                        "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                        "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                        "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string RatingKeyboardXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Accessibility.RatingKeyboard",
                                                         "    <StackPanel>\n" +
                                                         "        <fluence:RatingControl\n" +
                                                         "            x:Name=\"A11yRatingControl\"\n" +
@@ -509,8 +486,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                         "            MaxRating=\"5\"\n" +
                                                         "            Value=\"3\" />\n" +
                                                         "        <TextBlock x:Name=\"A11yRatingStatusText\" Text=\"Current rating: 3 of 5\" />\n" +
-                                                        "    </StackPanel>\n" +
-                                                        "</UserControl>\n";
+                                                        "    </StackPanel>\n");
 
         private const string RatingKeyboardCSharpSource = "using System.ComponentModel;\n" +
                                                           "using System.Windows;\n" +

@@ -35,11 +35,8 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryMenusPage : UserControl
     {
-        private const string MenuBarXamlSource = "<UserControl\n" +
-                                                 "    x:Class=\"Fluence.Wpf.Demo.Pages.Menus.MenuBar\"\n" +
-                                                 "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                 "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                 "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string MenuBarXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Menus.MenuBar",
                                                  "    <StackPanel>\n" +
                                                  "        <fluence:Menu\n" +
                                                  "            Margin=\"0,0,0,12\">\n" +
@@ -103,8 +100,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                  "            x:Name=\"MenuBarResultLabel\"\n" +
                                                  "            Foreground=\"{DynamicResource TextFillColorSecondaryBrush}\"\n" +
                                                  "            Text=\"Last menu action: None\" />\n" +
-                                                 "    </StackPanel>\n" +
-                                                 "</UserControl>\n";
+                                                 "    </StackPanel>\n");
 
         private const string MenuBarCSharpSource = "using System.Windows;\n" +
                                                    "using System.Windows.Controls;\n" +
@@ -125,11 +121,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                    "        }\n" +
                                                    "    }\n" +
                                                    "}\n";
-        private const string ContextMenuXamlSource = "<UserControl\n" +
-                                                     "    x:Class=\"Fluence.Wpf.Demo.Pages.Menus.ContextMenuActions\"\n" +
-                                                     "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                     "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                     "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string ContextMenuXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Menus.ContextMenuActions",
                                                      "    <fluence:Card Padding=\"16\" Variant=\"{x:Static fluence:CardVariant.Subtle}\">\n" +
                                                      "        <fluence:Card.ContextMenu>\n" +
                                                      "            <fluence:ContextMenu>\n" +
@@ -183,8 +176,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                      "                Foreground=\"{DynamicResource TextFillColorSecondaryBrush}\"\n" +
                                                      "                Text=\"Last action: None\" />\n" +
                                                      "        </StackPanel>\n" +
-                                                     "    </fluence:Card>\n" +
-                                                     "</UserControl>\n";
+                                                     "    </fluence:Card>\n");
 
         private const string ContextMenuCSharpSource = "using System.Windows;\n" +
                                                        "using System.Windows.Controls;\n" +
@@ -205,11 +197,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                        "        }\n" +
                                                        "    }\n" +
                                                        "}\n";
-        private const string ToolTipsXamlSource = "<UserControl\n" +
-                                                  "    x:Class=\"Fluence.Wpf.Demo.Pages.Menus.ToolTips\"\n" +
-                                                  "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                  "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                  "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string ToolTipsXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Menus.ToolTips",
                                                   "    <WrapPanel>\n" +
                                                   "        <fluence:Button Margin=\"0,0,8,8\" Content=\"Save\">\n" +
                                                   "            <fluence:Button.ToolTip>\n" +
@@ -245,8 +234,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                   "                <fluence:ToolTip Content=\"Settings are disabled for this item\" />\n" +
                                                   "            </fluence:Button.ToolTip>\n" +
                                                   "        </fluence:Button>\n" +
-                                                  "    </WrapPanel>\n" +
-                                                  "</UserControl>\n";
+                                                  "    </WrapPanel>\n");
 
         private const string ToolTipsCSharpSource = "using System.Windows.Controls;\n" +
                                                     "\n" +
@@ -261,11 +249,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                     "    }\n" +
                                                     "}\n";
 
-        private const string FlyoutXamlSource = "<UserControl\n" +
-                                                "    x:Class=\"Fluence.Wpf.Demo.Pages.Menus.FlyoutSample\"\n" +
-                                                "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string FlyoutXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Menus.FlyoutSample",
                                                 "    <fluence:Button Click=\"FlyoutButton_Click\" Content=\"Show flyout\">\n" +
                                                 "        <fluence:FlyoutBase.AttachedFlyout>\n" +
                                                 "            <fluence:Flyout Placement=\"Bottom\">\n" +
@@ -284,8 +269,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                 "                </fluence:Flyout.Content>\n" +
                                                 "            </fluence:Flyout>\n" +
                                                 "        </fluence:FlyoutBase.AttachedFlyout>\n" +
-                                                "    </fluence:Button>\n" +
-                                                "</UserControl>\n";
+                                                "    </fluence:Button>\n");
 
         private const string FlyoutCSharpSource = "using System.Windows;\n" +
                                                   "using System.Windows.Controls;\n" +
@@ -310,13 +294,9 @@ namespace Fluence.Wpf.Demo.Pages
                                                   "    }\n" +
                                                   "}\n";
 
-        private const string ContentDialogXamlSource = "<UserControl\n" +
-                                                       "    x:Class=\"Fluence.Wpf.Demo.Pages.Menus.ContentDialogSample\"\n" +
-                                                       "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                       "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                       "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
-                                                       "    <fluence:Button Click=\"ShowDialogButton_Click\" Content=\"Show dialog\" />\n" +
-                                                       "</UserControl>\n";
+        private static readonly string ContentDialogXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Menus.ContentDialogSample",
+                                                       "    <fluence:Button Click=\"ShowDialogButton_Click\" Content=\"Show dialog\" />\n");
 
         private const string ContentDialogCSharpSource = "using System.Threading.Tasks;\n" +
                                                          "using System.Windows;\n" +
@@ -354,11 +334,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                          "    }\n" +
                                                          "}\n";
 
-        private const string TeachingTipXamlSource = "<UserControl\n" +
-                                                     "    x:Class=\"Fluence.Wpf.Demo.Pages.Menus.TeachingTipSample\"\n" +
-                                                     "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                     "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                     "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string TeachingTipXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Menus.TeachingTipSample",
                                                      "    <Grid>\n" +
                                                      "        <fluence:Button x:Name=\"TipButton\" Click=\"ShowTipButton_Click\" Content=\"Show teaching tip\" />\n" +
                                                      "        <fluence:TeachingTip\n" +
@@ -368,8 +345,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                      "            CloseButtonContent=\"Got it\"\n" +
                                                      "            IsLightDismissEnabled=\"True\"\n" +
                                                      "            PreferredPlacement=\"Bottom\" />\n" +
-                                                     "    </Grid>\n" +
-                                                     "</UserControl>\n";
+                                                     "    </Grid>\n");
 
         private const string TeachingTipCSharpSource = "using System.Windows;\n" +
                                                        "using System.Windows.Controls;\n" +
@@ -444,11 +420,8 @@ namespace Fluence.Wpf.Demo.Pages
             DialogResultLabel.Text = string.Format(CultureInfo.CurrentCulture, "Dialog result: {0}", result);
         }
 
-        private const string CommandBarFlyoutXamlSource = "<UserControl\n" +
-                                                          "    x:Class=\"Fluence.Wpf.Demo.Pages.Menus.CommandBarSample\"\n" +
-                                                          "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                          "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                          "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string CommandBarFlyoutXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Menus.CommandBarSample",
                                                           "    <fluence:Button Click=\"ShowCommandBarButton_Click\" Content=\"Show command bar\">\n" +
                                                           "        <fluence:FlyoutBase.AttachedFlyout>\n" +
                                                           "            <fluence:CommandBarFlyout>\n" +
@@ -464,8 +437,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                           "                </fluence:CommandBarFlyout.SecondaryCommands>\n" +
                                                           "            </fluence:CommandBarFlyout>\n" +
                                                           "        </fluence:FlyoutBase.AttachedFlyout>\n" +
-                                                          "    </fluence:Button>\n" +
-                                                          "</UserControl>\n";
+                                                          "    </fluence:Button>\n");
 
         private const string CommandBarFlyoutCSharpSource = "using System.Windows;\n" +
                                                             "using System.Windows.Controls;\n" +

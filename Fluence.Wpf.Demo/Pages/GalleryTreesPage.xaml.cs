@@ -33,11 +33,8 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryTreesPage : UserControl
     {
-        private const string TreeViewHierarchyXamlSource = "<UserControl\n" +
-                                                           "    x:Class=\"Fluence.Wpf.Demo.Pages.Trees.TreeViewHierarchy\"\n" +
-                                                           "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                           "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                           "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string TreeViewHierarchyXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Trees.TreeViewHierarchy",
                                                            "    <fluence:TreeView\n" +
                                                            "        x:Name=\"HierarchyTreeView\"\n" +
                                                            "        MaxHeight=\"260\"\n" +
@@ -59,8 +56,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                            "        <fluence:TreeViewItem Header=\"Resources\">\n" +
                                                            "            <fluence:TreeViewItem Header=\"DemoSharedStyles.xaml\" />\n" +
                                                            "        </fluence:TreeViewItem>\n" +
-                                                           "    </fluence:TreeView>\n" +
-                                                           "</UserControl>\n";
+                                                           "    </fluence:TreeView>\n");
 
         private const string TreeViewHierarchyCSharpSource = "using System.Windows.Controls;\n" +
                                                              "\n" +
@@ -74,11 +70,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                              "        }\n" +
                                                              "    }\n" +
                                                              "}\n";
-        private const string TreeViewSelectionXamlSource = "<UserControl\n" +
-                                                           "    x:Class=\"Fluence.Wpf.Demo.Pages.Trees.TreeViewSelection\"\n" +
-                                                           "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                           "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                           "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string TreeViewSelectionXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Trees.TreeViewSelection",
                                                            "    <StackPanel>\n" +
                                                            "        <fluence:TreeView\n" +
                                                            "            x:Name=\"SelectionTreeView\"\n" +
@@ -103,8 +96,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                            "                <fluence:TreeViewItem Header=\"April\" />\n" +
                                                            "            </fluence:TreeViewItem>\n" +
                                                            "        </fluence:TreeView>\n" +
-                                                           "    </StackPanel>\n" +
-                                                           "</UserControl>\n";
+                                                           "    </StackPanel>\n");
 
         private const string TreeViewSelectionCSharpSource = "using System.Windows.Controls;\n" +
                                                              "\n" +
@@ -118,11 +110,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                              "        }\n" +
                                                              "    }\n" +
                                                              "}\n";
-        private const string TreeViewMultiSelectXamlSource = "<UserControl\n" +
-                                                             "    x:Class=\"Fluence.Wpf.Demo.Pages.Trees.TreeViewMultiSelect\"\n" +
-                                                             "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                             "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                             "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string TreeViewMultiSelectXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Trees.TreeViewMultiSelect",
                                                              "    <fluence:TreeView\n" +
                                                              "        x:Name=\"MultiSelectTreeView\"\n" +
                                                              "        MaxHeight=\"260\"\n" +
@@ -142,8 +131,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                              "            <fluence:TreeViewItem Header=\"Screenshots\" />\n" +
                                                              "            <fluence:TreeViewItem Header=\"Archive\" />\n" +
                                                              "        </fluence:TreeViewItem>\n" +
-                                                             "    </fluence:TreeView>\n" +
-                                                             "</UserControl>\n";
+                                                             "    </fluence:TreeView>\n");
 
         private const string TreeViewMultiSelectCSharpSource = "using System.Windows.Controls;\n" +
                                                                "\n" +
@@ -157,11 +145,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                                "        }\n" +
                                                                "    }\n" +
                                                                "}\n";
-        private const string TreeViewExpansionXamlSource = "<UserControl\n" +
-                                                           "    x:Class=\"Fluence.Wpf.Demo.Pages.Trees.TreeViewExpansion\"\n" +
-                                                           "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                           "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                           "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string TreeViewExpansionXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Trees.TreeViewExpansion",
                                                            "    <StackPanel>\n" +
                                                            "        <fluence:TreeView\n" +
                                                            "            x:Name=\"ExpansionTreeView\"\n" +
@@ -197,8 +182,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                            "                Content=\"Collapse all\"\n" +
                                                            "                MinWidth=\"140\" />\n" +
                                                            "        </StackPanel>\n" +
-                                                           "    </StackPanel>\n" +
-                                                           "</UserControl>\n";
+                                                           "    </StackPanel>\n");
 
         private const string TreeViewExpansionCSharpSource = "using System.Windows;\n" +
                                                              "using System.Windows.Controls;\n" +

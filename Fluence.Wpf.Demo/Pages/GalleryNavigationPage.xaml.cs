@@ -33,11 +33,8 @@ namespace Fluence.Wpf.Demo.Pages
 {
     public partial class GalleryNavigationPage : UserControl
     {
-        private const string LeftNavigationViewXamlSource = "<UserControl\n" +
-                                                            "    x:Class=\"Fluence.Wpf.Demo.Pages.Navigation.LeftNavigationView\"\n" +
-                                                            "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                            "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                            "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string LeftNavigationViewXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Navigation.LeftNavigationView",
                                                             "    <Border\n" +
                                                             "        Height=\"320\">\n" +
                                                             "        <fluence:NavigationView\n" +
@@ -66,8 +63,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                             "                </fluence:NavigationViewItem.Icon>\n" +
                                                             "            </fluence:NavigationViewItem>\n" +
                                                             "        </fluence:NavigationView>\n" +
-                                                            "    </Border>\n" +
-                                                            "</UserControl>\n";
+                                                            "    </Border>\n");
 
         private const string LeftNavigationViewCSharpSource = "using System.Windows.Controls;\n" +
                                                               "\n" +
@@ -81,11 +77,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                               "        }\n" +
                                                               "    }\n" +
                                                               "}\n";
-        private const string TopNavigationViewXamlSource = "<UserControl\n" +
-                                                           "    x:Class=\"Fluence.Wpf.Demo.Pages.Navigation.TopNavigationView\"\n" +
-                                                           "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                           "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                           "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string TopNavigationViewXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Navigation.TopNavigationView",
                                                            "    <Border\n" +
                                                            "        Height=\"240\">\n" +
                                                            "        <fluence:NavigationView\n" +
@@ -109,8 +102,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                            "                </fluence:NavigationViewItem.Icon>\n" +
                                                            "            </fluence:NavigationViewItem>\n" +
                                                            "        </fluence:NavigationView>\n" +
-                                                           "    </Border>\n" +
-                                                           "</UserControl>\n";
+                                                           "    </Border>\n");
 
         private const string TopNavigationViewCSharpSource = "using System.Windows.Controls;\n" +
                                                              "\n" +
@@ -124,11 +116,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                              "        }\n" +
                                                              "    }\n" +
                                                              "}\n";
-        private const string CompactNavigationViewXamlSource = "<UserControl\n" +
-                                                               "    x:Class=\"Fluence.Wpf.Demo.Pages.Navigation.CompactNavigationView\"\n" +
-                                                               "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                               "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                               "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string CompactNavigationViewXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Navigation.CompactNavigationView",
                                                                "    <StackPanel>\n" +
                                                                "        <Border\n" +
                                                                "            Height=\"300\"\n" +
@@ -167,8 +156,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                                "                x:Name=\"BackEnabledToggle\"\n" +
                                                                "                Content=\"Back enabled\"\n" +
                                                                "                IsChecked=\"True\" />\n" +
-                                                               "    </StackPanel>\n" +
-                                                               "</UserControl>\n";
+                                                               "    </StackPanel>\n");
 
         private const string CompactNavigationViewCSharpSource = "using System.Windows.Controls;\n" +
                                                                  "\n" +
@@ -182,11 +170,8 @@ namespace Fluence.Wpf.Demo.Pages
                                                                  "        }\n" +
                                                                  "    }\n" +
                                                                  "}\n";
-        private const string InfoBadgeNavigationXamlSource = "<UserControl\n" +
-                                                             "    x:Class=\"Fluence.Wpf.Demo.Pages.Navigation.InfoBadgeNavigation\"\n" +
-                                                             "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                             "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                             "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string InfoBadgeNavigationXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Navigation.InfoBadgeNavigation",
                                                              "    <Border Height=\"260\">\n" +
                                                              "        <fluence:NavigationView\n" +
                                                              "            Header=\"Inbox\"\n" +
@@ -219,8 +204,7 @@ namespace Fluence.Wpf.Demo.Pages
                                                              "                </fluence:NavigationViewItem.InfoBadge>\n" +
                                                              "            </fluence:NavigationViewItem>\n" +
                                                              "        </fluence:NavigationView>\n" +
-                                                             "    </Border>\n" +
-                                                             "</UserControl>\n";
+                                                             "    </Border>\n");
 
         private const string InfoBadgeNavigationCSharpSource = "using System.Windows.Controls;\n" +
                                                                "\n" +
@@ -235,13 +219,9 @@ namespace Fluence.Wpf.Demo.Pages
                                                                "    }\n" +
                                                                "}\n";
 
-        private const string BreadcrumbBarXamlSource = "<UserControl\n" +
-                                                       "    x:Class=\"Fluence.Wpf.Demo.Pages.Navigation.BreadcrumbTrail\"\n" +
-                                                       "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                       "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                       "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
-                                                       "    <fluence:BreadcrumbBar x:Name=\"Trail\" ItemClicked=\"Trail_ItemClicked\" />\n" +
-                                                       "</UserControl>\n";
+        private static readonly string BreadcrumbBarXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Navigation.BreadcrumbTrail",
+                                                       "    <fluence:BreadcrumbBar x:Name=\"Trail\" ItemClicked=\"Trail_ItemClicked\" />\n");
 
         private const string BreadcrumbBarCSharpSource = "using System.Collections.ObjectModel;\n" +
                                                          "using System.Windows.Controls;\n" +
@@ -292,18 +272,14 @@ namespace Fluence.Wpf.Demo.Pages
             Loaded += GalleryNavigationPage_Loaded;
         }
 
-        private const string PipsPagerXamlSource = "<UserControl\n" +
-                                                   "    x:Class=\"Fluence.Wpf.Demo.Pages.Navigation.CarouselPager\"\n" +
-                                                   "    xmlns=\"http://schemas.microsoft.com/winfx/2006/xaml/presentation\"\n" +
-                                                   "    xmlns:x=\"http://schemas.microsoft.com/winfx/2006/xaml\"\n" +
-                                                   "    xmlns:fluence=\"http://schemas.fluencewpf.com\">\n" +
+        private static readonly string PipsPagerXamlSource = DemoSampleXaml.UserControl(
+            "Fluence.Wpf.Demo.Pages.Navigation.CarouselPager",
                                                    "    <fluence:PipsPager\n" +
                                                    "        x:Name=\"Pager\"\n" +
                                                    "        NextButtonVisibility=\"Visible\"\n" +
                                                    "        NumberOfPages=\"8\"\n" +
                                                    "        PreviousButtonVisibility=\"Visible\"\n" +
-                                                   "        SelectedIndexChanged=\"Pager_SelectedIndexChanged\" />\n" +
-                                                   "</UserControl>\n";
+                                                   "        SelectedIndexChanged=\"Pager_SelectedIndexChanged\" />\n");
 
         private const string PipsPagerCSharpSource = "using System.Windows.Controls;\n" +
                                                      "using Fluence.Wpf;\n" +
