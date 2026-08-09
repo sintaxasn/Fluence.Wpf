@@ -12,6 +12,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - `Fluence.Wpf.Markup.ThemeDictionary` - the WinUI `ResourceDictionary.ThemeDictionaries` equivalent: per-theme `ThemeResourceDictionary` tables (`ThemeKey` of `Light` / `Dark` / `HighContrast` / `Default`, plus the WinUI high-contrast polarity keys `HighContrastBlack` / `HighContrastWhite` selected by live system window luminance) that swap automatically on theme changes; usable from XAML and code, weakly tracked so discarded instances never leak. Demonstrated on the gallery Colors page.
 - `ApplicationAccentColorManager.ApplyCustomAccent(Color light, Color dark)` - sticky per-theme accent seeds resolved inside the engine on every apply; high contrast follows the dark seed. Consumers that previously re-applied a custom accent from a `Changed` handler can delete the subscription and the duplicate palette rebuild it caused.
 
+### Changed
+
+- Demo: the home page hero lockup swap is fully declarative through a page-scoped `ThemeDictionary`; the `HighContrastBlack` / `HighContrastWhite` tables replace the code-behind luminance pick, and the `ApplicationThemeManager.Changed` subscription is gone.
+
 ## [0.8.12-Preview] - 2026-08-09
 
 ### Added

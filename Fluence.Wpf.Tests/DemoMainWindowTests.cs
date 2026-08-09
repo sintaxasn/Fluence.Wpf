@@ -161,7 +161,7 @@ namespace Fluence.Wpf.Tests
                     Assert.IsNotNull(dark, "The dark header lockup should resolve from merged application resources.");
 
                     // The hero shows the lockup drawn for the active theme and swaps on
-                    // theme changes via ApplicationThemeManager.Changed.
+                    // theme changes via the page's ThemeDictionary (no code-behind).
                     Assert.AreSame(light, image.Source, "A light theme should show the light header lockup.");
 
                     ApplicationThemeManager.Apply(ApplicationTheme.Dark, BackdropType.None, updateAccent: true);
