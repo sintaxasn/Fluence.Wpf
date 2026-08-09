@@ -39,6 +39,33 @@ namespace Fluence.Wpf.Demo.Pages
         private const string SampleMarkup = "<TextBlock Foreground=\"{DynamicResource TextFillColorPrimaryBrush}\" />";
         private const int TokensPerRow = 4;
 
+        private const string ThemeDictionaryXamlSource =
+            "<StackPanel>\n" +
+            "    <StackPanel.Resources>\n" +
+            "        <fluence:ThemeDictionary>\n" +
+            "            <fluence:ThemeDictionary.ThemeDictionaries>\n" +
+            "                <fluence:ThemeResourceDictionary ThemeKey=\"Default\">\n" +
+            "                    <SolidColorBrush x:Key=\"SampleBackgroundBrush\" Color=\"#EEEEEE\" />\n" +
+            "                    <SolidColorBrush x:Key=\"SampleTextBrush\" Color=\"#333333\" />\n" +
+            "                    <sys:String x:Key=\"SampleThemeString\">Light theme</sys:String>\n" +
+            "                </fluence:ThemeResourceDictionary>\n" +
+            "                <fluence:ThemeResourceDictionary ThemeKey=\"Dark\">\n" +
+            "                    <SolidColorBrush x:Key=\"SampleBackgroundBrush\" Color=\"#333333\" />\n" +
+            "                    <SolidColorBrush x:Key=\"SampleTextBrush\" Color=\"#EEEEEE\" />\n" +
+            "                    <sys:String x:Key=\"SampleThemeString\">Dark theme</sys:String>\n" +
+            "                </fluence:ThemeResourceDictionary>\n" +
+            "            </fluence:ThemeDictionary.ThemeDictionaries>\n" +
+            "        </fluence:ThemeDictionary>\n" +
+            "    </StackPanel.Resources>\n" +
+            "    <ui:Border Background=\"{DynamicResource SampleBackgroundBrush}\">\n" +
+            "        <TextBlock Foreground=\"{DynamicResource SampleTextBrush}\" Text=\"{DynamicResource SampleThemeString}\" />\n" +
+            "    </ui:Border>\n" +
+            "    <TextBlock\n" +
+            "        Foreground=\"{fluence:ThemeResource TextFillColorSecondaryBrush}\"\n" +
+            "        Text=\"ThemeResource re-resolves canonical tokens on every theme change.\" />\n" +
+            "</StackPanel>\n";
+
+
         private static readonly ColorSection[] Sections =
         [
             new(
@@ -198,6 +225,7 @@ namespace Fluence.Wpf.Demo.Pages
         {
             InitializeComponent();
             CopyCodeSampleButton.Tag = SampleMarkup;
+            ThemeDictionarySampleText.Text = ThemeDictionaryXamlSource;
             BuildSectionTabs();
         }
 
@@ -573,6 +601,11 @@ namespace Fluence.Wpf.Demo.Pages
         private void CopyCodeSampleButton_Click(object sender, RoutedEventArgs e)
         {
             Clipboard.SetText(SampleMarkup);
+        }
+
+        private void CopyThemeDictionarySampleButton_Click(object sender, RoutedEventArgs e)
+        {
+            Clipboard.SetText(ThemeDictionaryXamlSource);
         }
 
         private static void CopyTokenButton_Click(object sender, RoutedEventArgs e)
