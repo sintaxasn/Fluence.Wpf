@@ -233,7 +233,7 @@
                         Margin="{DynamicResource DemoControlGroupItemMargin}"
                         Padding="{DynamicResource DemoSampleInnerCardPadding}"
                         Header="Default"
-                        Variant="{x:Static uicore:CardVariant.Default}">
+                        Variant="Default">
                         <TextBlock Text="Standard surface for grouped content." TextWrapping="Wrap" />
                     </ui:Card>
                     <ui:Card
@@ -241,7 +241,7 @@
                         Margin="{DynamicResource DemoControlGroupItemMargin}"
                         Padding="{DynamicResource DemoSampleInnerCardPadding}"
                         Header="Outlined"
-                        Variant="{x:Static uicore:CardVariant.Outlined}">
+                        Variant="Outlined">
                         <TextBlock Text="Emphasizes the boundary over fill." TextWrapping="Wrap" />
                     </ui:Card>
                     <ui:Card
@@ -249,7 +249,7 @@
                         Margin="{DynamicResource DemoControlGroupItemMargin}"
                         Padding="{DynamicResource DemoSampleInnerCardPadding}"
                         Header="Filled"
-                        Variant="{x:Static uicore:CardVariant.Filled}">
+                        Variant="Filled">
                         <TextBlock Text="Adds stronger container presence." TextWrapping="Wrap" />
                     </ui:Card>
                     <ui:Card
@@ -257,7 +257,7 @@
                         Margin="{DynamicResource DemoControlGroupItemMargin}"
                         Padding="{DynamicResource DemoSampleInnerCardPadding}"
                         Header="Subtle"
-                        Variant="{x:Static uicore:CardVariant.Subtle}">
+                        Variant="Subtle">
                         <TextBlock Text="Keeps low-emphasis supporting content grouped." TextWrapping="Wrap" />
                     </ui:Card>
                 </UniformGrid>

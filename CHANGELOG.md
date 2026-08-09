@@ -15,6 +15,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 ### Changed
 
 - Demo: the home page hero lockup swap is fully declarative through a page-scoped `ThemeDictionary`; the `HighContrastBlack` / `HighContrastWhite` tables replace the code-behind luminance pick, and the `ApplicationThemeManager.Changed` subscription is gone.
+- Demo: `Card` samples set `Variant` with plain enum names (`Variant="Outlined"`) instead of `x:Static` references.
 
 ## [0.8.12-Preview] - 2026-08-09
 

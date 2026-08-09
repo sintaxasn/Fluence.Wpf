@@ -326,7 +326,7 @@
                         x:Name="RtlDemoCard"
                         Padding="16"
                         FlowDirection="RightToLeft"
-                        Variant="{x:Static uicore:CardVariant.Outlined}">
+                        Variant="Outlined">
                         <StackPanel>
                             <TextBlock
                                 Margin="0,0,0,8"
