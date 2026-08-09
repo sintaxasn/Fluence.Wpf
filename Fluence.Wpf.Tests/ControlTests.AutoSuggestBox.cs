@@ -72,13 +72,14 @@ namespace Fluence.Wpf.Tests
                     Selector? list = template.FindName("PART_SuggestionsList", box) as Selector;
 
                     Assert.IsNotNull(textBox, "PART_TextBox must be a Fluence TextBox so the field matches the themed look.");
+                    Controls.TextBox verifiedTextBox = textBox ?? throw new InvalidOperationException("PART_TextBox must be a Fluence TextBox so the field matches the themed look.");
                     Assert.IsNotNull(popup, "PART_SuggestionsPopup must be present in the template.");
                     Assert.IsNotNull(list, "PART_SuggestionsList must be a Selector hosting the suggestions.");
                     _ = Assert.IsInstanceOfType<Controls.ListBox>(list,
                         "The default template should present suggestions through the Fluence ListBox.");
                     Assert.IsFalse(popup.StaysOpen, "The suggestion popup must be light-dismiss (StaysOpen=false).");
                     Assert.IsTrue(popup.AllowsTransparency, "The suggestion popup must allow transparency for the rounded surface.");
-                    Assert.AreEqual("Search", textBox.PlaceholderText, StringComparer.Ordinal, "PlaceholderText must flow into the inner Fluence TextBox.");
+                    Assert.AreEqual("Search", verifiedTextBox.PlaceholderText, StringComparer.Ordinal, "PlaceholderText must flow into the inner Fluence TextBox.");
                 }
                 finally
                 {
@@ -119,7 +120,11 @@ namespace Fluence.Wpf.Tests
 
                     Controls.TextBox? textBox = box.Template?.FindName("PART_TextBox", box) as Controls.TextBox;
                     Assert.IsNotNull(textBox, "PART_TextBox must be present in the template.");
-                    Assert.AreEqual("fluent", textBox.Text, StringComparer.Ordinal, "A programmatic Text change must flow into the inner text box.");
+                    if (textBox is null)
+                    {
+                        throw new AssertFailedException("PART_TextBox must be present in the template.");
+                    }
+	                    Assert.AreEqual("fluent", textBox.Text, StringComparer.Ordinal, "A programmatic Text change must flow into the inner text box.");
                 }
                 finally
                 {
